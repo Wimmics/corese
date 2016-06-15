@@ -278,7 +278,7 @@ public class MyJPanelListener extends JPanel implements MouseListener, ActionLis
      * @param coreseFrame
      */
     public void refresh(MainFrame coreseFrame) {
-        coreseFrame.setMyCoreseNewInstance();
+        //coreseFrame.setMyCoreseNewInstance();
         appendMsg("reload ...\n" + coreseFrame.getMyCapturer().getContent() + "\n", coreseFrame);
         coreseFrame.setMyCoreseNewInstance();
         if (model.getSize() != 0) {

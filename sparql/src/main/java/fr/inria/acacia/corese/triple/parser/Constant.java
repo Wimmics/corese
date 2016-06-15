@@ -219,8 +219,12 @@ public class Constant extends Atom {
 	 *  source: javacc
 	 *  replace special char by escape char for pprint
 	 */
-	 public static String addEscapes(String str) {
-	      StringBuffer retval = new StringBuffer();
+         public static String addEscapes(String str) {
+             return addEscapes(str, true);
+         }
+        
+	 public static String addEscapes(String str, boolean quote) {
+	      StringBuilder retval = new StringBuilder();
 	      char ch;
 	      for (int i = 0; i < str.length(); i++) {
 	        switch (str.charAt(i))
@@ -246,8 +250,9 @@ public class Constant extends Atom {
 	              retval.append("\\\"");
 	              continue;
 	           case '\'':
-	              retval.append("\\\'");
-	              continue;
+                      if (quote) {retval.append("\\\'");}
+                      else {retval.append(str.charAt(i));}	              
+                      continue;
 	           case '\\':
 	              retval.append("\\\\");
 	              continue;

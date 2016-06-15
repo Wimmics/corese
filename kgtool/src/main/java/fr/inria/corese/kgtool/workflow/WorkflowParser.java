@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgtool.transform.ContextBuilder;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,7 @@ public class WorkflowParser {
     public static final String DATASET = PREF + "Dataset";
     public static final String PROBE = PREF + "Probe";
     public static final String ASSERT = PREF + "Assert";
+    public static final String DATASHAPE = PREF + "Shape";
     
     public static final String URI = PREF + "uri";
     public static final String BODY = PREF + "body";
@@ -67,11 +70,19 @@ public class WorkflowParser {
     public static final String THEN = PREF + "then";
     public static final String ELSE = PREF + "else";
     public static final String TEST_VALUE = PREF + "test";
+    public static final String WORKFLOW_VALUE = PREF + "workflow";
     public static final String VALUE = PREF + "value";
     public static final String EXP = PREF + "exp";
     public static final String COLLECT = PREF + "collect";
     public static final String COMPARE = PREF + "compare";
     public static final String MAIN = PREF + "main";
+    public static final String SHAPE = PREF + "shape";
+    public static final String VISITOR = PREF + "visitor";
+    public static final String SPIN = PREF + "spin";
+    public static final String NEW = PREF + "new";
+    
+    public static final String LOAD_PARAM = Context.STL_PARAM;
+    public static final String MODE_PARAM = Context.STL_MODE;
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -80,6 +91,7 @@ public class WorkflowParser {
     private String path;
     private boolean debug = !true;
     private SWMap map;
+    private Context context;
     
     static final ArrayList<String> topLevel;
     
@@ -87,6 +99,18 @@ public class WorkflowParser {
         topLevel = new ArrayList<String>();
         topLevel.add(BODY);
     }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
+    
+    Context getContext(){
+        return context;
+    }
+   
     
     class SWMap extends HashMap<String, SemanticWorkflow> {}
 
@@ -105,6 +129,7 @@ public class WorkflowParser {
         this();
         graph = g;
         this.sw = wp;
+        setContext(wp.getContext());
     }
     
     public SemanticWorkflow parse(Graph g) throws LoadException {
@@ -113,6 +138,7 @@ public class WorkflowParser {
     
     public SemanticWorkflow parse(Graph g, String name) throws LoadException {
         setGraph(g);
+        sw.setWorkflowGraph(g);
         Node node = getWorkflowNode(name);
         if (node == null) {
             if (path != null){
@@ -216,16 +242,24 @@ public class WorkflowParser {
         Node body = getNode(BODY, wf);
         Node uri  = getNode(URI, wf);
         if (body != null) {
-            WorkflowParser parser = new WorkflowParser(getGraph());
-            parser.setProcessMap(map);
+            WorkflowParser parser = new WorkflowParser(getGraph()).complete(this);
             return parser.parse(wf); 
         } else if (uri != null) {
-            WorkflowParser parser = new WorkflowParser();
-            parser.setProcessMap(map);
+            WorkflowParser parser = new WorkflowParser().complete(this);
             return parser.parse(uri.getLabel());
         } else {
             return null;
         }
+    }
+    
+    /**
+     * 
+     * This completed by wp
+     */
+    WorkflowParser complete(WorkflowParser wp){
+        setProcessMap(wp.getProcessMap());
+        setContext(wp.getContext());
+        return this;
     }
     
     /**
@@ -304,13 +338,13 @@ public class WorkflowParser {
     
     void parseContext(Node c) {
         ContextBuilder cb = new ContextBuilder(getGraph());
-        if (sw.getContext() != null) {
+        if (getContext() != null) {
             // wp workflow already has a Context
             // complete wp context with current specification
             // use case: server profile has a st:param Context
             // and workflow has a sw:param Context
             // result: merge them
-            cb.setContext(sw.getContext());
+            cb.setContext(getContext());
         }
         Context context = cb.process(c);
         sw.setContext(context);
@@ -324,7 +358,7 @@ public class WorkflowParser {
             complete(sw.getContext(), g);
         }
     }
-    
+     
     void complete(Context c, Graph g){
         if (c.get(Context.STL_SERVER_PROFILE) == null){
             c.set(Context.STL_SERVER_PROFILE, DatatypeMap.createObject(g));
@@ -359,20 +393,32 @@ public class WorkflowParser {
                 // special case (with complete done)
                 ap = subWorkflow(getGraph().getNode(dt));
             } 
+            else if (type.equals(DATASHAPE)){
+                ap = datashape(dt);
+            }
+            else if (type.equals(TRANSFORMATION)){
+                ap = transformation(dt);
+            }
             else {
                 IDatatype duri  = getValue(URI, dt);
                 IDatatype dbody = getValue(BODY, dt);
+                IDatatype dtest = getValue(TEST_VALUE, dt);
+                boolean test = dtest != null && dtest.booleanValue();
+
                 if (duri != null) {
                     String uri = duri.getLabel();
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
                         ap = queryPath(uri);
-                    } else if (type.equals(RULE) || type.equals(RULEBASE)) {
-                        ap = new RuleProcess(uri);
-                    } else if (type.equals(TRANSFORMATION)) {
-                        ap = new TransformationProcess(uri);
-                    } else if (type.equals(LOAD)) {
-                        ap = load(dt);
+                    } 
+                    else if (type.equals(FUNCTION)) {
+                        ap = functionPath(uri);
                     }
+                    else if (type.equals(RULE) || type.equals(RULEBASE)) {
+                        ap = new RuleProcess(uri);
+                    } 
+                    else if (type.equals(LOAD)) {
+                        ap = load(dt);
+                    }                   
                 }  
                 else if (dbody != null) {
                     if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
@@ -409,6 +455,88 @@ public class WorkflowParser {
         return ap;
     }
      
+    TransformationProcess transformation(IDatatype dt) {
+        String uri = getParam(dt, URI, MODE_PARAM, true);
+        return new TransformationProcess(uri);
+    }
+     
+     /**
+      * Special case: may get input from Context     
+      */
+    ShapeWorkflow datashape(IDatatype dt) {
+        IDatatype dtest  = getValue(TEST_VALUE, dt);
+        boolean test  = (dtest == null) ? false : dtest.booleanValue();
+        
+        String uri    = getParam(dt, URI, LOAD_PARAM, true);
+        String shape  = getParam(dt, SHAPE, MODE_PARAM, true);
+        String format = getParam(dt, PATH, PATH);
+        ShapeWorkflow ap = null;
+        if (shape != null && uri != null) {
+            ap = new ShapeWorkflow(shape, uri, format, test);
+        }
+        return ap;
+    }
+    
+    
+    /**
+     * Retrieve param from workflow graph pred or from context name
+     */
+     String getParam(IDatatype node, String pred, String name){
+         return getParam(node, pred, name, false);
+     }
+
+    
+    String getParam(IDatatype node, String pred, String name, boolean uri){
+        IDatatype dt = getValue(pred, node);
+        if (dt == null){
+            String value = getParam(name);
+            if (value != null){
+                if (uri){
+                    return resolve(value);
+                }
+                else {
+                    return value;
+                }
+            }
+        }
+        if (dt == null){
+            return null;
+        }
+        
+        return dt.getLabel();
+    }
+    
+    String getParam(String name){
+        if (getContext() == null || getContext().get(name) == null){
+            return null;
+        }
+        return getContext().get(name).getLabel();
+    }
+    
+    String resolve(String uri) {
+        if (getContext() == null){
+            return uri;
+        }
+        IDatatype dts = getContext().get(Context.STL_SERVER);
+        if (dts != null) {
+            return resolve(uri, dts.getLabel());
+        }
+        return uri;
+    }
+    
+     String resolve(String uri, String base){
+        try {
+            URI url = new URI(uri);
+            if (! url.isAbsolute()) {
+                url = new URI(base).resolve(uri);
+                uri= url.toString();
+            }
+        } catch (URISyntaxException ex) {
+            logger.info(ex);
+        }
+        return uri;
+    }
+     
      DatasetProcess dataset(IDatatype dt){
          return new DatasetProcess();
      }
@@ -416,6 +544,11 @@ public class WorkflowParser {
     SPARQLProcess queryPath(String path) throws LoadException{
         String q = QueryLoad.create().readWE(path);
         return new SPARQLProcess(q, path);
+    } 
+    
+    FunctionProcess functionPath(String path) throws LoadException{
+        String q = QueryLoad.create().readWE(path);
+        return new FunctionProcess(q, path);
     } 
           
     
@@ -435,6 +568,13 @@ public class WorkflowParser {
             String pp = ent.getNode(1).getLabel();
             w.add(new LoadProcess(pp, name, rec));
         }
+        
+        // get what to load from Context st:param
+        String uri  = getParam(LOAD_PARAM);
+        if (uri != null){
+            w.add(new LoadProcess(resolve(uri), name, rec));
+        }
+        
         if (w.getProcessList().size() == 1){
             return w.getProcessLast();
         }
@@ -444,8 +584,13 @@ public class WorkflowParser {
     
     ProbeProcess probe(IDatatype dt) throws LoadException {
         IDatatype body = getValue(EXP, dt);
-        WorkflowProcess wp = createProcess(body);
-        return new ProbeProcess(wp);
+        if (body == null){
+            return new ProbeProcess();
+        }
+        else {
+            WorkflowProcess wp = createProcess(body);        
+            return new ProbeProcess(wp);
+        }
     }
     
     ParallelProcess parallel(Node wf) throws LoadException {
@@ -467,7 +612,10 @@ public class WorkflowParser {
     AssertProcess asserter(IDatatype dt) throws LoadException {
         IDatatype dtest  = getValue(EXP, dt);
         IDatatype dvalue = getValue(VALUE, dt);
-        if (dtest != null && dvalue != null){
+        if (dvalue == null){
+            dvalue = DatatypeMap.TRUE;
+        }
+        if (dtest != null){
             WorkflowProcess w = fun(dtest);
             return new AssertProcess(w, dvalue);
         }
@@ -502,7 +650,8 @@ public class WorkflowParser {
     
     WorkflowProcess fun(IDatatype dt) throws LoadException{
          if (dt.isLiteral()){
-            // sw:if "us:test()"
+            // sw:Test   sw:if "us:test()"
+            // sw:Assert sw:exp "xt:size(?g)"
             return new FunctionProcess("function xt:main(){ " + dt.getLabel() + " }", getPath());
         }
         else {

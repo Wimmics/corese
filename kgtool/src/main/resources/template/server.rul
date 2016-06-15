@@ -2,45 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-#
-# onChange=''
-#
-template st:change {
-      
- if (st:get(st:protocol, st:ajax), 
-    "trans(this.form); return false;",
-    "submit();")  
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:bstyle { 
-    
-      "class='btn btn-warning'" 
-        
-}
-where {
-  filter (st:get(st:protocol, st:ajax))
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -91,10 +56,40 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:tail {
+template st:sstyle {
+  "class='form-control select'"
+}
+where {}
 
-if (st:get(st:protocol, st:ajax), "",
-    st:call-template(st:dotail))
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:dohead {
+
+  st:call-template(st:header)
+ # st:call-template(st:banner)
+  
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Hyper text link to server
+# May return javascript:trans(?uri)
+#
+template st:link (?uri) {
 
 }
 where {
@@ -127,48 +122,11 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:sstyle {
-  "class='form-control select'"
-}
-where {}
+template st:tail {
 
-]]>
-</body>
-</rule>
+if (st:get(st:protocol, st:ajax), "",
+    st:call-template(st:dotail))
 
-<rule>
-<body>
-<![CDATA[
-template st:banner  {
-"""
-<table class='banner'>
-<tr>
-<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a>
-</td>
-
-<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a>
-</td>
-
-<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a>
-</td>
-</tr>
-</table>
-"""
-}
-where {}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:head {
-
-  if (st:get(st:protocol, st:ajax), "",
-    st:call-template(st:dohead))
-    
 }
 where {
 
@@ -182,31 +140,15 @@ where {
 <body>
 <![CDATA[
 #
-# Hyper text link to server
-# May return javascript:trans(?uri)
+# onChange=''
 #
-template st:link (?uri) {
-
+template st:change {
+      
+ if (st:get(st:protocol, st:ajax), 
+    "trans(this.form); return false;",
+    "submit();")  
 }
 where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:dohead {
-
-  st:call-template(st:header)
-  st:call-template(st:banner)
-  
-}
-where {
-
 }
 
 ]]>
@@ -232,6 +174,64 @@ template st:header {
 where {
 
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:head {
+
+  if (st:get(st:protocol, st:ajax), "",
+    st:call-template(st:dohead))
+    
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:bstyle { 
+    
+      "class='btn btn-warning'" 
+        
+}
+where {
+  filter (st:get(st:protocol, st:ajax))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:banner  {
+"""
+<table class='banner'>
+<tr>
+<td><a href='http://www.inria.fr/centre/sophia'><img alt ='INRIA' src='http://www.inria.fr/var/inria/storage/images/medias/inria/images-corps/logo-inria-scientifique-couleur/404505-4-fre-FR/logo-inria-scientifique-couleur.jpg'/></a>
+</td>
+
+<td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a>
+</td>
+
+<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='/img/logo/i3s.gif' height='100'/></a>
+</td>
+</tr>
+</table>
+"""
+}
+where {}
 
 ]]>
 </body>

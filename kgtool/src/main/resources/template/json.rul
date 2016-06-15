@@ -2,29 +2,59 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-#
-# JSON LD Transformation
-#
-# Olivier Corby - Wimmics INRIA I3S - 2015
-#
+template st:body {
 
-template st:start {
-
-  st:call-template(st:head)
-  
-  str(?body)
-  
-  st:call-template(st:tail)
+   st:apply-templates(?in)
+   
+   ; separator = concat(",", st:nl(), st:nl())
+   
 }
 where {
-   bind(st:call-template(st:main) as ?body )
+
+   select distinct ?in where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (
+       isURI(?in) ||
+       (
+       # skip list
+        (?p not in (rdf:first, rdf:rest) && 
+        ! (?p = rdf:type && ?y = rdf:List))
+        
+       # except nested list
+        || exists { ?x rdf:first ?in }
+        
+       # except top level list
+        || not exists { ?x ?q ?in }
+       ))    
+   }
+   order by ?in
+   
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:type(?in) {
+
+  "," st:nl()
+  st:call-template(st:propertyvalue, ?in, rdf:type) 
+   
+}
+where {
+    filter exists { ?in rdf:type ?y } 
 }
 
 ]]>
@@ -63,14 +93,47 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:type(?in) {
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
 
-  "," st:nl()
-  st:call-template(st:propertyvalue, ?in, rdf:type) 
-   
+template st:start {
+
+  st:call-template(st:head)
+  
+  str(?body)
+  
+  st:call-template(st:tail)
 }
 where {
-    filter exists { ?in rdf:type ?y } 
+   bind(st:call-template(st:main) as ?body )
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+
+  format { 
+    """<h3>JSON</h3>
+    <pre>%s</pre>"""
+    st:call-template(st:start)
+  }
+  
+}
+where {
 }
 
 ]]>
@@ -96,6 +159,26 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:prefix {
+
+ st:nl()
+ 
+ "\"" str(?p) "\": \""  str(?n) "\""  
+
+ ; separator = ","
+ 
+}
+where {
+  bind (unnest(st:prefix()) as (?p, ?n))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:property(?in) {
 
   "," st:nl()
@@ -112,44 +195,6 @@ where {
   }
 }
 order by ?p 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:body {
-
-   st:apply-templates(?in)
-   
-   ; separator = concat(",", st:nl(), st:nl())
-   
-}
-where {
-
-   select distinct ?in where {
-     bind (st:get(st:uri) as ?in)
-     ?in ?p ?y
-     
-     filter (
-       isURI(?in) ||
-       (
-       # skip list
-        (?p not in (rdf:first, rdf:rest) && 
-        ! (?p = rdf:type && ?y = rdf:List))
-        
-       # except nested list
-        || exists { ?x rdf:first ?in }
-        
-       # except top level list
-        || not exists { ?x ?q ?in }
-       ))    
-   }
-   order by ?in
-   
-}
 
 ]]>
 </body>
@@ -214,51 +259,6 @@ where {
   ?x ?p ?y  
 }
 order by ?y
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:prefix {
-
- st:nl()
- 
- "\"" str(?p) "\": \""  str(?n) "\""  
-
- ; separator = ","
- 
-}
-where {
-  bind (unnest(st:prefix()) as (?p, ?n))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# JSON LD Transformation
-#
-# Olivier Corby - Wimmics INRIA I3S - 2015
-#
-
-template st:result {
-
-  format { 
-    """<h3>JSON</h3>
-    <pre>%s</pre>"""
-    st:call-template(st:start)
-  }
-  
-}
-where {
-}
 
 ]]>
 </body>

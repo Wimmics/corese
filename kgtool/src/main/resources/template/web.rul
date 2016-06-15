@@ -2,55 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:script {
-   """
-   <script type="text/javascript">           
-        function show(name){
-            document.getElementById('query').value = document.getElementById(name).value;
-        }                
-   </script>
-   """
-}
-where {}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:content2(?t, ?p) {
-
-  str(?t) "<br/>"  
-  
-  group distinct { 
-    "<a href='" str(?d) "'>" str(?d) "</a>" 
-    ; separator="<br/>"
-  } 
-  
-  "<br/>"
- 
-}
-where {
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-    ?ds a st:Dataset
-    ?ds ?p [ st:uri ?d ]
-  }
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -105,6 +60,30 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Display result of query
+# RDF graph is a result graph
+#
+
+prefix spq: <http://ns.inria.fr/sparql-template/sparql#>
+template st:result {
+
+   st:apply-templates-with(?sttl)
+    
+}
+where {
+  bind (st:get(st:query) as ?query)
+  bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
+  filter bound(?query)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:tail {
 format {
   """ 
@@ -118,6 +97,38 @@ format {
 }
 where {
 
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prev(?t) {
+
+format {
+  """
+  <a  href='%s'>
+  <button type='button' %s>Previous</button>
+  </a>
+  """
+  
+  st:plink(?n)
+  st:bstyle()
+  }
+  
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i - 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
 }
 
 ]]>
@@ -176,52 +187,36 @@ where {}
 <body>
 <![CDATA[
 #
-# Display result of query
-# RDF graph is a result graph
+# Select a query name to display and execute
+# query name bound to uri param
+# Generate query names list from context graph
 #
-
-prefix spq: <http://ns.inria.fr/sparql-template/sparql#>
-template st:result {
-
-   st:apply-templates-with(?sttl)
-    
-}
-where {
-  bind (st:get(st:query) as ?query)
-  bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
-  filter bound(?query)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:prev(?t) {
+template st:selectform(?t) {
 
 format {
+
   """
-  <a  href='%s'>
-  <button type='button' %s>Previous</button>
-  </a>
+  <h3>Select a query</h3>
+  <form method='get' id ='select' action='%s'>
+  <input type='hidden' name='profile' value='%s' />
+  %s   
+  <select %s id='uri' name='uri' onChange='%s'>
+  %s
+  </select>   
+  %s
+  </form>
   """
   
-  st:plink(?n)
-  st:bstyle()
-  }
-  
+  st:get(st:service) 
+  st:get(st:profile)   
+  st:call-template(st:prev, ?t)  
+  st:sstyle() 
+  st:change() 
+  st:call-template(st:list, ?t)  
+  st:call-template(st:next, ?t)
+}
 }
 where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?q1 st:name ?t ; st:index ?i
-    bind (?i - 1 as ?j)
-    ?q2 st:index ?j ;
-	st:name ?n 
-  }
 }
 
 ]]>
@@ -276,6 +271,24 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:script {
+   """
+   <script type="text/javascript">           
+        function show(name){
+            document.getElementById('query').value = document.getElementById(name).value;
+        }                
+   </script>
+   """
+}
+where {}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:nav {
  
  format {
@@ -291,6 +304,90 @@ template st:nav {
    
  }
 where {}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate query names list from context graph
+#
+template st:list(?t) {
+
+format {
+  """
+  <option value='%s'" %s> 
+  %s . %s 
+  </option>
+  """
+  
+  ?q
+  if (?q = ?t, "selected='true'", "")
+  str(?i)
+  str(?title)
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+  values ?qt {st:Query sw:Query}
+    [] a ?qt ;
+      st:index ?i ;
+      st:name ?q ;
+      rdfs:label ?title
+  }
+}
+order by ?i
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:content2(?t, ?p) {
+
+  str(?t) "<br/>"  
+  
+  group distinct { 
+    "<a href='" str(?d) "'>" str(?d) "</a>" 
+    ; separator="<br/>"
+  } 
+  
+  "<br/>"
+ 
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?ds a st:Dataset
+    ?ds ?p [ st:uri ?d ]
+  }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:head {
+   
+  format {
+  "<h2 class='center'>%s</h2>" 
+  str(?title)
+  }
+  
+}
+where {
+  bind (coalesce(st:get(st:title), "Tutorial") as ?title)
+}
 
 ]]>
 </body>
@@ -346,103 +443,6 @@ where {
       optional { ?qt sw:body  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Select a query name to display and execute
-# query name bound to uri param
-# Generate query names list from context graph
-#
-template st:selectform(?t) {
-
-format {
-
-  """
-  <h3>Select a query</h3>
-  <form method='get' id ='select' action='%s'>
-  <input type='hidden' name='profile' value='%s' />
-  %s   
-  <select %s id='uri' name='uri' onChange='%s'>
-  %s
-  </select>   
-  %s
-  </form>
-  """
-  
-  st:get(st:service) 
-  st:get(st:profile)   
-  st:call-template(st:prev, ?t)  
-  st:sstyle() 
-  st:change() 
-  st:call-template(st:list, ?t)  
-  st:call-template(st:next, ?t)
-}
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate query names list from context graph
-#
-template st:list(?t) {
-
-format {
-  """
-  <option value='%s'" %s> 
-  %s . %s 
-  </option>
-  """
-  
-  ?q
-  if (?q = ?t, "selected='true'", "")
-  str(?i)
-  str(?title)
-}
-   
-}
-where {
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-  values ?qt {st:Query sw:Query}
-    [] a ?qt ;
-      st:index ?i ;
-      st:name ?q ;
-      rdfs:label ?title
-  }
-}
-order by ?i
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:head {
-   
-  format {
-  "<h2 class='center'>%s</h2>" 
-  str(?title)
-  }
-  
-}
-where {
-  bind (coalesce(st:get(st:title), "Tutorial") as ?title)
 }
 
 ]]>

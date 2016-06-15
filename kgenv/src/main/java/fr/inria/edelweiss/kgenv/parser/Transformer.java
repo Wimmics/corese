@@ -209,6 +209,9 @@ public class Transformer implements ExpType {
 		if (ast.getContext() != null){
                     q.setContext(ast.getContext());
                 }
+                if (ast.getTemplateVisitor() != null){
+                    q.setTemplateVisitor(ast.getTemplateVisitor());
+                }
 		template(q, ast);
 				
 		q = transform(q, ast);

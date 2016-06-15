@@ -173,7 +173,7 @@ public class ManagerImpl implements Manager {
     }
 
     private boolean update(Basic ope, int mode, String source, String target) {
-        if (source.equals(target)) {
+        if (target != null && source.equals(target)) {
             return true;
         }
 

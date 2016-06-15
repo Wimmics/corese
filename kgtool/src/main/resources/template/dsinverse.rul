@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Jun 03 09:40:29 CEST 2016
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+function st:hasInverseProperty(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-all(?shape, ?sh, ?vis, ?s, ?p)
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?this, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:class ?c  
+  }
+  
+  ?x ?p ?this
+  bind (exists { ?x rdf:type/rdfs:subClassOf* ?c }    as ?suc)
+  
+  bind (st:report(sh:class, ?sh, ?shape, ?this, ?x, ?p, ?this, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    GRAPH ?shape {
+        ?sh sh:or ?or 
+    }
+    
+    bind (sh:or(sh:hasInverseProperty, ?or, ?s, ?p, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count > 0)  as ?suc)
+
+    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:not ?cst  
+  }
+    
+  bind (! sh:hasInverseProperty(?shape, ?cst, false, ?s, ?p) as ?suc)
+  
+  bind (st:report(sh:shape, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:hasValue ?v  
+  }
+  
+  ?s ?p ?o
+  bind (coalesce(?s = ?v, false)  as ?suc)
+  
+  bind (st:report(sh:hasValue, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:nodeKind ?k  
+  }
+  
+  ?s ?p ?o
+  bind (sh:hasKind(?s, ?k)  as ?suc)
+  
+  bind (st:report(sh:nodeKind, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:classIn ?lc                      
+ }
+  
+  ?s ?p ?o
+  bind (
+    exists { graph ?shape { ?lc rdf:rest*/rdf:first ?c } 
+        ?s rdf:type/rdfs:subClassOf* ?c }    
+  as ?suc)
+  
+  bind (st:report(sh:classIn, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p) {
+  sh:safe(?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:pattern ?exp   
+    optional { ?sh sh:flags ?flag }
+  }
+  ?s ?p ?o
+  bind ( 
+    coalesce(
+        ! isBlank(?s) && 
+        if (bound (?flag), regex(?s, ?exp, ?flag), regex(?s, ?exp)), 
+        false) 
+  as ?suc )
+
+  bind (st:report(sh:pattern, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:minLength|sh:maxLength ?m ; ?q ?m                       
+  }
+  
+  ?s ?p ?o
+  
+  bind (sh:mlength(?q, ?s, ?m) as ?suc )
+  bind (st:report(?q, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:minCount|sh:maxCount ?m ; ?q ?m                       
+  }
+
+  bind (sh:mcount(?q, sh:invCount(?o, ?p), ?m)    as ?suc)  
+  bind (st:report(?q, ?sh, ?shape, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:stem ?exp   
+  }
+  ?s ?p ?o
+  bind (isURI(?s) && strstarts(?s, ?exp)
+  as ?suc )
+
+  bind (st:report(sh:pattern, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    GRAPH ?shape {
+        ?sh sh:and ?and 
+    }
+    
+    bind (sh:and(sh:hasInverseProperty, ?and, ?s, ?p, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count = 0)  as ?suc)
+
+    bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:in ?lv                      
+  }
+  
+  ?s ?p ?o
+  bind (
+    exists { 
+        graph ?shape { ?lv rdf:rest*/rdf:first ?v } 
+        filter (?s = ?v) }    
+  as ?suc)
+  
+  bind (st:report(sh:in, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:shape ?cst  
+  }
+  
+  ?s ?p ?o
+  
+  bind (sh:testShape(?shape, ?cst, ?s) as ?suc)
+  
+  bind (st:report(sh:shape, ?sh, ?shape, ?o, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

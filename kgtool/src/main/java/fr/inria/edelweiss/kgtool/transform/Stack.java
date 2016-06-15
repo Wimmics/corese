@@ -18,12 +18,14 @@ class Stack {
 
     ArrayList<IDatatype> list;
     HashMap<IDatatype, ArrayList<Query>> map;
+    HashMap<IDatatype, ArrayList<IDatatype[]>> arg;
     HashMap<IDatatype, IDatatype> visit;
     boolean multi = true;
 
     Stack(boolean b) {
-        list = new ArrayList<IDatatype>();
-        map = new HashMap<IDatatype, ArrayList<Query>>();
+        list  = new ArrayList<IDatatype>();
+        map   = new HashMap<IDatatype, ArrayList<Query>>();
+        arg   = new HashMap<IDatatype, ArrayList<IDatatype[]>>();
         visit = new HashMap<IDatatype, IDatatype>();
         multi = b;
     }
@@ -32,37 +34,109 @@ class Stack {
         return list.size();
     }
 
+    @Deprecated
     void push(IDatatype dt) {
         list.add(dt);
     }
 
-    void push(IDatatype dt, Query q) {
+    /**
+     * dt is the focus node (the first argument)
+     * push template q    in dt  template stack 
+     * push argument args in dt argument stack.
+     */
+    void push(IDatatype dt, IDatatype[] args, Query q) {
         list.add(dt);
-        if (multi) {
-            ArrayList<Query> qlist = map.get(dt);
-            if (qlist == null) {
-                qlist = new ArrayList<Query>();
-                map.put(dt, qlist);
-            }
-            qlist.add(q);
+
+        ArrayList<Query> qlist = map.get(dt);
+        if (qlist == null) {
+            qlist = new ArrayList<Query>();
+            map.put(dt, qlist);
         }
+        qlist.add(q);
+
+        ArrayList<IDatatype[]> alist = arg.get(dt);
+        if (alist == null) {
+            alist = new ArrayList<IDatatype[]>();
+            arg.put(dt, alist);
+        }
+        alist.add(args);
     }
 
+    /**
+     * Pop template and argument stack.
+     */
     IDatatype pop() {
         if (list.size() > 0) {
-            int last = list.size() - 1;
-            IDatatype dt = list.get(last);
-            list.remove(last);
-            if (multi) {
-                ArrayList<Query> qlist = map.get(dt);
-                qlist.remove(qlist.size() - 1);
-            }
+
+            IDatatype dt = list.get(list.size() - 1);
+            list.remove(list.size() - 1);
+
+            ArrayList<Query> qlist = map.get(dt);
+            Query q = qlist.get(qlist.size() - 1);
+            qlist.remove(qlist.size() - 1);
+
+            ArrayList<IDatatype[]> alist = arg.get(dt);
+            alist.remove(alist.size() - 1);
+
             return dt;
         }
         return null;
     }
 
-    boolean contains(IDatatype dt) {
+    /**
+     * Check whether template q already applied on dt focus and possibly args
+     */
+   boolean contains(IDatatype dt, IDatatype[] args, Query q) {
+        ArrayList<Query> qlist = map.get(dt);
+        if (qlist == null || ! qlist.contains(q)){
+            return false;
+        }
+        // q is in dt stack
+        if (q.getArgList().size() <= 1){
+            // 0 or 1 argument: ?in or (?x)
+            return true;
+        }
+        // template q has several arguments
+        ArrayList<IDatatype[]> alist = arg.get(dt);
+        return contains(alist, args, qlist, q);
+    }
+   
+   /**
+    * Check whether q(args) already happened in alist arguments stack of dt focus node 
+    */
+   boolean contains(ArrayList<IDatatype[]> alist, IDatatype[] args, ArrayList<Query> qlist, Query q){
+       for (int i = 0; i<qlist.size(); i++){
+           if  (qlist.get(i) == q && same(alist.get(i), args)){
+               return true;
+           }
+       }
+       return false;
+   }
+   
+   /**
+    * Check whether two argument list are the same
+    */
+   boolean same(IDatatype[] a1, IDatatype[] a2){
+       if (a1 != null && a2 != null){
+           if (a1.length != a2.length){
+               return false;
+           }
+           else {
+               for (int i = 0; i<a1.length; i++){
+                   if (! a1[i].equals(a2[i])){
+                       return false;
+                   }
+               }
+              return true;
+           }
+       }
+       else {
+           return a1 == a2;
+       }
+   }
+   
+   @Deprecated
+   boolean contains(IDatatype dt) {
         return list.contains(dt);
     }
 
@@ -79,20 +153,6 @@ class Stack {
 
     void visit(IDatatype dt) {
         visit.put(dt, dt);
-    }
-
-    boolean contains(IDatatype dt, Query q) {
-        ArrayList<Query> qlist = map.get(dt);
-        return qlist != null && qlist.contains(q);
-    }
-
-    boolean contains2(IDatatype dt, Query q) {
-        boolean b = list.contains(dt);
-        if (b && multi) {
-            ArrayList<Query> qlist = map.get(dt);
-            return qlist.contains(q);
-        }
-        return b;
     }
 
     public String toString() {

@@ -36,9 +36,14 @@ public class GraphStore extends Graph {
     
     @Override
      public GraphStore copy(){
+        GraphStore g = empty();
+        g.copy(this);
+        return g;
+    }
+    
+    public GraphStore empty(){
         GraphStore g = new GraphStore();
         g.inherit(this);
-        g.copy(this);
         g.setNamedGraph(this);
         return g;
     }

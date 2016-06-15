@@ -1,0 +1,188 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://www.example.org/> .
+
+
+ex:AndOrPropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scopeProperty foaf:knows ;	
+	sh:constraint [
+        sh:and (
+            [sh:property [
+                sh:predicate ex:email ;
+                sh:minCount 1 
+            ]] 
+            [sh:property [
+                sh:predicate foaf:knows ;
+                sh:class foaf:Human
+            ]]             
+        )
+	];
+	sh:constraint [
+        sh:not 
+            [sh:property [
+                sh:predicate foaf:knows ;
+                sh:class foaf:Human
+            ]]             
+        
+	] ;
+	sh:constraint [
+        sh:or (
+            [sh:property [
+                sh:predicate ex:email ;
+                sh:minCount 100 
+            ]] 
+            [sh:property [
+                sh:predicate foaf:knows ;
+                sh:class foaf:Humanoid
+            ]] 
+        )
+	]
+		
+	.	
+
+
+
+ex:PersonShape
+	a sh:Shape ;
+	sh:scopeClass ex:Person ;
+	sh:property [
+        sh:predicate foaf:knows ;
+        sh:class ex:Person 
+    ] .
+    
+ex:PersonShape2
+	a sh:Shape ;
+	sh:scopeClass ex:Person ;
+	sh:property [
+        sh:predicate foaf:knows ;
+        sh:classIn (ex:Human ex:Test) ;
+        sh:severity sh:Warning
+    ] .
+	    
+	
+ex:PersonNodeShape
+	a sh:Shape ;
+	sh:scopeNode ex:Jim ;
+	sh:property [
+        sh:predicate foaf:name ;
+        sh:datatypeIn (xsd:string rdf:langString )
+	] ;
+	sh:property [
+        sh:predicate foaf:knows ;
+        sh:nodeKind sh:BlankNode
+	]
+	.	
+	
+ex:PersonNodeShape
+	a sh:Shape ;
+	sh:scopeNode ex:John ;
+	sh:property [
+        sh:predicate ex:value ;
+        sh:maxInclusive 5
+	] 
+	.
+	
+ex:PersonNodeShape
+	a sh:Shape ;
+	sh:scopeNode ex:Jack ;
+	sh:property [
+        sh:predicate ex:name ;
+        sh:equals foaf:name
+	] ;
+    sh:property [
+        sh:predicate rdf:value ;
+        sh:lessThan ex:value
+	] ;	
+	sh:property [
+        sh:predicate ex:name ;
+        sh:disjoint foaf:name
+	] ;
+	sh:property [
+        sh:predicate rdf:value ;
+        sh:in (1 2 3)
+	] ;
+	sh:property [
+        sh:predicate foaf:knows ;
+        sh:shape [
+            sh:inverseProperty [
+                sh:predicate rdf:value ;
+                sh:minCount 1
+            ] 
+        ]
+	] ;
+	sh:property [
+        sh:predicate foaf:name ;
+        sh:minLength 10 ; 
+        sh:maxLength 20
+    ] ;
+    sh:property [
+        sh:predicate foaf:knows ;
+        sh:pattern "inria"
+    ] ;
+    sh:property [
+        sh:predicate ex:label ;
+        sh:uniqueLang true
+    ]
+	.	
+	
+	
+ex:PropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scopeProperty  foaf:knows ;
+	sh:property [
+		sh:predicate ex:email ;
+		sh:minCount 1 
+	] ;
+	sh:inverseProperty [
+		sh:predicate foaf:knows ;
+		sh:class foaf:Person 
+	] ;
+	.	
+	
+ex:InvPropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scopeInverseProperty foaf:knows ;
+	sh:property [
+		sh:predicate ex:email ;
+		sh:minCount 1 
+	] .	
+	
+ex:SubPropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scope [
+		a sh:AllSubjectsScope ;
+	];
+	sh:property [
+		sh:predicate rdf:type ;
+		sh:minCount 1 
+	]
+	.
+		
+	
+ex:ObjPropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scope [
+		a sh:AllObjectsScope ;
+	];
+	sh:inverseProperty [
+		sh:predicate ex:member ;
+		sh:maxCount 1 
+	]
+	.
+	
+ex:FilteredExampleShape
+	a sh:Shape ;
+	sh:scopeClass ex:Person ;
+	
+	sh:filterShape [
+		a sh:Shape ; 
+		sh:property [
+			sh:predicate ex:member ;
+			sh:hasValue ex:W3c 
+		]
+	] ;
+	sh:property [
+		sh:predicate ex:email ;
+		sh:minCount 1 
+	] 
+	.

@@ -2,8 +2,11 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.util.SPINProcess;
 
 /**
  * Load a directory.
@@ -12,7 +15,6 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
  */
 public class LoadProcess extends WorkflowProcess {
     public static final String FILE = "file://";
-    
     String name;
     boolean rec = false;
     
@@ -47,11 +49,27 @@ public class LoadProcess extends WorkflowProcess {
             if (path.startsWith(FILE)){
                 path = path.substring(FILE.length());
             }
-            ld.parseDir(path, name, rec);
+            if (getModeString() != null && getModeString().equals(WorkflowParser.SPIN)){
+                loadSPARQLasSPIN(path, g);
+            }
+            else {
+                ld.parseDir(path, name, rec);
+            }
         } catch (LoadException ex) {
             throw new EngineException(ex);
         }
         return new Data(this, null, g);
+    }
+    
+    
+     void loadSPARQLasSPIN(String uri, Graph g) throws EngineException, LoadException{
+        QueryLoad ql = QueryLoad.create();
+        String str = ql.readWE(uri);
+        if (str != null){
+            SPINProcess sp = SPINProcess.create();
+            sp.setDefaultBase(path);
+            sp.toSpinGraph(str, g);        
+        }              
     }
     
     @Override

@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -270,6 +271,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     
     public void setContext(Context c){
         context = c;
+    }
+    
+    public Object getTemplateVisitor(){
+        if (defaultDataset != null){
+            return defaultDataset.getTemplateVisitor();
+        }
+        return null;
     }
 
     public boolean isUserQuery() {
@@ -1293,12 +1301,19 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return listType;
     }
 
-    /**
+
+    public Constant createLDSList(IDatatype dt){
+        Constant list = Constant.createBlank("_:list");
+        list.setDatatypeValue(dt);
+        return list;
+    }
+    
+     /**
      * Create an RDF List (rdf:first/rdf:rest) if close = true, end by rdf:nil
      * (usual case) Return an RDFList which is an And on the triples Can get
      * starting first blank node with function head() i.e. the subject of first
      * triple
-     */
+     */   
     public RDFList createRDFList(List<Expression> list, int arobase) {
         RDFList rlist = new RDFList(newBlankNode(), list);
         if (arobase == L_DEFAULT) {

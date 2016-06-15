@@ -165,6 +165,13 @@ public class Data {
     public void setVisitor(TemplateVisitor visitor) {
         this.visitor = visitor;
     }
+    
+    public Graph getVisitedGraph(){
+        if (visitor == null){
+            return null;
+        }
+        return visitor.visitedGraph();
+    }
 
     /**
      * @return the templateResult
@@ -271,12 +278,33 @@ public class Data {
         }
         return null;
     }
+    
+    
+    Dataset dataset(Context c, Dataset ds) {
+        if (ds == null && (c != null || getVisitor()!= null)) {
+            ds = new Dataset();
+        }
+        if (c != null) {
+            ds.setContext(c);
+        }        
+        if (getVisitor()!= null) {
+            ds.setTemplateVisitor(getVisitor());
+        }
+        return ds;
+    }
 
     /**
      * @param dataList the dataList to set
      */
     public void setDataList(List<Data> dataList) {
         this.dataList = dataList;
+    }
+    
+    void addData(Data d){
+        if (dataList == null){
+            dataList = new ArrayList<Data>();
+        }
+        dataList.add(d);
     }
 
     /**

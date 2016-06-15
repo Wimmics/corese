@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.DQPFactory;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -49,6 +50,22 @@ public class Query extends Exp implements Graphable {
     public static boolean test = true;
     public static boolean testJoin = false;
     public static boolean isOptional = true;
+    
+    private static DQPFactory factory;
+
+    /**
+     * @return the factory
+     */
+    public static DQPFactory getFactory() {
+        return factory;
+    }
+
+    /**
+     * @param aFactory the factory to set
+     */
+    public static void setFactory(DQPFactory aFactory) {
+        factory = aFactory;
+    }
 
     int limit = Integer.MAX_VALUE, offset = 0,
             // if slice > 0 : service gets mappings from previous pattern by slices
@@ -175,9 +192,6 @@ public class Query extends Exp implements Graphable {
 
     private String service;
     private Object templateVisitor;
-
-    
-    
 	
 	Query(){
         super(QUERY);
@@ -207,12 +221,12 @@ public class Query extends Exp implements Graphable {
 		bindingNodes 		= new ArrayList<Node>();
 		relaxEdges 		= new ArrayList<Node>();
 		argList 		= new ArrayList<Node>();
-                queryEdgeList           = new ArrayList<Edge>();
-                bgpGenerator            = new BgpGenerator();
-                edgeAndContext          = new HashMap<Edge, Exp>();
-
-        querySorter = new QuerySorter(this);
-
+                queryEdgeList           = new ArrayList<Edge>();              
+                querySorter = new QuerySorter(this);
+                
+                if (getFactory() != null){
+                    setBgpGenerator(getFactory().instance());
+                }
     }
 
     Query(Exp e) {
@@ -2193,6 +2207,10 @@ public class Query extends Exp implements Graphable {
     public boolean isRule() {
         return isRule;
     }
+    
+    public boolean isRecordEdge(){
+        return isRule() || isRelax();
+    }
 
     public void setDetail(boolean b) {
         isDetail = b;
@@ -2525,8 +2543,15 @@ public class Query extends Exp implements Graphable {
     
     public void setBgpGenerator(BgpGenerator bgpGenerator) {
         this.bgpGenerator = bgpGenerator;
-        edgeAndContext = bgpGenerator.getEdgeAndContext();
     }
+    
+    public HashMap<Edge, Exp> getEdgeAndContext() {
+        if (getBgpGenerator() == null){
+            return  null;
+        }
+        return getBgpGenerator().getEdgeAndContext();
+    }
+ 
 
     public List<Edge> getQueryEdgeList() {
         return queryEdgeList;
@@ -2549,15 +2574,7 @@ public class Query extends Exp implements Graphable {
     public void setFun(boolean isFun) {
         this.isFun = isFun;
     }
-	
-    public HashMap<Edge, Exp> getEdgeAndContext() {
-        return edgeAndContext;
-}
-
-    public void setEdgeAndContext(HashMap<Edge, Exp> edgeAndContext) {
-        this.edgeAndContext = edgeAndContext;
-    }
-    
+	 
      public Object getTemplateVisitor() {
         if (query == null){
             return templateVisitor;

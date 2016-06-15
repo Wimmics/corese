@@ -4,6 +4,11 @@ select
   
 where {
 
+    bind (unnest(xt:iota(12)) as ?n)
+
+}
+order by desc(?n)
+
 function xt:fac(?n) { 
   if (?n = 0, 1, ?n *  xt:fac(?n - 1))
 }
@@ -13,11 +18,5 @@ function ex:fun(?n) {
 }
 
 function ex:sigma(?n) {
-   apply (kg:plus, maplist (ex:fun, xt:iota(0, ?n)))
+   apply (rq:plus, maplist (ex:fun, xt:iota(0, ?n)))
 }
-
-
-
-bind (unnest(xt:iota(12)) as ?n)
-}
-order by desc(?n)

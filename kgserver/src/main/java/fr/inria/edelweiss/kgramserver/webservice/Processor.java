@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -24,11 +26,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
+ * Deprecated
+ * Use Workflow in profile.ttl instead
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
 @Path("process/{serv}")
+@Deprecated
 public class Processor {
 
     private static final String headerAccept = "Access-Control-Allow-Origin";
@@ -89,7 +93,7 @@ public class Processor {
             @QueryParam("transform") String trans,
             @QueryParam("query") String query,
             @PathParam("serv") String serv) {
-        
+                    
         boolean rdfs = entail != null && entail.equals("rdfs");
         GraphStore g = GraphStore.create(rdfs);
         
@@ -134,6 +138,21 @@ public class Processor {
              par.setProtect(true);
          }
          return new Transformer().template(new TripleStore(g), par);
+    }
+        
+    
+    String resolve(String uri){
+        URI url;
+        try {
+            url = new URI(uri);
+            if (!url.isAbsolute()) {
+                url = base.resolve(uri);
+                uri= url.toString();
+            }
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return uri;
     }
     
      String error(String err, String q){

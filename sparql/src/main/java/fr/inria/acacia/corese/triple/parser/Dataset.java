@@ -22,6 +22,7 @@ public class Dataset extends ASTObject {
 
 	List<Constant> from, named, with;
         private Context context;
+        private Object templateVisitor;
 
         // true when used by update (delete in default graph specified by from)
 	// W3C test case is true
@@ -247,4 +248,13 @@ public class Dataset extends ASTObject {
         }
         return DatatypeMap.createList(list);
     }
+
+    public void setTemplateVisitor(Object vis) {
+        templateVisitor = vis;
+    }
+    
+    public Object getTemplateVisitor(){
+        return templateVisitor;
+    }
+   
 }

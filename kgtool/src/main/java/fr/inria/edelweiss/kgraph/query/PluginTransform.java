@@ -64,6 +64,9 @@ public class PluginTransform implements ExprType {
 
             case STL_VISITED:
                 return visited(exp, env, p);
+                
+           case STL_VISITED_GRAPH:
+                return visitedGraph(exp, env, p);     
 
             case PROLOG:
                 return prolog(null, env, p);
@@ -113,13 +116,16 @@ public class PluginTransform implements ExprType {
 
             case STL_GET:
                 return get(exp, env, p, dt);
+                
+            case STL_SET:                
+                return set(exp, env, p, dt, null);    
 
             case STL_BOOLEAN:
                 return bool(exp, env, p, dt);
 
             case STL_VISITED:
                 return visited(exp, env, p, dt);
-                
+                                                
             case STL_ERRORS:
                 return errors(exp, env, p, dt);
 
@@ -128,7 +134,7 @@ public class PluginTransform implements ExprType {
 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
-                return transform(dt, null, null, null, exp, env, p);
+                return transformFocus(dt, null, null, exp, env, p);
 
             case CALL_TEMPLATE:
             case STL_TEMPLATE:
@@ -157,7 +163,7 @@ public class PluginTransform implements ExprType {
 
             case VISITED:
                 return visited(dt, env, p);
-                
+                                
             case STL_FORMAT:
                 return format(dt);     
                         
@@ -173,8 +179,7 @@ public class PluginTransform implements ExprType {
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
                 // dt1: focus
-                // dt2: arg
-                return transform(dt1, dt2, null, null, exp, env, p);
+                return transform(getArgs(dt1, dt2), dt1, null, null, null, exp, env, p);
                                
             case APPLY_TEMPLATES_WITH_GRAPH:
             case APPLY_TEMPLATES_WITH_NOGRAPH:
@@ -187,13 +192,13 @@ public class PluginTransform implements ExprType {
                 // dt1: transformation
                 // dt2: focus
                 
-               return transform(dt2, null, dt1, null, exp, env, p);
+               return transformFocus(dt2,  dt1, null, exp, env, p);
 
             case CALL_TEMPLATE:
             case STL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
-                return transform(dt2, null, null, dt1, exp, env, p);
+                return transformFocus(dt2,  null, dt1, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: transformation
@@ -245,35 +250,32 @@ public class PluginTransform implements ExprType {
             case STL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
-                // dt3: arg
-                return transform(getArgs(param, 1), dt2, dt3, null, dt1, null, exp, env, p);
+                return transform(getArgs(param, 1), dt2,  null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: transformation
                 // dt2: template name
                 // dt3: focus
-                return transform(getArgs(param, 2), dt3, null, dt1, dt2, null, exp, env, p);
+                return transform(getArgs(param, 2), dt3,  dt1, dt2, null, exp, env, p);
 
             case APPLY_TEMPLATES_WITH:
             case APPLY_TEMPLATES_WITH_ALL:
                 // dt1: transformation
                 // dt2: focus
-                // dt3: arg
                 
-               return transform(getArgs(param, 1), dt2, dt3, dt1, null, null, exp, env, p);
+               return transform(getArgs(param, 1), dt2,  dt1, null, null, exp, env, p);
                 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
                 // dt1: focus
-                // dt2: arg
-                return transform(getArgs(param, 0), dt1, dt2, null, null, null, exp, env, p);  
+                return transform(getArgs(param, 0), dt1,  null, null, null, exp, env, p);  
                 
             case APPLY_TEMPLATES_WITH_GRAPH:
             case APPLY_TEMPLATES_WITH_NOGRAPH:
                 // dt1: transformation 
                 // dt2: graph 
                 // dt3; focus
-                return transform(getArgs(param, 2), dt3, null, dt1, null, dt2, exp, env, p);
+                return transform(getArgs(param, 2), dt3,  dt1, null, dt2, exp, env, p);
                 
             case STL_VISIT:
                 return visit(exp, env, p, dt1, dt2, dt3);
@@ -296,7 +298,14 @@ public class PluginTransform implements ExprType {
         return Arrays.copyOfRange(obj, n, obj.length);
     }
     
-     IDatatype format(IDatatype dt1){
+    IDatatype[] getArgs(IDatatype dt1, IDatatype dt2){
+        IDatatype arr[] = new IDatatype[2];
+        arr[0] = dt1;
+        arr[1] = dt2;
+        return arr;
+    }
+          
+    IDatatype format(IDatatype dt1){
         return plugin.getValue(dt1.stringValue());
     }
     
@@ -521,8 +530,8 @@ public class PluginTransform implements ExprType {
     }
 
    
-    IDatatype transform(IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        return transform(null, focus, arg, trans, temp, null, exp, env, prod);
+    IDatatype transformFocus(IDatatype focus,  IDatatype trans, IDatatype temp, Expr exp, Environment env, Producer prod) {
+        return transform(null, focus,  trans, temp, null, exp, env, prod);
     }
 
     /**
@@ -532,10 +541,10 @@ public class PluginTransform implements ExprType {
      * temp:  name of a named template, may be null
      * name:  named graph
      */    
-    IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype arg, IDatatype trans, IDatatype temp, IDatatype name,
+    IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
         Transformer p = getTransformer(exp, env, prod, trans, temp, name);
-        IDatatype dt = p.process(args, focus, arg,
+        IDatatype dt = p.process(args, focus, 
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
@@ -692,46 +701,37 @@ public class PluginTransform implements ExprType {
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
         return getVisitor(env, p).set(dt1, dt2, dt3);
-//        Transformer t = getTransformer(env, p);
-//        return t.vset(dt1, dt2, dt3);
     }
 
     public IDatatype vget(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         return getVisitor(env, p).get(dt1, dt2);
-//        Transformer t = getTransformer(env, p);
-//        return t.vget(dt1, dt2);
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p) {
         Collection<IDatatype> list = getVisitor(env, p).visited();
         return DatatypeMap.createList(list);
-//        Transformer t = getTransformer(env, p);
-//        Collection<IDatatype> list = t.visited();
+    }
+    
+    public IDatatype visitedGraph(Expr exp, Environment env, Producer p) {
+        return getVisitor(env, p).visitedGraphNode();
     }
 
     public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {
         boolean b = getVisitor(env, p).isVisited(dt);
         return plugin.getValue(b);
-//        Transformer t = getTransformer(env, p);
-//        boolean b = t.visited(dt);
-//        return plugin.getValue(b);
     }
     
      public IDatatype errors(Expr exp, Environment env, Producer p, IDatatype dt) {
         Collection<IDatatype> list = getVisitor(env, p).getErrors(dt);
         return DatatypeMap.createList(list);
-//        Transformer t = getTransformer(env, p);
-//	return DatatypeMap.createList(t.getVisitor().getErrors(dt));
     }
 
     // Visitor design pattern
     public IDatatype visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
-       // Transformer t = getTransformer(env, p);
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;
         }
         getVisitor(env, p).visit(dt1, dt2, dt3);
-        //t.visit(dt1, dt2, dt3);
         return TRUE;
     }
 
@@ -800,7 +800,7 @@ public class PluginTransform implements ExprType {
         } else if (dt.isLiteral() && exp.oper() == ExprType.XSDLITERAL) {
             return xsdLiteral(dt, env, prod);
         } else {
-            return transform(dt, null, null, null, exp, env, prod);
+            return transformFocus(dt,  null, null, exp, env, prod);
         }
     }
 

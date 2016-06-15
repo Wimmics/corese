@@ -2,10 +2,30 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:classExpression(?x) {
+	?suc
+}
+where {
+	bind(
+		if (isURI(?x), true,
+			st:apply-templates-all(?x)
+		)
+	as ?suc)
+	
+	#filter(st:alreadyVisited(?x, "classExp", ?suc))
+}
+
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -31,39 +51,18 @@ where {}
 <rule>
 <body>
 <![CDATA[
-template st:classExpression(?x) {
-	?suc
-}
-where {
-	bind(
-		if (isURI(?x), true,
-			st:apply-templates-all(?x)
-		)
-	as ?suc)
-	
-	#filter(st:alreadyVisited(?x, "classExp", ?suc))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template {
-	?suc
+  ?suc
 }
 where {
-	?in a owl:Restriction ;
-	  owl:onProperty ?p
-		
-	bind(exists {
-		{ ?in owl:someValuesFrom ?e 
-		  filter (st:call-template(st:classExpression, ?e))}
-		union { ?in owl:hasValue ?e }
-		union { ?in owl:hasSelf ?e }
-	} as ?suc)
+  ?in owl:intersectionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:classExpression, ?e)
+    as ?suc
+  )
+  
 }
 
 ]]>
@@ -108,6 +107,28 @@ limit 1
 <rule>
 <body>
 <![CDATA[
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	  owl:onProperty ?p
+		
+	bind(exists {
+		{ ?in owl:someValuesFrom ?e 
+		  filter (st:call-template(st:classExpression, ?e))}
+		union { ?in owl:hasValue ?e }
+		union { ?in owl:hasSelf ?e }
+	} as ?suc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 # enumerations involving more than one individual (ObjectOneOf and DataOneOf)
 
 template {
@@ -126,27 +147,6 @@ where {
 		bind((?nbInd = 1) as ?suc)
 		filter(st:visit(st:err("one"), ?in, ?suc))
 	}
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  ?suc
-}
-where {
-  ?in owl:intersectionOf ?z 
-  ?z rdf:rest*/rdf:first ?e 
-  
-  bind (
-    st:call-template(st:classExpression, ?e)
-    as ?suc
-  )
-  
 }
 
 ]]>

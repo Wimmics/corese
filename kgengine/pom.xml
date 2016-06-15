@@ -15,7 +15,7 @@
         
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgtool</artifactId>
+            <artifactId>corese-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

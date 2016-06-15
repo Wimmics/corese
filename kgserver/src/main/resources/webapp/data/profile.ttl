@@ -19,6 +19,7 @@ st:dbpedia a st:Profile ;
   st:workflow st:dbpediawf
   .
   
+  
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
     <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
@@ -26,7 +27,14 @@ st:dbpediawf a sw:Workflow ;
   )
 .
   
-  
+st:hturtle a st:Profile ;
+st:workflow st:hturtleWF .
+
+st:hturtleWF a sw:Workflow ; 
+sw:body ( 
+  [ a sw:Transformation ; sw:uri st:hturtle ] 
+)  . 
+
   
 st:turtle a st:Profile ;
 st:workflow st:turtleWF .
@@ -210,7 +218,10 @@ st:rdfs a st:Profile ;
 #
 # ******************************************************
  
- 
+st:default3 a st:Server ;
+st:shareContent st:romecontent
+.
+
 st:default2 a st:Server ;
 st:content st:humancontent
 .
@@ -297,7 +308,7 @@ st:rome a st:Server ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;   
   ] ;
-  st:content st:romecontent ;
+  st:shareContent st:romecontent ;
   st:transform  st:navlab .   
   
  st:romecontent a sw:Workflow ; sw:body ( 
@@ -373,11 +384,95 @@ st:cdncontent a sw:Workflow ; sw:body (
     ] .
           
 
-st:owlrl a st:Server ;
+st:owlrl2 a st:Server ;
     st:service "owlrl" ;
     st:transform st:hturtle ;
     st:schema 
     [ st:uri <primer.owl> ] 
 .
+
+# ************************************************************************
+
+st:shape a st:Server ;
+    st:service "shape" ;
+    st:workflow st:shapeWF .
+
+st:shapeWF a sw:Workflow ;
+# get param(graph) and mode(shape) from server Context
+# parser get them from Context when creating ShapeProcess
+sw:body (
+    [ a sw:Shape ]
+    [ a sw:Transformation ; sw:uri st:dsresult ]
+    #[ a sw:Transformation ; sw:uri "/home/corby/AAData/sttl/datashape/result" ]
+) .
+
+
+
+
+
+#
+# Generic type check 
+# Context st:param is the RDF to load
+# Context st:mode  is the transformation type checker
+#
+st:typecheck a st:Profile ;
+st:workflow st:typecheckWF
+.
+
+st:typecheckWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Probe ; sw:mode sw:visitor ]
+    [ a sw:Transformation ] # sw:uri = st:mode 
+    [ a sw:Transformation ; sw:uri st:hturtle ]
+)
+.
+
+st:typecheckowl a st:Profile ;
+st:workflow st:typecheckOWLWF
+.
+
+st:typecheckOWLWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # st:param 
+    [ a sw:Probe ; sw:mode sw:visitor ]
+    [ a sw:Transformation ; sw:uri st:owltc ]  
+    [ a sw:Transformation ; sw:uri st:owlrl ]  
+    [ a sw:Transformation ; sw:uri st:owlqltc ]  
+    [ a sw:Transformation ; sw:uri st:owleltc ]  
+    [ a sw:Transformation ; sw:uri st:hturtle ]
+)
+.
+
+
+st:display a st:Profile ;
+st:workflow st:displayWF
+.
+
+st:displayWF a sw:Workflow ; 
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Transformation ] # sw:uri = st:mode 
+)
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

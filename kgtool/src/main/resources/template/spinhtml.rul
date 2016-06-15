@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -15,9 +15,9 @@ Thu Apr 14 15:38:02 CEST 2016
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template st:start {
+template st:main {
 
-   st:call-template(st:html)
+   st:call-template-with(st:spin, st:mode, st:html)
 
 }
 where {
@@ -39,9 +39,9 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template st:main {
+template st:start {
 
-   st:call-template-with(st:spin, st:mode, st:html)
+   st:call-template(st:html)
 
 }
 where {
@@ -96,20 +96,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:button {
-
-  """<button type='button'  onClick='next(+1)'>next</button>"""
-  """<button type='button'  onClick='next(-1)'>prev</button>"""
-}
-where {}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:next {
  
   """<script>
@@ -135,6 +121,20 @@ template st:next {
   }
   </script>"""
   
+}
+where {}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:button {
+
+  """<button type='button'  onClick='next(+1)'>next</button>"""
+  """<button type='button'  onClick='next(-1)'>prev</button>"""
 }
 where {}
 

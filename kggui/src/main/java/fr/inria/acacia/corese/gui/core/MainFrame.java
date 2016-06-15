@@ -55,7 +55,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -72,7 +71,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int LOAD = 1;
-	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-03-21";
+	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-05-01";
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
 	// Compteur pour le nombre d'onglets query créés 
@@ -986,11 +985,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			runRules(true);
 		} //Remet tout à zéro
 		else if (e.getSource() == reset) {
-			ongletListener.getTextPaneLogs().setText("");
-			ongletListener.getListLoadedFiles().removeAll();
-			ongletListener.getModel().removeAllElements();
-			setMyCoreseNewInstance();
-			appendMsg("reset... \n" + myCapturer.getContent() + "\ndone.\n");
+                        reset();
 		} //Recharge tous les fichiers déjà chargés
 		else if (e.getSource() == refresh) {
 			ongletListener.refresh(this);
@@ -1020,6 +1015,14 @@ public class MainFrame extends JFrame implements ActionListener {
 			execPlus(query);
 		}
 	}
+        
+       void reset() {
+            ongletListener.getTextPaneLogs().setText("");
+            ongletListener.getListLoadedFiles().removeAll();
+            ongletListener.getModel().removeAllElements();
+            setMyCoreseNewInstance();
+            appendMsg("reset... \n" + myCapturer.getContent() + "\ndone.\n");
+       }
 
 	void save(String str) {
 		JFileChooser filechoose = new JFileChooser(lCurrentPath);
@@ -1232,6 +1235,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	void loadWF(String path) {
+                reset();
 		WorkflowParser parser = new WorkflowParser();
 		// parser.setDebug(true);
 		try {
@@ -1241,10 +1245,10 @@ public class MainFrame extends JFrame implements ActionListener {
 			// wp.setDebug(true);
 			Data res = wp.process(new Data(myCorese.getGraph()));
 			Date d2 = new Date();
-			appendMsg(res.toString() + "\n");
-			appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0) + "\n");
 			System.out.println("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
-		} catch (LoadException ex) {
+                        appendMsg(res.toString() + "\n");
+			appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0) + "\n");
+                } catch (LoadException ex) {
 			LOGGER.error(ex);
 			appendMsg(ex.toString());
 		} catch (EngineException ex) {

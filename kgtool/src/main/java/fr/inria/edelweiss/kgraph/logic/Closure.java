@@ -49,7 +49,7 @@ static int count = 0;
         
     public void init(Node p1, Node p2) {
         // named graph where entailments are stored
-        src = graph.addGraph(Entailment.RULE);
+        src = graph.addRuleGraphNode();
         // predicate of transitive property
         pred1 = graph.getPropertyNode(p1); 
         pred2 = graph.getPropertyNode(p2); 

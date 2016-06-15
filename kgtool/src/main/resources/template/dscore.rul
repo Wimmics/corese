@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Jun 03 09:40:29 CEST 2016
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+# test and do not report error
+function st:testShape(?shape, ?sh, ?s){
+    st:apply-templates-all(?shape, ?sh, false, ?s)
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {
+        ?sh sh:inverseProperty ?cst        
+        optional { ?cst sh:filterShape ?fs }
+        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
+        ?cst sh:predicate ?p
+    }
+    
+    bind (sh:hasInverseProperty(?shape, ?cst, ?vis, ?s, ?p) as ?suc)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape { 
+        ?sh sh:property ?cst  
+        optional { ?cst sh:filterShape ?fs } 
+        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
+        ?cst sh:predicate ?p
+    }
+  
+    bind (sh:hasProperty(?shape, ?cst, ?vis, ?s, ?p) as ?suc)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {
+        ?sh sh:constraint sh:Closed  
+    }
+   
+   ?s ?p ?o
+   
+   bind (
+      exists { graph ?shape { ?sh sh:property [ sh:predicate ?p ]} }
+   as ?suc)
+   
+    bind (st:report(sh:closed, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template  (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {
+        ?sh sh:constraint ?cst 
+        filter (?cst != sh:Closed)
+        filter not exists { ?cst sh:closed ?bool }
+        
+        optional { ?cst sh:filterShape ?fs } 
+        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s))         
+   }
+   
+    bind (sh:hasConstraint(?shape, ?cst, ?vis, ?s) as ?suc)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {
+        ?sh sh:constraint ?cst
+        ?cst sh:closed true 
+        optional { ?cst sh:ignoredProperties ?skip }
+    }
+   
+   ?s ?p ?o
+   
+   bind (
+                     exists { graph ?shape { ?sh sh:property [ sh:predicate ?p ]} }
+    ||
+    (bound(?skip) && exists { graph ?shape { ?skip rdf:rest*/rdf:first ?p } })
+    
+   as ?suc)
+      
+   bind (st:report(sh:closed, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

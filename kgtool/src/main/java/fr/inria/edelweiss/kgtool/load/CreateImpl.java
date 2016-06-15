@@ -107,7 +107,7 @@ public class CreateImpl implements Creator {
     @Override
 	public void triple(Atom subject, Atom property, Atom object) {		
 		if (source == null){
-			source = graph.addGraph(Entailment.DEFAULT);
+			source = graph.addDefaultGraphNode();
 		}
 		Node s = getSubject(subject);
 		Node p = getProperty(property);
@@ -137,7 +137,7 @@ public class CreateImpl implements Creator {
     @Override
 	public void triple(Atom property, List<Atom> l) {
 		if (source == null){
-			source = graph.addGraph(Entailment.DEFAULT);
+			source = graph.addDefaultGraphNode();
 		}
 		
 		Node p = getProperty(property);

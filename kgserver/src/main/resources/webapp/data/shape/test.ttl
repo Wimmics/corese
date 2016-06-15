@@ -1,0 +1,17 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://www.example.org/> .
+
+
+	
+ex:SubPropertyScopeExampleShape
+	a sh:Shape ;
+	sh:scope [
+		a sh:AllSubjectsScope ;
+	];
+		
+	sh:property [
+        sh:predicate rdf:type ;
+        sh:nodeKind sh:BlankNode
+	]
+	.	
+	

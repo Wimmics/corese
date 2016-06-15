@@ -24,7 +24,9 @@ public interface TemplateVisitor {
     
     boolean isVisited(IDatatype dt);
 
-    public IDatatype visitedGraph();
+    public IDatatype visitedGraphNode();
+    
+    public Graph visitedGraph();
     
     Collection<IDatatype> getErrors(IDatatype dt);
     

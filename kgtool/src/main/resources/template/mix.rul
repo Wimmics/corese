@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -34,13 +34,15 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:start {
+template st:open {
 
-  st:call-template(st:open)
+st:head()
+
+"<h3>Result</h3>"
+
+
+
   
-  st:call-template(st:main)
-    
-  st:call-template(st:close)
 }
 where {
 
@@ -91,33 +93,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:button {
-
-  """<button type='button'  onClick='next(+1)'>next</button>"""
-  """<button type='button'  onClick='next(-1)'>prev</button>"""
-}
-where {}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 #
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:open {
+template st:start {
 
-st:head()
-
-"<h3>Result</h3>"
-
-
-
+  st:call-template(st:open)
   
+  st:call-template(st:main)
+    
+  st:call-template(st:close)
 }
 where {
 
@@ -168,6 +154,20 @@ template st:next {
   }
   </script>"""
   
+}
+where {}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:button {
+
+  """<button type='button'  onClick='next(+1)'>next</button>"""
+  """<button type='button'  onClick='next(-1)'>prev</button>"""
 }
 where {}
 

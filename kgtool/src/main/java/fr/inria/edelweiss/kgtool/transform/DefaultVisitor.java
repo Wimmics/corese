@@ -29,6 +29,7 @@ import java.util.Arrays;
 public class DefaultVisitor implements TemplateVisitor {
     static final String STL         = NSManager.STL;
     static final String TRACE       = STL + "trace";
+    static final String GRAPH       = STL + "graph";
     static final String START       = STL + "start";
     static final String TRANSFORM   = STL + "transform";
     static final String SILENT      = STL + "silent";
@@ -56,7 +57,7 @@ public class DefaultVisitor implements TemplateVisitor {
     boolean isDistinct = true;
     
     
-    DefaultVisitor(){
+    public DefaultVisitor(){
         map      = new HashMap();
         distinct = new HashMap();
         value    = new HashMap();
@@ -88,7 +89,10 @@ public class DefaultVisitor implements TemplateVisitor {
         if (arg == null){
             return;
         }
-        if (obj.equals(TRACE)){
+        if (obj.equals(GRAPH)){
+            addGraph((Graph) arg.getPointerObject());
+        }
+        else if (obj.equals(TRACE)){
             silent = ! getValue(arg);
         }
         else if (obj.equals(TRANSFORM)){
@@ -180,9 +184,12 @@ public class DefaultVisitor implements TemplateVisitor {
     	}
     }
     
+    void addGraph(Graph g){
+        visitedGraph.copy(g);
+    }
+    
     void storeGraph(String name, IDatatype obj){
-        Entity ent = visitedGraph.add(DatatypeMap.newResource(Entailment.DEFAULT), 
-                obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
+        Entity ent = visitedGraph.add(obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
     }
     
     StringBuilder toSB(){
@@ -192,30 +199,47 @@ public class DefaultVisitor implements TemplateVisitor {
             IDatatype res = t.process(dt);
             if (res != null){
                 sb.append(res.getLabel());
-                sb.append(NL);
-                sb.append(NL);
+                sb.append(NL).append(NL);
             }
         }
+        if (visitedGraph.size() > 0){
+            sb.append(toStringGraph());
+        }
         return sb;
+    }
+    
+    String toStringGraph(){
+        Transformer t = Transformer.create(visitedGraph, getTransform());
+        return t.toString();
     }
     
     public IDatatype display(){
         return DatatypeMap.newStringBuilder(toSB());     
     }
     
+    @Override
     public String toString(){
         return toSB().toString();
     }
     
+    @Override
     public Collection<IDatatype> visited(){  
         return list;
     }
     
-    public IDatatype visitedGraph(){
+    @Override
+    public IDatatype visitedGraphNode(){
         visitedGraph.init();
         return visitedNode;
     }
     
+    @Override
+    public Graph visitedGraph(){
+        visitedGraph.init();
+        return visitedGraph;
+    }
+    
+    @Override
     public boolean isVisited(IDatatype dt){
         if (isDistinct){
             return distinct.containsKey(dt);
@@ -231,6 +255,7 @@ public class DefaultVisitor implements TemplateVisitor {
         return false;
      }
      
+    @Override
      public void setGraph(Graph g){
          graph = g;
      }
@@ -277,11 +302,13 @@ public class DefaultVisitor implements TemplateVisitor {
         this.distinct = distinct;
     }
 
+    @Override
     public IDatatype set(IDatatype obj, IDatatype prop, IDatatype arg) {
           value.put(obj, arg);
           return arg;
     }
     
+    @Override
     public IDatatype get(IDatatype obj, IDatatype prop) {
           return value.get(obj);
     }
@@ -289,9 +316,10 @@ public class DefaultVisitor implements TemplateVisitor {
     /**
      * @return the errors of a node as an array
      */
+    @Override
     public Collection<IDatatype> getErrors(IDatatype dt){
-    	if(errors.get(dt) != null){
-    		return errors.get(dt);
+    	if (errors.containsKey(dt)){
+            return errors.get(dt);
     	}
     	else return new ArrayList<IDatatype>(0);
     }

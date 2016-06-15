@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 public class GraphManager {
     static Logger logger = Logger.getLogger(GraphManager.class);
 
-    static final String DEFAULT_GRAPH = Entailment.DEFAULT;
+    //static final String DEFAULT_GRAPH = Entailment.DEFAULT;
     // default loader, by meta protocol to preserve modularity
     static final String LOADER = "fr.inria.edelweiss.kgtool.load.Load";
     private Graph graph;
@@ -85,6 +85,14 @@ public class GraphManager {
             return new GraphManager(g);
         }
         return null;
+    }
+    
+    Node getDefaultGraphNode(){
+        return graph.addDefaultGraphNode();
+    }
+    
+    boolean isDefaultGraphNode(String name){
+        return graph.isDefaultGraphNode(name);
     }
      
     /**

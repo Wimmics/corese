@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -51,48 +51,14 @@ template {
     xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
-  ?in owl:propertyDisjointWith ?p 
+  ?in owl:equivalentProperty ?p 
   optional { ?in a ?t }
-  optional  { ?p a ?t }
+  optional { ?p a ?t }
   filter (?t = ?tt)
 }
 values (?tt ?l) {
-  (owl:ObjectProperty   "DisjointObjectProperties")
-  (owl:DatatypeProperty "DisjointDataProperties")
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    str(?label)  "(" ?in " " ?d ")"
-}
-where {
-  ?in rdfs:range ?d 
-  bind (
-    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
-    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
-    "ObjectPropertyRange"))
-    as ?label)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "InverseObjectProperties("  ?in " " ?y ")"  
-}
-where {
-  ?in owl:inverseOf ?y
-  filter(isURI(?in))
+  (owl:ObjectProperty   "EquivalentObjectProperties")
+  (owl:DatatypeProperty "EquivalentDataProperties")
 }
 
 ]]>
@@ -119,42 +85,10 @@ where {
 <body>
 <![CDATA[
 template {
-   xsd:string(?label) "(" ?in " " ?p ")"
+      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
 }
 where {
-  ?in rdfs:subPropertyOf ?p 
-  
-  bind (
-  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
-  "SubDataPropertyOf",
-  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
-  "SubAnnotationPropertyOf",
-  "SubObjectPropertyOf"))
-  as ?label)
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    xsd:string(?l) 
-    "ObjectProperty(" ?in  ")" 
-}
-where {
-  ?in a ?t
-}
-values (?t ?l) {
-  (owl:TransitiveProperty 	"Transitive")
-  (owl:SymmetricProperty 	"Symmetric")
-  (owl:AsymmetricProperty 	"Asymmetric")
-  (owl:ReflexiveProperty 	"Reflexive")
-  (owl:IrreflexiveProperty 	"Irreflexive")
-  (owl:InverseFunctionalProperty "InverseFunctional")
+  ?in owl:propertyChainAxiom ?l 
 }
 
 ]]>
@@ -188,6 +122,42 @@ where {
 <body>
 <![CDATA[
 template {
+    "InverseObjectProperties("  ?in " " ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y
+  filter(isURI(?in))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) "("  ?in " "  ?p ")"   
+}
+where {
+  ?in owl:propertyDisjointWith ?p 
+  optional { ?in a ?t }
+  optional  { ?p a ?t }
+  filter (?t = ?tt)
+}
+values (?tt ?l) {
+  (owl:ObjectProperty   "DisjointObjectProperties")
+  (owl:DatatypeProperty "DisjointDataProperties")
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
     str(?label)  "(" ?in " " ?d ")"
 }
 where {
@@ -207,10 +177,19 @@ where {
 <body>
 <![CDATA[
 template {
-      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
+   xsd:string(?label) "(" ?in " " ?p ")"
 }
 where {
-  ?in owl:propertyChainAxiom ?l 
+  ?in rdfs:subPropertyOf ?p 
+  
+  bind (
+  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
+  "SubDataPropertyOf",
+  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
+  "SubAnnotationPropertyOf",
+  "SubObjectPropertyOf"))
+  as ?label)
+  
 }
 
 ]]>
@@ -221,17 +200,38 @@ where {
 <body>
 <![CDATA[
 template {
-    xsd:string(?l) "("  ?in " "  ?p ")"   
+    str(?label)  "(" ?in " " ?d ")"
 }
 where {
-  ?in owl:equivalentProperty ?p 
-  optional { ?in a ?t }
-  optional { ?p a ?t }
-  filter (?t = ?tt)
+  ?in rdfs:range ?d 
+  bind (
+    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
+    "ObjectPropertyRange"))
+    as ?label)
 }
-values (?tt ?l) {
-  (owl:ObjectProperty   "EquivalentObjectProperties")
-  (owl:DatatypeProperty "EquivalentDataProperties")
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" ?in  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:TransitiveProperty 	"Transitive")
+  (owl:SymmetricProperty 	"Symmetric")
+  (owl:AsymmetricProperty 	"Asymmetric")
+  (owl:ReflexiveProperty 	"Reflexive")
+  (owl:IrreflexiveProperty 	"Irreflexive")
+  (owl:InverseFunctionalProperty "InverseFunctional")
 }
 
 ]]>

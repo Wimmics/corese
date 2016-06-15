@@ -37,6 +37,7 @@ public class WorkflowProcess implements AbstractProcess {
     private boolean display = false;
     private boolean collect = false;
     private boolean visit = false;
+    private boolean log = false; 
     private String result, uri, name;
     private IDatatype mode;
     String path;
@@ -52,7 +53,7 @@ public class WorkflowProcess implements AbstractProcess {
         start(d);
         Data res = run(d);
         finish(res);
-        after(res);
+        after(d, res);
         return res;
     } 
      
@@ -73,7 +74,10 @@ public class WorkflowProcess implements AbstractProcess {
        
     }
     
-    private void after(Data data) {
+    private void after(Data in, Data data) {
+        if (in.getVisitor() != null && data.getVisitor() == null){
+            data.setVisitor(in.getVisitor());
+        }
         afterDebug(data);
         if (recVisitor() != null){
             recVisitor().after(this, data);
@@ -290,6 +294,10 @@ public class WorkflowProcess implements AbstractProcess {
         return false;
     }
     
+    boolean isShape(){
+        return true;
+    }
+    
     boolean isModify(){
         return ! isTransformation();
     }
@@ -390,6 +398,13 @@ public class WorkflowProcess implements AbstractProcess {
     public IDatatype getMode() {
         return mode;
     }
+    
+    public String getModeString(){
+        if (mode == null){
+            return null;
+        }
+        return mode.getLabel();
+    }
 
     /**
      * @param mode the mode to set
@@ -478,6 +493,20 @@ public class WorkflowProcess implements AbstractProcess {
     
     public String getTransformation(){
         return null;
+    }
+
+    /**
+     * @return the log
+     */
+    public boolean isLog() {
+        return log;
+    }
+
+    /**
+     * @param log the log to set
+     */
+    public void setLog(boolean log) {
+        this.log = log;
     }
 
 }

@@ -2,24 +2,66 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Mon Jun 06 11:21:11 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
 <rule>
 <body>
 <![CDATA[
-template st:listrecrest(?y) {  
-   
-   "<rdf:rest>" 
-    box {
-      st:call-template(st:listrec, ?y)
-      }
-   "</rdf:rest>" 
-   
+#
+# Generic template for triples
+# Detect if object is a list
+#
+template st:triple(?in, ?p, ?y) {
+
+  if (?list,
+    st:call-template(st:listchoice, ?in, ?p, ?y),
+    st:apply-templates(?in, ?p, ?y))
 }
 where {
-  
+     
+   bind (isBlank(?y) &&  exists { ?y rdf:rest ?z }
+   as ?list)
+   
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main {
+   if (bound(?t), 
+        st:call-template(st:resource, ?in, ?t),
+        st:call-template(st:resource, ?in))
+    
+   ; separator = "\n\n"
+}
+where {
+   select distinct ?in ?t where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (isURI(?in) || ! exists { ?x ?q ?in } )
+     
+     optional {
+        select ?in ?t where {
+            ?in a ?t  
+            filter (! isBlank(?t))
+        } limit 1
+     }
+     
+   }
+   order by ?in
 }
 
 ]]>
@@ -54,26 +96,43 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:listrec(?y) {
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
 
-   "<rdf:Description>" 
-   
-   box {
-    
-   st:call-template(st:triple, ?y, rdf:first, ?f)
-   st:nl()
-   
-   if (?r = rdf:nil, 
-      st:apply-templates(?y, rdf:rest, ?r),
-      st:call-template(st:listrecrest, ?r))
-   
-   }
-     
-   "</rdf:Description>" 
+template st:result {
+  format { 
+    """<h3>RDF/XML</h3>
+    <pre>%s</pre>"""
+    replace(replace(st:call-template(st:start), "&", "&amp;"), "<", "&lt;")
+  }
+  
 }
 where {
-  ?y rdf:first ?f ;
-     rdf:rest  ?r
+bind (st:set(st:html, true) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:listtriple(?x, ?p, ?y) {
+format {
+   "<%s>%s</%s>"
+   
+   st:turtle(?p, true)
+   box { st:call-template(st:listrec, ?y) }
+   st:turtle(?p, true)
+}
+}
+where {
+  
 }
 
 ]]>
@@ -83,13 +142,39 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:blank (?y) {
-
-   st:call-template(st:resource, ?y) 
-
+template st:resourceref(?in) {
+format {
+  "<rdf:Description %s='%s' />" 
+  
+  st:turtle(?att)
+  str(?name)
+}
 }
 where {
-   filter(st:visit(?y))
+   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
+   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:collection(?x, ?p, ?y) {
+format {
+"<%s rdf:parseType='Collection'>%s</%s>"
+   
+    st:turtle(?p, true)
+    box { st:call-template(st:list, ?y) }
+    st:turtle(?p, true)
+    
+   }
+}
+where {
+  
 }
 
 ]]>
@@ -115,14 +200,42 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:resourceref(?in) {
+template st:profile {}
+where {}
 
-  "<rdf:Description " ?att "='" str(?name) "' />" 
+function st:literal(?x){
+    if (st:get(st:html, true), 
+        ?x, 
+        #st:format("<span class='literal'>%s</span>", ?x), 
+        ?x)
+}
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:resource(?in, ?t) {
+format {
+    "<%s %s='%s'>%s</%s>"
+    
+    st:turtle(?tag, true)
+    st:turtle(?att) 
+    str(?name)
+    box { 
+        if (bound(?t), 
+            st:call-template(st:property, ?in, ?t),
+            st:call-template(st:property, ?in))
+    }
+    st:turtle(?tag)
+}
 }
 where {
-   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+   bind (if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
+   bind (if (isBlank(?in), ?in, ?in) as ?name)
+   bind (if (bound(?t), ?t, rdf:Description) as ?tag)
 }
 
 
@@ -133,155 +246,21 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:property {
+template st:blank (?x, ?p, ?y) {
 
-   st:call-template(st:triple, ?in, ?p, ?y)
-
-}
-where {
-   ?in ?p ?y   
-}
-order by ?p ?y
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:resource(?in) {
-
-"<rdf:Description " ?att "='" str(?name) "'>" 
-
-   box {
-     st:call-template(st:property, ?in)
-   }
-
-"</rdf:Description>" 
+   if (bound(?t), 
+     st:call-template(st:resource, ?y, ?t),
+     st:call-template(st:resource, ?y))
 
 }
 where {
-   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind ( if (isBlank(?in), ?in, ?in) as ?name)
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generic template for triples
-# Detect if object is a list
-#
-template st:triple(?in, ?p, ?y) {
-
-  if (?list,
-    st:call-template(st:listchoice, ?in, ?p, ?y),
-    st:apply-templates(?in, ?p, ?y))
-}
-where {
-     
-   bind (isBlank(?y) &&  exists { ?y rdf:rest ?z }
-   as ?list)
-   
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# RDF/XML Transformation
-#
-# Olivier Corby - Wimmics INRIA I3S - 2015
-#
-
-template st:result {
-  format { 
-    """<h3>RDF/XML</h3>
-    <pre>%s</pre>"""
-    replace(replace(st:call-template(st:start), "&", "&amp;"), "<", "&lt;")
-  }
-  
-}
-where {
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:listtriple(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) ">"
-   
-   box {
-    st:call-template(st:listrec, ?y) 
-   }
-   
-   "</" st:turtle(?p, true) ">"
-}
-where {
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# select top level terms ?in
-# URI
-# Top level bnodes (not object of a property)
-#
-template st:main {
-   st:call-template(st:resource, ?in)
-   ; separator = "\n\n"
-}
-where {
-   select distinct ?in where {
-     bind (st:get(st:uri) as ?in)
-     ?in ?p ?y
-     
-     filter (isURI(?in) || ! exists { ?x ?q ?in } )
-     
-   }
-   order by ?in
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:collection(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:parseType='Collection'>" 
-   
-   box {
-    st:call-template(st:list, ?y) 
-   }
-   
-   "</" st:turtle(?p, true) ">"
-}
-where {
-  
+   ?x ?p ?y
+   optional {
+        select ?y ?t where {
+            ?y a ?t  filter (! isBlank(?t))
+        } limit 1
+     }
+    filter st:visit(?y)
 }
 
 ]]>
@@ -294,33 +273,13 @@ where {
 template st:list {
 
 if (isBlank(?e) && ! st:visited(?e),
-  st:call-template(st:blank, ?e),
+  st:call-template(st:blank, ?r, rdf:first, ?e),
   st:call-template(st:resourceref, ?e))
   
 }
 where {
-  ?in rdf:rest*/rdf:first ?e
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:head {
-
-"<" st:turtle(rdf:RDF)
-  ibox {
-    st:call-template(st:prefix)
-  }
-
-">\n\n"
-
-}
-where {
-
+  ?in rdf:rest* ?r 
+  ?r  rdf:first ?e
 }
 
 ]]>
@@ -378,14 +337,24 @@ where {
 <rule>
 <body>
 <![CDATA[
-template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " xml:lang='" lang(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+template st:listrec(?y) {
+format {
+"<rdf:Description>%s</rdf:Description>" 
+   
+   box {
+    
+   st:call-template(st:triple, ?y, rdf:first, ?f)
+   st:nl()
+   
+   if (?r = rdf:nil, 
+      st:apply-templates(?y, rdf:rest, ?r),
+      st:call-template(st:listrecrest, ?r))   
+   }
+}
 }
 where {
-   ?x ?p ?y
-   filter (isLiteral(?y) && datatype(?y) = rdf:langString)
+  ?y rdf:first ?f ;
+     rdf:rest  ?r
 }
 
 ]]>
@@ -395,21 +364,62 @@ where {
 <rule>
 <body>
 <![CDATA[
-template (?x, ?p, ?y) {
+template st:property(?in, ?t) {
 
-  "<" st:turtle(?p, true) ">" 
-    box{  
-      if (st:visited(?y),
-	st:call-template(st:resourceref, ?y),
-	st:call-template(st:blank, ?y))
-    }
-  "</" st:turtle(?p, true) ">"  
+   st:call-template(st:triple, ?in, ?p, ?y)
+
+}
+where {
+   ?in ?p ?y 
+   filter if (bound(?t), !(?p = rdf:type && ?y = ?t), true)
+}
+order by ?p ?y
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:head {
+format {
+"""
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<%s %s>
+
+"""
+
+st:turtle(rdf:RDF)
+ibox { st:call-template(st:prefix) }
+}
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:listrecrest(?y) {  
+format {
+   "<rdf:rest>%s</rdf:rest>" 
+   
+   box {
+      st:call-template(st:listrec, ?y)
+      }
+   }
+}
+where {
   
 }
-where {
-   ?x ?p ?y
-   filter (isBlank(?y))
-}
 
 ]]>
 </body>
@@ -419,9 +429,14 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:datatype='" datatype(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s rdf:datatype='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, "&xsd;"), datatype(?y)) 
+   st:literal(str(?y)) 
+   st:turtle(?p, true)
+}
 }
 where {
    ?x ?p ?y
@@ -438,14 +453,17 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) ">" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s>%s</%s>"
+   
+   st:turtle(?p, true)
+   st:literal(str(?y)) 
+   st:turtle(?p, true)
+   }
 }
 where {
    ?x ?p ?y
-   filter (isLiteral(?y) 
-   && datatype(?y) = xsd:string)
+   filter (isLiteral(?y) && datatype(?y) = xsd:string)
 }
 
 ]]>
@@ -456,11 +474,63 @@ where {
 <body>
 <![CDATA[
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:resource='" str(?y) "' />"
+format {
+   "<%s xml:lang='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   lang(?y)
+   st:literal(str(?y))
+   st:turtle(?p, true)
+}   
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) && datatype(?y) = rdf:langString)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template (?x, ?p, ?y) {
+format {
+   "<%s rdf:resource='%s' />"
+   
+   st:turtle(?p, true)
+   str(?y)
+}
 }
 where {
    ?x ?p ?y
    filter isURI(?y)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template (?x, ?p, ?y) {
+format {
+"""<%s>%s</%s>  """
+  
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+  st:turtle(?p, true)  
+ } 
+}
+where {
+   ?x ?p ?y
+   filter isBlank(?y)
 }
 
 ]]>

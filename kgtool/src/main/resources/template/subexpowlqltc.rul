@@ -2,32 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-template st:profile {
- 
-}
-where {}
-
-function st:aggregate(?x) { st:agg_and(?x) }
-  
-  function st:err(?x) { URI(concat(st:, "owlql/", str(?x))) }
-  
-  function st:alreadyVisited(?x, ?tag, ?suc) { 
-    if(st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
-  }
-
-
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -51,17 +29,20 @@ where {
 <rule>
 <body>
 <![CDATA[
-template {
-	?suc
+template st:profile {
+ 
 }
-where {
-	?in a owl:Restriction ;
-	 owl:onProperty ?p
-	 
-	 bind(
-	 	exists {?in owl:someValuesFrom owl:Thing}
-	 as ?suc)
-}
+where {}
+
+function st:aggregate(?x) { st:agg_and(?x) }
+  
+  function st:err(?x) { URI(concat(st:, "owlql/", str(?x))) }
+  
+  function st:alreadyVisited(?x, ?tag, ?suc) { 
+    if(st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
+  }
+
+
 
 ]]>
 </body>
@@ -91,6 +72,25 @@ where {
 	filter(! ?suc)
 }
 limit 1
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in a owl:Restriction ;
+	 owl:onProperty ?p
+	 
+	 bind(
+	 	exists {?in owl:someValuesFrom owl:Thing}
+	 as ?suc)
+}
 
 ]]>
 </body>

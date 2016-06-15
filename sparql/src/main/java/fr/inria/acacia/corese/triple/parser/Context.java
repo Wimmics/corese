@@ -55,6 +55,7 @@ public class Context extends ASTObject {
     public static final String STL_TRANSFORMATION_LIST    = STL + "transformations";
     public static final String STL_SOLUTION = STL + "solution";
     public static final String STL_VALUE    = STL + "value";
+    public static final String STL_VISITOR  = STL + "visitor";
     
     
     HashMap<String, IDatatype> table;
@@ -156,7 +157,12 @@ public class Context extends ASTObject {
     }
     
     public Context set(String name, IDatatype value) {
-        table.put(name, value);
+        if (value == null){
+            table.remove(name);
+        }
+        else {
+            table.put(name, value);
+        }
         return this;
     }
     

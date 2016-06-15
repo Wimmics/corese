@@ -5,7 +5,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import java.io.IOException;
 import java.io.InputStream;
 import org.apache.log4j.Logger;
 

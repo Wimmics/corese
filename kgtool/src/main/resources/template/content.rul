@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,21 +10,20 @@ Thu Apr 14 15:38:03 CEST 2016
 <body>
 <![CDATA[
 #
-# Display a calendar and a graph content
-# Specify named template (st:dbpedia) to be called by calendar
+# For each day of a calendar (see st:calendar/st:date)
+# generate href with query to dbpedia about event of this date
+# use year 2000 to have a bisextile year (to get January 29)
 #
-template st:query {
-  
-  st:call-template(st:main)
-  
+template st:dbpedia(?date) {
+  format {
+    "<a href='%s'>%s</a>"
+    
+    st:plink(concat("st:d2000-", month(?date), "-", day(?date)))
+    day(?date)
+  } 
 }
 where {
-  # export to st:calendar (see st:calendar/st:date)
-  bind (st:export(st:content, st:content) as ?c)
-  bind (st:export(st:date, st:dbpedia)    as ?d)
-  
-  bind (st:set(st:allyear, true) as ?a)
-  
+
 }
 
 ]]>
@@ -35,18 +34,40 @@ where {
 <body>
 <![CDATA[
 #
-# Display a calendar and a graph content
+# Display a day in the calendar of a month
+# May be a link or a number
 #
-template st:start {
-  
-  st:call-template(st:main)
+template st:date(?date) {
+
+    if (?b, st:call-template(st:link, ?date), day(?date))
   
 }
 where {
+
+bind (
+      exists { ?x ?p ?dd 
+	filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
+	filter (year(?dd) = year(?date) 
+	    && month(?dd) = month(?date) 
+	      && day(?dd) = day(?date)) } 
+    as ?b)
+   
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:link(?date) {
+
+  "<a href='#" str(?date) "'>"  day(?date)  "</a>"
   
-  # export to st:calendar (see st:calendar/st:date)
-  bind (st:export(st:content, st:content) as ?c)
-  bind (st:export(st:date, st:date)       as ?d)
+}
+where {
+   
 }
 
 ]]>
@@ -88,24 +109,18 @@ where {
 <body>
 <![CDATA[
 #
-# Display a day in the calendar of a month
-# May be a link or a number
+# Display a calendar and a graph content
 #
-template st:date(?date) {
-
-    if (?b, st:call-template(st:link, ?date), day(?date))
+template st:start {
+  
+  st:call-template(st:main)
   
 }
 where {
-
-bind (
-      exists { ?x ?p ?dd 
-	filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
-	filter (year(?dd) = year(?date) 
-	    && month(?dd) = month(?date) 
-	      && day(?dd) = day(?date)) } 
-    as ?b)
-   
+  
+  # export to st:calendar (see st:calendar/st:date)
+  bind (st:export(st:content, st:content) as ?c)
+  bind (st:export(st:date, st:date)       as ?d)
 }
 
 ]]>
@@ -166,20 +181,21 @@ order by ?date
 <body>
 <![CDATA[
 #
-# For each day of a calendar (see st:calendar/st:date)
-# generate href with query to dbpedia about event of this date
-# use year 2000 to have a bisextile year (to get January 29)
+# Display a calendar and a graph content
+# Specify named template (st:dbpedia) to be called by calendar
 #
-template st:dbpedia(?date) {
-  format {
-    "<a href='%s'>%s</a>"
-    
-    st:plink(concat("st:d2000-", month(?date), "-", day(?date)))
-    day(?date)
-  } 
+template st:query {
+  
+  st:call-template(st:main)
+  
 }
 where {
-
+  # export to st:calendar (see st:calendar/st:date)
+  bind (st:export(st:content, st:content) as ?c)
+  bind (st:export(st:date, st:dbpedia)    as ?d)
+  
+  bind (st:set(st:allyear, true) as ?a)
+  
 }
 
 ]]>
@@ -199,22 +215,6 @@ where {}
 
 
     
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:link(?date) {
-
-  "<a href='#" str(?date) "'>"  day(?date)  "</a>"
-  
-}
-where {
-   
-}
 
 ]]>
 </body>

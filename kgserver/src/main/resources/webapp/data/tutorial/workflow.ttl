@@ -17,8 +17,11 @@ st:tutorial a st:Dataset ;
 
   
 us:sparql a sw:Workflow ;
+
 sw:display true;
 sw:debug true;
+sw:collect true;
+
 sw:body (
   
 [ a sw:Query ;
@@ -29,13 +32,9 @@ Une question est alors posée avec un canevas de réponse à compléter. En cliq
 rdfs:comment ""@en ;
 
 st:query ""
+]
 
-
-  
-  
-  
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:begin ;
 rdfs:label "Triple Pattern" ;
 rdfs:comment "Ecrire une requête qui retourne tous les triplets du graphe."@fr ;
@@ -50,12 +49,9 @@ sw:body
 """select * where { 
    ?x ?p ?y
 }""" 
+]
 
-
-
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:type ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person."@fr ;
@@ -74,9 +70,9 @@ select * where {
   ?x a h:Person 
 }""" 
 
+]
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:type2 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en utilisant la propriété rdf:type."@fr ;
@@ -95,9 +91,9 @@ select * where {
   ?x rdf:type h:Person 
 }""" 
 
+]
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:type3 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en écrivant l'URI complète du type."@fr ;
@@ -116,10 +112,9 @@ select * where {
   ?x a <http://www.inria.fr/2015/humans#Person> 
 }""" 
 
+]
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:type4 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en spécifiant la base et en utilisant une URI relative."@fr ;
@@ -133,12 +128,9 @@ select * where {
   ?x a <#Person> 
 }""" 
 
+]
 
-
-
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:bgp ;
 rdfs:label "BGP" ;
 rdfs:comment "Retourne les instances de personne ayant un nom (h:name)."@fr ;
@@ -159,9 +151,9 @@ select * where {
      h:name ?n
 }""" 
 
+]
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:bgp2 ;
 rdfs:label "BGP" ;
 rdfs:comment "Retourne les instances de Man ayant pour enfant (h:hasChild) i:Pierre et i:Jack."@fr ;
@@ -184,10 +176,9 @@ select * where {
     h:hasChild i:Pierre, i:Jack .
 }""" 
 
+]
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:bnode ;
 rdfs:label "Blank Node" ;
 rdfs:comment "Trouver les personnes qui ont une valeur pour h:hasFriend en utilisant un blank node. "@fr ;
@@ -208,10 +199,10 @@ select * where {
   h:hasFriend []
 }""" 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:pvariable ;
 rdfs:label "Property Variable" ;
 rdfs:comment "Trouver les valeurs des propriétés des instances de personne. "@fr ;
@@ -231,10 +222,10 @@ select * where {
     ?p ?v
 }""" 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:pvariable2 ;
 rdfs:label "Property Variable" ;
 rdfs:comment "Trouver des ressources différentes qui ont  même  valeur pour une même propriété. "@fr ;
@@ -256,10 +247,10 @@ select * where {
   filter(?x != ?y)
 }""" 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:list ;
 rdfs:label "List" ;
 rdfs:comment """Enumérer les trois éléments d'une liste."""@fr ;
@@ -280,9 +271,10 @@ select * where {
 }
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:list2 ;
 rdfs:label "List" ;
 rdfs:comment """Enumérer les trois éléments d'une liste avec rdf:first et rdf:rest."""@fr ;
@@ -315,10 +307,10 @@ select * where {
 }
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:count ;
 rdfs:label "Count" ;
 rdfs:comment """Compter le nombre de solutions avec un opérateur d'aggrégation."""@fr ;
@@ -337,9 +329,10 @@ select (count(*) as ?c) where {
   ?x ?p ?y 
 }""" 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:group ;
 rdfs:label "Group By" ;
 rdfs:comment """Compter le nombre de solutions. Retourner un  résultat pour chaque valeur de ?x."""@fr ;
@@ -362,9 +355,10 @@ select ?x (count(*) as ?c) where {
 group by ?x
 """
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:gconcat ;
 rdfs:label "Group concat" ;
 rdfs:comment """Concaténer la liste des noms (?n) pour chaque valeur de ?x."""@fr ;
@@ -389,10 +383,10 @@ select ?x (group_concat(?n) as ?l) where {
 group by ?x
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:having ;
 rdfs:label "Having" ;
 rdfs:comment """Compter le nombre de solutions. Retourne un  résultat pour chaque valeur de ?x dont le compteur est > 1."""@fr ;
@@ -418,10 +412,10 @@ group by ?x
 having (count(*) > 1)
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:order ;
 rdfs:label "Order By" ;
 rdfs:comment "Retourner les ressources instance de type personne, triées par ordre alphabétique."@fr ;
@@ -447,9 +441,10 @@ order by ?n
 
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:distinct ;
 rdfs:label "Distinct" ;
 rdfs:comment "Retourner des résultats distincts."@fr ;
@@ -476,11 +471,10 @@ select distinct ?x ?y where {
 }
 order by ?x ?y""" 
 
+]
 
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:distinct2 ;
 rdfs:label "Distinct" ;
 rdfs:comment "Eliminer les doublons en remplaçant l'opérateur != par <."@fr ;
@@ -507,11 +501,10 @@ select distinct ?x ?y where {
 }
 order by ?x ?y""" 
 
+]
 
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:filter ;
 rdfs:label "Filter" ;
 rdfs:comment """A l'aide d'un filtre, retourner les ressources  avec un nom  qui contient la lettre 'l'."""@fr ;
@@ -534,9 +527,10 @@ select * where {
 }
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:lang ;
 rdfs:label "Language" ;
 rdfs:comment """Retourner les ressources  ayant un nom  taggé en français."""@fr ;
@@ -559,9 +553,10 @@ select * where {
 }
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:lang2 ;
 rdfs:label "Language" ;
 rdfs:comment """Retourner la ressource  dont le  nom  est le littéral 'Sophie' taggé en français."""@fr ;
@@ -582,10 +577,10 @@ select * where {
 }
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:datatype ;
 rdfs:label "Datatype" ;
 rdfs:comment """Retourner les datatypes des littéraux."""@fr ;
@@ -610,9 +605,10 @@ select * (datatype(?v) as ?d) where {
 }
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:datatype2 ;
 rdfs:label "Datatype" ;
 rdfs:comment """RDF et SPARQL peuvent gérer des datatypes arbitraires."""@fr ;
@@ -626,11 +622,10 @@ select * where {
 }
 """ 
 
+]
 
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:cast ;
 rdfs:label "Cast" ;
 rdfs:comment """Retourner la valeur de l'age castée en string."""@fr ;
@@ -651,11 +646,10 @@ select * (xsd:string(?a) as ?s) where {
 }
 """ 
 
+]
 
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:date ;
 rdfs:label "Date" ;
 rdfs:comment """Décomposer la date en année, mois, jour, heure, minute et seconde."""@fr ;
@@ -688,10 +682,10 @@ where {
 }
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:regex ;
 rdfs:label "Regex" ;
 rdfs:comment """Retourner les URI qui matchent une expression régulière."""@fr ;
@@ -716,12 +710,10 @@ where {
 }
 """ 
 
+]
 
 
-
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:if ;
 rdfs:label "If Then Else" ;
 rdfs:comment """Retourner 'majeur' ou 'mineur' selon l'age."""@fr ;
@@ -744,10 +736,10 @@ where {
 }
 """ 
 
+]
 
 
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:in ;
 rdfs:label "In" ;
 rdfs:comment """Fixer la valeur de ?x à i:Lucas, i:Pierre ou bien i:Mark avec l'opérateur de liste in."""@fr ;
@@ -774,11 +766,10 @@ where {
 }
 """ 
 
+]
 
 
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:union ;
 rdfs:label "Union" ;
 rdfs:comment """Retourner les  instances de Man ou Woman."""@fr ;
@@ -799,12 +790,10 @@ select * where {
 }
 """ 
 
+]
 
 
-
-
-
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:optional ;
 rdfs:label "Optional" ;
 rdfs:comment """Retourner les instances de Man ayant éventuellement un conjoint. """@fr ;
@@ -827,9 +816,10 @@ select * where {
 }
 """ 
 
+]
 
 
-][ a sw:Query ;
+[ a sw:Query ;
 st:name st:optional2 ;
 rdfs:label "Optional" ;
 rdfs:comment """Retourner les instances de Man ayant éventuellement un conjoint et éventuellement un enfant. """@fr ;

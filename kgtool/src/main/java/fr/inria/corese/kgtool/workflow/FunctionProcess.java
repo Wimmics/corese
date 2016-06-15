@@ -27,7 +27,6 @@ public class FunctionProcess extends WorkflowProcess {
     
      @Override
     void start(Data data){
-
      }
     
     @Override
@@ -41,6 +40,7 @@ public class FunctionProcess extends WorkflowProcess {
        IDatatype dt = eval(data, getContext(), getDataset());
        Data res = new Data(data.getGraph(), dt);
        res.setProcess(this);
+       res.setVisitor(data.getVisitor());
        return res;  
     }
     
@@ -49,13 +49,7 @@ public class FunctionProcess extends WorkflowProcess {
         if (path != null){
             exec.setDefaultBase(path);
         }
-        if (ds == null && c != null){
-            ds = new Dataset();
-        }
-        if (ds != null){
-            ds.setContext(c);
-        }
-        IDatatype res = exec.eval(getQuery(), ds);  
+        IDatatype res = exec.eval(getQuery(), data.dataset(c, ds));  
         return res;
     }
 
@@ -75,7 +69,10 @@ public class FunctionProcess extends WorkflowProcess {
     
     @Override
     public String stringValue(Data data){
-        return data.getDatatypeValue().toString();
+        if (data.getDatatypeValue() != null){
+            return data.getDatatypeValue().stringValue();
+        }
+        return null;
     }
-
+    
 }

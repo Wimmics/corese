@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgraph.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,15 +14,16 @@ import java.util.HashMap;
 
 /**
  * Table property node -> List<Edge>
- * Sorted by getNode(index), getNode(other) At the beginning, only table of
- * index 0 is fed with edges Other index are built at runtime only if needed Use
- * a new Edge Index based on Node int index
- *
+ * Sorted by getNode(index), getNode(other) 
+ * At the beginning, only table of
+ * index 0 is fed with edges 
+ * Other index are built at runtime only if needed 
+ * Nodes are sorted by Node index
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>> 
+public class EdgeIndexer 
         implements Index {
 
     private static final String NL = System.getProperty("line.separator");
@@ -43,6 +43,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     Comparator<Entity> comp;
     Graph graph;
     List<Node> sortedProperties;
+    // Property Node -> Edge List 
     HashMap<Node, EdgeList> table;
 
     EdgeIndexer(Graph g, boolean bi, int n) {
@@ -64,6 +65,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         }
     }
 
+    @Override
     public int size() {
         return table.size();
     }
@@ -90,6 +92,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
          return intCompare(n1.getIndex(), n2.getIndex());
      }
 
+    @Override
     public boolean same(Node n1, Node n2) {
         return n1.getIndex() == n2.getIndex();
     }
@@ -106,6 +109,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * Ordered list of properties For pprint TODO: optimize it
      */
+    @Override
     public List<Node> getSortedProperties() {
         if (isUpdate) {
             sortProperties();
@@ -128,18 +132,22 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         });
     }
 
+    @Override
     public Iterable<Node> getProperties() {
         return table.keySet();
     }
 
+    @Override
     public void setDuplicateEntailment(boolean b) {
         isOptim = !b;
     }
 
+    @Override
     public int getIndex() {
         return index;
     }
 
+    @Override
     public Iterable<Entity> getEdges() {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
         for (Node pred : getProperties()) {
@@ -152,10 +160,12 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         return meta;
     }
 
+    @Override
     public String toString() {
         return toRDF();
     }
 
+    @Override
     public String toRDF() {
         Serializer sb = new Serializer();
         sb.open("kg:Index");
@@ -176,6 +186,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         return sb.toString();
     }
 
+    @Override
     public int cardinality() {
         int total = 0;
         for (Node pred : getProperties()) {
@@ -188,12 +199,14 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      * Clean the content of the Index but keep the properties Hence Index can be
      * reused
      */
+    @Override
     public void clean() {
         for (Node p : getProperties()) {
             get(p).clear();
         }
     }
 
+    @Override
     public void clear() {
         isUpdate = true;
         if (index == 0) {
@@ -202,6 +215,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         table.clear();
     }
 
+    @Override
     public void clearIndex(Node pred) {
         EdgeList l = get(pred);
         if (l != null && l.size() > 0) {
@@ -209,6 +223,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         }
     }
 
+    @Override
     public void clearCache() {
         for (Node pred : getProperties()) {
             clearIndex(pred);
@@ -218,6 +233,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * Add a property in the table
      */
+    @Override
     public Entity add(Entity edge) {
         return add(edge, false);
     }
@@ -226,6 +242,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      * noGraph == true => if edge already exists in another graph, do not add
      * edge
      */
+    @Override
     public Entity add(Entity edge, boolean duplicate) {
         if (index != IGRAPH && edge.nbNode() <= index) {
             // use case:  additional node is not present, do not index on this node
@@ -267,6 +284,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * PRAGMA: All Edge in list have p as predicate Use case: Rule Engine
      */
+    @Override
     public void add(Node p, List<Entity> list) {
         EdgeList l = define(p);
         if (index == 0 || l.size() > 0) {
@@ -291,6 +309,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         return get(pred);
     }
 
+    @Override
     public boolean exist(Entity edge) {
         if (index != IGRAPH && edge.nbNode() <= index) {
             // use case:  additional node is not present, do not index on this node
@@ -313,10 +332,12 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      * later if we need a join at getNode(index) If the list already contains
      * edges, we add it now.
      */
+    @Override
     public void declare(Entity edge) {
         declare(edge, true);
     }
 
+    @Override
     public void declare(Entity edge, boolean duplicate) {
         EdgeList list = define(edge.getEdge().getEdgeNode());
         if (list.size() > 0) {
@@ -343,6 +364,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      */       
     void setComparator(EdgeList el){
         if (comp == null){
+            // create Comparator that will be shared
             comp = el.getComparator(index);
         }
         el.setComparator(comp);
@@ -351,6 +373,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * Sort edges by values of first Node and then by value of second Node
      */
+    @Override
     public void index() {
         index(true);
     }
@@ -364,6 +387,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         }
     }
 
+    @Override
     public void index(Node pred, boolean reduce) {
         index(pred);
         if (reduce) {
@@ -376,6 +400,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         el.sort();
     }
 
+    @Override
     public void indexNode() {
         for (Node pred : getProperties()) {
             for (Entity ent : get(pred)) {
@@ -401,6 +426,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         }
     }
 
+    @Override
     public int duplicate() {
         return count;
     }
@@ -438,10 +464,12 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * Return iterator of Edge with possibly node as element
      */
+    @Override
     public Iterable<Entity> getEdges(Node pred, Node node) {
         return getEdges(pred, node, null);
     }
 
+    @Override
     public Iterable<Entity> getEdges(Node pred, Node node, Node node2) {
         EdgeList list = checkGet(pred);
         if (list == null || node == null) {
@@ -453,6 +481,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         return list.getEdges(node, node2);
     }
 
+    @Override
     public int size(Node pred) {
         EdgeList list = get(pred);
         if (list == null) {
@@ -465,6 +494,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * Written for index = 0
      */
+    @Override
     public boolean exist(Node pred, Node n1, Node n2) {
         EdgeList list = checkGet(pred);
         if (list == null) {
@@ -493,6 +523,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
     /**
      * @param byIndex the byIndex to set
      */
+    @Override
     public void setByIndex(boolean byIndex) {
         this.byIndex = byIndex;
         index(false);
@@ -512,6 +543,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      */
     
 
+    @Override
     public Entity delete(Entity edge) {
         if (index != IGRAPH && edge.nbNode() <= index) {
             // use case:  additional node is not present, do not index on this node
@@ -571,20 +603,24 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
      * PRAGMA
      * Update functions are called with index = IGRAPH
      */
+    @Override
     public void clear(Node gNode) {
         update(gNode, null, Graph.CLEAR);
     }
 
+    @Override
     public void copy(Node g1, Node g2) {
         update(g2, null, Graph.CLEAR);
         update(g1, g2, Graph.COPY);
     }
 
+    @Override
     public void move(Node g1, Node g2) {
         update(g2, null, Graph.CLEAR);
         update(g1, g2, Graph.MOVE);
     }
 
+    @Override
     public void add(Node g1, Node g2) {
         update(g1, g2, Graph.COPY);
     }
@@ -680,6 +716,7 @@ public class EdgeIndexer //extends HashMap<Node, ArrayList<Entity>>
         }
     }
 
+    @Override
     public void delete(Node pred) {
     }
 }

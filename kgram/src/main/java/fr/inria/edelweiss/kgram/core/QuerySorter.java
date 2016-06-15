@@ -136,28 +136,26 @@ public class QuerySorter implements ExpType {
                         // take OPT_BIND(var = exp) into account
                         // TODO: graph ?g does not take into account OPT_BIND ?g = uri
                         switch (query.getPlanProfile()) {
+                            
                             case Query.QP_T0:
                                 sortFilter(exp, lVar);
                                 break;
+                                
                             case Query.QP_HEURISTICS_BASED:
                                 sort = new SorterNew();
                                 ((SorterNew) sort).sort(exp, lBind, prod, query.getPlanProfile());
                                 setBind(query, exp);
                                 break;
+                                
                             case Query.QP_BGP:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
-                                setBind(query, exp);  
-                                if ((!exp.isBGP()) && (!exp.isLock()) && exp.isEdgesOrFilter()) {
-//                                    System.out.println("\n\tAND   "+exp);
-                                    BgpGenerator tmp  = query.getBgpGenerator();
-                                    tmp.setExp(exp);
-                                    query.setBgpGenerator(tmp);
-                                    exp = query.getBgpGenerator().buildBGP();
-//                                    System.out.println("\n\t BGP  "+exp);
+                                setBind(query, exp);
+                                if (query.getBgpGenerator() != null){
+                                    exp = query.getBgpGenerator().process(exp);
                                 }
-                                
                                 break;
+                                
                             case Query.QP_DEFAULT:
                                 sort.sort(query, exp, lVar, lBind);
                                 sortFilter(exp, lVar);
@@ -167,18 +165,7 @@ public class QuerySorter implements ExpType {
                         }
 
                         service(exp);
-                    }
-                    // put filters where they are bound ASAP
-                    //sortFilter(exp, lVar);
-
-                    // set BIND expressions before right edge
-                    // ?x ?p ?y . ?x ?q ?t . filter(?t = 12)
-                    // ->
-                    // OPT_BIND(?t = 12) . ?x ?q ?t . filter(?t = 12) .  ?x ?p ?y                        
-                    //exp.setBind();
-                    //setBind(exp, lBind);
-                    // set graph filter into graph
-                    //exp.graphFilter();
+                    }                  
                 }
                 //******* Query plan END********
 

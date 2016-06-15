@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>kgtool</artifactId>
+            <artifactId>corese-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:03 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -55,33 +55,13 @@ template {
 	?suc
 }
 where {
-	?in owl:complementOf ?z
+	?in owl:intersectionOf ?z
+	?z rdf:rest*/rdf:first ?e
 	
 	bind (
-		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?z)
-	as ?suc)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-	?suc
-}
-where {
-	?in a owl:Restriction ;
-	  owl:onProperty ?p
-	
-	 bind ( exists { ?in owl:someValuesFrom ?e
-	  		  filter (isURI(?e)) 
-	  		}
-     as ?suc )
-      
-     filter(st:visit(st:err("failSuper"), ?in, ?suc))
+		st:call-template(st:superClassExpression, ?e)
+		as ?suc
+	)
 }
 
 ]]>
@@ -125,13 +105,33 @@ template {
 	?suc
 }
 where {
-	?in owl:intersectionOf ?z
-	?z rdf:rest*/rdf:first ?e
+	?in a owl:Restriction ;
+	  owl:onProperty ?p
+	
+	 bind ( exists { ?in owl:someValuesFrom ?e
+	  		  filter (isURI(?e)) 
+	  		}
+     as ?suc )
+      
+     filter(st:visit(st:err("failSuper"), ?in, ?suc))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+	?suc
+}
+where {
+	?in owl:complementOf ?z
 	
 	bind (
-		st:call-template(st:superClassExpression, ?e)
-		as ?suc
-	)
+		st:call-template-with(st:subexpowlqltc, st:subClassExpression, ?z)
+	as ?suc)
 }
 
 ]]>

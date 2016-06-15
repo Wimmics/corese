@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.ArrayList;
 import java.util.HashMap;

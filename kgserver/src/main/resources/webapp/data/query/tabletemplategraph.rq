@@ -1,0 +1,15 @@
+template {
+  format {
+    """
+    <h3>Visual RDF</h3>
+    <p><a href='https://graves.cl/visualRDF'>https://graves.cl/visualRDF</a></p>
+    <iframe width='1000' height='800' src='https://graves.cl/visualRDF/?url=%s'></iframe>
+    """
+    coalesce(encode_for_uri(?url), "")
+  }
+}
+where {
+  bind (st:get(st:uri) as ?uri)
+  bind (concat("http://corese.inria.fr", st:get(st:service), "?profile=st:ldp") as ?server) 
+  bind (concat(?server, coalesce(concat("&uri=", encode_for_uri(?uri)), "")) as ?url)
+}

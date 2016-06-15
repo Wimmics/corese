@@ -29,11 +29,15 @@ public class Manager {
     static final String STCONTEXT = Context.STL_CONTEXT;
     private static String DEFAULT = NSManager.STL + "default";
     private static String CONTENT = NSManager.STL + "content";
+    private static String CONTENT_SHARE = NSManager.STL + "shareContent";
     private static String SCHEMA = NSManager.STL + "schema";
     private static String NAME = NSManager.SWL + "name";
     static final String SKOLEM = NSManager.STL + "skolem";
-    static HashMap<String, TripleStore> // by dataset URI; e.g. st:cdn
-            mapURI;
+    static HashMap<String, TripleStore> 
+            // by dataset URI; e.g. st:cdn
+            mapURI, 
+            // by shareContent URI
+            mapShare;
     // name to URI (e.g. /template/cdn, cdn is the name of the service)
     // cdn -> st:cdn
     static HashMap<String, String> mapService;
@@ -42,12 +46,13 @@ public class Manager {
 
     static {
         //init();
+        mapShare = new HashMap<String, TripleStore>();
         manager = new Manager();
     }
 
     static Manager getManager() {
         return manager;
-    }
+   }
 
     /**
      * Create a TripleStore for each server definition from profile and load its
@@ -118,15 +123,20 @@ public class Manager {
         return store;
     }
 
-    GraphStore init(TripleStore ts, Service service) throws LoadException, EngineException {
+    void init(TripleStore ts, Service service) throws LoadException, EngineException {
         Graph g = getProfile().getProfileGraph();
         Node serv = g.getNode(service.getName());
         Node cont = g.getNode(CONTENT, serv);
+        boolean share = false;
+        if (cont == null){
+            share = true;
+            cont = g.getNode(CONTENT_SHARE, serv);
+        }
         if (cont != null) {
-            return initService(ts, g, serv, cont);
+             initService(ts, g, serv, cont, share);
         } 
         else {
-             return initService(ts, service);
+             initService(ts, service);
        }
     }
 
@@ -135,15 +145,31 @@ public class Manager {
     /**
      * Init service dataset with Workflow of Load
      */
-    GraphStore initService(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
-        GraphStore g = ts.getGraph();
-        SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
-        Data res = sw.process(new Data(g));
-        if (res.getGraph() != null && res.getGraph() != g){
-            ts.setGraph(res.getGraph());
-        }
+    void initService(TripleStore ts, Graph profile, Node server, Node swnode, boolean share) throws LoadException, EngineException {
+        initContent(ts, profile, server, swnode, share);
         ts.finish(getProfile().isProtected());
-        return g;
+    }
+    
+    void initContent(TripleStore ts, Graph profile, Node server, Node swnode, boolean share) throws LoadException, EngineException {
+        Graph gg = null;
+        if (share && mapShare.containsKey(swnode.getLabel())){
+            gg = mapShare.get(swnode.getLabel()).getGraph();            
+        }
+        else {
+            gg = createContent(ts, profile, server, swnode);
+            if (share){
+                mapShare.put(swnode.getLabel(), ts);
+            }
+        }
+        if (gg != null && gg != ts.getGraph()){
+            ts.setGraph(gg);
+        }
+    }
+    
+    Graph createContent(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
+        SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
+        Data res = sw.process(new Data(ts.getGraph()));
+        return res.getGraph();
     }
 
     void init(TripleStore ts) {

@@ -2,10 +2,23 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Apr 14 15:38:02 CEST 2016
+Fri Jun 03 09:40:29 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+template st:default(?in) { 
+}
+where {
+}
+
+
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -27,19 +40,6 @@ where {
       (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
    
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:default(?in) { 
-}
-where {
-}
-
 
 ]]>
 </body>
@@ -71,73 +71,6 @@ function st:process(?in) {  owlfs:process(?in) }
     if (?x = "", ?x, concat("\n", ?x))
   }
 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
-    "("
-	?p " "  ?in " " ?v
-    ")"
-}
-where {
-  ?in ?p ?v  
-
-  filter(
-    ! strstarts(?p, owl:) &&
-    ! strstarts(?p, rdf:) && 
-    ! strstarts(?p, rdfs:) 
-  )
-  filter not exists { ?in a owl:Axiom }
-  filter not exists { ?in a owl:Annotation }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "AnnotationAssertion(owl:deprecated " ?in " " st:xsdLiteral(true) 
-   ")"  
-}
-where {
-  { ?in a owl:DeprecatedClass } union 
-  { ?in a owl:DeprecatedProperty }  
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "AnnotationAssertion(" 
-   
-    xt:bnl(st:call-template(st:annotate, ?in, ?p, ?l))
-    
-      ?p " " 
-      ?in " " st:turtle(?l)
-   ")"
-}
-where {
-  ?in ?p ?l 
-  filter not exists { ?in a owl:Axiom }  
-}
-values ?p { rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith }
 
 ]]>
 </body>
@@ -181,17 +114,49 @@ where {
 <rule>
 <body>
 <![CDATA[
+template {
+    xsd:string(?l)  
+    "(" 
+      ?p " " ?s " "  ?t
+    ")"
+}
+where {
+  ?in a owl:NegativePropertyAssertion ;
+     owl:sourceIndividual  ?s ;
+     owl:assertionProperty ?p ;
+     ?q  ?t
+}
+values (?q ?l) {
+  (owl:targetIndividual "NegativeObjectPropertyAssertion")
+  (owl:targetValue      "NegativeDataPropertyAssertion")
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
 template {
-   "ClassAssertion(" ?t " " ?in ")"
+    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
+    "("
+	?p " "  ?in " " ?v
+    ")"
 }
 where {
-  ?in a ?t
-  filter (!(strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:)) )
+  ?in ?p ?v  
+
+  filter(
+    ! strstarts(?p, owl:) &&
+    ! strstarts(?p, rdf:) && 
+    ! strstarts(?p, rdfs:) 
+  )
+  filter not exists { ?in a owl:Axiom }
+  filter not exists { ?in a owl:Annotation }
 }
 
 ]]>
@@ -218,21 +183,56 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
 template {
-    xsd:string(?l)  
-    "(" 
-      ?p " " ?s " "  ?t
-    ")"
+   "ClassAssertion(" ?t " " ?in ")"
 }
 where {
-  ?in a owl:NegativePropertyAssertion ;
-     owl:sourceIndividual  ?s ;
-     owl:assertionProperty ?p ;
-     ?q  ?t
+  ?in a ?t
+  filter (!(strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:)) )
 }
-values (?q ?l) {
-  (owl:targetIndividual "NegativeObjectPropertyAssertion")
-  (owl:targetValue      "NegativeDataPropertyAssertion")
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "AnnotationAssertion(" 
+   
+    xt:bnl(st:call-template(st:annotate, ?in, ?p, ?l))
+    
+      ?p " " 
+      ?in " " st:turtle(?l)
+   ")"
+}
+where {
+  ?in ?p ?l 
+  filter not exists { ?in a owl:Axiom }  
+}
+values ?p { rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "AnnotationAssertion(owl:deprecated " ?in " " st:xsdLiteral(true) 
+   ")"  
+}
+where {
+  { ?in a owl:DeprecatedClass } union 
+  { ?in a owl:DeprecatedProperty }  
+
 }
 
 ]]>

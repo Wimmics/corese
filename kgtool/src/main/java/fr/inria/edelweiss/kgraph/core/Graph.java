@@ -73,6 +73,8 @@ public class Graph extends GraphObject implements Graphable {
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
+    // true means same number value with different datatypes do not join in SPARQL
+    // false: they join
     private static boolean distinctDatatype = false;
     static boolean byIndexDefault = true;
 
@@ -96,16 +98,18 @@ public class Graph extends GraphObject implements Graphable {
     Index table, tlist, tgraph,
             // for rdf:type, no named graph to speed up type test
             dtable;
-    // key -> Node
+    // key -> URI Node
     Hashtable<String, Entity> individual;
-    // label -> Node
+    // label -> Blank Node
     Hashtable<String, Entity> blank;
     SortedMap<IDatatype, Entity> 
-            // same number with different datatype do not coincide:
+            // IDatatype -> Literal Node 
+            // number with same value but different datatype have different Node
+            // but (may) have same index
             literal,
-            // table where same number with different datatype coincide:
-            // contain only numbers
+            // this table enables to share index in this case for same value with different datatypes
             sliteral;
+    // @deprecated
     // key -> Node
     Map<String, Entity> vliteral;
     // graph nodes: key -> Node
@@ -136,7 +140,7 @@ public class Graph extends GraphObject implements Graphable {
             hasDefault = !true;
     private boolean isListNode = !true;
     boolean byIndex = byIndexDefault;
-    // draft optmize EdgeIndexer EdgeList
+    // optmize EdgeIndexer EdgeList
     private boolean optIndex = true;
     // number of edges
     int size = 0;
@@ -150,6 +154,8 @@ public class Graph extends GraphObject implements Graphable {
     public int count = 0;
 
     private boolean hasList = false;
+    
+    private Node ruleGraph, defaultGraph, entailGraph;
 
     private IStorage storageMgr;
 
@@ -235,6 +241,10 @@ public class Graph extends GraphObject implements Graphable {
         setList();
     }
 
+    /**
+     * Create specific Index where edges are sorted newest first
+     * Use case: RuleEngine focus on new edges
+     */
     void setList() {
         if (hasList) {
             tlist = createIndex(byIndex, ILIST);
@@ -322,6 +332,7 @@ public class Graph extends GraphObject implements Graphable {
         this.optIndex = optIndex;
     }
 
+    @Override
     public int pointerType() {
         return GRAPH_POINTER;
     }
@@ -340,8 +351,8 @@ public class Graph extends GraphObject implements Graphable {
     /**
      * This Comparator enables to retrieve an occurrence of a given Literal
      * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node It represent (1 integer) and (1.0
-     * float) as two different Nodes
+     * Literal be represented by same Node 
+     * It represent (1 integer) and (1.0 float) as two different Nodes
      */
     class Compare implements Comparator<IDatatype> {
 
@@ -351,6 +362,7 @@ public class Graph extends GraphObject implements Graphable {
             diff = b;
         }
 
+        @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
 
             // xsd:integer differ from xsd:decimal 
@@ -377,22 +389,32 @@ public class Graph extends GraphObject implements Graphable {
         tables = new ArrayList<Index>(length);
 
         for (int i = 0; i < length; i++) {
+            // edge Index by subject, object
             tables.add(createIndex(byIndex, i));
         }
-
+        // edge Index by named graph
         tgraph = createIndex(byIndex, IGRAPH);
         tables.add(tgraph);
 
         table = getIndex(0);
-        literal = Collections.synchronizedSortedMap(new TreeNode(true));
+        
+        // Literals including numbers:
+        literal  = Collections.synchronizedSortedMap(new TreeNode(true));
+        // Literal number only (to manage Node index):
         sliteral = Collections.synchronizedSortedMap(new TreeNode(false));
+        // deprecated:
         vliteral = Collections.synchronizedMap(new HashMap<String, Entity>());
-
+        // URI Node
         individual = new Hashtable<String, Entity>();
+        // Blank Node
         blank = new Hashtable<String, Entity>();
+        // Named Graph Node
         graph = new Hashtable<String, Node>();
-        nodes = new ArrayList<Node>();
+        // Property Node
         property = new Hashtable<String, Node>();
+        
+        // Index of nodes of named graphs
+        // Use case: SPARQL Property Path
         gindex = new NodeIndex();
         values = new ValueResolverImpl();
         fac = new EdgeFactory(this);
@@ -667,11 +689,6 @@ public class Graph extends GraphObject implements Graphable {
         }
     }
 
-//	public void entail(List<Entity> list){
-//		if (isEntail && inference!=null){
-//			inference.entail(list);
-//		}
-//	}
     public void setDefault(boolean b) {
         hasDefault = b;
     }
@@ -1018,7 +1035,7 @@ public class Graph extends GraphObject implements Graphable {
     }
 
     public Node addList(List<Node> list) {
-        return addList(addGraph(Entailment.DEFAULT), list);
+        return addList(addDefaultGraphNode(), list);
     }
 
     public Node addList(Node g, List<Node> list) {
@@ -1324,16 +1341,6 @@ public class Graph extends GraphObject implements Graphable {
     }
 
     /**
-     * Retrieve Node or create it (but not add it into graph)
-     */
-//	public Node getCreateResource(String name){
-//		Node node = getResource(name);
-//		if (node == null){ 
-//			node = createNode(name);
-//		}
-//		return node;
-//	}
-    /**
      * Retrieve a node/graph node/property node
      */
     public Node getResource(String name) {
@@ -1503,8 +1510,10 @@ public class Graph extends GraphObject implements Graphable {
         } else {
             literal.put(dt, (Entity) node);
             if (distinctDatatype) {
+                // no join on number with different datatypes
                 indexNode(dt, node);
             } else {
+                // join on number with different datatypes
                 indexLiteralNode(dt, node);
             }
         }
@@ -2129,10 +2138,6 @@ public class Graph extends GraphObject implements Graphable {
         return this.storageMgr;
     }
     
-    public Node getNode(int i) {
-        return nodes.get(i);
-    }
-
     /**
      * Only for new node that does not exist
      */
@@ -2413,7 +2418,14 @@ public class Graph extends GraphObject implements Graphable {
 
     public boolean dropGraphNames() {
         graph.clear();
+        clearNamedGraph();
         return true;
+    }
+    
+    void clearNamedGraph(){
+        ruleGraph = null;
+        defaultGraph = null;
+        entailGraph = null;
     }
 
     public boolean clear(String uri, boolean isSilent) {
@@ -2640,9 +2652,14 @@ public class Graph extends GraphObject implements Graphable {
     }
     
     public Graph copy(){
-        Graph g = new Graph();
-        g.inherit(this);
+        Graph g = empty();
         g.copy(this);
+        return g;
+    }
+    
+    public Graph empty(){
+        Graph g = Graph.create();
+        g.inherit(this);
         return g;
     }
     
@@ -2672,11 +2689,18 @@ public class Graph extends GraphObject implements Graphable {
     /**
      * Add edge and add it's nodes
      */
+    public Entity add(IDatatype subject, IDatatype predicate, IDatatype value) {
+        Node def = addDefaultGraphNode();
+        return add((IDatatype) def.getValue(), subject, predicate, value);
+    }
+    
     public Entity add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
         Entity e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
         Entity ee = addEdgeWithNode(e);
         return ee;
     }
+    
+    
 
     /**
      * Add Edge, not add nodes
@@ -2691,7 +2715,7 @@ public class Graph extends GraphObject implements Graphable {
     }
 
     public Edge addEdge(Node subject, Node predicate, Node value) {
-        Node g = addGraph(Entailment.DEFAULT);
+        Node g = addDefaultGraphNode();
         return addEdge(g, subject, predicate, value);
     }
 
@@ -2718,6 +2742,40 @@ public class Graph extends GraphObject implements Graphable {
      */
     public Node addGraph(String label) {
         return basicAddGraph(label);
+    }
+    
+    public Node addDefaultGraphNode(){
+        if (defaultGraph == null){
+            defaultGraph = addGraph(Entailment.DEFAULT);
+        }
+        return defaultGraph;
+    }
+    
+    public boolean isDefaultGraphNode(Node g){
+        return isDefaultGraphNode(g.getLabel()); 
+    }
+    
+    public boolean isDefaultGraphNode(String name){
+        return name.equals(Entailment.DEFAULT);
+    }
+    
+    public Node getDefaultGraphNode(){
+        return defaultGraph;
+    }
+    
+    public Node addRuleGraphNode(){
+        if (ruleGraph == null){
+            ruleGraph = addGraph(Entailment.RULE);
+        }
+        return ruleGraph;
+    }
+       
+    public Node getRuleGraphNode(){
+        return ruleGraph;
+    }
+    
+    public boolean isRuleGraphNode(Node node){
+        return ruleGraph != null && node == ruleGraph;
     }
 
     public Node addResource(String label) {

@@ -30,12 +30,14 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.GraphListen;
 import java.util.ArrayList;
@@ -649,7 +651,7 @@ public class PluginImpl extends ProxyImpl {
     }
     
     IDatatype triple(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
-        EdgeImpl edge = EdgeImpl.create(DatatypeMap.newResource(Entailment.DEFAULT), subj, pred, obj);
+        EdgeQuad edge = EdgeQuad.create(DatatypeMap.newResource(Entailment.DEFAULT), subj, pred, obj);
         return (IDatatype) edge.getNode().getValue();
     }
 
@@ -934,6 +936,10 @@ public class PluginImpl extends ProxyImpl {
     Transformer getTransformer(Environment env, Producer p) {
         return pt.getTransformer(env, p);
     } 
+    
+    TemplateVisitor getVisitor(Environment env, Producer p){
+        return pt.getVisitor(env, p);
+    }
     
     public Expr decode(Expr exp, Environment env, Producer p){
         return pt.decode(exp, env, p);

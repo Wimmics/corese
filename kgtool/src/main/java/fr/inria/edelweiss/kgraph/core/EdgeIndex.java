@@ -23,6 +23,7 @@ import java.util.HashMap;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
+@Deprecated
 public class EdgeIndex //extends HashMap<Node, ArrayList<Entity>> 
 implements Index {
     private static final String NL = System.getProperty("line.separator");

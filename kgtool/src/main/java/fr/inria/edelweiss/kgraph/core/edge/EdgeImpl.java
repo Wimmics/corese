@@ -1,10 +1,10 @@
-package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core.edge;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import java.util.ArrayList;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class EdgeImpl extends EdgeTop
         nodes[1] = object;
     }
     
-    EdgeImpl(Node g, Node pred, Node subject, Node object, Node arg1) {
+   public EdgeImpl(Node g, Node pred, Node subject, Node object, Node arg1) {
         this(g, pred);
         nodes = new Node[3];
         nodes[0] = subject;
@@ -159,7 +159,10 @@ public class EdgeImpl extends EdgeTop
 
     @Override
     public Node getNode(int n) {
-        return nodes[n];
+        switch (n){
+            case Graph.IGRAPH : return getGraph();
+            default: return nodes[n];
+        }
     }
 
     @Override

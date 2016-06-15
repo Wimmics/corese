@@ -192,4 +192,12 @@ public class Util {
 
         return json.toString();
     }
+    
+     public static Long sum(ConcurrentHashMap<String, Long> map) {
+        Long sum = 0L;
+        for (String key : map.keySet()) {
+            sum += map.get(key);
+        }
+        return sum;
+    }
 }

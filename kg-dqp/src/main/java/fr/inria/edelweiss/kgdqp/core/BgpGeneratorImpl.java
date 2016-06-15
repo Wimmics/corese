@@ -12,8 +12,13 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.BgpGenerator;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
@@ -371,4 +376,28 @@ public class BgpGeneratorImpl implements BgpGenerator {
         this.edgeAndContext = edgeAndContext;
     }
 
+    
+    public void sortProducersByEdges(Map<Producer, ArrayList<Edge>> indexProducerEdges) {
+
+       Set<Map.Entry<Producer,ArrayList<Edge>>> indexProducerEdgesEntries = indexProducerEdges.entrySet();
+
+       // used linked list to sort, because insertion of elements in linked list is faster than an array list. 
+       List<Map.Entry<Producer,ArrayList<Edge>>> indexProducerEdgesLinkedList = new LinkedList<Map.Entry<Producer,ArrayList<Edge>>>(indexProducerEdgesEntries);
+
+       // sorting the List
+       Collections.sort(indexProducerEdgesLinkedList, new Comparator<Map.Entry<Producer,ArrayList<Edge>>>() {
+
+           @Override
+           public int compare(Map.Entry<Producer, ArrayList<Edge>> element1,
+                   Map.Entry<Producer, ArrayList<Edge>> element2) {        
+              return (element1.getValue().size() != element2.getValue().size())? ((element1.getValue().size() < element2.getValue().size())? 1 : -1):0;
+           }
+       });
+
+       // Storing the list into Linked HashMap to preserve the order of insertion.
+       indexProducerEdges.clear();
+       for(Map.Entry<Producer,ArrayList<Edge>> entry: indexProducerEdgesLinkedList) {
+           indexProducerEdges.put(entry.getKey(), entry.getValue());
+       }
+   }
 }

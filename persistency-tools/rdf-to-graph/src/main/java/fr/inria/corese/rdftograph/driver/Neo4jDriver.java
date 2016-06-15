@@ -61,6 +61,7 @@ public class Neo4jDriver extends GdbDriver {
 	@Override
 	public void closeDb() {
 		try {
+			graph.tx().commit();
 			graph.close();
 		} catch (Exception ex) {
 			Logger.getLogger(Neo4jDriver.class.getName()).log(Level.SEVERE, null, ex);

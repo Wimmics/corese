@@ -199,7 +199,7 @@ public class TestW3C11KGraphNew {
     }
 
     public static void main(String[] args) {
-        new TestW3C11KGraph().process();
+        new TestW3C11KGraphNew().process();
     }
 
     /**
@@ -313,6 +313,7 @@ public class TestW3C11KGraphNew {
         gok = 0;
         gko = 0;
 
+        // 25 (june 2016)
         // 28 errors  416 success
         // 29 errors 04/05/12
         // 31 errors 11/05/12 because of optional DOT 
@@ -321,12 +322,12 @@ public class TestW3C11KGraphNew {
         if (true) {
             //QueryProcess.setJoin(true);
             //Graph.setValueTable(true);
-            Graph.setCompareIndex(true);
+            //Graph.setCompareIndex(true);
             test1();
             testUpdate();
             //testRDF();
             // TODO: blank should not span BGP
-           // test0(); //24 errorstest
+            //test0(); //25 errorstest
         } else {
             test();
         }
@@ -561,10 +562,10 @@ public class TestW3C11KGraphNew {
         //System.out.println(map);
 
         String defbase = uri(path + File.separator);
-
-        Dataset input = new Dataset().init(map.getMappings(), "?name", "?g");
+        // Dataset with named graphs only
+        Dataset input  = new Dataset().init(map.getMappings(), "?name", "?g");
         Dataset output = new Dataset().init(map.getMappings(), "?nres", "?gr");
-
+        // dEFAULT GRAPH
         List<String> fdefault = getValueList(map, "?d");
 
         String test     = getValue(map, "?x");
@@ -660,11 +661,11 @@ public class TestW3C11KGraphNew {
         Load load = Load.create(graph);
         //graph.setOptimize(true);
         load.reset();
+        QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED);
         QueryProcess exec = QueryProcess.create(graph, true);
         //exec.setSPARQLCompliant(true);
         // for update:
         exec.setLoader(load);
-
 
 
 
@@ -692,7 +693,7 @@ public class TestW3C11KGraphNew {
                     Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        } else if (fresult == null && output.getURIs().size() == 0) { //frnamed.size()==0){
+        } else if (fresult == null && output.getURIs().isEmpty()) { //frnamed.size()==0){
             if (isEmpty) {
                 gres = Graph.create();
             }
@@ -732,7 +733,7 @@ public class TestW3C11KGraphNew {
                 || (fresult != null && (fresult.endsWith(".ttl") || fresult.endsWith(".rdf")))) {
 
             if (sparql1 || path.contains("construct")) {
-                // Graph Result 
+                // Result Dataset
                 gres = Graph.create();
                 Load rl = Load.create(gres);
                 rl.reset();
@@ -830,43 +831,38 @@ public class TestW3C11KGraphNew {
         ds.setUpdate(isUpdate);
 
         if (!isRDF) {
-            // default graph
+            
+            // Dataset may be specified by query from/named:
             if (fdefault.isEmpty()) {
+                // get query from
                 for (Node node : qq.getFrom()) {
                     String name = node.getLabel();
                     fdefault.add(name);
                 }
             }
-
-            // named graphs
             if (input.getURIs().isEmpty()) {
+                // get query from named
                 for (Node node : qq.getNamed()) {
                     String name = node.getLabel();
-                    //fnamed.add(name);
                     input.addURI(name);
                 }
             }
-
-
-            // default graph
+           
             if (fdefault.size() > 0) {
                 // Load RDF files for default graph
                 ds.defFrom();
                 for (String file : fdefault) {
                     ds.addFrom(file);
                     try {
-                        load.parse(file, file);
+                        load.parse(file , file);
                     } catch (LoadException ex) {
                         Logger.getLogger(TestW3C11KGraph.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
 
-
-            // named graphs
             if (input.getURIs().size() > 0) {
                 // Load RDF files for named graphs
-                //namedGraph = new ArrayList<String>();
                 ds.defNamed();
                 int i = 0;
                 for (String file : input.getURIs()) {
@@ -1008,6 +1004,7 @@ public class TestW3C11KGraphNew {
                     kg = graph;
                 }
                gres.setDebug(true);
+               // compare SPARQL result kg and Test case result gres
                 if (kg != null && !gres.compare(kg)) {
                     System.out.println("kgram:");
                     System.out.println(kg.display());

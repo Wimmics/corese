@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -1083,12 +1084,6 @@ public class CoreseDatatype
 		return null;
 	}
         
-        @Override
-	public Node getGraphStore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public int nbNode() {
 		// TODO Auto-generated method stub
@@ -1145,4 +1140,11 @@ public class CoreseDatatype
     public Query getQuery() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    @Override
+    public TripleStore getTripleStore() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     }

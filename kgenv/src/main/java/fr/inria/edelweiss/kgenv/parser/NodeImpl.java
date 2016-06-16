@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 
 public class NodeImpl implements Node {
 	
@@ -169,7 +170,7 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public Object getGraphStore() {
+    public TripleStore getTripleStore() {
         return null;
     }
 

@@ -56,6 +56,8 @@ public class QuerySolver  implements SPARQLEngine {
         public static final int DEFAULT_MODE = 0;
         public static final int SERVER_MODE  = 1;
 
+        private static int QUERY_PLAN  = Query.QP_DEFAULT;
+        
 	static String NAMESPACES;
 
 	protected EventManager manager;
@@ -106,7 +108,7 @@ public class QuerySolver  implements SPARQLEngine {
 	static int count = 0;
 	
 	static boolean test = true;
-        private int planner = Query.QP_DEFAULT;
+        private int planner = QUERY_PLAN;
         private boolean isUseBind;
 	
 	public QuerySolver (){
@@ -140,6 +142,10 @@ public class QuerySolver  implements SPARQLEngine {
 		eval.setProducer(p);
 		return eval;
 	}
+        
+        public static void setPlanDefault(int n){
+            QUERY_PLAN = n;
+        }
         
 	public void add(Producer prod){
 		MetaProducer meta;

@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Eval;
@@ -19,6 +20,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.tool.Message;
+import org.apache.log4j.Logger;
 
 /**
  * Pragma processor
@@ -27,6 +29,8 @@ import fr.inria.edelweiss.kgram.tool.Message;
  *
  */
 public class Pragma  {
+	private static Logger logger = Logger.getLogger(Pragma.class);
+        
 	public static final String KG 		= ExpType.KGRAM;
 	public static final String STL 		= ExpType.STL;
 	// subject
@@ -77,6 +81,9 @@ public class Pragma  {
 	public static final String NAME		= KG + "name";
 	public static final String SEPARATOR= KG + "separator";
 	public static final String TURTLE	= KG + "turtle";
+	public static final String PLAN         = KG + "plan";
+	public static final String STD          = KG + "std";
+        
 
 
 	public static final String HELP 	= KG + "help";
@@ -251,6 +258,14 @@ public class Pragma  {
                                         || property.equals(STL_PRIORITY)){					
 					ast.setPriority(odt.intValue());
 				}
+                                else if (property.equals(PLAN)){
+                                    if (object.equals(STD)){
+                                        transform.setPlanProfile(Query.QP_DEFAULT);
+                                    }
+                                    else if (object.equals(OPTIM)){
+                                        transform.setPlanProfile(Query.QP_HEURISTICS_BASED);
+                                    }
+                                }
 			}else if(subject.endsWith(APPROXIMATE)){
                                 ast.setApproximateSearchOptions(property, object);
                         }           		
@@ -360,7 +375,7 @@ public class Pragma  {
 			}
                         else if (property.equals(MATCH)){
 				query.setMatchBlank(value(object));
-			}
+			}                       
 		}
 		else if (subject.equals(PRAGMA)){
 			if (property.equals(HELP) && value(object)){

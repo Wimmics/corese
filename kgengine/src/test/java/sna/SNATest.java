@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.path.Visit;
-import fr.inria.edelweiss.kgraph.core.EdgeImpl;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;

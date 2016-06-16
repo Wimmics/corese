@@ -60,6 +60,7 @@ public class WorkflowParser {
     public static final String STL_PARAM = Context.STL_PARAM;
     public static final String PATH = PREF + "path";
     public static final String NAME = PREF + "name";
+    public static final String NAMED = PREF + "named";
     public static final String REC = PREF + "rec";
     public static final String PROBE_VALUE = WorkflowProcess.PROBE;
     public static final String DISPLAY = PREF + "display";
@@ -555,30 +556,40 @@ public class WorkflowParser {
     WorkflowProcess load(IDatatype dt){
         Node subject = getGraph().getNode(dt);
         IDatatype dname = getValue(NAME, dt);
+        IDatatype dnamed = getValue(NAMED, dt);
         IDatatype drec  = getValue(REC, dt);
         String name = (dname == null) ? null : dname.getLabel();
         boolean rec = (drec == null) ? false : drec.booleanValue();
+        boolean named = (dnamed == null) ? false : dnamed.booleanValue();
         SemanticWorkflow w = new SemanticWorkflow();
         
         for (Entity ent : getGraph().getEdges(PATH, subject, 0)){
             String pp = ent.getNode(1).getLabel();
-            w.add(new LoadProcess(pp, name, rec));
+            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
         }
         for (Entity ent : getGraph().getEdges(URI, subject, 0)){
             String pp = ent.getNode(1).getLabel();
-            w.add(new LoadProcess(pp, name, rec));
+            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
         }
         
         // get what to load from Context st:param
         String uri  = getParam(LOAD_PARAM);
         if (uri != null){
-            w.add(new LoadProcess(resolve(uri), name, rec));
+            String pp = resolve(uri); 
+            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
         }
         
         if (w.getProcessList().size() == 1){
             return w.getProcessLast();
         }
         return w;
+    }
+    
+    String getName(String path, String name, boolean named){
+        if (name == null && named){
+            return path;
+        }
+        return name;
     }
        
     

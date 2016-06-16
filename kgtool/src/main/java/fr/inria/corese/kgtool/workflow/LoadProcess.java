@@ -17,6 +17,7 @@ public class LoadProcess extends WorkflowProcess {
     public static final String FILE = "file://";
     String name;
     boolean rec = false;
+    private boolean named = false;
     
     public LoadProcess(String path){
         this.path = path;
@@ -28,6 +29,10 @@ public class LoadProcess extends WorkflowProcess {
         this.name = name;
     }
    
+    public LoadProcess(String path, String name, boolean rec, boolean named){
+        this(path, name, rec);
+        this.named = named;
+    }
     
     @Override
     void start(Data data){
@@ -52,7 +57,7 @@ public class LoadProcess extends WorkflowProcess {
             if (getModeString() != null && getModeString().equals(WorkflowParser.SPIN)){
                 loadSPARQLasSPIN(path, g);
             }
-            else {
+            else {                
                 ld.parseDir(path, name, rec);
             }
         } catch (LoadException ex) {
@@ -75,6 +80,20 @@ public class LoadProcess extends WorkflowProcess {
     @Override
     public String stringValue(Data data){
         return data.getGraph().toString();
+    }
+
+    /**
+     * @return the named
+     */
+    public boolean isNamed() {
+        return named;
+    }
+
+    /**
+     * @param named the named to set
+     */
+    public void setNamed(boolean named) {
+        this.named = named;
     }
 
 }

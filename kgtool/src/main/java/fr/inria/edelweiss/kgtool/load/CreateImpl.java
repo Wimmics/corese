@@ -14,7 +14,6 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * 
@@ -107,7 +106,7 @@ public class CreateImpl implements Creator {
     @Override
 	public void triple(Atom subject, Atom property, Atom object) {		
 		if (source == null){
-			source = graph.addDefaultGraphNode();
+			source = graph.addDefaultGraphNode();                      
 		}
 		Node s = getSubject(subject);
 		Node p = getProperty(property);

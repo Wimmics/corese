@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.acacia.corese.exceptions.*;
-import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 
 import fr.inria.edelweiss.engine.core.Engine;
@@ -18,6 +17,7 @@ import fr.inria.edelweiss.engine.model.api.LBind;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -26,6 +26,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.Date;
+import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 
 
@@ -49,7 +50,7 @@ public class TestRuleEngine {
 	public static void init() throws EngineException {	
 		//Graph.setCompareIndex(true);
 		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
-
+                //Load.setDefaultGraphValue(true);
 		graph = createGraph(true);
 		Load load = Load.create(graph);
 
@@ -76,6 +77,11 @@ public class TestRuleEngine {
 		rengine.load(data + "engine/rule/test2.brul");
 		rengine.load(data + "engine/rule/meta.brul");
 	}
+        
+     @AfterClass
+    static public void finish(){
+        EdgeFactory.trace();
+    }   
 	
      static  GraphStore createGraph() {
           return createGraph(false);

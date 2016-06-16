@@ -362,8 +362,8 @@ public class CoreseTest2 extends TestCase {
                // tune(graph);
 		graph.set(Entailment.DATATYPE_INFERENCE, true);
                 //graph.setCompareIndex(true);
-
 		Load load = Load.create(graph);
+                load.setDefaultGraph(false);
 		//graph.setOptimize(true);
 		
 		long t1 = new Date().getTime();

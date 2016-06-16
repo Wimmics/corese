@@ -14,11 +14,13 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import static junit.TestUnit.data;
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /*
@@ -32,6 +34,21 @@ import org.junit.Test;
  *
  */
 public class TestQueryWorkflow {
+    
+    @BeforeClass
+    static public void init(){
+        Load.setDefaultGraphValue(true);       
+    }
+    
+    @Test
+      public void testShape2() throws EngineException, LoadException{
+          for (int i = 0; i<1; i++){
+            SemanticWorkflow sw = new WorkflowParser().parse(data + "shape/test/workflow.ttl");
+            Data data = sw.process();
+          }
+      }
+      
+     
     
      @Test
     public void testServer29() throws EngineException, LoadException {
@@ -311,7 +328,7 @@ public class TestQueryWorkflow {
         Graph g = Graph.create();
         Data res = w.process(new Data(g));
         String str = res.stringValue();
-        assertEquals(502, str.length());
+        assertEquals(503, str.length());
     }
     
 }

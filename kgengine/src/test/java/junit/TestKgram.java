@@ -16,11 +16,14 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 public class TestKgram extends TestSuite
 {
@@ -39,7 +42,14 @@ public class TestKgram extends TestSuite
     public TestKgram(){}
    
    
+   public static void start(){
+       Load.setDefaultGraphValue(true);
+   }
+    
 	
+        public static void finish(){
+            EdgeFactory.trace();
+        }
    
     
     static String getQuery(String name){

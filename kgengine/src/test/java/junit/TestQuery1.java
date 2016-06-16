@@ -78,7 +78,7 @@ public class TestQuery1 {
     static public void init() {
         //Query.STD_PLAN = Query.PLAN_RULE_BASED;
         
-        //Load.setDefaultGraphValue(true);
+        Load.setDefaultGraphValue(true);
 
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
         //QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
@@ -94,8 +94,8 @@ public class TestQuery1 {
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
-        fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = !true;
-        Query.STD_PLAN = Query.QP_HEURISTICS_BASED;
+        //fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = !true;
+        //QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
     }
     
     @AfterClass

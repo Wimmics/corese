@@ -23,7 +23,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>corese-core</artifactId>
-            <version>${project.version}</version>
+            <version>3.2.1-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
         
 	<dependency>
@@ -75,7 +76,19 @@
             <version>${project.parent.version}</version>
             <type>jar</type>
         </dependency>
-
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>kgtool</artifactId>
+            <version>3.2.1-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -145,7 +158,7 @@
                             <!--<finalName>kgdqp-${build.version}</finalName>-->
                             <archive>
                                 <manifest>
-                                    <mainClass>fr.inria.edelweiss.kgdqp.core.CentralizedInferrencingNoSpin</mainClass>
+                                    <mainClass>fr.inria.edelweiss.kgdqp.test.TestDQP</mainClass>
                                 </manifest>
                             </archive>
                            

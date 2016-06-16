@@ -1,0 +1,793 @@
+ INFO 2016-05-04 13:25:15,704 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-05-04 13:25:15,704 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-05-04 13:25:15,706 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . 
+filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') }
+ INFO 2016-05-04 13:25:15,706 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . 
+filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') }
+ INFO 2016-05-04 13:25:15,844 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-05-04 13:25:15,844 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-05-04 13:25:15,845 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-05-04 13:25:15,845 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-05-04 13:25:15,846 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . 
+filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') }
+ INFO 2016-05-04 13:25:15,846 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . 
+filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') }
+ INFO 2016-05-04 13:25:15,846 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,846 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondissement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondissement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?arrondissement igeo:subdivisionDirecte ?canton .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,847 [main] (ServiceGrouper.java:446) - Triple pattern ?arrondissement igeo:subdivisionDirecte ?canton .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,848 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,848 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,848 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,848 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondissement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondissement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?arrondissement igeo:subdivisionDirecte ?canton .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?arrondissement igeo:subdivisionDirecte ?canton .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?canton igeo:nom ?cantonNom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?canton igeo:nom ?cantonNom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,849 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:446) - Triple pattern ?canton igeo:nom ?cantonNom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:446) - Triple pattern ?canton igeo:nom ?cantonNom .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?departement igeo:nom ?nom . 
+?canton igeo:nom ?cantonNom . }
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?departement igeo:nom ?nom . 
+?canton igeo:nom ?cantonNom . }
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,850 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:subdivisionDirecte ?arrondissement . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:subdivisionDirecte ?arrondissement . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?arrondissement igeo:subdivisionDirecte ?canton . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?arrondissement igeo:subdivisionDirecte ?canton . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?canton igeo:nom ?cantonNom . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:277) - 2 free variables for ?canton igeo:nom ?cantonNom . 
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ INFO 2016-05-04 13:25:15,851 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ WARN 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:subdivisionDirecte ?departement .  with ?canton igeo:nom ?cantonNom . 
+ INFO 2016-05-04 13:25:15,852 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:subdivisionDirecte ?departement .  with ?canton igeo:nom ?cantonNom . 
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,853 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?canton igeo:nom ?cantonNom . 
+ INFO 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?canton igeo:nom ?cantonNom . 
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,854 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:328) - Comparing : ?arrondissement igeo:subdivisionDirecte ?canton .  with ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:328) - Comparing : ?arrondissement igeo:subdivisionDirecte ?canton .  with ?departement igeo:nom ?nom . 
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?canton igeo:nom ?cantonNom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:328) - Comparing : ?arrondissement igeo:subdivisionDirecte ?canton .  with ?canton igeo:nom ?cantonNom . 
+ INFO 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:328) - Comparing : ?arrondissement igeo:subdivisionDirecte ?canton .  with ?canton igeo:nom ?cantonNom . 
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,855 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?arrondissement igeo:subdivisionDirecte ?canton .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:subdivisionDirecte ?arrondissement .  with ?arrondissement igeo:subdivisionDirecte ?canton . 
+ INFO 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:subdivisionDirecte ?arrondissement .  with ?arrondissement igeo:subdivisionDirecte ?canton . 
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:subdivisionDirecte ?arrondissement .  with ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:subdivisionDirecte ?arrondissement .  with ?departement igeo:nom ?nom . 
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,856 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:subdivisionDirecte ?arrondissement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:subdivisionDirecte ?arrondissement . 
+ INFO 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:subdivisionDirecte ?arrondissement . 
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ WARN 2016-05-04 13:25:15,857 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . , ?departement igeo:subdivisionDirecte ?arrondissement . , ?arrondissement igeo:subdivisionDirecte ?canton . , ?canton igeo:nom ?cantonNom . ]
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:340) - {filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') 
+?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . }
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:340) - {filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') 
+?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . }
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-05-04 13:25:15,858 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-05-04 13:25:15,859 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?arrondissement ?cantonNom 
+where
+{filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') 
+?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . }
+order by ?popTotale 
+
+
+ INFO 2016-05-04 13:25:15,859 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select ?arrondissement ?cantonNom 
+where
+{filter (?v = '11') 
+filter (?cantonNom = 'Paris 14e  canton') 
+?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . 
+?departement igeo:subdivisionDirecte ?arrondissement . 
+?arrondissement igeo:subdivisionDirecte ?canton . 
+?canton igeo:nom ?cantonNom . }
+order by ?popTotale 
+
+
+ERROR 2016-05-04 13:25:15,860 [main] (ASTQuery.java:623) - OrderBy GroupBy Undefined exp: ?popTotale
+ERROR 2016-05-04 13:25:15,860 [main] (ASTQuery.java:623) - OrderBy GroupBy Undefined exp: ?popTotale
+ INFO 2016-05-04 13:25:15,861 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{FILTER{(?v = '11')} FILTER{(?cantonNom = 'Paris 14e  canton')} EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} EDGE{?canton igeo:nom ?cantonNom} }
+ INFO 2016-05-04 13:25:15,861 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{FILTER{(?v = '11')} FILTER{(?cantonNom = 'Paris 14e  canton')} EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} EDGE{?canton igeo:nom ?cantonNom} }
+ INFO 2016-05-04 13:25:15,861 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-05-04 13:25:15,861 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-05-04 13:25:15,874 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+ INFO 2016-05-04 13:25:15,874 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+ INFO 2016-05-04 13:25:15,876 [pool-1-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:15,876 [pool-1-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:15,877 [pool-1-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	  FILTER ((?v = '11'))
+	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:subdivisionDirecte ?arrondissement . 
+ 	 ?arrondissement igeo:subdivisionDirecte ?canton . 
+ } 
+ INFO 2016-05-04 13:25:15,877 [pool-1-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	  FILTER ((?v = '11'))
+	 ?region igeo:subdivisionDirecte ?departement . 
+ 	 ?departement igeo:subdivisionDirecte ?arrondissement . 
+ 	 ?arrondissement igeo:subdivisionDirecte ?canton . 
+ } 
+ INFO 2016-05-04 13:25:15,893 [pool-1-thread-1] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8085/sparql
+ INFO 2016-05-04 13:25:15,893 [pool-1-thread-1] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8085/sparql
+ INFO 2016-05-04 13:25:15,893 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:25:15,893 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:25:15,893 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 18ms.
+ INFO 2016-05-04 13:25:15,893 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 18ms.
+ INFO 2016-05-04 13:25:15,893 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 21ms.
+	 FOR BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+
+ INFO 2016-05-04 13:25:15,893 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 21ms.
+	 FOR BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+
+ INFO 2016-05-04 13:25:15,897 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-05-04 13:25:15,897 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-05-04 13:25:15,897 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,897 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,898 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,898 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,974 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 77 ms.
+ INFO 2016-05-04 13:25:15,974 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 77 ms.
+ INFO 2016-05-04 13:25:15,989 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 91 ms.
+ INFO 2016-05-04 13:25:15,989 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 91 ms.
+ INFO 2016-05-04 13:25:15,989 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 91ms.
+ INFO 2016-05-04 13:25:15,989 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 91ms.
+ INFO 2016-05-04 13:25:15,990 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:25:15,990 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:25:15,990 [pool-3-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,990 [pool-3-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,990 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,990 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:15,997 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:25:15,997 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:25:16,015 [pool-3-thread-2] (CallableResult.java:63) - Finished CallableResult in 25 ms.
+ INFO 2016-05-04 13:25:16,015 [pool-3-thread-2] (CallableResult.java:63) - Finished CallableResult in 25 ms.
+ INFO 2016-05-04 13:25:16,015 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 25ms.
+ INFO 2016-05-04 13:25:16,015 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 25ms.
+ INFO 2016-05-04 13:25:16,016 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,016 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,016 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,016 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,017 [pool-4-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,017 [pool-4-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,022 [pool-4-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,022 [pool-4-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,034 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:25:16,034 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:25:16,035 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-05-04 13:25:16,035 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-05-04 13:25:16,035 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,035 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,036 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,036 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,037 [pool-5-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,037 [pool-5-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,041 [pool-5-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,041 [pool-5-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,163 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 127 ms.
+ INFO 2016-05-04 13:25:16,163 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 127 ms.
+ INFO 2016-05-04 13:25:16,165 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 128ms.
+ INFO 2016-05-04 13:25:16,165 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 128ms.
+ INFO 2016-05-04 13:25:16,166 [main] (Eval.java:2177) - 
+	Get EDGE in 131ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,166 [main] (Eval.java:2177) - 
+	Get EDGE in 131ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,166 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,166 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,166 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,166 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,167 [pool-6-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,167 [pool-6-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,173 [pool-6-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:25:16,173 [pool-6-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:25:16,282 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 116 ms.
+ INFO 2016-05-04 13:25:16,282 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 116 ms.
+ INFO 2016-05-04 13:25:16,283 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 117ms.
+ INFO 2016-05-04 13:25:16,283 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 117ms.
+ INFO 2016-05-04 13:25:16,285 [main] (Eval.java:2177) - 
+	Get EDGE in 119ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,285 [main] (Eval.java:2177) - 
+	Get EDGE in 119ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,285 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,285 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,285 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,285 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,285 [pool-7-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,285 [pool-7-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,289 [pool-7-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,289 [pool-7-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,381 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 96 ms.
+ INFO 2016-05-04 13:25:16,381 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 96 ms.
+ INFO 2016-05-04 13:25:16,383 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 98ms.
+ INFO 2016-05-04 13:25:16,383 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 98ms.
+ INFO 2016-05-04 13:25:16,384 [main] (Eval.java:2177) - 
+	Get EDGE in 99ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,384 [main] (Eval.java:2177) - 
+	Get EDGE in 99ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,385 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,385 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,385 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,385 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,385 [pool-8-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,385 [pool-8-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,389 [pool-8-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,389 [pool-8-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,406 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 21 ms.
+ INFO 2016-05-04 13:25:16,406 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 21 ms.
+ INFO 2016-05-04 13:25:16,407 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 22ms.
+ INFO 2016-05-04 13:25:16,407 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 22ms.
+ INFO 2016-05-04 13:25:16,407 [main] (Eval.java:2177) - 
+	Get EDGE in 22ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,407 [main] (Eval.java:2177) - 
+	Get EDGE in 22ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,408 [main] (Eval.java:2177) - 
+	Get EDGE in 391ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,408 [main] (Eval.java:2177) - 
+	Get EDGE in 391ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,408 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,408 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,408 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,408 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,408 [pool-9-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,408 [pool-9-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,413 [pool-9-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,413 [pool-9-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,414 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:25:16,414 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:25:16,414 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:25:16,414 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:25:16,415 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,415 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,415 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,415 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,415 [pool-10-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,415 [pool-10-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,419 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,419 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,419 [pool-10-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,419 [pool-10-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,420 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:25:16,420 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:25:16,420 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,420 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,421 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,421 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,421 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,421 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,421 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,421 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,421 [pool-11-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,421 [pool-11-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,425 [pool-11-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,425 [pool-11-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,431 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:25:16,431 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:25:16,431 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:25:16,431 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:25:16,432 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,432 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,432 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,432 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,432 [pool-12-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,432 [pool-12-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,437 [pool-12-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,437 [pool-12-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,581 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 149 ms.
+ INFO 2016-05-04 13:25:16,581 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 149 ms.
+ INFO 2016-05-04 13:25:16,583 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 151ms.
+ INFO 2016-05-04 13:25:16,583 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 151ms.
+ INFO 2016-05-04 13:25:16,585 [main] (Eval.java:2177) - 
+	Get EDGE in 153ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,585 [main] (Eval.java:2177) - 
+	Get EDGE in 153ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,585 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,585 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,586 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,586 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,586 [pool-13-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,586 [pool-13-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,590 [pool-13-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,590 [pool-13-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,629 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 43 ms.
+ INFO 2016-05-04 13:25:16,629 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 43 ms.
+ INFO 2016-05-04 13:25:16,629 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 43ms.
+ INFO 2016-05-04 13:25:16,629 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 43ms.
+ INFO 2016-05-04 13:25:16,630 [main] (Eval.java:2177) - 
+	Get EDGE in 45ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,630 [main] (Eval.java:2177) - 
+	Get EDGE in 45ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,631 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,631 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,631 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,631 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,631 [pool-14-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,631 [pool-14-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,635 [pool-14-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,635 [pool-14-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,690 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 59 ms.
+ INFO 2016-05-04 13:25:16,690 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 59 ms.
+ INFO 2016-05-04 13:25:16,692 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 61ms.
+ INFO 2016-05-04 13:25:16,692 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 61ms.
+ INFO 2016-05-04 13:25:16,693 [main] (Eval.java:2177) - 
+	Get EDGE in 63ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,693 [main] (Eval.java:2177) - 
+	Get EDGE in 63ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,693 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,693 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,693 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,693 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,693 [pool-15-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,693 [pool-15-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,697 [pool-15-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,697 [pool-15-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,765 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 72 ms.
+ INFO 2016-05-04 13:25:16,765 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 72 ms.
+ INFO 2016-05-04 13:25:16,766 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 73ms.
+ INFO 2016-05-04 13:25:16,766 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 73ms.
+ INFO 2016-05-04 13:25:16,767 [main] (Eval.java:2177) - 
+	Get EDGE in 74ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,767 [main] (Eval.java:2177) - 
+	Get EDGE in 74ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,767 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,767 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,768 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,768 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,768 [pool-16-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,768 [pool-16-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,773 [pool-16-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,773 [pool-16-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,836 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 68 ms.
+ INFO 2016-05-04 13:25:16,836 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 68 ms.
+ INFO 2016-05-04 13:25:16,838 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 70ms.
+ INFO 2016-05-04 13:25:16,838 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 70ms.
+ INFO 2016-05-04 13:25:16,839 [main] (Eval.java:2177) - 
+	Get EDGE in 72ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,839 [main] (Eval.java:2177) - 
+	Get EDGE in 72ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,839 [main] (Eval.java:2177) - 
+	Get EDGE in 418ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,839 [main] (Eval.java:2177) - 
+	Get EDGE in 418ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,839 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,839 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondissement
+ INFO 2016-05-04 13:25:16,840 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,840 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,840 [pool-17-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,840 [pool-17-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,843 [pool-17-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,843 [pool-17-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,845 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,845 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,846 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:25:16,846 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:25:16,846 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,846 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,846 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,846 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,846 [pool-18-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,846 [pool-18-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,849 [pool-18-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,849 [pool-18-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,849 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,849 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,850 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:25:16,850 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:25:16,850 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,850 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,850 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,850 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,851 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,851 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,851 [pool-19-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,851 [pool-19-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,855 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,855 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,856 [pool-19-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,856 [pool-19-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:25:16,856 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:25:16,856 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:25:16,857 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,857 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,857 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,857 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?arrondissement igeo:subdivisionDirecte ?canton
+ INFO 2016-05-04 13:25:16,860 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,860 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,861 [pool-20-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,861 [pool-20-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,864 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,864 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:25:16,870 [pool-20-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:25:16,870 [pool-20-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:25:16,870 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:25:16,870 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:25:16,870 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,870 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?arrondissement igeo:subdivisionDirecte ?canton}
+
+ INFO 2016-05-04 13:25:16,870 [main] (Eval.java:2177) - 
+	Get EDGE in 31ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,870 [main] (Eval.java:2177) - 
+	Get EDGE in 31ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondissement}
+
+ INFO 2016-05-04 13:25:16,871 [main] (Eval.java:2177) - 
+	Get EDGE in 881ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:25:16,871 [main] (Eval.java:2177) - 
+	Get EDGE in 881ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:25:16,871 [main] (Eval.java:2177) - 
+	Get EDGE in 977ms.  
+	FOR EDGE{?region igeo:codeRegion ?v}
+
+ INFO 2016-05-04 13:25:16,871 [main] (Eval.java:2177) - 
+	Get EDGE in 977ms.  
+	FOR EDGE{?region igeo:codeRegion ?v}
+
+ INFO 2016-05-04 13:25:16,871 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+ INFO 2016-05-04 13:25:16,871 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+ INFO 2016-05-04 13:25:16,871 [pool-21-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:16,871 [pool-21-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:16,871 [pool-21-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:16,871 [pool-21-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:25:16,872 [pool-21-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ 	 ?canton igeo:nom ?cantonNom . 
+ 	  FILTER ((?cantonNom = 'Paris 14e  canton'))
+} 
+ INFO 2016-05-04 13:25:16,872 [pool-21-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ 	 ?canton igeo:nom ?cantonNom . 
+ 	  FILTER ((?cantonNom = 'Paris 14e  canton'))
+} 
+ INFO 2016-05-04 13:25:16,872 [pool-21-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ 	 ?canton igeo:nom ?cantonNom . 
+ 	  FILTER ((?cantonNom = 'Paris 14e  canton'))
+} 
+ INFO 2016-05-04 13:25:16,872 [pool-21-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ 	 ?canton igeo:nom ?cantonNom . 
+ 	  FILTER ((?cantonNom = 'Paris 14e  canton'))
+} 
+ INFO 2016-05-04 13:25:16,880 [pool-21-thread-2] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8087/sparql
+ INFO 2016-05-04 13:25:16,880 [pool-21-thread-2] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8087/sparql
+ INFO 2016-05-04 13:25:16,880 [pool-21-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:25:16,880 [pool-21-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:25:16,891 [pool-21-thread-1] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8086/sparql
+ INFO 2016-05-04 13:25:16,891 [pool-21-thread-1] (CallableResult.java:59) - RESULTS: 0 FROM http://localhost:8086/sparql
+ INFO 2016-05-04 13:25:16,892 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 21 ms.
+ INFO 2016-05-04 13:25:16,892 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 21 ms.
+ INFO 2016-05-04 13:25:16,892 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 21ms.
+ INFO 2016-05-04 13:25:16,892 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 21ms.
+ INFO 2016-05-04 13:25:16,892 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 21ms.
+	 FOR BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+
+ INFO 2016-05-04 13:25:16,892 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 21ms.
+	 FOR BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+
+ INFO 2016-05-04 13:25:16,892 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-05-04 13:25:16,892 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:nom ?nom
+ INFO 2016-05-04 13:25:16,893 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,893 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,893 [pool-22-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,893 [pool-22-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,905 [pool-22-thread-2] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:25:16,905 [pool-22-thread-2] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:25:16,937 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 44 ms.
+ INFO 2016-05-04 13:25:16,937 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 44 ms.
+ INFO 2016-05-04 13:25:16,944 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 51ms.
+ INFO 2016-05-04 13:25:16,944 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 51ms.
+ INFO 2016-05-04 13:25:16,944 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?canton igeo:nom ?cantonNom
+ INFO 2016-05-04 13:25:16,944 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?canton igeo:nom ?cantonNom
+ INFO 2016-05-04 13:25:16,945 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,945 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,945 [pool-23-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,945 [pool-23-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:25:16,948 [pool-23-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,948 [pool-23-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,948 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,948 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:25:16,948 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-05-04 13:25:16,948 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 3ms.
+ INFO 2016-05-04 13:25:16,948 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?canton igeo:nom ?cantonNom}
+
+ INFO 2016-05-04 13:25:16,948 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?canton igeo:nom ?cantonNom}
+
+ INFO 2016-05-04 13:25:16,949 [main] (TestDQP.java:248) - 0 results in 1247 ms
+ INFO 2016-05-04 13:25:16,949 [main] (TestDQP.java:249) - 
+
+ INFO 2016-05-04 13:25:16,949 [main] (TestDQP.java:250) - Remote queries
+ INFO 2016-05-04 13:25:16,949 [main] (TestDQP.java:251) - =========
+	?region igeo:subdivisionDirecte ?departement
+	2
+--
+	?region igeo:codeRegion ?v
+	2
+--
+	?arrondissement igeo:subdivisionDirecte ?canton
+	26
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+	1
+--
+	BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+	2
+--
+	?departement igeo:nom ?nom
+	2
+--
+	?departement igeo:subdivisionDirecte ?arrondissement
+	8
+--
+	?canton igeo:nom ?cantonNom
+	2
+--
+	>====  Sum = 45  =====
+
+ INFO 2016-05-04 13:25:16,949 [main] (TestDQP.java:252) - Transferred results per query
+ INFO 2016-05-04 13:25:16,950 [main] (TestDQP.java:253) - =========
+	?region igeo:subdivisionDirecte ?departement
+	4
+--
+	?region igeo:codeRegion ?v
+	1
+--
+	?arrondissement igeo:subdivisionDirecte ?canton
+	858
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:subdivisionDirecte ?arrondissement} EDGE{?arrondissement igeo:subdivisionDirecte ?canton} }
+	0
+--
+	BGP{EDGE{?departement igeo:nom ?nom} EDGE{?canton igeo:nom ?cantonNom} }
+	0
+--
+	?departement igeo:nom ?nom
+	57
+--
+	?departement igeo:subdivisionDirecte ?arrondissement
+	13
+--
+	?canton igeo:nom ?cantonNom
+	0
+--
+	>====  Sum = 933  =====
+
+ INFO 2016-05-04 13:25:16,950 [main] (TestDQP.java:254) - Remote queries per data source
+ INFO 2016-05-04 13:25:16,950 [main] (TestDQP.java:255) - =========
+	http://localhost:8085/sparql
+	20
+--
+	http://localhost:8086/sparql
+	21
+--
+	http://localhost:8087/sparql
+	4
+--
+	>====  Sum = 45  =====
+
+ INFO 2016-05-04 13:25:16,950 [main] (TestDQP.java:256) - Transferred results per source
+ INFO 2016-05-04 13:25:16,950 [main] (TestDQP.java:257) - =========
+	http://localhost:8085/sparql
+	871
+--
+	http://localhost:8086/sparql
+	49
+--
+	http://localhost:8087/sparql
+	13
+--
+	>====  Sum = 933  =====
+

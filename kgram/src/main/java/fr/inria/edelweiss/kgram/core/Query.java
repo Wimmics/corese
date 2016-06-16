@@ -2626,5 +2626,5 @@ public class Query extends Exp implements Graphable {
     public void setTransformationTemplate(boolean isTransformationTemplate) {
         this.isTransformationTemplate = isTransformationTemplate;
     }
-	
+
 }

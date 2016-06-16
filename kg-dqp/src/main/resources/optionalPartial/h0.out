@@ -1,0 +1,2059 @@
+ INFO 2016-05-04 13:18:42,326 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-05-04 13:18:42,326 [main] (ServiceGrouper.java:84) - Building indices for 
+ INFO 2016-05-04 13:18:42,328 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+ INFO 2016-05-04 13:18:42,328 [main] (ServiceGrouper.java:85) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+ INFO 2016-05-04 13:18:42,549 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-05-04 13:18:42,549 [main] (ServiceGrouper.java:559) - Edge index
+ INFO 2016-05-04 13:18:42,550 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-05-04 13:18:42,550 [main] (ServiceGrouper.java:575) - Source index
+ INFO 2016-05-04 13:18:42,550 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,550 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ INFO 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:426) - Processing
+[?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,551 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:subdivisionDirecte ?departement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?region igeo:codeRegion ?v .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,553 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:nom ?nom .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:272) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-05-04 13:18:42,554 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:codeRegion ?v . 
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:277) - 2 free variables for ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ INFO 2016-05-04 13:18:42,555 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ WARN 2016-05-04 13:18:42,556 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,556 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,556 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,556 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ INFO 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:328) - Comparing : ?departement igeo:nom ?nom .  with ?region igeo:subdivisionDirecte ?departement . 
+ WARN 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,557 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ INFO 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ WARN 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,558 [main] (ServiceGrouper.java:353) - Searching for ?departement igeo:nom ?nom .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ INFO 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ INFO 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?departement igeo:nom ?nom . 
+ WARN 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:codeRegion ?v .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ WARN 2016-05-04 13:18:42,559 [main] (ServiceGrouper.java:353) - Searching for ?region igeo:subdivisionDirecte ?departement .  in [?region igeo:codeRegion ?v . , ?region igeo:subdivisionDirecte ?departement . , ?departement igeo:nom ?nom . ]
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:328) - Comparing : ?region igeo:codeRegion ?v .  with ?region igeo:subdivisionDirecte ?departement . 
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:340) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:340) - {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom . }
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:259) - Found consecutive triple patterns into {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:426) - Processing
+[?departement igeo:subdivisionDirecte ?arrondisement . ]
+ INFO 2016-05-04 13:18:42,560 [main] (ServiceGrouper.java:426) - Processing
+[?departement igeo:subdivisionDirecte ?arrondisement . ]
+ WARN 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondisement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondisement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondisement .  appears in more than one data source, excluded from SERVICE.
+ WARN 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:446) - Triple pattern ?departement igeo:subdivisionDirecte ?arrondisement .  appears in more than one data source, excluded from SERVICE.
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:271) - Ranking : 
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:272) - {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:272) - {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:subdivisionDirecte ?arrondisement . 
+ INFO 2016-05-04 13:18:42,561 [main] (ServiceGrouper.java:277) - 2 free variables for ?departement igeo:subdivisionDirecte ?arrondisement . 
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:286) - Sorting services possibly with the same score
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:340) - {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:340) - {?departement igeo:subdivisionDirecte ?arrondisement . }
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:264) - No consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:264) - No consecutive triple patterns into {?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-05-04 13:18:42,562 [main] (ServiceGrouper.java:118) - Final rewritten query
+ INFO 2016-05-04 13:18:42,563 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+
+
+ INFO 2016-05-04 13:18:42,563 [main] (ServiceGrouper.java:119) - prefix idemo: <http://rdf.insee.fr/def/demo#>
+prefix igeo: <http://rdf.insee.fr/def/geo#>
+select * 
+where
+{?region igeo:codeRegion ?v . 
+?region igeo:subdivisionDirecte ?departement . 
+?departement igeo:nom ?nom .  optional {?departement igeo:subdivisionDirecte ?arrondisement . }}
+
+
+ INFO 2016-05-04 13:18:42,565 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{OPTIONAL{AND{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} } AND{EDGE{?departement igeo:subdivisionDirecte ?arrondisement} } } }
+ INFO 2016-05-04 13:18:42,565 [main] (ServiceGrouper.java:57) - Building predicates indices for AND{OPTIONAL{AND{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} EDGE{?departement igeo:nom ?nom} } AND{EDGE{?departement igeo:subdivisionDirecte ?arrondisement} } } }
+ INFO 2016-05-04 13:18:42,565 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-05-04 13:18:42,565 [main] (ServiceGrouper.java:65) - END of building index!
+ INFO 2016-05-04 13:18:42,577 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+ INFO 2016-05-04 13:18:42,577 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+ INFO 2016-05-04 13:18:42,579 [pool-1-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:42,579 [pool-1-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:42,581 [pool-1-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ } 
+ INFO 2016-05-04 13:18:42,581 [pool-1-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?region igeo:codeRegion ?v . 
+ 	 ?region igeo:subdivisionDirecte ?departement . 
+ } 
+ INFO 2016-05-04 13:18:42,609 [pool-1-thread-1] (CallableResult.java:59) - RESULTS: 16 FROM http://localhost:8085/sparql
+ INFO 2016-05-04 13:18:42,609 [pool-1-thread-1] (CallableResult.java:59) - RESULTS: 16 FROM http://localhost:8085/sparql
+ INFO 2016-05-04 13:18:42,609 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 30 ms.
+ INFO 2016-05-04 13:18:42,609 [pool-1-thread-1] (CallableResult.java:63) - Finished CallableResult in 30 ms.
+ INFO 2016-05-04 13:18:42,609 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 30ms.
+ INFO 2016-05-04 13:18:42,609 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 30ms.
+ INFO 2016-05-04 13:18:42,610 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 35ms.
+	 FOR BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+
+ INFO 2016-05-04 13:18:42,610 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 35ms.
+	 FOR BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+
+ INFO 2016-05-04 13:18:42,610 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-05-04 13:18:42,610 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:codeRegion ?v
+ INFO 2016-05-04 13:18:42,611 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,611 [pool-2-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,611 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,611 [pool-2-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,724 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 113 ms.
+ INFO 2016-05-04 13:18:42,724 [pool-2-thread-1] (CallableResult.java:63) - Finished CallableResult in 113 ms.
+ INFO 2016-05-04 13:18:42,780 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 169 ms.
+ INFO 2016-05-04 13:18:42,780 [pool-2-thread-2] (CallableResult.java:63) - Finished CallableResult in 169 ms.
+ INFO 2016-05-04 13:18:42,787 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 176ms.
+ INFO 2016-05-04 13:18:42,787 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 176ms.
+ INFO 2016-05-04 13:18:42,787 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,787 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,788 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,788 [pool-3-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,800 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:42,800 [pool-3-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:42,800 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:42,800 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:42,801 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,801 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,801 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,801 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,801 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,801 [pool-4-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,806 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,806 [pool-4-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,807 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,807 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,807 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,807 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,808 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,808 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,808 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,808 [pool-5-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,813 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,813 [pool-5-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,813 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,813 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,813 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,813 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,814 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,814 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,814 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,814 [pool-6-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,818 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,818 [pool-6-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,819 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,819 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,819 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,819 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,819 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,819 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,819 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,819 [pool-7-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,824 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,824 [pool-7-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,824 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,824 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,824 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,824 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,825 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,825 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,825 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,825 [pool-8-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,843 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:18:42,843 [pool-8-thread-1] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:18:42,843 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-05-04 13:18:42,843 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 18ms.
+ INFO 2016-05-04 13:18:42,844 [main] (Eval.java:2177) - 
+	Get EDGE in 19ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,844 [main] (Eval.java:2177) - 
+	Get EDGE in 19ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,844 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,844 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,844 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,844 [pool-9-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,847 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,847 [pool-9-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,848 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:18:42,848 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:18:42,848 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,848 [main] (Eval.java:2177) - 
+	Get EDGE in 4ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,848 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,848 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,849 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,849 [pool-10-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,852 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,852 [pool-10-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,853 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,853 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:42,853 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,853 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,853 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,853 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,854 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,854 [pool-11-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,854 [pool-11-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,854 [pool-11-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,858 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,858 [pool-11-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,860 [pool-11-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,860 [pool-11-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,860 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,860 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,861 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,861 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,861 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,861 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,861 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,861 [pool-12-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,861 [pool-12-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,861 [pool-12-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,865 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,865 [pool-12-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,875 [pool-12-thread-2] (CallableResult.java:63) - Finished CallableResult in 14 ms.
+ INFO 2016-05-04 13:18:42,875 [pool-12-thread-2] (CallableResult.java:63) - Finished CallableResult in 14 ms.
+ INFO 2016-05-04 13:18:42,875 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 14ms.
+ INFO 2016-05-04 13:18:42,875 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 14ms.
+ INFO 2016-05-04 13:18:42,875 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,875 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,876 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,876 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,876 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,876 [pool-13-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,876 [pool-13-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,876 [pool-13-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,880 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,880 [pool-13-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,889 [pool-13-thread-2] (CallableResult.java:63) - Finished CallableResult in 13 ms.
+ INFO 2016-05-04 13:18:42,889 [pool-13-thread-2] (CallableResult.java:63) - Finished CallableResult in 13 ms.
+ INFO 2016-05-04 13:18:42,890 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 14ms.
+ INFO 2016-05-04 13:18:42,890 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 14ms.
+ INFO 2016-05-04 13:18:42,890 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,890 [main] (Eval.java:2177) - 
+	Get EDGE in 14ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,890 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,890 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,891 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,891 [pool-14-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,891 [pool-14-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,891 [pool-14-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,894 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,894 [pool-14-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:42,898 [pool-14-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,898 [pool-14-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,899 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,899 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,899 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,899 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,899 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,899 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,899 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,899 [pool-15-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,899 [pool-15-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,899 [pool-15-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,903 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,903 [pool-15-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,909 [pool-15-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,909 [pool-15-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,909 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,909 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,910 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,910 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,910 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,910 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,910 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,910 [pool-16-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,910 [pool-16-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,910 [pool-16-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,914 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,914 [pool-16-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,920 [pool-16-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,920 [pool-16-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,920 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,920 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,920 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,920 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,920 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,920 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,921 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,921 [pool-17-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,921 [pool-17-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,921 [pool-17-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,925 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,925 [pool-17-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,929 [pool-17-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,929 [pool-17-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,929 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,929 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,929 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,929 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,930 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,930 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,930 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,930 [pool-18-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,930 [pool-18-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,930 [pool-18-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,934 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,934 [pool-18-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,940 [pool-18-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,940 [pool-18-thread-2] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:42,940 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,940 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,941 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,941 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,941 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,941 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,941 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,941 [pool-19-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,941 [pool-19-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,941 [pool-19-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,948 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,948 [pool-19-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,950 [pool-19-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:42,950 [pool-19-thread-2] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:42,951 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,951 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,951 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,951 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,951 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,951 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,952 [pool-20-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,952 [pool-20-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,952 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,952 [pool-20-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,958 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,958 [pool-20-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,958 [pool-20-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,958 [pool-20-thread-2] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:42,958 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,958 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:42,959 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,959 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,959 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,959 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,959 [pool-21-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,959 [pool-21-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,959 [pool-21-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,959 [pool-21-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,963 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,963 [pool-21-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,967 [pool-21-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,967 [pool-21-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,967 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,967 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:42,967 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,967 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,970 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,970 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,970 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,970 [pool-22-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,970 [pool-22-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,970 [pool-22-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,975 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,975 [pool-22-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:42,978 [pool-22-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,978 [pool-22-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:42,979 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:42,979 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:42,979 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,979 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,979 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,979 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,979 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,979 [pool-23-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,979 [pool-23-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,979 [pool-23-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,983 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,983 [pool-23-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:42,986 [pool-23-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,986 [pool-23-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,986 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:42,986 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:42,986 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,986 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,986 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,986 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,987 [pool-24-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,987 [pool-24-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,987 [pool-24-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,987 [pool-24-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,994 [pool-24-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,994 [pool-24-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:42,996 [pool-24-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:42,996 [pool-24-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:42,997 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,997 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:42,997 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,997 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:42,998 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,998 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:42,998 [pool-25-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,998 [pool-25-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,998 [pool-25-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:42,998 [pool-25-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,002 [pool-25-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,002 [pool-25-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,005 [pool-25-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,005 [pool-25-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,006 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,006 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,006 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,006 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,006 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,006 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,006 [pool-26-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,006 [pool-26-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,007 [pool-26-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,007 [pool-26-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,010 [pool-26-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,010 [pool-26-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,013 [pool-26-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,013 [pool-26-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,013 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,013 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,013 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,013 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,014 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,014 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,014 [pool-27-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,014 [pool-27-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,014 [pool-27-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,014 [pool-27-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,017 [pool-27-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,017 [pool-27-thread-1] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,022 [pool-27-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,022 [pool-27-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,022 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,022 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,022 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,022 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,023 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,023 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?region igeo:subdivisionDirecte ?departement
+ INFO 2016-05-04 13:18:43,023 [pool-28-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,023 [pool-28-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,023 [pool-28-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,023 [pool-28-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,027 [pool-28-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,027 [pool-28-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,035 [pool-28-thread-2] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:43,035 [pool-28-thread-2] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:43,035 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:43,035 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:43,036 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,036 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?region igeo:subdivisionDirecte ?departement}
+
+ INFO 2016-05-04 13:18:43,036 [main] (Eval.java:2177) - 
+	Get EDGE in 426ms.  
+	FOR EDGE{?region igeo:codeRegion ?v}
+
+ INFO 2016-05-04 13:18:43,036 [main] (Eval.java:2177) - 
+	Get EDGE in 426ms.  
+	FOR EDGE{?region igeo:codeRegion ?v}
+
+ INFO 2016-05-04 13:18:43,037 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?departement igeo:nom ?nom} }
+ INFO 2016-05-04 13:18:43,037 [main] (ParallelMetaProducerLessBlocking.java:214) - Searching for BGP : BGP{EDGE{?departement igeo:nom ?nom} }
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-1] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-2] (CallableResult.java:56) - CallableResult for GetMappings
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-1] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-05-04 13:18:43,037 [pool-29-thread-2] (RemoteQueryOptimizerFull.java:144) - BGP QUERY: 
+ SELECT * WHERE { 
+	 ?departement igeo:nom ?nom . 
+ } 
+ INFO 2016-05-04 13:18:43,055 [pool-29-thread-2] (CallableResult.java:59) - RESULTS: 12 FROM http://localhost:8087/sparql
+ INFO 2016-05-04 13:18:43,055 [pool-29-thread-2] (CallableResult.java:59) - RESULTS: 12 FROM http://localhost:8087/sparql
+ INFO 2016-05-04 13:18:43,055 [pool-29-thread-2] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:18:43,055 [pool-29-thread-2] (CallableResult.java:63) - Finished CallableResult in 18 ms.
+ INFO 2016-05-04 13:18:43,058 [pool-29-thread-1] (CallableResult.java:59) - RESULTS: 45 FROM http://localhost:8086/sparql
+ INFO 2016-05-04 13:18:43,058 [pool-29-thread-1] (CallableResult.java:59) - RESULTS: 45 FROM http://localhost:8086/sparql
+ INFO 2016-05-04 13:18:43,059 [pool-29-thread-1] (CallableResult.java:63) - Finished CallableResult in 22 ms.
+ INFO 2016-05-04 13:18:43,059 [pool-29-thread-1] (CallableResult.java:63) - Finished CallableResult in 22 ms.
+ INFO 2016-05-04 13:18:43,061 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 24ms.
+ INFO 2016-05-04 13:18:43,061 [main] (ParallelMetaProducerLessBlocking.java:255) - Global results retrieved in getMappings 24ms.
+ INFO 2016-05-04 13:18:43,062 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 25ms.
+	 FOR BGP{EDGE{?departement igeo:nom ?nom} }
+
+ INFO 2016-05-04 13:18:43,062 [main] (Eval.java:1671) - 
+	GET MAPPINGS in 25ms.
+	 FOR BGP{EDGE{?departement igeo:nom ?nom} }
+
+ INFO 2016-05-04 13:18:43,066 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,066 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,067 [pool-30-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,067 [pool-30-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,069 [pool-30-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,069 [pool-30-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,076 [pool-30-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,076 [pool-30-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,077 [pool-30-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,077 [pool-30-thread-2] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,077 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,077 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,077 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,077 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,078 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,078 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,078 [pool-31-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,078 [pool-31-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,079 [pool-31-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,079 [pool-31-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,082 [pool-31-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,082 [pool-31-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,088 [pool-31-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,088 [pool-31-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,088 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,088 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,089 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,089 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,089 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,089 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,089 [pool-32-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,089 [pool-32-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,090 [pool-32-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,090 [pool-32-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,094 [pool-32-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,094 [pool-32-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,098 [pool-32-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,098 [pool-32-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,098 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,098 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,099 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,099 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,099 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,099 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,099 [pool-33-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,099 [pool-33-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,099 [pool-33-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,099 [pool-33-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,103 [pool-33-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,103 [pool-33-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,109 [pool-33-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,109 [pool-33-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,109 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,109 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,110 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,110 [main] (Eval.java:2177) - 
+	Get EDGE in 11ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,110 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,110 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,110 [pool-34-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,110 [pool-34-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,110 [pool-34-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,110 [pool-34-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,114 [pool-34-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,114 [pool-34-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,117 [pool-34-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,117 [pool-34-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,118 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,118 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,118 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,118 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,118 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,118 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,118 [pool-35-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,118 [pool-35-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,119 [pool-35-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,119 [pool-35-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,124 [pool-35-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,124 [pool-35-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,127 [pool-35-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,127 [pool-35-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,127 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,127 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,128 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,128 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,128 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,128 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,128 [pool-36-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,128 [pool-36-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,129 [pool-36-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,129 [pool-36-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,133 [pool-36-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,133 [pool-36-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,140 [pool-36-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:43,140 [pool-36-thread-1] (CallableResult.java:63) - Finished CallableResult in 12 ms.
+ INFO 2016-05-04 13:18:43,140 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:43,140 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 12ms.
+ INFO 2016-05-04 13:18:43,141 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,141 [main] (Eval.java:2177) - 
+	Get EDGE in 13ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,141 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,141 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,142 [pool-37-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,142 [pool-37-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,143 [pool-37-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,143 [pool-37-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,148 [pool-37-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,148 [pool-37-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,156 [pool-37-thread-1] (CallableResult.java:63) - Finished CallableResult in 14 ms.
+ INFO 2016-05-04 13:18:43,156 [pool-37-thread-1] (CallableResult.java:63) - Finished CallableResult in 14 ms.
+ INFO 2016-05-04 13:18:43,157 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 15ms.
+ INFO 2016-05-04 13:18:43,157 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 15ms.
+ INFO 2016-05-04 13:18:43,157 [main] (Eval.java:2177) - 
+	Get EDGE in 16ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,157 [main] (Eval.java:2177) - 
+	Get EDGE in 16ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,157 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,157 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,159 [pool-38-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,159 [pool-38-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,159 [pool-38-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,159 [pool-38-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,163 [pool-38-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,163 [pool-38-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,168 [pool-38-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,168 [pool-38-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,168 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,168 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,169 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,169 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,169 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,169 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,169 [pool-39-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,169 [pool-39-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,170 [pool-39-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,170 [pool-39-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,173 [pool-39-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,173 [pool-39-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,178 [pool-39-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,178 [pool-39-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,178 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,178 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,178 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,178 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,179 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,179 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,180 [pool-40-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,180 [pool-40-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,180 [pool-40-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,180 [pool-40-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,184 [pool-40-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,184 [pool-40-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,187 [pool-40-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,187 [pool-40-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,187 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,187 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,188 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,188 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,188 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,188 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,188 [pool-41-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,188 [pool-41-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,196 [pool-41-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,196 [pool-41-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,199 [pool-41-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,199 [pool-41-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,205 [pool-41-thread-1] (CallableResult.java:63) - Finished CallableResult in 17 ms.
+ INFO 2016-05-04 13:18:43,205 [pool-41-thread-1] (CallableResult.java:63) - Finished CallableResult in 17 ms.
+ INFO 2016-05-04 13:18:43,205 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 17ms.
+ INFO 2016-05-04 13:18:43,205 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 17ms.
+ INFO 2016-05-04 13:18:43,206 [main] (Eval.java:2177) - 
+	Get EDGE in 18ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,206 [main] (Eval.java:2177) - 
+	Get EDGE in 18ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,206 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,206 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,206 [pool-42-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,206 [pool-42-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,207 [pool-42-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,207 [pool-42-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,210 [pool-42-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,210 [pool-42-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,211 [pool-42-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,211 [pool-42-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,212 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,212 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,212 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,212 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,212 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,212 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,212 [pool-43-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,212 [pool-43-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,212 [pool-43-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,212 [pool-43-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,217 [pool-43-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,217 [pool-43-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,220 [pool-43-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,220 [pool-43-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,221 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,221 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,221 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,221 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,221 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,221 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,222 [pool-44-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,222 [pool-44-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,222 [pool-44-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,222 [pool-44-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,225 [pool-44-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,225 [pool-44-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,228 [pool-44-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,228 [pool-44-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,228 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,228 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,229 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,229 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,229 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,229 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,229 [pool-45-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,229 [pool-45-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,229 [pool-45-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,229 [pool-45-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,233 [pool-45-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,233 [pool-45-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,238 [pool-45-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,238 [pool-45-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,239 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,239 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,239 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,239 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,239 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,239 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,239 [pool-46-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,239 [pool-46-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,240 [pool-46-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,240 [pool-46-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,243 [pool-46-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,243 [pool-46-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,247 [pool-46-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,247 [pool-46-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,247 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,247 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,248 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,248 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,248 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,248 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,248 [pool-47-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,248 [pool-47-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,248 [pool-47-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,248 [pool-47-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,252 [pool-47-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,252 [pool-47-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,255 [pool-47-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,255 [pool-47-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,255 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,255 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,255 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,255 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,255 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,255 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,256 [pool-48-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,256 [pool-48-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,256 [pool-48-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,256 [pool-48-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,259 [pool-48-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,259 [pool-48-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,262 [pool-48-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,262 [pool-48-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,262 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,262 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,262 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,262 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,263 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,263 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,263 [pool-49-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,263 [pool-49-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,263 [pool-49-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,263 [pool-49-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,266 [pool-49-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,266 [pool-49-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,274 [pool-49-thread-1] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-05-04 13:18:43,274 [pool-49-thread-1] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-05-04 13:18:43,275 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 11ms.
+ INFO 2016-05-04 13:18:43,275 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 11ms.
+ INFO 2016-05-04 13:18:43,275 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,275 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,275 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,275 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,275 [pool-50-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,275 [pool-50-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,275 [pool-50-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,275 [pool-50-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,280 [pool-50-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,280 [pool-50-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,280 [pool-50-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,280 [pool-50-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,281 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,281 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,281 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,281 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,281 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,281 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,281 [pool-51-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,281 [pool-51-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,282 [pool-51-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,282 [pool-51-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,285 [pool-51-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,285 [pool-51-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,289 [pool-51-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,289 [pool-51-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,290 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,290 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,290 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,290 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,291 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,291 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,291 [pool-52-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,291 [pool-52-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,291 [pool-52-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,291 [pool-52-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,294 [pool-52-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,294 [pool-52-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,297 [pool-52-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,297 [pool-52-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,298 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,298 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,298 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,298 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,298 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,298 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,299 [pool-53-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,299 [pool-53-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,299 [pool-53-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,299 [pool-53-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,302 [pool-53-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,302 [pool-53-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,305 [pool-53-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,305 [pool-53-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,305 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,305 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,305 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,305 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,306 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,306 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,306 [pool-54-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,306 [pool-54-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,306 [pool-54-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,306 [pool-54-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,310 [pool-54-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,310 [pool-54-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,313 [pool-54-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,313 [pool-54-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,313 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,313 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,313 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,313 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,313 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,313 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,314 [pool-55-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,314 [pool-55-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,314 [pool-55-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,314 [pool-55-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,316 [pool-55-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,316 [pool-55-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,321 [pool-55-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,321 [pool-55-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,322 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,322 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,322 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,322 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,322 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,322 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,323 [pool-56-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,323 [pool-56-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,323 [pool-56-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,323 [pool-56-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,326 [pool-56-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,326 [pool-56-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,329 [pool-56-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,329 [pool-56-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,329 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,329 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,329 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,329 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,330 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,330 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,330 [pool-57-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,330 [pool-57-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,330 [pool-57-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,330 [pool-57-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,333 [pool-57-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,333 [pool-57-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,337 [pool-57-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,337 [pool-57-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,337 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,337 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,338 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,338 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,338 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,338 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,338 [pool-58-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,338 [pool-58-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,338 [pool-58-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,338 [pool-58-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,341 [pool-58-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,341 [pool-58-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,347 [pool-58-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,347 [pool-58-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,348 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,348 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,348 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,348 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,348 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,348 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,348 [pool-59-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,348 [pool-59-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,349 [pool-59-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,349 [pool-59-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,353 [pool-59-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,353 [pool-59-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,359 [pool-59-thread-1] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-05-04 13:18:43,359 [pool-59-thread-1] (CallableResult.java:63) - Finished CallableResult in 11 ms.
+ INFO 2016-05-04 13:18:43,359 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 11ms.
+ INFO 2016-05-04 13:18:43,359 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 11ms.
+ INFO 2016-05-04 13:18:43,360 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,360 [main] (Eval.java:2177) - 
+	Get EDGE in 12ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,360 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,360 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,360 [pool-60-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,360 [pool-60-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,360 [pool-60-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,360 [pool-60-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,365 [pool-60-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,365 [pool-60-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,369 [pool-60-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,369 [pool-60-thread-1] (CallableResult.java:63) - Finished CallableResult in 9 ms.
+ INFO 2016-05-04 13:18:43,369 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,369 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,369 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,369 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,369 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,369 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,370 [pool-61-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,370 [pool-61-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,370 [pool-61-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,370 [pool-61-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,375 [pool-61-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,375 [pool-61-thread-2] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,378 [pool-61-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,378 [pool-61-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,379 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,379 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 9ms.
+ INFO 2016-05-04 13:18:43,379 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,379 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,379 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,379 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,380 [pool-62-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,380 [pool-62-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,380 [pool-62-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,380 [pool-62-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,383 [pool-62-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,383 [pool-62-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,387 [pool-62-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,387 [pool-62-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,387 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,387 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,387 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,387 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,388 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,388 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,388 [pool-63-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,388 [pool-63-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,388 [pool-63-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,388 [pool-63-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,392 [pool-63-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,392 [pool-63-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,398 [pool-63-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,398 [pool-63-thread-1] (CallableResult.java:63) - Finished CallableResult in 10 ms.
+ INFO 2016-05-04 13:18:43,398 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,398 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 10ms.
+ INFO 2016-05-04 13:18:43,398 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,398 [main] (Eval.java:2177) - 
+	Get EDGE in 10ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,399 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,399 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,399 [pool-64-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,399 [pool-64-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,399 [pool-64-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,399 [pool-64-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,402 [pool-64-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,402 [pool-64-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,405 [pool-64-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,405 [pool-64-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,405 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,405 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,405 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,405 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,406 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,406 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,406 [pool-65-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,406 [pool-65-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,406 [pool-65-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,406 [pool-65-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,409 [pool-65-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,409 [pool-65-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,411 [pool-65-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,411 [pool-65-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,412 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,412 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,412 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,412 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,412 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,412 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,412 [pool-66-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,412 [pool-66-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,413 [pool-66-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,413 [pool-66-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,415 [pool-66-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,415 [pool-66-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,418 [pool-66-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,418 [pool-66-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,418 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,418 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,418 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,418 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,418 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,418 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,419 [pool-67-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,419 [pool-67-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,419 [pool-67-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,419 [pool-67-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,421 [pool-67-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,421 [pool-67-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,426 [pool-67-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,426 [pool-67-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,426 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,426 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,426 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,426 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,426 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,426 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,426 [pool-68-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,426 [pool-68-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,427 [pool-68-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,427 [pool-68-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,429 [pool-68-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,429 [pool-68-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,441 [pool-68-thread-1] (CallableResult.java:63) - Finished CallableResult in 15 ms.
+ INFO 2016-05-04 13:18:43,441 [pool-68-thread-1] (CallableResult.java:63) - Finished CallableResult in 15 ms.
+ INFO 2016-05-04 13:18:43,442 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 16ms.
+ INFO 2016-05-04 13:18:43,442 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 16ms.
+ INFO 2016-05-04 13:18:43,442 [main] (Eval.java:2177) - 
+	Get EDGE in 16ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,442 [main] (Eval.java:2177) - 
+	Get EDGE in 16ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,442 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,442 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,442 [pool-69-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,442 [pool-69-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,442 [pool-69-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,442 [pool-69-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,445 [pool-69-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,445 [pool-69-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,448 [pool-69-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,448 [pool-69-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,448 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,448 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,448 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,448 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,449 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,449 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,449 [pool-70-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,449 [pool-70-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,449 [pool-70-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,449 [pool-70-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,452 [pool-70-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,452 [pool-70-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,455 [pool-70-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,455 [pool-70-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,455 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,455 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,455 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,455 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,455 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,455 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,455 [pool-71-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,455 [pool-71-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,456 [pool-71-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,456 [pool-71-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,458 [pool-71-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,458 [pool-71-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,463 [pool-71-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,463 [pool-71-thread-1] (CallableResult.java:63) - Finished CallableResult in 8 ms.
+ INFO 2016-05-04 13:18:43,463 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,463 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 8ms.
+ INFO 2016-05-04 13:18:43,463 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,463 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,464 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,464 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,464 [pool-72-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,464 [pool-72-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,464 [pool-72-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,464 [pool-72-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,467 [pool-72-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,467 [pool-72-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,470 [pool-72-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,470 [pool-72-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,470 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,470 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,470 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,470 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,470 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,470 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,471 [pool-73-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,471 [pool-73-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,471 [pool-73-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,471 [pool-73-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,474 [pool-73-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,474 [pool-73-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,478 [pool-73-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,478 [pool-73-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,478 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,478 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,478 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,478 [main] (Eval.java:2177) - 
+	Get EDGE in 8ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,479 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,479 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,479 [pool-74-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,479 [pool-74-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,479 [pool-74-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,479 [pool-74-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,481 [pool-74-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,481 [pool-74-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,484 [pool-74-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,484 [pool-74-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,484 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,484 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,484 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,484 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,484 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,484 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,484 [pool-75-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,484 [pool-75-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,484 [pool-75-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,484 [pool-75-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,487 [pool-75-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,487 [pool-75-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,490 [pool-75-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,490 [pool-75-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,490 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,490 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,490 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,490 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,490 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,490 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,491 [pool-76-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,491 [pool-76-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,491 [pool-76-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,491 [pool-76-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,493 [pool-76-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,493 [pool-76-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,497 [pool-76-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,497 [pool-76-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,497 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,497 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,497 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,497 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,498 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,498 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,498 [pool-77-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,498 [pool-77-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,498 [pool-77-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,498 [pool-77-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,500 [pool-77-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,500 [pool-77-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,503 [pool-77-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,503 [pool-77-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,503 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,503 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,503 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,503 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,504 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,504 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,504 [pool-78-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,504 [pool-78-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,504 [pool-78-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,504 [pool-78-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,506 [pool-78-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,506 [pool-78-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,510 [pool-78-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,510 [pool-78-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,510 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,510 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 6ms.
+ INFO 2016-05-04 13:18:43,510 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,510 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,510 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,510 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,511 [pool-79-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,511 [pool-79-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,511 [pool-79-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,511 [pool-79-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,513 [pool-79-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,513 [pool-79-thread-2] (CallableResult.java:63) - Finished CallableResult in 2 ms.
+ INFO 2016-05-04 13:18:43,516 [pool-79-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,516 [pool-79-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,516 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,516 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,517 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,517 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,517 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,517 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,517 [pool-80-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,517 [pool-80-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,517 [pool-80-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,517 [pool-80-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,520 [pool-80-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,520 [pool-80-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,521 [pool-80-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,521 [pool-80-thread-1] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,521 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:18:43,521 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 4ms.
+ INFO 2016-05-04 13:18:43,522 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,522 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,522 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,522 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,522 [pool-81-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,522 [pool-81-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,522 [pool-81-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,522 [pool-81-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,525 [pool-81-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,525 [pool-81-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,527 [pool-81-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,527 [pool-81-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,527 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,527 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,527 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,527 [main] (Eval.java:2177) - 
+	Get EDGE in 5ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,527 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,527 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,528 [pool-82-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,528 [pool-82-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,528 [pool-82-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,528 [pool-82-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,531 [pool-82-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,531 [pool-82-thread-2] (CallableResult.java:63) - Finished CallableResult in 3 ms.
+ INFO 2016-05-04 13:18:43,533 [pool-82-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,533 [pool-82-thread-1] (CallableResult.java:63) - Finished CallableResult in 5 ms.
+ INFO 2016-05-04 13:18:43,533 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,533 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 5ms.
+ INFO 2016-05-04 13:18:43,533 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,533 [main] (Eval.java:2177) - 
+	Get EDGE in 6ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,534 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,534 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,534 [pool-83-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,534 [pool-83-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,534 [pool-83-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,534 [pool-83-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,540 [pool-83-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,540 [pool-83-thread-1] (CallableResult.java:63) - Finished CallableResult in 6 ms.
+ INFO 2016-05-04 13:18:43,541 [pool-83-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,541 [pool-83-thread-2] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,541 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,541 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,541 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,541 [main] (Eval.java:2177) - 
+	Get EDGE in 7ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,542 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,542 [main] (ParallelMetaProducerLessBlocking.java:61) - Searching for edge : ?departement igeo:subdivisionDirecte ?arrondisement
+ INFO 2016-05-04 13:18:43,542 [pool-84-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,542 [pool-84-thread-1] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,543 [pool-84-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,543 [pool-84-thread-2] (CallableResult.java:52) - CallableResult for GetEdge
+ INFO 2016-05-04 13:18:43,547 [pool-84-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,547 [pool-84-thread-2] (CallableResult.java:63) - Finished CallableResult in 4 ms.
+ INFO 2016-05-04 13:18:43,549 [pool-84-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,549 [pool-84-thread-1] (CallableResult.java:63) - Finished CallableResult in 7 ms.
+ INFO 2016-05-04 13:18:43,550 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,550 [main] (ParallelMetaProducerLessBlocking.java:193) - Global results retrieved in getEdges 7ms.
+ INFO 2016-05-04 13:18:43,550 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,550 [main] (Eval.java:2177) - 
+	Get EDGE in 9ms.  
+	FOR EDGE{?departement igeo:subdivisionDirecte ?arrondisement}
+
+ INFO 2016-05-04 13:18:43,550 [main] (TestDQP.java:248) - 186 results in 1226 ms
+ INFO 2016-05-04 13:18:43,553 [main] (TestDQP.java:249) - 
+01 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/38>; ?nom = "Isère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/381>; 
+02 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/38>; ?nom = "Isère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/382>; 
+03 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/38>; ?nom = "Isère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/383>; 
+04 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/74>; ?nom = "Haute-Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/741>; 
+05 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/74>; ?nom = "Haute-Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/744>; 
+06 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/74>; ?nom = "Haute-Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/743>; 
+07 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/74>; ?nom = "Haute-Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/742>; 
+08 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/42>; ?nom = "Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/421>; 
+09 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/42>; ?nom = "Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/422>; 
+10 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/42>; ?nom = "Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/423>; 
+11 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/26>; ?nom = "Drôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/262>; 
+12 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/26>; ?nom = "Drôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/261>; 
+13 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/26>; ?nom = "Drôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/263>; 
+14 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/73>; ?nom = "Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/731>; 
+15 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/73>; ?nom = "Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/733>; 
+16 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/73>; ?nom = "Savoie"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/732>; 
+17 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/69>; ?nom = "Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/692>; 
+18 ?region = <http://id.insee.fr/geo/region/82>; ?v = "82"; ?departement = <http://id.insee.fr/geo/departement/69>; ?nom = "Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/691>; 
+19 ?region = <http://id.insee.fr/geo/region/93>; ?v = "93"; ?departement = <http://id.insee.fr/geo/departement/13>; ?nom = "Bouches-du-Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/134>; 
+20 ?region = <http://id.insee.fr/geo/region/93>; ?v = "93"; ?departement = <http://id.insee.fr/geo/departement/13>; ?nom = "Bouches-du-Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/133>; 
+21 ?region = <http://id.insee.fr/geo/region/93>; ?v = "93"; ?departement = <http://id.insee.fr/geo/departement/13>; ?nom = "Bouches-du-Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/132>; 
+22 ?region = <http://id.insee.fr/geo/region/93>; ?v = "93"; ?departement = <http://id.insee.fr/geo/departement/13>; ?nom = "Bouches-du-Rhône"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/131>; 
+23 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/51>; ?nom = "Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/514>; 
+24 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/51>; ?nom = "Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/511>; 
+25 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/51>; ?nom = "Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/513>; 
+26 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/51>; ?nom = "Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/512>; 
+27 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/51>; ?nom = "Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/515>; 
+28 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/10>; ?nom = "Aube"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/103>; 
+29 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/10>; ?nom = "Aube"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/101>; 
+30 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/10>; ?nom = "Aube"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/102>; 
+31 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/52>; ?nom = "Haute-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/521>; 
+32 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/52>; ?nom = "Haute-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/522>; 
+33 ?region = <http://id.insee.fr/geo/region/21>; ?v = "21"; ?departement = <http://id.insee.fr/geo/departement/52>; ?nom = "Haute-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/523>; 
+34 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/90>; ?nom = "Territoire de Belfort"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/901>; 
+35 ?region = <http://id.insee.fr/geo/region/41>; ?v = "41"; ?departement = <http://id.insee.fr/geo/departement/54>; ?nom = "Meurthe-et-Moselle"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/542>; 
+36 ?region = <http://id.insee.fr/geo/region/41>; ?v = "41"; ?departement = <http://id.insee.fr/geo/departement/54>; ?nom = "Meurthe-et-Moselle"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/543>; 
+37 ?region = <http://id.insee.fr/geo/region/41>; ?v = "41"; ?departement = <http://id.insee.fr/geo/departement/54>; ?nom = "Meurthe-et-Moselle"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/541>; 
+38 ?region = <http://id.insee.fr/geo/region/41>; ?v = "41"; ?departement = <http://id.insee.fr/geo/departement/54>; ?nom = "Meurthe-et-Moselle"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/544>; 
+39 ?region = <http://id.insee.fr/geo/region/06>; ?v = "06"; ?departement = <http://id.insee.fr/geo/departement/976>; ?nom = "Mayotte"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9760>; 
+40 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/12>; ?nom = "Aveyron"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/122>; 
+41 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/12>; ?nom = "Aveyron"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/121>; 
+42 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/12>; ?nom = "Aveyron"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/123>; 
+43 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/65>; ?nom = "Hautes-Pyrénées"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/653>; 
+44 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/65>; ?nom = "Hautes-Pyrénées"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/652>; 
+45 ?region = <http://id.insee.fr/geo/region/73>; ?v = "73"; ?departement = <http://id.insee.fr/geo/departement/65>; ?nom = "Hautes-Pyrénées"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/651>; 
+46 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/625>; 
+47 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/627>; 
+48 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/622>; 
+49 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/624>; 
+50 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/621>; 
+51 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/626>; 
+52 ?region = <http://id.insee.fr/geo/region/31>; ?v = "31"; ?departement = <http://id.insee.fr/geo/departement/62>; ?nom = "Pas-de-Calais"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/623>; 
+53 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/39>; ?nom = "Jura"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/391>; 
+54 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/39>; ?nom = "Jura"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/392>; 
+55 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/39>; ?nom = "Jura"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/393>; 
+56 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/25>; ?nom = "Doubs"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/253>; 
+57 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/25>; ?nom = "Doubs"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/252>; 
+58 ?region = <http://id.insee.fr/geo/region/43>; ?v = "43"; ?departement = <http://id.insee.fr/geo/departement/25>; ?nom = "Doubs"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/251>; 
+59 ?region = <http://id.insee.fr/geo/region/74>; ?v = "74"; ?departement = <http://id.insee.fr/geo/departement/23>; ?nom = "Creuse"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/232>; 
+60 ?region = <http://id.insee.fr/geo/region/74>; ?v = "74"; ?departement = <http://id.insee.fr/geo/departement/23>; ?nom = "Creuse"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/231>; 
+61 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/78>; ?nom = "Yvelines"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/783>; 
+62 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/78>; ?nom = "Yvelines"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/782>; 
+63 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/78>; ?nom = "Yvelines"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/781>; 
+64 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/78>; ?nom = "Yvelines"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/784>; 
+65 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/75>; ?nom = "Paris"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/751>; 
+66 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/77>; ?nom = "Seine-et-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/773>; 
+67 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/77>; ?nom = "Seine-et-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/775>; 
+68 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/77>; ?nom = "Seine-et-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/772>; 
+69 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/77>; ?nom = "Seine-et-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/774>; 
+70 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/77>; ?nom = "Seine-et-Marne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/771>; 
+71 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/91>; ?nom = "Essonne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/912>; 
+72 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/91>; ?nom = "Essonne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/911>; 
+73 ?region = <http://id.insee.fr/geo/region/11>; ?v = "11"; ?departement = <http://id.insee.fr/geo/departement/91>; ?nom = "Essonne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/913>; 
+74 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/64>; ?nom = "Pyrénées-Atlantiques"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/642>; 
+75 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/64>; ?nom = "Pyrénées-Atlantiques"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/643>; 
+76 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/64>; ?nom = "Pyrénées-Atlantiques"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/641>; 
+77 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/24>; ?nom = "Dordogne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/244>; 
+78 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/24>; ?nom = "Dordogne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/243>; 
+79 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/24>; ?nom = "Dordogne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/242>; 
+80 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/24>; ?nom = "Dordogne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/241>; 
+81 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/334>; 
+82 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/335>; 
+83 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/332>; 
+84 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/333>; 
+85 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/331>; 
+86 ?region = <http://id.insee.fr/geo/region/72>; ?v = "72"; ?departement = <http://id.insee.fr/geo/departement/33>; ?nom = "Gironde"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/336>; 
+87 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/21>; ?nom = "Côte-d\'Or"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/213>; 
+88 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/21>; ?nom = "Côte-d\'Or"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/211>; 
+89 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/21>; ?nom = "Côte-d\'Or"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/212>; 
+90 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/71>; ?nom = "Saône-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/711>; 
+91 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/71>; ?nom = "Saône-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/713>; 
+92 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/71>; ?nom = "Saône-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/714>; 
+93 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/71>; ?nom = "Saône-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/712>; 
+94 ?region = <http://id.insee.fr/geo/region/26>; ?v = "26"; ?departement = <http://id.insee.fr/geo/departement/71>; ?nom = "Saône-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/715>; 
+95 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/14>; ?nom = "Calvados"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/142>; 
+96 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/14>; ?nom = "Calvados"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/141>; 
+97 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/14>; ?nom = "Calvados"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/144>; 
+98 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/14>; ?nom = "Calvados"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/143>; 
+99 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/50>; ?nom = "Manche"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/501>; 
+100 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/50>; ?nom = "Manche"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/503>; 
+101 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/50>; ?nom = "Manche"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/502>; 
+102 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/50>; ?nom = "Manche"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/504>; 
+103 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/61>; ?nom = "Orne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/612>; 
+104 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/61>; ?nom = "Orne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/611>; 
+105 ?region = <http://id.insee.fr/geo/region/25>; ?v = "25"; ?departement = <http://id.insee.fr/geo/departement/61>; ?nom = "Orne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/613>; 
+106 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/36>; ?nom = "Indre"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/364>; 
+107 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/36>; ?nom = "Indre"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/363>; 
+108 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/36>; ?nom = "Indre"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/362>; 
+109 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/36>; ?nom = "Indre"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/361>; 
+110 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/37>; ?nom = "Indre-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/373>; 
+111 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/37>; ?nom = "Indre-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/372>; 
+112 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/37>; ?nom = "Indre-et-Loire"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/371>; 
+113 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/28>; ?nom = "Eure-et-Loir"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/282>; 
+114 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/28>; ?nom = "Eure-et-Loir"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/283>; 
+115 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/28>; ?nom = "Eure-et-Loir"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/284>; 
+116 ?region = <http://id.insee.fr/geo/region/24>; ?v = "24"; ?departement = <http://id.insee.fr/geo/departement/28>; ?nom = "Eure-et-Loir"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/281>; 
+117 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/27>; ?nom = "Eure"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/271>; 
+118 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/27>; ?nom = "Eure"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/272>; 
+119 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/27>; ?nom = "Eure"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/273>; 
+120 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/76>; ?nom = "Seine-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/762>; 
+121 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/76>; ?nom = "Seine-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/761>; 
+122 ?region = <http://id.insee.fr/geo/region/23>; ?v = "23"; ?departement = <http://id.insee.fr/geo/departement/76>; ?nom = "Seine-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/763>; 
+123 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/79>; ?nom = "Deux-Sèvres"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/792>; 
+124 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/79>; ?nom = "Deux-Sèvres"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/793>; 
+125 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/79>; ?nom = "Deux-Sèvres"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/791>; 
+126 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/17>; ?nom = "Charente-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/172>; 
+127 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/17>; ?nom = "Charente-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/174>; 
+128 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/17>; ?nom = "Charente-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/175>; 
+129 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/17>; ?nom = "Charente-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/171>; 
+130 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/17>; ?nom = "Charente-Maritime"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/173>; 
+131 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/16>; ?nom = "Charente"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/162>; 
+132 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/16>; ?nom = "Charente"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/163>; 
+133 ?region = <http://id.insee.fr/geo/region/54>; ?v = "54"; ?departement = <http://id.insee.fr/geo/departement/16>; ?nom = "Charente"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/161>; 
+134 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/29>; ?nom = "Finistère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/291>; 
+135 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/29>; ?nom = "Finistère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/292>; 
+136 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/29>; ?nom = "Finistère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/293>; 
+137 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/29>; ?nom = "Finistère"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/294>; 
+138 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/35>; ?nom = "Ille-et-Vilaine"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/353>; 
+139 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/35>; ?nom = "Ille-et-Vilaine"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/352>; 
+140 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/35>; ?nom = "Ille-et-Vilaine"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/351>; 
+141 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/35>; ?nom = "Ille-et-Vilaine"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/354>; 
+142 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/22>; ?nom = "Côtes-d\'Armor"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/224>; 
+143 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/22>; ?nom = "Côtes-d\'Armor"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/221>; 
+144 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/22>; ?nom = "Côtes-d\'Armor"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/222>; 
+145 ?region = <http://id.insee.fr/geo/region/53>; ?v = "53"; ?departement = <http://id.insee.fr/geo/departement/22>; ?nom = "Côtes-d\'Armor"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/223>; 
+146 ?region = <http://id.insee.fr/geo/region/22>; ?v = "22"; ?departement = <http://id.insee.fr/geo/departement/60>; ?nom = "Oise"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/602>; 
+147 ?region = <http://id.insee.fr/geo/region/22>; ?v = "22"; ?departement = <http://id.insee.fr/geo/departement/60>; ?nom = "Oise"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/604>; 
+148 ?region = <http://id.insee.fr/geo/region/22>; ?v = "22"; ?departement = <http://id.insee.fr/geo/departement/60>; ?nom = "Oise"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/601>; 
+149 ?region = <http://id.insee.fr/geo/region/22>; ?v = "22"; ?departement = <http://id.insee.fr/geo/departement/60>; ?nom = "Oise"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/603>; 
+150 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/72>; ?nom = "Sarthe"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/721>; 
+151 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/72>; ?nom = "Sarthe"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/723>; 
+152 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/72>; ?nom = "Sarthe"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/722>; 
+153 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/53>; ?nom = "Mayenne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/532>; 
+154 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/53>; ?nom = "Mayenne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/531>; 
+155 ?region = <http://id.insee.fr/geo/region/52>; ?v = "52"; ?departement = <http://id.insee.fr/geo/departement/53>; ?nom = "Mayenne"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/533>; 
+156 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/15>; ?nom = "Cantal"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/151>; 
+157 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/15>; ?nom = "Cantal"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/153>; 
+158 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/15>; ?nom = "Cantal"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/152>; 
+159 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/63>; ?nom = "Puy-de-Dôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/635>; 
+160 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/63>; ?nom = "Puy-de-Dôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/634>; 
+161 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/63>; ?nom = "Puy-de-Dôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/631>; 
+162 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/63>; ?nom = "Puy-de-Dôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/633>; 
+163 ?region = <http://id.insee.fr/geo/region/83>; ?v = "83"; ?departement = <http://id.insee.fr/geo/departement/63>; ?nom = "Puy-de-Dôme"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/632>; 
+164 ?region = <http://id.insee.fr/geo/region/04>; ?v = "04"; ?departement = <http://id.insee.fr/geo/departement/974>; ?nom = "La Réunion"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9742>; 
+165 ?region = <http://id.insee.fr/geo/region/04>; ?v = "04"; ?departement = <http://id.insee.fr/geo/departement/974>; ?nom = "La Réunion"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9741>; 
+166 ?region = <http://id.insee.fr/geo/region/04>; ?v = "04"; ?departement = <http://id.insee.fr/geo/departement/974>; ?nom = "La Réunion"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9743>; 
+167 ?region = <http://id.insee.fr/geo/region/04>; ?v = "04"; ?departement = <http://id.insee.fr/geo/departement/974>; ?nom = "La Réunion"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9744>; 
+168 ?region = <http://id.insee.fr/geo/region/03>; ?v = "03"; ?departement = <http://id.insee.fr/geo/departement/973>; ?nom = "Guyane"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9731>; 
+169 ?region = <http://id.insee.fr/geo/region/03>; ?v = "03"; ?departement = <http://id.insee.fr/geo/departement/973>; ?nom = "Guyane"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9732>; 
+170 ?region = <http://id.insee.fr/geo/region/02>; ?v = "02"; ?departement = <http://id.insee.fr/geo/departement/972>; ?nom = "Martinique"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9723>; 
+171 ?region = <http://id.insee.fr/geo/region/02>; ?v = "02"; ?departement = <http://id.insee.fr/geo/departement/972>; ?nom = "Martinique"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9722>; 
+172 ?region = <http://id.insee.fr/geo/region/02>; ?v = "02"; ?departement = <http://id.insee.fr/geo/departement/972>; ?nom = "Martinique"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9724>; 
+173 ?region = <http://id.insee.fr/geo/region/02>; ?v = "02"; ?departement = <http://id.insee.fr/geo/departement/972>; ?nom = "Martinique"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9721>; 
+174 ?region = <http://id.insee.fr/geo/region/94>; ?v = "94"; ?departement = <http://id.insee.fr/geo/departement/2A>; ?nom = "Corse-du-Sud"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/2A4>; 
+175 ?region = <http://id.insee.fr/geo/region/94>; ?v = "94"; ?departement = <http://id.insee.fr/geo/departement/2A>; ?nom = "Corse-du-Sud"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/2A1>; 
+176 ?region = <http://id.insee.fr/geo/region/01>; ?v = "01"; ?departement = <http://id.insee.fr/geo/departement/971>; ?nom = "Guadeloupe"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9712>; 
+177 ?region = <http://id.insee.fr/geo/region/01>; ?v = "01"; ?departement = <http://id.insee.fr/geo/departement/971>; ?nom = "Guadeloupe"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/9711>; 
+178 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/66>; ?nom = "Pyrénées-Orientales"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/663>; 
+179 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/66>; ?nom = "Pyrénées-Orientales"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/661>; 
+180 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/66>; ?nom = "Pyrénées-Orientales"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/662>; 
+181 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/11>; ?nom = "Aude"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/113>; 
+182 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/11>; ?nom = "Aude"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/111>; 
+183 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/11>; ?nom = "Aude"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/112>; 
+184 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/34>; ?nom = "Hérault"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/342>; 
+185 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/34>; ?nom = "Hérault"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/341>; 
+186 ?region = <http://id.insee.fr/geo/region/91>; ?v = "91"; ?departement = <http://id.insee.fr/geo/departement/34>; ?nom = "Hérault"; ?arrondisement = <http://id.insee.fr/geo/arrondissement/343>; 
+
+ INFO 2016-05-04 13:18:43,556 [main] (TestDQP.java:250) - Remote queries
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:251) - =========
+	?region igeo:subdivisionDirecte ?departement
+	44
+--
+	?region igeo:codeRegion ?v
+	2
+--
+	?departement igeo:subdivisionDirecte ?arrondisement
+	110
+--
+	BGP{EDGE{?departement igeo:nom ?nom} }
+	2
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+	1
+--
+	>====  Sum = 159  =====
+
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:252) - Transferred results per query
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:253) - =========
+	?region igeo:subdivisionDirecte ?departement
+	41
+--
+	?region igeo:codeRegion ?v
+	33
+--
+	?departement igeo:subdivisionDirecte ?arrondisement
+	186
+--
+	BGP{EDGE{?departement igeo:nom ?nom} }
+	57
+--
+	BGP{EDGE{?region igeo:codeRegion ?v} EDGE{?region igeo:subdivisionDirecte ?departement} }
+	16
+--
+	>====  Sum = 333  =====
+
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:254) - Remote queries per data source
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:255) - =========
+	http://localhost:8085/sparql
+	75
+--
+	http://localhost:8086/sparql
+	82
+--
+	http://localhost:8087/sparql
+	2
+--
+	>====  Sum = 159  =====
+
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:256) - Transferred results per source
+ INFO 2016-05-04 13:18:43,557 [main] (TestDQP.java:257) - =========
+	http://localhost:8085/sparql
+	210
+--
+	http://localhost:8086/sparql
+	86
+--
+	http://localhost:8087/sparql
+	37
+--
+	>====  Sum = 333  =====
+

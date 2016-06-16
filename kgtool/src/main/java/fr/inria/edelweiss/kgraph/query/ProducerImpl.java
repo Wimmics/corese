@@ -168,7 +168,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     // eg BIND(node as ?x)
     boolean isExtern(Node node, Environment env){
         return node.getIndex() == -1
-                || node.getGraphStore() != graph;
+                || node.getTripleStore() != graph;
     }
 
     boolean isType(Edge edge, Environment env) {

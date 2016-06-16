@@ -256,7 +256,7 @@ public class MatcherImpl implements Matcher {
     
     boolean same(Node n1, Node n2){        
         return  (n1.getIndex() == n2.getIndex() 
-                && n1.getGraphStore() == n2.getGraphStore()
+                && n1.getTripleStore() == n2.getTripleStore()
                 && n1.getIndex() != -1) 
                 || n1.same(n2);
     }

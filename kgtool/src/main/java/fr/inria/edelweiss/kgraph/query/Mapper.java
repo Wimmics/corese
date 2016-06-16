@@ -73,7 +73,7 @@ public class Mapper {
     Mappings map(List<Node> nodes, Pointerable obj) { 
         switch (obj.pointerType()){
             case Pointerable.GRAPH_POINTER: 
-                return map(nodes, (Graph) obj.getGraphStore());
+                return map(nodes, (Graph) obj.getTripleStore());
                 
             case Pointerable.MAPPINGS_POINTER:
                 return map(nodes, obj.getMappings());

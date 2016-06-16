@@ -28,7 +28,6 @@ public class ManagerImpl implements Manager {
     static final int COPY = 0;
     static final int MOVE = 1;
     static final int ADD = 2;
-    private static final String DEFAULT = Entailment.DEFAULT;
 
     ManagerImpl(GraphManager gm) {
         this.gm = gm;
@@ -158,7 +157,7 @@ public class ManagerImpl implements Manager {
                 update(ope, mode, source, name);
             } else {
                 // use case: move g to default
-                update(ope, mode, source, DEFAULT);
+                update(ope, mode, source, gm.getDefaultGraphNode().getLabel());
             }
         } else if (target != null && ds != null && ds.hasFrom()) {
             // copy default to g

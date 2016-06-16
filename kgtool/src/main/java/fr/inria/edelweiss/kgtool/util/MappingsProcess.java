@@ -36,7 +36,7 @@ public class MappingsProcess {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
-            ld.loadString(f.toString(), "", Entailment.DEFAULT, "", Load.TURTLE_FORMAT);
+            ld.loadString(f.toString(), "", ld.defaultGraph(), "", Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
             Logger.getLogger(MappingsProcess.class.getName()).log(Level.SEVERE, null, ex);
         }

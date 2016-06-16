@@ -9,6 +9,7 @@ import java.util.List;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -50,7 +51,7 @@ public class Mappings extends PointerObject
     Node fake;
     Object object;
     private Eval eval;
-    private Object graph;
+    private TripleStore graph;
     private int nbsolutions = 0;
     EventManager manager;
     // SPARQL: -1 (unbound first)
@@ -1083,12 +1084,12 @@ public class Mappings extends PointerObject
         }
     }
 
-    public void setGraph(Object graph) {
+    public void setGraph(TripleStore graph) {
         this.graph = graph;
     }
 
     @Override
-    public Object getGraphStore() {
+    public TripleStore getTripleStore() {
         return graph;
     }
 

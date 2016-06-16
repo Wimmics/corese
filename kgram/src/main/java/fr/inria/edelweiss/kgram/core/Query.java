@@ -328,7 +328,7 @@ public class Query extends Exp implements Graphable {
     public int getPlanProfile() {
         return planner;
     }
-    
+      
     /**
      * @return the hasFunctional
      */

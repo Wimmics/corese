@@ -2,6 +2,7 @@ package fr.inria.edelweiss.kgram.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +39,7 @@ public abstract class PointerObject implements Pointerable {
     }
     
     @Override
-    public Object getGraphStore(){
+    public TripleStore getTripleStore(){
         return null;
     }
     

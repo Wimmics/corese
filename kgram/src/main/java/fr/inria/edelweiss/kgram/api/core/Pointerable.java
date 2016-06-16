@@ -31,7 +31,7 @@ public interface Pointerable extends Loopable {
     
     Query getQuery();
 
-    Object getGraphStore();
+    TripleStore getTripleStore();
     
     // let ((?x, ?y) = ?m)
     // ->

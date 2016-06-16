@@ -71,7 +71,7 @@ public interface Node {
 	
 	Object getObject();
         
-        Object getGraphStore();
+        TripleStore getTripleStore();
 	
 	void setObject(Object o);
 	

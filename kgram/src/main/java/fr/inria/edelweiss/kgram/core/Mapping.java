@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.filter.Extension;
@@ -992,7 +993,7 @@ public class Mapping
     }
 
     @Override
-    public Object getGraphStore() {
+    public TripleStore getTripleStore() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 	

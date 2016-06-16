@@ -31,6 +31,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -48,7 +49,7 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph extends GraphObject implements Graphable {
+public class Graph extends GraphObject implements Graphable, TripleStore {
 
     private static Logger logger = Logger.getLogger(Graph.class);
     public static final String TOPREL
@@ -77,6 +78,22 @@ public class Graph extends GraphObject implements Graphable {
     // false: they join
     private static boolean distinctDatatype = false;
     static boolean byIndexDefault = true;
+    
+    private static final String[] PREDEFINED = {
+        Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
+        RDFS.SUBCLASSOF, RDF.TYPE,  RDF.FIRST, RDF.REST
+    }; 
+    
+    public static final int DEFAULT_INDEX = 0;
+    public static final int ENTAIL_INDEX = 1;
+    public static final int RULE_INDEX = 2;
+    
+    public static final int SUBCLASS_INDEX = 3;
+    public static final int TYPE_INDEX = 4;
+    public static final int FIRST_INDEX = 5;
+    public static final int REST_INDEX = 6;
+   
+    
 
     private int mode = DEFAULT;
     /**
@@ -98,6 +115,8 @@ public class Graph extends GraphObject implements Graphable {
     Index table, tlist, tgraph,
             // for rdf:type, no named graph to speed up type test
             dtable;
+    // predefined individual
+    HashMap<String, Node> system;
     // key -> URI Node
     Hashtable<String, Entity> individual;
     // label -> Blank Node
@@ -156,13 +175,15 @@ public class Graph extends GraphObject implements Graphable {
     private boolean hasList = false;
     
     private Node ruleGraph, defaultGraph, entailGraph;
+    
+   private ArrayList<Node> systemNode;
 
     private IStorage storageMgr;
 
     static {
         setCompareIndex(true);
     }
-
+    
     // SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
     /**
      * @return the isSkolem
@@ -292,7 +313,7 @@ public class Graph extends GraphObject implements Graphable {
     }
     
      @Override
-    public Graph getGraphStore() {
+    public Graph getTripleStore() {
         return this;
     }
     
@@ -420,6 +441,40 @@ public class Graph extends GraphObject implements Graphable {
         fac = new EdgeFactory(this);
         manager = new Workflow(this);
         key = hashCode() + ".";
+        initSystem();
+    }
+    
+    /**
+     * System Node are predefined such as kg:default Node for default graph
+     * They have an index but they are not yet stored in any graph table
+     * but system table
+     * They are retrieved by getResource, getNode, getGraph, getProperty on demand
+     */
+    void initSystem(){
+        system = new HashMap<String, Node>();
+        systemNode = new ArrayList<Node>();
+        for (String uri : PREDEFINED){
+            Node n = createSystemNode(uri);
+            system.put(uri, n);
+            systemNode.add(n);
+        }
+        defaultGraph = system.get(Entailment.DEFAULT);
+        ruleGraph    = system.get(Entailment.RULE);
+    }
+    
+    NodeImpl createSystemNode(String label){
+        IDatatype dt = DatatypeMap.newResource(label);
+        NodeImpl node = NodeImpl.create(dt, this);
+        index(dt, node);
+        return node;
+    }
+    
+    Node getSystemNode(String name){
+        return system.get(name);        
+    }
+    
+    public Node getNode(int n){
+        return systemNode.get(n);
     }
 
     public static Graph create() {
@@ -697,6 +752,7 @@ public class Graph extends GraphObject implements Graphable {
         return hasDefault;
     }
 
+    @Override
     public String toString() {
         return toRDF();
     }
@@ -999,6 +1055,9 @@ public class Graph extends GraphObject implements Graphable {
         Entity ent = table.add(edge, duplicate);
         // tell other index that predicate has instances
         if (ent != null) {
+            if (edge.getGraph() == null){
+                System.out.println("Graph: " + edge);
+            }
             addGraphNode(edge.getGraph());
             addPropertyNode(edge.getEdge().getEdgeNode());
 
@@ -1355,6 +1414,9 @@ public class Graph extends GraphObject implements Graphable {
         if (node == null) {
             node = getPropertyNode(name);
         }
+        if (node == null) {
+            node = getSystemNode(name);
+        }
         return node;
     }
 
@@ -1425,6 +1487,11 @@ public class Graph extends GraphObject implements Graphable {
         graph.put(key, node);
         return node;
     }
+    
+    Node basicAddGraphNode(Node node){
+       graph.put(node.getLabel(), node);
+       return node; 
+    }
 
     Node basicAddResource(String label) {
         String key = getID(label);
@@ -1435,6 +1502,9 @@ public class Graph extends GraphObject implements Graphable {
         node = getGraphNode(key, label);
         if (node == null) {
             node = getPropertyNode(label);
+        }
+        if (node == null){
+            node = getSystemNode(label);
         }
         if (node != null) {
             add((IDatatype) node.getValue(), node);
@@ -2423,9 +2493,7 @@ public class Graph extends GraphObject implements Graphable {
     }
     
     void clearNamedGraph(){
-        ruleGraph = null;
-        defaultGraph = null;
-        entailGraph = null;
+        
     }
 
     public boolean clear(String uri, boolean isSilent) {
@@ -2556,8 +2624,8 @@ public class Graph extends GraphObject implements Graphable {
      * TODO: setUpdate(true)
      */
     Entity copy(Node gNode, Entity ent) {
-        Entity e = fac.copy(ent);
-        fac.setGraph(e, gNode);
+        Entity e = fac.copy(gNode, ent);
+        //fac.setGraph(e, gNode);
 
         if (hasTag() && e.nbNode() == 3) {
             // edge has a tag
@@ -2593,6 +2661,7 @@ public class Graph extends GraphObject implements Graphable {
         return list;
     }
 
+    @Deprecated
     public List<Entity> copy(Graph g, boolean b) {
         ArrayList<Entity> list = new ArrayList<Entity>();
 
@@ -2646,9 +2715,13 @@ public class Graph extends GraphObject implements Graphable {
     }
 
     public void copy(Graph g) {
+        copyNode(g);
         for (Entity ent : g.getEdges()) {
             copy(ent);
         }
+    }
+    
+    void copyNode(Graph g){
     }
     
     public Graph copy(){
@@ -2741,18 +2814,17 @@ public class Graph extends GraphObject implements Graphable {
      * return graph nodes
      */
     public Node addGraph(String label) {
+        //if (isDefaultGraphNode(label)){return defaultGraph;}
         return basicAddGraph(label);
     }
     
     public Node addDefaultGraphNode(){
-        if (defaultGraph == null){
-            defaultGraph = addGraph(Entailment.DEFAULT);
-        }
-        return defaultGraph;
+        //return defaultGraph;
+        return basicAddGraphNode(defaultGraph);
     }
     
     public boolean isDefaultGraphNode(Node g){
-        return isDefaultGraphNode(g.getLabel()); 
+        return g == defaultGraph; 
     }
     
     public boolean isDefaultGraphNode(String name){
@@ -2764,10 +2836,7 @@ public class Graph extends GraphObject implements Graphable {
     }
     
     public Node addRuleGraphNode(){
-        if (ruleGraph == null){
-            ruleGraph = addGraph(Entailment.RULE);
-        }
-        return ruleGraph;
+        return basicAddGraphNode(ruleGraph);
     }
        
     public Node getRuleGraphNode(){
@@ -2775,7 +2844,7 @@ public class Graph extends GraphObject implements Graphable {
     }
     
     public boolean isRuleGraphNode(Node node){
-        return ruleGraph != null && node == ruleGraph;
+        return node == ruleGraph;
     }
 
     public Node addResource(String label) {

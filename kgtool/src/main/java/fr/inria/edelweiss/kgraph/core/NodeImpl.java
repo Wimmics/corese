@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 
 /**
  * Node
@@ -36,7 +37,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
         dt = val;
     }
 
-    public static Node create(IDatatype val, Graph g) {
+    public static NodeImpl create(IDatatype val, Graph g) {
         return new NodeImpl(val, g);
     }
 
@@ -197,7 +198,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     }
 
     @Override
-    public Object getGraphStore() {
+    public TripleStore getTripleStore() {
         return graph;
     }
 }

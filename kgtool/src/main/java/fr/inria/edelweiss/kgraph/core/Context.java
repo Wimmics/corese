@@ -131,7 +131,7 @@ public class Context implements Graphable {
     @Override
     public String toGraph() {
         StringBuilder sb = new StringBuilder();
-        sb.append(toRDF());
+        //sb.append(toRDF());
         sb.append(graph.toRDF());
         return sb.toString();
     }

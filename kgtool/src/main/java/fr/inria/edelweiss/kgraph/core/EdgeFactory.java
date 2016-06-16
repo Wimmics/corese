@@ -1,58 +1,133 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeTop;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import java.util.List;
-
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeRule;
+import fr.inria.edelweiss.kgraph.core.edge.*;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import java.util.List;
 
 /*
  * Factory creates Edges
- * Quad : EdgeQuad
- * Tuple: EdgeImpl
- * @author Olivier Corby, Edelweiss INRIA 2011
+ * Specific Named Graph have specific Edge Class
+ * where graph node and/or predicate node are not replicated in each Edge
+ * @author Olivier Corby, INRIA 2011-2016
  *
  */
 public class EdgeFactory {
-
+    public static int std = 0, def = 0, rul = 0, ent = 0, typ = 0, sub = 0, fst = 0, rst = 0;
+    public static boolean trace = false;
     Graph graph;
     boolean isOptim = false,
             isTag = false,
             isGraph = false;
     int count = 0;
     String key;
+    private boolean optimize = true;
 
     EdgeFactory(Graph g) {
         graph = g;
         key = hashCode() + ".";
     }
 
-
+    static public void trace(){
+        System.out.println("Typ: " + typ);
+        System.out.println("Sub: " + sub); 
+        System.out.println("Fst: " + fst); 
+        System.out.println("Rst: " + rst); 
+        System.out.println();
+        System.out.println("Def: " + def);
+        System.out.println("Rul: " + rul);
+        System.out.println("Ent: " + ent);
+        System.out.println("Std: " + std);
+        System.out.println("Tot: " + (std+def+rul+ent));        
+    }   
 
     public Entity create(Node source, Node subject, Node predicate, Node value) {
         if (graph.isTuple()){
              return EdgeImpl.create(source, subject, predicate, value);
         }
-        else {
+        else if (optimize) {
             return genCreate(source, subject, predicate, value);
+        }
+        else {
+            return EdgeGeneric.create(source, subject, predicate, value);
         }
     }       
     
+    /**
+     * Specific named graph and specific properties have specific Edge class
+     */
     public Entity genCreate(Node source, Node subject, Node predicate, Node value) {
-        if (graph.isRuleGraphNode(source)){
-            // Rule edge: source MUST be created using graph.addRuleGraphNode()
-            return EdgeRule.create(source, subject, predicate, value);
-        }
-        else {
-            return quad(source, subject, predicate, value);
+        switch (source.getIndex()) {
+            case Graph.RULE_INDEX:
+                rul++;
+                return ruleCreate(source, subject, predicate, value);
+             case Graph.ENTAIL_INDEX:
+                ent++;
+                return entailCreate(source, subject, predicate, value);    
+            case Graph.DEFAULT_INDEX:
+                def++;
+                return defaultCreate(source, subject, predicate, value);
+            default:
+                std++;
+                return quad(source, subject, predicate, value);
         }
     }
     
+    /**
+     * Edge for default graph kg:default
+     * Named Graph is not stored in Edge
+     * Several properties have specific class: rdf:type, rdf:first, rdf:rest, rdfs:subClassOf
+     */
+    public Entity defaultCreate(Node source, Node subject, Node predicate, Node value) {
+        switch (predicate.getIndex()){
+            case Graph.TYPE_INDEX: 
+                typ++;
+                return EdgeBinaryType.create(source, subject, predicate, value);
+             case Graph.SUBCLASS_INDEX: 
+                sub++;
+                return EdgeBinarySubclass.create(source, subject, predicate, value);
+             case Graph.FIRST_INDEX:
+                fst++;
+                return EdgeBinaryFirst.create(source, subject, predicate, value); 
+             case Graph.REST_INDEX:
+                rst++;
+                return EdgeBinaryRest.create(source, subject, predicate, value);              
+             default:
+                 return EdgeDefault.create(source, subject, predicate, value);       
+        }       
+    }
+    
+    /**
+     * Edge for RDFS entailment graph kg:entail
+     */
+    public Entity entailCreate(Node source, Node subject, Node predicate, Node value) {
+        ent++;
+        return EdgeEntail.create(source, subject, predicate, value);
+    }
+
+    /**
+     * Edge for rule graph kg:rule, store an index and a provenance
+     * Named Graph is not stored in Edge
+     * Several properties have specific class: rdf:type, rdfs:subClassOf
+     */    
+    public Entity ruleCreate(Node source, Node subject, Node predicate, Node value) {
+        switch (predicate.getIndex()){
+            case Graph.TYPE_INDEX: 
+                typ++;
+                return EdgeRuleType.create(source, subject, predicate, value);
+             case Graph.SUBCLASS_INDEX: 
+                sub++;
+                return EdgeRuleSubclass.create(source, subject, predicate, value); 
+             default:
+                return EdgeRule.create(source, subject, predicate, value);    
+        }       
+    }
+
+    /**
+     * Edge for user named graph
+     */
     public Entity quad(Node source, Node subject, Node predicate, Node value) {
             return EdgeQuad.create(source, subject, predicate, value);
    }
@@ -62,13 +137,14 @@ public class EdgeFactory {
         return ee;
     }
     
-    public Entity copy(Entity ent) {
-        if (ent instanceof EdgeTop) {
-            EdgeTop e = (EdgeTop) ent;
-            return e.copy();
+    public Entity copy(Node node, Entity ent) {
+        if (ent instanceof EdgeImpl) {
+            EdgeImpl ee = ((EdgeImpl)ent).copy();
+            ee.setGraph(node);
+            return ee;
         }       
         else {
-            return create(ent.getGraph(), ent.getEdge().getEdgeNode(), ent.getNode(0), ent.getNode(1));
+            return create(node, ent.getNode(0), ent.getEdge().getEdgeNode(),  ent.getNode(1));
         }
     }
 

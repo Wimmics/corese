@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
 import fr.inria.edelweiss.kgraph.core.GraphObject;
 import java.util.ArrayList;
 
@@ -16,7 +17,15 @@ import java.util.ArrayList;
 public abstract class EdgeTop extends GraphObject implements Entity {
     
         public Entity copy() {
-            return this;
+            return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
+        }
+        
+        public static Entity create(Node source, Node subject, Node predicate, Node objet){
+            return null;
+        }
+        
+        public Node getEdgeNode(){
+            return null;
         }
         
          public void setTag(Node node) {           
@@ -76,8 +85,8 @@ public abstract class EdgeTop extends GraphObject implements Entity {
         }
         
             @Override
-        public Node getGraphStore() {
-            return null;
+        public TripleStore getTripleStore() {
+            return getNode(0).getTripleStore();
         }
 
 

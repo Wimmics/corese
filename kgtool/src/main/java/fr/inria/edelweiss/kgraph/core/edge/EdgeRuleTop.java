@@ -11,19 +11,15 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class EdgeRule extends EdgeTriple {
+public abstract class EdgeRuleTop extends EdgeBinary {
     static int pcount = 0;
     int index = -1;
     Object prov;
      
-     EdgeRule(Node source, Node pred, Node subject, Node object){
-        super(pred, subject, object);
-    }
+    EdgeRuleTop (Node subject, Node object){
+      super(subject, object);
+  }
     
-    public static EdgeRule create(Node source, Node subject, Node pred, Node object) {
-        return new EdgeRule(source, pred, subject, object);
-    }
-      
     @Override
     public int getIndex(){
         return index;

@@ -25,13 +25,6 @@ public class EdgeQuad extends EdgeTriple {
         return new EdgeQuad(g, pred, subject, object);
     }
 
-    
-    @Override
-    public EdgeQuad copy() {
-        return new EdgeQuad(graph, predicate, subject, object);
-    }
-
-
     @Override
     public Node getGraph() {
         return graph;

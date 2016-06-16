@@ -32,6 +32,7 @@ import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -69,6 +70,8 @@ public class Load
     static final String[] protocols = {HTTP, FTP, FILE};
     static final String OWL = NSManager.OWL; 
     static final String IMPORTS = OWL + "imports";
+    // true:  load files into kg:default graph when no named graph is given
+    // false: load files into named graphs (name = URI of file) 
     private static boolean DEFAULT_GRAPH = false;
 
     
@@ -85,7 +88,6 @@ public class Load
     boolean debug = !true,
             hasPlugin = false;
     private boolean renameBlankNode = true;
-    // true means load into default graph when no named graph is given
     private boolean defaultGraph = DEFAULT_GRAPH;
     int nb = 0;
     private int limit = Integer.MAX_VALUE;
@@ -384,7 +386,7 @@ public class Load
     String target(String name, String path){
         if (name == null){
             if (isDefaultGraph()){
-                return Entailment.DEFAULT;
+                return defaultGraph();
             }
             else {
                 return path;
@@ -393,12 +395,17 @@ public class Load
         return name;
     }
     
+    public String defaultGraph(){
+        Node node = graph.addDefaultGraphNode();
+        return node.getLabel();
+    }
+    
     public void parse(InputStream stream) throws LoadException {
         parse(stream, UNDEF_FORMAT);
     }
 
     public void parse(InputStream stream, int format) throws LoadException {
-        parse(stream, Entailment.DEFAULT, format);
+        parse(stream, defaultGraph(), format);
     }
 
     public void parse(InputStream stream, String name, int format) throws LoadException {
@@ -490,7 +497,7 @@ public class Load
     }
 
     public void loadString(String str, int format) throws LoadException {
-        loadString(str, Entailment.DEFAULT, format);
+        loadString(str, defaultGraph(), format);
     }
 
     public void loadString(String str, String name, int format) throws LoadException {
@@ -506,7 +513,7 @@ public class Load
     }
 
     public void loadResource(String path, int format) throws LoadException {
-        loadResource(path, Entailment.DEFAULT, format);
+        loadResource(path, defaultGraph(), format);
     }
 
     public void loadResource(String path, String name, int format) throws LoadException {
@@ -841,10 +848,10 @@ public class Load
      */
     public void load(InputStream stream, String source, String path) throws LoadException {
         if (source == null) {
-            source = Entailment.DEFAULT;
+            source = defaultGraph();
         }
         if (path == null) {
-            path = Entailment.DEFAULT;
+            path = defaultGraph();
         }
         // ici source était aussi la base ... (au lieu de path)
         load(stream, path, source, source, getFormat(path));
@@ -950,7 +957,7 @@ public class Load
 
     @Deprecated
     public void load(InputStream stream, int format) throws LoadException {
-        load(stream, Entailment.DEFAULT, format);
+        load(stream, defaultGraph(), format);
     }
 
     @Deprecated

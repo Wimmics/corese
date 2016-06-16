@@ -52,6 +52,7 @@ import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
@@ -71,7 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int LOAD = 1;
-	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-05-01";
+	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-06-21";
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
 	// Compteur pour le nombre d'onglets query créés 
@@ -129,7 +130,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JCheckBox checkBoxVerbose;
 	private JCheckBox checkBoxLoad;
 
-	private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbtrace;
+	private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbtrace, cbnamed;
 
 	private JMenuItem validate;
 	//style correspondant au graphe
@@ -187,6 +188,12 @@ public class MainFrame extends JFrame implements ActionListener {
 	private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
 
 	int nbTabs = 0;
+        
+        static {
+            // false: load files into named graphs
+            // true:  load files into kg:default graph
+            Load.setDefaultGraphValue(false);
+        }
 
 	/**
 	 * Crée la fenêtre principale, initialise Corese
@@ -522,6 +529,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		cbrdfs = new JCheckBox("RDFS");
 		cbowlrllite = new JCheckBox("OWL RL Lite");
 		cbowlrl = new JCheckBox("OWL RL");
+		cbnamed = new JCheckBox("Load Named");
 		checkBoxLoad = new JCheckBox("Load");
 		checkBoxQuery = new JCheckBox("Query");
 		checkBoxRule = new JCheckBox("Rule");
@@ -617,6 +625,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		engineMenu.add(cbowlrl);
 		engineMenu.add(cbowlrllite);
 		engineMenu.add(cbtrace);
+		engineMenu.add(cbnamed);
 		myRadio.add(kgramBox);
 		aboutMenu.add(apropos);
 		aboutMenu.add(tuto);
@@ -702,6 +711,16 @@ public class MainFrame extends JFrame implements ActionListener {
 			}
 		});
 		cbrdfs.setSelected(true);
+                
+                cbnamed.setSelected(true);
+                cbnamed.setEnabled(true);
+                cbnamed.addItemListener(
+			new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				Load.setDefaultGraphValue(!cbnamed.isSelected());
+			}
+		});
 
 		cbowlrl.setEnabled(true);
 		cbowlrl.setSelected(false);

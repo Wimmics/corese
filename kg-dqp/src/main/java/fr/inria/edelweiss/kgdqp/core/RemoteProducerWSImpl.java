@@ -807,4 +807,9 @@ public class RemoteProducerWSImpl implements Producer {
         return result;
     }
 
+    @Override
+    public Entity copy(Entity ent) {
+        return ent;
+    }
+
 }

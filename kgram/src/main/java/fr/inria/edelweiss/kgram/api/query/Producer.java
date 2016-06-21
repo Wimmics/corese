@@ -220,4 +220,6 @@ public interface Producer {
          void setGraphNode(Node n);
          
          Node getGraphNode();
+         
+         Entity copy(Entity ent);
 }

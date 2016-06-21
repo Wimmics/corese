@@ -223,5 +223,10 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     public DatatypeValue getDatatypeValue(Object value) {
         return producer.getDatatypeValue(value);
     }
+    
+    @Override 
+    public Entity copy(Entity ent){
+        return producer.copy(ent);
+    }
 
 }

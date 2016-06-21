@@ -169,4 +169,9 @@ public class ProducerDefault implements Producer {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Entity copy(Entity ent) {
+        return ent;
+    }
+
 }

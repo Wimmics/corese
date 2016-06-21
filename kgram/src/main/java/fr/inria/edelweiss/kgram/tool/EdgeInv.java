@@ -7,110 +7,99 @@ import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.core.PointerObject;
 
 public class EdgeInv extends PointerObject implements Edge, Entity {
-	
-	Edge edge;
-	Entity ent;
-	
-	public EdgeInv(Edge e){
-		edge = e;
-	}
-	
-	public EdgeInv(Entity e){
-		ent = e;
-		edge = e.getEdge();
-	}
-	
-	public String toString(){
-		return "inverse(" + edge.toString() +")";
-	}
 
-	@Override
-	public boolean contains(Node n) {
+    Edge edge;
+    Entity ent;
 
-		return edge.contains(n);
-	}
+    public EdgeInv(Edge e) {
+        edge = e;
+    }
 
-	@Override
-	public int nbNode() {
+    public EdgeInv(Entity e) {
+        ent = e;
+        edge = e.getEdge();
+    }
 
-		return edge.nbNode();
-	}
-	
-//	public int nbArg() {
-//
-//		return edge.nbArg();
-//	}
-	
-	public Edge getEdge(){
-		return edge;
-	}
-	
-	public Node getGraph(){
-		return ent.getGraph();
-	}
-	
-	public Entity getEntity(){
-		return ent;
-	}
+    @Override
+    public String toString() {
+        return "inverse(" + edge.toString() + ")";
+    }
 
-	@Override
-	public Node getEdgeNode() {
+    @Override
+    public boolean contains(Node n) {
 
-		return edge.getEdgeNode();
-	}
+        return edge.contains(n);
+    }
 
-	@Override
-	public int getIndex() {
+    @Override
+    public int nbNode() {
 
-		return edge.getIndex();
-	}
+        return edge.nbNode();
+    }
 
-	@Override
-	public String getLabel() {
+    @Override
+    public Edge getEdge() {
+        return edge;
+    }
 
-		return edge.getLabel();
-	}
+    @Override
+    public Node getGraph() {
+        return ent.getGraph();
+    }
 
-	@Override
-	public Node getNode(int n) {
+    @Override
+    public Entity getEntity() {
+        return ent;
+    }
 
-		switch(n){
-		case 0:  return edge.getNode(1);
-		case 1:  return edge.getNode(0);
-		default: return edge.getNode(n);
-		}
-	}
+    @Override
+    public Node getEdgeNode() {
+        return edge.getEdgeNode();
+    }
 
-//	@Override
-//	public boolean match(Edge edge) {
-//
-//		return true;
-//	}
+    @Override
+    public int getIndex() {
+        return edge.getIndex();
+    }
 
-	@Override
-	public void setIndex(int n) {
+    @Override
+    public String getLabel() {
+        return edge.getLabel();
+    }
 
-		
-	}
+    @Override
+    public Node getNode(int n) {
+        switch (n) {
+            case 0:
+                return edge.getNode(1);
+            case 1:
+                return edge.getNode(0);
+            default:
+                return edge.getNode(n);
+        }
+    }
 
-	@Override
-	public Node getEdgeVariable() {
+    @Override
+    public void setIndex(int n) {
+    }
 
-		return edge.getEdgeVariable();
-	}
+    @Override
+    public Node getEdgeVariable() {
+        return edge.getEdgeVariable();
+    }
 
-	@Override
-	public Node getNode() {
-
-		return null;
-	}
+    @Override
+    public Node getNode() {
+        return null;
+    }
 
     @Override
     public Object getProvenance() {
-        return ent.getProvenance();    
+        return ent.getProvenance();
     }
-    
-    public void setProvenance(Object obj){
+
+    @Override
+    public void setProvenance(Object obj) {
         ent.setProvenance(obj);
     }
 
@@ -118,9 +107,9 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
     public Iterable getLoop() {
         return ent.getLoop();
     }
-    
-    public int pointerType(){
-        return Pointerable.ENTITY_POINTER;
-    }       
 
+    @Override
+    public int pointerType() {
+        return Pointerable.ENTITY_POINTER;
+    }
 }

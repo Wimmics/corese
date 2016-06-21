@@ -606,7 +606,7 @@ public class PathFinder
 		Mapping map =  Mapping.create(qNodes, tNodes);
                 if (isStorePath){
                     tNodes[ip] = getPathNode();
-                    Path edges = path.copy();
+                    Path edges = path.copy(producer);
                     if (isReverse) edges.reverse();
                     Path[] lp = new Path[length];
                     lp[ip] = edges;

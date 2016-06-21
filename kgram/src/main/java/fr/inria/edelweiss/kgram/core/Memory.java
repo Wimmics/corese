@@ -28,7 +28,7 @@ import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
  *
  */
 public class Memory implements Environment {
-
+    public static boolean IS_EDGE = !true;
     static final Edge[] emptyEdges = new Edge[0];
     static final Entity[] emptyEntities = new Entity[0];
     // number of times nodes are bound by Stack
@@ -61,7 +61,7 @@ public class Memory implements Environment {
     // true when processing aggregate at the end 
     boolean isAggregate = false;
     private boolean isFake = false,
-            isEdge = true;
+            isEdge = IS_EDGE;
     EventManager manager;
     boolean hasEvent = false;
     int nbEdge = 0, nbNode = 0;
@@ -85,6 +85,7 @@ public class Memory implements Environment {
         hasEvent = true;
     }
 
+    @Override
     public EventManager getEventManager() {
         if (manager == null) {
             kgram.createManager();
@@ -92,6 +93,7 @@ public class Memory implements Environment {
         return manager;
     }
 
+    @Override
     public boolean hasEventManager() {
         return (manager != null);
     }
@@ -112,6 +114,7 @@ public class Memory implements Environment {
         return results;
     }
 
+    @Override
     public Query getQuery() {
         return query;
     }
@@ -124,6 +127,7 @@ public class Memory implements Environment {
         gNode = g;
     }
 
+    @Override
     public Node getGraphNode() {
         return gNode;
     }
@@ -136,10 +140,12 @@ public class Memory implements Environment {
         return stack;
     }
 
+    @Override
     public void setExp(Exp ee) {
         exp = ee;
     }
 
+    @Override
     public Exp getExp() {
         return exp;
     }
@@ -367,7 +373,8 @@ public class Memory implements Environment {
             for (Edge edge : qEdges) {
                 if (edge != null) {
                     qedge[n] = edge;
-                    tedge[n] = result[i];
+                    //tedge[n] = result[i];
+                    tedge[n] = p.copy(result[i]);                    
                     n++;
                 }
                 i++;
@@ -549,10 +556,6 @@ public class Memory implements Environment {
             nbEdges[index]++;
             qEdges[index] = q;
             result[index] = ent;
-
-//			if (hasEvent){
-//				event(q);
-//			}
         }
         return success;
     }

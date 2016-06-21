@@ -25,12 +25,11 @@ import java.util.HashMap;
  */
 public class EdgeIndexer 
         implements Index {
-
+    public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
-    private static Logger logger = Logger.getLogger(EdgeIndex.class);
-    static boolean byKey = Graph.valueOut;
+    private static Logger logger = Logger.getLogger(EdgeIndexer.class);
     private boolean byIndex = true;
     int index = 0, other = 1;
     int count = 0;
@@ -74,8 +73,22 @@ public class EdgeIndexer
         table.put(n, l);
     }
 
+    /**
+     * Return edges as they are stored, in internal format
+     */
+    @Override
     public EdgeList get(Node n) {
         return table.get(n);
+    }
+    
+    /**
+     * Iterate edges in external format as complete Edge
+     */
+    Iterable<Entity> extGet(Node p){
+        if (test){
+            return getEdges(p, null, null);
+        }
+        return get(p);
     }
 
      int intCompare(int n1, int n2) {
@@ -100,9 +113,9 @@ public class EdgeIndexer
    
 
     Node getNode(Entity ent, int n) {
-        if (n == IGRAPH) {
-            return ent.getGraph();
-        }
+//        if (n == IGRAPH) {
+//            return ent.getGraph();
+//        }
         return ent.getNode(n);
     }
 
@@ -142,16 +155,23 @@ public class EdgeIndexer
         isOptim = !b;
     }
 
+    /**
+     * 
+     * The index of Node the Index is sorted with
+     */
     @Override
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Iterate edges in external format
+     */
     @Override
     public Iterable<Entity> getEdges() {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
         for (Node pred : getProperties()) {
-            Iterable<Entity> it = get(pred);
+            Iterable<Entity> it = extGet(pred);
             meta.next(it);
         }
         if (meta.isEmpty()) {
@@ -238,9 +258,16 @@ public class EdgeIndexer
         return add(edge, false);
     }
 
+    Entity internal(Entity ent){
+        if (test){
+            return graph.getEdgeFactory().internal(ent);
+        }
+        return ent;
+    }
+    
     /**
-     * noGraph == true => if edge already exists in another graph, do not add
-     * edge
+     * Add edge in internal format that may be more synthetic
+     * predicate and graph may be omitted
      */
     @Override
     public Entity add(Entity edge, boolean duplicate) {
@@ -250,6 +277,7 @@ public class EdgeIndexer
             return null;
         }
 
+        Entity internal = internal(edge);       
         EdgeList el = define(edge.getEdge().getEdgeNode());
        
         if (isSort(edge)) {
@@ -261,7 +289,7 @@ public class EdgeIndexer
             }       
 
             if (onInsert(edge)) {
-                el.add(i, edge);
+                el.add(i, internal);
                 logInsert(edge);
             } else {
                 return null;
@@ -270,14 +298,13 @@ public class EdgeIndexer
             // edges are not already sorted (load time)
             // add all edges, duplicates will be removed later when first query occurs
             if (onInsert(edge)) {
-                el.add(edge);
+                el.add(internal);
                 logInsert(edge);
             } else {
                 return null;
             }
         }
 
-        //complete(edge);
         return edge;
     }
 
@@ -351,7 +378,7 @@ public class EdgeIndexer
     private EdgeList define(Node predicate) {
         EdgeList list = get(predicate);
         if (list == null) {
-            list = new EdgeList(predicate, index);
+            list = new EdgeList(graph, predicate, index);
             setComparator(list);
             put(predicate, list);
         }
@@ -384,6 +411,16 @@ public class EdgeIndexer
         }
         if (reduce && index == 0) {
             reduce();
+        }
+    }
+          
+    @Override
+    public void compact(){
+        if (graph.isGraphNode(graph.getNode(Graph.RULE_INDEX))){
+            for (Node pred : getProperties()) {
+                EdgeList el = get(pred);
+                el.compact();
+            }
         }
     }
 
@@ -453,7 +490,7 @@ public class EdgeIndexer
         synchronized (pred) {
             EdgeList list = get(pred);
             if (list != null && list.size() == 0) {
-                EdgeList std = (EdgeList) graph.getIndex().getEdges(pred, null);
+                EdgeList std = (EdgeList) graph.getIndex().get(pred);
                 list.copy(std);
                 list.sort();
             }
@@ -472,10 +509,18 @@ public class EdgeIndexer
     @Override
     public Iterable<Entity> getEdges(Node pred, Node node, Node node2) {
         EdgeList list = checkGet(pred);
-        if (list == null || node == null) {
+        if (list == null){ 
             return list;
         }
-        if (node2 == null) {
+        else if (node == null){
+            if (test){
+                return new EdgeIterate(list);
+            }
+            else {
+                return list;
+            }
+        }
+        else if (test || node2 == null) {
             return list.getEdges(node);
         }
         return list.getEdges(node, node2);
@@ -541,16 +586,25 @@ public class EdgeIndexer
      * TODO: semantics of default graph (kgraph:default vs union of all graphs)
      *
      */
-    
-
     @Override
     public Entity delete(Entity edge) {
+        Node pred = graph.getPropertyNode(edge.getEdge().getEdgeNode());
+        if (pred == null){
+            return null;
+        }
+        return delete(pred, edge);
+    }
+
+    @Override
+    public Entity delete(Node pred, Entity edge) {
         if (index != IGRAPH && edge.nbNode() <= index) {
             // use case:  additional node is not present, do not index on this node
             // never happens for subject object and graph
             return null;
         }
-        EdgeList list = getListByLabel(edge);
+        //EdgeList list = getListByLabel(edge);
+        EdgeList list = get(pred);
+        
         if (list == null) {
             return null;
         }
@@ -648,12 +702,12 @@ public class EdgeIndexer
                 continue;
             }
 
-            update(g1, g2, list, n, mode);
+            update(g1, g2, pred, list, n, mode);
 
         }
     }
 
-    private void update(Node g1, Node g2, EdgeList list, int n, int mode) {
+    private void update(Node g1, Node g2, Node pred, EdgeList list, int n, int mode) {
         boolean isBefore = false;
         
         if (g2 != null && nodeCompare(g1, g2) < 0) {
@@ -667,14 +721,14 @@ public class EdgeIndexer
                 switch (mode) {
 
                     case Graph.CLEAR:
-                        clear(ent);
+                        clear(pred, ent);
                         list.remove(i);
                         break;
 
                     case Graph.MOVE:
-                        clear(ent);
+                        clear(pred, ent);
                         list.remove(i);
-                        ee = copy(g2, ent);
+                        ee = copy(g2, pred, ent);
                         if (isBefore) {
                         } else if (ee != null) {
                             i++;
@@ -682,7 +736,7 @@ public class EdgeIndexer
                         break;
 
                     case Graph.COPY:
-                        ee = copy(g2, ent);
+                        ee = copy(g2, pred, ent);
                         // get next ent
                         i++;
                         // g2 is before g1 hence ent was added before hence incr i again
@@ -701,14 +755,14 @@ public class EdgeIndexer
     /**
      * TODO: setUpdate(true)
      */
-    private Entity copy(Node gNode, Entity ent) {
-        return graph.copy(gNode, ent);
+    private Entity copy(Node gNode, Node pred, Entity ent) {
+        return graph.copy(gNode, pred, ent);
     }
 
-    private void clear(Entity ent) {
+    private void clear(Node pred, Entity ent) {
         for (Index ei : graph.getIndexList()) {
             if (ei.getIndex() != IGRAPH) {
-                Entity rem = ei.delete(ent);
+                Entity rem = ei.delete(pred, ent);
                 if (isDebug && rem != null) {
                     logger.debug("** EI clear: " + ei.getIndex() + " " + rem);
                 }

@@ -631,6 +631,7 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void clean() {
        graph.clean();
+       graph.compact();
        cleanRules();
     }
 

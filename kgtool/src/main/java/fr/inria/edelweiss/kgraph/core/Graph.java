@@ -277,11 +277,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     Index createIndex(boolean b, int i) {
-        if (isOptIndex()) {
-            return new EdgeIndexer(this, b, i);
-        } else {
-            return new EdgeIndex(this, b, i);
-        }
+        return new EdgeIndexer(this, b, i);
     }
 
     /**
@@ -507,7 +503,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public static void setCompareKey(boolean b) {
-        EdgeIndex.byKey = b;
         if (b) {
             setValueTable(true);
         }
@@ -1000,6 +995,20 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         isIndex = false;
     }
+    
+    public void compact(){
+        cleanIndex();
+        table.compact();
+    }
+    
+    void cleanIndex() {
+        for (Index ei : getIndexList()) {
+            if (ei.getIndex() != 0) {
+                ei.clean();
+            }
+        }
+    }
+ 
 
     public void prepare() {
         if (isIndex) {
@@ -2027,6 +2036,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Iterable<Node> getGraphNodes() {
         return graph.values();
     }
+    
+    public int nbGraphNodes(){
+        return graph.size();
+    }
 
     public Iterable<Entity> getNodes() {
         return individual.values();
@@ -2623,8 +2636,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * TODO: setUpdate(true)
      */
-    Entity copy(Node gNode, Entity ent) {
-        Entity e = fac.copy(gNode, ent);
+    Entity copy(Node gNode, Node pred, Entity ent) {
+        Entity e = fac.copy(gNode, pred, ent);
         //fac.setGraph(e, gNode);
 
         if (hasTag() && e.nbNode() == 3) {

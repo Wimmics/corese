@@ -23,6 +23,9 @@ public class EdgeGeneric extends EdgeTop
     public EdgeGeneric() {
     }
 
+    public EdgeGeneric(Node pred) {
+        predicate = pred;
+    }
 
     EdgeGeneric(Node g, Node p){
         graph = g;
@@ -46,6 +49,19 @@ public class EdgeGeneric extends EdgeTop
      
     public static EdgeGeneric create(Node g, Node subject, Node pred, Node object) {
         return new EdgeGeneric(g, pred, subject, object);
+    }
+    
+    public void replicate(Entity cur){
+        setNode(0, cur.getNode(0));
+        setNode(1, cur.getNode(1));
+        setIndex(cur.getEdge().getIndex());
+        setProvenance(cur.getProvenance());
+    }
+    
+     public void duplicate(Entity cur){
+        setEdgeNode(cur.getEdge().getEdgeNode());
+        setGraph(cur.getGraph());
+        replicate(cur);
     }
 
     public void add(Node node){

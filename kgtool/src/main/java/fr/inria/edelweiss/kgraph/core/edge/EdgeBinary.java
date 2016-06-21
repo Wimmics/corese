@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgraph.core.edge;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
@@ -13,7 +12,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  *
  */
 public abstract class EdgeBinary extends EdgeTop 
-    implements Edge, Entity {
+    implements Edge {
     public static boolean displayGraph = true;
     protected Node subject, object;
 

@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import static fr.inria.edelweiss.kgraph.core.EdgeIndexer.IGRAPH;
 import static fr.inria.edelweiss.kgraph.core.EdgeIndexer.ILIST;
 import java.util.ArrayList;
@@ -21,13 +20,14 @@ import java.util.List;
  *
  */
 public class EdgeList implements Iterable<Entity> {
-
-    Node predicate;
+    Graph graph;
+    private Node predicate;
     ArrayList<Entity> list;
     Comparator<Entity> comp;
     int index = 0, other = 0, next = IGRAPH;
 
-    EdgeList(Node p, int i) {
+    EdgeList(Graph g, Node p, int i) {
+        graph = g;
         predicate = p;
         list = new ArrayList<Entity>();
         index = i;
@@ -54,6 +54,10 @@ public class EdgeList implements Iterable<Entity> {
     Entity get(int i) {
         return list.get(i);
     }
+    
+    int getIndex(){
+        return index;
+    }
 
     /**
      * Remove duplicate edges
@@ -74,6 +78,18 @@ public class EdgeList implements Iterable<Entity> {
         }
         list = l;
         return count;
+    }
+    
+    /**
+     * Replace kg:rule Edge by compact EdgeInternalRule
+     */
+    void compact(){
+        ArrayList<Entity> l = new ArrayList<Entity>(list.size());
+        for (Entity ent : list) {
+           Entity ee = graph.getEdgeFactory().compact(ent);
+           l.add(ee);
+        }
+        list = l;
     }
 
     void sort() {
@@ -241,8 +257,14 @@ public class EdgeList implements Iterable<Entity> {
         if (n >= 0 && n < list.size()) {
             int n1 = getNodeIndex(n, index);
             if (n1 == node1.getIndex()) {
-                Iterate it = new Iterate(this, n);
-                return it;
+                if (EdgeIndexer.test) {
+                    // draft
+                    return new EdgeIterate(this, n);
+
+                } else {
+                    // format
+                    return new Iterate(this, n);
+                }
             }
         }
         return null;
@@ -314,6 +336,14 @@ public class EdgeList implements Iterable<Entity> {
     }
 
     /**
+     * @return the predicate
+     */
+    public Node getPredicate() {
+        return predicate;
+    }
+
+
+    /**
      * edge = list.get(n) node = edge.getNode(index) Return an iterator of edges
      * with node as index element
      */
@@ -322,14 +352,11 @@ public class EdgeList implements Iterable<Entity> {
         List<Entity> list;
         int node;
         int ind, start;
-        EdgeQuad edge;
 
         Iterate(EdgeList l, int n) {
             list = l.getList();
             node = getNodeIndex(list.get(n), index);
             start = n;
-            // draft test
-            //edge = new EdgeQuad();
         }
 
         @Override
@@ -340,7 +367,6 @@ public class EdgeList implements Iterable<Entity> {
 
         @Override
         public boolean hasNext() {
-            // TODO Auto-generated method stub
             boolean b = ind < list.size()
                     && getNodeIndex(list.get(ind), index) == node;
             return b;
@@ -348,37 +374,25 @@ public class EdgeList implements Iterable<Entity> {
 
         @Override
         public Entity next() {
-            // TODO Auto-generated method stub
             Entity ent = list.get(ind++);
-            return ent; // getResult(ent);
+            return ent; 
         }
 
         @Override
         public void remove() {
-            // TODO Auto-generated method stub
-        }
-        
-        Entity getResult(Entity ent){
-            edge.setNode(0, ent.getNode(0));
-            edge.setNode(1, ent.getNode(1));
-            edge.setEdgeNode(ent.getEdge().getEdgeNode());
-            edge.setGraph(ent.getGraph());
-            return edge;
-        }
+        }         
     }
+    
+       
 
+    // getNode(IGRAPH) must return getGraph()
     int getNodeIndex(Entity ent, int n) {
-//        if (n == IGRAPH) {
-//            return ent.getGraph().getIndex();
-//        }
         return ent.getNode(n).getIndex();
     }
 
+    // getNode(IGRAPH) must return getGraph()
     int getNodeIndex(int i, int n) {
         Entity ent = list.get(i);
-//        if (n == IGRAPH) {
-//            return ent.getGraph().getIndex();
-//        }
         return ent.getNode(n).getIndex();
     }
 

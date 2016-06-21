@@ -25,6 +25,8 @@ public interface Index {
 	int duplicate();
 
 	void index();
+        
+        void compact();
                 
         void index(Node pred, boolean reduce);
 
@@ -45,6 +47,8 @@ public interface Index {
         void add(Node p, List<Entity> list);
 
         Entity delete(Entity edge);
+        
+        Entity delete(Node pred, Entity edge);
 
 	void delete(Node pred);
 
@@ -59,6 +63,8 @@ public interface Index {
 	int size(Node pred);
 
 	Iterable<Entity> getEdges();
+        
+        Iterable<Entity> get(Node pred);
 
 	Iterable<Entity> getEdges(Node pred, Node node);
 

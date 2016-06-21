@@ -281,6 +281,7 @@ public class Entailment implements Engine {
     /**
      * Store property domain, range, subPropertyOf, symmetric, inverse
      */
+    @Override
     public void onInsert(Node gNode, Edge edge) {
         define(gNode, edge);
     }
@@ -288,10 +289,7 @@ public class Entailment implements Engine {
     boolean define(Node gNode, Edge edge) {
         //if (! edge.getLabel().startsWith(W3C)) return;
         boolean isMeta = true;
-//		if (edge.getNode(1).isBlank()){
-//			// DRAFT: do nothing
-//		}
-//		else 
+
         switch (getType(edge.getLabel())) {
 
             case TYPE:
@@ -483,7 +481,7 @@ public class Entailment implements Engine {
         if (i == 1 && dt.isLiteral()) {
             return;
         }
-
+        
         if (list != null) {
             for (Node type : list) {
                 Entity ee = create(gNode, node, hasType, type);
@@ -787,11 +785,11 @@ public class Entailment implements Engine {
             if (isDebug) {
                 logger.info("Entail: " + pred + " " + graph.size(pred));
             }
-            Entity pdomain = null, prange = null;
+            Node pdomain = null, prange = null;
             boolean isFirst = true;
-
+            
             for (Entity ent : graph.getEdges(pred)) {
-
+                
                 if (isFirst) {
                     // ?p rdf:type rdf:Property
                     defProperty(pred);
@@ -809,20 +807,20 @@ public class Entailment implements Engine {
                 if (isFirst) {
                     isFirst = false;
                     signature(gg, edge);
-                    pdomain = ent;
-                    prange = ent;
+                    pdomain = ent.getNode(0);
+                    prange  = ent.getNode(1);                    
                 } else {
 
-                    if (pdomain.getEdge().getNode(0) != ent.getEdge().getNode(0)
+                    if (pdomain != ent.getEdge().getNode(0)
                             || !isDefaultGraph) {
                         domain(gg, edge);
-                        pdomain = ent;
+                        pdomain = ent.getNode(0);                      
                     }
-
-                    if (prange.getEdge().getNode(1) != ent.getEdge().getNode(1)
+                    
+                    if (prange != ent.getEdge().getNode(1)
                             || !isDefaultGraph) {
                         range(gg, edge);
-                        prange = ent;
+                        prange = ent.getNode(1);
                     }
                 }
 
@@ -936,18 +934,22 @@ public class Entailment implements Engine {
         return str;
     }
 
+    @Override
     public void setActivate(boolean b) {
         isActivate = b;
     }
 
+    @Override
     public boolean isActivate() {
         return isActivate;
     }
 
+    @Override
     public void remove() {
         graph.clear(ENTAIL, true);
     }
 
+    @Override
     public int type() {
         return RDFS_ENGINE;
     }

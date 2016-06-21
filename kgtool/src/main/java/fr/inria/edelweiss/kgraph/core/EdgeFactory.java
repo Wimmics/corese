@@ -53,7 +53,28 @@ public class EdgeFactory {
         else {
             return EdgeGeneric.create(source, subject, predicate, value);
         }
-    }       
+    } 
+    
+    public Entity internal(Entity ent){
+        switch (ent.getGraph().getIndex()){
+            // rule edge must store an index
+            case Graph.RULE_INDEX: return ent;
+            case Graph.DEFAULT_INDEX:
+                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));
+            case Graph.ENTAIL_INDEX:
+                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));    
+            default: 
+                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));
+        }
+    }
+    
+    public Entity compact(Entity ent){
+        switch (ent.getGraph().getIndex()){
+            case Graph.RULE_INDEX: 
+                return EdgeInternalRule.create(ent.getNode(0), ent.getNode(1));
+            default: return ent;
+        }
+    }
     
     /**
      * Specific named graph and specific properties have specific Edge class
@@ -137,15 +158,19 @@ public class EdgeFactory {
         return ee;
     }
     
-    public Entity copy(Node node, Entity ent) {
+    public Entity copy(Node node, Node pred, Entity ent) {
         if (ent instanceof EdgeImpl) {
             EdgeImpl ee = ((EdgeImpl)ent).copy();
             ee.setGraph(node);
             return ee;
         }       
         else {
-            return create(node, ent.getNode(0), ent.getEdge().getEdgeNode(),  ent.getNode(1));
+            return create(node, ent.getNode(0), pred,  ent.getNode(1));
         }
+    }
+    
+    public Entity copy(Entity ent){
+        return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
     }
 
     /**

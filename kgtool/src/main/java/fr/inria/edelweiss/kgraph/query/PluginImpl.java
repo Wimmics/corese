@@ -25,6 +25,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -176,7 +177,7 @@ public class PluginImpl extends ProxyImpl {
                 
                 switch (exp.oper()) {
                     case KGRAM:
-                        return kgram(g, o);
+                        return kgram(env, g, o);
 
                     case NODE:
                         return node(g, o);
@@ -859,14 +860,15 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
-    Node kgram(Graph g, Object o) {
+    Node kgram(Environment env, Graph g, Object o) {
         IDatatype dt = (IDatatype) o;
         String query = dt.getLabel();
-        return kgram(g, query);
+        return kgram(env, g, query);
     }
         
-    Node kgram(Graph g, String  query) {    
+    Node kgram(Environment env, Graph g, String  query) {    
         QueryProcess exec = QueryProcess.create(g, true);
+        exec.setRule(env.getQuery().isRule());
         try {
             Mappings map = exec.sparqlQuery(query);
             if (map.getGraph() == null){

@@ -158,14 +158,15 @@ public class Workflow implements Engine {
 		return isSuccess;
 	}
 
+        @Override
 	public void init() {
 		for (Engine e : engines){
 			e.init();
 		}
 	}
 
-	public void onDelete() {
-		
+        @Override
+	public void onDelete() {	
 		if (isClearEntailment ){
 			remove();		
 		}
@@ -175,12 +176,14 @@ public class Workflow implements Engine {
 		}
 	}
 
+        @Override
 	public void onInsert(Node gNode, Edge edge) {
 		for (Engine e : engines){
 			e.onInsert(gNode, edge);
 		}
 	}
 
+        @Override
 	public void onClear() {
 		for (Engine e : engines){
 			e.onClear();
@@ -190,6 +193,7 @@ public class Workflow implements Engine {
 	/**
 	 * Remove entailments
 	 */
+        @Override
 	public void remove() {
 		for (Engine e : engines){
 			e.remove();
@@ -197,14 +201,17 @@ public class Workflow implements Engine {
 	}
 
 
+        @Override
 	public void setActivate(boolean b) {
 		isActivate  = b;
 	}
 
+        @Override
 	public boolean isActivate() {
 		return isActivate;
 	}
 
+        @Override
 	public int type() {
 		return WORKFLOW_ENGINE;
 	}

@@ -196,7 +196,7 @@ public class ExtendGraph {
     private Object eval(Producer p, Expr exp, Environment env, IDatatype dt) {
        try {
             String q = load(dt.getLabel());
-            Node res = plugin.kgram(getGraph(p), q);
+            Node res = plugin.kgram(env, getGraph(p), q);
             return res;
         } catch (IOException ex) {
             return null;

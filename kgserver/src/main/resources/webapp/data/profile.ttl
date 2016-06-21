@@ -26,6 +26,15 @@ st:dbpediawf a sw:Workflow ;
     [ a sw:Transformation ; sw:uri st:navlab ]
   )
 .
+
+
+st:geoloc a st:Profile ;
+st:workflow st:geoloc ;
+sw:body (
+    <query/geo.rq>
+    st:dbpediawf
+)
+.
   
 st:hturtle a st:Profile ;
 st:workflow st:hturtleWF .
@@ -350,17 +359,17 @@ st:cdn a st:Server ;
   .  
     
 st:cdncontent a sw:Workflow ; sw:body ( 
-[ a sw:Load ; sw:path 
+[ a sw:Load ; sw:named true ; sw:path 
   <cdn/aa_siecle.ttl> ,  <cdn/fr.ttl> , 
-  <cdn/spqr.ttl> , <cdn/franc.ttl> , <cdn/eds.ttl> , 
+  <cdn/spqr.ttl> ,    <cdn/franc.ttl> , <cdn/eds.ttl> , 
   <cdn/emp.ttl> ,     <cdn/provence.ttl> ,  <cdn/icon.rdf> , 
-  <cdn/icon.ttl> ,    <cdn/context.ttl> ,  
+  <cdn/icon.ttl> ,    <cdn/context.ttl> ,
   <cdn/an1000.ttl> ,  <cdn/an1100.ttl> , 
-  <cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,   <cdn/an1400.ttl> , 
+  <cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,  <cdn/an1400.ttl> , 
   <cdn/an1500.ttl> ,  <cdn/an1600.ttl> ,  <cdn/an1700.ttl> , 
-  <cdn/an1800.ttl> ,  <cdn/an1900.ttl> ,  <cdn/pos.ttl> 	
-] )
-.
+  <cdn/an1800.ttl> ,  <cdn/an1900.ttl>  ,  <cdn/pos.ttl>	
+] 
+).
 
     
  st:history a st:Profile ;
@@ -392,12 +401,13 @@ st:owlrl2 a st:Server ;
 .
 
 # ************************************************************************
+# Former Java hard coded Process implemented as declarative Workflow
+# These Profile are also Workflow
+#
 
 st:shape a st:Server ;
     st:service "shape" ;
-    st:workflow st:shapeWF .
-
-st:shapeWF a sw:Workflow ;
+    st:workflow st:shape  ;
 # get param(graph) and mode(shape) from server Context
 # parser get them from Context when creating ShapeProcess
 sw:body (
@@ -408,18 +418,13 @@ sw:body (
 
 
 
-
-
 #
 # Generic type check 
 # Context st:param is the RDF to load
 # Context st:mode  is the transformation type checker
 #
 st:typecheck a st:Profile ;
-st:workflow st:typecheckWF
-.
-
-st:typecheckWF a sw:Workflow ; 
+st:workflow st:typecheck ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
@@ -430,10 +435,7 @@ sw:body (
 .
 
 st:typecheckowl a st:Profile ;
-st:workflow st:typecheckOWLWF
-.
-
-st:typecheckOWLWF a sw:Workflow ; 
+st:workflow st:typecheckowl ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # st:param 
@@ -448,10 +450,7 @@ sw:body (
 
 
 st:display a st:Profile ;
-st:workflow st:displayWF
-.
-
-st:displayWF a sw:Workflow ; 
+st:workflow st:display ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
@@ -460,10 +459,26 @@ sw:body (
 .
 
 
+st:sparqltc a st:Profile ;
+st:workflow st:sparqltc ;
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ;    sw:mode sw:spin ] # sw:uri = st:param 
+    [ a sw:Probe ;   sw:mode sw:visitor ]
+    [ a sw:Transformation ; sw:uri st:spintc] 
+    [ a sw:Transformation ; sw:uri st:spinhtml ]
+)
+.
 
 
-
-
+st:sparqldsp a st:Profile ;
+st:workflow st:sparqldsp ;
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load    ; sw:mode sw:spin ] # sw:uri = st:param 
+    [ a sw:Transformation ] # sw:uri = st:mode 
+)
+.
 
 
 

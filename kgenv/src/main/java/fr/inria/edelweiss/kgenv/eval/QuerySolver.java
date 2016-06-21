@@ -83,6 +83,7 @@ public class QuerySolver  implements SPARQLEngine {
     private boolean isPathType = false;
     private boolean isStorePath = true;
     private boolean isCachePath = false;
+    private boolean isRule = false;
         // two blank nodes match if they have the same description
         // (their edges  and target nodes math)
         // use case: match two OWL Blank nodes that represent the same exp
@@ -325,6 +326,11 @@ public class QuerySolver  implements SPARQLEngine {
        
 	     	
 	void init(Query q){
+            // use case: OWL RL kg:sparql(query) in a rule
+            // query is evaluated as a Rule
+                if (isRule){
+                    q.setRule(isRule);
+                }
                 q.setMatchBlank(isMatchBlank);
 		q.setListGroup(isListGroup);
 		q.setListPath(isListPath);
@@ -744,6 +750,20 @@ public class QuerySolver  implements SPARQLEngine {
     
      public void set(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    /**
+     * @return the rule
+     */
+    public boolean isRule() {
+        return isRule;
+    }
+
+    /**
+     * @param rule the rule to set
+     */
+    public void setRule(boolean rule) {
+        this.isRule = rule;
     }
 	
 }

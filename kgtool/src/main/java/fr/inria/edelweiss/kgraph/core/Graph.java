@@ -1670,6 +1670,38 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             indexNode((IDatatype) pNode.getValue(), pNode);
         }
     }
+    
+    /**
+     * Return a DataStore with default or named graph
+     * Use case: iterate edges
+     */
+    public DataStore getNamed(){
+        return new DataStore(this).named();
+    }
+    
+    public DataStore getNamed(List<Node> from){
+        return new DataStore(this, from).named();
+    }
+    
+    public DataStore getNamed(Node source){
+        return new DataStore(this).named(source);
+    }
+    
+    public DataStore getNamed(List<Node> from, Node source){
+        if (source == null){
+            return getNamed(from);
+        }
+        return getNamed(source);
+    }
+       
+    public DataStore getDefault(){
+        return new DataStore(this);
+    }
+    
+    public DataStore getDefault(List<Node> from){
+        return new DataStore(this, from);
+    }
+    
 
     public Iterable<Entity> getEdges() {
         Iterable<Entity> ie = table.getEdges();
@@ -1909,12 +1941,12 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     // without duplicates 
     public Iterable<Entity> getNodeEdges(Node node) {
-        return EdgeIterator.create(this, getEdges(node, 0));
+        return DataStore.create(this, getEdges(node, 0));
     }
 
     public Iterable<Entity> getNodeEdges(Node gNode, Node node) {
-        EdgeIterator it = EdgeIterator.create(this, getEdges(node, 0));
-        it.setGraph(gNode);
+        DataStore it = DataStore.create(this, getEdges(node, 0));
+        it.named(gNode);
         return it;
     }
 

@@ -1,95 +1,171 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
 import java.util.ArrayList;
 
 /**
- *
- * Eliminate successive similar edges (when no graph ?g {}) Check from & from
- * named Check graph ?g
+ * Transient Dataset over graph in order to iterate edges 
+ * Use case: Producer getEdges()
+ * default or named graphs, from or from named
+ * Default graph: eliminate duplicate edges during iteration
+ * May take edge level into account for RuleEngine optimization
+ * 
  */
-public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
+public class DataStore implements Iterable<Entity>, Iterator<Entity> {
 
-    static final List<Entity> empty = new ArrayList<Entity>(0);
+    static final List<Entity> empty     = new ArrayList<Entity>(0);
+    static final List<Node> emptyNode   = new ArrayList<Node>(0);
     Iterable<Entity> iter;
     Iterator<Entity> it;
     EdgeGeneric glast;
     Edge last;
-    Node graphNode;
-    //Graph graph;
     List<Node> from;
     Node fromNode;
-    boolean hasGraph, hasFrom, hasOneFrom;
-    private boolean hasTag = false;
+    Graph graph;
+    boolean isNamedGraph, hasFrom, hasOneFrom;
     private int level = -1;
     boolean hasLevel = false;
 
-    EdgeIterator(Graph g) {
-        //graph = g;
-        init();
-    }
-
-    // eliminate duplicate edges due to same source
-    EdgeIterator(Graph g, Iterable<Entity> i) {
-        //graph = g;
-        iter = i;
-        hasGraph = false;
+    DataStore(Graph g) {
+        graph = g;
+        isNamedGraph = false;
         hasFrom = false;
         hasOneFrom = false;
-        init();
     }
 
-    public static EdgeIterator create(Graph g) {
-        EdgeIterator ei = new EdgeIterator(g);
-        ei.setTag(g.hasTag());
+    public static DataStore create(Graph g) {
+        DataStore ei = new DataStore(g);
         return ei;
     }
 
-    public static EdgeIterator create(Graph g, Iterable<Entity> i) {
-        EdgeIterator ei = new EdgeIterator(g, i);
-        ei.setTag(g.hasTag());
+    public static DataStore create(Graph g, Iterable<Entity> i) {
+        DataStore ei = new DataStore(g);
+        ei.setIterable(i);
         return ei;
     }
-
-    void init() {
-    }
-
-    public EdgeIterator(Graph g, Iterable<Entity> i, List<Node> list, boolean hasGraph) {
-        iter = i;
+    
+     public DataStore(Graph g, List<Node> list) {
+        this(g);
         from = list;
-        this.hasGraph = hasGraph;
         hasFrom = from.size() > 0;
         hasOneFrom = from.size() == 1;
         if (hasOneFrom) {
             fromNode = g.getGraphNode(from.get(0).getLabel());
-            if (fromNode == null) {
-                iter = empty;
+        }
+    }
+
+    public DataStore(Graph g, Iterable<Entity> i, List<Node> list) {
+        this(g, list);
+        setIterable(i);
+    }
+       
+    public Iterable<Entity> iterate() {
+        return iterate(graph.getTopProperty());
+    }
+
+    public Iterable<Entity> iterate(Node predicate) {
+        setIterable(graph.getEdges(predicate));
+        return this;
+    }
+
+    public Iterable<Entity> iterate(Node predicate, Node node) {
+        return iterate(predicate, node, 0);
+    }
+
+    public Iterable<Entity> iterate(Node predicate, Node node, int n) {
+        if (isNamedGraph){
+            if (node == null && hasFrom && ! from.isEmpty()) {
+                return getEdgesFromNamed(from, predicate);
             }
         }
-        setTag(g.hasTag());
-        //graph = g;
-        init();
+        else {
+            if (node == null && hasFrom && ! from.isEmpty()) {
+                // no query node has a value, there is a from           
+                if (! isFromOK(from)) {
+                    // from URIs are unknown in current graph
+                    return empty;
+                }
+            }
+        }
+        
+        setIterable(graph.getEdges(predicate, node, n));
+        if (iter == null) {
+            return empty;
+        }
+        return this;
+    }
+    
+    /**
+     * Iterate predicate in from named
+     */
+    Iterable<Entity> getEdgesFromNamed(List<Node> from, Node predicate) {
+        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+
+        for (Node src : from) {
+            Node tfrom = graph.getGraphNode(src.getLabel());
+            if (tfrom != null) {
+                Iterable<Entity> it = graph.getEdges(predicate, tfrom, Graph.IGRAPH);
+                if (it != null) {
+                    meta.next(it);
+                }
+            }
+        }
+
+        if (meta.isEmpty()) {
+            return empty;
+        } else {
+            return meta;
+        }
+    }
+    
+     boolean isFromOK(List<Node> from) {
+        for (Node node : from) {
+            Node tfrom = graph.getNode(node);
+            if (tfrom != null && graph.isGraphNode(tfrom)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void setIterable(Iterable<Entity> it){
+        iter = it;
+    }
+    
+    public DataStore level(int n){
+        setLevel(n);
+        return  this;
+    }
+    
+    public DataStore named(){
+        this.isNamedGraph = true;
+        return this;
     }
 
-    void setTag(boolean b) {
-        hasTag = b;
-    }
-
-    void setGraph(Node g) {
-        hasGraph = true;
-        graphNode = g;
+    public DataStore named(Node g) {
+        if (g != null) {
+            fromNode = g;
+            hasFrom = true;
+            hasOneFrom = true;
+            if (from == null){
+                from = emptyNode;
+            }
+        }
+        return named();
     }
 
     @Override
     public Iterator<Entity> iterator() {
-        // TODO Auto-generated method stub
+        if (hasOneFrom && fromNode == null) {
+            return empty.iterator();
+        }
         it = iter.iterator();
         last = null;
         return this;
@@ -97,17 +173,12 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 
     @Override
     public boolean hasNext() {
-        // TODO Auto-generated method stub
         return it.hasNext();
     }
 
     boolean same(Node n1, Node n2) {
         return n1.getIndex() == n2.getIndex();
     }
-    
-//     boolean same2(Node n1, Node n2) {
-//        return graph.getIndex().same(n1, n2);
-//    }
 
     @Override
     public Entity next() {
@@ -116,23 +187,16 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
             Entity ent = it.next();
             boolean ok = true;
 
-            if (hasGraph) {
-                if (graphNode == null) {
-                    // keep duplicates
-                    ok = true;
-                } else {
-                    // check same graph node
-                    if (!same(ent.getGraph(), graphNode)) {
-                        ok = false;
-                    }
-                }
-            } else if (last != null) {
+            if (isNamedGraph) {
+                // ok
+            } 
+            else if (last != null) {
                 // eliminate successive duplicates
                 ok = different(last, ent.getEdge());
             }
 
             if (ok && hasFrom) {
-                ok = isFrom(ent, from);
+                ok = isFrom(ent);
             }
 
             if (ok) {
@@ -155,12 +219,7 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
             return true;
         } else {
             int size = last.nbNode();
-            if (size == edge.nbNode()) {
-                // draft: third argument is a tag, skip it
-                // @deprecated (Kolflow CRDT)
-                if (hasTag && size == 3) {
-                    size = 2;
-                }
+            if (size == edge.nbNode()) {               
                 for (int i = 0; i < size; i++) {
                     if (!same(last.getNode(i), edge.getNode(i))) {
                         return true;
@@ -191,14 +250,13 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
 
     @Override
     public void remove() {
-        // TODO Auto-generated method stub
     }
 
     /**
      *
      * Check if entity graph node is member of from by dichotomy
      */
-    boolean isFrom(Entity ent, List<Node> from) {
+    boolean isFrom(Entity ent) {
         if (hasOneFrom) {
             return same(fromNode, ent.getGraph());
         } else {
@@ -237,27 +295,6 @@ public class EdgeIterator implements Iterable<Entity>, Iterator<Entity> {
                 return find(list, node, mid + 1, last);
             }
         }
-    }
-
-    boolean isFrom2(Entity ent, List<Node> from) {
-        Node g = ent.getGraph();
-        for (Node node : from) {
-            if (g.same(node)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // draft unused
-    private void provenance(Entity ent) {
-        ent.setProvenance(graph(ent));
-    }
-
-    Graph graph(Entity ent) {
-        Graph g = Graph.create();
-        g.copy(ent);
-        return g;
     }
 
     /**

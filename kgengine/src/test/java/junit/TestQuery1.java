@@ -51,6 +51,7 @@ import fr.inria.edelweiss.kgtool.util.GraphStoreInit;
 import fr.inria.edelweiss.kgtool.util.QueryManager;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.AfterClass;
@@ -154,7 +155,70 @@ public class TestQuery1 {
 
     }
      
-     
+    @Test
+       public void testDataStore() throws EngineException{
+           Graph g = Graph.create(false);
+           QueryProcess exec = QueryProcess.create(g);
+           
+           String init = "insert data {"
+                   + "graph us:g1 {"
+                   + "us:John foaf:knows us:Jack, us:Jules "
+                   + "foaf:knows rdfs:domain foaf:Person"
+                   + "} "
+                   + "graph us:g2 {"
+                   + "us:John foaf:knows us:Jack "
+                   + "foaf:Person rdfs:subClassOf foaf:Human "
+                   + "foaf:Human rdfs:subClassOf foaf:Humanoid "
+                   + "}"                  
+                   + "}";
+                         
+           exec.query(init);
+                    
+           ArrayList<Node> list = new ArrayList<Node>();
+           ArrayList<Node> list2 = new ArrayList<Node>();
+           
+           list.add(g.getGraphNode(NSManager.USER+"g1"));
+           list2.add(g.getGraphNode(NSManager.USER+"g1"));
+           list2.add(g.getGraphNode(NSManager.USER+"g2"));
+           
+           Node p = g.getPropertyNode(NSManager.FOAF+"knows");
+           Node n = g.getNode(NSManager.USER+"John");
+           Node n1 = g.getNode(NSManager.USER+"Jack");
+           
+           
+           assertEquals(5, count(g.getDefault().iterate()));
+                           
+           assertEquals(3, count(g.getDefault(list).iterate()));
+       
+           assertEquals(5, count(g.getDefault(list2).iterate()));
+                  
+           assertEquals(6, count(g.getNamed().iterate()));
+          
+           assertEquals(3, count(g.getNamed(list).iterate()));
+                   
+           assertEquals(6, count(g.getNamed(list2).iterate()));
+                            
+           assertEquals(2, count(g.getDefault(list2).iterate(p, n, 0)));
+                            
+           assertEquals(3, count(g.getNamed(list2).iterate(p, n, 0)));
+                 
+           assertEquals(1, count(g.getDefault(list2).iterate(p, n1, 1)));
+                   
+           assertEquals(2, count(g.getNamed(list2).iterate(p, n1, 1)));
+      }
+    
+    int count(Iterable<Entity> it){
+          int c = 0;
+          for (Entity ent : it){
+              if (ent != null){
+                  //System.out.println(ent);
+                  c++;
+              }
+          }
+          //System.out.println("");
+          return c;
+      }
+    
    @Test  
     public void testrepl() throws EngineException{
         String q = "select ('o' as ?pat) ('oo' as ?rep) (replace('aobooc', ?pat, ?rep) as ?res) where {}";

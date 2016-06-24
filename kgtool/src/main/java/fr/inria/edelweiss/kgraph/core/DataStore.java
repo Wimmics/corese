@@ -29,13 +29,14 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
     List<Node> from;
     Node fromNode;
     Graph graph;
-    boolean isNamedGraph, hasFrom, hasOneFrom;
+    boolean isNamedGraph, hasFrom, hasOneFrom, isMember;
     private int level = -1;
     boolean hasLevel = false;
 
     DataStore(Graph g) {
         graph = g;
         isNamedGraph = false;
+        isMember = true;
         hasFrom = false;
         hasOneFrom = false;
     }
@@ -45,6 +46,7 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
         return ei;
     }
 
+    @Deprecated
     public static DataStore create(Graph g, Iterable<Entity> i) {
         DataStore ei = new DataStore(g);
         ei.setIterable(i);
@@ -53,14 +55,10 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
     
      public DataStore(Graph g, List<Node> list) {
         this(g);
-        from = list;
-        hasFrom = from.size() > 0;
-        hasOneFrom = from.size() == 1;
-        if (hasOneFrom) {
-            fromNode = g.getGraphNode(from.get(0).getLabel());
-        }
+        from(list);
     }
 
+    @Deprecated 
     public DataStore(Graph g, Iterable<Entity> i, List<Node> list) {
         this(g, list);
         setIterable(i);
@@ -78,30 +76,39 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
     public Iterable<Entity> iterate(Node predicate, Node node) {
         return iterate(predicate, node, 0);
     }
+    
+    public Iterable<Entity> iterate(Node node, int n) {
+        return iterate(graph.getTopProperty(), node, n);
+    }
 
     public Iterable<Entity> iterate(Node predicate, Node node, int n) {
-        if (isNamedGraph){
-            if (node == null && hasFrom && ! from.isEmpty()) {
+        // optimize special cases
+        if (isNamedGraph) {
+            if (node == null && hasFrom && !from.isEmpty()) {
+                // exploit IGraph Index to focus on from
                 return getEdgesFromNamed(from, predicate);
+            } else if (!hasFrom) {
+                // iterate all named graph edges
+                return graph.properGetEdges(predicate, node, n);
             }
-        }
-        else {
-            if (node == null && hasFrom && ! from.isEmpty()) {
-                // no query node has a value, there is a from           
-                if (! isFromOK(from)) {
-                    // from URIs are unknown in current graph
-                    return empty;
-                }
+        } 
+        // default graph
+        else if (node == null && hasFrom && !from.isEmpty()) {
+            // no query node has a value, there is a from           
+            if (!isFromOK(from)) {
+                // from URIs are unknown in current graph
+                return empty;
             }
+        } 
+        else if (!hasFrom && graph.nbGraphNodes() == 1 && !hasLevel) {
+            return graph.properGetEdges(predicate, node, n);
         }
-        
-        setIterable(graph.getEdges(predicate, node, n));
-        if (iter == null) {
-            return empty;
-        }
+
+        // general case
+        setIterable(graph.properGetEdges(predicate, node, n));
         return this;
     }
-    
+
     /**
      * Iterate predicate in from named
      */
@@ -148,6 +155,24 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
         this.isNamedGraph = true;
         return this;
     }
+    
+    public void from(List<Node> list) {
+        from = list;
+        hasFrom = from.size() > 0;
+        hasOneFrom = from.size() == 1;
+        if (hasOneFrom) {
+            fromNode = graph.getGraphNode(from.get(0).getLabel());
+        }
+    }
+    
+    /**
+     * The from clause is taken as skip from
+     * the graphs are skipped to answer query
+     */
+    public DataStore minus(){
+        isMember = false;
+        return this;
+    }
 
     public DataStore named(Node g) {
         if (g != null) {
@@ -168,6 +193,7 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
         }
         it = iter.iterator();
         last = null;
+        glast = null;
         return this;
     }
 
@@ -196,7 +222,7 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
             }
 
             if (ok && hasFrom) {
-                ok = isFrom(ent);
+                ok = result(isFrom(ent));
             }
 
             if (ok) {
@@ -264,6 +290,16 @@ public class DataStore implements Iterable<Entity>, Iterator<Entity> {
             int res = find(from, g);
             return res != -1;
         }
+    }
+    
+    /**
+     * isMember = false means skip graph in from clause
+     */
+    boolean result(boolean found){
+        if (isMember){
+            return found;
+        }
+        return ! found;
     }
 
     public boolean isFrom(List<Node> from, Node node) {

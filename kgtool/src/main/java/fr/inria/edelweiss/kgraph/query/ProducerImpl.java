@@ -73,6 +73,8 @@ public class ProducerImpl implements Producer, IProducerQP {
     int mode = DEFAULT;
     private IDatatype prevdt;
     private Node prevnode;
+    
+    HashMap<Edge, DataStore> cache;
 
     public ProducerImpl() {
         this(Graph.create());
@@ -85,6 +87,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         ei = DataStore.create(g);
         toRDF = new RDFizer();
         vcache = new ValueCache();
+        cache = new HashMap<Edge, DataStore>();
     }
 
     public static ProducerImpl create(Graph g) {
@@ -288,23 +291,41 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         return it;
     }
-    
+        
     
     /**
      * Enumerate candidate edges either from default graph or from named graphs
      */
-    Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from, 
-            Node predicate, Node focusNode, Node objectNode, int n){
-        
-       if (gNode == null){
-           return graph.getDefault(from).iterate(predicate, focusNode, n);
-       }      
-       else {
-           return graph.getNamed(from, sNode).iterate(predicate, focusNode, n);
-       }
-    }     
-         
-        
+    Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from,
+            Node predicate, Node focusNode, Node objectNode, int n) {
+        return datastore(gNode, from, sNode).iterate(predicate, focusNode, n);
+    }
+
+    DataStore datastore(Node gNode, List<Node> from, Node sNode) {
+        if (gNode == null) {
+            return graph.getDefault(from);
+        } else {
+            return graph.getNamed(from, sNode);
+        }
+    }
+
+    // draft test: manage DataStore in a cache
+    Iterable<Entity> getEdges(Edge edge, Node gNode, Node sNode, List<Node> from,
+            Node predicate, Node focusNode, Node objectNode, int n) {
+        DataStore ds;
+        if (sNode != null) {
+            ds = datastore(gNode, from, sNode);
+        } else {
+            ds = cache.get(edge);
+            if (ds == null) {
+                ds = datastore(gNode, from, sNode);
+                cache.put(edge, ds);
+            }
+        }
+        return ds.iterate(predicate, focusNode, n);
+    }
+
+ 
      
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
@@ -463,7 +484,6 @@ public class ProducerImpl implements Producer, IProducerQP {
             if (match(exp, predicate)) {
                 // exclude
             } else {
-               // Iterable<Entity> it = graph.getEdges(pred, start, index);
                 Iterable<Entity> it = getEdges(gNode, src, from, predicate, start, null, index);
                 
                 if (it != null) {
@@ -475,8 +495,6 @@ public class ProducerImpl implements Producer, IProducerQP {
             return empty;
         }
         return meta;
-        //Iterable<Entity> it = complete(env, edge, meta, gNode, src, from, true);
-        //return it;
     }
 
     boolean match(Regex exp, Node pred) {
@@ -706,32 +724,6 @@ public class ProducerImpl implements Producer, IProducerQP {
         return dt;
     }
     
-//      synchronized public Node getNode2(Object value) {
-//        // TODO Auto-generated method stub
-//        if (!(value instanceof IDatatype)) {
-//            return DatatypeMap.createObject("tmp", value);
-//        }
-//        IDatatype dt = (IDatatype) value;
-//        if (selfValue || dt.isFuture()) {
-//            // future: template intermediate result 
-//            return dt;
-//        }
-//
-//        Node node = vcache.get(dt);
-//        if (node != null) {
-//            return node;
-//        }
-//        // look up Node value in the graph
-//        node = graph.getNode(dt, false, false);
-//
-//        if (node == null) {
-//            node = dt;
-//        }
-//
-//        vcache.put(dt, node);
-//        return node;
-//    }
-
     public Object getValue(Node node) {
         return node.getValue();
     }
@@ -748,6 +740,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     public void init(int nbNodes, int nbEdges) {
         // TODO Auto-generated method stub
         graph.init();
+        cache.clear();
     }
 
     @Override

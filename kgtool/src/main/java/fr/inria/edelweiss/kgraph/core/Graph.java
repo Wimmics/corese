@@ -93,9 +93,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public static final int FIRST_INDEX = 5;
     public static final int REST_INDEX = 6;
    
-    
+    public static final int DEFAULT_UNION = 0;
+    public static final int DEFAULT_GRAPH = 1;
+    public static int DEFAULT_GRAPH_MODE = DEFAULT_UNION;
 
+    private int defaultGraphMode = DEFAULT_GRAPH_MODE;
+    
     private int mode = DEFAULT;
+    
     /**
      * Synchronization:
      *
@@ -176,7 +181,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     private Node ruleGraph, defaultGraph, entailGraph;
     
-   private ArrayList<Node> systemNode;
+   private ArrayList<Node> systemNode, defaultGraphList;
 
     private IStorage storageMgr;
 
@@ -353,6 +358,20 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public int pointerType() {
         return GRAPH_POINTER;
     }
+
+    /**
+     * @return the defaultGraph
+     */
+    public int getDefaultGraphMode() {
+        return defaultGraphMode;
+    }
+
+    /**
+     * @param defaultGraph the defaultGraph to set
+     */
+    public void setDefaultGraphMode(int defaultGraph) {
+        this.defaultGraphMode = defaultGraph;
+    }
    
     class TreeNode extends TreeMap<IDatatype, Entity> {
 
@@ -469,8 +488,21 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return system.get(name);        
     }
     
+    @Override
     public Node getNode(int n){
         return systemNode.get(n);
+    }
+    
+    public Node getNodeDefault(){
+        return getNode(DEFAULT_INDEX);
+    }
+    
+    public Node getNodeRule(){
+        return getNode(RULE_INDEX);
+    }
+    
+     public Node getNodeEntail(){
+        return getNode(ENTAIL_INDEX);
     }
 
     public static Graph create() {
@@ -1693,13 +1725,43 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         return getNamed(source);
     }
-       
-    public DataStore getDefault(){
+    
+    public Graph addDefaultGraph(Node node){
+        if (defaultGraphList == null){
+           defaultGraphList = new ArrayList<Node>(); 
+        }
+        if (node != null){
+            defaultGraphList.add(node);
+        }
+        return this;
+    }
+    
+    public List<Node> getDefaultGraphList() {
+        return defaultGraphList;
+    }
+
+    public DataStore getDefaultUnion() {
         return new DataStore(this);
+    }
+
+    public DataStore getDefault() {
+        if (defaultGraphList == null) {
+            return getDefaultUnion();
+        }
+        return getDefault(getDefaultGraphList());
     }
     
     public DataStore getDefault(List<Node> from){
+        if (from == null || from.isEmpty()){
+            return getDefault();
+        }
         return new DataStore(this, from);
+    }
+    
+    public DataStore getDefault(Node name){
+        ArrayList<Node> list = new ArrayList<Node>(1);
+        list.add(name);
+        return getDefault(list);
     }
     
 
@@ -1773,6 +1835,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return NodeIterator.create(it, index);
     }
 
+    public Iterable<Entity> properGetEdges(Node predicate, Node node, int n) {
+        Iterable<Entity> it = getEdges(predicate, node, null, n);
+        if (it == null){
+            return EMPTY;
+        }
+        return it;
+    }
+    
     public Iterable<Entity> getEdges(Node predicate, Node node, int n) {
         return getEdges(predicate, node, null, n);
     }
@@ -1941,13 +2011,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     // without duplicates 
     public Iterable<Entity> getNodeEdges(Node node) {
-        return DataStore.create(this, getEdges(node, 0));
+        return getDefault().iterate(node, 0);
     }
 
     public Iterable<Entity> getNodeEdges(Node gNode, Node node) {
-        DataStore it = DataStore.create(this, getEdges(node, 0));
-        it.named(gNode);
-        return it;
+        return getNamed(gNode).iterate(node, 0);
     }
 
     Index getIndex(int n, boolean def) {
@@ -2859,12 +2927,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * return graph nodes
      */
     public Node addGraph(String label) {
-        //if (isDefaultGraphNode(label)){return defaultGraph;}
         return basicAddGraph(label);
     }
     
     public Node addDefaultGraphNode(){
-        //return defaultGraph;
         return basicAddGraphNode(defaultGraph);
     }
     

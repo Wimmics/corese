@@ -37,6 +37,7 @@ import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -529,6 +530,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case CONT:
                 return getValue(dt1.contains(dt2));
+                
+            case SAMETERM:
+                return sameterm(dt1, dt2);
 
             case CONTAINS:
                 if (!compatible(dt1, dt2)) {
@@ -820,6 +824,17 @@ public class ProxyImpl implements Proxy, ExprType {
     boolean stdChar(char c) {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' 
                 || c == '-' || c == '.' || c == '_' || c == '~';
+    }
+    
+    IDatatype sameterm(IDatatype dt1, IDatatype dt2){
+       boolean b = dt1.equals(dt2);
+       if (! b){
+           return FALSE;
+       }
+       if (dt1.isLiteral() && dt2.isLiteral()){
+           return getValue(dt1.getCode() == dt2.getCode());
+       }
+       return TRUE;
     }
 
     // first index is 1

@@ -44,6 +44,7 @@ public class Processor {
         
 	public static final String IN  	 = "in";
 
+	private static final String SAMETERM = "sameTerm";
 	private static final String MIN = "min";
 	private static final String MAX = "max";
 	private static final String SUM = "sum";
@@ -786,6 +787,7 @@ public class Processor {
 		defoper(ENV, 	 ExprType.ENV);
 		defoper(SLICE, 	 ExprType.SLICE);
 
+		defoper(SAMETERM, ExprType.SAMETERM);
 		defoper(STRLEN, ExprType.STRLEN);
 		defoper(SUBSTR, ExprType.SUBSTR);
 		defoper(UCASE, 	ExprType.UCASE);

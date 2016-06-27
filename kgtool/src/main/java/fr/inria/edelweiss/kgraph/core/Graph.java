@@ -182,6 +182,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     private Node ruleGraph, defaultGraph, entailGraph;
     
    private ArrayList<Node> systemNode, defaultGraphList;
+   DataStore dataStore;
 
     private IStorage storageMgr;
 
@@ -457,6 +458,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         manager = new Workflow(this);
         key = hashCode() + ".";
         initSystem();
+        dataStore = new DataStore(this);
     }
     
     /**
@@ -1703,67 +1705,17 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
     
-    /**
-     * Return a DataStore with default or named graph
-     * Use case: iterate edges
-     */
-    public DataStore getNamed(){
-        return new DataStore(this).named();
+    public DataStore getDataStore(){
+        return dataStore;
     }
     
-    public DataStore getNamed(List<Node> from){
-        return new DataStore(this, from).named();
+    public DataProducer getDefault(){
+        return getDataStore().getDefault();
     }
     
-    public DataStore getNamed(Node source){
-        return new DataStore(this).named(source);
+     public DataProducer getNamed(){
+        return getDataStore().getNamed();
     }
-    
-    public DataStore getNamed(List<Node> from, Node source){
-        if (source == null){
-            return getNamed(from);
-        }
-        return getNamed(source);
-    }
-    
-    public Graph addDefaultGraph(Node node){
-        if (defaultGraphList == null){
-           defaultGraphList = new ArrayList<Node>(); 
-        }
-        if (node != null){
-            defaultGraphList.add(node);
-        }
-        return this;
-    }
-    
-    public List<Node> getDefaultGraphList() {
-        return defaultGraphList;
-    }
-
-    public DataStore getDefaultUnion() {
-        return new DataStore(this);
-    }
-
-    public DataStore getDefault() {
-        if (defaultGraphList == null) {
-            return getDefaultUnion();
-        }
-        return getDefault(getDefaultGraphList());
-    }
-    
-    public DataStore getDefault(List<Node> from){
-        if (from == null || from.isEmpty()){
-            return getDefault();
-        }
-        return new DataStore(this, from);
-    }
-    
-    public DataStore getDefault(Node name){
-        ArrayList<Node> list = new ArrayList<Node>(1);
-        list.add(name);
-        return getDefault(list);
-    }
-    
 
     public Iterable<Entity> getEdges() {
         Iterable<Entity> ie = table.getEdges();
@@ -2011,11 +1963,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     // without duplicates 
     public Iterable<Entity> getNodeEdges(Node node) {
-        return getDefault().iterate(node, 0);
+        return getDataStore().getDefault().iterate(node, 0);
     }
 
     public Iterable<Entity> getNodeEdges(Node gNode, Node node) {
-        return getNamed(gNode).iterate(node, 0);
+        return getDataStore().getNamed().from(gNode).iterate(node, 0);
     }
 
     Index getIndex(int n, boolean def) {

@@ -32,7 +32,7 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.DataStore;
+import fr.inria.edelweiss.kgraph.core.DataProducer;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     static final String TOPREL = Graph.TOPREL;
     List<Entity> empty   = new ArrayList<Entity>(0);
     List<Node> emptyFrom = new ArrayList<Node>(0);
-    DataStore ei;
+    DataProducer ei;
     Graph graph,
             // cache for handling (fun() as var) created Nodes
             local;
@@ -74,7 +74,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     private IDatatype prevdt;
     private Node prevnode;
     
-    HashMap<Edge, DataStore> cache;
+    HashMap<Edge, DataProducer> cache;
 
     public ProducerImpl() {
         this(Graph.create());
@@ -84,10 +84,10 @@ public class ProducerImpl implements Producer, IProducerQP {
         graph = g;
         local = Graph.create();
         mapper = new Mapper(this);
-        ei = DataStore.create(g);
+        ei = DataProducer.create(g);
         toRDF = new RDFizer();
         vcache = new ValueCache();
-        cache = new HashMap<Edge, DataStore>();
+        cache = new HashMap<Edge, DataProducer>();
     }
 
     public static ProducerImpl create(Graph g) {
@@ -226,7 +226,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                     n = ILIST;
                     // rule engine requires new edges with level >= exp.getLevel()
                     // ILIST is index of specific Edge Index sorted by reverse level
-                    Iterable<Entity> it = graph.getDefault(from).level(level).iterate(predicate, null, ILIST);
+                    Iterable<Entity> it = graph.getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
                     return localMatch(it, gNode, edge, env);
                 }
             }
@@ -281,7 +281,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         if (mode == EXTENSION && getQuery() == q) {
             // Producer for an external graph ?g :
             // bind (us:graph() as ?g) graph ?g { }         
-            it = graph.getDefault(emptyFrom).iterate(predicate, focusNode, n);
+            it = graph.getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, n);
         }
         else {
             it = getEdges(gNode, getNode(gNode, env), from, predicate, focusNode, objectNode, n);
@@ -298,27 +298,27 @@ public class ProducerImpl implements Producer, IProducerQP {
      */
     Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int n) {
-        return datastore(gNode, from, sNode).iterate(predicate, focusNode, n);
+        return dataProducer(gNode, from, sNode).iterate(predicate, focusNode, n);
     }
 
-    DataStore datastore(Node gNode, List<Node> from, Node sNode) {
+    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode) {
         if (gNode == null) {
-            return graph.getDefault(from);
+            return graph.getDataStore().getDefault(from);
         } else {
-            return graph.getNamed(from, sNode);
+            return graph.getDataStore().getNamed(from, sNode);
         }
     }
 
     // draft test: manage DataStore in a cache
     Iterable<Entity> getEdges(Edge edge, Node gNode, Node sNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int n) {
-        DataStore ds;
+        DataProducer ds;
         if (sNode != null) {
-            ds = datastore(gNode, from, sNode);
+            ds = dataProducer(gNode, from, sNode);
         } else {
             ds = cache.get(edge);
             if (ds == null) {
-                ds = datastore(gNode, from, sNode);
+                ds = dataProducer(gNode, from, sNode);
                 cache.put(edge, ds);
             }
         }

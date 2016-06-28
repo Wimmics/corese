@@ -261,9 +261,6 @@ public class ProxyImpl implements Proxy, ExprType {
                     }
 
                 default:
-//                    if (plugin != null) {
-//                        return plugin.term(exp, env, p, dt1, dt2);
-//                    }
                     return null;
 
             }
@@ -353,6 +350,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.createResource(str);
     }
 
+    @Override
     public Object function(Expr exp, Environment env, Producer p, Object o1) {
 
         IDatatype dt = (IDatatype) o1;

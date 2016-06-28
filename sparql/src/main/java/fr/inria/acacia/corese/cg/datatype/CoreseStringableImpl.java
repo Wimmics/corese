@@ -52,6 +52,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	 * Cast a literal to a boolean may be allowed: when the value
 	 * can be cast to a float, double, decimal or integer, if this value is 0, then return false, else return true
 	 */
+        @Override
 	public IDatatype cast(IDatatype target, IDatatype javaType) {
 		if (target.getLabel().equals(RDF.xsdboolean)){
 			try {
@@ -67,27 +68,33 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		}
 	}
 
+        @Override
 	public  int getCode(){
 		return code;
 	}
 
         
+        @Override
 	public String getLowerCaseLabel(){
 		return getLabel().toLowerCase();
 	}
 
+        @Override
 	public boolean isNumber() {
 		return false;
 	}
 
+        @Override
 	public boolean isTrue() throws CoreseDatatypeException {
 		return getLabel().length() > 0;
 	}
 
+        @Override
 	public boolean isTrueAble() {
 		return true;
 	}
 
+        @Override
 	public boolean contains(IDatatype iod){
 		try{
 			return getLowerCaseLabel().indexOf(iod.getLowerCaseLabel()) != -1;
@@ -99,6 +106,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	}
 
 
+        @Override
 	public boolean startsWith(IDatatype iod){
 		try{
 			return getLabel().startsWith(iod.getLabel());
@@ -119,6 +127,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		return getLabel().startsWith(label);
 	}
 
+        @Override
 	public String getNormalizedLabel(){
 		return getLabel();
 	}
@@ -139,6 +148,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	}
 
 
+        @Override
 	public IDatatype plus(IDatatype iod) {
 		String str = getLabel() + iod.getLabel();
 		
@@ -150,6 +160,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		}
 	}
 
+        @Override
 	public IDatatype minus(IDatatype iod) {
 		int index = getLabel().indexOf(iod.getLabel());
 		String str=null;

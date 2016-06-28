@@ -888,11 +888,11 @@ public class Processor {
         }
 	       
 	
-	int getOper(Term term){
+	static int getOper(Term term){
                 return getOper(term.getLabel());
         }
                 
-        public int getOper(String name){
+        public static int getOper(String name){
 		Integer n = table.get(name.toLowerCase());
 		if (n == null){
 			if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD) || 

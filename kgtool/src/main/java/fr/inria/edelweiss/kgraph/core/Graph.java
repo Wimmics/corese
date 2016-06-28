@@ -1032,7 +1032,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     public void compact(){
         cleanIndex();
-        table.compact();
+        if (isGraphNode(getNode(Graph.RULE_INDEX))){
+            table.compact();
+        }
     }
     
     void cleanIndex() {

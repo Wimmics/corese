@@ -769,7 +769,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             return true;
         }
 
-        return ei.isFrom(from, node);
+        return ei.getCreateDataFrom().isFrom(from, node);
     }
 
     /**

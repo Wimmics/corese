@@ -416,7 +416,7 @@ public class EdgeIndexer
           
     @Override
     public void compact(){
-        if (graph.isGraphNode(graph.getNode(Graph.RULE_INDEX))){
+        if (test){
             for (Node pred : getProperties()) {
                 EdgeList el = get(pred);
                 el.compact();

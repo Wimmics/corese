@@ -2,13 +2,12 @@ package fr.inria.edelweiss.kgraph.core;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.triple.parser.Processor;
 import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
@@ -20,32 +19,31 @@ import java.util.ArrayList;
  * default or named graphs, from or from named
  * Default graph: eliminate duplicate edges during iteration
  * May take edge level into account for RuleEngine optimization
+ * Example: 
+ * graph.getDefault().from(g1).iterate(foaf:knows)
+ * graph.getNamed().minus(list(g1 g2)).iterate(us:John, 0)
+ * graph.getDefault().iterate().filter(ExprType.GE, 100) -- filter (?object >= 100)
  * 
  */
 public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
 
     static final List<Entity> empty     = new ArrayList<Entity>(0);
     static final List<Node> emptyNode   = new ArrayList<Node>(0);
+    
     Iterable<Entity> iter;
     Iterator<Entity> it;
     EdgeGeneric glast;
     Edge last;
-    List<Node> from;
-    Node fromNode;
-    IDatatype value;
     Graph graph;
-    boolean isNamedGraph, hasFrom, hasOneFrom, isMember;
-    int test;
-    private int level = -1;
-    boolean hasLevel = false;
+    DataFilter filter;
+    DataFrom from;
+    boolean isNamedGraph;
+    private int level;
 
     DataProducer(Graph g) {
         graph = g;
         isNamedGraph = false;
-        isMember = true;
-        hasFrom = false;
-        hasOneFrom = false;
-        test = -1;
+        level = -1;
     }
 
     public static DataProducer create(Graph g) {
@@ -72,53 +70,51 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         setIterable(i);
     }
        
-    public Iterable<Entity> iterate() {
+    public DataProducer iterate() {
         return iterate(graph.getTopProperty());
     }
 
-    public Iterable<Entity> iterate(Node predicate) {
+    public DataProducer iterate(Node predicate) {
         setIterable(graph.getEdges(predicate));
         return this;
     }
 
-    public Iterable<Entity> iterate(Node predicate, Node node) {
+    public DataProducer iterate(Node predicate, Node node) {
         return iterate(predicate, node, 0);
     }
     
-    public Iterable<Entity> iterate(Node node, int n) {
+    public DataProducer iterate(Node node, int n) {
         return iterate(graph.getTopProperty(), node, n);
     }
 
-    public Iterable<Entity> iterate(Node predicate, Node node, int n) {
+     public DataProducer iterate(Node predicate, Node node, int n) {
         // optimize special cases
         if (isNamedGraph) {
-            if (node == null && hasFrom && !from.isEmpty()) {
+            if (node == null && from != null && !from.isEmpty()) {
                 // exploit IGraph Index to focus on from
-                return getEdgesFromNamed(from, predicate);
-            } else if (!hasFrom) {
-                // iterate all named graph edges
-                return graph.properGetEdges(predicate, node, n);
-            }
+                setIterable(getEdgesFromNamed(from.getFrom(), predicate));
+                return this;
+            } 
         } 
         // default graph
-        else if (node == null && hasFrom && !from.isEmpty()) {
+        else if (node == null && from != null && !from.isEmpty()) {
             // no query node has a value, there is a from           
-            if (!isFromOK(from)) {
+            if (! from.isFromOK(from.getFrom())) {
                 // from URIs are unknown in current graph
-                return empty;
+                setIterable( empty);
+                return this;
             }
         } 
-        else if (!hasFrom && graph.nbGraphNodes() == 1 && !hasLevel) {
-            return graph.properGetEdges(predicate, node, n);
-        }
 
         // general case
         setIterable(graph.properGetEdges(predicate, node, n));
         return this;
     }
+    
+    
 
     /**
-     * Iterate predicate in from named
+     * Iterate predicate from named
      */
     Iterable<Entity> getEdgesFromNamed(List<Node> from, Node predicate) {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
@@ -139,16 +135,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
             return meta;
         }
     }
-    
-     boolean isFromOK(List<Node> from) {
-        for (Node node : from) {
-            Node tfrom = graph.getNode(node);
-            if (tfrom != null && graph.isGraphNode(tfrom)) {
-                return true;
-            }
-        }
-        return false;
-    }
+   
     
     public void setIterable(Iterable<Entity> it){
         iter = it;
@@ -164,27 +151,23 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return this;
     }
     
-    public DataProducer from(List<Node> list) {
-        from = list;
-        hasFrom = from.size() > 0;
-        hasOneFrom = from.size() == 1;
-        if (hasOneFrom) {
-            fromNode = graph.getGraphNode(from.get(0).getLabel());
-            if (fromNode == null){
-                hasOneFrom = false;
-            }
+    public DataFrom getCreateDataFrom(){
+        if (from == null){
+            from = new DataFrom(graph);
+        }
+        return from;
+    }
+    
+    public DataProducer from(List<Node> list) {  
+        if (list != null && ! list.isEmpty()){
+            getCreateDataFrom().from(list);
         }
         return this;
     }
     
     public DataProducer from(Node g) {
-        if (g != null) {
-            fromNode = g;
-            hasFrom = true;
-            hasOneFrom = true;
-            if (from == null){
-                from = emptyNode;
-            }
+        if (g != null) {          
+            getCreateDataFrom().from(g);
         }
         return this;
     }
@@ -202,46 +185,25 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
      * the graphs are skipped to answer query
      */    
     public DataProducer minus(List<Node> list){
-        from(list);
-        isMember = false;
+        getCreateDataFrom().minus(list);
         return this;
     }
     
     public DataProducer minus(Node node){
-        from(node);
-        isMember = false;
+        getCreateDataFrom().minus(node);
         return this;
     }
     
-    public DataProducer filter(int test, IDatatype dt){
-        this.test = test;
-        this.value = dt;
+    public DataProducer not(){
+        if (filter != null){
+            filter.not();
+        }
         return this;
     }
     
-    public DataProducer filter(int test, int value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-    
-    public DataProducer filter(int test, double value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-
-    public DataProducer filter(int test, String value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-
-    public DataProducer greaterEqual(IDatatype dt){
-        return filter(ExprType.GE, dt);      
-    }
-    
-    public DataProducer lessEqual(IDatatype dt){
-        return filter(ExprType.LE, dt);      
-    }
-
     @Override
     public Iterator<Entity> iterator() {
-        if (hasOneFrom && fromNode == null) {
+        if (from != null && from.isOneFrom() && from.getFromNode() == null) {
             return empty.iterator();
         }
         it = iter.iterator();
@@ -264,39 +226,37 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
 
         while (hasNext()) {
             Entity ent = it.next();
-            boolean ok = true;
+            
 
             if (isNamedGraph) {
                 // ok
             } 
-            else if (last != null) {
-                // eliminate successive duplicates
-                ok = different(last, ent.getEdge());
+            else if (last != null && ! different(last, ent.getEdge())){
+                continue;
             }
 
-            if (ok && hasFrom) {
-                ok = result(isFrom(ent));
+            if (from != null && ! from.eval(ent)){
+                continue;
             }
             
-            if (ok && test != -1){
-                ok = test(ent);
+            if (filter != null&& ! filter.eval(ent)){
+                continue;
+            }
+            
+            if (level != -1 && ent.getEdge().getIndex() < level) {
+                    // use case: Rule Engine requires edges with level >= this.level
+                 it = empty.iterator();
+                 break;
             }
 
-            if (ok) {
-                record(ent);
-                if (hasLevel && last.getIndex() < level) {
-                    // use case: Rule Engine requires edges with level >= this.level
-                    it = empty.iterator();
-                    return null;
-                }
-                return ent;
-            }
+            record(ent);
+            return ent;
         }
         return null;
     }
       
-    
-    boolean different(Edge last, Edge edge) {
+    // eliminate successive duplicates
+    boolean different(Edge last, Edge edge) {       
         if (edge.getEdgeNode() == null || ! same(last.getEdgeNode(), edge.getEdgeNode())) {
             // different properties: ok
             return true;
@@ -312,27 +272,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         }
         return false;
     }
-    
-    
-    boolean test(Entity ent) {
-        IDatatype dt = (IDatatype)ent.getNode(1).getValue();
-        try {
-            switch (test){           
-                case ExprType.GT: return dt.greater(value);
-                case ExprType.GE: return dt.greaterOrEqual(value);
-                case ExprType.LE: return dt.lessOrEqual(value);
-                case ExprType.LT: return dt.less(value);
-                case ExprType.EQ: return dt.equals(value);
-                case ExprType.NEQ: return ! dt.equals(value);
-
-                default: return true;
-            }
-        }
-        catch (CoreseDatatypeException e){
-            return false;
-        }
-    }
-
+        
     void record(Entity ent) {
         if (EdgeIndexer.test){
             record2(ent);
@@ -356,61 +296,6 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
 
     /**
-     *
-     * Check if entity graph node is member of from by dichotomy
-     */
-    boolean isFrom(Entity ent) {
-        if (hasOneFrom) {
-            return same(fromNode, ent.getGraph());
-        } else {
-            Node g = ent.getGraph();
-            int res = find(from, g);
-            return res != -1;
-        }
-    }
-    
-    /**
-     * isMember = false means skip graph in from clause
-     */
-    boolean result(boolean found){
-        if (isMember){
-            return found;
-        }
-        return ! found;
-    }
-
-    public boolean isFrom(List<Node> from, Node node) {
-        int res = find(from, node);
-        return res != -1;
-    }
-
-    int find(List<Node> list, Node node) {
-        int res = find(list, node, 0, list.size());
-        if (res >= 0 && res < list.size()
-                && list.get(res).same(node)) {
-            return res;
-        }
-        return -1;
-    }
-
-    /**
-     * Find the index of node in list of Node by dichotomy
-     */
-    int find(List<Node> list, Node node, int first, int last) {
-        if (first >= last) {
-            return first;
-        } else {
-            int mid = (first + last) / 2;
-            int res = list.get(mid).compare(node);
-            if (res >= 0) {
-                return find(list, node, first, mid);
-            } else {
-                return find(list, node, mid + 1, last);
-            }
-        }
-    }
-
-    /**
      * @return the level
      */
     public int getLevel() {
@@ -422,7 +307,75 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
      */
     public void setLevel(int level) {
         this.level = level;
-        hasLevel = level != -1;
     }
+    
+    
+    /********************************************************
+     * 
+     * 
+     *******************************************************/
+    
+    
+    public DataProducer filter(int test){
+        filter = new DataFilter(test);
+        return this;
+    }
+    
+    public DataProducer filter(int test, IDatatype dt){
+        filter = new DataFilter(test, dt);
+        return this;
+    }
+    
+    public DataProducer filter(int test, IDatatype dt, int index){
+        filter = new DataFilter(test, dt, index);
+        return this;
+    }
+       
+    public DataProducer filter(int test, int value){
+         return filter(test, DatatypeMap.newInstance(value));
+    }
+    
+    public DataProducer filter(int test, double value){
+         return filter(test, DatatypeMap.newInstance(value));
+    }
+
+    public DataProducer filter(int test, String value){
+         return filter(test, DatatypeMap.newInstance(value));
+    }
+    
+    
+    
+    
+    public DataProducer filter(String test){
+        filter = new DataFilter(oper(test));
+        return this;
+    }
+    
+    public DataProducer filter(String test, IDatatype dt){
+        filter = new DataFilter(oper(test), dt);
+        return this;
+    }
+    
+    public DataProducer filter(String test, IDatatype dt, int index){
+        filter = new DataFilter(oper(test), dt, index);
+        return this;
+    }
+    
+    public DataProducer filter(String test, int value){
+         return filter(oper(test), DatatypeMap.newInstance(value));
+    }
+    
+    public DataProducer filter(String test, double value){
+         return filter(oper(test), DatatypeMap.newInstance(value));
+    }
+
+    public DataProducer filter(String test, String value){
+         return filter(oper(test), DatatypeMap.newInstance(value));
+    }
+    
+    int oper(String str){
+        return Processor.getOper(str);
+    }
+    
 
 }

@@ -24,6 +24,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -80,7 +81,8 @@ public class TestQuery1 {
         //Query.STD_PLAN = Query.PLAN_RULE_BASED;
         
         Load.setDefaultGraphValue(true);
-
+        //Graph.DEFAULT_GRAPH_MODE = Graph.DEFAULT_GRAPH;
+        
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
         //QueryProcess.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
 
@@ -177,34 +179,37 @@ public class TestQuery1 {
            ArrayList<Node> list = new ArrayList<Node>();
            ArrayList<Node> list2 = new ArrayList<Node>();
            
-           list.add(g.getGraphNode(NSManager.USER+"g1"));
-           list2.add(g.getGraphNode(NSManager.USER+"g1"));
-           list2.add(g.getGraphNode(NSManager.USER+"g2"));
+           Node g1 = g.getGraphNode(NSManager.USER+"g1");
+           Node g2 = g.getGraphNode(NSManager.USER+"g2");
+           list.add(g1);
+           list2.add(g1);
+           list2.add(g2);
            
            Node p = g.getPropertyNode(NSManager.FOAF+"knows");
            Node n = g.getNode(NSManager.USER+"John");
            Node n1 = g.getNode(NSManager.USER+"Jack");
            
+           assertEquals(2, count(g.getDefault().iterate(p)));
+           assertEquals(3, count(g.getNamed().iterate(p)));
+           assertEquals(2, count(g.getDefault().iterate(n, 0)));
+           assertEquals(3, count(g.getNamed().iterate(n, 0)));                               
+           assertEquals(5, count(g.getDefault().iterate()));                           
+           assertEquals(3, count(g.getDefault().from(list).iterate()));       
+           assertEquals(5, count(g.getDefault().from(list2).iterate()));                 
+           assertEquals(6, count(g.getNamed().iterate()));         
+           assertEquals(3, count(g.getNamed().from(list).iterate()));                   
+           assertEquals(6, count(g.getNamed().from(list2).iterate()));                           
+           assertEquals(2, count(g.getDefault().from(list2).iterate(p, n, 0)));                           
+           assertEquals(3, count(g.getNamed().from(list2).iterate(p, n, 0)));                
+           assertEquals(1, count(g.getDefault().from(list2).iterate(p, n1, 1)));                  
+           assertEquals(2, count(g.getNamed().from(list2).iterate(p, n1, 1)));
+           assertEquals(3, count(g.getNamed().minus(g1).iterate()));
+           assertEquals(3, count(g.getDefault().minus(g1).iterate()));  
+           assertEquals(0, count(g.getDefault().minus(list2).iterate()));
            
-           assertEquals(5, count(g.getDefault().iterate()));
-                           
-           assertEquals(3, count(g.getDefault(list).iterate()));
-       
-           assertEquals(5, count(g.getDefault(list2).iterate()));
-                  
-           assertEquals(6, count(g.getNamed().iterate()));
-          
-           assertEquals(3, count(g.getNamed(list).iterate()));
-                   
-           assertEquals(6, count(g.getNamed(list2).iterate()));
-                            
-           assertEquals(2, count(g.getDefault(list2).iterate(p, n, 0)));
-                            
-           assertEquals(3, count(g.getNamed(list2).iterate(p, n, 0)));
-                 
-           assertEquals(1, count(g.getDefault(list2).iterate(p, n1, 1)));
-                   
-           assertEquals(2, count(g.getNamed(list2).iterate(p, n1, 1)));
+           assertEquals(5, count(g.getDefault().iterate().filter(ExprType.ISURI)));          
+           assertEquals(0, count(g.getDefault().iterate().filter(ExprType.ISBLANK)));           
+           assertEquals(5, count(g.getDefault().iterate().filter(ExprType.ISBLANK).not()));
       }
     
     int count(Iterable<Entity> it){

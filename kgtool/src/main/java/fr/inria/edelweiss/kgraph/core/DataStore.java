@@ -1,11 +1,18 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Simple DataStore to define what is the default graph
+ * By default it is the union of named graphs
+ * It can be redefined using addDefaultGraph(node)
+ * Producer uses getDefault()
+ * getDefault().iterate()
+ * getNamed().iterate()
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */

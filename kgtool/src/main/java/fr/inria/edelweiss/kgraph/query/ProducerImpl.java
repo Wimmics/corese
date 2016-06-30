@@ -32,14 +32,18 @@ import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.DataProducer;
+import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgtool.util.ValueCache;
 import java.util.HashMap;
 
 /**
  * Producer
- *
+ * Implement getEdges() for KGRAM interpreter
+ * rely on 
+ * graph.getDataStore().getDefault()
+ * graph.getDataStore().getNamed()
+ * 
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */

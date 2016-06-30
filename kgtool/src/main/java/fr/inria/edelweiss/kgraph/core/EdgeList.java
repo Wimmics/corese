@@ -11,10 +11,14 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Edge List of a predicate 
+ * Edge List of a predicate
+ * Edge may be stored without predicate Node to spare memory
  * Edges are sorted according to 
  * 1- edge.getNode(index).getIndex() (subject)
  * 2- other nodes (object, graph)
+ * index 0:
+ * g1 s1 p o1 ; g2 s1 p o1 ; g1 s1 p o2 ; g2 s2 p o3 ; ... 
+ *
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *

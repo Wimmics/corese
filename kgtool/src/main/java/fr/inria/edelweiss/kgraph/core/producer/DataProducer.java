@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core.producer;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -8,8 +8,11 @@ import java.util.List;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
 import java.util.ArrayList;
 
@@ -24,52 +27,31 @@ import java.util.ArrayList;
  * graph.getNamed().minus(list(g1 g2)).iterate(us:John, 0)
  * graph.getDefault().iterate().filter(ExprType.GE, 100) -- filter (?object >= 100)
  * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2016
  */
 public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
 
     static final List<Entity> empty     = new ArrayList<Entity>(0);
-    static final List<Node> emptyNode   = new ArrayList<Node>(0);
     
     Iterable<Entity> iter;
     Iterator<Entity> it;
     EdgeGeneric glast;
     Edge last;
     Graph graph;
-    DataFilter filter;
+    private DataFilter filter;
     DataFrom from;
     boolean isNamedGraph;
-    private int level;
 
-    DataProducer(Graph g) {
+    public DataProducer(Graph g) {
         graph = g;
         isNamedGraph = false;
-        level = -1;
     }
 
     public static DataProducer create(Graph g) {
         DataProducer ei = new DataProducer(g);
         return ei;
     }
-
-    @Deprecated
-    public static DataProducer create(Graph g, Iterable<Entity> i) {
-        DataProducer ei = new DataProducer(g);
-        ei.setIterable(i);
-        return ei;
-    }
-    
-    @Deprecated
-     public DataProducer(Graph g, List<Node> list) {
-        this(g);
-        from(list);
-    }
-
-    @Deprecated 
-    public DataProducer(Graph g, Iterable<Entity> i, List<Node> list) {
-        this(g, list);
-        setIterable(i);
-    }
-       
+      
     public DataProducer iterate() {
         return iterate(graph.getTopProperty());
     }
@@ -141,8 +123,12 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         iter = it;
     }
     
+    /**
+     * RuleEngine require Edge with getIndex() >= n
+     * 
+     */
     public DataProducer level(int n){
-        setLevel(n);
+        filter(ExprType.EDGE_LEVEL, n);
         return  this;
     }
     
@@ -154,6 +140,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     public DataFrom getCreateDataFrom(){
         if (from == null){
             from = new DataFrom(graph);
+            setFilter(from);
         }
         return from;
     }
@@ -194,13 +181,6 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return this;
     }
     
-    public DataProducer not(){
-        if (filter != null){
-            filter.not();
-        }
-        return this;
-    }
-    
     @Override
     public Iterator<Entity> iterator() {
         if (from != null && from.isOneFrom() && from.getFromNode() == null) {
@@ -221,6 +201,9 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return n1.getIndex() == n2.getIndex();
     }
 
+    /**
+     * Main function iterate Edges.
+     */
     @Override
     public Entity next() {
 
@@ -234,21 +217,17 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
             else if (last != null && ! different(last, ent.getEdge())){
                 continue;
             }
-
-            if (from != null && ! from.eval(ent)){
+            
+            if (filter != null && ! filter.eval(ent)) {
+                // filter process from() clause
+                if (filter.fail()) {
+                    // RuleEngine edge level may fail
+                    it = empty.iterator();
+                    return null;
+                }
                 continue;
             }
-            
-            if (filter != null&& ! filter.eval(ent)){
-                continue;
-            }
-            
-            if (level != -1 && ent.getEdge().getIndex() < level) {
-                    // use case: Rule Engine requires edges with level >= this.level
-                 it = empty.iterator();
-                 break;
-            }
-
+                    
             record(ent);
             return ent;
         }
@@ -294,40 +273,91 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     @Override
     public void remove() {
     }
-
-    /**
-     * @return the level
-     */
-    public int getLevel() {
-        return level;
-    }
-
-    /**
-     * @param level the level to set
-     */
-    public void setLevel(int level) {
-        this.level = level;
-    }
-    
+   
     
     /********************************************************
      * 
      * 
      *******************************************************/
     
+    // place holder
+    public DataProducer filter(){
+        return this;
+    }
     
     public DataProducer filter(int test){
-        filter = new DataFilter(test);
+        setFilter(new DataFilter(test));
         return this;
     }
     
     public DataProducer filter(int test, IDatatype dt){
-        filter = new DataFilter(test, dt);
+        setFilter(new DataFilter(test, dt));
         return this;
     }
     
     public DataProducer filter(int test, IDatatype dt, int index){
-        filter = new DataFilter(test, dt, index);
+        setFilter(new DataFilter(test, dt, index));
+        return this;
+    }
+    
+    public DataProducer filter(int test, Node node, int index){
+        setFilter(new DataFilter(test, (IDatatype)node.getValue(), index));
+        return this;
+    }
+    
+    public DataProducer property(int test, Node node){
+        return filter(test, node, DataFilter.PROPERTY_INDEX);
+    }
+    
+    public DataProducer graph(int test, Node node){
+        return filter(test, node, DataFilter.GRAPH_INDEX);
+    }
+    
+    public DataProducer subject(int test, Node node){
+        return filter(test, node, 0);
+    }
+     
+    public DataProducer object(int test, Node node){
+        return filter(test, node, 1);
+    } 
+    
+    public DataProducer object(int test, String value){
+        return filter(test, value, 1);
+    } 
+    
+    public DataProducer object(int test, int value){
+        return filter(test, value, 1);
+    } 
+    
+    public DataProducer object(int test, double value){
+        return filter(test, value, 1);
+    } 
+    
+    public DataProducer subject(int test){
+        return filter(test, (IDatatype)null, 0);
+    }
+     
+    public DataProducer object(int test){
+        return filter(test, (IDatatype)null, 1);
+    } 
+    
+    public DataProducer and(){
+        setFilter(new DataFilterAnd());
+        return this;
+    }
+    
+    public DataProducer or(){
+        setFilter(new DataFilterOr());
+        return this;
+    }
+    
+    public DataProducer not(){
+        setFilter(new DataFilterNot());
+        return this;
+    }
+    
+    public DataProducer compare(int test, int i1, int i2){
+        setFilter(new DataFilter(test, i1, i2));
         return this;
     }
        
@@ -343,21 +373,31 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
          return filter(test, DatatypeMap.newInstance(value));
     }
     
+     public DataProducer filter(int test, int value, int index){
+         return filter(test, DatatypeMap.newInstance(value), index);
+    }
     
+    public DataProducer filter(int test, double value, int index){
+         return filter(test, DatatypeMap.newInstance(value), index);
+    }
+
+    public DataProducer filter(int test, String value, int index){
+         return filter(test, DatatypeMap.newInstance(value), index);
+    }
     
     
     public DataProducer filter(String test){
-        filter = new DataFilter(oper(test));
+        setFilter(new DataFilter(oper(test)));
         return this;
     }
     
     public DataProducer filter(String test, IDatatype dt){
-        filter = new DataFilter(oper(test), dt);
+        setFilter(new DataFilter(oper(test), dt));
         return this;
     }
     
     public DataProducer filter(String test, IDatatype dt, int index){
-        filter = new DataFilter(oper(test), dt, index);
+        setFilter(new DataFilter(oper(test), dt, index));
         return this;
     }
     
@@ -376,6 +416,28 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     int oper(String str){
         return Processor.getOper(str);
     }
-    
 
+    /**
+     * @return the filter
+     */
+    public DataFilter getFilter() {
+        return filter;
+    }
+
+    /**
+     * @param filter the filter to set
+     */
+    public void setFilter(DataFilter f) {
+        if (filter == null){
+            filter = f;
+        }
+        else if (filter.isBoolean()){
+           filter.setFilter(f);
+        }
+        else {
+            // use case: filter = from(g1)
+            filter = new DataFilterAnd(filter, f);
+        }
+    }
+    
 }

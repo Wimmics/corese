@@ -1,16 +1,20 @@
-package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core.producer;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * from, from named dataset for edge iteration
+ * getNamed().from|minus(list|node).iterate()
+ * getDefault().from|minus(list|node).iterate()
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class DataFrom {
+public class DataFrom extends DataFilter {
     static final List<Node> emptyNode   = new ArrayList<Node>(0);    
     
     private List<Node> from;
@@ -70,6 +74,7 @@ public class DataFrom {
         return getFrom().isEmpty();
     }
     
+    @Override
     boolean eval(Entity ent){
         boolean b = result(isFrom(ent));
         return b;
@@ -88,6 +93,7 @@ public class DataFrom {
      /**
      * isMember = false means skip graph in from clause
      */
+    @Override
     boolean result(boolean found){
         if (isMember){
             return found;

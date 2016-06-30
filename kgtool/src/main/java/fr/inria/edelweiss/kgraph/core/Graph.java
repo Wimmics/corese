@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +46,10 @@ import java.util.Map;
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
  * List<Edge>
  * Edge List are sorted Join on a Node is computed by dichotomy
+ * getEdges() return edges of all named graphs as quads
+ * Default Graph: g.getDefault().iterate()
+ * Named Graphs:  g.getNamed().iterate()
+ * See DataProducer for more iterators
  *
  * @author Olivier Corby, Edelweiss INRIA 2010
  *

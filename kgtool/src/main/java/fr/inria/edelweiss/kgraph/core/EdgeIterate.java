@@ -6,10 +6,11 @@ import java.util.Iterator;
 
 /**
  * Iterate internal Edge Index 
- * fill buffer Edge from internal Index
+ * fill buffer Edge with property Node from internal Index
  * return the buffer
  * buffer is the same object during iteration
  * hence if someone need to record edge, it MUST be copied
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */

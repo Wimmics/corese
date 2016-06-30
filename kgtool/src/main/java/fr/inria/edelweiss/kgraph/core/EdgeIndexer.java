@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 /**
  * Table property node -> List<Edge>
+ * Edge may be stored using internal structure without property Node to spare memory
  * Sorted by getNode(index), getNode(other) 
  * At the beginning, only table of
  * index 0 is fed with edges 
@@ -25,6 +26,7 @@ import java.util.HashMap;
  */
 public class EdgeIndexer 
         implements Index {
+    // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
     static final int IGRAPH = Graph.IGRAPH;

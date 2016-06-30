@@ -16,6 +16,11 @@ public class DataFilterOr extends DataFilterBoolean {
         
     DataFilterOr(){
     }
+    
+    public DataFilterOr(DataFilter f1, DataFilter f2){
+         add(f1);
+         add(f2);
+    }
        
     @Override
     boolean eval(Entity ent){

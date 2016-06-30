@@ -16,6 +16,10 @@ public class DataFilterNot extends DataFilterBoolean {
         
     DataFilterNot(){
     }
+    
+    public DataFilterNot(DataFilter f1){
+         add(f1);
+    }
        
     @Override
     boolean eval(Entity ent){

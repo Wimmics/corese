@@ -18,7 +18,7 @@ public class DataFilterAnd extends DataFilterBoolean {
     DataFilterAnd(){        
     }
     
-     DataFilterAnd(DataFilter f1, DataFilter f2){
+    public DataFilterAnd(DataFilter f1, DataFilter f2){
          add(f1);
          add(f2);
     }

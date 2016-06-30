@@ -128,7 +128,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
      * 
      */
     public DataProducer level(int n){
-        filter(ExprType.EDGE_LEVEL, n);
+        setFilter(new DataFilter(ExprType.EDGE_LEVEL, n));
         return  this;
     }
     
@@ -277,144 +277,24 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     
     /********************************************************
      * 
+     * API to add filters to iterate()
+     * Use case:
+     * 
+     * g.getDefault().iterate(foaf:age).filter(new DataFilterFactory().object(ExprType.GE, 50))   -- object >= 50
+     * g.getNamed().from(g1).iterate().filter(new DataFilterFactory().compare(ExprType.EQ, 0, 1)) -- subject = object
+     * g.getDefault().iterate().filter(new DataFilterFactory().and().subject(AA).object(BB)) -- and/or are binary
+     * g.getDefault().iterate().filter(new DataFilterFactory().not().or().subject(AA).object(BB)) -- not is unary
      * 
      *******************************************************/
-    
-    // place holder
-    public DataProducer filter(){
+        
+    public DataProducer filter(DataFilter f){
+        setFilter(f);
         return this;
-    }
-    
-    public DataProducer filter(int test){
-        setFilter(new DataFilter(test));
-        return this;
-    }
-    
-    public DataProducer filter(int test, IDatatype dt){
-        setFilter(new DataFilter(test, dt));
-        return this;
-    }
-    
-    public DataProducer filter(int test, IDatatype dt, int index){
-        setFilter(new DataFilter(test, dt, index));
-        return this;
-    }
-    
-    public DataProducer filter(int test, Node node, int index){
-        setFilter(new DataFilter(test, (IDatatype)node.getValue(), index));
-        return this;
-    }
-    
-    public DataProducer property(int test, Node node){
-        return filter(test, node, DataFilter.PROPERTY_INDEX);
-    }
-    
-    public DataProducer graph(int test, Node node){
-        return filter(test, node, DataFilter.GRAPH_INDEX);
-    }
-    
-    public DataProducer subject(int test, Node node){
-        return filter(test, node, 0);
     }
      
-    public DataProducer object(int test, Node node){
-        return filter(test, node, 1);
-    } 
-    
-    public DataProducer object(int test, String value){
-        return filter(test, value, 1);
-    } 
-    
-    public DataProducer object(int test, int value){
-        return filter(test, value, 1);
-    } 
-    
-    public DataProducer object(int test, double value){
-        return filter(test, value, 1);
-    } 
-    
-    public DataProducer subject(int test){
-        return filter(test, (IDatatype)null, 0);
-    }
-     
-    public DataProducer object(int test){
-        return filter(test, (IDatatype)null, 1);
-    } 
-    
-    public DataProducer and(){
-        setFilter(new DataFilterAnd());
+    public DataProducer filter(DataFilterFactory f){
+        setFilter(f.getFilter());
         return this;
-    }
-    
-    public DataProducer or(){
-        setFilter(new DataFilterOr());
-        return this;
-    }
-    
-    public DataProducer not(){
-        setFilter(new DataFilterNot());
-        return this;
-    }
-    
-    public DataProducer compare(int test, int i1, int i2){
-        setFilter(new DataFilter(test, i1, i2));
-        return this;
-    }
-       
-    public DataProducer filter(int test, int value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-    
-    public DataProducer filter(int test, double value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-
-    public DataProducer filter(int test, String value){
-         return filter(test, DatatypeMap.newInstance(value));
-    }
-    
-     public DataProducer filter(int test, int value, int index){
-         return filter(test, DatatypeMap.newInstance(value), index);
-    }
-    
-    public DataProducer filter(int test, double value, int index){
-         return filter(test, DatatypeMap.newInstance(value), index);
-    }
-
-    public DataProducer filter(int test, String value, int index){
-         return filter(test, DatatypeMap.newInstance(value), index);
-    }
-    
-    
-    public DataProducer filter(String test){
-        setFilter(new DataFilter(oper(test)));
-        return this;
-    }
-    
-    public DataProducer filter(String test, IDatatype dt){
-        setFilter(new DataFilter(oper(test), dt));
-        return this;
-    }
-    
-    public DataProducer filter(String test, IDatatype dt, int index){
-        setFilter(new DataFilter(oper(test), dt, index));
-        return this;
-    }
-    
-    public DataProducer filter(String test, int value){
-         return filter(oper(test), DatatypeMap.newInstance(value));
-    }
-    
-    public DataProducer filter(String test, double value){
-         return filter(oper(test), DatatypeMap.newInstance(value));
-    }
-
-    public DataProducer filter(String test, String value){
-         return filter(oper(test), DatatypeMap.newInstance(value));
-    }
-    
-    int oper(String str){
-        return Processor.getOper(str);
     }
 
     /**

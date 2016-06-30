@@ -28,25 +28,25 @@ public class DataFilter implements ExprType {
     
     DataFilter(){}
     
-    DataFilter(int test){
+    public DataFilter(int test){
         this(test, null, 1);
         complete();
     }
     
-    DataFilter(int test, int i1, int i2){
+    public DataFilter(int test, int i1, int i2){
         this(test, null, i1);
         other = i2;
     }
     
-    DataFilter(int test, int index){
+    public DataFilter(int test, int index){
        this(test, null, index);
     }
     
-    DataFilter(int test, IDatatype dt){
+    public DataFilter(int test, IDatatype dt){
         this(test, dt, 1);
     }
     
-    DataFilter(int test, IDatatype dt, int index){
+    public DataFilter(int test, IDatatype dt, int index){
         this.test = test;
         this.value = dt;
         this.index = index;
@@ -108,9 +108,9 @@ public class DataFilter implements ExprType {
     boolean eval(Entity ent) {
         switch (getOper()) {
 
-            // Rule Engine optimization require edge with index >= value
+            // Rule Engine optimization require edge with index >= index
             case EDGE_LEVEL:
-                return result(ent.getEdge().getIndex() >= getValue().intValue());
+                return result(ent.getEdge().getIndex() >= index);
                 
             default:
                 IDatatype dt =  getValue(ent, index);

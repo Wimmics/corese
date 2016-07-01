@@ -103,6 +103,7 @@ public class PluginImpl extends ProxyImpl {
         return new PluginImpl(m);
     }  
     
+    @Override
     public void setMode(int mode){
         switch (mode){
             
@@ -118,10 +119,12 @@ public class PluginImpl extends ProxyImpl {
     }
     
     // DRAFT: store current query in the Graph
+    @Override
     public void start(Producer p, Environment env){
         
     }
     
+    @Override
     public void finish(Producer p, Environment env){
         Graph g = getGraph(p);
         if (g != null){
@@ -129,11 +132,12 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
+    @Override
     public Object function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {         
 
-            case GRAPH:
+            case KG_GRAPH:
                 return getGraph(p);
                            
                           
@@ -159,6 +163,7 @@ public class PluginImpl extends ProxyImpl {
 
     }
 
+    @Override
     public Object function(Expr exp, Environment env, Producer p, Object o) {
         IDatatype dt = datatype(o);
 
@@ -256,6 +261,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
  
+    @Override
     public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
         IDatatype dt1 = (IDatatype) o1,
                 dt2 = (IDatatype) o2;
@@ -323,6 +329,7 @@ public class PluginImpl extends ProxyImpl {
 
     }
 
+    @Override
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
        IDatatype[] param = (IDatatype[]) args;
        

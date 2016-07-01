@@ -17,10 +17,10 @@ import java.util.ArrayList;
  *
  */
 public class DataFilter implements ExprType {
-    public static final int SUBJECT_INDEX = 0;
-    public static final int OBJECT_INDEX = 1;
-    public static final int PROPERTY_INDEX = -2;
-    public static final int GRAPH_INDEX = Graph.IGRAPH;
+    public static final int SUBJECT = 0;
+    public static final int OBJECT = 1;
+    public static final int PROPERTY = -2;
+    public static final int GRAPH = Graph.IGRAPH;
     
     private int test;
     int index, other = 1;
@@ -96,7 +96,7 @@ public class DataFilter implements ExprType {
     
     Node getNode(Entity ent, int n){
         switch (n){
-            case PROPERTY_INDEX: return ent.getEdge().getEdgeNode();
+            case PROPERTY: return ent.getEdge().getEdgeNode();
             default: return ent.getNode(n);
         }
     }

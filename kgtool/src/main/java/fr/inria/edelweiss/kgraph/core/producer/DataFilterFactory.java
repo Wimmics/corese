@@ -29,6 +29,10 @@ public class DataFilterFactory {
     
     public DataFilterFactory(){}
     
+    public DataFilterFactory init(){
+        filter = null;
+        return  this;
+    }
     
       /**
      * @param filter the filter to set
@@ -72,11 +76,11 @@ public class DataFilterFactory {
     }
     
     public DataFilterFactory property(int test, Node node){
-        return filter(test, node, DataFilter.PROPERTY_INDEX);
+        return filter(test, node, DataFilter.PROPERTY);
     }
     
     public DataFilterFactory graph(int test, Node node){
-        return filter(test, node, DataFilter.GRAPH_INDEX);
+        return filter(test, node, DataFilter.GRAPH);
     }
     
     public DataFilterFactory subject(int test, Node node){
@@ -89,6 +93,14 @@ public class DataFilterFactory {
     
     public DataFilterFactory object(int test, String value){
         return filter(test, value, 1);
+    } 
+    
+    public DataFilterFactory property(int test, String value){
+        return filter(test, value, DataFilter.PROPERTY);
+    } 
+    
+     public DataFilterFactory graph(int test, String value){
+        return filter(test, value, DataFilter.GRAPH);
     } 
     
     public DataFilterFactory object(int test, int value){

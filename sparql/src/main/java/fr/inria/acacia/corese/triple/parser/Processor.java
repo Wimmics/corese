@@ -750,7 +750,7 @@ public class Processor {
 		defoper(PSIMILAR, ExprType.PSIM);
 		defoper(ANCESTOR, ExprType.ANCESTOR);
 		defoper(DEPTH,   ExprType.DEPTH);
-		defoper(GRAPH,   ExprType.GRAPH);
+		defoper(GRAPH,   ExprType.KG_GRAPH);
 		defoper(NODE,    ExprType.NODE);
 		defoper(GET_OBJECT,     ExprType.GET_OBJECT);
 		defoper(SET_OBJECT,     ExprType.SET_OBJECT);

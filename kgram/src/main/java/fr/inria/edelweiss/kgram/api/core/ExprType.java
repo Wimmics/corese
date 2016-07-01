@@ -150,7 +150,7 @@ public interface ExprType {
 	public static int PROCESS       = 205;
 	public static int ENV   	= 206;
 	public static int DEPTH 	= 207;
-	public static int GRAPH 	= 208;
+	public static int KG_GRAPH 	= 208;
 	public static int NODE 		= 209;
 	public static int GET_OBJECT 	= 210;
 	public static int SET_OBJECT 	= 211;

@@ -70,6 +70,7 @@
 	  <version>1.7.21</version>
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
+	  <groupId>fr.inria.wimmics</groupId>
 	  <artifactId>tinkerpop</artifactId>
 	  <version>${project.version}</version>
 	 </dependency>

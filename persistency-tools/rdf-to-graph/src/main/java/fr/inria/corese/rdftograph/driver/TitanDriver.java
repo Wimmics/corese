@@ -5,29 +5,31 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.thinkaurelius.titan.core.Cardinality;
+import com.thinkaurelius.titan.core.EdgeLabel;
+import com.thinkaurelius.titan.core.Multiplicity;
+import com.thinkaurelius.titan.core.PropertyKey;
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
+import static fr.inria.corese.rdftograph.RdfToGraph.CONTEXT;
+import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
 import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
 import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
 import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
 import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
-import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
-import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
 import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
 import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
+import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -37,39 +39,43 @@ import org.openrdf.model.Value;
  *
  * @author edemairy
  */
-public class OrientDbDriver extends GdbDriver {
+public class TitanDriver extends GdbDriver {
 
-	OrientGraphFactory graph;
-	private OrientGraph g;
+	TitanGraph g;
 
 	@Override
 	public void openDb(String dbPath) {
-		try {
-			if (getWipeOnOpen()) {
-				String path = dbPath.replaceFirst("plocal:", "");
-				if (Files.exists(Paths.get(path))) {
-					delete(path);
-				}
-			}
-		} catch (IOException ex) {
-			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
+		BaseConfiguration configuration = new BaseConfiguration();
+		configuration.setProperty("storage.batch-loading", false);
+		configuration.setProperty("storage.backend", "berkeleyje");
+//		configuration.setProperty("storage.backend", "cassandrathrift");
+//		configuration.setProperty("storage.hostname", "127.0.0.1");
+		configuration.setProperty("storage.directory", dbPath);
+		configuration.setProperty("schema.default", "default");
+		configuration.setProperty("storage.buffer-size", 50_000);
+		configuration.setProperty("ids.block-size", 1_000_000);
+		g = TitanFactory.open(configuration);
+		TitanManagement manager = g.openManagement();
+		if (!manager.containsEdgeLabel(RDF_EDGE_LABEL)) {
+			EdgeLabel rdfLabel = manager.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			manager.makePropertyKey(CONTEXT).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			manager.makePropertyKey(KIND).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			manager.makePropertyKey(LANG).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			manager.makePropertyKey(TYPE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
+			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildCompositeIndex();
+			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue).buildCompositeIndex();
+			manager.commit();
 		}
-		graph = new OrientGraphFactory(dbPath);
-		BaseConfiguration nodeConfig = new BaseConfiguration();
-		nodeConfig.setProperty("type", "NOTUNIQUE");
-		nodeConfig.setProperty("keytype", OType.STRING);
-		graph.getTx().createVertexIndex(VERTEX_VALUE, RDF_VERTEX_LABEL, nodeConfig);
-		graph.getTx().createEdgeIndex(EDGE_VALUE, RDF_EDGE_LABEL, nodeConfig);
-		g = graph.getTx();
 	}
-
 
 	@Override
 	public void closeDb() {
 		try {
-			graph.getTx().close();
+			g.close();
 		} catch (Exception ex) {
-			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -101,7 +107,6 @@ public class OrientDbDriver extends GdbDriver {
 
 	@Override
 	public Object createNode(Value v) {
-//		OrientGraph g = graph.getTx();
 		Object result = null;
 		String nodeId = nodeId(v);
 		if (alreadySeen.containsKey(nodeId)) {
@@ -129,7 +134,6 @@ public class OrientDbDriver extends GdbDriver {
 				break;
 			}
 		}
-//		g.commit();
 		alreadySeen.put(nodeId, result);
 		return result;
 	}
@@ -137,7 +141,6 @@ public class OrientDbDriver extends GdbDriver {
 	@Override
 	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
 		Object result = null;
-//		OrientGraph g = graph.getTx();
 		Vertex vSource = g.vertices(source).next();
 		Vertex vObject = g.vertices(object).next();
 		ArrayList<Object> p = new ArrayList<>();
@@ -149,12 +152,11 @@ public class OrientDbDriver extends GdbDriver {
 		p.add(predicate);
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
-//		g.commit();
 		return result;
 	}
 
 	@Override
 	public void commit() {
-		graph.getTx().commit();
+		g.tx().commit();
 	}
 }

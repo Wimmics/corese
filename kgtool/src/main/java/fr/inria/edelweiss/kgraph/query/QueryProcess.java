@@ -164,7 +164,7 @@ public class QueryProcess extends QuerySolver {
         return eval;
     }
 
-	private static ProducerImpl p = null;
+	private static ProducerImpl p;
 
     /**
 	 * isMatch = true: Each Producer perform local Matcher.match() on its
@@ -173,24 +173,14 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String FACTORY = "fr.inria.corese.persistency.Factory";
+		String FACTORY = "fr.inria.corese.tinkerpop.Factory";
 		if (p == null) {
 			try {
 				Class<?> classFactory = Class.forName(FACTORY);
 				Method method = classFactory.getMethod("create", Graph.class);
 				p = (ProducerImpl) method.invoke(null, g);
         p.setMatch(isMatch);
-			} catch (ClassNotFoundException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (NoSuchMethodException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (SecurityException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalAccessException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}

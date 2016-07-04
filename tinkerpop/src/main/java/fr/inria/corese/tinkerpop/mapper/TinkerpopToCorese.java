@@ -5,12 +5,12 @@
  */
 package fr.inria.corese.tinkerpop.mapper;
 
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import static fr.inria.corese.tinkerpop.mapper.Mapper.*;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
@@ -36,7 +36,7 @@ public class TinkerpopToCorese {
 		Entity result = EdgeQuad.create(
 			coreseGraph.createNode(context),
 			unmapNode(e.outVertex()),
-			coreseGraph.createNode((String) e.value(VALUE)),
+			coreseGraph.createNode((String) e.value(EDGE_VALUE)),
 			unmapNode(e.inVertex())
 		);
 		return result;
@@ -45,11 +45,11 @@ public class TinkerpopToCorese {
 	private Node unmapNode(Vertex node) {
 		switch ((String) node.value(KIND)) {
 			case IRI:
-				return coreseGraph.createNode((String) node.value(VALUE));
+				return coreseGraph.createNode((String) node.value(VERTEX_VALUE));
 			case BNODE:
-				return coreseGraph.createBlank((String) node.value(VALUE));
+				return coreseGraph.createBlank((String) node.value(VERTEX_VALUE));
 			case LITERAL:
-				String label = (String) node.value(VALUE);
+				String label = (String) node.value(VERTEX_VALUE);
 				String type = (String) node.value(TYPE);
 				VertexProperty<String> lang = node.property(LANG);
 				if (lang.isPresent()) {

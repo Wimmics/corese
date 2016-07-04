@@ -15,7 +15,7 @@ import java.util.Optional;
 public class Factory {
 
 	public final static String DRIVER = "com.orientechnologies.orient.jdbc.OrientJdbcDriver";
-	public final static String DB_PATH = "jdbc:orient:plocal:/Users/edemairy/btc_orientdb_1m";
+	public final static String DB_PATH = "jdbc:orient:plocal:/Users/edemairy/btc_bd_odb";
 	public static String[] CONFIG = {DbGraph.PATH, DB_PATH, DbGraph.USER, "admin", DbGraph.PASSWORD, "admin"};
 
 	private static Optional<DbGraph> graph = null;

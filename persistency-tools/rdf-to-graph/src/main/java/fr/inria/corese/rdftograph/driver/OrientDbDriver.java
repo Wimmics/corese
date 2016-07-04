@@ -5,6 +5,7 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
 import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
@@ -12,7 +13,10 @@ import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
 import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
 import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
 import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
+import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -35,6 +40,7 @@ import org.openrdf.model.Value;
 public class OrientDbDriver extends GdbDriver {
 
 	OrientGraphFactory graph;
+	private OrientGraph g;
 
 	@Override
 	public void openDb(String dbPath) {
@@ -49,11 +55,22 @@ public class OrientDbDriver extends GdbDriver {
 			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		graph = new OrientGraphFactory(dbPath);
+		BaseConfiguration nodeConfig = new BaseConfiguration();
+		nodeConfig.setProperty("type", "NOTUNIQUE");
+		nodeConfig.setProperty("keytype", OType.STRING);
+		graph.getTx().createVertexIndex(VERTEX_VALUE, RDF_VERTEX_LABEL, nodeConfig);
+		graph.getTx().createEdgeIndex(EDGE_VALUE, RDF_EDGE_LABEL, nodeConfig);
+		g = graph.getTx();
 	}
+
 
 	@Override
 	public void closeDb() {
-		graph.close();
+		try {
+			graph.getTx().close();
+		} catch (Exception ex) {
+			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	Map<String, Object> alreadySeen = new HashMap<>();
@@ -84,7 +101,7 @@ public class OrientDbDriver extends GdbDriver {
 
 	@Override
 	public Object createNode(Value v) {
-		OrientGraph g = graph.getTx();
+//		OrientGraph g = graph.getTx();
 		Object result = null;
 		String nodeId = nodeId(v);
 		if (alreadySeen.containsKey(nodeId)) {
@@ -93,16 +110,16 @@ public class OrientDbDriver extends GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				Vertex newVertex = g.addVertex();
-				newVertex.property(VALUE, v.stringValue());
+				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, v.stringValue());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
 				result = newVertex.id();
 				break;
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				Vertex newVertex = g.addVertex();
-				newVertex.property(VALUE, l.getLabel());
+				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, l.getLabel());
 				newVertex.property(TYPE, l.getDatatype().toString());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
 				if (l.getLanguage().isPresent()) {
@@ -112,7 +129,7 @@ public class OrientDbDriver extends GdbDriver {
 				break;
 			}
 		}
-		g.commit();
+//		g.commit();
 		alreadySeen.put(nodeId, result);
 		return result;
 	}
@@ -120,7 +137,7 @@ public class OrientDbDriver extends GdbDriver {
 	@Override
 	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
 		Object result = null;
-		OrientGraph g = graph.getTx();
+//		OrientGraph g = graph.getTx();
 		Vertex vSource = g.vertices(source).next();
 		Vertex vObject = g.vertices(object).next();
 		ArrayList<Object> p = new ArrayList<>();
@@ -128,12 +145,16 @@ public class OrientDbDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
-		p.add(VALUE);
+		p.add(EDGE_VALUE);
 		p.add(predicate);
-		Edge e = vSource.addEdge("rdf_edge", vObject, p.toArray());
+		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
-		g.commit();
+//		g.commit();
 		return result;
 	}
 
+	@Override
+	public void commit() {
+		graph.getTx().commit();
+	}
 }

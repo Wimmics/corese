@@ -4,19 +4,19 @@
 package fr.inria.corese.rdftograph;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.IRI;
@@ -29,15 +29,15 @@ import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.helpers.AbstractRDFHandler;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 
 import org.openrdf.rio.helpers.NTriplesParserSettings;
 
 /**
- * This application: 
- *   (i) read a RDF file using sesame library; 
- *   (ii) write the content into a neo4j DB using the neo4j library.
+ * This application: (i) read a RDF file using sesame library; (ii) write the
+ * content into a neo4j DB using the neo4j library.
  *
  * @author edemairy
  */
@@ -50,19 +50,55 @@ public class RdfToGraph {
 	public static final String KIND = "kind";
 	public static final String LANG = "lang";
 	public static final String TYPE = "type";
-	public static final String VALUE = "value";
+	public static final String EDGE_VALUE = "e_value";
+	public static final String VERTEX_VALUE = "v_value";
+	public static final String RDF_EDGE_LABEL = "rdf_edge";
+	public static final String RDF_VERTEX_LABEL = "rdf_vertex";
 
 	private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
 	protected Model model;
 	protected GdbDriver driver;
-	private static final String[] AUTHORIZED_DRIVERS_ARRAY = {"neo4j", "orientdb", "tneo4j", "torientdb"};
-	private static final HashSet<String> AUTHORIZED_DRIVERS = new HashSet<>(Arrays.asList(AUTHORIZED_DRIVERS_ARRAY));
 	private static final Map<String, String> DRIVER_TO_CLASS;
 
 	static {
 		DRIVER_TO_CLASS = new HashMap<>();
 		DRIVER_TO_CLASS.put("neo4j", "fr.inria.corese.rdftograph.driver.Neo4jDriver");
 		DRIVER_TO_CLASS.put("orientdb", "fr.inria.corese.rdftograph.driver.OrientDbDriver");
+		DRIVER_TO_CLASS.put("titandb", "fr.inria.corese.rdftograph.driver.TitanDriver");
+	}
+
+	private class StatementCounter extends AbstractRDFHandler {
+
+		private int countedStatements = 0;
+		private int triples = 0;
+
+		@Override
+		public void handleStatement(Statement statement) {
+			Resource context = statement.getContext();
+			Resource source = statement.getSubject();
+			IRI predicat = statement.getPredicate();
+			Value object = statement.getObject();
+
+			String contextString = (context == null) ? "" : context.stringValue();
+
+			Object sourceNode = driver.createNode(source);
+			Object objectNode = driver.createNode(object);
+
+			Map<String, Object> properties = new HashMap();
+			properties.put(CONTEXT, contextString);
+			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
+			triples++;
+			if (triples % CHUNK_SIZE == 0) {
+				LOGGER.info("" + triples);
+				try {
+					driver.commit();
+				} catch (Exception ex) {
+					LOGGER.severe("Trying to pursue after: " + ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		}
+
 	}
 
 	public RdfToGraph() {
@@ -90,7 +126,7 @@ public class RdfToGraph {
 		return result;
 	}
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 		if (args.length < 2) {
 			System.err.println("Usage: rdfToGraph fileName db_path [backend]");
 			System.err.println("if the parser cannot guess the format of the input file, NQUADS is used.");
@@ -102,7 +138,7 @@ public class RdfToGraph {
 		String driverName = "neo4j";
 		if (args.length >= 3) {
 			String driverParam = args[2];
-			if (AUTHORIZED_DRIVERS.contains(driverParam)) {
+			if (DRIVER_TO_CLASS.keySet().contains(driverParam)) {
 				driverName = driverParam;
 			}
 		}
@@ -111,7 +147,12 @@ public class RdfToGraph {
 		converter.setDriver(driverName);
 
 		String rdfFileName = args[0];
-		FileInputStream inputStream = new FileInputStream(new File(rdfFileName));
+		InputStream inputStream;
+		if (rdfFileName.endsWith(".gz")) {
+			inputStream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(rdfFileName)));
+		} else {
+			inputStream = new FileInputStream(new File(rdfFileName));
+		}
 		String dbPath = args[1];
 
 		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
@@ -128,7 +169,8 @@ public class RdfToGraph {
 	 * Read a RDF stream and serialize it inside a Neo4j graph.
 	 *
 	 * @param rdfStream Input stream containing rdf data
-	 * @param format Format used for the rdf representation in the input stream
+	 * @param format Format used for the rdf representation in the input
+	 * stream
 	 * @param dbPath Where to store the rdf data.
 	 */
 	public void convert(InputStream rdfStream, RDFFormat format, String dbPath) {
@@ -139,7 +181,7 @@ public class RdfToGraph {
 			LOGGER.info("Loading file");
 			readFile(rdfStream, format);
 			LOGGER.info("Writing graph in db");
-			writeModelToNeo4j();
+//			writeModelToNeo4j();
 			LOGGER.info("closing DB");
 			driver.closeDb();
 			LOGGER.info("** end of convert **");
@@ -155,7 +197,7 @@ public class RdfToGraph {
 	 * @param format Format used to represent the RDF in the file.
 	 * @throws IOException
 	 */
-	public void readFile(InputStream in, RDFFormat format) throws IOException {
+	public void readFile_old(InputStream in, RDFFormat format) throws IOException {
 		RDFParser rdfParser = Rio.createParser(format);
 		ParserConfig config = new ParserConfig();
 		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
@@ -166,7 +208,23 @@ public class RdfToGraph {
 		rdfParser.parse(in, "");
 	}
 
-	final static private int THRESHOLD = 9414890; //Integer.MAX_VALUE;
+	public void readFile(InputStream in, RDFFormat format) throws IOException {
+		StatementCounter myCounter = new StatementCounter();
+		RDFParser rdfParser = Rio.createParser(format);
+		ParserConfig config = new ParserConfig();
+		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
+		rdfParser.setParserConfig(config);
+		rdfParser.setRDFHandler(myCounter);
+		try {
+			rdfParser.parse(in, "");
+		} catch (Exception e) {
+			LOGGER.severe(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	final static private int CHUNK_SIZE = 50_000; //Integer.MAX_VALUE;
 
 	public void writeModelToNeo4j() {
 		int triples = 0;
@@ -185,8 +243,9 @@ public class RdfToGraph {
 			properties.put(CONTEXT, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
-			if (triples > THRESHOLD) {
-				break;
+			if (triples % CHUNK_SIZE == 0) {
+				LOGGER.info("" + triples);
+				driver.commit();
 			}
 		}
 		System.out.println(triples + " processed");

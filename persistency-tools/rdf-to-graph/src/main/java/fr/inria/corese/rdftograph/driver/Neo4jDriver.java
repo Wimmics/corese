@@ -12,7 +12,10 @@ import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
 import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
 import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
 import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
+import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
+import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,20 +23,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.DynamicRelationshipType;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.unsafe.batchinsert.BatchInserter;
-import org.neo4j.unsafe.batchinsert.BatchInserters;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
-import org.neo4j.tinkerpop.api.impl.Neo4jFactoryImpl;
 
 /**
  *
@@ -52,6 +48,9 @@ public class Neo4jDriver extends GdbDriver {
 				delete(dbPath);
 			}
 			graph = Neo4jGraph.open(dbPath);
+			graph.cypher("CREATE INDEX ON :rdf_edge(e_value)");
+			graph.cypher("CREATE INDEX ON :rdf_vertex(v_value)");
+			graph.tx().commit();
 		} catch (Exception e) {
 			LOGGER.severe(e.toString());
 			e.printStackTrace();
@@ -75,11 +74,11 @@ public class Neo4jDriver extends GdbDriver {
 			switch (RdfToGraph.getKind(object)) {
 				case BNODE:
 				case IRI:
-					result &= endNode.getProperty(VALUE).equals(object.stringValue());
+					result &= endNode.getProperty(EDGE_VALUE).equals(object.stringValue());
 					break;
 				case LITERAL:
 					Literal l = (Literal) object;
-					result &= endNode.getProperty(VALUE).equals(l.getLabel());
+					result &= endNode.getProperty(EDGE_VALUE).equals(l.getLabel());
 					result &= endNode.getProperty(TYPE).equals(l.getDatatype().stringValue());
 					if (l.getLanguage().isPresent()) {
 						result &= endNode.hasProperty(LANG) && endNode.getProperty(LANG).equals(l.getLanguage().get());
@@ -96,6 +95,13 @@ public class Neo4jDriver extends GdbDriver {
 	}
 	Map<String, Object> alreadySeen = new HashMap<>();
 
+	/**
+	 * Returns a unique id to store as the key for alreadySeen, to prevent
+	 * creation of duplicates.
+	 *
+	 * @param v
+	 * @return
+	 */
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
 		String kind = RdfToGraph.getKind(v);
@@ -128,8 +134,7 @@ public class Neo4jDriver extends GdbDriver {
 	 * @return
 	 */
 	@Override
-	public Object createNode(Value v
-	) {
+	public Object createNode(Value v) {
 //		Graph g = graph.getTx();
 		Object result = null;
 		String nodeId = nodeId(v);
@@ -139,16 +144,16 @@ public class Neo4jDriver extends GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				Vertex newVertex = graph.addVertex();
-				newVertex.property(VALUE, v.stringValue());
+				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, v.stringValue());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
 				result = newVertex.id();
 				break;
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				Vertex newVertex = graph.addVertex();
-				newVertex.property(VALUE, l.getLabel());
+				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, l.getLabel());
 				newVertex.property(TYPE, l.getDatatype().toString());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
 				if (l.getLanguage().isPresent()) {
@@ -158,12 +163,9 @@ public class Neo4jDriver extends GdbDriver {
 				break;
 			}
 		}
-//		graph.commit();
 		alreadySeen.put(nodeId, result);
 		return result;
 	}
-
-	static RelationshipType rdfEdge = DynamicRelationshipType.withName("rdf_edge");
 
 	@Override
 	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties
@@ -177,13 +179,17 @@ public class Neo4jDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
-		p.add(VALUE);
+		p.add(EDGE_VALUE);
 		p.add(predicate);
-		Edge e = vSource.addEdge("rdf_edge", vObject, p.toArray());
+		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
-//		g.commit();
 		return result;
-		//properties.put(VALUE, predicate);
+		//properties.put(EDGE_VALUE, predicate);
 		//return g.createRelationship((Long) source, (Long) object, rdfEdge, properties);
+	}
+
+	@Override
+	public void commit() {
+		graph.tx().commit();
 	}
 }

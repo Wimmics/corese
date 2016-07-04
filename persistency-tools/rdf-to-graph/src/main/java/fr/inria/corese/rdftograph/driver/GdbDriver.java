@@ -49,4 +49,6 @@ public abstract class GdbDriver {
 	public abstract Object createNode(Value v);
 
 	public abstract Object createRelationship(Object sourceId, Object objectId, String predicate, Map<String, Object> properties);
+
+	public abstract void commit();
 }

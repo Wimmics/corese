@@ -17,12 +17,12 @@ import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
  */
 public class Factory {
 
-//	public static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
-//	public static String DB_PATH = "/Users/edemairy/btc_neo4j_1m";
-//	public static String[] CONFIG = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
-		public static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
-		public static String DB_PATH = "plocal:/Users/edemairy/btc_orientdb_1m";
-		public static String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
+	public static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
+	public static String DB_PATH = "/Users/edemairy/btc_neo4j_10m";
+	public static String[] CONFIG = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
+//		public static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
+//		public static String DB_PATH = "plocal:/Users/edemairy/btc_orientdb_1m";
+//		public static String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
 
 	private static Optional<TinkerpopGraph> graph = null;
 

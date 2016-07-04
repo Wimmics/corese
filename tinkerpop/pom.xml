@@ -34,22 +34,28 @@
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>neo4j-gremlin</artifactId>
-            <version>3.1.1-incubating</version>
+            <version>3.2.0-incubating</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-tinkerpop-api-impl</artifactId>
-            <version>0.3-2.3.2</version>
+            <version>0.3-2.3.3</version>
         </dependency>
         <dependency>
             <groupId>com.michaelpollmeier</groupId>
             <artifactId>orientdb-gremlin</artifactId>
-            <version>3.1.1-incubating.1</version>
+            <version>3.2.0-incubating.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>tinkergraph-gremlin</artifactId>
-            <version>3.1.1-incubating</version>
+            <version>3.2.0-incubating</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.corese</groupId>
+            <artifactId>rdf-to-graph</artifactId>
+            <version>3.2.1p-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
     </dependencies>

@@ -241,6 +241,41 @@ public class RuleEngine implements Engine, Graphable {
         eng.set(q);
         return eng;
     }
+    
+    /**
+     * 
+     * @return true if there is no Constraint Violation
+     */
+    public boolean success(){
+        try {
+            String q = QueryLoad.create().getResource("/query/rulesuccess.rq");
+            QueryProcess ex = QueryProcess.create(graph);
+            Mappings map = ex.query(q);
+            return map.size() == 0;
+        } catch (IOException ex) {
+            logger.error(ex);
+        } catch (EngineException ex) {
+            logger.error(ex);
+        }
+        return true;
+    }
+    
+    /**
+     * @return a Graph of Constraint Violation, may be empty
+     */
+    public Graph constraint(){
+         try {
+            String q = QueryLoad.create().getResource("/query/ruleconstraint.rq");
+            QueryProcess ex = QueryProcess.create(graph);
+            Mappings map = ex.query(q);
+            return (Graph) map.getGraph();
+        } catch (IOException ex) {
+            logger.error(ex);
+        } catch (EngineException ex) {
+            logger.error(ex);
+        }
+        return Graph.create();
+    }
 
     public boolean process() {
         if (graph == null) {

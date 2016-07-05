@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  * g.getDefault().iterate().filter(
  * new DataFilterFactory().object(ExprType.GE, 50)) -- object >= 50
  * g.getNamed().iterate().filter(
- * new DataFilterFactory().compare(ExprType.EQ, 0, 1)) -- subject = object
+ * new DataFilterFactory().edge(ExprType.EQ, 0, 1)) -- subject = object
  * g.getDefault().iterate().filter(
  * new DataFilterFactory().and().subject(AA).object(BB)) -- and/or are binary
  * g.getDefault().iterate().filter(
@@ -24,6 +24,10 @@ import fr.inria.edelweiss.kgram.api.core.Node;
  *
  */
 public class DataFilterFactory {
+    public static final int SUBJECT  = DataFilter.SUBJECT;
+    public static final int OBJECT   = DataFilter.OBJECT;
+    public static final int PROPERTY = DataFilter.PROPERTY;
+    public static final int GRAPH    = DataFilter.GRAPH;
     
     DataFilter filter;
     
@@ -32,6 +36,22 @@ public class DataFilterFactory {
     public DataFilterFactory init(){
         filter = null;
         return  this;
+    }
+    
+    public int graph(){
+        return GRAPH;
+    }
+    
+    public int subject(){
+        return SUBJECT;
+    }
+    
+    public int property(){
+        return PROPERTY;
+    }
+    
+    public int object(){
+        return OBJECT;
     }
     
       /**
@@ -111,6 +131,21 @@ public class DataFilterFactory {
         return filter(test, value, 1);
     } 
     
+    public DataFilterFactory node(int test, int index, Node value){
+        return filter(test, value, index);
+    } 
+    
+    public DataFilterFactory node(int test, int index, int value){
+        return filter(test, value, index);
+    } 
+    
+    public DataFilterFactory node(int test, int index, double value){
+        return filter(test, value, index);
+    } 
+     public DataFilterFactory node(int test, int index, String value){
+        return filter(test, value, index);
+    } 
+    
     /**
      * subject(ExprType.ISBLANK)
      */
@@ -153,9 +188,9 @@ public class DataFilterFactory {
      * Compare edge node values 
      * DataFilter.PROPERTY_INDEX and DataFilter.GRAPH_INDEX
      * DataFilter.SUBJECT_INDEX (0) and DataFilter.OBJECT_INDEX (1)
-     * compare(ExprType.EQ, DataFilter.PROPERTY_INDEX, DataFilter.SUBJECT_INDEX)
+     * edge(ExprType.EQ, DataFilter.PROPERTY_INDEX, DataFilter.SUBJECT_INDEX)
      */
-    public DataFilterFactory compare(int test, int i1, int i2){
+    public DataFilterFactory edge(int test, int i1, int i2){
         setFilter(new DataFilter(test, i1, i2));
         return this;
     }

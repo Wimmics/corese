@@ -31,15 +31,18 @@ public class CoreseString extends CoreseStringLiteral { //CoreseStringableImpl{
 	  return new CoreseString(str);
   }
 
+  @Override
   public IDatatype getDatatype(){
        return datatype;
      }
 
+  @Override
   public int getCode() {
     return code;
   }
 
  
+  @Override
   public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case STRING:  return getLabel().equals(iod.getLabel());

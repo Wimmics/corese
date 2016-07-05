@@ -42,45 +42,59 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
   public CoreseUndefLiteral() {
       super(FUTURE);
   }
+    @Override
   public void setDatatype(String uri) {
     datatype = getGenericDatatype(uri);
   }
 
+    @Override
   public int getCode() {
    return code;
  }
 
 
+    @Override
   public IDatatype getDatatype(){
     return datatype;
   }
 
+    @Override
   public boolean isTrue() throws CoreseDatatypeException {
       throw failure();
     }
 
+    @Override
     public boolean isTrueAble() {
       return false;
     }
 	
   void check(IDatatype iod) throws CoreseDatatypeException {
-      if (getDatatype() != iod.getDatatype()){
+      if (iod.getCode() == UNDEF && getDatatype() != iod.getDatatype()){
       	throw failure(); 
       }
   }
   
-  public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
-	  if (! iod.isLiteral()) return false; 
-	  check(iod);
-	  boolean b =  getLabel().equals(iod.getLabel());
-	  if (!b) throw failure();
-	  return b;
+    @Override
+    public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
+        if (!iod.isLiteral()) {
+            return false;
+        }
+        check(iod);
+        if (getDatatype() != iod.getDatatype()) {
+            return false;
+        }
+        boolean b = getLabel().equals(iod.getLabel());
+        if (!b) {
+            throw failure();
+        }
+        return b;
 
-  }
+    }
 
     /**
      * @return the object
      */
+    @Override
     public Object getObject() {
         return object;
     }
@@ -88,6 +102,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     /**
      * @param object the object to set
      */
+    @Override
     public void setObject(Object object) {
         this.object = object;
     }
@@ -95,6 +110,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     /**
      * @return the isFuture
      */
+    @Override
     public boolean isFuture() {
         return isFuture;
     }

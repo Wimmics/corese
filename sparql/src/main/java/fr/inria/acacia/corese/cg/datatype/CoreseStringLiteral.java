@@ -42,6 +42,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
    * semiEquals do not look at @ lang for 2 String Literal  only
    * otherwise compute equals
    */
+  @Override
   public boolean semiEquals(IDatatype iod) {
     if (iod instanceof CoreseStringLiteral){
       CoreseStringLiteral lit=(CoreseStringLiteral)iod;
@@ -52,6 +53,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   }
   
   
+  @Override
   public int compare(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case LITERAL:
@@ -65,6 +67,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
   }
   
 
+  @Override
   public boolean less(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case LITERAL:
@@ -77,6 +80,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  throw failure();
   }
   
+  @Override
   public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
 	  switch (iod.getCode()){
 	  case LITERAL:
@@ -89,6 +93,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  throw failure();
   }
   
+  @Override
   public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case LITERAL:
@@ -101,6 +106,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  throw failure();
   }
   
+  @Override
   public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case LITERAL:

@@ -30,6 +30,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	/**
 	 * Literal has no xsd:datatype
 	 */
+        @Override
 	public IDatatype getDatatype(){
 		if (dataLang == empty){
 			// SPARQL requires that datatype("abc") = xsd:string
@@ -38,10 +39,12 @@ public class CoreseLiteral extends CoreseStringLiteral {
 		return datatype;
 	}
 
+        @Override
 	public  int getCode(){
 		return code;
 	}
 
+        @Override
 	public void setLang(String lang) {
 		//lang=str;
 		if (lang != null)
@@ -50,16 +53,19 @@ public class CoreseLiteral extends CoreseStringLiteral {
 
 
 
+        @Override
 	public String getLang(){
 		if (dataLang == null) return null;
 		else return dataLang.getLabel();
 	}
 
+        @Override
 	public IDatatype getDataLang(){
 		return dataLang;
 	}
 
 
+        @Override
 	public boolean hasLang(){
 		return dataLang != null && dataLang != empty;
 	}
@@ -83,20 +89,24 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	 * literal x string throw failure (?)
 	 *
 	 */
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		
 		case STRING:  
 			if (getDataLang() != empty){
-				throw failure();
+				return false; //throw failure();
 			}
 			return getLabel().equals(iod.getLabel());
 			
 		case LITERAL:
 			boolean b1 = testLang(iod);
-			if (! b1) throw failure(); //return false;
+			if (! b1) {
+                            return false;
+                        } //throw failure(); //return false;
 			return getLabel().equals(iod.getLabel());	
 			
+                case UNDEF:
 		case URI:
 		case BLANK: return false;
 		}

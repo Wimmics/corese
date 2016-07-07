@@ -1,8 +1,5 @@
 package fr.inria.edelweiss.kgraph.core.producer;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.triple.parser.Processor;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,8 +89,8 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         setIterable(graph.properGetEdges(predicate, node, n));
         return this;
     }
-    
-    
+     
+     
 
     /**
      * Iterate predicate from named
@@ -120,7 +117,18 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
    
     
     public void setIterable(Iterable<Entity> it){
-        iter = it;
+        if (iter == null){
+            iter = it;
+        }
+        else if (iter instanceof MetaIterator){
+            ((MetaIterator) iter).next(it);
+        }
+        else {
+            MetaIterator m = new MetaIterator<Entity>();
+            m.next(iter);
+            m.next(it);
+            iter = m;
+        }
     }
     
     /**

@@ -650,6 +650,10 @@ public class Exp extends PointerObject
 	public void setNodeList(List<Node> l) {
 		lNodes = l;
 	}
+        
+        public boolean hasNodeList(){
+            return getNodeList() != null && ! getNodeList().isEmpty();
+        }
 
 	public void addNode(Node n) {
 		if (lNodes == null) {

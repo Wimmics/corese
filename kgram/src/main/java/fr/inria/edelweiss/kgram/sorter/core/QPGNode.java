@@ -133,7 +133,12 @@ public class QPGNode {
                     case VALUES:
                         return this.isShared(bpn2.exp.getNodeList(), bpn1.exp);
                     case BIND:
-                        return this.isShared(bpn2.exp.getNode(), bpn1.exp);
+                        if (bpn2.exp.hasNodeList()){
+                             return this.isShared(bpn2.exp.getNodeList(), bpn1.exp);
+                        }
+                        else {
+                            return this.isShared(bpn2.exp.getNode(), bpn1.exp);
+                        }
                     default:;
                 }
             case BIND:
@@ -143,7 +148,12 @@ public class QPGNode {
                     case VALUES:
                         return this.isShared(bpn2.exp.getNodeList(), bpn1.exp.getNode());//td
                     case BIND:
-                        return this.compare(bpn2.exp.getNode(), bpn1.exp.getNode());
+                        if (bpn2.exp.hasNodeList()){
+                            return this.compare(bpn2.exp.getNodeList(), bpn1.exp.getNode());
+                        }
+                        else {
+                            return this.compare(bpn2.exp.getNode(), bpn1.exp.getNode());
+                        }
                     default:;
                 }
             default:

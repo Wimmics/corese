@@ -23,12 +23,12 @@
             <version>2.6</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgram</artifactId>
             <version>3.2.1-SNAPSHOT</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

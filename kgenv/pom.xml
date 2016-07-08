@@ -9,13 +9,18 @@
     </parent>
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgenv</artifactId>
-
+    <version>${parent.version}</version>
     <dependencies>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
-            <version>${project.version}</version>
-        </dependency>	
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>kgram</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
 <!--        <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>cryptohash</artifactId>
@@ -30,11 +35,6 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgram</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -10,40 +10,38 @@
     
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgengine</artifactId>
-    <packaging>jar</packaging>
+    <version>${parent.version}</version>
     <dependencies>
-        
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>corese-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>kgram</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>kgenv</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
-            <version>${project.parent.version}</version>
-            <type>jar</type>
+            <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>engine</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
             <artifactId>arp</artifactId>
             <version>2.2.b</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>engine</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -1,0 +1,15 @@
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+# test and do not report error
+function st:testShape(?shape, ?sh, ?s){
+    st:apply-templates-all(?shape, ?sh, false, ?s)
+}
+
+
+
+

@@ -1,0 +1,20 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:equals ?q 
+  }
+
+  bind (sh:path(?shape, ?s, ?p) as ?l1)
+  bind (sh:path(?shape, ?s, ?q) as ?l2)
+  
+  values ?o { unnest(?l2) }  
+  bind (xt:member(?o, ?l1) as ?suc)
+  
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  
+}

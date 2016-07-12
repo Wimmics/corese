@@ -1,0 +1,21 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:datatypeIn ?lc                      
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (
+    isLiteral(?o) &&
+    exists { 
+        graph ?shape { ?lc rdf:rest*/rdf:first ?d } 
+        filter (datatype(?o) = ?d) }    
+  as ?suc)
+  
+  bind (st:report(sh:datatypeIn, ?sh,  ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}

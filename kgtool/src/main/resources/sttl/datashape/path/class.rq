@@ -1,0 +1,17 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?this, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:class ?c 
+  }
+  
+  values ?x { unnest(sh:path(?shape, ?this, ?p)) }
+  bind (exists { ?x rdf:type/rdfs:subClassOf* ?c } as ?suc)
+
+  bind (st:report(sh:class, ?sh, ?shape, ?this, ?this, ?p, ?x, ?suc, ?vis) as ?b)
+}
+

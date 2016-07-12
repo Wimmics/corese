@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:datatype ?d  
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (isLiteral(?o) && datatype(?o) = ?d  as ?suc)
+  
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}

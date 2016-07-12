@@ -1,0 +1,19 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    GRAPH ?shape {
+        ?sh sh:or ?or 
+    }
+    
+    bind (sh:or(sh:hasProperty, ?or, ?s, ?p, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count > 0)  as ?suc)
+
+    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+

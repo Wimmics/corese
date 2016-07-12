@@ -1,0 +1,15 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+
+
+
+
+
+

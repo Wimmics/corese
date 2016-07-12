@@ -1194,7 +1194,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * ::=
      * let (?list = xt:list()){
      *   for (var in exp){
-     *     xt:add(?list, body)
+     *     xt:add(body, ?list)
      *   }
      *   apply(rq:concat, ?list)
      * }
@@ -1202,7 +1202,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public Term defLoop(Variable var, Expression exp, Expression body) {
         Variable list = new Variable("?_list_" + nbd++);
         Expression let = defLet(list, createFunction(createQName("xt:list")));
-        Expression add = createFunction(createQName("xt:add"), list, body);
+        Expression add = createFunction(createQName("xt:add"), body, list);
         Expression loop = new ForLoop(var, exp, add);
         Expression app  = 
                 createFunction(Constant.createResource("apply"), 

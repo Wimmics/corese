@@ -40,6 +40,8 @@ public class Processor {
 	public static final String XT_IOTA     = EXT+"iota";
 	public static final String XT_REVERSE  = EXT+"reverse";
 	public static final String XT_APPEND   = EXT+"append";
+	public static final String XT_MEMBER   = EXT+"member";
+	public static final String XT_MERGE    = EXT+"merge";
 	public static final String XT_SORT     = EXT+"sort";
         
 	public static final String IN  	 = "in";
@@ -53,6 +55,7 @@ public class Processor {
 	private static final String ISIRI = "isIRI";
 	private static final String ISBLANK = "isBlank";
 	private static final String ISLITERAL = "isLiteral";
+	private static final String ISLIST = "isList";
 	private static final String ISNUMERIC = "isNumeric";
 	private static final String LANG = "lang";
 	private static final String REGEX = "regex";
@@ -80,6 +83,7 @@ public class Processor {
 	static final String MAPLIST = "maplist";
 	static final String MAPFUN = "mapfun";
 	private static final String MAPMERGE = "mapmerge";
+	private static final String MAPAPPEND = "mapappend";
 	private static final String MAPSELECT = "mapselect";
 	private static final String MAPFIND   = "mapfind";
 	private static final String MAPFINDLIST   = "mapfindlist";
@@ -553,6 +557,7 @@ public class Processor {
 		defoper(ISIRI, 	ExprType.ISURI);
 		defoper(ISBLANK, ExprType.ISBLANK);
 		defoper(ISLITERAL, ExprType.ISLITERAL);
+		defoper(ISLIST, ExprType.ISLIST);
 		defoper(ISNUMERIC, ExprType.ISNUMERIC);
 		defoper(LANG, 	ExprType.LANG);
 		defoper(LANGMATCH, ExprType.LANGMATCH);
@@ -579,6 +584,7 @@ public class Processor {
 		defoper(XT_IOTA,        ExprType.IOTA);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
+		defoper(XT_MERGE,       ExprType.XT_MERGE);
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
                 
@@ -590,6 +596,7 @@ public class Processor {
 		defsysoper(MAPLIST,        ExprType.MAPLIST);
 		defsysoper(MAPFUN,         ExprType.MAPFUN);
 		defsysoper(MAPMERGE,       ExprType.MAPMERGE);
+		defsysoper(MAPAPPEND,      ExprType.MAPAPPEND);
 		defsysoper(MAPSELECT,      ExprType.MAPFINDLIST);
 		defsysoper(MAPFIND,        ExprType.MAPFIND);
 		defsysoper(MAPFINDLIST,    ExprType.MAPFINDLIST);
@@ -597,6 +604,7 @@ public class Processor {
 		defsysoper(MAPEVERY,       ExprType.MAPEVERY);
                 
 		defoper(XT_MAPPING,     ExprType.XT_MAPPING);
+		defoper(XT_MEMBER,      ExprType.XT_MEMBER);
 		defoper(XT_ADD,         ExprType.XT_ADD);
 		defoper(XT_CONS,        ExprType.XT_CONS);
 		defoper(XT_FIRST,       ExprType.XT_FIRST);

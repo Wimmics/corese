@@ -106,6 +106,7 @@ public interface ExprType {
 	public static int XSDSTRING 	 = 82;
         public static int APPROXIMATE 	 = 83;
         public static int APP_SIM 	 = 84;
+        public static int ISLIST 	 = 85;
 
 	
 	// term
@@ -260,6 +261,7 @@ public interface ExprType {
 	public static int EVAL          = 325;
 	public static int FUNCALL       = 326;
 	public static int FOR           = 327;
+	public static int MAPAPPEND     = 328;
         
 	public static int XT_SORT       = 330;
         
@@ -300,6 +302,8 @@ public interface ExprType {
         public static int XT_METADATA    = 432;
         public static int XT_FROM        = 433;
         public static int XT_NAMED       = 434;
+        public static int XT_MEMBER      = 435;
+        public static int XT_MERGE       = 436;
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;

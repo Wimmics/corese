@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:index {
+    format {
+        "<h4>%s: %s</h4>" 
+        
+        strafter(?s, sh:) ?c
+    }
+}
+where {
+    select ?s (count(*) as ?c) where {
+        graph st:visitor { ?x a sh:ValidationResult ; sh:severity ?s }
+    } 
+    group by ?s
+    order by ?s
+}

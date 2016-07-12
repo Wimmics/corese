@@ -1,0 +1,8 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:start {
+    st:call-template(st:main)
+}
+where {
+    
+}

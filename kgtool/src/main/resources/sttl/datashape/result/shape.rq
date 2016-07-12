@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:shape {
+    format {
+        "<h4>Validation Result: %s</h4>" 
+        
+        ?c
+    }
+}
+where {
+
+    {select (count(*) as ?c) where {
+        graph st:visitor { ?x a sh:ValidationResult }
+    }}
+    filter (?c > 0)
+}

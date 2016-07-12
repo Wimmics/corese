@@ -1,0 +1,20 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:title {
+    format {
+        """
+        <h2>Data Shape Validation</h2>
+        <p>
+        <a href='http://w3c.github.io/data-shapes/shacl/'>Data Shape: http://w3c.github.io/data-shapes/shacl/</a> <br/>
+        <a href='%s'>RDF: %s</a> <br/>
+        <a href='%s'>Shape: %s </a> 
+        </p>
+        """
+        
+        st:get(st:param)st:get(st:param)
+        st:get(st:mode)st:get(st:mode)
+    } 
+}
+where {
+    
+}

@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:main {
+    st:call-template(st:title)
+    st:call-template(st:shape)
+    st:call-template(st:index)
+    
+    st:call-template(st:show)
+
+    #st:apply-templates-with-graph(st:hturtle, ?g)
+}
+where {
+    bind (st:get(st:param) as ?par)
+    bind (st:visitedGraph() as ?g)
+    filter bound(?par)
+}

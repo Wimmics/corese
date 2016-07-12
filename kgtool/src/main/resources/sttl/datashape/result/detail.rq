@@ -1,0 +1,21 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:detail {
+    format {
+        """
+        <pre>%s</pre> 
+        <pre>%s</pre>
+        
+        """ 
+        
+       if (exists { ?s ?p ?o }, st:apply-templates-with(st:turtlehtml, ?s), str(?s))
+        
+        group { st:apply-templates-with-graph(st:turtlehtml, st:visitor, ?r) ; separator = "\n" }
+    }
+}
+where {
+    graph st:visitor { ?r sh:focusNode ?s }  
+    
+}
+group by ?s
+order by ?s

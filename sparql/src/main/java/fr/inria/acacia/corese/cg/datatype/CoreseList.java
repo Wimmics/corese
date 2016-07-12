@@ -7,7 +7,6 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public class CoreseList extends CoreseUndefLiteral {
 
@@ -34,6 +33,7 @@ public class CoreseList extends CoreseUndefLiteral {
         list = vec;
     }
 
+    @Override
     public IDatatype getDatatype() {
         return dt;
     }
@@ -57,6 +57,7 @@ public class CoreseList extends CoreseUndefLiteral {
         return  new CoreseList(new ArrayList<IDatatype>());
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("(");
@@ -68,6 +69,7 @@ public class CoreseList extends CoreseUndefLiteral {
         return sb.toString();
     }
 
+    @Override
     public boolean isList() {
         return true;
     }

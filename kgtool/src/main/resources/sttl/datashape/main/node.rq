@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scopeNode ?s
+    optional { ?sh sh:filterShape ?fs }  
+  }
+  
+  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
+  
+  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
+}

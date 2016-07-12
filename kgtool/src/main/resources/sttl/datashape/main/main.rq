@@ -1,0 +1,17 @@
+#
+# Starting point of DataShape
+# Select toplevel shapes: have scope, nobody points to them 
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:main(?shape) {
+   st:apply-templates-all(?shape, ?sh, true)
+}
+where {
+   graph ?shape {
+     select distinct ?sh where {
+       ?sh sh:scope|sh:scopeClass|sh:scopeNode|sh:scopeProperty|sh:scopeInverseProperty ?scope
+       filter not exists { ?x ?p ?sh }
+     }
+   }
+}

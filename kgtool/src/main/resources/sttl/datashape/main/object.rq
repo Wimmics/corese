@@ -1,0 +1,18 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?o) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?sh sh:scope [ a sh:AllObjectsScope ]       
+    optional { ?sh sh:filterShape ?fs }   
+  }
+  
+  { select distinct ?o where { ?s ?p ?o } }
+  
+  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?o) )
+
+  bind (sh:hasShape(?shape, ?sh, ?vis, ?o) as ?suc)
+}

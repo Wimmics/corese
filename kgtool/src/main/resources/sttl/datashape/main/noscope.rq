@@ -1,0 +1,20 @@
+#
+# Inner shapes may have no scope
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  ?suc
+}
+where {
+
+  graph ?shape {
+    ?x sh:shape|sh:filterShape|sh:and|sh:or|sh:not ?sh
+    filter not exists { ?sh sh:scodeNode|sh:scopeClass|sh:scope|sh:scopeProperty|sh:scopeInverseProperty ?scope }
+    optional { ?sh sh:filterShape ?fs }  
+  }
+        
+  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
+  
+  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
+}

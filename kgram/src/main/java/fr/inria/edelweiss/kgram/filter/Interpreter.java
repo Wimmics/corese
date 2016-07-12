@@ -369,6 +369,7 @@ public class Interpreter implements Evaluator, ExprType {
             case MAP:
             case MAPLIST:
             case MAPMERGE:
+            case MAPAPPEND:
             case MAPFIND:
             case MAPFINDLIST:
             case MAPEVERY:

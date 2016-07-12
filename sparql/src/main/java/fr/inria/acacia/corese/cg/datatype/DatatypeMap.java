@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -726,47 +727,32 @@ public class DatatypeMap implements Cst, RDF {
           }        
          return newInstance(dt.size());
      }
-     
-     static List<IDatatype> getValues(IDatatype dt){
-         return dt.getValues();
-     }
-     
+         
       public static IDatatype first(IDatatype dt){
-          if (! dt.isList()){
+          if (! dt.isList() || dt.getValues().isEmpty()){
               return null;
-          }         
-         List<IDatatype> val = getValues(dt);
-         if (val == null || val.size()>0){
-             return null;
-         }
-         return val.get(0);
+          }                 
+         return dt.getValues().get(0);
      }
       
-      public static IDatatype rest(IDatatype dt){
-         if (! dt.isList()){
-              return null;
-          }        
-         List<IDatatype> val = getValues(dt);
-       
-         if (val.size() > 1){
-             ArrayList<IDatatype> res = new ArrayList(val.size()-1);
-             for (int i = 1; i<=res.size(); i++){
-                 res.add(val.get(i));
-             }
-             return createList(res);
-         }
-         else {
-             return createList();
-         }
-     }
+      public static IDatatype rest(IDatatype dt) {
+        if (!dt.isList()) {
+            return null;
+        }
+        List<IDatatype> val = dt.getValues();
+        ArrayList<IDatatype> res = new ArrayList(val.size() - 1);
+        for (int i = 1; i < val.size(); i++) {
+            res.add(val.get(i));
+        }
+        return createList(res);
+    }
       
       // modify
-     public static IDatatype add(IDatatype list, IDatatype elem){
+     public static IDatatype add(IDatatype elem, IDatatype list){
           if (! list.isList()){
               return null;
-          }
-          List<IDatatype> val = getValues(list);
-          val.add(elem);
+          }          
+          list.getValues().add(elem);
           return list;
       }
      
@@ -775,7 +761,7 @@ public class DatatypeMap implements Cst, RDF {
           if (! list.isList()){
               return null;
           }
-          List<IDatatype> val = getValues(list);
+          List<IDatatype> val = list.getValues();
           ArrayList<IDatatype> res = new ArrayList(val.size()+1);
           res.add(elem);
           res.addAll(val);        
@@ -786,11 +772,30 @@ public class DatatypeMap implements Cst, RDF {
           if (! dt1.isList() || ! dt2.isList()){
               return null;
           }
-          List<IDatatype> a1 = getValues(dt1);
-          List<IDatatype> a2 = getValues(dt2);
+          List<IDatatype> a1 = dt1.getValues();
+          List<IDatatype> a2 = dt2.getValues();
           ArrayList<IDatatype> res = new ArrayList(a1.size() + a2.size());
           res.addAll(a1);
           res.addAll(a2);
+          return createList(res);
+      }
+      
+      // remove duplicates
+       public static IDatatype merge(IDatatype dt1, IDatatype dt2){
+          if (! dt1.isList() || ! dt2.isList()){
+              return null;
+          }
+          ArrayList<IDatatype> res = new ArrayList();
+          for (IDatatype dt : dt1.getValues()){
+              if (! res.contains(dt)){
+                  res.add(dt);
+              }
+          }
+          for (IDatatype dt : dt2.getValues()){
+              if (! res.contains(dt)){
+                  res.add(dt);
+              }
+          }
           return createList(res);
       }
 
@@ -799,7 +804,7 @@ public class DatatypeMap implements Cst, RDF {
           if (! list.isList()){
               return null;
           }
-          List<IDatatype> arr = getValues(list);
+          List<IDatatype> arr = list.getValues();
           if (n.intValue() >= arr.size()){
               return null;
           }
@@ -810,7 +815,7 @@ public class DatatypeMap implements Cst, RDF {
          if (! list.isList()){
               return null;
           }
-          List<IDatatype> arr = getValues(list);
+          List<IDatatype> arr = list.getValues();
           if (n.intValue() >= arr.size()){
               return null;
           }
@@ -819,23 +824,17 @@ public class DatatypeMap implements Cst, RDF {
      }
 
       
-     public static IDatatype list(Object[] args){
-         if (args.length == 0){
-             return createList();
-         }
-        ArrayList<IDatatype> ldt = new ArrayList(args.length);
-        for (int i=0; i<args.length; i++){
-            ldt.add((IDatatype) args[i]);
-        }
-        IDatatype dt = createList(ldt);
-        return dt;
+     public static IDatatype list(IDatatype[] args){ 
+        ArrayList<IDatatype> val = new ArrayList<IDatatype>(args.length);
+        val.addAll(Arrays.asList(args));
+        return  createList(val);
     }
     
     public static IDatatype reverse(IDatatype dt){
         if ( ! dt.isList()){
             return dt;
         }
-        List<IDatatype> value = getValues(dt);
+        List<IDatatype> value = dt.getValues();
         ArrayList<IDatatype> res   = new ArrayList<IDatatype>(value.size());
         int n = value.size() - 1;
         for (int i = 0; i<value.size(); i++){
@@ -844,13 +843,21 @@ public class DatatypeMap implements Cst, RDF {
         return createList(res);
     }
     
+    // modify list
      public static IDatatype sort(IDatatype dt){
         if ( ! dt.isList()){
             return dt;
         }
-        List<IDatatype> value = getValues(dt);
+        List<IDatatype> value = dt.getValues();
         Collections.sort(value);
         return dt;
         
+     }
+     
+     public static IDatatype member(IDatatype elem, IDatatype list){
+         if (! list.isList()){
+             return null;
+         }
+         return list.getValues().contains(elem) ? TRUE : FALSE;
      }
 }

@@ -443,6 +443,9 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_COUNT:
                 return count(dt);
                 
+            case ISLIST:
+                return getValue(dt.isList());
+                
             case XT_FIRST:
                 return DatatypeMap.first(dt);
                 
@@ -605,6 +608,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 return (bb) ? TRUE : FALSE;
             }
                 
+            case XT_MEMBER: 
+                return DatatypeMap.member(dt1, dt2);
+                
             case XT_CONS:
                 return DatatypeMap.cons(dt1, dt2);
                 
@@ -613,6 +619,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_APPEND:
                 return DatatypeMap.append(dt1, dt2);
+                
+            case XT_MERGE:
+                return DatatypeMap.merge(dt1, dt2);    
                 
             case XT_GET:
                 return get(dt1, dt2);
@@ -648,6 +657,7 @@ public class ProxyImpl implements Proxy, ExprType {
             case MAP:
             case MAPLIST:
             case MAPMERGE:
+            case MAPAPPEND:
             case MAPFIND:
             case MAPFINDLIST:
                 return map(exp, env, p, param);
@@ -1509,10 +1519,11 @@ public class ProxyImpl implements Proxy, ExprType {
     private IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param) {
         boolean maplist   = exp.oper() == MAPLIST; 
         boolean mapmerge  = exp.oper() == MAPMERGE; 
+        boolean mapappend  = exp.oper() == MAPAPPEND; 
         boolean mapfindelem = exp.oper() == MAPFIND;
         boolean mapfindlist = exp.oper() == MAPFINDLIST;
         boolean mapfind = mapfindelem || mapfindlist;
-        boolean hasList = maplist || mapmerge;
+        boolean hasList = maplist || mapmerge || mapappend;
         
         IDatatype list = null;
         IDatatype ldt = null;
@@ -1593,20 +1604,20 @@ public class ProxyImpl implements Proxy, ExprType {
             
         }
         
-        if (mapmerge){
+        if (mapmerge || mapappend){
             int i = 0;
-            ArrayList<IDatatype> merge = new ArrayList<IDatatype>(size);
+            ArrayList<IDatatype> mlist = new ArrayList<IDatatype>();
             for (IDatatype dt : res){
                 if (dt.isList()){
                     for (IDatatype v : dt.getValues()){
-                        merge.add(v);
+                        add(mlist, v, mapmerge);
                     }
                 }
                 else {
-                    merge.add(dt);
+                    add(mlist, dt, mapmerge);
                 }
             }
-            return DatatypeMap.createList(merge);
+            return DatatypeMap.createList(mlist);
         }
         else if (maplist){
             return DatatypeMap.createList(res); 
@@ -1618,6 +1629,17 @@ public class ProxyImpl implements Proxy, ExprType {
             return null;
         }
         return TRUE;
+    }
+    
+    void add(List<IDatatype> list, IDatatype dt, boolean merge){
+        if (merge){
+            if (! list.contains(dt)){
+                list.add(dt);
+            }
+        }
+        else {
+            list.add(dt);
+        }
     }
       
   
@@ -1746,6 +1768,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return DatatypeMap.ONE; 
                 
             case XT_APPEND:
+            case XT_MERGE:
                 return DatatypeMap.EMPTY_LIST;
                 
             default: return dt;

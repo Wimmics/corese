@@ -1,0 +1,18 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+function st:hasProperty(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-all(?shape, ?sh, ?vis, ?s, ?p)
+}
+
+
+
+
+
+

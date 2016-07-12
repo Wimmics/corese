@@ -1,0 +1,16 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:equals ?q 
+  }
+
+  ?s ?p ?o  bind ( exists { ?s ?q ?o }   as ?suc)
+    
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  
+}

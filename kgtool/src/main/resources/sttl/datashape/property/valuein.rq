@@ -1,0 +1,20 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:in ?lv                      
+  }
+  
+  ?s ?p ?o
+  bind (
+    exists { 
+        graph ?shape { ?lv rdf:rest*/rdf:first ?v } 
+        filter (?o = ?v && ( isURI(?o) || datatype(?o) = datatype(?v))) }    
+  as ?suc)
+  
+  bind (st:report(sh:in, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}

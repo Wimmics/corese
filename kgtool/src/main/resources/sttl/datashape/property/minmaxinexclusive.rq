@@ -1,0 +1,22 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:minInclusive|sh:minExclusive|sh:maxInclusive|sh:maxExclusive ?m ; ?q ?m                       
+  }
+  ?s ?p ?o
+  bind ( 
+    coalesce(
+        if (?q = sh:minInclusive, ?o >= ?m,
+        if (?q = sh:minExclusive, ?o > ?m,
+        if (?q = sh:maxInclusive, ?o <= ?m, 
+            ?o < ?m))), 
+    false) 
+  as ?suc )
+  
+  bind (st:report(?q, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+

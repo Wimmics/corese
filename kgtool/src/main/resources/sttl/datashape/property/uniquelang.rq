@@ -1,0 +1,19 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:uniqueLang ?l  
+  }
+  
+  ?s ?p ?o
+  bind (lang(?o) as ?lang)
+  filter (bound(?lang) && ?lang != "")
+  
+  bind (not exists { ?s ?p ?v  filter (?v != ?o && lang(?v) = ?lang) }    as ?suc)
+
+  bind (st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}

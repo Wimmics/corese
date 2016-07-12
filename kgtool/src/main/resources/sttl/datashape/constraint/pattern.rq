@@ -1,0 +1,20 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:pattern ?exp   
+    optional { ?sh sh:flags ?flag }
+  }
+  bind ( 
+    coalesce(
+        ! isBlank(?s) && 
+        if (bound (?flag), regex(?s, ?exp, ?flag), regex(?s, ?exp)), 
+        false) 
+  as ?suc )
+
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+}
+

@@ -1,0 +1,19 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:minLength|sh:maxLength ?m ; ?q ?m                       
+  }
+  bind ( 
+    coalesce(
+        ! isBlank(?s) && 
+        if (?q = sh:minLength, strlen(?s) >= ?m, strlen(?s) <= ?m), 
+        false) 
+  as ?suc )
+
+  bind (st:report(?q, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+}
+

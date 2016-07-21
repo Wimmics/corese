@@ -1,17 +1,12 @@
 template st:start(?in) {
-  st:call-template(?uri, ?desc)    
-  
+  format {
+    """
+    <span class='errors'>%s</span>
+    """
+    ?res 
+  }  
 }
 where {
-
-  bind (unnest(st:errors(?in)) as ?e)
-  bind (STRBEFORE(STRAFTER(?e, st:), "/") as ?type)
-  bind (STRAFTER(STRAFTER(?e, st:), "/")  as ?desc)
-    
-values (?type ?uri) {
-  ("owlel" st:mainEL)
-  ("owlql" st:mainQL)
-  ("owlrl" st:mainRL)
-  ("owltc" st:mainOWL)
-}    
+    bind (st:call-template(st:main, ?in) as ?res)
+    filter (bound(?res) && strlen(?res) > 0)
 } 

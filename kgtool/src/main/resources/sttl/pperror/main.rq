@@ -1,0 +1,25 @@
+template st:main(?in) {
+    ?res  
+}
+where {
+
+  #bind (unnest(st:errors(?in)) as ?e)
+  values ?e { unnest(st:errors(?in)) }
+  filter strstarts(?e, st:)
+  bind (strafter(?e, st:) as ?str)
+  bind (strbefore(?str, "/") as ?type)
+  bind (strafter(?str, "/")  as ?desc)
+    
+values (?type ?uri) {
+    ("owlel" st:mainEL)
+    ("owlql" st:mainQL)
+    ("owlrl" st:mainRL)
+    ("owltc" st:mainOWL)
+} 
+
+ bind ( st:call-template(?uri, ?desc)  as ?res)
+ 
+ filter (strlen(?res) > 0)
+
+
+} 

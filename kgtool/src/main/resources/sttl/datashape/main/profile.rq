@@ -275,17 +275,25 @@ function sh:path(?shape, ?s, ?p, ?inv){
     let ((?q, ?path) = 
       select ?shape ?p ?q ?path where {
       graph ?shape { 
-      # rdf:rest is for a sequence (there is no specific operator, just a list)
-      ?p sh:inversePath|sh:alternativePath|sh:zeroOrMorePath|sh:oneOrMorePath|rdf:rest ?path ; 
+        # rdf:rest is for a sequence 
+        ?p sh:inversePath|sh:alternativePath|
+           sh:zeroOrMorePath|sh:oneOrMorePath|sh:zeroOrOnePath|rdf:rest ?path ; 
         ?q ?path }
       } ) {
       
-     if (?q = rdf:rest) { sh:sequence(?shape, ?s, ?p, ?inv) }
-     else   { funcall(?q, ?shape, ?s, ?path, ?inv) }
+      if (?q = rdf:rest) { sh:sequence(?shape, ?s, ?p, ?inv) }
+      else   { funcall(?q, ?shape, ?s, ?path, ?inv) }
+     
    }
 }
 }
 
+
+function sh:zeroOrOnePath(?shape, ?s, ?p, ?inv){
+    let (?l = sh:path(?shape, ?s, ?p, ?inv)){
+        if (xt:member(?s, ?l), ?l, xt:cons(?s, ?l))
+    }
+}
 
 function sh:zeroOrMorePath(?shape, ?s, ?p, ?inv){
     sh:rec(?shape, ?s, ?p, xt:list(?s), ?inv)

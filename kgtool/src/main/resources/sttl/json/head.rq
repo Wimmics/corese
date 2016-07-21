@@ -2,17 +2,10 @@ template st:head {
 
 """{
 "@context": {"""
-  box {
-    "\"rdf\": \""  str(rdf:)  "\","  st:nl()
-    "\"rdfs\": \"" str(rdfs:) "\","  st:nl()
-    "\"owl\": \""  str(owl:)  "\","  st:nl()
-    "\"xsd\": \""  str(xsd:)  "\","  st:nl()
-    "\"foaf\": \"http://xmlns.com/foaf/0.1/\""
-    
-    st:call-template(st:prefix)
-    
+  ibox {       
+    st:call-template(st:prefix)    
   }
-"},"
+"\n},"
 
 st:nl()
 st:nl()

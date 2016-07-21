@@ -1,10 +1,10 @@
 template st:prefix {
 
- "," st:nl()
+ st:nl()
  
  "\"" str(?p) "\": \""  str(?n) "\""  
 
- ; separator = ""
+ ; separator = ","
  
 }
 where {

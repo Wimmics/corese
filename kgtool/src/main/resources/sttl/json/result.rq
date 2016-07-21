@@ -1,0 +1,17 @@
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+
+  format { 
+    """<h3>JSON</h3>
+    <pre>%s</pre>"""
+    st:call-template(st:start)
+  }
+  
+}
+where {
+}

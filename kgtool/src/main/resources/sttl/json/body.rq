@@ -6,7 +6,9 @@ template st:body {
    
 }
 where {
-   {select distinct ?in where {
+
+   select distinct ?in where {
+     bind (st:focus() as ?in)
      ?in ?p ?y
      
      filter (
@@ -23,6 +25,6 @@ where {
         || not exists { ?x ?q ?in }
        ))    
    }
-   order by ?in}
+   order by ?in
    
 }

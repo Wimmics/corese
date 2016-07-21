@@ -1,0 +1,5 @@
+prefix sp: <http://spinrdf.org/sp#>
+construct 
+where {
+  ?x a sp:ConstraintViolation ; ?p ?y
+}

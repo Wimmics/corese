@@ -8,7 +8,7 @@ template st:banner  {
 <td><a href='http://wimmics.inria.fr'><img alt='Wimmics' src ='/img/wimmics.png' height='100'/></a>
 </td>
 
-<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='http://www.i3s.unice.fr/I3S/LOGOS/NewlogoI3S-250x70.png' /></a>
+<td><a href='http://www.i3s.unice.fr'><img alt='I3S' src ='/img/logo/i3s.gif' height='100'/></a>
 </td>
 </tr>
 </table>

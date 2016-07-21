@@ -5,9 +5,10 @@ format {
   """
   <h3>Query</h3>
   <form method='post' id='sparql' action='%s'>  
-    <select name="profile"> 
-      %s
+    <select name="profile">  
+      %s   
       <option value='st:sparql'>LDP</option>
+      <option value='st:std'>STD</option>
     </select>   
       <br/>
       <textarea cols='60' rows='10' name='query'>%s</textarea>
@@ -17,8 +18,13 @@ format {
   """
   
   st:get(st:service)
-  if (bound(?prof), st:format("<option value='%s'>Profile</option>", ?prof), "")
+  
+  if (bound(?prof) && ?prof not in (st:sparql, st:std),
+    st:format("<option value='%s'>Local</option>", str(?prof)),
+    "")
+    
   str(?q)
+  
   st:submit()
   }
 }

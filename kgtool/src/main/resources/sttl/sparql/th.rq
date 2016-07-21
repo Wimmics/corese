@@ -1,7 +1,11 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:th {
  
-    "<th>" str(?v) "</th>" ; separator = " "
+    format {
+      "<th>%s</th>" 
+      str(?v)
+    } 
+    ; separator = " "
  
 }
 where {

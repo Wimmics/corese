@@ -1,0 +1,27 @@
+template st:tableconsuri {
+    format {
+        """
+        <tr>
+        <th>%s</th>
+        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
+        </tr>
+        """
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
+}
+where {
+  { bind (st:get(st:uri) as ?x) ?x ?p ?y }
+  union 
+  { bind (st:get(st:uri) as ?p) ?x ?p ?y }
+  union 
+  { bind (st:get(st:uri) as ?y) ?x ?p ?y }
+}
+order by ?x ?p ?y
+
+

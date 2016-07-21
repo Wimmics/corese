@@ -3,7 +3,6 @@
 #
 template st:show(?x) {
     format { "<img width='35' src='%s' />"  str(?l) }
-#    st:call-template(st:show2, ?x)
 }
 where {
   bind (st:get(st:dataset) as ?g)

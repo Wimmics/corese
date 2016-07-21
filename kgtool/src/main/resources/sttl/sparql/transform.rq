@@ -1,8 +1,0 @@
-template st:transform(?x) {
-
-    st:get(st:service) "?uri=" encode_for_uri(?x) "&profile=" st:get(st:profile)
-    
-}
-where {
-
-}

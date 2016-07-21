@@ -1,5 +1,5 @@
 template st:tablecons {
-  if (bound(?uri)) {
+  if (bound(?uri) && ! st:get(st:all, true)) {
     st:call-template(st:tableconsuri)
   }
   else {
@@ -7,7 +7,7 @@ template st:tablecons {
   }
 }
 where {
-  bind (st:focus() as ?uri)
+  bind (st:get(st:uri) as ?uri)
 }
 
 

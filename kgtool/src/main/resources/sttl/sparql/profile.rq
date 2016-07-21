@@ -3,7 +3,7 @@ template st:profile {
 }
 where {}
   
-  # LOD URI hypertext link generated as is (see display.rq)
+  # LOD URI hypertext link generated as is 
   # set by profile.ttl : st:param [ st:lod (URI) ]
   #
   function st:lod(?x){
@@ -24,7 +24,7 @@ where {}
 	st:call-template(st:linkesc, ?x)
       }
       else {
-	st:call-template(st:linkprofile2, ?x)
+	st:call-template(st:linkprofile, ?x)
       }     
     }
   }

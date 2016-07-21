@@ -1,8 +1,11 @@
+#
+# st:pplink search specific profile for URI wrt st:lodprofile() if any
+#
 template st:linkprofile(?x) {
 
   if (isURI(?x), 
     st:call-template(st:link, 
-      coalesce(st:plink(?x), encode_for_uri(?x)),
+      coalesce(st:pplink(?x), encode_for_uri(?x)),
       ?e),
     str(?e))
     

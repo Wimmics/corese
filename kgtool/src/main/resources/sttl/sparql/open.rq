@@ -4,7 +4,6 @@ template st:open {
 format {
 
   """
-  <h3>Result</h3>
   <table class='table'>    
   <tr><td/>%s</tr>\n
   """

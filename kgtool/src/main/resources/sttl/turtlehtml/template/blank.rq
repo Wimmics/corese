@@ -5,9 +5,8 @@
 template {
   if (?refer, concat(st:turtle(?in), " "), "[")     
   
-  #if display fail tag
-  if (st:visited(?in), st:call-template(st:pperror, ?in),
-  	# else not visited
+  if (st:visited(?in), 
+    st:call-template(st:pperror, st:call-template(st:ibox, ?in)),
   	st:call-template(st:ibox, ?in)
   )
   
@@ -21,7 +20,7 @@ template {
 }
 where {
   ?in ?p ?y
-  filter (isBlank(?in))
+  filter isBlank(?in)
   filter not exists { ?in rdf:first ?e }
   
   bind (exists { ?a ?q ?in } as ?nested)

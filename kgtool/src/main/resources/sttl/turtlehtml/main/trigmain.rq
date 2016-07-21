@@ -1,0 +1,24 @@
+#
+# Trig Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:trigmain {
+format {
+"""
+graph %s {%s}
+"""
+  
+  st:clean(st:turtle(?g))
+  box {
+       st:apply-templates-with-graph(st:turtlehtml, ?g) 
+  }
+}
+}
+where {
+  select ?g where {
+    graph ?g {
+      filter exists { ?x ?p ?y }
+    }
+  }
+}
+order by ?g 

@@ -5,17 +5,11 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:result {
-  str(?res)
-  ; separator = "\n\n"
-}
-where {
-  ?rs rs:solution ?s 
-  ?s rs:index ?i  
-  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
-    
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
-  }
+
+  "<h3>Turtle</h3>\n"
+  st:call-template(st:start)
   
 }
-order by ?i ?var
+where {
+ 
+}

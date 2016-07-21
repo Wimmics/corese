@@ -3,20 +3,11 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template  {
-  "(" 
-    group { 
-      if (?refer, st:turtle(?e), ?e) 
-      ; separator = "\n"
-    } 
-  ")"
-  
+    if (st:visited(?in), 
+        st:call-template(st:pperror, st:call-template(st:list, ?in)),
+        st:call-template(st:list, ?in)
+  )
 }
 where {
-  ?in rdf:rest* ?r
-  ?r  rdf:first ?e
-  
-  bind(isBlank(?e) && 
-    ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
-    || exists { ?e ?q ?e })
-    as ?refer)
+    ?in rdf:first ?e
 }

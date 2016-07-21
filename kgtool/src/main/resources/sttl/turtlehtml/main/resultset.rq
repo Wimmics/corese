@@ -1,0 +1,21 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:resultset {
+  str(?res)
+  ; separator = "\n\n"
+}
+where {
+  ?rs rs:solution ?s 
+  ?s rs:index ?i  
+  ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
+    
+  graph eng:dataset {
+     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
+  }
+  
+}
+order by ?i ?var

@@ -4,13 +4,19 @@
 #
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:main {
-    
-  if (?b, 
-    st:call-template(st:result),
-    st:apply-templates-with(st:turtlehtml))
-  
+      
+    st:clean(st:prolog("prefix"))
+    st:nl()
+    str(?main)
+
 }
 where {
    bind (exists { ?rs a rs:ResultSet } as ?b)
+   bind (if (?b, true, st:export(st:uri,   st:focus()))   as ?e)
+   
+   bind (if (?b, 
+    st:call-template(st:resultset),
+    st:apply-templates-with(st:turtlehtml)) as ?main)
+    
 }
 

@@ -4,22 +4,10 @@
 #
 template st:start {
   st:prolog("@prefix")
-  group { 
-    st:apply-templates(?x)
-    ; separator = "\n\n"
-  }
+  st:nl()
+  str(?main)
 }
 where {
-  select distinct ?x where { 
-    ?x ?p ?y     
-    filter ( 
-      isURI(?x) 
-      || not exists { ?z ?q ?x }
-      || (isBlank(?x) 
-	  && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
-	   || exists { ?x ?q ?x }
-	  ))
-    )
-  } order by ?x
+  bind (st:call-template(st:main) as ?main)
 }
 

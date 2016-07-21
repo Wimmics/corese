@@ -1,7 +1,7 @@
 template st:pperrorsp(?in) {
-			"""<span class="errors">"""
-		    st:call-template-with(st:pperror, st:start, ?in)
-		    """</span>"""
+
+    st:call-template-with(st:pperror, st:start, ?in)
+
 }
 where {
 }

@@ -1,7 +1,9 @@
 template st:pperror(?in) {
-	"""<span class='fail'>"""
-		st:call-template(st:ibox, ?in)
-	"</span>"
+	format {
+        "<span class='fail'>%s</span>"
+	
+        ?in
+	}
 }
 where {
 

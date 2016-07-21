@@ -1,0 +1,7 @@
+template st:profile {}
+where {}
+
+
+function st:clean(?in){
+    replace(?in, "<", "&lt;") 		
+}

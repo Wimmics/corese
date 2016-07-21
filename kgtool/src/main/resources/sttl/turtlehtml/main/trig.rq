@@ -1,0 +1,19 @@
+#
+# Trig Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:trig {
+
+  st:call-template(st:open)
+  
+  st:clean(st:prolog("prefix"))
+  st:nl()
+  
+  str(?res)
+    
+  st:call-template(st:close)
+  
+}
+where {
+   bind (st:call-template(st:trigmain) as ?res)
+}

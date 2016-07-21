@@ -33,11 +33,22 @@ public class Compile {
 
     public static void main(String[] args){
         new Compile().pplib();
+        //new Compile().specific();
     }
     
+    void specific(){
+         translate("/home/corby/AATest/test/huto/sttl", "/home/corby/AATest/test/huto/huto.rul");
+    }
     
     public void pplib() {
         String lib = srclib;
+        
+        translate(root + "datashape/main",     lib + "dsmain.rul");
+        translate(root + "datashape/core",     lib + "dscore.rul");
+        translate(root + "datashape/property", lib + "dsproperty.rul");
+        translate(root + "datashape/path",     lib + "dspath.rul");
+        translate(root + "datashape/constraint",  lib + "dsconstraint.rul");
+        translate(root + "datashape/result",   lib + "dsresult.rul");
 
         translate(root + "list", lib + "list.rul");
         translate(root + "system", lib + "system.rul");
@@ -58,12 +69,6 @@ public class Compile {
         translate(root + "tospin", lib + "tospin.rul");
         translate(root + "locate", lib + "locate.rul");
 
-        translate(root + "owlrl/main", lib + "owlrl.rul");
-        translate(root + "owlrl/axiom", lib + "axiom.rul");
-        translate(root + "owlrl/subexp", lib + "subexp.rul");
-        translate(root + "owlrl/superexp", lib + "superexp.rul");
-        translate(root + "owlrl/equivexp", lib + "equivexp.rul");
-        
         translate(root + "owl", lib + "owl1.rul");
         
         translate(root + "owl2/owl",            lib + "owl.rul");
@@ -93,12 +98,13 @@ public class Compile {
         //******************************************
         
         translate(root + "pperror", lib + "pperror.rul");
-
-        translate(root + "owltc/main", lib + "owltc.rul");
-        translate(root + "owltc/axiomowltc", lib + "axiomowltc.rul");
-        translate(root + "owltc/classexpconformityowltc", lib + "classexpconformityowltc.rul");
-
-
+        
+        translate(root + "owlrl/main", lib + "owlrl.rul");
+        translate(root + "owlrl/axiom", lib + "axiom.rul");
+        translate(root + "owlrl/subexp", lib + "subexp.rul");
+        translate(root + "owlrl/superexp", lib + "superexp.rul");
+        translate(root + "owlrl/equivexp", lib + "equivexp.rul");
+        
         translate(root + "owleltc/main", lib + "owleltc.rul");
         translate(root + "owleltc/axiomowleltc", lib + "axiomowleltc.rul");
         translate(root + "owleltc/classexpowleltc", lib + "classexpowleltc.rul");
@@ -111,7 +117,7 @@ public class Compile {
         translate(root + "owltc/main", lib + "owltc.rul");
         translate(root + "owltc/axiomowltc", lib + "axiomowltc.rul");
         translate(root + "owltc/classexpconformityowltc", lib + "classexpconformityowltc.rul");
-
+             
     }
 
     void translate(String src, String tgt) {

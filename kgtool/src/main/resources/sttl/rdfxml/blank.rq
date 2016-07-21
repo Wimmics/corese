@@ -1,15 +1,17 @@
 template (?x, ?p, ?y) {
-
-  "<" st:turtle(?p, true) ">" 
-    box{  
-      if (st:visited(?y),
-	st:call-template(st:resourceref, ?y),
-	st:call-template(st:blank, ?y))
-    }
-  "</" st:turtle(?p, true) ">"  
+format {
+"""<%s>%s</%s>  """
   
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+  st:turtle(?p, true)  
+ } 
 }
 where {
    ?x ?p ?y
-   filter (isBlank(?y))
+   filter isBlank(?y)
 }

@@ -1,7 +1,12 @@
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " xml:lang='" lang(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s xml:lang='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   lang(?y)
+   st:literal(str(?y))
+   st:turtle(?p, true)
+}   
 }
 where {
    ?x ?p ?y

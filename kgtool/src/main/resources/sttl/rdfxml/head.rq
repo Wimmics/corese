@@ -1,18 +1,17 @@
 template st:head {
+format {
+"""
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
 
-"<rdf:RDF"
-  box {
-    "xmlns:rdf='"  str(rdf:) "'"  st:nl()
-    "xmlns:rdfs='" str(rdfs:) "'" st:nl()
-    "xmlns:owl='"  str(owl:) "'"  st:nl()
-    "xmlns:xsd='"  str(xsd:) "'"  st:nl() 
-    
-    st:call-template(st:prefix)
-    
-  }
-">"
-"\n\n"
+<%s %s>
 
+"""
+
+st:turtle(rdf:RDF)
+ibox { st:call-template(st:prefix) }
+}
 }
 where {
 

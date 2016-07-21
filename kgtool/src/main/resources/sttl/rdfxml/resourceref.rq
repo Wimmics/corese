@@ -1,7 +1,10 @@
 template st:resourceref(?in) {
-
-  "<rdf:Description " ?att "='" str(?name) "' />" 
-
+format {
+  "<rdf:Description %s='%s' />" 
+  
+  st:turtle(?att)
+  str(?name)
+}
 }
 where {
    bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)

@@ -1,9 +1,10 @@
-template st:property {
+template st:property(?in, ?t) {
 
    st:call-template(st:triple, ?in, ?p, ?y)
 
 }
 where {
-   ?in ?p ?y   
+   ?in ?p ?y 
+   filter if (bound(?t), !(?p = rdf:type && ?y = ?t), true)
 }
 order by ?p ?y

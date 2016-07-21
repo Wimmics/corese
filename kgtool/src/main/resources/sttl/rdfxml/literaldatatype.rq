@@ -1,7 +1,12 @@
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:datatype='" datatype(?y) "'>" 
-   str(?y) 
-   "</" st:turtle(?p, true) ">"
+format {
+   "<%s rdf:datatype='%s'>%s</%s>"
+   
+   st:turtle(?p, true)
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, "&xsd;"), datatype(?y)) 
+   st:literal(str(?y)) 
+   st:turtle(?p, true)
+}
 }
 where {
    ?x ?p ?y

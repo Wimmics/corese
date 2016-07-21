@@ -1,6 +1,11 @@
 template st:prefix {
 
-  "xmlns:" str(?p) "='" str(?n) "'" 
+ st:nl()  
+ format { 
+    "xmlns:%s='%s'"  
+    str(?p) str(?n) 
+ }
+ ; separator = ""
 
 }
 where {

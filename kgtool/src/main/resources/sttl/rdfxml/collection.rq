@@ -1,11 +1,12 @@
 template st:collection(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:parseType='Collection'>" 
+format {
+"<%s rdf:parseType='Collection'>%s</%s>"
    
-   box {
-    st:call-template(st:list, ?y) 
+    st:turtle(?p, true)
+    box { st:call-template(st:list, ?y) }
+    st:turtle(?p, true)
+    
    }
-   
-   "</" st:turtle(?p, true) ">"
 }
 where {
   

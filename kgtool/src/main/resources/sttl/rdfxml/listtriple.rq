@@ -1,11 +1,11 @@
 template st:listtriple(?x, ?p, ?y) {
-   "<" st:turtle(?p, true) ">"
+format {
+   "<%s>%s</%s>"
    
-   box {
-    st:call-template(st:listrec, ?y) 
-   }
-   
-   "</" st:turtle(?p, true) ">"
+   st:turtle(?p, true)
+   box { st:call-template(st:listrec, ?y) }
+   st:turtle(?p, true)
+}
 }
 where {
   

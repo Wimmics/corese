@@ -1,6 +1,6 @@
 template st:listrec(?y) {
-
-   "<rdf:Description>" 
+format {
+"<rdf:Description>%s</rdf:Description>" 
    
    box {
     
@@ -9,11 +9,9 @@ template st:listrec(?y) {
    
    if (?r = rdf:nil, 
       st:apply-templates(?y, rdf:rest, ?r),
-      st:call-template(st:listrecrest, ?r))
-   
+      st:call-template(st:listrecrest, ?r))   
    }
-     
-   "</rdf:Description>" 
+}
 }
 where {
   ?y rdf:first ?f ;

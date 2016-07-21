@@ -1,0 +1,9 @@
+template st:profile {}
+where {}
+
+function st:literal(?x){
+    if (st:get(st:html, true), 
+        ?x, 
+        #st:format("<span class='literal'>%s</span>", ?x), 
+        ?x)
+}

@@ -1,11 +1,11 @@
 template st:listrecrest(?y) {  
+format {
+   "<rdf:rest>%s</rdf:rest>" 
    
-   "<rdf:rest>" 
-    box {
+   box {
       st:call-template(st:listrec, ?y)
       }
-   "</rdf:rest>" 
-   
+   }
 }
 where {
   

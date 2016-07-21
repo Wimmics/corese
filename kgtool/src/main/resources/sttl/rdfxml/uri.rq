@@ -1,5 +1,10 @@
 template (?x, ?p, ?y) {
-   "<" st:turtle(?p, true) " rdf:resource='" str(?y) "' />"
+format {
+   "<%s rdf:resource='%s' />"
+   
+   st:turtle(?p, true)
+   str(?y)
+}
 }
 where {
    ?x ?p ?y

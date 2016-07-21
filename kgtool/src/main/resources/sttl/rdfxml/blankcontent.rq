@@ -1,8 +1,16 @@
-template st:blank (?y) {
+template st:blank (?x, ?p, ?y) {
 
-   st:call-template(st:resource, ?y) 
+   if (bound(?t), 
+     st:call-template(st:resource, ?y, ?t),
+     st:call-template(st:resource, ?y))
 
 }
 where {
-   filter(st:visit(?y))
+   ?x ?p ?y
+   optional {
+        select ?y ?t where {
+            ?y a ?t  filter (! isBlank(?t))
+        } limit 1
+     }
+    filter st:visit(?y)
 }

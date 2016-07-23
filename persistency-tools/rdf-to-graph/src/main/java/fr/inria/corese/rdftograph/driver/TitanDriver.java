@@ -11,7 +11,12 @@ import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.schema.Mapping;
+import com.thinkaurelius.titan.core.schema.SchemaAction;
+import com.thinkaurelius.titan.core.schema.SchemaStatus;
+import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
+import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
 import static fr.inria.corese.rdftograph.RdfToGraph.CONTEXT;
@@ -24,12 +29,15 @@ import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
 import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
 import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
 import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -46,37 +54,85 @@ public class TitanDriver extends GdbDriver {
 	@Override
 	public void openDb(String dbPath) {
 		BaseConfiguration configuration = new BaseConfiguration();
-		configuration.setProperty("storage.batch-loading", false);
+//		configuration.setProperty("storage.batch-loading", false);
 		configuration.setProperty("storage.backend", "berkeleyje");
-//		configuration.setProperty("storage.backend", "cassandrathrift");
-//		configuration.setProperty("storage.hostname", "127.0.0.1");
 		configuration.setProperty("storage.directory", dbPath);
-		configuration.setProperty("schema.default", "default");
+//		configuration.setProperty("schema.default", "default");
 		configuration.setProperty("storage.buffer-size", 50_000);
 		configuration.setProperty("ids.block-size", 1_000_000);
-		g = TitanFactory.open(configuration);
-		TitanManagement manager = g.openManagement();
-		if (!manager.containsEdgeLabel(RDF_EDGE_LABEL)) {
+		configuration.setProperty("index.search.backend", "elasticsearch");
+		configuration.setProperty("index.search.directory", dbPath + "/es");
+		configuration.setProperty("index.search.elasticsearch.client-only", false);
+		configuration.setProperty("index.search.elasticsearch.local-mode", true);
+
+		g = TitanFactory.open(dbPath + "/conf.properties");
+
+		g.tx().rollback();
+		ManagementSystem manager = (ManagementSystem) g.openManagement();
+//		manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
+		manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
+		manager.commit();
+
+	}
+
+	private void createIndexes() {
+		g.tx().rollback();
+		ManagementSystem manager = (ManagementSystem) g.openManagement();
+//		if (!manager.containsEdgeLabel(RDF_EDGE_LABEL)) {
+		if (false) {
 			EdgeLabel rdfLabel = manager.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
-			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			manager.makePropertyKey(CONTEXT).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			manager.makePropertyKey(KIND).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			manager.makePropertyKey(LANG).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			manager.makePropertyKey(TYPE).dataType(String.class).cardinality(Cardinality.SINGLE).make();
-			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildCompositeIndex();
-			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue).buildCompositeIndex();
+			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
+			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
+			manager.makePropertyKey(CONTEXT).dataType(String.class).make();
+			manager.makePropertyKey(KIND).dataType(String.class).make();
+			manager.makePropertyKey(LANG).dataType(String.class).make();
+			manager.makePropertyKey(TYPE).dataType(String.class).make();
+			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildMixedIndex("search");
+			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue).buildMixedIndex("search");//CompositeIndex();
 			manager.commit();
+			boolean registered = false;
+			long before = System.currentTimeMillis();
+			while (!registered) {
+				try {
+					Thread.sleep(500L);
+				} catch (InterruptedException ex) {
+					Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
+				}
+				TitanManagement mgmt = g.openManagement();
+				TitanGraphIndex idx = mgmt.getGraphIndex("byVertexValue");
+				registered = true;
+				for (PropertyKey k : idx.getFieldKeys()) {
+					SchemaStatus s = idx.getIndexStatus(k);
+					registered &= s.equals(SchemaStatus.REGISTERED);
+				}
+				mgmt.rollback();
+			}
 		}
 	}
 
 	@Override
 	public void closeDb() {
 		try {
-			g.close();
+			g.tx().commit();
+			g.tx().rollback();
+			ManagementSystem manager = (ManagementSystem) g.openManagement();
+//			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
+			PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+//			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
+//			PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
+//
+			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");//CompositeIndex();
+//			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildMixedIndex("search");
+			manager.commit();
+
+			manager.awaitGraphIndexStatus(g, "byVertexValue").call();
+			manager = (ManagementSystem) g.openManagement();
+			manager.updateIndex(manager.getGraphIndex("byVertexValue"), SchemaAction.REINDEX).get();
+			manager.commit();
 		} catch (Exception ex) {
 			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
 		}
+		g.close();
 	}
 
 	Map<String, Object> alreadySeen = new HashMap<>();

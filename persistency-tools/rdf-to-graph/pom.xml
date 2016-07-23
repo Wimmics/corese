@@ -52,11 +52,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-runtime</artifactId>
-			<version>4.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-nativerdf</artifactId>
 			<version>4.1.1</version>
 			<type>jar</type>
@@ -70,7 +65,7 @@
 	 <dependency>
 	  <groupId>org.apache.tinkerpop</groupId>
 	  <artifactId>neo4j-gremlin</artifactId>
-	  <version>3.2.0-incubating</version>
+	  <version>3.0.2-incubating</version>
 	  <type>jar</type>
 	 </dependency>
 	 <dependency>
@@ -79,14 +74,9 @@
 	  <version>0.3-2.3.3</version>
 	 </dependency>
 	 <dependency>
-	  <groupId>org.apache.lucene</groupId>
-	  <artifactId>lucene-core</artifactId>
-	  <version>3.6.2</version>
-	 </dependency>
-	 <dependency>
 	  <groupId>com.michaelpollmeier</groupId>
 	  <artifactId>orientdb-gremlin</artifactId>
-	  <version>3.2.0-incubating.0</version>
+	  <version>3.0.2.incubating.0</version>
 	  <type>jar</type>
 	 </dependency>
 	 <dependency>
@@ -105,7 +95,12 @@
 	 <dependency>
 	  <groupId>org.apache.tinkerpop</groupId>
 	  <artifactId>gremlin-core</artifactId>
-	  <version>3.2.0-incubating</version>
+	  <version>3.0.2-incubating</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.openrdf.sesame</groupId>
+	  <artifactId>sesame-rio-nquads</artifactId>
+	  <version>4.1.1</version>
 	 </dependency>
 	</dependencies>
 	<properties>

@@ -69,7 +69,7 @@ public class TitanDriver extends GdbDriver {
 
 		g.tx().rollback();
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
-//		manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
+		manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
 		manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
 		manager.commit();
 
@@ -119,15 +119,19 @@ public class TitanDriver extends GdbDriver {
 //			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
 			PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 //			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
-//			PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
+			PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
 //
 			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");//CompositeIndex();
-//			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildMixedIndex("search");
+			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
 			manager.commit();
 
 			manager.awaitGraphIndexStatus(g, "byVertexValue").call();
+			manager.awaitGraphIndexStatus(g, "byEdgeValue").call();
 			manager = (ManagementSystem) g.openManagement();
 			manager.updateIndex(manager.getGraphIndex("byVertexValue"), SchemaAction.REINDEX).get();
+			manager.commit();
+			manager = (ManagementSystem) g.openManagement();
+			manager.updateIndex(manager.getGraphIndex("byEdgeValue"), SchemaAction.REINDEX).get();
 			manager.commit();
 		} catch (Exception ex) {
 			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);

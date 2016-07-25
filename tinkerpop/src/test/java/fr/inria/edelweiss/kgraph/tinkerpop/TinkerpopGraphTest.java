@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
+//import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 /**
@@ -19,14 +19,14 @@ import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
  */
 public class TinkerpopGraphTest {
 
-	public final static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
-	public final static String DB_PATH = "plocal:/Users/edemairy/Developpement/Neo4jTinkerpop/RdfToGraph/src/test/resources/testConvertOrientdbResult.orientdb";
-	public final static String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
+//	public final static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
+//	public final static String DB_PATH = "plocal:/Users/edemairy/Developpement/Neo4jTinkerpop/RdfToGraph/src/test/resources/testConvertOrientdbResult.orientdb";
+//	public final static String[] CONFIG = {OrientGraph.CONFIG_URL, DB_PATH};
 
 
-//	public final static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
-//	public final static String DB_PATH = "/Users/edemairy/Developpement/Neo4jTinkerpop/RdfToGraph/src/test/resources/testConvertNeo4jResult.neo4jdb";
-//	public final static String[] CONFIG = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
+	public final static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
+	public final static String DB_PATH = "/Users/edemairy/Developpement/Neo4jTinkerpop/RdfToGraph/src/test/resources/testConvertNeo4jResult.neo4jdb";
+	public final static String[] CONFIG = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
 	
 	public final static boolean DISPLAY_EDGES = true;
 	public final static int MAX_DISPLAY_EDGES = 10000;

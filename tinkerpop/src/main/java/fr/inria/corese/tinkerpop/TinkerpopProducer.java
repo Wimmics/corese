@@ -3,6 +3,9 @@
  */
 package fr.inria.corese.tinkerpop;
 
+import static fr.inria.corese.tinkerpop.MappingRdf.EDGE_VALUE;
+import static fr.inria.corese.tinkerpop.MappingRdf.VERTEX_VALUE;
+import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -10,11 +13,14 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
-import static fr.inria.corese.tinkerpop.mapper.Mapper.*;
 import org.apache.log4j.Logger;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 /**
  *
@@ -24,6 +30,7 @@ public class TinkerpopProducer extends ProducerImpl {
 
 	private final Logger LOGGER = Logger.getLogger(TinkerpopProducer.class.getName());
 	private TinkerpopGraph tpGraph;
+	private TinkerpopToCorese unmapper;
 
 	public TinkerpopProducer(Graph graph) {
 		super(graph);
@@ -45,17 +52,21 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node subject = qEdge.getNode(0);
 		Node object = qEdge.getNode(1);
 
-		ArrayList< Predicate<Traverser<org.apache.tinkerpop.gremlin.structure.Edge>>> edgeFilters = new ArrayList<>();
-		if (!isPredicateFree(qEdge)) {
-			edgeFilters.add(e -> e.get().value(VALUE).equals(qEdge.getEdgeNode().getLabel()));
+		Function<GraphTraversalSource, GraphTraversal<org.apache.tinkerpop.gremlin.structure.Edge, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+		if (isPredicateFree(qEdge)) {
+			filter = null;
+		} else {
+			filter =  t -> {
+				return t.E().has(EDGE_VALUE, qEdge.getEdgeNode().getLabel());
+			} ;
 		}
-		if (!subject.isVariable()) {
-			edgeFilters.add(e -> e.get().outVertex().value(VALUE).toString().equals(subject.getLabel()));
-		}
-		if (!object.isVariable()) {
-			edgeFilters.add(e -> e.get().inVertex().value(VALUE).toString().equals(object.getLabel()));
-		}
-		return tpGraph.getEdges(edgeFilters);
+//		if (subject.isVariable()) {
+//			edgeFilters.add(e -> e.get().outVertex().value(VERTEX_VALUE).toString().equals(subject.getLabel()));
+//		}
+//		if (!object.isVariable()) {
+//			edgeFilters.add(e -> e.get().inVertex().value(VERTEX_VALUE).toString().equals(object.getLabel()));
+//		}
+		return tpGraph.getEdges(filter);
 	}
 
 	private boolean isPredicateFree(Edge edge) {

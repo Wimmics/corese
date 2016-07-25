@@ -5,7 +5,7 @@
  */
 package fr.inria.corese.tinkerpop.mapper;
 
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
+import static fr.inria.corese.tinkerpop.MappingRdf.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;

@@ -67,75 +67,55 @@ public class TitanDriver extends GdbDriver {
 
 		g = TitanFactory.open(dbPath + "/conf.properties");
 
-		g.tx().rollback();
-		ManagementSystem manager = (ManagementSystem) g.openManagement();
-		manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
-		manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
-		manager.commit();
+		makeIfNotExistProperty(EDGE_VALUE);
+		makeIfNotExistProperty(VERTEX_VALUE);
+		createIndexes();
 
 	}
 
-	private void createIndexes() {
+	void makeIfNotExistProperty(String propertyName) {
 		g.tx().rollback();
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
-//		if (!manager.containsEdgeLabel(RDF_EDGE_LABEL)) {
-		if (false) {
-			EdgeLabel rdfLabel = manager.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
-			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
-			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
-			manager.makePropertyKey(CONTEXT).dataType(String.class).make();
-			manager.makePropertyKey(KIND).dataType(String.class).make();
-			manager.makePropertyKey(LANG).dataType(String.class).make();
-			manager.makePropertyKey(TYPE).dataType(String.class).make();
-			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue).buildMixedIndex("search");
-			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue).buildMixedIndex("search");//CompositeIndex();
-			manager.commit();
-			boolean registered = false;
-			long before = System.currentTimeMillis();
-			while (!registered) {
-				try {
-					Thread.sleep(500L);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				TitanManagement mgmt = g.openManagement();
-				TitanGraphIndex idx = mgmt.getGraphIndex("byVertexValue");
-				registered = true;
-				for (PropertyKey k : idx.getFieldKeys()) {
-					SchemaStatus s = idx.getIndexStatus(k);
-					registered &= s.equals(SchemaStatus.REGISTERED);
-				}
-				mgmt.rollback();
+		if (!manager.containsPropertyKey(propertyName)) {
+			manager.makePropertyKey(propertyName).dataType(String.class).make();
+		}
+		manager.commit();
+	}
+
+	private void createIndexes() {
+		try {
+			g.tx().commit();
+			g.tx().rollback();
+			ManagementSystem manager = (ManagementSystem) g.openManagement();
+			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
+
+				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+				PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
+
+				manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
+				manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
+				manager.commit();
+
+				manager.awaitGraphIndexStatus(g, "byVertexValue").call();
+				manager.awaitGraphIndexStatus(g, "byEdgeValue").call();
+
+				manager = (ManagementSystem) g.openManagement();
+				manager.updateIndex(manager.getGraphIndex("byVertexValue"), SchemaAction.REINDEX).get();
+				manager.commit();
+
+				manager = (ManagementSystem) g.openManagement();
+				manager.updateIndex(manager.getGraphIndex("byEdgeValue"), SchemaAction.REINDEX).get();
+				manager.commit();
 			}
+
+		} catch (Exception ex) {
+			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
 	public void closeDb() {
-		try {
-			g.tx().commit();
-			g.tx().rollback();
-			ManagementSystem manager = (ManagementSystem) g.openManagement();
-//			PropertyKey vertexValue = manager.makePropertyKey(VERTEX_VALUE).dataType(String.class).make();
-			PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
-//			PropertyKey edgeValue = manager.makePropertyKey(EDGE_VALUE).dataType(String.class).make();
-			PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
-//
-			manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");//CompositeIndex();
-			manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
-			manager.commit();
 
-			manager.awaitGraphIndexStatus(g, "byVertexValue").call();
-			manager.awaitGraphIndexStatus(g, "byEdgeValue").call();
-			manager = (ManagementSystem) g.openManagement();
-			manager.updateIndex(manager.getGraphIndex("byVertexValue"), SchemaAction.REINDEX).get();
-			manager.commit();
-			manager = (ManagementSystem) g.openManagement();
-			manager.updateIndex(manager.getGraphIndex("byEdgeValue"), SchemaAction.REINDEX).get();
-			manager.commit();
-		} catch (Exception ex) {
-			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-		}
 		g.close();
 	}
 

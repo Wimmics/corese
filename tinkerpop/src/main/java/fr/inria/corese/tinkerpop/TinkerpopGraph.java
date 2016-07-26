@@ -121,7 +121,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return null;
 	}
 
-public static Optional<TinkerpopGraph> create(String driverName, String config) {
+	public static Optional<TinkerpopGraph> create(String driverName, String config) {
 		try {
 			Class gclass = Class.forName(driverName);
 			Method factoryMethod = gclass.getMethod("open", String.class);
@@ -135,7 +135,7 @@ public static Optional<TinkerpopGraph> create(String driverName, String config) 
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Helper that use a String array to generate the configuration used to
 	 * initialize the tinkerpop driver.
@@ -159,10 +159,10 @@ public static Optional<TinkerpopGraph> create(String driverName, String config) 
 		}
 	}
 
-	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<org.apache.tinkerpop.gremlin.structure.Edge, org.apache.tinkerpop.gremlin.structure.Edge>> filter) {
+	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter) {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
-			GraphTraversal<Edge, Edge> edges = filter.apply(traversal);
+			GraphTraversal<?, Edge> edges = filter.apply(traversal);
 			Iterator<Entity> result = edges.limit(1000).map(e -> unmapper.buildEntity(e.get()));
 			return new Iterable<Entity>() {
 				public Iterator<Entity> iterator() {

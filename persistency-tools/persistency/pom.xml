@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>3.2.0-incubating</version>
+            <version>3.0.2-incubating</version>
             <type>jar</type>
         </dependency>
     </dependencies>

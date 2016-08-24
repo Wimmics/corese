@@ -2,7 +2,6 @@ package fr.inria.edelweiss.kgraph.query;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
@@ -181,7 +180,9 @@ public class QueryProcess extends QuerySolver {
 				p = (ProducerImpl) method.invoke(null, g);
         p.setMatch(isMatch);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(Level.SEVERE, null, ex);
+				LOGGER.fatal(ex);
+				LOGGER.fatal("impossible to create a producer, aborting");
+				System.exit(-1);
 			}
 		}
         QueryProcess exec = QueryProcess.create(p);
@@ -347,9 +348,9 @@ public class QueryProcess extends QuerySolver {
             Query q = compile(str);
             return q;
         } catch (LoadException ex) {
-            logger.error(ex);
+			LOGGER.error(ex);
         } catch (EngineException ex) {
-            logger.error(ex);
+			LOGGER.error(ex);
         }
         return null;
     }

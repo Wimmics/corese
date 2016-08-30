@@ -3,7 +3,8 @@ package fr.inria.edelweiss.kgpipe;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
@@ -19,7 +20,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.RuleLoad;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * Pipeline described using RDF, interpreted using SPARQL queries
@@ -28,7 +29,7 @@ import java.util.logging.Level;
  *
  */
 public class Pipe {
-	private static Logger logger = Logger.getLogger(Pipe.class);	
+	private static Logger logger = LogManager.getLogger(Pipe.class);	
 
 	static final String KGRAM = ExpType.KGRAM ;
 	
@@ -132,7 +133,7 @@ public class Pipe {
             try {
                 load.parse(name);
             } catch (LoadException ex) {
-                java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Pipe.class.getName()).log(Level.ERROR, "", ex);
             }
 	}
 	
@@ -235,7 +236,7 @@ public class Pipe {
             try {
                 load.parse(name);
             } catch (LoadException ex) {
-                java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Pipe.class.getName()).log(Level.ERROR, "", ex);
             }
 	}
 	

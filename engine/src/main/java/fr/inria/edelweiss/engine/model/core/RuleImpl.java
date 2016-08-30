@@ -3,7 +3,8 @@ package fr.inria.edelweiss.engine.model.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -13,7 +14,7 @@ import fr.inria.edelweiss.engine.model.api.Query;
 import fr.inria.edelweiss.engine.model.api.Rule;
 
 public class RuleImpl implements Rule {
-	private static Logger logger = Logger.getLogger(RuleImpl.class);
+	private static Logger logger = LogManager.getLogger(RuleImpl.class);
 	private static int count = 0;
 
 	private ASTQuery ruleInstance;

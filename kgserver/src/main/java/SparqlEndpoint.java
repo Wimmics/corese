@@ -12,7 +12,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.net.URI;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -23,7 +24,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
  */
 public class SparqlEndpoint {
 
-    private Logger logger = Logger.getLogger(SparqlEndpoint.class);
+    private Logger logger = LogManager.getLogger(SparqlEndpoint.class);
     private int port;
     public URI resourceURI;
     public Server server;

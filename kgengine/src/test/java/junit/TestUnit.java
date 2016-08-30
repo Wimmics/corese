@@ -83,8 +83,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 import junit.GListener.Operation;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
@@ -185,7 +186,7 @@ public class TestUnit {
         try {
             init(g);
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         g.init();
         return g;
@@ -713,9 +714,9 @@ public class TestUnit {
              Data res = w.process();   
        System.out.println("finish");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
    
       
@@ -983,7 +984,7 @@ public class TestUnit {
             ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
             
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(5, g.size());
         System.out.println(g.display());
@@ -1033,7 +1034,7 @@ public class TestUnit {
         try {
             ld.parse(new File(data + "junit"), new ExtensionFilter(), null,true);                      
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         //assertEquals(4, g.size());
         System.out.println(g.display());
@@ -1050,7 +1051,7 @@ public class TestUnit {
             ld.parse(NSManager.RDF);                      
                         
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         
         System.out.println(g.display());
@@ -3127,7 +3128,7 @@ public class TestUnit {
             Mappings map = exec.query(q2);
             System.out.println(map);
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         
         
@@ -3811,7 +3812,7 @@ public class TestUnit {
             StringBuffer b = p.doPost2(serv, query);
             System.out.println(b);
         } catch (IOException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         }
               
@@ -4417,7 +4418,7 @@ String init = "prefix ex: <http://example.org/>"
         try {
             ld.loadWE(path, Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         System.out.println(g);
     }
@@ -5225,7 +5226,7 @@ public void testOWLRL() throws EngineException, IOException, LoadException {
 //            ld.loadWE(data + "work/dbpedia/persondata_en_uris_de.ttl");
 
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (OutOfMemoryError e) {
             System.out.println("Out Of Memory: " + gs.size());
         }
@@ -5498,7 +5499,7 @@ Enum std  Time: 1.05
             ld.loadWE(data + "template/owl/data/tmp.ttl");
             //ld.loadWE(data + "template/owl/data/test.ttl");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
         Transformer t = Transformer.create(gs, Transformer.TURTLE);
@@ -5541,7 +5542,7 @@ Enum std  Time: 1.05
         try {
             ld.loadWE(data + "template/owl/data/primer.owl");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         ld.loadWE(data + "owlrule/owlrl.rul");
         RuleEngine re = ld.getRuleEngine();
@@ -5836,7 +5837,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             ld.loadWE(data + "template/owl/data/primer.owl");
             //ld.loadWE(data + "template/owl/data/hao.owl");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
 //        QueryLoad ql = QueryLoad.create();
@@ -5917,7 +5918,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             ld.loadWE(data + "template/owl/data/primer.owl");
             ld.loadWE(data + "template/owl/data/primer-data.ttl");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
         //462 bnode match: 19585
@@ -5991,9 +5992,9 @@ exec.setPlanProfile(Query.STD_PLAN);
 //            Mappings m = exec.query(qq);
 //            System.out.println(m.getTemplateStringResult());
 //        } catch (IOException ex) {
-//            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+//            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
 //        } catch (EngineException ex) {
-//            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+//            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
 //        }    
 
         //System.out.println(map.size());
@@ -6031,7 +6032,7 @@ exec.setPlanProfile(Query.STD_PLAN);
         try {
             ld.loadWE(data + "work/testowl.ttl");
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
         String q = "prefix ex: <http://example.org/>"
@@ -6670,7 +6671,7 @@ exec.setPlanProfile(Query.STD_PLAN);
         try {
             exec.query(init);
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         System.out.println(g);
     }
@@ -7450,7 +7451,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8019,7 +8020,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8047,7 +8048,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println("size: " + map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8086,7 +8087,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println(f);
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8214,7 +8215,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println("size: " + map.size());
             //assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
             assertEquals("result", true, ex);
         }
 
@@ -8461,7 +8462,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8532,11 +8533,11 @@ exec.setPlanProfile(Query.STD_PLAN);
 
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (LoadException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8559,7 +8560,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 
             }
         } catch (IOException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         System.out.println("** res: \n" + buf);
 
@@ -8599,13 +8600,13 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println(m.getValue("?p"));
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (SAXException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         } catch (IOException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8639,7 +8640,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println("size: " + map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8673,7 +8674,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println("size: " + map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -8704,7 +8705,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println("size: " + map.size());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
 
@@ -8915,7 +8916,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 //            System.out.println(g.display());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -9033,7 +9034,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 //            TSVFormat tsv = TSVFormat.create(map);
 //            System.out.println(tsv);
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
 
@@ -9254,7 +9255,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             //System.out.println("Size: " + graph.getValueResolver().getCount());
 
         } catch (EngineException ex) {
-            Logger.getLogger(TestQuery1.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 
@@ -9400,7 +9401,7 @@ exec.setPlanProfile(Query.STD_PLAN);
             System.out.println(f);
             System.out.println(map.size());
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

@@ -26,7 +26,8 @@ import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -56,7 +57,7 @@ public class DqpRestTest {
             + "     FILTER (?name ~ 'Bobby')"
             //            + "} LIMIT 100";
             + "} ";
-    private final static Logger logger = Logger.getLogger(DqpRestTest.class);
+    private final static Logger logger = LogManager.getLogger(DqpRestTest.class);
     private final static int port1 = 9098;
     private final static int port2 = 9099;
     private static Process server1 = null;

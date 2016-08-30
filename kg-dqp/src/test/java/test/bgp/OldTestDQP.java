@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class OldTestDQP {
 
-    private Logger logger = Logger.getLogger(OldTestDQP.class);
+    private Logger logger = LogManager.getLogger(OldTestDQP.class);
 
     static final String host = "localhost";
 
@@ -197,13 +198,13 @@ public class OldTestDQP {
         try {
             ld.parseDir(OldTestDQP.class.getClassLoader().getResource("demographie").getPath() + "/cog-2012.ttl");
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(OldTestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(OldTestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
 
         try {
             ld.parseDir(OldTestDQP.class.getClassLoader().getResource("demographie").getPath() + "/popleg-2010.ttl");
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(OldTestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(OldTestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
 
         logger.info("Graph size: " + graph.size());
@@ -268,7 +269,7 @@ public class OldTestDQP {
 //            test.testLocal();
             test.testDQP();
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(OldTestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(OldTestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 }

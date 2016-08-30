@@ -4,7 +4,8 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class GraphCompare {
-    private static Logger logger = Logger.getLogger(GraphCompare.class);
+    private static Logger logger = LogManager.getLogger(GraphCompare.class);
     
     Graph g1, g2;
     

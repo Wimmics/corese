@@ -10,8 +10,8 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Graph Execution Context
@@ -151,7 +151,7 @@ public class Context implements Graphable {
         try {
             str = ql.getResource("/data/kgram.ttl");
         } catch (IOException ex) {
-            Logger.getLogger(Context.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Context.class.getName()).log(Level.ERROR, "", ex);
         }
         return str;
     }

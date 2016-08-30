@@ -9,8 +9,9 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 public class TripleStore {
 
-    private static Logger logger = Logger.getLogger(TripleStore.class);
+    private static Logger logger = LogManager.getLogger(TripleStore.class);
     GraphStore graph = GraphStore.create(false);
     QueryProcess exec = QueryProcess.create(graph);
     boolean rdfs = false, owl = false;
@@ -121,7 +122,7 @@ public class TripleStore {
                 //ld.loadWE(f, f, Load.TURTLE_FORMAT);
                 ld.parse(f, Load.TURTLE_FORMAT);
             } catch (LoadException ex) {
-                java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(SPARQLRestAPI.class.getName()).log(Level.ERROR, "", ex);
             }
         }
     }

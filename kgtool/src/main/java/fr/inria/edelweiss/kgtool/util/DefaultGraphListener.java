@@ -4,7 +4,6 @@
  */
 package fr.inria.edelweiss.kgtool.util;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -19,8 +18,8 @@ import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -176,7 +175,7 @@ public class DefaultGraphListener implements GraphListener {
             try {
                 sp.toSpinGraph(ast, gg, "kg:query");
             } catch (EngineException ex) {
-                Logger.getLogger(DefaultGraphListener.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(DefaultGraphListener.class.getName()).log(Level.ERROR, "", ex);
             }
         }
 

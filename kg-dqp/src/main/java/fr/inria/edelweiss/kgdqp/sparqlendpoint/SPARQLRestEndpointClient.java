@@ -7,9 +7,10 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.*;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import javax.ws.rs.core.UriBuilder;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -85,7 +86,7 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
             return doGet(query, "application/rdf+xml");
 //	    return doGet(query, "text/turtle");
 	} catch (IOException ex) {
-	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
+	    LogManager.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.ERROR, "", ex);
 	}
 	return null;
     }
@@ -100,7 +101,7 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
 	try {
 	    return doGet(query, "application/sparql-results+xml");
 	} catch (IOException ex) {
-	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
+	    LogManager.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.ERROR, "", ex);
 	}
 	return null;
     }
@@ -115,7 +116,7 @@ public class SPARQLRestEndpointClient implements SparqlEndpointInterface {
 	try {
 	    return doGet(query, "application/sparql-results+xml");
 	} catch (IOException ex) {
-	    Logger.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.SEVERE, null, ex);
+	    LogManager.getLogger(SPARQLRestEndpointClient.class.getName()).log(Level.ERROR, "", ex);
 	}
 	return null;
     }

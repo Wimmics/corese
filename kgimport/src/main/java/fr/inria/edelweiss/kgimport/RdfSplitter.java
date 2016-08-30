@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,7 +33,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple tool to fragment RDF data into homogeneous segments (same size),
@@ -44,7 +45,7 @@ import org.apache.log4j.Logger;
  */
 public class RdfSplitter {
 
-    private static Logger logger = Logger.getLogger(RdfSplitter.class);
+    private static Logger logger = LogManager.getLogger(RdfSplitter.class);
 
     /**
      * The input directory describing the RDF dataset to be fragmented.
@@ -511,7 +512,7 @@ public class RdfSplitter {
                                 model.read(iS, null);
                             }
                         } catch (FileNotFoundException ex) {
-                            java.util.logging.Logger.getLogger(RdfSplitter.class.getName()).log(Level.SEVERE, null, ex);
+                            LogManager.getLogger(RdfSplitter.class.getName()).log(Level.ERROR, "", ex);
                         }
                     }
                 }

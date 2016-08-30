@@ -22,7 +22,8 @@ import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.HashMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Manage extended named graph 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class ExtendGraph {
-    static Logger logger = Logger.getLogger(ExtendGraph.class);
+    static Logger logger = LogManager.getLogger(ExtendGraph.class);
     
     private static final String KGEXT     = NSManager.KGEXT;
     private static final String KGEXTQUERY = NSManager.KGEXTCONS;    

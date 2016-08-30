@@ -14,8 +14,8 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Graph Listener implements callbacks as FunSPARQL functions Manage an Eval
@@ -79,7 +79,7 @@ public class GraphListen implements GraphListener {
                 eval = QueryProcess.createEval(graph, init);
             }
         } catch (EngineException ex) {
-            Logger.getLogger(GraphListen.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(GraphListen.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

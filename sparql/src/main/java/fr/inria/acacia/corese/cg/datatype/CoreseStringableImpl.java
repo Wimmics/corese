@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.cg.datatype;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
@@ -26,7 +27,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(CoreseStringableImpl.class);
+	private static Logger logger = LogManager.getLogger(CoreseStringableImpl.class);
 
 	static int code = STRINGABLE;
 	public static int count = 0;

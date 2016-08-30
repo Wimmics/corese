@@ -37,7 +37,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * REST API to expose main features of the KGRAM-DQP federation engine.
@@ -47,7 +48,7 @@ import org.apache.log4j.Logger;
 @Path("dqp")
 public class DqpRestAPI {
 
-    private Logger logger = Logger.getLogger(DqpRestAPI.class);
+    private Logger logger = LogManager.getLogger(DqpRestAPI.class);
     private static Graph graph = Graph.create(false);
     private static ProviderImplCostMonitoring sProv = ProviderImplCostMonitoring.create();
     private static QueryProcessDQP execDQP = QueryProcessDQP.create(graph, sProv, false);

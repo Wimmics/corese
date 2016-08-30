@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Dataset;
@@ -39,7 +40,7 @@ public class SPARQLEndpointServlet extends HttpServlet {
     private static final String UPDATE = "update";
     private static final String LOAD = "load";
     private static final long serialVersionUID = 1L;
-    private static Logger logger = Logger.getLogger(SPARQLEndpointServlet.class);
+    private static Logger logger = LogManager.getLogger(SPARQLEndpointServlet.class);
     Graph graph;
 
     @Override

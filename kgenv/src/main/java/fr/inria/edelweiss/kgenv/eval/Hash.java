@@ -3,7 +3,8 @@ package fr.inria.edelweiss.kgenv.eval;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 //import fr.cryptohash.*;
 
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class Hash {
-	private static Logger logger = Logger.getLogger(Hash.class);	
+	private static Logger logger = LogManager.getLogger(Hash.class);	
 
 	//static String SHA224 = "SHA-224";
 	String name;

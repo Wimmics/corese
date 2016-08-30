@@ -23,7 +23,8 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Plugin to Transformer
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class PluginTransform implements ExprType {
-    static Logger logger = Logger.getLogger(PluginTransform.class);
+    static Logger logger = LogManager.getLogger(PluginTransform.class);
 
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
     private static final String VISIT_DEFAULT_NAME = NSManager.STL + "default";

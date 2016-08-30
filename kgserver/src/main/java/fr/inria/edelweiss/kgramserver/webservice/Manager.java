@@ -14,8 +14,9 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 
 /**
  * Dataset Manager Load Profile Datasets into TripleStores Manage a map of
@@ -70,9 +71,9 @@ public class Manager {
                 try {
                     initTripleStore(p, s);
                 } catch (LoadException ex) {
-                    Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger(Tutorial.class.getName()).log(Level.ERROR, "", ex);
                 } catch (EngineException ex) {
-                    Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
                 }
             }
         }
@@ -178,9 +179,9 @@ public class Manager {
             try {
                 init(ts, s);
             } catch (LoadException ex) {
-                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
             } catch (EngineException ex) {
-                Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
             }
         }
     }
@@ -241,7 +242,7 @@ public class Manager {
             exec.query(init);
             exec.query(init2);
         } catch (EngineException ex) {
-            Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Tutorial.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 
@@ -282,7 +283,7 @@ public class Manager {
                 try {
                     getProfile().initServer(g);
                 } catch (EngineException ex) {
-                    Logger.getLogger(Tutorial.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger(Tutorial.class.getName()).log(Level.ERROR, "", ex);
                 }
             }
         }

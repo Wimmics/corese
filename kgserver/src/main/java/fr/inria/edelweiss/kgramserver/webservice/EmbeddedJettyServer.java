@@ -24,7 +24,8 @@ import org.apache.commons.vfs.FileDepthSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -91,7 +92,7 @@ public class EmbeddedJettyServer {
 
 		System.out.println("Loading log4j configuration: " + log4jfile);
 		PropertyConfigurator.configure(log4jfile);
-		logger = Logger.getLogger(EmbeddedJettyServer.class);
+		logger = LogManager.getLogger(EmbeddedJettyServer.class);
 
 		HOME_PAGE = SPARQLRestAPI.isAjax ? "demo_new.html" : "demo.html";
 

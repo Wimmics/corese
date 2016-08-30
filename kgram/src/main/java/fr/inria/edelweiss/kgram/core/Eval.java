@@ -33,9 +33,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine Compute graph homomorphism and
@@ -54,7 +55,7 @@ import org.apache.log4j.Logger;
  */
 public class Eval implements ExpType, Plugin {
 
-    private static Logger logger = Logger.getLogger(Eval.class);
+    private static Logger logger = LogManager.getLogger(Eval.class);
     private static final String PREF = EXT;
     private static final String FUN_CANDIDATE = PREF + "candidate";
     private static final String FUN_SERVICE = PREF + "service";

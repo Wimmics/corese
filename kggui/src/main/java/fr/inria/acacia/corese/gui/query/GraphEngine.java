@@ -28,7 +28,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.LoadPlugin;
 import java.util.Date;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class GraphEngine  {
-    private static Logger logger = Logger.getLogger(GraphEngine.class);
+    private static Logger logger = LogManager.getLogger(GraphEngine.class);
 	static final String BRUL = "brul";
 	
 	private Graph graph;

@@ -9,8 +9,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Initialize a GraphStore
@@ -72,7 +72,7 @@ public class GraphStoreInit {
             try {
                 ld.load(stream, SYSTEM, name);
             } catch (LoadException ex) {
-                Logger.getLogger(GraphStore.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(GraphStore.class.getName()).log(Level.ERROR, "", ex);
             }
         }
     }

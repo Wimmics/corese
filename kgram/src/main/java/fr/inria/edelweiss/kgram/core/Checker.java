@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgram.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Query Type Checker
@@ -22,7 +23,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Checker {
 	
-	static Logger logger = Logger.getLogger(Checker.class);
+	static Logger logger = LogManager.getLogger(Checker.class);
 	
 	Eval eval;
 	Producer producer;

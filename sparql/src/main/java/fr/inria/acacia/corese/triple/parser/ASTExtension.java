@@ -4,7 +4,8 @@ package fr.inria.acacia.corese.triple.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Manage extension functions 
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class ASTExtension {
-    private static Logger logger = Logger.getLogger(ASTExtension.class);	
+    private static Logger logger = LogManager.getLogger(ASTExtension.class);	
 
     static final String NL = System.getProperty("line.separator");
     //FunMap map;

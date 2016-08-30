@@ -7,7 +7,8 @@
 //import java.io.IOException;
 //import java.util.Date;
 //
-//import org.apache.log4j.Logger;
+//import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 //
 //
 //
@@ -55,7 +56,7 @@
 //	boolean skip = false;
 //	boolean printResult = !true; //CoreseTestSuiteParser1.displayResult;
 //    boolean printResult2 = true;
-//    private static Logger logger = Logger.getLogger(CoreseTest2.class);
+//    private static Logger logger = LogManager.getLogger(CoreseTest2.class);
 //    static StatListener el;
 //    static int count = 0;
 //    

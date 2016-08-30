@@ -13,7 +13,8 @@ import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -50,7 +51,7 @@ public class ProviderImpl implements Provider {
 	
 	private static final String SERVICE_ERROR = "Service error: ";
 
-	private static Logger logger = Logger.getLogger(ProviderImpl.class);
+	private static Logger logger = LogManager.getLogger(ProviderImpl.class);
 	
 	static final String LOCALHOST = "http://localhost:8080/sparql";
 	static final String DBPEDIA   = "http://fr.dbpedia.org/sparql";

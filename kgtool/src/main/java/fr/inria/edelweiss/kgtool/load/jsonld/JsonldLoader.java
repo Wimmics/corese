@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -25,7 +26,7 @@ public class JsonldLoader {
     /**
      * logger from log4j
      */
-    private static Logger logger = Logger.getLogger(JsonldLoader.class);
+    private static Logger logger = LogManager.getLogger(JsonldLoader.class);
 
     private Reader reader;
     private InputStream is;

@@ -16,7 +16,8 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Extension of the KGRAM SPARQL query processor, that handles several
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class QueryProcessDQP extends QueryProcess {
 
-    private static Logger logger = Logger.getLogger(QueryProcessDQP.class);
+    private static Logger logger = LogManager.getLogger(QueryProcessDQP.class);
     private final int parallelWaitMP = 0;
     private final int parallelLessWaitMP = 1;
     private final int pipelinedMP = 2;

@@ -28,7 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Manage load, import, profile
@@ -39,7 +40,7 @@ import org.apache.log4j.Logger;
  */
 public class Loader {
     
-    private static Logger logger = Logger.getLogger(Loader.class);
+    private static Logger logger = LogManager.getLogger(Loader.class);
     private String STL = NSManager.STL;
     public static final String PPLIB = "/template/";
     

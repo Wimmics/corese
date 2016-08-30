@@ -16,10 +16,11 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.WebServiceException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -30,7 +31,7 @@ import org.xml.sax.SAXException;
  */
 public class SourceSelectorWS {
 
-    private static Logger logger = Logger.getLogger(SourceSelectorWS.class);
+    private static Logger logger = LogManager.getLogger(SourceSelectorWS.class);
     private static SourceSelectorWS instance = null;
 
     public static SourceSelectorWS getInstance() {

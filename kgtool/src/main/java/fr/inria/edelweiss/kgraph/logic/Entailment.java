@@ -13,7 +13,8 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * RDFS Entailment
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class Entailment implements Engine {
 
-    private static Logger logger = Logger.getLogger(Entailment.class);
+    private static Logger logger = LogManager.getLogger(Entailment.class);
     private static final String S_TYPE = RDF.TYPE;
     private static final String S_BLI = RDF.BLI;
     private static final String S_PROPERTY = RDF.PROPERTY;

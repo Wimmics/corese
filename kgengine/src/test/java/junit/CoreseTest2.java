@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.Date;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 
@@ -31,7 +32,7 @@ import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.junit.Ignore;
 
 @Ignore
@@ -59,7 +60,7 @@ public class CoreseTest2 extends TestCase {
 	boolean skip = false;
 	boolean printResult = !true; //CoreseTestSuiteParser1.displayResult;
     boolean printResult2 = true;
-    private static Logger logger = Logger.getLogger(CoreseTest2.class);
+    private static Logger logger = LogManager.getLogger(CoreseTest2.class);
     static StatListener el;
     static int count = 0;
     
@@ -308,7 +309,7 @@ public class CoreseTest2 extends TestCase {
                     try {
                         init();
                     } catch (LoadException ex) {
-                        java.util.logging.Logger.getLogger(CoreseTest2.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getLogger(CoreseTest2.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
                 //QueryProcess.setSort(true);

@@ -3,7 +3,8 @@ package fr.inria.edelweiss.kgraph.query;
 import fr.inria.edelweiss.kgraph.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -56,7 +57,7 @@ import java.util.logging.Level;
  */
 public class PluginImpl extends ProxyImpl {
 
-    static Logger logger = Logger.getLogger(PluginImpl.class);
+    static Logger logger = LogManager.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
@@ -918,7 +919,7 @@ public class PluginImpl extends ProxyImpl {
         try {
             str = ql.readWE(dt.getLabel());
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(PluginImpl.class.getName()).log(Level.ERROR, "", ex);
         }
         if (str == null){
             str = "";

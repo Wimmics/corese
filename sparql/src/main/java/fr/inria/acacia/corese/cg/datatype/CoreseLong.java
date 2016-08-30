@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.cg.datatype;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
@@ -20,7 +21,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 public  class CoreseLong extends CoreseNumber {
 
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(CoreseLong.class);
+	private static Logger logger = LogManager.getLogger(CoreseLong.class);
 
 	static final CoreseURI datatype=new CoreseURI(RDF.xsdlong);
 	static final int code = LONG;

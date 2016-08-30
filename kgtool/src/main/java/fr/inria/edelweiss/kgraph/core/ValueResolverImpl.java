@@ -5,8 +5,8 @@ import fr.inria.edelweiss.kgraph.api.ValueResolver;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 //import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
@@ -28,7 +28,7 @@ public class ValueResolverImpl implements ValueResolver {
         try {
             hasher = MessageDigest.getInstance(NAME);
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(ValueResolverImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(ValueResolverImpl.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

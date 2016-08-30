@@ -13,9 +13,10 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -29,7 +30,7 @@ import org.junit.Test;
  */
 public class DrugBankDebug {
 
-    private Logger logger = Logger.getLogger(DrugBankDebug.class);
+    private Logger logger = LogManager.getLogger(DrugBankDebug.class);
     String sparqlQuery = "SELECT ?predicate ?object WHERE {"
             + "{    <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00201> ?predicate ?object . }"
             + " UNION    "
@@ -92,7 +93,7 @@ public class DrugBankDebug {
             //         ld.parseDir("/Users/gaignard/Desktop/producer-4/drugbank_dump.rdf"); // 300ms
             ld.parseDir("/Users/gaignard/Desktop/Expe-FedEx-FedBench-G5K/updated-datasets/drugbank_dump.ttl"); // 300ms
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(DrugBankDebug.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DrugBankDebug.class.getName()).log(Level.ERROR, "", ex);
         }
 
 //        ld.parseDir("/Users/gaignard/Documents/These/ExperimentsG5K/FedBench-dataset/dataset-dbpedia-3/category_labels_en.ttl"); // 300ms

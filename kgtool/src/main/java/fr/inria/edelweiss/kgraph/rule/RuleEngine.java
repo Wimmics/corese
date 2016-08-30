@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -37,7 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * Forward Rule Engine 
@@ -67,7 +68,7 @@ public class RuleEngine implements Engine, Graphable {
     public static final String OWL_RL_LITE_PATH = "/rule/owlrllite.rul";
     
     private static final String UNKNOWN = "unknown";
-    private static Logger logger = Logger.getLogger(RuleEngine.class);
+    private static Logger logger = LogManager.getLogger(RuleEngine.class);
     Graph graph;
     QueryProcess exec;
     List<Rule> rules;
@@ -167,9 +168,9 @@ public class RuleEngine implements Engine, Graphable {
         try {
             cleanOWL();
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
         }
         // enable graph Index by timestamp
         graph.setHasList(true);
@@ -333,9 +334,9 @@ public class RuleEngine implements Engine, Graphable {
             Mappings map = ex.query(q);
             return map.getTemplateStringResult();
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RuleEngine.class.getName()).log(Level.ERROR, "", ex);
         }
         return null;
     }

@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ASTVisitable;
@@ -43,7 +44,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     /**
      * logger from log4j
      */
-    private static Logger logger = Logger.getLogger(ASTQuery.class);
+    private static Logger logger = LogManager.getLogger(ASTQuery.class);
 
     static String RootPropertyQN = RDFS.RootPropertyQN; // cos:Property
     static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";

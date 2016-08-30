@@ -6,7 +6,8 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -46,7 +47,7 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  *
  */
 public class QuerySolver  implements SPARQLEngine {
-	private static Logger logger = Logger.getLogger(QuerySolver.class);
+	private static Logger logger = LogManager.getLogger(QuerySolver.class);
         public static final String MAIN_FUN = NSManager.EXT + "main";
 	
 	public static final int STD_ENTAILMENT  = 0;

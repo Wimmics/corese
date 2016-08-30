@@ -20,7 +20,8 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.tool.Message;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Pragma processor
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class Pragma  {
-	private static Logger logger = Logger.getLogger(Pragma.class);
+	private static Logger logger = LogManager.getLogger(Pragma.class);
         
 	public static final String KG 		= ExpType.KGRAM;
 	public static final String STL 		= ExpType.STL;

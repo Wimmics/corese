@@ -9,7 +9,7 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.HTMLFormat;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -69,7 +70,7 @@ public class SPIN {
             return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();
 
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SPARQLRestAPI.class.getName()).log(Level.ERROR, "", ex);
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }
@@ -122,7 +123,7 @@ public class SPIN {
             return Response.status(200).header(headerAccept, "*").entity(ft.toString()).build();
 
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(SPARQLRestAPI.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SPARQLRestAPI.class.getName()).log(Level.ERROR, "", ex);
             return Response.status(500).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
     }

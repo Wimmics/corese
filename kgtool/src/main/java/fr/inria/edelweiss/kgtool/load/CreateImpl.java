@@ -14,6 +14,8 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
@@ -23,7 +25,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  * 
  */
 public class CreateImpl implements Creator {
-    private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(CreateImpl.class);
+    private static Logger logger = LogManager.getLogger(CreateImpl.class);
     
     HashMap<String, String> blank;
     NSManager nsm;

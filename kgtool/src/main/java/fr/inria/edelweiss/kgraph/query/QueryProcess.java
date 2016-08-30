@@ -31,7 +31,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM as a lightweight version
@@ -46,7 +47,7 @@ import org.apache.log4j.Logger;
  */
 public class QueryProcess extends QuerySolver {
 
-    private static Logger logger = Logger.getLogger(QueryProcess.class);
+    private static Logger logger = LogManager.getLogger(QueryProcess.class);
     //sort query edges taking cardinality into account
     static boolean isSort = false;
     private Manager updateManager;

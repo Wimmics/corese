@@ -51,13 +51,14 @@ import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import javax.swing.JEditorPane;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import org.apache.logging.log4j.LogManager;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -558,7 +559,7 @@ public final class MyJPanelQuery extends JPanel {
                 ld.loadString(str, Load.TURTLE_FORMAT);
                 displayGraph(g, nsm);
             } catch (LoadException ex) {
-                java.util.logging.Logger.getLogger(MyJPanelQuery.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(MyJPanelQuery.class.getName()).log(Level.ERROR, "", ex);
             }
         }
     }

@@ -27,7 +27,8 @@ import java.net.URI;
 import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,7 +52,7 @@ import org.junit.Ignore;
  */
 public class RDFS_no_entailmentsTest {
 
-    private static Logger logger = Logger.getLogger(RDFS_entailmentsTest.class);
+    private static Logger logger = LogManager.getLogger(RDFS_entailmentsTest.class);
     private static int port = 9081;
     private static Server server;
     private static File humanData, humanOnt;

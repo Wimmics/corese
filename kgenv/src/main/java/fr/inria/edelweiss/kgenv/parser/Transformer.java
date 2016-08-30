@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -40,7 +41,7 @@ import java.util.HashMap;
  *
  */
 public class Transformer implements ExpType {	
-	private static Logger logger = Logger.getLogger(Transformer.class);
+	private static Logger logger = LogManager.getLogger(Transformer.class);
 
 	public static  boolean ISBGP = false;
 	public static final String ROOT = "?_kgram_";

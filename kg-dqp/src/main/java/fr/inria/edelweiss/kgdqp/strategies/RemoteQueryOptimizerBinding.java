@@ -12,7 +12,8 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * An optimizer that propagates intermediate results (variable bindings)
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class RemoteQueryOptimizerBinding implements RemoteQueryOptimizer {
 
-    private static Logger logger = Logger.getLogger(RemoteQueryOptimizerBinding.class);
+    private static Logger logger = LogManager.getLogger(RemoteQueryOptimizerBinding.class);
 
     RemoteQueryOptimizerBinding() {
     }

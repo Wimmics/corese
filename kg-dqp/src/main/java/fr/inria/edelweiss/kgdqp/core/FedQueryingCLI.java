@@ -27,7 +27,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class FedQueryingCLI {
 
-    static Logger logger = Logger.getLogger(FedQueryingCLI.class);
+    static Logger logger = LogManager.getLogger(FedQueryingCLI.class);
 
     @SuppressWarnings("unchecked")
     public static void main(String args[]) throws ParseException, EngineException {

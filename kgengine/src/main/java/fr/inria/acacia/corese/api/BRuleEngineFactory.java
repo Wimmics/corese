@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.api;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * 
@@ -11,7 +12,7 @@ import org.apache.log4j.Logger;
 
 public class BRuleEngineFactory {
 	public static String ENGINE = "fr.inria.edelweiss.engine.core.Engine";
-	private static Logger logger = Logger.getLogger(BRuleEngineFactory.class);
+	private static Logger logger = LogManager.getLogger(BRuleEngineFactory.class);
 
 	public static BRuleEngineFactory newInstance(){
 		return new BRuleEngineFactory();

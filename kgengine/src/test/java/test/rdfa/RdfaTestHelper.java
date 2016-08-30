@@ -18,8 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -169,9 +170,9 @@ public class RdfaTestHelper {
             reader.close();
             is.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(RdfaTestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RdfaTestHelper.class.getName()).log(Level.ERROR, "", ex);
         } catch (IOException ex) {
-            Logger.getLogger(RdfaTestHelper.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RdfaTestHelper.class.getName()).log(Level.ERROR, "", ex);
         }
 
         //convert list to object array

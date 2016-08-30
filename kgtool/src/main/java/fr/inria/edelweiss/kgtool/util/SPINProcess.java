@@ -12,8 +12,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -143,9 +143,9 @@ public class SPINProcess {
         try {
             ld.parse(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(SPINProcess.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
         }
         return g;
      }

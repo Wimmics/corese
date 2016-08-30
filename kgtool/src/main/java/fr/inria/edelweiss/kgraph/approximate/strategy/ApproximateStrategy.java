@@ -19,7 +19,8 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Define the strategies
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class ApproximateStrategy {
 
-    private final static Logger logger = Logger.getLogger(ApproximateStrategy.class);
+    private final static Logger logger = LogManager.getLogger(ApproximateStrategy.class);
     public final static String SEPARATOR = "-";
     
     //default strategy-algorithm map

@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -28,7 +29,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
  *
  */
 public class QueryEngine implements Engine {
-	private static Logger logger = Logger.getLogger(QueryEngine.class);	
+	private static Logger logger = LogManager.getLogger(QueryEngine.class);	
 	
 	Graph graph;
 	QueryProcess exec;

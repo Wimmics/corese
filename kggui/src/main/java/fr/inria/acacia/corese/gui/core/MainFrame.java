@@ -39,10 +39,6 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.WriterAppender;
-
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.gui.query.Buffer;
@@ -58,9 +54,19 @@ import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
  * Fenêtre principale, avec le conteneur d'onglets et le menu
@@ -176,7 +182,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 	private GraphEngine myCorese = null;
 	private CaptureOutput myCapturer = null;
-	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(MainFrame.class.getName());
 	private MyEvalListener el;
 	Buffer buffer;
 	private static final String STYLE = "/style/";
@@ -188,12 +194,12 @@ public class MainFrame extends JFrame implements ActionListener {
 	private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
 
 	int nbTabs = 0;
-        
-        static {
-            // false: load files into named graphs
-            // true:  load files into kg:default graph
-            Load.setDefaultGraphValue(false);
-        }
+
+	static {
+		// false: load files into named graphs
+		// true:  load files into kg:default graph
+		Load.setDefaultGraphValue(false);
+	}
 
 	/**
 	 * Crée la fenêtre principale, initialise Corese
@@ -212,9 +218,9 @@ public class MainFrame extends JFrame implements ActionListener {
 		try {
 			defaultQuery = read(QUERY + DEFAULT_SELECT_QUERY);
 		} catch (LoadException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		} catch (IOException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		}
 
 		//Initialise Corese
@@ -344,9 +350,9 @@ public class MainFrame extends JFrame implements ActionListener {
 		try {
 			saveStylesheet = read(STYLE + STYLESHEET);
 		} catch (LoadException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		} catch (IOException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		}
 		defaultStylesheet = saveStylesheet;
 	}
@@ -711,10 +717,10 @@ public class MainFrame extends JFrame implements ActionListener {
 			}
 		});
 		cbrdfs.setSelected(true);
-                
-                cbnamed.setSelected(true);
-                cbnamed.setEnabled(true);
-                cbnamed.addItemListener(
+
+		cbnamed.setSelected(true);
+		cbnamed.setEnabled(true);
+		cbnamed.addItemListener(
 			new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -1004,7 +1010,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			runRules(true);
 		} //Remet tout à zéro
 		else if (e.getSource() == reset) {
-                        reset();
+			reset();
 		} //Recharge tous les fichiers déjà chargés
 		else if (e.getSource() == refresh) {
 			ongletListener.refresh(this);
@@ -1034,14 +1040,14 @@ public class MainFrame extends JFrame implements ActionListener {
 			execPlus(query);
 		}
 	}
-        
-       void reset() {
-            ongletListener.getTextPaneLogs().setText("");
-            ongletListener.getListLoadedFiles().removeAll();
-            ongletListener.getModel().removeAllElements();
-            setMyCoreseNewInstance();
-            appendMsg("reset... \n" + myCapturer.getContent() + "\ndone.\n");
-       }
+
+	void reset() {
+		ongletListener.getTextPaneLogs().setText("");
+		ongletListener.getListLoadedFiles().removeAll();
+		ongletListener.getModel().removeAllElements();
+		setMyCoreseNewInstance();
+		appendMsg("reset... \n" + myCapturer.getContent() + "\ndone.\n");
+	}
 
 	void save(String str) {
 		JFileChooser filechoose = new JFileChooser(lCurrentPath);
@@ -1254,7 +1260,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	void loadWF(String path) {
-                reset();
+		reset();
 		WorkflowParser parser = new WorkflowParser();
 		// parser.setDebug(true);
 		try {
@@ -1265,9 +1271,9 @@ public class MainFrame extends JFrame implements ActionListener {
 			Data res = wp.process(new Data(myCorese.getGraph()));
 			Date d2 = new Date();
 			System.out.println("time: " + (d2.getTime() - d1.getTime()) / (1000.0));
-                        appendMsg(res.toString() + "\n");
+			appendMsg(res.toString() + "\n");
 			appendMsg("time: " + (d2.getTime() - d1.getTime()) / (1000.0) + "\n");
-                } catch (LoadException ex) {
+		} catch (LoadException ex) {
 			LOGGER.error(ex);
 			appendMsg(ex.toString());
 		} catch (EngineException ex) {
@@ -1312,9 +1318,9 @@ public class MainFrame extends JFrame implements ActionListener {
 			save(sb.toString());
 
 		} catch (IOException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		} catch (LoadException ex) {
-			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+			LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
 		}
 	}
 
@@ -1595,7 +1601,16 @@ public class MainFrame extends JFrame implements ActionListener {
 	public static void main(String[] p_args) {
 
 		CaptureOutput aCapturer = new CaptureOutput();
-		Logger.getLogger("fr.inria.acacia.corese").addAppender(new WriterAppender(new PatternLayout("%m%n"), aCapturer));
+
+		LoggerContext context = (LoggerContext) LogManager.getContext();
+		Configuration config = context.getConfiguration();
+
+		PatternLayout layout = PatternLayout.createLayout("%m%n", null,config, null, Charset.defaultCharset(), false, false, null, null);
+//		Appender appender = ConsoleAppender.createAppender(layout, null, null, "CONSOLE_APPENDER", null, null);
+//		Appender appender = WriterAppender.createAppender(layout, null, aCapturer, "WRITER_APPENDER", false, true);
+//		appender.start();
+//		config.addAppender(appender);
+//		LoggerConfig loggerConfig = LogManager.getLogger("fr.inria.acacia.corese");
 		MainFrame coreseFrame = null;
 		if (p_args.length > 0) {
 			coreseFrame = new MainFrame(aCapturer, p_args[0]);

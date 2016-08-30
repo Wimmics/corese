@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * delegate class for read/write/delete string from file via file handler
@@ -50,7 +50,7 @@ public class StringManagerDelegate {
             fh.getChannel().read(literalBf, meta.getOffset());
             return new String(literalBf.array(), Charset.forName(Constants.ENCODING));
         } catch (IOException ex) {
-            Logger.getLogger(StringManagerDelegate.class.getName()).log(Level.SEVERE, "Read " + meta + " error!", ex);
+            LogManager.getLogger(StringManagerDelegate.class.getName()).log(Level.ERROR, "Read " + meta + " error!", ex);
             return null;
         }
     }
@@ -144,7 +144,7 @@ public class StringManagerDelegate {
                 }
             }
         }
-        Logger.getLogger(StringManagerDelegate.class.getName()).log(Level.INFO, "{0} records are deleted!", toDelete.size());
+        LogManager.getLogger(StringManagerDelegate.class.getName()).log(Level.INFO, "{0} records are deleted!", toDelete.size());
 
         this.clean();
         this.fhManager = newManager.fhManager;

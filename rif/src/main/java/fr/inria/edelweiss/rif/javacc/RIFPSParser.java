@@ -20,7 +20,7 @@ public class RIFPSParser implements RIFPSParserConstants {
         private RIFPSDocument rifdoc ;
 
         /** Logger from log4j */
-        private static Logger logger = Logger.getLogger(RIFPSParser.class) ;
+        private static Logger logger = LogManager.getLogger(RIFPSParser.class) ;
 
         public void setRIFDocument(RIFPSDocument rifdoc) {
                 this.rifdoc = rifdoc ;

@@ -3,7 +3,8 @@ package fr.inria.edelweiss.engine.core;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 //import fr.inria.acacia.corese.event.Event;
 //import fr.inria.acacia.corese.event.EventManager;
@@ -20,7 +21,7 @@ import fr.inria.edelweiss.engine.model.core.LBindImpl;
 import fr.inria.edelweiss.engine.tool.api.EventsTreatment;
 
 public class Backward {
-	private static Logger logger = Logger.getLogger(Backward.class);
+	private static Logger logger = LogManager.getLogger(Backward.class);
 
 		/**
 	     * ruleBase: { construct {?a grandFather ?c} where {?a father ?b . ?b father ?c} }

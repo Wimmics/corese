@@ -12,7 +12,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Helper class to handle the retrieveing of results when getEdges() are
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class CallableGetEdges implements Callable<Iterable<Entity>> {
 
-    private final Logger logger = Logger.getLogger(CallableGetEdges.class);
+    private final Logger logger = LogManager.getLogger(CallableGetEdges.class);
     private Producer p = null;
     private Node gNode = null;
     private List<Node> from = null;

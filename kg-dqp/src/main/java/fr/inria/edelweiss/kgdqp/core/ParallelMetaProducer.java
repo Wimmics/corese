@@ -17,7 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Meta Producer that handles concurent accesses to several Producers Uses a
@@ -28,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class ParallelMetaProducer extends MetaProducer {
 
-    private final Logger logger = Logger.getLogger(ParallelMetaProducer.class);
+    private final Logger logger = LogManager.getLogger(ParallelMetaProducer.class);
 
     protected ParallelMetaProducer() {
         super();

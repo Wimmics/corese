@@ -3,7 +3,8 @@ package fr.inria.acacia.corese.cg.datatype;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
@@ -33,7 +34,7 @@ public class DatatypeMap implements Cst, RDF {
     /**
      * logger from log4j
      */
-    private static Logger logger = Logger.getLogger(DatatypeMap.class);
+    private static Logger logger = LogManager.getLogger(DatatypeMap.class);
     public static final IDatatype ZERO = newInstance(0);
     public static final IDatatype ONE = newInstance(1);
     public static final IDatatype MINUSONE = newInstance(-1);

@@ -6,7 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
@@ -26,7 +27,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 public class CoreseDate extends CoreseDatatype {
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(CoreseDate.class);
+	private static Logger logger = LogManager.getLogger(CoreseDate.class);
 	
 	static int code=DATE;
 	static final String TODAY = "today";

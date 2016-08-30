@@ -8,7 +8,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,7 +29,7 @@ import fr.inria.edelweiss.kgraph.rule.RuleEngine;
  */
 public class RuleLoad {
 
-    private static Logger logger = Logger.getLogger(Load.class);
+    private static Logger logger = LogManager.getLogger(Load.class);
     public static final String NS = "http://ns.inria.fr/edelweiss/2011/rule#";
     static final String BRUL = "http://ns.inria.fr/corese/2008/rule#";
     static final String COS = "http://www.inria.fr/acacia/corese#";

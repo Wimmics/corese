@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -16,7 +17,7 @@ import fr.inria.edelweiss.engine.model.api.ExpFilter;
 import fr.inria.edelweiss.engine.model.api.Query;
 
 public class QueryImpl implements Query {
-	private static Logger logger = Logger.getLogger(QueryImpl.class);
+	private static Logger logger = LogManager.getLogger(QueryImpl.class);
 
 	//body
 	private List<Clause> clauses;

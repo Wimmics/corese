@@ -11,8 +11,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Extract a Transformer Context from a profile.ttl graph st:param object
@@ -41,7 +41,7 @@ public class ContextBuilder {
         try {
             ld.parse(path);
         } catch (LoadException ex) {
-            Logger.getLogger(ContextBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(ContextBuilder.class.getName()).log(Level.ERROR, "", ex);
         }
     }
     

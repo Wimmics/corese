@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -31,7 +32,7 @@ public class EdgeIndexer
     private static final String NL = System.getProperty("line.separator");
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
-    private static Logger logger = Logger.getLogger(EdgeIndexer.class);
+    private static Logger logger = LogManager.getLogger(EdgeIndexer.class);
     private boolean byIndex = true;
     int index = 0, other = 1;
     int count = 0;

@@ -5,8 +5,8 @@ import com.sun.jersey.multipart.FormDataParam;
 import static fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer.HOME_PAGE;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -17,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class enables to assign an URL to services
@@ -164,7 +165,7 @@ public class SrvWrapper {
             int pos = html.indexOf(CONTENT_HTML) + CONTENT_HTML.length();//find place to insert
             html.replace(pos, pos, rs.getEntity().toString());//insert content
         } catch (IOException ex) {
-            Logger.getLogger(SrvWrapper.class.getName()).log(Level.WARNING, "can not read home page");
+            LogManager.getLogger(SrvWrapper.class.getName()).log(Level.WARN, "can not read home page");
         }
         return html;
     }

@@ -10,8 +10,8 @@ import java.util.Formatter;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 
 public class Earl {
 	
@@ -35,7 +35,7 @@ public class Earl {
                 fmt.format(header);
                 fmt.format(corese);
             } catch (LoadException ex) {
-                Logger.getLogger(Earl.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Earl.class.getName()).log(Level.ERROR, "", ex);
             }
 	}
 	

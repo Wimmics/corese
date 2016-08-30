@@ -7,8 +7,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.awt.font.TransformAttribute;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 
 /**
  * Domain Specific Workflow to process DataShape on RDF Graph

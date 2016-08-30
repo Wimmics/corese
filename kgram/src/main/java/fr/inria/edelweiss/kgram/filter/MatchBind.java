@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -17,7 +18,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
  *
  */
 public class MatchBind {
-	private static Logger logger = Logger.getLogger(MatchBind.class);	
+	private static Logger logger = LogManager.getLogger(MatchBind.class);	
 
 	Hashtable<Expr, Expr> table;
 	List<Expr> stack;

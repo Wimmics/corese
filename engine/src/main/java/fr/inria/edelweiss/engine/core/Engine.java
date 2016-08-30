@@ -3,7 +3,8 @@ package fr.inria.edelweiss.engine.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 //import fr.inria.acacia.corese.event.Event;
 //import fr.inria.acacia.corese.event.RuleEvent;
@@ -28,7 +29,7 @@ import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 public class Engine 
 //implements IBRuleEngine 
 {
-	private static Logger logger = Logger.getLogger(Engine.class);
+	private static Logger logger = LogManager.getLogger(Engine.class);
 	boolean hasEvent = false;
 	/**
      * DATA

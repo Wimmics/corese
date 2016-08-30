@@ -9,8 +9,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -26,13 +26,13 @@ public class Custom {
         try {
             return evalWE(exp, env, p, param);
         } catch (NoSuchMethodException ex) {
-            Logger.getLogger(Custom.class.getName()).error(ex);
+            LogManager.getLogger(Custom.class.getName()).error(ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(Custom.class.getName()).error(ex);
+            LogManager.getLogger(Custom.class.getName()).error(ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Custom.class.getName()).error(ex);
+            LogManager.getLogger(Custom.class.getName()).error(ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(Custom.class.getName()).error(ex);
+            LogManager.getLogger(Custom.class.getName()).error(ex);
         }
         return null;
     }
@@ -84,7 +84,7 @@ public class Custom {
             try {
                 sort(list.getValues());
             } catch (CoreseDatatypeException ex) {
-                java.util.logging.Logger.getLogger(Custom.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Custom.class.getName()).log(Level.ERROR, "", ex);
             }
         }
         return list;

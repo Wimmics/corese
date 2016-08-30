@@ -16,12 +16,13 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
-import java.util.logging.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 public class QueryLoad {
 
-    private static Logger logger = Logger.getLogger(QueryLoad.class);
+    private static Logger logger = LogManager.getLogger(QueryLoad.class);
     static final String HTTP = "http://";
     static final String FILE = "file://";
     static final String FTP = "ftp://";
@@ -127,7 +128,7 @@ public class QueryLoad {
         try {
             query = readWE(name);
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(QueryLoad.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(QueryLoad.class.getName()).log(Level.ERROR, "", ex);
         }
         if (query == "") {
             return null;

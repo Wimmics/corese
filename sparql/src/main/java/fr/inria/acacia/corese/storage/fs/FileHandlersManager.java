@@ -6,8 +6,8 @@ import fr.inria.acacia.corese.storage.cache.LRUCache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Manager all the files and file handlers, including a poop of handlers for
@@ -75,7 +75,7 @@ public class FileHandlersManager extends LRUCache<Integer, FileHandler> {
         } else if (allFiles.containsKey(fid)) { //not in the pool, but in the maintenence list
             return this.getFileHandler(fid, allFiles.get(fid));
         } else {//not anywhere
-            Logger.getLogger(FileHandlersManager.class.getName()).log(Level.WARNING, "File handler id [{0}]  not yet initialized!", fid);
+            LogManager.getLogger(FileHandlersManager.class.getName()).log(Level.WARN, "File handler id [{0}]  not yet initialized!", fid);
             return null;
         }
     }

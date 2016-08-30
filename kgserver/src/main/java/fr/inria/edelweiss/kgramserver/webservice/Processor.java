@@ -12,8 +12,8 @@ import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -24,6 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Deprecated
@@ -47,7 +48,7 @@ public class Processor {
         try {
             base = new URI(Profile.SERVER);
         } catch (URISyntaxException ex) {
-            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
         }
         map = new HashMap();
         map.put("owl",      QUERY + "owl.rq");
@@ -110,13 +111,13 @@ public class Processor {
                     load(url.toString(), g);
                 }
             } catch (LoadException ex) {
-                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
                 return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
             } catch (EngineException ex) {
-                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
                 return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
             } catch (URISyntaxException ex) {
-                Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
                 return Response.status(500).header(headerAccept, "*").entity(error(ex.toString(), null)).build();
             }
         }
@@ -150,7 +151,7 @@ public class Processor {
                 uri= url.toString();
             }
         } catch (URISyntaxException ex) {
-            Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
         }
         return uri;
     }

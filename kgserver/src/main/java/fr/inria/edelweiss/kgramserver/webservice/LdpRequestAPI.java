@@ -18,7 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple version of Linked Data Platform 1.0 (LDP) Server, according to W3C
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
 @Path("ldp")
 public class LdpRequestAPI {
 
-    private final Logger logger = Logger.getLogger("==LDP== " + LdpRequestAPI.class);
+    private final Logger logger = LogManager.getLogger("==LDP== " + LdpRequestAPI.class);
     private static final TripleStore store = new TripleStore();
     private static final QueryProcess exec = QueryProcess.create(store.graph);
     private final String headerAccept = "Access-Control-Allow-Origin";

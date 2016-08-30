@@ -1,7 +1,8 @@
 package fr.inria.acacia.corese.triple.parser;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
@@ -27,7 +28,7 @@ import java.util.List;
 public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(Exp.class); 
+	private static Logger logger = LogManager.getLogger(Exp.class); 
 	
 	private ArrayList<Exp> body;
 	

@@ -14,7 +14,8 @@ import fr.inria.edelweiss.kgraph.core.Workflow;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class GraphManager {
-    static Logger logger = Logger.getLogger(GraphManager.class);
+    static Logger logger = LogManager.getLogger(GraphManager.class);
 
     //static final String DEFAULT_GRAPH = Entailment.DEFAULT;
     // default loader, by meta protocol to preserve modularity

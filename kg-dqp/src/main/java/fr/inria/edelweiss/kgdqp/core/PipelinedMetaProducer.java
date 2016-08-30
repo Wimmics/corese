@@ -15,7 +15,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Meta Producer that handles concurent accesses to several Producers
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class PipelinedMetaProducer extends MetaProducer {
 
-    private final Logger logger = Logger.getLogger(PipelinedMetaProducer.class);
+    private final Logger logger = LogManager.getLogger(PipelinedMetaProducer.class);
     private ArrayList<SyncEdgeBuffer> buffers = new ArrayList<SyncEdgeBuffer>();
 
     protected PipelinedMetaProducer() {

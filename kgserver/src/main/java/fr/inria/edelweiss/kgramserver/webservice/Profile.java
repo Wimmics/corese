@@ -22,8 +22,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 
 /**
  * Parser of RDF profile that defines: 1- a set of profile (eg specifying a
@@ -56,7 +57,7 @@ public class Profile {
             DATA = SERVER + "/data/";
             QUERY = DATA + "query/";
         } catch (UnknownHostException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 
@@ -237,11 +238,11 @@ public class Profile {
             process(g);
             initFunction();
         } catch (IOException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
         } catch (LoadException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
         }
     }
     

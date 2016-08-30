@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Ad-hoc mediator handling mappings from some OntoNeuroLOG properties to the
@@ -39,7 +40,7 @@ import org.apache.log4j.Logger;
  */
 public class RemoteSqlProducerImpl implements Producer {
 
-    private static Logger logger = Logger.getLogger(RemoteSqlProducerImpl.class);
+    private static Logger logger = LogManager.getLogger(RemoteSqlProducerImpl.class);
     private String url, driver, login, password;
     private Map<String, String> rdfSqlMappings = new HashMap<String, String>();
     private final String sqlHasForName = "{ "

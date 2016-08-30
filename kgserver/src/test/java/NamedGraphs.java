@@ -29,7 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,7 +53,7 @@ import org.junit.Ignore;
  */
 public class NamedGraphs {
 
-    private static Logger logger = Logger.getLogger(NamedGraphs.class);
+    private static Logger logger = LogManager.getLogger(NamedGraphs.class);
     private static int port2 = 9082;
     private static Server server2;
 

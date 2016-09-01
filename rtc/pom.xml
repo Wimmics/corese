@@ -8,10 +8,11 @@
         <version>3.2.1-SNAPSHOT</version>
     </parent>
     
-    <groupId>fr.inria.wimmics</groupId>
+    <groupId>${parent.groupId}</groupId>
     <artifactId>rtc</artifactId>
+    <version>${parent.version}</version>
     <name>rtc</name>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

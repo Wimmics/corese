@@ -2,8 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.inria.wimmics</groupId>
-	<artifactId>sparql</artifactId>
     
 	<parent>
 		<groupId>fr.inria.wimmics</groupId>
@@ -12,18 +10,15 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+	<artifactId>sparql</artifactId>
+
 	<dependencies>
-		<!--<dependency>
-			<groupId>StringHelper</groupId>
-			<artifactId>StringHelper</artifactId>
-			<version>1.0</version>
-		</dependency>-->
-		<!--<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
-		</dependency>-->
-                
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>kgram</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -32,19 +27,10 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
-        
-		<dependency>
-			<groupId>fr.inria.wimmics</groupId>
-			<artifactId>kgram</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-    
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
-	
 	</dependencies>
 
 	<build>

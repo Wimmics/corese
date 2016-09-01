@@ -7,26 +7,20 @@
 		<version>3.2.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<groupId>fr.inria.wimmics</groupId>
+	
 	<artifactId>kgenv</artifactId>
 
 	<dependencies>
 		<dependency>
-			<groupId>fr.inria.wimmics</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
-			<version>${project.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>	
-		<!--        <dependency>
-		    <groupId>fr.inria.wimmics</groupId>
-		    <artifactId>cryptohash</artifactId>
-		    <version>1.0</version>
-		</dependency> 
 		<dependency>
-		    <groupId>fr.inria.wimmics</groupId>
-		    <artifactId>StringHelper</artifactId>
-		    <version>1.0</version>
-		</dependency>-->
-    
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>kgram</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -35,13 +29,8 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>fr.inria.wimmics</groupId>
-			<artifactId>kgram</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		
 	</dependencies>
-
 
 	<build>
 		<resources>

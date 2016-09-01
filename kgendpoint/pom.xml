@@ -8,8 +8,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>fr.inria.wimmics</groupId>
+    <groupId>${parent.groupId}</groupId>
     <artifactId>kgendpoint</artifactId>
+    <version>${parent.version}</version>
     <packaging>war</packaging>
 
     <name>kgendpoint</name>
@@ -29,15 +30,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>
-            <groupId>fr.inria.wimmics</groupId>
+             <groupId>${parent.groupId}</groupId>
             <artifactId>kgimport</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>corese-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
@@ -49,11 +56,6 @@
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>corese-server</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

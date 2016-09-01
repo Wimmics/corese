@@ -7,7 +7,7 @@
 		<version>3.2.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<groupId>fr.inria.wimmics</groupId>
+
 	<artifactId>corese-server</artifactId>
 
 	<dependencies>
@@ -17,29 +17,24 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgengine</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgdqp</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<!--        <dependency>
-		    <groupId>${project.groupId}</groupId>
-		    <artifactId>kgimport</artifactId>
-		    <version>${project.version}</version>
-		</dependency>-->
-		<!--        <dependency>
-		    <groupId>com.sun.xml.ws</groupId>
-		    <artifactId>jaxws-rt</artifactId>
-		</dependency>-->
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>sparql</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.metro</groupId>
 			<artifactId>webservices-rt</artifactId>
 		</dependency>
-        
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -123,14 +118,7 @@
 			<artifactId>commons-io</artifactId>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>fr.inria.wimmics</groupId>
-			<artifactId>sparql</artifactId>
-			<version>${project.parent.version}</version>
-			<type>jar</type>
-		</dependency>
 	</dependencies>
-
 	<build>
 		<resources>
 			<resource>

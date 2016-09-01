@@ -7,12 +7,12 @@ select
  (power(6  * ex:zeta(?n, 2), 1/2) as ?pi1)
  (power(90 * ex:zeta(?n, 4), 1/4) as ?pi2)
 where {
+     
+}
+values ?n { 1000 }
 
  function ex:fun(?n, ?p) { 1 / power(?n, ?p) }
   
  function ex:zeta(?n, ?p) {
     apply(kg:plus, (maplist(ex:fun, xt:iota(?n), ?p)))
 }
-     
-}
-values ?n { 1000 }

@@ -6,8 +6,9 @@ import fr.inria.edelweiss.rif.ast.* ;
 
 import java.io.InputStream ;
 import java.util.Vector ;
+import org.apache.logging.log4j.LogManager;
 
-import org.apache.log4j.Logger ;
+import org.apache.logging.log4j.Logger ;
 
 /**
  * Represents the RIF-BLD grammar for the Presentation Syntax (PS) and handles the abstract syntax tree building on the fly

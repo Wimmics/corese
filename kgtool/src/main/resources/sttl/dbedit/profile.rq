@@ -46,4 +46,48 @@ function us:clean(?s){
     "", ?s)
 }
 
+#
+# Generation of HTML table of DBpedia updates given ?list of updates 
+#
+function us:table(?list, ?size){
+ let ( ?table  = st:split(?list, ?size),
+       ?ftable = "<table class='table'>\n%s</table>\n",
+       ?frow   = "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n",
+       ?fcell  = "<td style='vertical-align: bottom'>%s</td>\n")
+       {
+     st:format(?ftable, 
+      let (?n = 0){
+	    loop (?row in ?table){
+	      st:format(?frow, 
+	        set(?n = ?n + 1), 
+	        loop (?cell in ?row){
+		      st:format(?fcell, ?cell)
+	        })
+	    }
+	  }
+     )
+  }
+}
+
+#
+# One cell of the HTML table of DBpedia updates
+#
+function us:cell(?l, ?c, ?x, ?i){
+    st:format (
+
+	"""	
+	 %s (%s)
+	 <br/>
+	  <a href='%s'>
+	    <img width='100' alt="%s" src="%s" />
+	  </a>	 
+	""" ,
+	      
+	?l,
+	?c,
+	st:plink(?x, st:dbpedia),
+	?x,
+	us:clean(?i) 	
+      )
+}
 

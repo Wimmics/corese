@@ -18,7 +18,9 @@ template st:month {
     </p>
     """
     
-    st:call-template(st:dbpediafor, ?date)
+    if (bound(?type), 
+      st:call-template(st:dbpediafortype, ?date, ?type),
+      st:call-template(st:dbpediafortest, ?date))
     
   }
   
@@ -33,7 +35,9 @@ where {
 #   bind (st:set(st:profile, st:dbedit) as ?tt)
 #   bind (st:set(st:service, "template") as ?ss)
 
-   bind (st:get(st:uri) as ?uri)
+   bind (st:get(st:uri)  as ?uri)
+   # type of resoures to focus on
+   bind (st:get(st:mode) as ?type)
    bind (strafter(?uri, us:root()) as ?str)
    bind (strdt(?str, xsd:gYearMonth) as ?date)
    bind (st:set(st:date, ?date) as ?tmp)

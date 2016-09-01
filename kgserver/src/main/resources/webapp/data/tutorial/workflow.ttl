@@ -29,7 +29,8 @@ st:name st:intro ;
 rdfs:label "Introduction" ;
 rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
 Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. 'Dataset' donne accès au graphe RDF."""@fr ;
-rdfs:comment ""@en ;
+
+rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Solution' displays the solution, 'Template' displays the query template. 'Submit' submits the SPARQL query to the server. 'Dataset' shows the RDF dataset of the tutorial."""@en ;
 
 st:query ""
 ]
@@ -38,7 +39,7 @@ st:query ""
 st:name st:begin ;
 rdfs:label "Triple Pattern" ;
 rdfs:comment "Ecrire une requête qui retourne tous les triplets du graphe."@fr ;
-rdfs:comment "Return the whole graph"@en ;
+rdfs:comment "Write a query that returns all triples"@en ;
 
 st:query 
 """select * where { 
@@ -55,7 +56,7 @@ sw:body
 st:name st:type ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person."@fr ;
-rdfs:comment "Return instances of type person."@en ;
+rdfs:comment "Return instances of type h:Person."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#abbrevRdfType> ;
 
 st:query 
@@ -76,7 +77,7 @@ select * where {
 st:name st:type2 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en utilisant la propriété rdf:type."@fr ;
-rdfs:comment "Return instances of type person."@en ;
+rdfs:comment "Return instances of type h:Person using rdf:type property."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#abbrevRdfType> ;
 
 st:query 
@@ -97,7 +98,7 @@ select * where {
 st:name st:type3 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en écrivant l'URI complète du type."@fr ;
-rdfs:comment "Return instances of type person."@en ;
+rdfs:comment "Return instances of type h:Person using the complete URI of the type (without prefix h:)."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#abbrevRdfType> ;
 
 st:query 
@@ -118,7 +119,7 @@ select * where {
 st:name st:type4 ;
 rdfs:label "Type" ;
 rdfs:comment "Retourner les instances du type h:Person en spécifiant la base et en utilisant une URI relative."@fr ;
-rdfs:comment "Return instances of type person."@en ;
+rdfs:comment "Return instances of type h:Person using base and an URI."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#abbrevRdfType> ;
 
 
@@ -134,7 +135,7 @@ select * where {
 st:name st:bgp ;
 rdfs:label "BGP" ;
 rdfs:comment "Retourne les instances de personne ayant un nom (h:name)."@fr ;
-rdfs:comment "Return instances of person having a name."@en ;
+rdfs:comment "Return instances of person having a name (h:name)."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#BasicGraphPatterns> ;
 
 st:query 
@@ -157,7 +158,7 @@ select * where {
 st:name st:bgp2 ;
 rdfs:label "BGP" ;
 rdfs:comment "Retourne les instances de Man ayant pour enfant (h:hasChild) i:Pierre et i:Jack."@fr ;
-rdfs:comment "Return instances of Man having i:Pierre and i:Jack has child."@en ;
+rdfs:comment "Return instances of Man having i:Pierre and i:Jack as child (h:hasChild)."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#predObjLists> ;
 
 st:query 
@@ -182,7 +183,7 @@ select * where {
 st:name st:bnode ;
 rdfs:label "Blank Node" ;
 rdfs:comment "Trouver les personnes qui ont une valeur pour h:hasFriend en utilisant un blank node. "@fr ;
-rdfs:comment "Blank nodes are anonymous variables that are not returned in the result."@en ;
+rdfs:comment "Find instances of person having a value for h:hasFriend using a blank node instead of a variable."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#QSynBlankNodes> ;
 
 st:query 
@@ -206,7 +207,7 @@ select * where {
 st:name st:pvariable ;
 rdfs:label "Property Variable" ;
 rdfs:comment "Trouver les valeurs des propriétés des instances de personne. "@fr ;
-rdfs:comment "Find person property values."@en ;
+rdfs:comment "Find property values of instances of person."@en ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2015/humans#>
@@ -229,7 +230,7 @@ select * where {
 st:name st:pvariable2 ;
 rdfs:label "Property Variable" ;
 rdfs:comment "Trouver des ressources différentes qui ont  même  valeur pour une même propriété. "@fr ;
-rdfs:comment "Find person property values."@en ;
+rdfs:comment "Find different resources with same value for same property."@en ;
 
 st:query 
 """prefix h: <http://www.inria.fr/2015/humans#>
@@ -254,7 +255,7 @@ select * where {
 st:name st:list ;
 rdfs:label "List" ;
 rdfs:comment """Enumérer les trois éléments d'une liste."""@fr ;
-rdfs:comment """Enumerate list elements."""@en ;
+rdfs:comment """Enumerate elements of a list with 3 elements."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#collections> ;
 
 st:query 
@@ -278,7 +279,7 @@ select * where {
 st:name st:list2 ;
 rdfs:label "List" ;
 rdfs:comment """Enumérer les trois éléments d'une liste avec rdf:first et rdf:rest."""@fr ;
-rdfs:comment """Enumerate list elements."""@en ;
+rdfs:comment """Enumerate elements of a list with 3 elements using rdf:first and rdf:rest"""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#collections> ;
 
 st:query 
@@ -362,7 +363,7 @@ group by ?x
 st:name st:gconcat ;
 rdfs:label "Group concat" ;
 rdfs:comment """Concaténer la liste des noms (?n) pour chaque valeur de ?x."""@fr ;
-rdfs:comment """Concatenate the list of friends."""@en ;
+rdfs:comment """Concatenate the list of names (?n) for each value of ?x."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#aggregates> ;
 
 st:query 
@@ -478,7 +479,7 @@ order by ?x ?y"""
 st:name st:distinct2 ;
 rdfs:label "Distinct" ;
 rdfs:comment "Eliminer les doublons en remplaçant l'opérateur != par <."@fr ;
-rdfs:comment "Return distinct results."@en ;
+rdfs:comment "Eliminate 'duplicate' results by replacing != by <."@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#modDuplicates> ;
 
 st:query 
@@ -560,7 +561,7 @@ select * where {
 st:name st:lang2 ;
 rdfs:label "Language" ;
 rdfs:comment """Retourner la ressource  dont le  nom  est le littéral 'Sophie' taggé en français."""@fr ;
-rdfs:comment """Return resources with name Sophie tagged in french."""@en ;
+rdfs:comment """Return resources with name 'Sophie' tagged in french."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#matchLangTags> ;
 
 st:query 
@@ -584,7 +585,7 @@ select * where {
 st:name st:datatype ;
 rdfs:label "Datatype" ;
 rdfs:comment """Retourner les datatypes des littéraux."""@fr ;
-rdfs:comment """Return literals with a datatype value."""@en ;
+rdfs:comment """Return datatype of literals."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#func-datatype> ;
 
 st:query 
@@ -629,7 +630,7 @@ select * where {
 st:name st:cast ;
 rdfs:label "Cast" ;
 rdfs:comment """Retourner la valeur de l'age castée en string."""@fr ;
-rdfs:comment """Return ager value caset as a string."""@en ;
+rdfs:comment """Return age value casted as a string."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#FunctionMapping> ;
 
 st:query 
@@ -653,7 +654,7 @@ select * (xsd:string(?a) as ?s) where {
 st:name st:date ;
 rdfs:label "Date" ;
 rdfs:comment """Décomposer la date en année, mois, jour, heure, minute et seconde."""@fr ;
-rdfs:comment """Return the date."""@en ;
+rdfs:comment """Decompose the date as year, month, day, hour, minute, second."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#func-date-time> ;
 
 st:query 
@@ -716,8 +717,8 @@ where {
 [ a sw:Query ;
 st:name st:if ;
 rdfs:label "If Then Else" ;
-rdfs:comment """Retourner 'majeur' ou 'mineur' selon l'age."""@fr ;
-rdfs:comment """If then else."""@en ;
+rdfs:comment """Retourner 'adult' ou 'young' selon l'age."""@fr ;
+rdfs:comment """Return 'adult' or 'young' according to age."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#func-if> ;
 
 st:query 
@@ -730,7 +731,7 @@ where {
 
 sw:body 
 """prefix h: <http://www.inria.fr/2015/humans#>
-select * (if (?a >= 18, "majeur", "mineur") as ?s) 
+select * (if (?a >= 18, "adult", "young") as ?s) 
 where { 
   ?x h:age ?a
 }
@@ -743,7 +744,7 @@ where {
 st:name st:in ;
 rdfs:label "In" ;
 rdfs:comment """Fixer la valeur de ?x à i:Lucas, i:Pierre ou bien i:Mark avec l'opérateur de liste in."""@fr ;
-rdfs:comment """Fix ?x value with in."""@en ;
+rdfs:comment """Test whether the value of ?x is i:Lucas, i:Pierre or i:Mark using the 'in' list operator."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#func-in> ;
 
 st:query 
@@ -823,7 +824,7 @@ select * where {
 st:name st:optional2 ;
 rdfs:label "Optional" ;
 rdfs:comment """Retourner les instances de Man ayant éventuellement un conjoint et éventuellement un enfant. """@fr ;
-rdfs:comment """Return instances of Man possibly having a spouse."""@en ;
+rdfs:comment """Return instances of Man possibly having a spouse and possibly having  child."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#optionals> ;
 
 st:query 
@@ -850,7 +851,7 @@ select * where {
 st:name st:optional3 ;
 rdfs:label "Optional" ;
 rdfs:comment """Retourner les instances de Man ayant éventuellement un conjoint et un enfant. """@fr ;
-rdfs:comment """Return instances of Man possibly having a spouse."""@en ;
+rdfs:comment """Return instances of Man possibly having a spouse and child."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#optionals> ;
 
 st:query 
@@ -878,7 +879,7 @@ select * where {
 st:name st:optional4 ;
 rdfs:label "Optional" ;
 rdfs:comment """Retourner les instances de Person ayant éventuellement un age >= 18. """@fr ;
-rdfs:comment """Return instances of Man possibly having a age >= 18."""@en ;
+rdfs:comment """Return instances of Man possibly having  age >= 18."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#optionals> ;
 
 st:query 
@@ -908,7 +909,7 @@ select * where {
 st:name st:minus ;
 rdfs:label "Minus" ;
 rdfs:comment """Retourner les instances de Woman n'ayant pas de conjoint, en utilisant la clause minus. """@fr ;
-rdfs:comment """Return instances of Man not having a spouse. """@en ;
+rdfs:comment """Return instances of Woman not having a spouse using 'minus' clause. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#neg-minus> ;
 
 st:query 
@@ -935,7 +936,9 @@ select * where {
 st:name st:minus2 ;
 rdfs:label "Minus" ;
 rdfs:comment """Retourne les instances de Woman ayant un conjoint. Minus ne fonctionne que s'il y a une variable commune entre les deux clauses du minus. Ici ce n'est pas le cas, d'où le fait que i:Flora est présente dans la solution. Pour corriger cela, remplacer i:Flora par la variable ?x."""@fr ;
-rdfs:comment """Return instances of Man not having a spouse. """@en ;
+
+rdfs:comment """Return instances of Man not having a spouse. Minus works when its two clauses share a common variable, which is not the case in the example below."""@en ;
+
 st:reference <http://www.w3.org/TR/sparql11-query/#neg-minus> ;
 
 st:query 
@@ -973,7 +976,7 @@ select * where {
 st:name st:exists ;
 rdfs:label "Exists" ;
 rdfs:comment """Retourner les instances de Man ayant  un conjoint (h:hasSpouse), utiliser la clause filter exists. """@fr ;
-rdfs:comment """Return instances of Man having a spouse. """@en ;
+rdfs:comment """Return instances of Man having a spouse using the 'filter exists' clause. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#neg-pattern> ;
 
 st:query 
@@ -1052,7 +1055,7 @@ select * where {
 st:name st:graph2 ;
 rdfs:label "Named Graph" ;
 rdfs:comment """Interroger un graphe nommé dont l'URI est annotée avec une date (h:date)."""@fr ;
-rdfs:comment """Return  named graph(s) where there are solutions."""@en ;
+rdfs:comment """Return  named graph(s) where the graph URI is annotated with a date (h:date)."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#rdfDataset> ;
 st:query 
 """prefix h: <http://www.inria.fr/2015/humans#>
@@ -1077,7 +1080,7 @@ select * where {
 st:name st:from ;
 rdfs:label "From" ;
 rdfs:comment """Spécifier le graphe nommé st:data1 pour constituer le graphe par défaut. """@fr ;
-rdfs:comment """Specify the named graph(s) used to form the default graph. """@en ;
+rdfs:comment """Specify the st:data1 named graph  to form the default graph. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#unnamedGraph> ;
 
 st:query 
@@ -1105,7 +1108,7 @@ where {
 st:name st:from-named ;
 rdfs:label "From Named" ;
 rdfs:comment """Spécifier le  graphe nommé st:data2 sur lequel l'énoncé graph ?g sera évalué """@fr ;
-rdfs:comment """Specify the named graphs where the named graph pattern is evaluated."""@en ;
+rdfs:comment """Specify the st:data2 named graphs where the named graph pattern ?g is evaluated."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#namedGraphs> ;
 
 st:query 
@@ -1135,7 +1138,7 @@ where {
 st:name st:from2 ;
 rdfs:label "From Named" ;
 rdfs:comment """Spécifier le  graphe par défaut st:data1 (sur lequel est évalué le triplet) et le graphe nommé st:data2 (sur lequel est évalué le named graph pattern)."""@fr ;
-rdfs:comment """Specify the named graphs where the named graph pattern is evaluated."""@en ;
+rdfs:comment """Specify the default graph as st:data1 and the named graph as st:data2."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#namedGraphs> ;
 
 st:query 
@@ -1170,7 +1173,7 @@ where {
 st:name st:subquery ;
 rdfs:label "Subquery" ;
 rdfs:comment """Calculer l'age min et l'age max dans la sous-requête emboîtée, trouver ainsi les ressources ayant l'age min et celles ayant l'age max"""@fr ;
-rdfs:comment """Execute part of the query in a nested subquery."""@en ;
+rdfs:comment """Compute the min and the max of age in a nested query. Find resources with min age and resources with max age."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#subqueries> ;
 
 st:query 
@@ -1208,7 +1211,7 @@ select * where {
 st:name st:bind ;
 rdfs:label "Bind" ;
 rdfs:comment """Avec la clause bind () créer une variable pour le résultat d'un calcul sur ?n, par exemple avec ucase."""@fr ;
-rdfs:comment """Create a variable for the result of a computation."""@en ;
+rdfs:comment """Bind a variable for the result of a computation, for example compute and bind ucase(?n)."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#bind> ;
 
 st:query 
@@ -1235,7 +1238,7 @@ select * where {
 st:name st:values ;
 rdfs:label "Values" ;
 rdfs:comment """Fixer les valeurs de la variable ?n à 'John', 'Alice' ou 'Lucas' avec la clause values."""@fr ;
-rdfs:comment """Set values of some variables."""@en ;
+rdfs:comment """Set value of variable ?n to 'John', 'Alice' or 'Lucas' using the values clause."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#inline-data> ;
 
 st:query 
@@ -1262,7 +1265,7 @@ select * where {
 st:name st:path ;
 rdfs:label "Property Path" ;
 rdfs:comment """Retourner les ressources reliées par un chemin de propriétés h:hasFriend. """@fr ;
-rdfs:comment """Return resources related by a property path. """@en ;
+rdfs:comment """Return resources related by a h:hasFriend property path. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 
 st:query 
@@ -1287,7 +1290,7 @@ select * where {
 st:name st:path2 ;
 rdfs:label "Property Path" ;
 rdfs:comment """Retourner les ressources reliées par un chemin de propriétés h:hasFriend ou h:hasChild. """@fr ;
-rdfs:comment """Return resources related by a property path. """@en ;
+rdfs:comment """Return resources related by a property path with h:hasFriend or h:hasChild. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 
 st:query 
@@ -1345,7 +1348,7 @@ sw:body
 st:name st:construct ;
 rdfs:label "Construct" ;
 rdfs:comment """Transformer la requête pour construire un graphe résultat."""@fr ;
-rdfs:comment """Create a result graph."""@en ;
+rdfs:comment """Construct a result graph."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#construct> ;
 
 st:query 
@@ -1376,7 +1379,7 @@ where {
 st:name st:describe ;
 rdfs:label "Describe" ;
 rdfs:comment """Transformer la requête pour décrire la ressource ?x."""@fr ;
-rdfs:comment """Describe a resource."""@en ;
+rdfs:comment """Describe resource ?x."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#describe> ;
 
 st:query 
@@ -1428,7 +1431,7 @@ ask  {
 st:name st:anypath ;
 rdfs:label "Property Path" ;
 rdfs:comment """Retourner les ressources reliées à i:Gaston par un chemin constitué de n'importe quelle propriété. """@fr ;
-rdfs:comment """Return resources related by a property path. """@en ;
+rdfs:comment """Return resources related to i:Gaston by a property path with any property. """@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 
 st:query 
@@ -1456,7 +1459,7 @@ select * where {
 st:name st:listpp ;
 rdfs:label "List Path" ;
 rdfs:comment """Enumérer les éléments d'une liste avec un chemin sur les propriétés rdf:rest et rdf:first."""@fr ;
-rdfs:comment """Enumerate list elements using a path."""@en ;
+rdfs:comment """Enumerate list elements using a property path with rdf:first and rdf:rest."""@en ;
 st:reference <http://www.w3.org/TR/sparql11-query/#propertypaths> ;
 
 st:query 

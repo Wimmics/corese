@@ -1,0 +1,10 @@
+prefix sp: <http://spinrdf.org/sp#>
+template {
+  format {
+     "%s %s" 	st:number()  xt:turtle(?x) 
+ }
+  ; separator = "\n\n" 
+}
+where {
+  ?x a sp:ConstraintViolation
+}

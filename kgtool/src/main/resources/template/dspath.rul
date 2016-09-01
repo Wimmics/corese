@@ -1,0 +1,539 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Thu Sep 01 12:04:16 CEST 2016
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:profile {}
+where {}
+
+function st:aggregate(?x) {
+  st:agg_and(?x)
+}
+
+
+
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:class ?c 
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (exists { ?o rdf:type/rdfs:subClassOf* ?c } as ?suc)
+
+  bind (st:report(sh:class, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    GRAPH ?shape {
+        ?sh sh:or ?or 
+    }
+    
+    values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+    
+    bind (sh:or(sh:hasPath, ?or, ?s, ?p, ?o, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count > 0)  as ?suc)
+
+    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:not ?cst  
+  }
+    
+  bind (! sh:hasPath(?shape, ?cst, false, ?s, ?p) as ?suc)
+  
+  bind (st:report(sh:shape, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:equals ?q 
+  }
+
+  bind (sh:path(?shape, ?s, ?p) as ?l1)
+  bind (sh:path(?shape, ?s, ?q) as ?l2)
+  
+  values ?o { unnest(?l1) }  
+  bind (xt:member(?o, ?l2) as ?suc)
+  
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:hasValue ?v  
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (coalesce(?o = ?v, false) as ?suc)
+  
+  bind (st:report(sh:hasValue, ?sh, ?shape, ?s, ?s, ?p, st:null, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:disjoint ?q   
+  }
+  
+  bind (sh:path(?shape, ?s, ?p) as ?l1)
+  bind (sh:path(?shape, ?s, ?q) as ?l2)
+  
+  values ?o { unnest(?l1) }  
+  bind (! xt:member(?o, ?l2) as ?suc) 
+  
+  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:pattern ?exp   
+    optional { ?sh sh:flags ?flag }
+  }
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind ( 
+    coalesce(
+        ! isBlank(?o) && 
+        if (bound (?flag), regex(?o, ?exp, ?flag), regex(?o, ?exp)), 
+        false) 
+  as ?suc )
+
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:datatype ?d  
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (isLiteral(?o) && datatype(?o) = ?d  as ?suc)
+  
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:nodeKind ?k  
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (sh:hasKind(?o, ?k)  as ?suc)
+
+  bind (st:report(sh:nodeKind, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:minLength|sh:maxLength ?m ; ?q ?m                       
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  
+  bind (sh:mlength(?q, ?o, ?m) as ?suc )
+  bind (st:report(?q, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:equals ?q 
+  }
+
+  bind (sh:path(?shape, ?s, ?p) as ?l1)
+  bind (sh:path(?shape, ?s, ?q) as ?l2)
+  
+  values ?o { unnest(?l2) }  
+  bind (xt:member(?o, ?l1) as ?suc)
+  
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:lessThan|sh:lessThanOrEquals ?q ; ?r ?q  
+  }
+  
+  ?s ?p ?o ; ?q ?v
+  
+  bind (coalesce(if (?r = sh:lessThan, ?o < ?v, ?o <= ?v), false) as ?suc)
+    
+  bind (st:report(?r, ?sh, ?shape, ?s, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  
+}
+ 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:minCount|sh:maxCount ?m ; ?q ?m                       
+  }
+  
+  bind (sh:mcount(?q, xt:size(sh:path(?shape, ?s, ?p)), ?m)    as ?suc) 
+
+  bind (st:report(?q, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:stem ?exp   
+  }
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (isURI(?o) && strstarts(?o, ?exp)
+  as ?suc )
+
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    GRAPH ?shape {
+        ?sh sh:and ?and 
+    }
+    
+    bind (sh:and(sh:hasPath, ?and, ?s, ?p, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count = 0)  as ?suc)
+
+    bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:in ?lv                      
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  bind (
+    exists { 
+        graph ?shape { ?lv rdf:rest*/rdf:first ?v } 
+        filter (?o = ?v && ( isURI(?o) || datatype(?o) = datatype(?v))) }    
+  as ?suc)
+  
+  bind (st:report(sh:in, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    ?sh sh:minInclusive|sh:minExclusive|sh:maxInclusive|sh:maxExclusive ?m ; ?q ?m                       
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  
+  bind ( 
+    coalesce(
+        if (?q = sh:minInclusive, ?o >= ?m,
+        if (?q = sh:minExclusive, ?o > ?m,
+        if (?q = sh:maxInclusive, ?o <= ?m, 
+            ?o < ?m))), 
+    false) 
+  as ?suc )
+  
+  bind (st:report(?q, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {
+    ?sh sh:uniqueLang ?l  
+  }
+   
+  bind (sh:path(?shape, ?s, ?p) as ?values)
+  values ?o { unnest(?values) }
+  
+  bind (lang(?o) as ?lang)
+  filter (bound(?lang) && ?lang != "")
+  
+  bind (! mapfind(sh:sameLang, ?o, ?values) as ?suc)
+  
+  bind (st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+
+function sh:sameLang(?x, ?y){
+    isLiteral(?y) && datatype(?y) = rdf:langString && lang(?y) = lang(?x) && ?x != ?y
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  graph ?shape {  
+    ?sh sh:shape ?cst  
+  }
+  
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+  
+  bind (sh:testShape(?shape, ?cst, ?o) as ?suc)
+  bind (st:report(sh:shape, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

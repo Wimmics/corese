@@ -3,10 +3,17 @@
 [] owl:imports <profile.ttl>
 [] owl:imports <tutorial/workflow.ttl>
 
-sw:main a sw:Workflow ; 
+sw:main a sw:Workflow ;
+
+sw:param [
+st:protocol st:ajax ;
+st:service "tutorial/rdf" ;
+st:profile st:web
+] ;
+
   sw:body ( 
   st:tutocontent 
-  us:sparql
+  [ a sw:Transformation ; sw:uri st:web ]
   ) 
 .
 

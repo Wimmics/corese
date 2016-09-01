@@ -3,10 +3,9 @@
 [] owl:imports <profile.ttl>
 [] owl:imports <tutorial/workflow.ttl>
 
-sw:main a sw:Workflow ; 
+sw:main a sw:Workflow ;
   sw:body ( 
   st:tutocontent 
-  us:sparql
   ) 
 .
 

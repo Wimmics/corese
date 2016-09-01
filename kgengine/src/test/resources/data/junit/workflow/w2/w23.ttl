@@ -6,7 +6,6 @@ sw:body (
 
 
 [ a sw:Workflow ; sw:body (
-  [ a sw:Query ; sw:body "construct where {}" ]
   [ a sw:Load ; sw:path <../../../test/mooc/> ]
   [ a sw:RuleBase ; sw:uri sw:owlrl ]
  )

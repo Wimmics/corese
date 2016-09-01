@@ -8,7 +8,7 @@ where {
         ?sh sh:property ?cst  
         optional { ?cst sh:filterShape ?fs } 
         filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s)) 
-        ?cst sh:predicate ?p
+        ?cst sh:predicate ?p 
     }
   
     bind (sh:hasProperty(?shape, ?cst, ?vis, ?s, ?p) as ?suc)

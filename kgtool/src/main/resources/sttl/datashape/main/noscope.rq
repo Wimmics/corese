@@ -10,7 +10,8 @@ where {
 
   graph ?shape {
     ?x sh:shape|sh:filterShape|sh:and|sh:or|sh:not ?sh
-    filter not exists { ?sh sh:scodeNode|sh:scopeClass|sh:scope|sh:scopeProperty|sh:scopeInverseProperty ?scope }
+    filter not exists { 
+      ?sh sh:targetNode|sh:targetClass|sh:targetSubjectsOf|sh:targetObjectsOf ?scope }
     optional { ?sh sh:filterShape ?fs }  
   }
         

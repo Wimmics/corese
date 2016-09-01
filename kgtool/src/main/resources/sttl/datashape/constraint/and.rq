@@ -10,7 +10,7 @@ where {
     
     bind (sh:and(?and, ?s, ?shape) as ?count)
 	bind (! bound(?count) AS ?failure) .
-	bind ( IF (?failure, false, ?count = 0)  as ?suc)
+	bind (IF (?failure, false, ?count = 0)  as ?suc)
 
     bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   

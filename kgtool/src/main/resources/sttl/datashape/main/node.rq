@@ -6,7 +6,7 @@ template (?shape, ?sh, ?vis, ?s) {
 where {
 
   graph ?shape {
-    ?sh sh:scopeNode ?s
+    ?sh sh:targetNode ?s
     optional { ?sh sh:filterShape ?fs }  
   }
   

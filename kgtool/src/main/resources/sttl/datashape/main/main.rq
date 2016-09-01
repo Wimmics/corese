@@ -10,7 +10,7 @@ template st:main(?shape) {
 where {
    graph ?shape {
      select distinct ?sh where {
-       ?sh sh:scope|sh:scopeClass|sh:scopeNode|sh:scopeProperty|sh:scopeInverseProperty ?scope
+       ?sh sh:targetClass|sh:targetNode|sh:targetSubjectsOf|sh:targetObjectsOf ?scope
        filter not exists { ?x ?p ?sh }
      }
    }

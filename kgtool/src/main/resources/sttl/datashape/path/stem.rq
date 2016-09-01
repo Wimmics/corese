@@ -1,6 +1,6 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p) {
+template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {

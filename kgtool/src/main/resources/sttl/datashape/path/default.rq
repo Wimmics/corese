@@ -1,8 +1,0 @@
-template st:default2 (?sh, ?shape, ?s, ?vis){
-    false
-}
-where {
-    graph ?shape {
-        bind (kg:display(st:atw(st:turtle, ?sh), ?s)    as ?r)
-    }
-}

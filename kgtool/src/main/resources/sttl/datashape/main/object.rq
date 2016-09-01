@@ -6,13 +6,15 @@ template (?shape, ?sh, ?vis, ?o) {
 where {
 
   graph ?shape {
-    ?sh sh:scope [ a sh:AllObjectsScope ]       
-    optional { ?sh sh:filterShape ?fs }   
+    ?sh sh:targetObjectsOf ?p 				
+    optional { ?sh sh:filterShape ?fs }  
+  
   }
   
-  { select distinct ?o where { ?s ?p ?o } }
+  { select distinct ?p ?o where { ?s ?p ?o } }
   
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?o) )
-
+  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?o) ) 
+  
   bind (sh:hasShape(?shape, ?sh, ?vis, ?o) as ?suc)
 }
+

@@ -5,14 +5,17 @@ template (?shape, ?sh, ?vis, ?s) {
 }
 where {
 
-  graph ?shape {
-    ?sh sh:scope [ a sh:AllSubjectsScope ] 
+  graph ?shape {   
+    ?sh sh:targetSubjectsOf ?p  
     optional { ?sh sh:filterShape ?fs }  
   }
   
-  { select distinct ?s where { ?s ?p ?o } } 
+
+  { select distinct ?s ?p where { ?s ?p ?o } }
   
   filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-
+  
   bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
 }
+
+

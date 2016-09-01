@@ -15,24 +15,28 @@ function sh:test(){
     st:get(st:test, true)
 }
 
+function sh:package(?test, ?name){
+    if (sh:test(), concat("/user/corby/home/AAData/sttl/datashape/", ?test), ?name)
+}
+
 function sh:main(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/main", st:dsmain)
+    sh:package("main", st:dsmain)
 }
 
 function sh:core(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/core", st:dscore)
+    sh:package("core", st:dscore)
 }
 
 function sh:constraint(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/constraint", st:dsconstraint)
+    sh:package("constraint", st:dsconstraint)
 }
 
 function sh:property(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/property", st:dsproperty)
+    sh:package("property", st:dsproperty)
 }
 
 function sh:path(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/path", st:dspath)
+    sh:package("path", st:dspath)
 }
 
 # test and may report error
@@ -54,14 +58,20 @@ function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
 }
 
 function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p){
-   #st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
-    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
+   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
+}
+
+function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p, ?o){
+   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
 }
 
 function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p){
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
+function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o){
+    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
+}
 
 function sh:safe(?shape, ?sh, ?suc){
     if (?suc) { true }
@@ -112,15 +122,17 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
             sh:focusNode ?foc ;
             sh:subject ?ss ;
             sh:predicate ?pp ;
+            sh:path ?pp ;
             sh:object ?oo ;
             sh:message ?mes ;
             rdfs:isDefinedBy ?def
+            #?sr ?pr ?or
         } 
         where { 
             bind (uuid() as ?r)
             graph ?shape { 
                 # first triple pattern needed to bind ?sh
-                ?sh sh:predicate|sh:path|sh:constraint|^sh:constraint ?any 
+                ?sh sh:predicate|sh:path|sh:constraint|^sh:constraint|sh:or|sh:and|sh:not ?any 
                 optional { ?sh sh:severity ?se } 
                 bind (coalesce(?se, sh:Violation) as ?sev)
                 bind (st:apply-templates-with(st:turtle, ?sh) as ?mes)
@@ -128,6 +140,8 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
                 bind (sh:value(?s) as ?ss)
                 bind (sh:value(?p) as ?pp)
                 bind (sh:value(?o) as ?oo)
+                
+                #values (?sr ?pr ?or) { unnest(sh:rec(?shape, ?pp, xt:list())) }
             }
         } 
         values (?name ?sh ?shape ?foc ?s ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
@@ -136,6 +150,21 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
         st:visit(st:trace, st:graph, ?g)
     }
 }
+
+
+function sh:rec(?g, ?x, ?l){
+    if (isBlank(?x)){
+        let (?res = select * where { graph ?g { ?x ?p ?y }}){
+            for ((?xx, ?p, ?y) in ?res){
+                xt:add(xt:list(?x, ?p, ?y), ?l) ;             
+                sh:rec(?g, ?y, ?l)
+            } 
+        }
+    } ;
+    ?l
+    
+}
+
 
 function sh:def(){
     let (?list = @(
@@ -198,6 +227,7 @@ function sh:or(?fun, ?or, ?s, ?p, ?shape){
     sh:bool(?fun, ?or, ?s, ?p, ?shape, 1, 0)
 }
 
+# property (predicate or path)
 function sh:bool(?fun, ?bool, ?s, ?p, ?shape, ?suc, ?fail){
     let ((?count) = 
         SELECT ?fun ?bool ?s ?p ?shape ?suc ?fail (SUM(?val) AS ?count)
@@ -211,7 +241,28 @@ function sh:bool(?fun, ?bool, ?s, ?p, ?shape, ?suc, ?fail){
 		{ ?count }
 }
 
-# constraint
+
+# used by inverse/property or
+# count success
+function sh:or(?fun, ?or, ?s, ?p, ?o, ?shape){
+    sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)
+}
+
+# property (predicate or path)
+function sh:bool(?fun, ?bool, ?s, ?p, ?o, ?shape, ?suc, ?fail){
+    let ((?count) = 
+        SELECT ?fun ?bool ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+			GRAPH ?shape {
+				?bool rdf:rest*/rdf:first ?sh
+			}
+			BIND (funcall(?fun, ?shape, ?sh, false, ?s, ?p, ?o) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		})
+		{ ?count }
+}
+
+# constraint/core
 function sh:bool(?bool, ?s, ?shape, ?suc, ?fail){
     let ((?count) = 
         SELECT ?bool ?s ?shape ?suc ?fail (SUM(?val) AS ?count)

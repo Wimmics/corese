@@ -1,6 +1,6 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+template (?shape, ?sh, ?vis, ?s) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
@@ -8,12 +8,15 @@ where {
         ?sh sh:and ?and 
     }
     
-    bind (sh:and(sh:hasProperty, ?and, ?s, ?p, ?shape) as ?count)
+    bind (sh:and(?and, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
-	bind ( IF (?failure, false, ?count = 0)  as ?suc)
-
+	bind (IF (?failure, false, ?count = 0)  as ?suc)
+	
     bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
 
-
+# count failure
+function sh:and(?and, ?s, ?shape){
+    sh:bool(?and, ?s, ?shape, 0, 1)
+}

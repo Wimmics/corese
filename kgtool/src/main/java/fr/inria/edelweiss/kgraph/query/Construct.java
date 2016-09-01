@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -31,7 +32,7 @@ import fr.inria.edelweiss.kgtool.util.Duplicate;
 public class Construct
         implements Comparator<Node> {
 
-    private static Logger logger = Logger.getLogger(Construct.class);
+    private static Logger logger = LogManager.getLogger(Construct.class);
     static final String BLANK = "_:b_";
     static final String DOT = ".";
     int count = 0, ruleIndex = 0, index = 0;

@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class for generating the weights of each algorithm based on their priorities
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class Priority {
 
-    private final static Logger logger = Logger.getLogger(Priority.class);
+    private final static Logger logger = LogManager.getLogger(Priority.class);
     // private static final Map<StrategyType, Double> strategyMap = new EnumMap<StrategyType, Double>(StrategyType.class);
     private static final Map<AlgType, Double> algorithmMap = new EnumMap<AlgType, Double>(AlgType.class);
 

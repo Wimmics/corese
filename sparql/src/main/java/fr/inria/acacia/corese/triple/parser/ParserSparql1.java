@@ -2,7 +2,8 @@ package fr.inria.acacia.corese.triple.parser;
 
 
 import java.io.StringReader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import fr.inria.acacia.corese.exceptions.QueryLexicalException;
 import fr.inria.acacia.corese.exceptions.QuerySyntaxException;
 import fr.inria.acacia.corese.triple.javacc1.JavaccParseException;
@@ -20,7 +21,7 @@ import fr.inria.acacia.corese.triple.javacc1.TokenMgrError;
 public class ParserSparql1 {
 
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(ParserSparql1.class);
+	private static Logger logger = LogManager.getLogger(ParserSparql1.class);
 	
     SparqlCorese parser;
     

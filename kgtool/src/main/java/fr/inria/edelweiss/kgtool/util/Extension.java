@@ -6,7 +6,8 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.io.InputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class Extension {
-  	private static final Logger logger = Logger.getLogger(Extension.class);
+  	private static final Logger logger = LogManager.getLogger(Extension.class);
   
     private static final String[] NAMES = 
     { "system.rq", "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };

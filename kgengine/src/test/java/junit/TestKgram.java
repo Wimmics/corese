@@ -20,8 +20,9 @@ import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -112,7 +113,7 @@ public class TestKgram extends TestSuite
                   try {
                       load.loadWE(DATA + "/comma/query.rdf");
                   } catch (LoadException ex) {
-                      Logger.getLogger(TestKgram.class.getName()).log(Level.SEVERE, null, ex);
+                      LogManager.getLogger(TestKgram.class.getName()).log(Level.ERROR, "", ex);
                   }
 			  qGraph.index();
 

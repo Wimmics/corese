@@ -18,7 +18,8 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * An optimizer that combines filter and binding optimizations.
@@ -28,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
 
-    private static Logger logger = Logger.getLogger(RemoteQueryOptimizerFull.class);
+    private static Logger logger = LogManager.getLogger(RemoteQueryOptimizerFull.class);
 
     @Override
     public String getSparqlQuery(Node gNode, List<Node> from, Edge edge, Environment env) {

@@ -34,7 +34,8 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * SPARQL Template Transformation Engine
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
  * Olivier Corby, Wimmics INRIA I3S - 2012
  */
 public class Transformer  {
-    private static Logger logger = Logger.getLogger(Transformer.class);
+    private static Logger logger = LogManager.getLogger(Transformer.class);
 
     private static final String NULL = "";
     private static final String STL         = NSManager.STL;

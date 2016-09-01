@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgtool.util;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -9,11 +8,10 @@ import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Query Manager that process and modify a query before processing
@@ -104,7 +102,7 @@ public class QueryManager {
         try {
             query = load(q);
         } catch (LoadException ex) {
-            Logger.getLogger(QueryManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
              return new Mappings();
         }
         QueryProcess exec = QueryProcess.create(g);
@@ -113,7 +111,7 @@ public class QueryManager {
             Mappings map = exec.query(query);
             return map;
         } catch (EngineException ex) {
-            Logger.getLogger(QueryManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
         }
         return new Mappings();
     }
@@ -154,14 +152,14 @@ public class QueryManager {
         try {
             update = load(q);
         } catch (LoadException ex) {
-            Logger.getLogger(QueryManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
             return g;
         }
         QueryProcess up = QueryProcess.create(g);
         try {
             up.query(update);
         } catch (EngineException ex) {
-            Logger.getLogger(QueryManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
         }
         return g;
     }

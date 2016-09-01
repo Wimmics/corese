@@ -2,7 +2,8 @@ package fr.inria.edelweiss.kgraph.query;
 
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
@@ -29,7 +30,7 @@ import fr.inria.edelweiss.kgram.core.Query;
  *
  */
 public class UpdateProcess {
-	private static Logger logger = Logger.getLogger(UpdateProcess.class);	
+	private static Logger logger = LogManager.getLogger(UpdateProcess.class);	
 
 	Manager manager;
         QueryProcess exec;

@@ -3,7 +3,7 @@ package fr.inria.edelweiss.kgram.filter;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import java.util.HashMap;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A generic filter Evaluator Values are Java Object Target processing is
@@ -31,7 +32,7 @@ import java.util.HashMap;
  */
 public class Interpreter implements Evaluator, ExprType {
 
-    private static Logger logger = Logger.getLogger(Interpreter.class);
+    private static Logger logger = LogManager.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
     protected Proxy proxy;

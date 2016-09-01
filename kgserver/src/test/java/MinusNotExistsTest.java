@@ -24,7 +24,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public class MinusNotExistsTest {
             + "     MINUS {?x foaf:knows <http://i3s/Mireille>} ."
             + "} ";
     
-    private static Logger logger = Logger.getLogger(DqpRestTest.class);
+    private static Logger logger = LogManager.getLogger(DqpRestTest.class);
     private static int port1 = 9081;
     private static int port2 = 9082;
     private static Process server1 = null;

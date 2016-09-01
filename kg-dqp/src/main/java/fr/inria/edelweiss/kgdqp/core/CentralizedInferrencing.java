@@ -29,7 +29,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 public class CentralizedInferrencing {
 
-    static Logger logger = Logger.getLogger(CentralizedInferrencing.class);
+    static Logger logger = LogManager.getLogger(CentralizedInferrencing.class);
 
     static final String pertinentRulesQueryOumy = "prefix sp: <http://spinrdf.org/sp#>\n"
             + "Select   DISTINCT  (st:apply-templates-with(st:spin, ?r) as ?res) \n"

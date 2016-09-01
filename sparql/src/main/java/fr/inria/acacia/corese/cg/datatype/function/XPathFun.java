@@ -15,7 +15,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,7 +33,7 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 
 public class XPathFun {
 	
-	private static Logger logger = Logger.getLogger(XPathFun.class);
+	private static Logger logger = LogManager.getLogger(XPathFun.class);
 	static final String RDFNS   =  "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 	NSManager nsm;

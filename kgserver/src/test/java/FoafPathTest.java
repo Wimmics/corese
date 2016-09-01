@@ -27,7 +27,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,7 +50,7 @@ import static org.junit.Assert.*;
  */
 public class FoafPathTest {
 
-    private static Logger logger = Logger.getLogger(FoafPathTest.class);
+    private static Logger logger = LogManager.getLogger(FoafPathTest.class);
     private static int port = 9090;
     private static Server server;
     private static File p1, p2;

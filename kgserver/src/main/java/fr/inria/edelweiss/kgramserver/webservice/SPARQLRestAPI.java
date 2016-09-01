@@ -30,7 +30,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service. The engine can be remotely
@@ -46,7 +47,7 @@ public class SPARQLRestAPI {
     public static final String PROFILE_DEFAULT   = "profile.ttl";        
     public static final String DEFAULT           = NSManager.STL + "default"; 
     static final int ERROR = 500;
-    private static Logger logger = Logger.getLogger(SPARQLRestAPI.class);
+    private static Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
     private static boolean isDebug = false;
     private static boolean isDetail = false;
     static String localProfile;

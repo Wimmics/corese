@@ -4,7 +4,8 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -58,7 +59,7 @@ public class Distance {
 	private Hashtable<Node, Integer> depth;
 
 
-	static Logger logger = Logger.getLogger(Distance.class);
+	static Logger logger = LogManager.getLogger(Distance.class);
 	
 	
 	

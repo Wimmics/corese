@@ -13,7 +13,8 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Helper class to handle the retrieveing of results when getMappings() are
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
 @Deprecated
 public class CallableGetBasicGraphPattern implements Callable<Mappings>{
 
-    private final Logger logger = Logger.getLogger(CallableGetBasicGraphPattern.class);
+    private final Logger logger = LogManager.getLogger(CallableGetBasicGraphPattern.class);
     private Producer producer = null;
     private Node graphNode = null; 
     private List<Node> from = null;

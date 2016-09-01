@@ -3,7 +3,8 @@ package fr.inria.acacia.corese.cg.datatype;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.storage.api.IStorage;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>Title: Corese</p>
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
 
 public class CoreseStringLiteral extends CoreseStringableImpl{
   static int code=STRING;
-  private static Logger logger = Logger.getLogger(CoreseStringLiteral.class);
+  private static Logger logger = LogManager.getLogger(CoreseStringLiteral.class);
   
   private IStorage manager ;
   private int id;

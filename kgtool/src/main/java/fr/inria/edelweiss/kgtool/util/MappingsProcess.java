@@ -7,12 +7,11 @@ package fr.inria.edelweiss.kgtool.util;
 
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.RDFResultFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -38,7 +37,7 @@ public class MappingsProcess {
         try {
             ld.loadString(f.toString(), "", ld.defaultGraph(), "", Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            Logger.getLogger(MappingsProcess.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(MappingsProcess.class.getName()).log(Level.ERROR, "", ex);
         }
         return g;
     }

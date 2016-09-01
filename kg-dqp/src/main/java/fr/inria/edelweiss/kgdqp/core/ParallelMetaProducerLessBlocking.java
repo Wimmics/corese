@@ -23,7 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Meta Producer that handles concurrent accesses to several Producers. Uses a
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 public class ParallelMetaProducerLessBlocking extends MetaProducer {
 
-    private final Logger logger = Logger.getLogger(ParallelMetaProducerLessBlocking.class);
+    private final Logger logger = LogManager.getLogger(ParallelMetaProducerLessBlocking.class);
     private final HashMap<String, ArrayList<Producer>> bookKeeping = new HashMap<String, ArrayList<Producer>>();
     private final ArrayList<Exp> processedBGP = new ArrayList<Exp>();
     private ArrayList<Producer> sameProducers = new ArrayList<Producer>();

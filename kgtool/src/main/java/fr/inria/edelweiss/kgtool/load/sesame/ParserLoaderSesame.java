@@ -6,7 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -25,7 +26,7 @@ import org.openrdf.rio.helpers.RDFHandlerBase;
  */
 public class ParserLoaderSesame {
 
-    private static Logger logger = Logger.getLogger(RDFaLoader.class);
+    private static Logger logger = LogManager.getLogger(RDFaLoader.class);
 
     Reader reader;
     InputStream is;

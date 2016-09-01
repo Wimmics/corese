@@ -13,7 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Helper class to handle the retrieveing of results 
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class CallableBufferedGetEdges implements Callable<Iterable<Entity>> {
     
-    private final Logger logger = Logger.getLogger(CallableBufferedGetEdges.class);
+    private final Logger logger = LogManager.getLogger(CallableBufferedGetEdges.class);
     private Producer p = null;
     private Node gNode = null; 
     private List<Node> from = null;

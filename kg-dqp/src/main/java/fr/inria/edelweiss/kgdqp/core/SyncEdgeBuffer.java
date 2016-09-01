@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Synchronized buffer to put/get path edges
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class SyncEdgeBuffer implements Iterable<Entity>, Iterator<Entity> {
 
-    private final Logger logger = Logger.getLogger(SyncEdgeBuffer.class);
+    private final Logger logger = LogManager.getLogger(SyncEdgeBuffer.class);
     private BlockingQueue<Entity> queue = new LinkedBlockingQueue<Entity>(100);
     private ExecutorService executorService = null;
     private int nbPendingTasks = 0;

@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.update.Basic;
@@ -23,7 +24,7 @@ import fr.inria.edelweiss.kgraph.logic.Entailment;
 public class ManagerImpl implements Manager {
 
    
-    static Logger logger = Logger.getLogger(ManagerImpl.class);
+    static Logger logger = LogManager.getLogger(ManagerImpl.class);
     GraphManager gm;
     static final int COPY = 0;
     static final int MOVE = 1;

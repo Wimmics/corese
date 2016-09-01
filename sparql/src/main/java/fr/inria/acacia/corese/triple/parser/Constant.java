@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -20,7 +21,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Constant extends Atom {
-	private static Logger logger = Logger.getLogger(Constant.class);
+	private static Logger logger = LogManager.getLogger(Constant.class);
 	private static NSManager nsm;
 	static DatatypeMap dm;
 	boolean isQName = false;

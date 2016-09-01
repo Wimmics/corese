@@ -3,7 +3,8 @@ package fr.inria.edelweiss.kgenv.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
@@ -38,7 +39,7 @@ import fr.inria.edelweiss.kgram.core.Query;
  */
 public class ExpandPath implements QueryVisitor {
 	
-	private static Logger log = Logger.getLogger(ExpandPath.class);
+	private static Logger log = LogManager.getLogger(ExpandPath.class);
 	
 	private static final String ROOT = "?_VAR_";
 	private static final String NEQ = Term.SNEQ;

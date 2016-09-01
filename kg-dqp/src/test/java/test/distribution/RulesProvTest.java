@@ -9,9 +9,10 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.CentralizedInferrencingNoSpin;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -54,15 +55,15 @@ public class RulesProvTest {
             String commandLine = "-l /Users/gaignard/Desktop/out/ -r /Users/gaignard/Desktop/VIP-rules/";
             CentralizedInferrencingNoSpin.main(commandLine.split(" "));
         } catch (ParseException ex) {
-            Logger.getLogger(RulesProvTest.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RulesProvTest.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            Logger.getLogger(RulesProvTest.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RulesProvTest.class.getName()).log(Level.ERROR, "", ex);
         } catch (InterruptedException ex) {
-            Logger.getLogger(RulesProvTest.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RulesProvTest.class.getName()).log(Level.ERROR, "", ex);
         } catch (IOException ex) {
-            Logger.getLogger(RulesProvTest.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RulesProvTest.class.getName()).log(Level.ERROR, "", ex);
         } catch (LoadException ex) {
-            Logger.getLogger(RulesProvTest.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(RulesProvTest.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 }

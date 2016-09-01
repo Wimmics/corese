@@ -4,8 +4,9 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 
 /**
  * Test update/load/query in parallel threads
@@ -41,7 +42,7 @@ public class TestWebServer extends Thread {
         try {
             process();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(TestWebServer.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestWebServer.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

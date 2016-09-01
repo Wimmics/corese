@@ -23,8 +23,9 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.TemplateFormat;
 import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+
 
 public class PPrint {
 	
@@ -158,7 +159,7 @@ public class PPrint {
 //                Query qq = exec.compile(str);
 //                System.out.println(qq.getAST());
 //            } catch (EngineException ex) {
-//                Logger.getLogger(PPrint.class.getName()).log(Level.SEVERE, null, ex);
+//                LogManager.getLogger(PPrint.class.getName()).log(Level.ERROR, "", ex);
 //            }
 //            
             
@@ -181,7 +182,7 @@ public class PPrint {
                         System.out.println(qq.getAST());
                     }
                 } catch (EngineException ex) {
-                    Logger.getLogger(PPrint.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger(PPrint.class.getName()).log(Level.ERROR, "", ex);
                 }
             }
 

@@ -10,16 +10,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author macina
  */
 public class AnalyzeResults {
-    private org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AnalyzeResults.class);
+    private org.apache.log4j.Logger logger = org.apache.log4j.LogManager.getLogger(AnalyzeResults.class);
     
     private List<File> logFile = new ArrayList<File>();
     private List<File> resultFile = new ArrayList<File>();
@@ -60,7 +61,7 @@ public class AnalyzeResults {
                 logger.info(resultFile.get(i)+" ?? "+resultFile.get(i+1));
                 queryComparator.put(queriesName.get(i/2),FileUtils.contentEquals(resultFile.get(i), resultFile.get(i+1)));
             } catch (IOException ex) {
-                Logger.getLogger(AnalyzeResults.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(AnalyzeResults.class.getName()).log(Level.ERROR, "", ex);
             }
         }
         

@@ -2,7 +2,8 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeInteger;
@@ -36,7 +37,7 @@ import java.util.List;
 public class CoreseDatatype 
 	implements IDatatype 
 	{
-	private static Logger logger = Logger.getLogger(CoreseDatatype.class);
+	private static Logger logger = LogManager.getLogger(CoreseDatatype.class);
 
 	static final CoreseURI datatype=new CoreseURI(RDF.RDFSRESOURCE);
 	static final CoreseString empty=new CoreseString("");

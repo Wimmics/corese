@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Handler for manipulating disk file, channel, buffer, etc..
@@ -55,7 +55,7 @@ public class FileHandler {
             fileChannel = randomAccessFile.getChannel();
             buffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, BEGIN, this.params.get(type.BUF_SIZE));
         } catch (IOException ex) {
-            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, "id:" + fid + ", path:" + file, ex);
+            LogManager.getLogger(FileHandler.class.getName()).log(Level.ERROR, "id:" + fid + ", path:" + file, ex);
         }
     }
 
@@ -113,7 +113,7 @@ public class FileHandler {
             this.buffer = this.fileChannel.map(FileChannel.MapMode.READ_WRITE, fileChannel.size(), buf);
             this.bufferOffset += buffer.capacity();
         } catch (IOException ex) {
-            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, "Allocalte buffer error <" + fname + ">!", ex);
+            LogManager.getLogger(FileHandler.class.getName()).log(Level.ERROR, "Allocalte buffer error <" + fname + ">!", ex);
         }
     }
 
@@ -156,7 +156,7 @@ public class FileHandler {
             this.bufferOffset = BEGIN;
             file.delete();
         } catch (IOException ex) {
-            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, "Close connection <" + fname + "> errors!", ex);
+            LogManager.getLogger(FileHandler.class.getName()).log(Level.ERROR, "Close connection <" + fname + "> errors!", ex);
         }
     }
 

@@ -6,8 +6,8 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Generic Process to be programmed
@@ -87,9 +87,9 @@ public class DatasetProcess extends WorkflowProcess {
             Data res = sw.process(input);
             return res;
         } catch (LoadException ex) {
-            Logger.getLogger(DatasetProcess.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DatasetProcess.class.getName()).log(Level.ERROR, "", ex);
         } catch (EngineException ex) {
-            Logger.getLogger(DatasetProcess.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DatasetProcess.class.getName()).log(Level.ERROR, "", ex);
         }
 
         return data;

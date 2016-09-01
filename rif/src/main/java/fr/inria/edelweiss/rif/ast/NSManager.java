@@ -5,7 +5,8 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.edelweiss.rif.api.RIF;
 
@@ -28,7 +29,7 @@ public class NSManager
 	private static final long serialVersionUID = 1L;
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(NSManager.class);
+	private static Logger logger = LogManager.getLogger(NSManager.class);
 	
 	/** prefix seed (ns1, ns2,...) */
 	private static final String seed = "ns";

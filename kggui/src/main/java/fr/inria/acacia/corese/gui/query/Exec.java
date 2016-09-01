@@ -2,7 +2,8 @@ package fr.inria.acacia.corese.gui.query;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.gui.core.MainFrame;
@@ -13,14 +14,14 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 
 
 /**
  * Exec KGRAM Query in a // thread to enable interacting with EvalListener through the GUI
  */
 public class Exec extends Thread {
-	private static Logger logger = Logger.getLogger(Exec.class);
+	private static Logger logger = LogManager.getLogger(Exec.class);
         
         static final String qvalidate = "template { st:apply-templates-with(st:spintypecheck) } where {}";
         //static final String qvalidate = "template {st:apply-templates-with('/home/corby/AData/template/spintypecheck/template/')} where {}";
@@ -98,7 +99,7 @@ public class Exec extends Thread {
                 Mappings map = exec.query(qvalidate);
                 return map;                
             } catch (EngineException ex) {
-                java.util.logging.Logger.getLogger(Exec.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(Exec.class.getName()).log(Level.ERROR, "", ex);
             }
             return new Mappings();
         }

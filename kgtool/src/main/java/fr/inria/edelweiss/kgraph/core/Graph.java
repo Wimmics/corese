@@ -13,7 +13,8 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -56,7 +57,7 @@ import java.util.Map;
  */
 public class Graph extends GraphObject implements Graphable, TripleStore {
 
-    private static Logger logger = Logger.getLogger(Graph.class);
+    private static Logger logger = LogManager.getLogger(Graph.class);
     public static final String TOPREL
             = fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
     static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);

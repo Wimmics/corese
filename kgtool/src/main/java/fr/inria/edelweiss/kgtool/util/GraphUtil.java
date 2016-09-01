@@ -3,8 +3,8 @@ package fr.inria.edelweiss.kgtool.util;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -25,7 +25,7 @@ public class GraphUtil {
             Load ld = Load.create(g);
             ld.loadString(gs.toString(), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            Logger.getLogger(GraphUtil.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(GraphUtil.class.getName()).log(Level.ERROR, "", ex);
         }
         return g;
     }   

@@ -1,7 +1,8 @@
 package fr.inria.acacia.corese.triple.parser;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
@@ -26,7 +27,7 @@ public class Option extends Exp {
 	private static final long serialVersionUID = 1L;
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(Option.class);
+	private static Logger logger = LogManager.getLogger(Option.class);
         // false: OPTION corese (unary)
         // true:  OPTIONAL SPARQL (binary)
 	public static boolean isOptional = true;

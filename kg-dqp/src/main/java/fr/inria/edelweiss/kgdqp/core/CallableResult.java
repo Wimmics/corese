@@ -14,7 +14,8 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Helper class to handle the retrieveing of results when getEdges() or
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class CallableResult implements Callable<Result> {
 
-    private final Logger logger = Logger.getLogger(CallableResult.class);
+    private final Logger logger = LogManager.getLogger(CallableResult.class);
     private Producer producer = null;
     private Node gNode = null;
     private List<Node> from = null;

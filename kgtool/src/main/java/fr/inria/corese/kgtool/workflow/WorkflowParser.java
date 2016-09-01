@@ -20,7 +20,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Parse a graph that describes a Workflow 
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class WorkflowParser {
 
-    private static Logger logger = Logger.getLogger(WorkflowParser.class);
+    private static Logger logger = LogManager.getLogger(WorkflowParser.class);
     public static final String PREF = NSManager.SWL;
         
     public static final String QUERY = PREF + "Query";

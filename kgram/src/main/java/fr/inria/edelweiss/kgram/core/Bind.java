@@ -5,7 +5,8 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Local variable bindings
@@ -24,7 +25,7 @@ public class Bind {
     // let add no level
     ArrayList<Integer> level;
     
-    private static Logger logger = Logger.getLogger(Bind.class);
+    private static Logger logger = LogManager.getLogger(Bind.class);
 
     Bind() {
         varList = new ArrayList();

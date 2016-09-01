@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -37,7 +38,7 @@ public class NSManager extends ASTObject {
     /**
      * logger from log4j
      */
-    private static Logger logger = Logger.getLogger(NSManager.class);
+    private static Logger logger = LogManager.getLogger(NSManager.class);
     public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
     public static final String XSD  = RDFS.XSD;
     public static final String RDF  = RDFS.RDF;

@@ -26,7 +26,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -36,7 +36,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.xml.XMLLayout;
 
 /**
@@ -45,7 +46,7 @@ import org.apache.log4j.xml.XMLLayout;
  */
 public class TestDQP {
 
-    private Logger logger = Logger.getLogger(TestDQP.class);
+    private Logger logger = LogManager.getLogger(TestDQP.class);
 
     static final String host = "localhost";
 
@@ -202,13 +203,13 @@ public class TestDQP {
         try {
             ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/cog-2012.ttl");
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
 
         try {
             ld.parseDir(TestDQP.class.getClassLoader().getResource("demographie").getPath() + "/popleg-2010.ttl");
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
 
         logger.info("Graph size: " + graph.size());
@@ -281,7 +282,7 @@ public class TestDQP {
 //                        bufferValuesFile.flush();
 //                        writeValuesFile.close();
 //                    } catch (IOException ex) {
-//                        java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                        LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
 //                    }
 //                } else {
 ////                    resultFileName += "D" + round + ".txt";
@@ -303,7 +304,7 @@ public class TestDQP {
 //                        bufferValuesFile.flush();
 //                        writeValuesFile.close();
 //                    } catch (IOException ex) {
-//                        java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                        LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
 //                    }
 //                }
 //
@@ -325,7 +326,7 @@ public class TestDQP {
 //                    logger.addAppender(fa);
 //
 //                } catch (IOException ex) {
-//                    java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                    LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
 //                }
 
                 StopWatch sw = new StopWatch();
@@ -359,11 +360,11 @@ public class TestDQP {
 //                    bufferValuesFile.flush();
 //                    writeValuesFile.close();
 //                } catch (IOException e) {
-//                    java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, e);
+//                    LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", e);
 //                }
 
 //            } catch (InterruptedException ex) {
-//                java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+//                LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
 //            }
         }
 
@@ -424,7 +425,7 @@ public class TestDQP {
         } catch (ParseException exp) {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(TestDQP.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(TestDQP.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

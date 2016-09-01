@@ -3,7 +3,8 @@ package fr.inria.acacia.corese.triple.parser;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -26,7 +27,7 @@ public class Triple extends Exp {
 	private static final long serialVersionUID = 1L;
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(Triple.class);
+	private static Logger logger = LogManager.getLogger(Triple.class);
 	
 //	final static String SDT = KeywordPP.SDT;
 //	final static String LANG = KeywordPP.LANG;

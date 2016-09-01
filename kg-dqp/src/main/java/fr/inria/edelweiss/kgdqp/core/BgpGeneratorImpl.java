@@ -19,7 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Transform AND to
@@ -28,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class BgpGeneratorImpl implements BgpGenerator { 
 
-    private Logger logger = Logger.getLogger(BgpGeneratorImpl.class);
+    private Logger logger = LogManager.getLogger(BgpGeneratorImpl.class);
 
     private Exp exp;
     private Exp newExp;

@@ -23,7 +23,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A class aiming at grouping, if possible, consecutive tripple into SPARQL
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class ServiceGrouper implements QueryVisitor {
 
-    Logger logger = Logger.getLogger(ServiceGrouper.class);
+    Logger logger = LogManager.getLogger(ServiceGrouper.class);
     private QueryProcessDQP execDQP;
 
     private HashMap<Triple, ArrayList<Producer>> indexEdgeProducers;

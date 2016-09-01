@@ -33,7 +33,8 @@ import java.net.URL;
 import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 /**
@@ -45,7 +46,7 @@ import org.xml.sax.SAXException;
  */
 public class RemoteProducerWSImpl implements Producer {
 
-    private final static Logger logger = Logger.getLogger(RemoteProducerWSImpl.class);
+    private final static Logger logger = LogManager.getLogger(RemoteProducerWSImpl.class);
     private final SparqlEndpointInterface rp;
     private final HashMap<String, Boolean> cacheIndex = new HashMap<String, Boolean>();
     private boolean provEnabled = false;

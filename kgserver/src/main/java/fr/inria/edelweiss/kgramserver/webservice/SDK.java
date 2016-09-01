@@ -4,8 +4,8 @@ import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+
 import javax.print.attribute.standard.Media;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.logging.log4j.LogManager;
 
 /*
  * To change this template, choose Tools | Templates
@@ -42,10 +43,10 @@ public class SDK {
         try {
             g = new Profile().loadServer("sdk.ttl");
         } catch (IOException ex) {
-            Logger.getLogger(SDK.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SDK.class.getName()).log(Level.ERROR, "", ex);
             g = GraphStore.create();
         } catch (LoadException ex) {
-            Logger.getLogger(SDK.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(SDK.class.getName()).log(Level.ERROR, "", ex);
             g = GraphStore.create();
         }
          TripleStore st = new TripleStore(g);

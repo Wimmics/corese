@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -28,6 +27,8 @@ import fr.inria.edelweiss.kgram.path.Visit.TTable;
 import fr.inria.edelweiss.kgram.tool.EdgeInv;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import java.util.HashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**********************************************************
@@ -89,7 +90,7 @@ import java.util.HashMap;
 public class PathFinder 
 {	
 	
-	private static Logger logger = Logger.getLogger(PathFinder.class);
+	private static Logger logger = LogManager.getLogger(PathFinder.class);
 	
 	public static long cedge = 0, cresult = 0, ctest = 0;
 

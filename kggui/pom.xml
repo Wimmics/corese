@@ -49,13 +49,22 @@
 		</dependency>    
         
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
 		</dependency>
+	 <dependency>
+	  <groupId>org.slf4j</groupId>
+	  <artifactId>slf4j-api</artifactId>
+	  <version>1.7.21</version>
+	 </dependency>
 	</dependencies>
 
 	<build>
@@ -183,5 +192,5 @@
 			</build> 
 		</profile> 
 	</profiles>
-    <name>corese-gui</name>
+	<name>corese-gui</name>
 </project>

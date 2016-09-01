@@ -27,7 +27,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * HTML SPARQL endpoint 
@@ -39,7 +40,7 @@ import org.apache.log4j.Logger;
 @Path("template")
 public class Transformer {
 
-    private static Logger logger = Logger.getLogger(Transformer.class);
+    private static Logger logger = LogManager.getLogger(Transformer.class);
     private static final String headerAccept = "Access-Control-Allow-Origin";
     private static final String TEMPLATE_SERVICE = "/template";
     private static final String RESULT = NSManager.STL + "result";

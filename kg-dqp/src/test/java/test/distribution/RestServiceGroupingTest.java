@@ -18,7 +18,8 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,7 +33,7 @@ import org.junit.Test;
  */
 public class RestServiceGroupingTest {
 
-    Logger logger = Logger.getLogger(RestServiceGroupingTest.class);
+    Logger logger = LogManager.getLogger(RestServiceGroupingTest.class);
 
     String ginsengQuery1 = "PREFIX semehr: <http://www.mnemotix.com/ontology/semEHR#> \n"
             + "SELECT ?codePostal (count(*) as ?total) WHERE { \n"

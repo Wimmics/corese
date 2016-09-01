@@ -25,7 +25,8 @@ import java.net.URL;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -96,7 +97,7 @@ public class DqpServiceRestTest {
             + "VALUES ?s { 'http://localhost:" + port + "/kgram/sparql' 'http://fr.dbpedia.org/sparql' } "
             + "PRAGMA {kg:service kg:slice 50}";
     
-    private static Logger logger = Logger.getLogger(DqpRestTest.class);
+    private static Logger logger = LogManager.getLogger(DqpRestTest.class);
     
     private static int port = 9082;
     private static Server server;

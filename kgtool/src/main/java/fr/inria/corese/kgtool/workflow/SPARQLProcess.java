@@ -15,7 +15,8 @@ import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.util.MappingsGraph;
 import java.util.Date;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
  *
  */
 public class SPARQLProcess extends  WorkflowProcess {
-    private static Logger logger = Logger.getLogger(SPARQLProcess.class);
+    private static Logger logger = LogManager.getLogger(SPARQLProcess.class);
     static final String NL = System.getProperty("line.separator");
 
     private String query;

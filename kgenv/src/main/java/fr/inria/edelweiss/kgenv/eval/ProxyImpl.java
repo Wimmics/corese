@@ -6,7 +6,8 @@ import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -37,7 +38,7 @@ import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -49,7 +50,7 @@ import java.util.logging.Level;
 public class ProxyImpl implements Proxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
-    private static Logger logger = Logger.getLogger(ProxyImpl.class);
+    private static Logger logger = LogManager.getLogger(ProxyImpl.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;

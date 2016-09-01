@@ -22,7 +22,8 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 //import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class JenaGraphFactory {
 
-    public static Logger logger = Logger.getLogger(JenaGraphFactory.class);
+    public static Logger logger = LogManager.getLogger(JenaGraphFactory.class);
 
     /**
      * Handling of XSDDateType ?? -> transformed as String into KGRAM See

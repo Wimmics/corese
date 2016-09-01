@@ -145,11 +145,11 @@ function xt:split(?list, ?nc){
 	for (?j in ?jlist){
 	  let (?k = ?nb + ?j){
 	    if (?k < ?size){
-	      xt:add(?row, xt:get(?list, ?k))
+	      xt:add(xt:get(?list, ?k), ?row)
 	    }
 	  }
 	} ;
-	xt:add(?table, ?row)
+	xt:add(?row, ?table)
       }
     } ;
     ?table

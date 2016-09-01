@@ -196,7 +196,7 @@ public class TestW3C11KGraphNew {
         DatatypeMap.setSPARQLCompliant(true);
         tko = new Testing();
         tok = new Testing();
-		earl = new Earl();
+        earl = new Earl(); 
     }
 
     public static void main(String[] args) {
@@ -240,7 +240,11 @@ public class TestW3C11KGraphNew {
         test(root0 + "construct");
     }
     
-    
+    void test00() {
+        sparql1 = false;
+        test(root0 + "open-world");
+
+    }
 
     void testRDF() {
         sparql1 = true;
@@ -308,9 +312,13 @@ public class TestW3C11KGraphNew {
         sparql1 = false;
         test(root0 + "bind");
     }
+    
+    public void process() {
+        process(1);
+    }
 
    // @Test
-    public void process() {
+    public void process(int version) {
         gok = 0;
         gko = 0;
 
@@ -324,11 +332,13 @@ public class TestW3C11KGraphNew {
             //QueryProcess.setJoin(true);
             //Graph.setValueTable(true);
             //Graph.setCompareIndex(true);
-            test1();
-            testUpdate();
-            //testRDF();
-            // TODO: blank should not span BGP
-            //test0(); //25 errorstest
+            if (version == 1){
+                test1();
+                testUpdate();
+            }
+            else {
+                test0(); //25 errorstest
+            }
         } else {
             test();
         }

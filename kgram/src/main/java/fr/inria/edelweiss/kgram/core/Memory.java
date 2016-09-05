@@ -211,6 +211,7 @@ public class Memory implements Environment {
         }
     }
 
+    @Override
     public String toString() {
         String str = "";
         int n = 0;
@@ -231,21 +232,21 @@ public class Memory implements Environment {
     }
 
     /**
-     * Copy this Bind local variable stack into this memory Use case: define
-     * (xt:foo(?x) = exists { ?x ex:pp ?y }) TODO: MUST only consider bindings
-     * of current function call (not all bindings in the stack)
+     * Copy this Bind local variable stack into this memory 
+     * Use case: 
+     * function xt:foo(?x) { exists { ?x ex:pp ?y } } 
      */
     void copy(Bind bind) {
         for (Expr var : bind.getVariables()) {
             Node qn = getQueryNode(var.getLabel());
             if (qn == null) {
-                // System.out.println("Mem: undefined query node: " + var);
+                //System.out.println("Mem: undefined query node: " + var);
             } else {
                 //System.out.println("M: " + qn + " " + bind.get(var));
                 push(qn, bind.get(var));
             }
         }
-        setBind(bind);
+        setBind(bind);       
     }
 
     /**
@@ -481,6 +482,7 @@ public class Memory implements Environment {
         bnode.clear();
     }
 
+    @Override
     public Map getMap() {
         return bnode;
     }
@@ -884,14 +886,17 @@ public class Memory implements Environment {
         return nodes[n];
     }
 
+    @Override
     public Node getQueryNode(int n) {
         return qNodes[n];
     }
 
+    @Override
     public Node[] getQueryNodes() {
         return qNodes;
     }
 
+    @Override
     public boolean isBound(Node qNode) {
         return getNode(qNode) != null;
     }
@@ -908,6 +913,7 @@ public class Memory implements Environment {
         return qEdges;
     }
 
+    @Override
     public Entity[] getEdges() {
         return result;
     }
@@ -932,6 +938,7 @@ public class Memory implements Environment {
         return null;
     }
 
+    @Override
     public Node[] getNodes() {
         return nodes;
     }
@@ -939,6 +946,7 @@ public class Memory implements Environment {
     /**
      * The target Node of a query Node in the stack
      */
+    @Override
     public Node getNode(Node node) {
         int n = node.getIndex();
         if (n == -1) {
@@ -947,6 +955,7 @@ public class Memory implements Environment {
         return nodes[n];
     }
 
+    @Override
     public Node getNode(String name) {
         int index = getIndex(name);
         if (index == ExprType.UNBOUND) {
@@ -961,6 +970,7 @@ public class Memory implements Environment {
      * aggregate use case: select count(?x) as ?count where { {select ?x where
      * {...}} }
      */
+    @Override
     public Node getQueryNode(String name) {
         Node node = query.getProperAndSubSelectNode(name); //query.getProperNode(name);
         return node;
@@ -982,6 +992,7 @@ public class Memory implements Environment {
         return ExprType.UNBOUND;
     }
 
+    @Override
     public Node getNode(Expr var) {
         int index = var.getIndex();
         switch (var.subtype()) {
@@ -1012,6 +1023,7 @@ public class Memory implements Environment {
      *
      * Aggregates and system functions
      */
+    @Override
     public int count() {
         return current().size();
     }
@@ -1021,6 +1033,7 @@ public class Memory implements Environment {
     }
 
     // sum(?x)
+    @Override
     public void aggregate(Evaluator eval, Producer p, Filter f) {
         current().process(eval, f, this, p);
     }
@@ -1044,10 +1057,12 @@ public class Memory implements Environment {
         }
     }
 
+    @Override
     public Mappings getMappings() {
         return current();
     }
 
+    @Override
     public int pathLength(Node qNode) {
         Path path = lPath[qNode.getIndex()];
         if (path == null) {
@@ -1056,6 +1071,7 @@ public class Memory implements Environment {
         return path.length();
     }
 
+    @Override
     public int pathWeight(Node qNode) {
         Path path = lPath[qNode.getIndex()];
         if (path == null) {
@@ -1064,6 +1080,7 @@ public class Memory implements Environment {
         return path.weight();
     }
 
+    @Override
     public Path getPath(Node qNode) {
         return lPath[qNode.getIndex()];
     }
@@ -1081,10 +1098,12 @@ public class Memory implements Environment {
         return lPath[qNode.getIndex()] != null;
     }
 
+    @Override
     public Object getObject() {
         return object;
     }
 
+    @Override
     public void setObject(Object o) {
         object = o;
     }
@@ -1097,6 +1116,7 @@ public class Memory implements Environment {
         return isFake;
     }
 
+    @Override
     public Extension getExtension() {
         return query.getActualExtension();
     }
@@ -1106,6 +1126,7 @@ public class Memory implements Environment {
         bind.set(exp, var, value);
     }
 
+    @Override
     public void bind(Expr exp, Expr var, Node value) {
         bind.bind(exp, var, value);
     }
@@ -1125,6 +1146,7 @@ public class Memory implements Environment {
         bind.unset(exp, var);
     }
 
+    @Override
     public void unset(Expr exp, List<Expr> lvar) {
         bind.unset(exp, lvar);
     }

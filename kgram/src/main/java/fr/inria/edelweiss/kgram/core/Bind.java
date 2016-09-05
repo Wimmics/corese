@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 public class Bind {
 
     static final String NL = System.getProperty("line.separator");
-    Node value;
     ArrayList<Expr> varList;
     ArrayList<Node> valList;
     // level of the stack before function call
@@ -33,10 +32,12 @@ public class Bind {
         level   = new ArrayList();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Level: ").append(level).append(NL);
         for (int i = varList.size() - 1; i >= 0; i--) {
-            sb.append(varList.get(i) + " = " + valList.get(i) + NL);
+            sb.append(varList.get(i)).append(" = ").append(valList.get(i)).append(NL);
         }
         return sb.toString();
     }
@@ -54,8 +55,6 @@ public class Bind {
     }
 
     public Node get(Expr var) {
-//        System.out.println("B: " + var + " " + var.getIndex());
-//        System.out.println(this);
         for (int i = varList.size() - 1; i >= 0; i--) {
             if (varList.get(i).equals(var)) {
                 return valList.get(i);
@@ -91,8 +90,8 @@ public class Bind {
     public void set(Expr exp, List<Expr> lvar, Object[] value) {
         if (exp.oper() == ExprType.FUNCTION || exp.oper() == ExprType.EQ){
             // xt:fun(?x) = exp
-            // funcall
-            level.add(varList.size());           
+            // funcall          
+            level.add(varList.size()); 
         }
         int i = 0;
         for (Expr var : lvar) {
@@ -107,8 +106,14 @@ public class Bind {
     public void unset(Expr exp, List<Expr> lvar) {
         if (exp.oper() == ExprType.FUNCTION ||exp.oper() == ExprType.EQ){
             // xt:fun(?x) = exp
-            // funcall
-            level.remove(level.size()-1);
+            // funcall        
+           if (! level.isEmpty()) {
+               level.remove(level.size()-1);
+           }
+           else {
+               System.out.println("Bind: \n" + exp);
+               System.out.println(this);
+           }
         }
         for (int j = lvar.size() - 1; j >= 0; j--) {
             unset(lvar.get(j));
@@ -121,8 +126,10 @@ public class Bind {
     }
 
     private void unset(Expr var) {
-        varList.remove(varList.size() - 1);
-        valList.remove(valList.size() - 1);
+        if (! varList.isEmpty()){
+            varList.remove(varList.size() - 1);
+            valList.remove(valList.size() - 1);
+        }
     }
     
     

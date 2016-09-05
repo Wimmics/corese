@@ -171,12 +171,14 @@ public class Interpreter implements Evaluator, ExprType {
     // Integer to IDatatype to Node
     // for kgram internal use of java values
     // e.g. count(*) ...
+    @Override
     public Node cast(Object obj, Environment env, Producer p){
         Object val = proxy.cast(obj, env, p);
         Node node = p.getNode(val);
         return node;
     }
 
+    @Override
     public Object eval(Expr exp, Environment env, Producer p) {
         //System.out.println("Interpret: " + exp + " " + env.getClass().getName());
         switch (exp.type()) {
@@ -812,6 +814,7 @@ public class Interpreter implements Evaluator, ExprType {
         return in.eval(exp.getBody(), eval.getMemory(), p);
     }
     
+    @Override
     public int compare(Environment env, Producer p, Node n1, Node n2){
         return proxy.compare(env, p, n1, n2);
     }
@@ -819,6 +822,7 @@ public class Interpreter implements Evaluator, ExprType {
     /**
      * Use case: st:process() overloaded by an extension function   
      */
+    @Override
       public Object eval(Expr exp, Environment env, Producer p, Object[] values, Extension ext ){
         Expr def = ext.get(exp, values);
         if (def == null){

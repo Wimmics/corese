@@ -501,7 +501,7 @@ public class Eval implements ExpType, Plugin {
         if (memory.isFake()) {
             // Temporary memory created by PathFinder
             mem = memory;
-        } else if (exp.getObject() != null) {
+        } else if (!memory.hasBind() && exp.getObject() != null) {
             mem = (Memory) exp.getObject();
             mem.start();
             memory.copyInto(null, mem);

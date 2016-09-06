@@ -172,10 +172,16 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String FACTORY = "fr.inria.corese.tinkerpop.Factory";
 		if (p == null) {
+			String factory = System.getenv("CORESE_FACTORY");//"fr.inria.corese.tinkerpop.Factory";
+			if (factory == null) {
+				logger.info("CORESE_FACTORY not defined, using the default ProducerImpl");
+				p = ProducerImpl.create(g);
+				p.setMatch(isMatch);
+			} else {
+				logger.info("CORESE_FACTORY defined. Using factory: " + factory);
 			try {
-				Class<?> classFactory = Class.forName(FACTORY);
+					Class<?> classFactory = Class.forName(factory);
 				Method method = classFactory.getMethod("create", Graph.class);
 				p = (ProducerImpl) method.invoke(null, g);
         p.setMatch(isMatch);
@@ -184,6 +190,7 @@ public class QueryProcess extends QuerySolver {
 				LOGGER.fatal("impossible to create a producer, aborting");
 				System.exit(-1);
 			}
+		}
 		}
         QueryProcess exec = QueryProcess.create(p);
         exec.setMatch(isMatch);
@@ -261,7 +268,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * **************************************************************
+	 * *************************************************************
      *
      * API for query
      *

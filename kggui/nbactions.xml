@@ -12,7 +12,7 @@
             <properties>
                 <exec.args>-Xmx10g -Xms10g -Dfr.inria.corese.factory=fr.inria.corese.tinkerpop.Factory -Dfr.inria.corese.tinkerpop.dbinput=/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data/test1_db/ -classpath %classpath fr.inria.acacia.corese.gui.core.MainFrame</exec.args>
                 <exec.executable>java</exec.executable>
-                
+                <Env.CORESE_FACTORY>fr.inria.corese.tinkerpop.Factory</Env.CORESE_FACTORY>
                 
             </properties>
         </action>

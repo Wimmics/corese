@@ -71,7 +71,8 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>tinkerpop</artifactId>
-	  <version>${project.version}</version>
+	  <version>3.2.1p-SNAPSHOT</version>
+	  <scope>runtime</scope>
 	 </dependency>
 	 <dependency>
 	  <groupId>org.openrdf.sesame</groupId>

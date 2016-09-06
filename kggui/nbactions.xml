@@ -12,6 +12,8 @@
             <properties>
                 <exec.args>-Xmx10g -Xms10g -classpath %classpath fr.inria.acacia.corese.gui.core.MainFrame</exec.args>
                 <exec.executable>java</exec.executable>
+                <Env.CORESE_FACTORY>fr.inria.corese.tinkerpop.Factory</Env.CORESE_FACTORY>
+                
             </properties>
         </action>
         <action>

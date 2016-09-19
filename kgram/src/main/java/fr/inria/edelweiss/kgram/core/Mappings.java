@@ -213,11 +213,16 @@ public class Mappings extends PointerObject
         return object;
     }
 
+    @Override
     public String toString() {
         return toString(false);
     }
-
+    
     public String toString(boolean all) {
+        return toString(all, true);     
+    }
+
+    public String toString(boolean all, boolean ptr) {
         StringBuffer sb = new StringBuffer();
         int i = 1;
         boolean isSelect = select != null && !all;
@@ -227,11 +232,11 @@ public class Mappings extends PointerObject
 
             if (isSelect) {
                 for (Node qNode : select) {
-                    print(map, qNode, sb);
+                    print(map, qNode, sb, ptr);
                 }
             } else {
                 for (Node qNode : map.getQueryNodes()) {
-                    print(map, qNode, sb);
+                    print(map, qNode, sb, ptr);
                 }
             }
 
@@ -241,12 +246,12 @@ public class Mappings extends PointerObject
         return sb.toString();
     }
 
-    void print(Mapping map, Node qNode, StringBuffer sb) {
+    void print(Mapping map, Node qNode, StringBuffer sb, boolean ptr) {
         Node node = map.getNode(qNode);
         if (node != null) {
             sb.append(qNode).append(" = ").append(node);
             Object obj = node.getObject();
-            if (obj != null
+            if (ptr && obj != null
                     && obj != this
                     && obj instanceof PointerObject) {
                 sb.append(" : ");

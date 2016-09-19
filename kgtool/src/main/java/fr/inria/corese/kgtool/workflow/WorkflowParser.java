@@ -383,85 +383,73 @@ public class WorkflowParser {
         if (isDebug()) {
             System.out.println("WP: " + dt + " " + dtype);
         }
-        if (dtype == null){
-            if (dt.isURI()){
+        if (dtype == null) {
+            if (dt.isURI()) {
                 // default is Query
                 ap = queryPath(dt.getLabel());
             }
-        }
-        else {
+        } else {
             String type = dtype.getLabel();
             if (type.equals(WORKFLOW)) {
                 // special case (with complete done)
                 ap = subWorkflow(getGraph().getNode(dt));
-            } 
-            else if (type.equals(DATASHAPE)){
-                ap = datashape(dt);
-            }
-            else if (type.equals(TRANSFORMATION)){
-                ap = transformation(dt);
-            }
-            else {
-                IDatatype duri  = getValue(URI, dt);
-                IDatatype dbody = getValue(BODY, dt);
-                IDatatype dtest = getValue(TEST_VALUE, dt);
-                boolean test = dtest != null && dtest.booleanValue();
+            } else {
+                if (type.equals(DATASHAPE)) {
+                    ap = datashape(dt);
+                } else if (type.equals(TRANSFORMATION)) {
+                    ap = transformation(dt);
+                } else {
+                    IDatatype duri = getValue(URI, dt);
+                    IDatatype dbody = getValue(BODY, dt);
+                    IDatatype dtest = getValue(TEST_VALUE, dt);
+                    boolean test = dtest != null && dtest.booleanValue();
 
-                if (duri != null) {
-                    String uri = duri.getLabel();
-                    if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
-                        ap = queryPath(uri);
-                    } 
-                    else if (type.equals(FUNCTION)) {
-                        ap = functionPath(uri);
-                    }
-                    else if (type.equals(RULE) || type.equals(RULEBASE)) {
-                        ap = new RuleProcess(uri);
-                    } 
-                    else if (type.equals(LOAD)) {
+                    if (duri != null) {
+                        String uri = duri.getLabel();
+                        if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
+                            ap = queryPath(uri);
+                        } else if (type.equals(FUNCTION)) {
+                            ap = functionPath(uri);
+                        } else if (type.equals(RULE) || type.equals(RULEBASE)) {
+                            ap = new RuleProcess(uri);
+                        } else if (type.equals(LOAD)) {
+                            ap = load(dt);
+                        }
+                    } else if (dbody != null) {
+                        if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
+                            ap = new SPARQLProcess(dbody.getLabel(), getPath());
+                        } else if (type.equals(FUNCTION)) {
+                            ap = new FunctionProcess(dbody.getLabel(), getPath());
+                        } else if (type.equals(PARALLEL)) {
+                            ap = parallel(getGraph().getNode(dt));
+                        }
+                    } else if (type.equals(PROBE)) {
+                        ap = probe(dt);
+                    } else if (type.equals(LOAD)) {
                         ap = load(dt);
-                    }                   
-                }  
-                else if (dbody != null) {
-                    if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
-                        ap = new SPARQLProcess(dbody.getLabel(), getPath());
+                    } else if (type.equals(TEST)) {
+                        ap = test(dt);
+                    } else if (type.equals(DATASET)) {
+                        ap = dataset(dt);
+                    } else if (type.equals(ASSERT)) {
+                        ap = asserter(dt);
                     }
-                    else if (type.equals(FUNCTION)){
-                        ap = new FunctionProcess(dbody.getLabel(), getPath());
-                    }
-                    else if (type.equals(PARALLEL)){
-                        ap = parallel(getGraph().getNode(dt));
-                    }                   
                 }
-                else if (type.equals(PROBE)){
-                     ap = probe(dt);
-                 }
-                else if (type.equals(LOAD)) {
-                    ap = load(dt);
-                }
-                else if (type.equals(TEST)) {
-                    ap = test(dt);
-                }
-                else if (type.equals(DATASET)){
-                    ap = dataset(dt);
-                }
-                else if (type.equals(ASSERT)){
-                    ap = asserter(dt);
-                }
-                
+
+
                 if (ap != null) {
                     complete(ap, dt);
                 }
             }
-         }
+        }
         return ap;
     }
-     
+
     TransformationProcess transformation(IDatatype dt) {
         String uri = getParam(dt, URI, MODE_PARAM, true);
         return new TransformationProcess(uri);
     }
-     
+
      /**
       * Special case: may get input from Context     
       */

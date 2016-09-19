@@ -20,8 +20,6 @@ public class SemanticWorkflow extends  CompositeProcess {
      
     Data data;
     private int loop = -1;
-    private Date d1;
-    private Date d2;
     private Graph workflowGraph;
     
     public SemanticWorkflow(){
@@ -132,7 +130,6 @@ public class SemanticWorkflow extends  CompositeProcess {
     
     // local before
     void before(Data data){
-        d1 = new Date();
         prepare(data);
     }
     
@@ -144,12 +141,8 @@ public class SemanticWorkflow extends  CompositeProcess {
     
     // local after
     void after(Data data){
-        d2 = new Date();
     }
     
-    public double getTime(){
-        return (d2.getTime() - d1.getTime()) / 1000.0;
-    }
     
     @Override
     void start(Data data){

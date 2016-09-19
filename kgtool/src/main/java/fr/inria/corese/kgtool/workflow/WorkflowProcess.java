@@ -16,6 +16,8 @@ import static fr.inria.corese.kgtool.workflow.WorkflowParser.NAME;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.COLLECT;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +40,7 @@ public class WorkflowProcess implements AbstractProcess {
     private boolean collect = false;
     private boolean visit = false;
     private boolean log = false; 
+    private long time;
     private String result, uri, name;
     private IDatatype mode;
     String path;
@@ -50,9 +53,12 @@ public class WorkflowProcess implements AbstractProcess {
      
     public Data compute(Data d) throws EngineException {
         before(d);
+        Date d1 = new Date();
         start(d);
         Data res = run(d);
         finish(res);
+        Date d2 = new Date();
+        setTime(d2.getTime() - d1.getTime());
         after(d, res);
         return res;
     } 
@@ -131,7 +137,15 @@ public class WorkflowProcess implements AbstractProcess {
     void afterDebug(Data data) {
         if (isRecDebug()) {
             System.out.println(data);
+            if (data.getVisitedGraph() != null) {
+                display(data.getVisitedGraph());
+            }
         }
+    }
+    
+    void display(Graph g){
+        Transformer t = Transformer.create(g, Transformer.TURTLE);
+        System.out.println(t);
     }
      
     public List<WorkflowProcess> getProcessList(){
@@ -399,6 +413,10 @@ public class WorkflowProcess implements AbstractProcess {
         return mode;
     }
     
+    public boolean hasMode(){
+        return mode != null;
+    }
+    
     public String getModeString(){
         if (mode == null){
             return null;
@@ -507,6 +525,24 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public void setLog(boolean log) {
         this.log = log;
+    }
+
+    /**
+     * @return the time
+     */
+    public long getTime() {
+        return time;
+    }
+    
+    public long getMainTime(){
+        return getTime();
+    }
+
+    /**
+     * @param time the time to set
+     */
+    public void setTime(long time) {
+        this.time = time;
     }
 
 }

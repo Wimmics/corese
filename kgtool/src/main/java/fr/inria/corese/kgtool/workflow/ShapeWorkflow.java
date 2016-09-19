@@ -3,11 +3,7 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
-import java.awt.font.TransformAttribute;
-import org.apache.logging.log4j.Level;
 
 
 /**
@@ -18,7 +14,7 @@ import org.apache.logging.log4j.Level;
  */
 public class ShapeWorkflow extends SemanticWorkflow {
     public static final String SHAPE_NAME  = NSManager.STL + "shape";
-    public static final String SHAPE_TRANS_TEST = "/home/corby/AAData/sttl/datashape/main";
+    public static final String SHAPE_TRANS_TEST = "/user/corby/home/AAData/sttl/datashape/main";
     public static final String SHAPE_TRANS = Transformer.DATASHAPE;
     public static final String FORMAT = Transformer.TURTLE;
     public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
@@ -27,6 +23,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
     
     private String format = FORMAT;
     TransformationProcess transformer;
+    LoadProcess load;
     
     SPARQLProcess sp;
     
@@ -51,26 +48,44 @@ public class ShapeWorkflow extends SemanticWorkflow {
         return true;
     }
     
+    @Override
+    public void start(Data data){
+        if (hasMode() && getMode().isNumber()){
+            load.setMode(getMode());
+        }
+        super.start(data);
+    }
+    
     private void create(String shape, String data, String trans, boolean test){
         if (trans != null){
             format = trans;
         }
         setCollect(true);
-        LoadProcess ld = new LoadProcess(data);
+        load = new LoadProcess(data);
         LoadProcess ls = new LoadProcess(shape);
         ParallelProcess para = new ParallelProcess();
-        para.insert(new SemanticWorkflow().add(ld));
+        para.insert(new SemanticWorkflow().add(load));
         para.insert(new SemanticWorkflow(SHAPE_NAME).add(ls));
         // test = true: use DataShape transformation not compiled
+        transformer = new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS);
         this.add(para)
             .add(new DatasetProcess())
-            .add(new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS));
+            .add(transformer);
         // set  Visitor Report Graph as named graph st:visitor
         this.add(new DatasetProcess(WorkflowParser.VISITOR));
                       
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
         }       
+    }
+    
+    public TransformationProcess getTransformer(){
+        return transformer;
+    }
+    
+    @Override
+    public long getMainTime(){
+        return transformer.getTime();
     }
     
     

@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.query.Construct;
 import fr.inria.edelweiss.kgraph.query.GraphManager;
+import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -71,6 +72,7 @@ public class RuleEngine implements Engine, Graphable {
     private static Logger logger = LogManager.getLogger(RuleEngine.class);
     Graph graph;
     QueryProcess exec;
+    private QueryEngine qengine;
     List<Rule> rules;
     List<Record> records;
     HashMap<Integer, String> path;
@@ -375,21 +377,17 @@ public class RuleEngine implements Engine, Graphable {
     }
 
     public Query defRule(String name, String rule) throws EngineException {
-        Query qq = exec.compileRule(rule, ds);
-
-        if (!qq.isConstruct()) {
-            // template
-            qq.setRule(false);
-            ASTQuery ast = (ASTQuery) qq.getAST();
-            ast.setRule(false);
+        if (isTransformation()) {
+            return qengine.defQuery(rule);
+        } else {
+            Query qq = exec.compileRule(rule, ds);
+            if (qq != null) {
+                Rule r = Rule.create(name, qq);
+                defRule(r);
+                return qq;
+            }
+            return null;
         }
-
-        if (qq != null) { 
-            Rule r = Rule.create(name, qq);
-            defRule(r);  
-            return qq;
-        }
-        return null;
     }
     
     void declare(Rule r) {
@@ -1016,6 +1014,27 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    /**
+     * @return the qengine
+     */
+    public QueryEngine getQueryEngine() {
+        return qengine;
+    }
+
+    /**
+     * @param qengine the qengine to set
+     */
+    public void setQueryEngine(QueryEngine qengine) {
+        this.qengine = qengine;
+    }
+
+    /**
+     * @return the isTransformation
+     */
+    public boolean isTransformation() {
+        return qengine != null && qengine.isTransformation();
     }
 
     class STable extends Hashtable<Rule, Integer> {

@@ -829,7 +829,13 @@ public class Eval implements ExpType, Plugin {
                 exp.setNext(next);
                 stack.add(n + 1, next);
             }
-
+            
+            if (exp.isBGPAble()){
+                exp.setBGPAble(false);
+                backtrack = bgpAble(p, gNode, exp, stack, n);
+                exp.setBGPAble(true);
+            }
+            else 
             switch (exp.type()) {
 
                 case NEXT:
@@ -859,23 +865,23 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case GRAPH:
-
                     if (env.isPath(exp.getGraphName())) {
                         // graph $path { }
                         // switch Producer to path
                         backtrack
                                 = inGraph(p, memory.getPath(exp.getGraphName()),
                                         gNode, exp, stack, n);
-                    } else {
+                    } 
+                    else {
                         Node gg = getNode(exp.getGraphName());
                         if (gg != null && p.isProducer(gg)) {
                             // graph $path { }
                             // named graph in GraphStore 
                             // switch Producer 
-                            backtrack
-                                    = inGraph(p, p.getProducer(gg, memory),
-                                            gNode, exp, stack, n);
-                        } else {
+                            backtrack = inGraph(p, p.getProducer(gg, memory),
+                                    gNode, exp, stack, n);
+                        }                        
+                        else {
                             backtrack = graph(gNode, exp, stack, n);
                         }
                     }
@@ -1222,16 +1228,16 @@ public class Eval implements ExpType, Plugin {
      * node : exp graph node
      */
     public Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
-        return subEval(p, gNode, node, exp, main, null);
+        return subEval(p, gNode, node, exp, main, null, false);
     }
 
-    private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m) {
+    private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m, boolean bind) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
         mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
-        bind(mem, exp, main, m);
+        bind(mem, exp, main, m, bind);
         if (main != null && main.type() == Exp.JOIN) {
             service(exp, mem);
         }
@@ -1239,12 +1245,13 @@ public class Eval implements ExpType, Plugin {
         return lMap;
     }
 
-    void bind(Memory mem, Exp exp, Exp main, Mapping m) {
+    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind ) {
         if (m != null) {
             mem.push(m, -1);
         }
         if (main == null) {
-        } else if ((main.isOptional() || main.isJoin()) && exp.getNodeList() != null) {
+        } 
+        else if ((bind  || main.isOptional() || main.isJoin()) && exp.getNodeList() != null) {
             // A optional B
             // bind variables of A from environment
             for (Node qnode : exp.getNodeList()) {
@@ -1656,8 +1663,6 @@ public class Eval implements ExpType, Plugin {
     private int bgp(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         List<Node> from = query.getFrom(gNode);
-//        StopWatch sw = new StopWatch();
-//        sw.start();
         Mappings map = p.getMappings(gNode, from, exp, memory);
 
         for (Mapping m : map) {
@@ -1671,10 +1676,50 @@ public class Eval implements ExpType, Plugin {
                 }
             }
         }
-
-//        sw.stop();
-//        logger.info("\n\tGET MAPPINGS in " + sw.getTime() + "ms.\n\t FOR "+exp+"\n");
         return backtrack;
+    }
+    
+    /**
+     * 
+     * Exp evaluated as a BGP, get result Mappings, push Mappings and continue
+     * Use case: cache the Mappings
+     */
+     private int bgpAble(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n - 1;
+        Mappings map = getMappings(p, gNode, exp);
+        for (Mapping m : map) {
+            m.fixQueryNodes(query);
+            boolean b = memory.push(m, n, false);
+            if (b) {
+                int back = eval(p, gNode, stack, n + 1);
+                memory.pop(m);
+                if (back < n) {
+                    return back;
+                }
+            }
+        }
+        return backtrack;
+    }
+     
+     
+    Mappings getMappings(Producer p, Node gNode, Exp exp) {
+        if (exp.hasCache()) {
+            Node n = memory.getNode(exp.getCacheNode());
+            if (n != null) {
+                Mappings m = exp.getMappings(n);
+                if (m == null) {
+                    m = subEval(p, gNode, gNode, exp, exp, null, true);
+                    exp.cache(n, m);                      
+                }
+//                else {
+//                    System.out.println(query.getAST());
+//                    System.out.println(m.size());
+//                    System.out.println(m.toString(true, false));
+//                }
+                return m;
+            }
+        }
+        return subEval(p, gNode, gNode, exp, exp, null, true);
     }
 
 
@@ -2461,7 +2506,7 @@ public class Eval implements ExpType, Plugin {
 
             boolean success = false;
 
-            Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1);
+            Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1, false);
 
             for (Mapping r2 : map2) {
 

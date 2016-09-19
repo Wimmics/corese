@@ -407,33 +407,35 @@ public class QuerySolver  implements SPARQLEngine {
         }
         
         public Query compileRule(String squery, Dataset ds) throws EngineException {
-		Transformer transformer =  transformer();
-                setParameter(transformer);
-		transformer.setBase(defaultBase);
-		transformer.set(ds);
+		Transformer transformer =  createTransformer(ds);
 		Query query = transformer.transform(squery, true);
 		return query;	
-	}
+	}	
 	
+	public Query compile(String squery, Dataset ds) throws EngineException {
+		Transformer transformer =  createTransformer(ds);
+		transformer.setSPARQLCompliant(isSPARQLCompliant);
+		Query query = transformer.transform(squery);
+		return query;
+	}
+        
+        
+       Transformer createTransformer(Dataset ds) {
+            Transformer transformer = transformer();
+            setParameter(transformer);
+            transformer.setBase(defaultBase);
+            transformer.set(ds);
+            return transformer;
+       }
+        
 	public Query compile(ASTQuery ast) {
 		Transformer transformer =  transformer();			
                 setParameter(transformer);
 		transformer.setSPARQLCompliant(isSPARQLCompliant);
 		Query query = transformer.transform(ast);
 		return query;
-	}
-	
-	public Query compile(String squery, Dataset ds) throws EngineException {
-		Transformer transformer =  transformer();			
-                setParameter(transformer);
-		transformer.setSPARQLCompliant(isSPARQLCompliant);
-		transformer.setBase(defaultBase);
-		transformer.set(ds);
-		Query query = transformer.transform(squery);
-		return query;
-	}
-	
-	
+	}        
+		
 	public Mappings filter(Mappings map, String filter) throws EngineException{
 		Query q = compileFilter(filter);
 		Eval kgram = Eval.create(producer, evaluator, matcher);

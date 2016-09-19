@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgtool.transform;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +13,8 @@ import java.util.HashMap;
  * @author Olivier Corby, Wimmics Inria I3S, 2013
  *
  */
-class Stack {
-
+public class Stack {
+public static int count = 0;
     ArrayList<IDatatype> list;
     HashMap<IDatatype, ArrayList<Query>> map;
     HashMap<IDatatype, ArrayList<IDatatype[]>> arg;
@@ -68,8 +67,7 @@ class Stack {
     IDatatype pop() {
         if (list.size() > 0) {
 
-            IDatatype dt = list.get(list.size() - 1);
-            list.remove(list.size() - 1);
+            IDatatype dt = list.remove(list.size() - 1);
 
             ArrayList<Query> qlist = map.get(dt);
             Query q = qlist.get(qlist.size() - 1);
@@ -87,7 +85,7 @@ class Stack {
      * Check whether template q already applied on dt focus and possibly args
      */
    boolean contains(IDatatype dt, IDatatype[] args, Query q) {
-        ArrayList<Query> qlist = map.get(dt);
+       ArrayList<Query> qlist = map.get(dt);
         if (qlist == null || ! qlist.contains(q)){
             return false;
         }
@@ -155,6 +153,7 @@ class Stack {
         visit.put(dt, dt);
     }
 
+@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int i = 0;

@@ -13,6 +13,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import java.util.HashMap;
 
 /**
  * KGRAM expressions
@@ -39,11 +40,13 @@ public class Exp extends PointerObject
 		isBGP = false,
 		lock = false,
 		isSilent = false;
+        private boolean BGPAble = false;
 
 	private boolean isFunctional = false;
 	VExp args;
 	Edge edge;
 	Node node;
+        private Node arg;
 	List<Node> lNodes;
 	Filter filter;
 	List<Filter> lFilter;
@@ -58,6 +61,7 @@ public class Exp extends PointerObject
 	private Exp path;
 	private Exp bind;
 	Mappings map, templateMap;
+        HashMap<Node, Mappings> cache;
 	int min = -1, max = -1;
 	private int level = -1;
 	private boolean isSystem = false;
@@ -137,6 +141,34 @@ public class Exp extends PointerObject
 	public boolean isBGPAnd() {
 		return type == AND || type == BGP;
 	}
+
+    /**
+     * @return the BGPAble
+     */
+    public boolean isBGPAble() {
+        return BGPAble;
+    }
+
+    /**
+     * @param BGPAble the BGPAble to set
+     */
+    public void setBGPAble(boolean BGPAble) {
+        this.BGPAble = BGPAble;
+    }
+
+    /**
+     * @return the arg
+     */
+    public Node getCacheNode() {
+        return arg;
+    }
+
+    /**
+     * @param arg the arg to set
+     */
+    public void setCacheNode(Node arg) {
+        this.arg = arg;
+    }
 
 	class VExp extends ArrayList<Exp> {
 	}
@@ -1668,4 +1700,22 @@ public class Exp extends PointerObject
 	public void setLock(boolean lock) {
 		this.lock = lock;
 	}
+        
+        public void cache(Node n){
+           setCacheNode(n);
+           cache = new HashMap<Node, Mappings>(); 
+        }
+        
+        boolean hasCache(){
+            return cache != null;
+        }
+        
+        void cache(Node n, Mappings m){
+            cache.put(n, m);
+        }
+        
+        Mappings getMappings(Node n){
+            Mappings m = cache.get(n);
+            return m;
+        }
 }

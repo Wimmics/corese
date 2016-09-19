@@ -61,6 +61,7 @@ public class Context extends ASTObject {
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
     HashMap<String, Boolean> export;
+    HashMap<String, Context> context;
     NSManager nsm;
     
     private boolean userQuery = false;
@@ -77,6 +78,7 @@ public class Context extends ASTObject {
         export = new HashMap();
     }
 
+    @Override
     public String toString() {
         if (nsm == null){
             nsm = NSManager.create();
@@ -154,6 +156,27 @@ public class Context extends ASTObject {
            
     boolean export(String str){        
         return export.get(str) != null && export.get(str) && get(str) != null;
+    }
+    
+    Context getContext(String name){
+        if (context == null){
+            context = new HashMap<String, Context>();
+        }
+        Context c = context.get(name);
+        if (c == null){
+            c = new Context();
+            context.put(name, c);
+        }
+        return c;
+    }
+    
+    public IDatatype cget(IDatatype name, IDatatype slot){
+        return getContext(name.getLabel()).get(slot.getLabel());
+    }
+    
+    public IDatatype cset(IDatatype name, IDatatype slot, IDatatype value){
+        getContext(name.getLabel()).set(slot.getLabel(), value);
+        return value;
     }
     
     public Context set(String name, IDatatype value) {
@@ -323,10 +346,12 @@ public class Context extends ASTObject {
         set(STL_SERVER_PROFILE, obj);
     }
     
+    @Override
     public int pointerType(){
         return Pointerable.CONTEXT_POINTER;
     }
     
+    @Override
     public Iterable getLoop(){
         return getList().getValues();       
     }

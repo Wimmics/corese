@@ -102,14 +102,21 @@ public class Query extends Exp implements Graphable {
     // SPIN graph
     private Object graph;
     Query query, outerQuery;
-    // for templates
-    private Query templateProfile;
+    private ArrayList<Query> subQueryList;
     Graphable ast;
     Object object;
 
-    private Object pprinter;
+    // Transformation profile template
+    private Query templateProfile;
+    private Object templateVisitor;
+    // st:set/st:get Context
     private Object context;
+    // current transformer if any
+    private Object transformer;
+    // table: transformation -> Transformer
+    // shared by templates of Transformer
     HashMap<String, Object> tprinter;
+    
     Compile compiler;
     private QuerySorter querySorter;
 
@@ -192,7 +199,6 @@ public class Query extends Exp implements Graphable {
     private HashMap<Edge, Exp> edgeAndContext;
 
     private String service;
-    private Object templateVisitor;
 	
 	Query(){
         super(QUERY);
@@ -2237,27 +2243,27 @@ public class Query extends Exp implements Graphable {
         return getGlobalQuery().getPPrinter(null);
     }
 
-    public void setTransformer(String p, Object pprinter) {
-        getGlobalQuery().setPPrinter(p, pprinter);
+    public void setTransformer(String p, Object transformer) {
+        getGlobalQuery().setPPrinter(p, transformer);
     }
 
-    public Object getPPrinter(String p) {
+    Object getPPrinter(String p) {
         if (p == null) {
-            return pprinter;
+            return transformer;
         }
         return tprinter.get(p);
     }
 
-    public void setPPrinter(String p, Object pprinter) {
+    void setPPrinter(String p, Object transformer) {
         if (p == null) {
             // next kg:pprint() will use this one
-            this.pprinter = pprinter;
+            this.transformer = transformer;
         } else {
-            if (this.pprinter == null) {
+            if (this.transformer == null) {
                 // next kg:pprint() will use this one
-                this.pprinter = pprinter;
+                this.transformer = transformer;
             }
-            tprinter.put(p, pprinter);
+            tprinter.put(p, transformer);
         }
     }
 
@@ -2626,6 +2632,28 @@ public class Query extends Exp implements Graphable {
      */
     public void setTransformationTemplate(boolean isTransformationTemplate) {
         this.isTransformationTemplate = isTransformationTemplate;
+    }
+
+    /**
+     * @return the subQueryList
+     */
+    public ArrayList<Query> getSubQueryList() {
+        return subQueryList;
+    }
+
+    /**
+     * @param subQueryList the subQueryList to set
+     */
+    public void setSubQueryList(ArrayList<Query> subQueryList) {
+        this.subQueryList = subQueryList;
+    }
+    
+    public HashMap getEnvironment(){
+        return tprinter;
+    }
+    
+    public void setEnvironment(HashMap map){
+        tprinter = map;
     }
 
 }

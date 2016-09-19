@@ -54,12 +54,22 @@ public class LoadProcess extends WorkflowProcess {
             if (path.startsWith(FILE)){
                 path = path.substring(FILE.length());
             }
-            if (getModeString() != null && getModeString().equals(WorkflowParser.SPIN)){
+            
+            if (! hasMode()){
+                ld.parseDir(path, name, rec); 
+            }
+            else if (getModeString().equals(WorkflowParser.SPIN)){
                 loadSPARQLasSPIN(path, g);
             }
-            else {                
-                ld.parseDir(path, name, rec);
+            else if (getMode().isNumber()){
+                for (int i = 0; i<getMode().intValue(); i++){
+                 ld.parseDir(path, name, rec);
+                }
             }
+            else {
+               ld.parseDir(path, name, rec); 
+            }
+            
         } catch (LoadException ex) {
             throw new EngineException(ex);
         }

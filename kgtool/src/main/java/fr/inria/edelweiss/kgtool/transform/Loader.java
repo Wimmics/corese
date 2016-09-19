@@ -14,7 +14,6 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
-import fr.inria.edelweiss.kgraph.rule.Rule;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -67,11 +66,21 @@ public class Loader {
         this.ds = ds;
     }
     
+    /**
+     * Load transformation from .rq or .rul file(s)
+     * .rq loaded in QueryEngine
+     * .rul loaded in RuleEngine
+     * Templates are eventually stored in QueryEngine
+     */
      QueryEngine load(String pp) {
         QueryEngine qe = QueryEngine.create(graph); 
-        RuleEngine re  = RuleEngine.create(graph);       
+        RuleEngine re  = RuleEngine.create(graph); 
+        qe.setTransformation(true);
+        re.setQueryEngine(qe);
         qe.setDataset(ds);
         re.setDataset(ds);
+        
+        visitor(qe); 
         
         if (pp == null) {
             // skip;
@@ -89,32 +98,21 @@ public class Loader {
                 logger.error("Transformer Load Error: " + pp);
             }
 
-            if (qe.isEmpty()) {
-
-                if (! re.isEmpty()) {
-
-                    for (Rule r : re.getRules()) {
-                        Query q = r.getQuery();
-                        qe.defQuery(q);
-                    }
-                }
-            }
-
-            for (Query q : qe.getTemplates()) {
-                q.setPPrinter(pp, trans);
-                q.setTransformationTemplate(true);
-            }
-            
-            for (Query q : qe.getNamedTemplates()) {
-                q.setPPrinter(pp, trans);
-                q.setTransformationTemplate(true);
-            }
-            
+           //qe.complete(pp, trans);
         }
           
         return qe;
 
     }
+     
+     /**
+      * QueryVisitor may perform optimization
+      */
+     void visitor(QueryEngine qe){
+         if (trans.getTransformation()!=null && trans.getTransformation().contains("datashape")){
+            qe.setVisitor(new TransformerVisitor());
+         }
+     }
      
   
     
@@ -122,6 +120,7 @@ public class Loader {
      * Predefined transformations loaded from Corese resource or ns.inria.fr server
      */
     void load(Load ld, String pp) throws LoadException {
+        //System.out.println("Load: " + pp);    
         String name = null;
         pp = clean(pp);
         if (nsm.inNamespace(pp, STL)) {
@@ -138,7 +137,7 @@ public class Loader {
             src = src + LoadFormat.RULE;                  
         }
         InputStream stream = getClass().getResourceAsStream(src);
-        if (stream == null) {             
+        if (stream == null) { 
             try {
                 URL uri = new URL(pp);                
                 stream = uri.openStream();
@@ -152,7 +151,7 @@ public class Loader {
             }
         }
         // use non synchronized load method because we may be inside a query 
-        // with a read lock
+        // with a read lock       
         ld.loadRule(new InputStreamReader(stream), src);
 
     }
@@ -160,13 +159,9 @@ public class Loader {
     // remove #
     String clean(String uri){
         return trans.getURI(uri);
-//        if (uri.contains("#")){
-//            return uri.substring(0, uri.indexOf("#"));
-//        }
-//        return uri;
     }
-    
-     /**
+        
+    /**
     * 
     * @param tqe: Transformer global QE
     * @param qe:  current or imported QE 
@@ -183,9 +178,9 @@ public class Loader {
             profile(qprofile);
             
             if (qprofile.getExtension() != null){
+                // share profile function definitions in templates
                 fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
                 tr.definePublic(qprofile.getExtension(), qprofile, false);
-                // share function definitions in  templates
                 for (Query t : qe.getTemplates()) {             
                     t.addExtension(qprofile.getExtension());
                 }
@@ -210,6 +205,7 @@ public class Loader {
     * executed by init(st:profile)
     * 
     */
+    @Deprecated
     void loadImport(QueryEngine tqe, String uri) {
         QueryEngine eng = load(uri);
         profile(tqe, eng);
@@ -239,22 +235,13 @@ public class Loader {
 
     }
     
-    /**
-     * The st:profile named template may contain a st:define statement such as:
-     * st:define(st:process(?in) = st:uri(?in))
-     * st:define(st:default(?in) = st:turtle(?in))
-     * where st:process(?in) represents the processing of a variable in template clause
-     * default processing is st:apply-templates(?x)
-     * it can be overloaded
-     * eg spin transformation uses st:uri(?var).
-     */
+    @Deprecated
     void profile(Query q){
         init(q, q.getSelectFun());
     }
     
  
     void init(Query q, List<Exp> select) {
-        //q.setExtension(new Extension());
         for (Exp exp : select) {
             if (exp.getFilter() != null) {
                 initExp(q, exp.getFilter().getExp());
@@ -264,14 +251,7 @@ public class Loader {
     
     void initExp(Query q, Expr exp) {
         switch (exp.oper()) {
-            
-//            case ExprType.STL_DEFINE:
-//                if (exp.getExpList().size() == 1
-//                        && exp.getExp(0).getExpList().size() == 2) {
-//                    init(q, exp);
-//                }
-//                break;
-                
+                            
             case ExprType.STL_IMPORT:
                 if (exp.getExpList().size() >= 1){
                     q.setFilter(STL_IMPORT, exp.getFilter());

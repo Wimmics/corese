@@ -220,8 +220,11 @@ public class PluginTransform implements ExprType {
                 return visit(exp, env, p, dt1, dt2, null);
                 
             case STL_GET:
-                return get(exp, env, p, dt1, dt2);   
+                return get(exp, env, p, dt1, dt2);
                 
+            case STL_CGET:
+                return cget(exp, env, p, dt1, dt2);   
+                                   
             case STL_FORMAT:
                 return format(dt1, dt2);
                  
@@ -283,6 +286,9 @@ public class PluginTransform implements ExprType {
                 
             case STL_VSET:
                 return vset(exp, env, p, dt1, dt2, dt3); 
+                
+            case STL_CSET:
+                return cset(exp, env, p, dt1, dt2, dt3);     
                 
             case STL_FORMAT:
                 return format(param);
@@ -431,9 +437,6 @@ public class PluginTransform implements ExprType {
     
 
     void complete(Query q, Transformer t, IDatatype uri) {
-//        if (uri != null){
-//            t.getContext().set(Transformer.STL_TRANSFORM, uri);
-//        }
         t.complete(q, (Transformer) q.getTransformer());
         if (uri != null){
             t.getContext().set(Transformer.STL_TRANSFORM, uri);
@@ -661,6 +664,15 @@ public class PluginTransform implements ExprType {
         }
         boolean b = dt.equals(dt2);
         return plugin.getValue(b);
+    }
+    
+    public IDatatype cget(Expr exp, Environment env, Producer p, IDatatype name, IDatatype slot) {
+        return getContext(env, p).cget(name, slot);
+    }
+
+    public IDatatype cset(Expr exp, Environment env, Producer p, IDatatype name, IDatatype slot, IDatatype value) {
+        getContext(env, p).cset(name, slot, value);
+        return value;
     }
 
     public IDatatype index(Expr exp, Environment env, Producer p) {

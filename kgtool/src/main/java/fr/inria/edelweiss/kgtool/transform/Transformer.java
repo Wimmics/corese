@@ -91,6 +91,8 @@ public class Transformer  {
     private static String NL = System.getProperty("line.separator");
     private static boolean isOptimizeDefault = false;
     private static boolean isExplainDefault = false;
+    
+    public static int count = 0;
 
     private TemplateVisitor visitor;
     Graph graph, fake;
@@ -117,6 +119,9 @@ public class Transformer  {
     String start = STL_START;
     HashMap<Query, Integer> tcount;
     HashMap<String, String> loaded, imported;
+    // table of nested transformers for apply-templates-with
+    // all sub transformers share same table recursively
+    private HashMap<String, Transformer> transformerMap;
     private Context context;
     private boolean isHide = false;
     public boolean stat = !true;
@@ -158,6 +163,7 @@ public class Transformer  {
         fake = Graph.create();
         set(qp);
         nsm = NSManager.create();
+        transformerMap = new HashMap<String, Transformer>();
         init();
         stack = new Stack(true);
         EMPTY = DatatypeMap.createLiteral(NULL);
@@ -207,7 +213,6 @@ public class Transformer  {
             if (n == null) {
                 gg = Graph.create();
                 Load load = Load.create(gg);
-                //load.load(name, Load.TURTLE_FORMAT);
                 load.parse(name, Load.TURTLE_FORMAT);                
             } 
             else {
@@ -406,10 +411,6 @@ public class Transformer  {
         if (name != null){
              setStart(STL + name);
         }
-//        if (uri != null && uri.contains("#")){
-//            String name = uri.substring(1 + uri.indexOf("#"));
-//            setStart(STL + name);
-//        }  
     }
     
     /**
@@ -511,6 +512,7 @@ public class Transformer  {
         return nbt;
     }
 
+    @Override
     public String toString() {
         return transform();
     }
@@ -567,16 +569,17 @@ public class Transformer  {
     }
     
     public IDatatype process(String temp, boolean all, String sep) {
+        count++;
         query = null;
         ArrayList<IDatatype> result = new ArrayList<IDatatype>();
         if (temp == null) {
             temp = start;
         }
         List<Query> list = getTemplate(temp);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             list = qe.getTemplates();
         }
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             logger.error("No templates");
         }
 
@@ -590,7 +593,6 @@ public class Transformer  {
             if (isDebug) {
                 qq.setDebug(true);
             }
-            //qq.setPPrinter(pp, this);
             // remember start with qq for function pprint below
             query = qq;
             if (query.getName() != null){
@@ -659,6 +661,10 @@ public class Transformer  {
     public IDatatype template(String temp, IDatatype dt) {
         return process(null, dt, temp, false, null, null, null);
     }
+    
+    public static int getCount(){
+        return count;
+    }
 
     /**
      * exp: the fun call, eg st:apply-templates(?x) 
@@ -679,7 +685,8 @@ public class Transformer  {
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
     public IDatatype process(IDatatype[] args, IDatatype dt1, String temp,
-            boolean allTemplates, String sep, Expr exp, Query q) {      
+            boolean allTemplates, String sep, Expr exp, Query q) {   
+        count++;
         if (dt1 == null) {
             return EMPTY;
         }
@@ -1179,17 +1186,20 @@ public class Transformer  {
        setOptimize(table.isOptimize(pp));
        Loader load = new Loader(this);
        load.setDataset(ds);
-       qe = load.load(pp);
+       qe = load.load(getTransformation());
+       // templates share profile functions
+       qe.profile();
+       // templates share table: transformation -> Transformer
+       qe.complete(this, this.getTransformerMap());
        if (isCheck()) {
             check();
        }
-       load.profile(qe, qe);
        setHasDefault(qe.getTemplate(STL_DEFAULT) != null);
        Query profile = qe.getTemplate(STL_PROFILE);
        if (profile != null && profile.getExtension() != null){
            Expr exp = profile.getExtension().get(STL_AGGREGATE);
            if (exp != null){
-               defAggregate = exp.getBody().oper(); //exp.getExp(1).oper();
+               defAggregate = exp.getBody().oper(); 
            }                  
        }
        qe.sort();
@@ -1369,23 +1379,20 @@ public class Transformer  {
           
    /**
     * Query q is the calling query (or template)
-    * Transformer ct is current Transformer
+    * Transformer ct is current Transformer (of template q)
     * this new Transformer  inherit information from query and current transformer (if any)
     */
     public void complete(Query q, Transformer ct) {             
        ASTQuery ast = (ASTQuery) q.getAST();
        Context c = getContext(q, ct);
        if (c != null){
-           // inherit exported properties:
+           // inherit context exported properties:
            getContext().complete(c);
            init(getContext());
        }
-       if (ct != null)  {
-            setNSM(ct.getNSM());   
-//            if (ct.getVisitor() != null){
-//                setVisitor(ct.getVisitor());
-//            }
-        }
+       if (ct != null) {
+            complete(ct);
+       }
        TemplateVisitor vis = getVisitor(q, ct);
        if (vis != null){
            setVisitor(vis);
@@ -1393,6 +1400,14 @@ public class Transformer  {
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         complete(ast.getNSM());
+    }
+    
+    /**
+     * this transformer inherits outer transformer table: transformation -> Transformer
+    */
+    void complete(Transformer t){
+        setNSM(t.getNSM()); 
+        getQueryEngine().complete(this, t.getTransformerMap());
     }
     
     void init(Context c) {
@@ -1503,6 +1518,20 @@ public class Transformer  {
     
     void initVisit(){
         setVisitor(new DefaultVisitor());
+    }
+
+    /**
+     * @return the transformerMap
+     */
+    public HashMap<String, Transformer> getTransformerMap() {
+        return transformerMap;
+    }
+
+    /**
+     * @param transformerMap the transformerMap to set
+     */
+    public void setTransformerMap(HashMap<String, Transformer> transformerMap) {
+        this.transformerMap = transformerMap;
     }
           
 }

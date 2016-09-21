@@ -12,6 +12,8 @@
 	<modules>
 		<module>persistency</module>
 		<module>rdf-to-graph</module>
+	 <module>coreseTimer-common</module>
+	 <module>coreseTimer-memory</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

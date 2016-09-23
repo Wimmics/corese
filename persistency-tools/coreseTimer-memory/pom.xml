@@ -12,13 +12,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>coreseTimer-common</artifactId>
-            <version>3.2.1p-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>corese-core</artifactId>
-            <version>3.2.1p-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

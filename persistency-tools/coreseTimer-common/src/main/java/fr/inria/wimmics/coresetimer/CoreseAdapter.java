@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.wimmics.coresetimer.memory;
+package fr.inria.wimmics.coresetimer;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -11,8 +11,6 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.wimmics.coresetimer.CoreseTimer;
-import fr.inria.wimmics.coresetimer.CoreseAdapterInterface;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -59,6 +57,6 @@ public class CoreseAdapter implements CoreseAdapterInterface {
 
 	@Override
 	public void postProcessing() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		exec.close();
 	}
 }

@@ -23,6 +23,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
  * @author edemairy
  */
 public class CoreseTimer {
+
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
 	public final static String[] inputs = {
 		"data.nq"
@@ -31,8 +32,8 @@ public class CoreseTimer {
 	public final static String[] queries = {
 		//		"select (count(*) as ?count) where { graph ?g {?x ?p ?y}}",
 		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
-		"select * where { ?x  a ?y }",
-		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .}"
+		"select * where { ?x  a ?y } limit 10000",
+		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
 //		"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges
 	};
 
@@ -42,6 +43,7 @@ public class CoreseTimer {
 	public final static String PREFIX = "bd_";
 	public CoreseAdapterInterface adapter;
 	public String adapterName;
+	private static String outputRoot;
 
 	/**
 	 *
@@ -52,31 +54,35 @@ public class CoreseTimer {
 	 */
 	public CoreseTimer(String adapterName, String runProfile) {
 		this.adapterName = adapterName;
-		// create output directory
-		String outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
-		outputRoot = checkTerminalSlash(outputRoot);
-		outputRoot = outputRoot + runProfile;
-		createDir(outputRoot, "r--r-----");
+		// create output directory of the form ${OUTPUT_ROOT}
+		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
+		outputRoot = ensureEndWith(outputRoot, "/");
+		outputRoot += runProfile;
+		outputRoot = ensureEndWith(outputRoot, "/");
+		createDir(outputRoot, "rwxr-x---");
 	}
 
 	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
-		return prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
+		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
 	}
 
 	public void run() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 		String inputRoot = getEnvWithDefault("INPUT_ROOT", "./");
-		inputRoot = checkTerminalSlash(inputRoot);
+		inputRoot = ensureEndWith(inputRoot, "/");
 
 		// Loading the nq data in corese, then applying several times the query.
 		for (int nbInput = 0; nbInput < inputs.length; nbInput++) {
+			LOGGER.info("beginning with input #" + nbInput);
 			// require to have a brand new adapter for each new input set.
 			adapter = (CoreseAdapterInterface) Class.forName(adapterName).newInstance();
 			String inputFileName = inputRoot + inputs[nbInput];
 			adapter.preProcessing(inputFileName);
 			for (int nbQuery = 0; nbQuery < queries.length; nbQuery++) {
 				String query = queries[nbQuery];
+				LOGGER.info("processing nbQuery #" + nbQuery);
 				DescriptiveStatistics stats = new DescriptiveStatistics();
 				for (int i = 0; i < SAMPLES + WARMUP_THRESHOLD; i++) {
+					LOGGER.info("iteration #" + i);
 					final long startTime = System.currentTimeMillis();
 					adapter.execQuery(query);
 					final long endTime = System.currentTimeMillis();
@@ -86,12 +92,13 @@ public class CoreseTimer {
 					}
 				}
 
-				String resultsFileName = makeFileName("result_", ".xml", nbInput, nbQuery);
+				String resultsFileName = makeFileName("result_", ".txt", nbInput, nbQuery);
 				adapter.saveResults(resultsFileName);
 				writeStats(nbInput, nbQuery, stats);
 
 			}
 		}
+		adapter.postProcessing();
 	}
 
 	/**
@@ -134,11 +141,11 @@ public class CoreseTimer {
 		} catch (IOException ex) {
 			Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		LOGGER.info("Directory created at: "+dirPath.toString());
+		LOGGER.info("Directory created at: " + dirPath.toString());
 	}
 
-	private String checkTerminalSlash(String dirName) {
-		String result = (dirName.endsWith("/")) ? dirName : dirName + "/";
+	private String ensureEndWith(String dirName, String end) {
+		String result = (dirName.endsWith(end)) ? dirName : dirName + "/";
 		return result;
 	}
 

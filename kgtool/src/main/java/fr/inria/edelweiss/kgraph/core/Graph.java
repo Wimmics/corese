@@ -58,6 +58,9 @@ import java.util.Map;
  *
  */
 public class Graph extends GraphObject implements Graphable, TripleStore {
+    static {
+	    Corese.init();
+    }
 
     private static Logger logger = LogManager.getLogger(Graph.class);
     public static final String TOPREL

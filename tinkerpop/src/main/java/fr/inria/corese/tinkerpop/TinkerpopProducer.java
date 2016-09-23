@@ -12,14 +12,8 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.log4j.Logger;
 import static org.apache.tinkerpop.gremlin.process.traversal.P.gt;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -46,6 +40,8 @@ public class TinkerpopProducer extends ProducerImpl {
 	}
 
 	/**
+	 * @todo use env to obtain values given by Corese
+	 * 
 	 * @param gNode @TODO Not used for the moment
 	 * @param from @TODO Not used for the moment
 	 * @param qEdge Requested edge.
@@ -118,6 +114,9 @@ public class TinkerpopProducer extends ProducerImpl {
 		return name.equals(Graph.TOPREL);
 	}
 
+	public void close(){
+		tpGraph.close();
+	}
 
 
 }

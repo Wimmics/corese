@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.wimmics.coresetimer.memory;
-
-import fr.inria.wimmics.coresetimer.CoreseTimer;
+package fr.inria.wimmics.coresetimer;
 
 /**
  *
@@ -13,12 +11,12 @@ import fr.inria.wimmics.coresetimer.CoreseTimer;
  */
 public class Main {
 	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-		System.setProperty("CORESE_FACTORY", "fr.inria.corese.tinkerpop.Factory");
+		System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
 		CoreseTimer timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName() , "db"); 
 		timer.run();
 
 
-		System.setProperty("CORESE_FACTORY", "");
+		System.setProperty("fr.inria.corese.factory", "");
 		timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName(), "memory"); 
 		timer.run();
 	}	

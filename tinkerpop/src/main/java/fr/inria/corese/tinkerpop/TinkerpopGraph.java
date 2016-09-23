@@ -3,21 +3,17 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import static fr.inria.corese.tinkerpop.MappingRdf.RDF_EDGE_LABEL;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -97,8 +93,11 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	@Override
 	public void finalize() throws Throwable {
+		LOGGER.info("calling close");
 		tGraph.close();
+		LOGGER.info("close called");
 		super.finalize();
+		LOGGER.info("after finalize");
 	}
 
 	/**
@@ -163,7 +162,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);
-			Iterator<Entity> result = edges.limit(1000).map(e -> unmapper.buildEntity(e.get()));
+			Iterator<Entity> result = edges.map(e -> unmapper.buildEntity(e.get()));
 			return new Iterable<Entity>() {
 				public Iterator<Entity> iterator() {
 					return result;
@@ -196,4 +195,12 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		super.clean();
 		tGraph.tx().commit();
 	}
+
+	public void close(){
+		try {
+			tGraph.close();
+		} catch (Exception ex) {
+			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, "Exception when closing: ", ex);
+		}
+	}	
 }

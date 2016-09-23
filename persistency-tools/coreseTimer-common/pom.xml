@@ -11,9 +11,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>fr.inria.wimmics</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>corese-core</artifactId>
-			<version>3.2.1p-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -37,6 +37,11 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.19</version>
 		</dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>tinkerpop</artifactId>
+	  <version>${project.version}</version>
+	 </dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

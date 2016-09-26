@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import static fr.inria.edelweiss.kgtool.transform.Transformer.STL_PROFILE;
+import fr.inria.edelweiss.kgtool.transform.TransformerVisitor;
 
 /**
  * Equivalent of RuleEngine for Query and Template Run a set of query
@@ -34,10 +35,11 @@ public class QueryEngine implements Engine {
 
     private static Logger logger = LogManager.getLogger(QueryEngine.class);
     Graph graph;
-    QueryProcess exec;
+    private QueryProcess exec;
     ArrayList<Query> list;
     private Dataset ds;
     HashMap<String, Query> table;
+    HashMap<String, ArrayList<Query>> tableList;
     TemplateIndex index;
     boolean isDebug = false,
             isActivate = true,
@@ -49,7 +51,7 @@ public class QueryEngine implements Engine {
         graph = g;
         exec = QueryProcess.create(g);
         list = new ArrayList<Query>();
-        table = new HashMap<String, Query>();
+        table = new HashMap<String, Query>();       
         index = new TemplateIndex();
     }
 
@@ -72,7 +74,7 @@ public class QueryEngine implements Engine {
 
     public Query defQuery(String q) throws EngineException {
         //System.out.println("** QE: \n" + q);
-        Query qq = exec.compile(q, ds);
+        Query qq = getQueryProcess().compile(q, ds);
         if (qq != null) {
             ASTQuery ast = (ASTQuery) qq.getAST();
             defQuery(qq);
@@ -102,48 +104,68 @@ public class QueryEngine implements Engine {
     }
 
     /**
+     * called once with this transformer map and 
+     * may be called again with outer transformar map if any
      * map belongs to current or outer transformer
      * current transformer may inherit table from outer transformer
      * hence all subtransformers share same table
      * table: transformation -> Transformer
      */
     public void complete(Transformer trans, HashMap<String, Transformer> map) {
+        complete();
         trans.setTransformerMap(map);
-        String pp = trans.getTransformation();
         for (Query q : getTemplates()) {
-            q.setEnvironment(map);
-            q.setTransformer(pp, trans);
-            q.setTransformationTemplate(true);
+            complete(q, trans);
         }
-
         for (Query q : getNamedTemplates()) {
-            q.setEnvironment(map);
-            q.setTransformer(pp, trans);
-            q.setTransformationTemplate(true);
+            complete(q, trans);
+        }
+    }
+    
+    void complete(Query q, Transformer trans) {
+        q.setEnvironment(trans.getTransformerMap());
+        q.setTransformer(trans.getTransformation(), trans);
+        q.setTransformationTemplate(true);
+        q.setListPath(true);
+    }
+    
+    void complete(){
+        if (tableList == null){
+            tableList = new HashMap<String, ArrayList<Query>>();
+            for (String name : table.keySet()){
+                ArrayList<Query> list = new ArrayList<Query>(1);
+                list.add(table.get(name));
+                tableList.put(name, list);
+            }
         }
     }
 
     /**
      * templates share profile function definitions
+     * function st:optimize(){} : run TransformerVisitor to optimize template
      */
     public void profile() {
-        Query qprofile = getTemplate(STL_PROFILE);
-        if (qprofile != null) {
+        Query profile = getTemplate(STL_PROFILE);
+        if (profile != null) {
 
-            if (qprofile.getExtension() != null) {
+            if (profile.getExtension() != null) {
                 // share profile function definitions in templates
                 fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
-                tr.definePublic(qprofile.getExtension(), qprofile, false);
+                tr.definePublic(profile.getExtension(), profile, false);
+                TransformerVisitor tv = new TransformerVisitor(profile.getExtension().get(Transformer.STL_OPTIMIZE) != null);
+                
                 for (Query t : getTemplates()) {
-                    t.addExtension(qprofile.getExtension());
+                    t.addExtension(profile.getExtension());
+                    tv.visit(t);
                 }
                 for (Query t : getNamedTemplates()) {
-                    t.addExtension(qprofile.getExtension());
+                    t.addExtension(profile.getExtension());
+                    tv.visit(t);
                 }
             }
         }
     }
-
+            
     public void trace() {
         System.out.println(index.toString());
     }
@@ -171,6 +193,10 @@ public class QueryEngine implements Engine {
     public Query getTemplate(String name) {
         return table.get(name);
     }
+    
+    public List<Query> getTemplateList(String name) {
+        return tableList.get(name);
+    }
 
     public Collection<Query> getNamedTemplates() {
         return table.values();
@@ -194,7 +220,7 @@ public class QueryEngine implements Engine {
             // We are here because a query is processed, hence a (read) lock has been taken
             // tell the query processor that it is already synchronized to prevent QueryProcess synUpdate
             // to take a write lock that would cause a deadlock
-            exec.setSynchronized(true);
+            getQueryProcess().setSynchronized(true);
         }
         for (Query q : list) {
 
@@ -203,7 +229,7 @@ public class QueryEngine implements Engine {
                 q.setDebug(isDebug);
                 System.out.println(q.getAST());
             }
-            Mappings map = exec.query(q);
+            Mappings map = getQueryProcess().query(q);
             b = map.nbUpdate() > 0 || b;
             if (isDebug) {
                 logger.debug(map + "\n");
@@ -214,7 +240,7 @@ public class QueryEngine implements Engine {
 
     public Mappings process(Query q, Mapping m) {
         try {
-            Mappings map = exec.query(q, m, null);
+            Mappings map = getQueryProcess().query(q, m, null);
             return map;
         } catch (EngineException e) {
             // TODO Auto-generated catch block
@@ -329,6 +355,13 @@ public class QueryEngine implements Engine {
     }
 
     public void setVisitor(QueryVisitor vis) {
-        exec.setVisitor(vis);
+        getQueryProcess().setVisitor(vis);
+    }
+
+    /**
+     * @return the exec
+     */
+    public QueryProcess getQueryProcess() {
+        return exec;
     }
 }

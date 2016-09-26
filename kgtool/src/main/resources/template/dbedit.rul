@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Mon Sep 26 11:26:38 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -55,189 +55,39 @@ where {
 #
 prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
 prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
-prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/xmlschema#>
+prefix dc:  <http://purl.org/dc/element/1.1/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix o:   <http://dbpedia.org/ontology/>
 
 template  st:dbpediafortest(?date) {
      
-  let (?list   = aggregate(us:cell(?l, ?c, ?x, ?i)),
-       ?table  = st:split(?list, 5),
-       ?ftable = "<table class='table'>\n%s</table>\n",
-       ?frow   = "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n",
-       ?fcell  = "<td style='vertical-align: bottom'>%s</td>\n"){
-     st:format(?ftable, 
-      let (?n = 0){
-	loop (?row in ?table){
-	    st:format(?frow, 
-	      set(?n = ?n + 1), 
-	      loop (?cell in ?row){
-		st:format(?fcell, ?cell)
-	      })
-	 }
-	}
-      )
-  }
-                  
+  us:table(aggregate(us:cell(?l, ?c, ?res, ?i)), 5)
+      
 }
 where {
     bind (st:get(st:date) as ?date) 
     filter kg:slice(100)
     
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
+  service <http://dbpedia-historique.inria.fr/sparql> {
     
-      select ?x ?c ?i ?date 
+      select distinct ?res ?x ?c ?date 
       where {
-	?rev dc:date ?date 
-	?x dbfr:revPerMonth ?rev 
-	?rev rdf:value ?c  
-	?x o:thumbnail ?i  
-	
-	  filter (
-	       ! regex(?x, "Wikipédia:") 
-	    && ! regex(?x, "Utilisateur:") 
-	    && ! regex(?x, "Portail:") 
-	    && ! regex(?x, "Catégorie:") 
-	    && ! regex(?x, "Discussion_") 
-	    && ! regex(?x, "Modèle:") 
-	    && ! regex(?x, "Projet:")   
-	  ) 		
-
+        ?rev dc:date ?date 
+        ?x dbfr:revPerMonth ?rev 
+        ?rev rdf:value ?c 
+        ?x foaf:primaryTopic ?res
       }
       order by desc(?c)
-      limit 50
-      
+      limit 50      
     }
     
-    # split in two services appears to be much more efficient !
+     # split in two services appears to be much more efficient !
     
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-	?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+  service <http://dbpedia-historique.inria.fr/sparql> {
+        ?res o:thumbnail ?i
+	    ?res rdfs:label ?l filter langMatches(lang(?l), "fr")
     }
-}
-
-
-function us:cell(?l, ?c, ?x, ?i){
-    st:format (
-
-	"""	
-	 %s (%s)
-	 <br/>
-	  <a href='%s'>
-	    <img width='100' alt="%s" src="%s" />
-	  </a>	 
-	""" ,
-	      
-	?l,
-	?c,
-	st:plink(?x, st:dbpedia),
-	?x,
-	us:clean(?i) 	
-      )
-}
-
-
-
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate a table with DBpedia topmost resource updates
-# given month/year ?date
-#
-#
-prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
-prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
-prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/xmlschema#>
-prefix o:   <http://dbpedia.org/ontology/>
-
-template  st:dbpedia(?date) {
-     
-     
-      format {
-
-	"""
-	%s
-	<td style='vertical-align: bottom'>
-	 %s (%s)
-	 <br/>
-	  <a href='%s'>
-	    <img width='100' alt="%s" src="%s" />
-	  </a>
-	 
-	</td>
-	"""
-	
-        # every p cell, add a new row
-	us:row(st:number(), 5)
-	?l
-	?c
-	st:plink(?x, st:dbpedia)
-	?x
-	us:clean(?i) 
-	
-
-      }
-        
-}
-where {
-  bind (st:get(st:date) as ?date) 
-  filter kg:slice(100)
-  
-  service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-  
-    select ?x ?c ?i ?date 
-    where {
-      ?rev dc:date ?date 
-      ?x dbfr:revPerMonth ?rev 
-      ?rev rdf:value ?c  
-      ?x o:thumbnail ?i  
-      
-	filter (
-	     ! regex(?x, "Wikipédia:") 
-	  && ! regex(?x, "Utilisateur:") 
-	  && ! regex(?x, "Portail:") 
-	  && ! regex(?x, "Catégorie:") 
-	  && ! regex(?x, "Discussion_") 
-	  && ! regex(?x, "Modèle:") 
-	  && ! regex(?x, "Projet:")   
-	) 		
-
-    }
-    order by desc(?c)
-    limit 50
     
-  }
-  
-  # split in two services appears to be much more efficient !
-  
-  service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-      ?x rdfs:label ?l filter langMatches(lang(?l), "fr")
-  }
-
-}
-order by desc(?c)
-
-
-# every p cell, add a new row
-function us:row(?n, ?p){
-  if (xt:mod(?n - 1, ?p) = 0, 
-      st:format(
-	"""
-	</tr>
-	<tr><th style='vertical-align: middle'>%s</th>
-	""",  
-	1 + xt:div(?n, ?p) ),
-     "")
 }
 
 
@@ -367,73 +217,41 @@ where {
 #
 prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
 prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
-prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/xmlschema#>
+prefix dc:  <http://purl.org/dc/element/1.1/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix o:   <http://dbpedia.org/ontology/>
 
-template  st:dbpediafortype(?date, ?type) {
+template  st:dbpediafortype(?date) {
      
-     let (?list = aggregate(us:cell(?l, ?c, ?x, ?i))){
-        st:table(st:split(?list, 5))
-     }
-                  
+  us:table(aggregate(us:cell(?l, ?c, ?res, ?i)), 5)
+      
 }
 where {
     bind (st:get(st:date) as ?date) 
     bind (st:get(st:mode) as ?type) 
     filter kg:slice(100)
     
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
+  service <http://dbpedia-historique.inria.fr/sparql> {
     
-      select ?x ?c ?i ?date ?type
+      select distinct ?res ?x ?c ?date ?type
       where {
-	?rev dc:date ?date 
-	?x dbfr:revPerMonth ?rev 
-	?x a ?type
-	?rev rdf:value ?c  
-	?x o:thumbnail ?i  
-	
-	  filter (
-	       ! regex(?x, "Wikipédia:") 
-	    && ! regex(?x, "Utilisateur:") 
-	    && ! regex(?x, "Portail:") 
-	    && ! regex(?x, "Catégorie:") 
-	    && ! regex(?x, "Discussion_") 
-	    && ! regex(?x, "Modèle:") 
-	    && ! regex(?x, "Projet:")   
-	  ) 		
-
+        ?rev dc:date ?date 
+        ?x dbfr:revPerMonth ?rev 
+        ?x foaf:primaryTopic ?res
+        ?res a ?type
+        ?rev rdf:value ?c 
       }
       order by desc(?c)
-      limit 50
-      
+      limit 50      
     }
     
-    # split in two services appears to be much more efficient !
+     # split in two services appears to be much more efficient !
     
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-	?x rdfs:label ?l filter langMatches(lang(?l), "fr")
+  service <http://dbpedia-historique.inria.fr/sparql> {
+        ?res o:thumbnail ?i
+	    ?res rdfs:label ?l filter langMatches(lang(?l), "fr")
     }
-}
-
-
-function us:cell(?l, ?c, ?x, ?i){
-    st:format (
-
-	"""	
-	 %s (%s)
-	 <br/>
-	  <a href='%s'>
-	    <img width='100' alt="%s" src="%s" />
-	  </a>	 
-	""" ,
-	      
-	?l,
-	?c,
-	st:plink(?x, st:dbpedia),
-	?x,
-	us:clean(?i) 	
-      )
+    
 }
 
 
@@ -442,75 +260,6 @@ function us:cell(?l, ?c, ?x, ?i){
 
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
-prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
-prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix o:   <http://dbpedia.org/ontology/>
-
-template st:dbpedia10(?date) {
-     
-     # every 10 cell, add a new row
-     if (xt:mod(st:number() - 1, 10) = 0, 
-      st:format(
-	"""
-	</tr>
-	<tr><th style='vertical-align: middle'>%s</th>
-	""",  
-	1 + xt:div(st:number(), 10) ),
-     "")
-     
-      format {
-
-	"""
-	<td style='vertical-align: bottom'>
-	  <a href='%s'>
-	    <img width='100' alt="%s" src="%s" />
-	  </a>
-	  <br/>
-	  %s
-	</td>
-	"""
-	
-	st:plink(?x, st:dbpedia)
-	?x
-	?i 
-	?c
-      }
-        
-}
-where {
-  
-  service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-    select ?x ?c ?i ?l ?date where {
-      ?rev dc:date ?date ; rdf:value ?c  
-      ?x dbfr:revPerMonth ?rev 
-      ?x o:thumbnail ?i 
-	FILTER (
-	     ! regex(?x, "Wikipédia:") 
-	  && ! regex(?x, "Utilisateur:") 
-	  && ! regex(?x, "Portail:") 
-	  && ! regex(?x, "Catégorie:") 
-	  && ! regex(?x, "Discussion_") 
-	  && ! regex(?x, "Modèle:") 
-	  && ! regex(?x, "Projet:")   
-	)
-	
-	#?x rdfs:label ?l filter langMatches(lang(?l), "fr")
-
-    }
-    ORDER BY DESC(?c)
-    LIMIT 10
-  }
-}
-ORDER BY DESC(?c)
 
 ]]>
 </body>
@@ -567,6 +316,50 @@ function us:clean(?s){
     "", ?s)
 }
 
+#
+# Generation of HTML table of DBpedia updates given ?list of updates 
+#
+function us:table(?list, ?size){
+ let ( ?table  = st:split(?list, ?size),
+       ?ftable = "<table class='table'>\n%s</table>\n",
+       ?frow   = "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n",
+       ?fcell  = "<td style='vertical-align: bottom'>%s</td>\n")
+       {
+     st:format(?ftable, 
+      let (?n = 0){
+	    loop (?row in ?table){
+	      st:format(?frow, 
+	        set(?n = ?n + 1), 
+	        loop (?cell in ?row){
+		      st:format(?fcell, ?cell)
+	        })
+	    }
+	  }
+     )
+  }
+}
+
+#
+# One cell of the HTML table of DBpedia updates
+#
+function us:cell(?l, ?c, ?x, ?i){
+    st:format (
+
+	"""	
+	 %s (%s)
+	 <br/>
+	  <a href='%s'>
+	    <img width='100' alt="%s" src="%s" />
+	  </a>	 
+	""" ,
+	      
+	?l,
+	?c,
+	st:plink(?x, st:dbpedia),
+	?x,
+	us:clean(?i) 	
+      )
+}
 
 
 ]]>
@@ -622,93 +415,6 @@ where {
    
 #   filter kg:display(?date)
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate a table with DBpedia topmost resource updates
-# given month/year ?date
-#
-#
-prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
-prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
-prefix dc:  <http://contextus.net/ontology/ontomedia/misc/date#>
-prefix xsd: <http://www.w3.org/2001/xmlschema#>
-prefix o:   <http://dbpedia.org/ontology/>
-
-template  st:dbpediafor(?date) {
-     
-     let (?list = aggregate(us:cell(?l, ?c, ?x, ?i))){
-        st:table(st:split(?list, 5))
-     }
-                  
-}
-where {
-    bind (st:get(st:date) as ?date) 
-    filter kg:slice(100)
-    
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-    
-      select ?x ?c ?i ?date 
-      where {
-	?rev dc:date ?date 
-	?x dbfr:revPerMonth ?rev 
-	?rev rdf:value ?c  
-	?x o:thumbnail ?i  
-	
-	  filter (
-	       ! regex(?x, "Wikipédia:") 
-	    && ! regex(?x, "Utilisateur:") 
-	    && ! regex(?x, "Portail:") 
-	    && ! regex(?x, "Catégorie:") 
-	    && ! regex(?x, "Discussion_") 
-	    && ! regex(?x, "Modèle:") 
-	    && ! regex(?x, "Projet:")   
-	  ) 		
-
-      }
-      order by desc(?c)
-      limit 50
-      
-    }
-    
-    # split in two services appears to be much more efficient !
-    
-    service <http://dbpedia-test-fr.inria.fr/historique/sparql> {
-	?x rdfs:label ?l filter langMatches(lang(?l), "fr")
-    }
-}
-
-
-function us:cell(?l, ?c, ?x, ?i){
-    st:format (
-
-	"""	
-	 %s (%s)
-	 <br/>
-	  <a href='%s'>
-	    <img width='100' alt="%s" src="%s" />
-	  </a>	 
-	""" ,
-	      
-	?l,
-	?c,
-	st:plink(?x, st:dbpedia),
-	?x,
-	us:clean(?i) 	
-      )
-}
-
-
-
-
-
-
 
 ]]>
 </body>

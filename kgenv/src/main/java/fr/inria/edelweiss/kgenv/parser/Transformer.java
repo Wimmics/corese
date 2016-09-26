@@ -361,14 +361,15 @@ public class Transformer implements ExpType {
         filters(q);
         relax(q);
         new QueryProfile(q).profile();
+       
+        define(q, ast);
+        
         q.setSubQueryList(subQueryList);
         if (visit != null) {
             for (QueryVisitor v : visit) {
                 v.visit(q);
             }
         }
-
-        define(q, ast);
 
         return q;
     }

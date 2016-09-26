@@ -19,14 +19,16 @@ public static int count = 0;
     HashMap<IDatatype, ArrayList<Query>> map;
     HashMap<IDatatype, ArrayList<IDatatype[]>> arg;
     HashMap<IDatatype, IDatatype> visit;
+    Transformer transformer;
     boolean multi = true;
 
-    Stack(boolean b) {
+    Stack(Transformer t, boolean b) {
         list  = new ArrayList<IDatatype>();
         map   = new HashMap<IDatatype, ArrayList<Query>>();
         arg   = new HashMap<IDatatype, ArrayList<IDatatype[]>>();
         visit = new HashMap<IDatatype, IDatatype>();
         multi = b;
+        transformer = t;
     }
 
     int size() {
@@ -41,7 +43,8 @@ public static int count = 0;
     /**
      * dt is the focus node (the first argument)
      * push template q    in dt  template stack 
-     * push argument args in dt argument stack.
+     * push argument args in dt argument stack
+     * args may be null. 
      */
     void push(IDatatype dt, IDatatype[] args, Query q) {
         list.add(dt);
@@ -70,7 +73,6 @@ public static int count = 0;
             IDatatype dt = list.remove(list.size() - 1);
 
             ArrayList<Query> qlist = map.get(dt);
-            Query q = qlist.get(qlist.size() - 1);
             qlist.remove(qlist.size() - 1);
 
             ArrayList<IDatatype[]> alist = arg.get(dt);
@@ -80,37 +82,36 @@ public static int count = 0;
         }
         return null;
     }
-
-    /**
+    
+    
+     /**
      * Check whether template q already applied on dt focus and possibly args
      */
-   boolean contains(IDatatype dt, IDatatype[] args, Query q) {
-       ArrayList<Query> qlist = map.get(dt);
-        if (qlist == null || ! qlist.contains(q)){
+    boolean contains(IDatatype dt, IDatatype[] args, Query q) {
+        ArrayList<Query> qlist = map.get(dt);
+        if (qlist == null) {
             return false;
         }
-        // q is in dt stack
-        if (q.getArgList().size() <= 1){
-            // 0 or 1 argument: ?in or (?x)
-            return true;
-        }
-        // template q has several arguments
         ArrayList<IDatatype[]> alist = arg.get(dt);
-        return contains(alist, args, qlist, q);
+        
+        for (int i = 0; i < qlist.size(); i++) {
+            if (qlist.get(i) == q) {
+                // q is in dt stack
+                if (q.getArgList().size() <= 1) {
+                    // 0 or 1 argument: ?in or (?x)
+                    // q in stack of dt
+                    return true;
+                } 
+                else if (same(alist.get(i), args)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
-   
-   /**
-    * Check whether q(args) already happened in alist arguments stack of dt focus node 
-    */
-   boolean contains(ArrayList<IDatatype[]> alist, IDatatype[] args, ArrayList<Query> qlist, Query q){
-       for (int i = 0; i<qlist.size(); i++){
-           if  (qlist.get(i) == q && same(alist.get(i), args)){
-               return true;
-           }
-       }
-       return false;
-   }
-   
+          
+    
    /**
     * Check whether two argument list are the same
     */
@@ -132,6 +133,42 @@ public static int count = 0;
            return a1 == a2;
        }
    }
+   
+   
+   
+
+    /**
+     * Check whether template q already applied on dt focus and possibly args
+     */
+   @Deprecated
+   boolean contains2(IDatatype dt, IDatatype[] args, Query q) {
+        ArrayList<Query> qlist = map.get(dt);
+        if (qlist == null || ! qlist.contains(q)){
+            return false;
+        }
+        // q is in dt stack
+        if (q.getArgList().size() <= 1){
+            // 0 or 1 argument: ?in or (?x)
+            return true;
+        }
+        // template q has several arguments
+        ArrayList<IDatatype[]> alist = arg.get(dt);
+        return contains(alist, args, qlist, q);
+    }
+   
+   /**
+    * Check whether q(args) already happened in alist arguments stack of dt focus node 
+    */
+   @Deprecated
+   boolean contains(ArrayList<IDatatype[]> alist, IDatatype[] args, ArrayList<Query> qlist, Query q){
+       for (int i = 0; i<qlist.size(); i++){
+           if  (qlist.get(i) == q && same(alist.get(i), args)){
+               return true;
+           }
+       }
+       return false;
+   }
+   
    
    @Deprecated
    boolean contains(IDatatype dt) {

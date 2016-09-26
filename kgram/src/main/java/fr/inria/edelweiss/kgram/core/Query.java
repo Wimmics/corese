@@ -186,6 +186,7 @@ public class Query extends Exp implements Graphable {
 
     private Exp templateGroup, templateNL;
     private List<Node> argList;
+    private Mapping mapping;
     private List<Entity> edgeList;
     private String name;
     private String profile;
@@ -2654,6 +2655,20 @@ public class Query extends Exp implements Graphable {
     
     public void setEnvironment(HashMap map){
         tprinter = map;
+    }
+
+    /**
+     * @return the mapping
+     */
+    public Mapping getMapping() {
+        return mapping;
+    }
+
+    /**
+     * @param mapping the mapping to set
+     */
+    public void setMapping(Mapping mapping) {
+        this.mapping = mapping;
     }
 
 }

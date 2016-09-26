@@ -606,6 +606,7 @@ public class Mapping
 		return nodes[n];
 	}
 	
+        @Override
 	public Node getQueryNode(int n){
 		return qNodes[n];
 	}
@@ -626,6 +627,7 @@ public class Mapping
 		return n.getValue();
 	}
         
+        @Override
         public Object getValue(String var, int n){
             return getValue(var);
         }
@@ -638,6 +640,7 @@ public class Mapping
 		return n.getValue();
 	}
 	
+        @Override
 	public Node getNode(String label){
 		int n = 0;
 		for (Node qnode : qNodes){
@@ -658,10 +661,12 @@ public class Mapping
             return list;
        }
 	
+        @Override
 	public Node[] getQueryNodes(){
 		return qNodes;
 	}
 	
+        @Override
 	public Node[] getNodes(){
 		return nodes;
 	}
@@ -670,6 +675,7 @@ public class Mapping
 		return qEdges;
 	}
 	
+        @Override
 	public Entity[] getEdges(){
 		return edges;
 	}

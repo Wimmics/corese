@@ -78,7 +78,7 @@ public class Transformer  {
     public static final String STL_START    = STL + "start";
     public static final String STL_TRACE    = STL + "trace";
     public static final String STL_DEFAULT  = Processor.STL_DEFAULT;   
-    //private static final String STL_TURTLE  = STL + "turtle";   
+    public static final String STL_OPTIMIZE    = STL + "optimize";
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PROCESS  = Processor.STL_PROCESS;   
     public static final String STL_AGGREGATE  = Processor.STL_AGGREGATE;   
@@ -100,6 +100,7 @@ public class Transformer  {
     Query query;
     NSManager nsm;
     QueryProcess exec;
+    private Mapping mapping;
     Processor proc;
     private Dataset ds;
     Stack stack;
@@ -120,15 +121,17 @@ public class Transformer  {
     HashMap<Query, Integer> tcount;
     HashMap<String, String> loaded, imported;
     // table of nested transformers for apply-templates-with
-    // all sub transformers share same table recursively
+    // templates share this table
+    // sub transformers share same table recursively
     private HashMap<String, Transformer> transformerMap;
+    // table accessible using st:set/st:get
     private Context context;
     private boolean isHide = false;
     public boolean stat = !true;
-    private boolean isAllResult = true;
     private boolean isCheck = false;
     // index and run templates according to focus node type
     // no subsumption (exact match on type)
+    @Deprecated
     private boolean isOptimize = isOptimizeDefault;
     
     // st:process() of template variable, may be overloaded
@@ -143,10 +146,8 @@ public class Transformer  {
     static {
         table = new Table();
     }
-    private boolean isExplain = isExplainDefault();
+    // is there a st:default template
     private boolean hasDefault = false;
-    private Expr processExp;
-
   
 
     Transformer(Graph g, String p) {
@@ -165,7 +166,7 @@ public class Transformer  {
         nsm = NSManager.create();
         transformerMap = new HashMap<String, Transformer>();
         init();
-        stack = new Stack(true);
+        stack = new Stack(this, true);
         EMPTY = DatatypeMap.createLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
         proc = Processor.create();
@@ -544,14 +545,6 @@ public class Transformer  {
         return aggregate;
     }
     
-    public Expr getProcessExp(){
-        return processExp;
-    }
-    
-    void setProcessExp(Expr e){
-         processExp = e;
-    }
-
     /**
      * Transform the whole graph (no focus node) 
      * Apply template st:start, if any
@@ -568,6 +561,10 @@ public class Transformer  {
         return process(temp, false, null);
     }
     
+    /**
+     * Run transformation when there is no focus node
+     * Usually it runs the st:start template.
+     */
     public IDatatype process(String temp, boolean all, String sep) {
         count++;
         query = null;
@@ -576,7 +573,7 @@ public class Transformer  {
             temp = start;
         }
         List<Query> list = getTemplate(temp);
-        if (list.isEmpty()) {
+        if (list == null) {
             list = qe.getTemplates();
         }
         if (list.isEmpty()) {
@@ -668,13 +665,14 @@ public class Transformer  {
 
     /**
      * exp: the fun call, eg st:apply-templates(?x) 
-     * dt1: focus node 
-     * args: list of args 
+     * dt: focus node 
+     * args: list of args, may be null
      * temp: name of a template (may be null) 
-     * allTemplates: execute all templates on focus and concat results 
+     * allTemplates: execute all templates on focus and aggregate results 
      * sep: separator in case of allTemplates
-     * use case: template {  ?w  } where {  ?w  } 
-     * Search a template that matches ?w By convention, ?w is bound to ?in, all templates use
+     * q is the template Query
+     * use case: template {  st:apply-templates(?w)  } where {  ?w  } 
+     * Search a template that matches ?w By convention, ?w is bound to ?in, templates use
      * variable ?in as focus node in where clause and ?out as output node 
      * Execute the first template that matches ?w (all templates if allTemplates = true) 
      * Templates are sorted more "specific" first  using a 
@@ -684,15 +682,15 @@ public class Transformer  {
      * context of evaluation: it is an extension function of a SPARQL query
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
-    public IDatatype process(IDatatype[] args, IDatatype dt1, String temp,
+    public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
             boolean allTemplates, String sep, Expr exp, Query q) {   
         count++;
-        if (dt1 == null) {
+        if (dt == null) {
             return EMPTY;
         }
         
         if (level() >= levelMax){
-            return display(dt1, q);
+            return defaut(dt, q);
         }
 
         ArrayList<IDatatype> result = null;
@@ -702,29 +700,26 @@ public class Transformer  {
         boolean start = false;
 
         if (query != null && stack.size() == 0) {
-            // just started with query in pprint() above
+            // just started with query in process() above
             // without focus node at that time
             // push dt -> query in the stack
-            // query is the first template that started pprint (see function above)
+            // query is the first template that started process (see function above)
             // and at that time ?in was not bound
-            // use case:
-            // template {"subClassOf(" ?in " " ?y ")"} where {?in rdfs:subClassOf ?y}
             start = true;
-            stack.push(dt1, args, query);
+            stack.push(dt, args, query);
        }
 
         if (isDebug || isTrace) {
-            trace(dt1, args, exp);
+            trace(dt, args, exp);
         }
 
-        Graph g = graph;
         QueryProcess exec = this.exec;
         
         int count = 0, n = 0;
 
         IDatatype type = null;
         if (isOptimize) {
-            type = graph.getValue(RDF.TYPE, dt1);
+            type = graph.getValue(RDF.TYPE, dt);
         }
         
         List<Query> templateList = getTemplates(temp, type);
@@ -733,7 +728,8 @@ public class Transformer  {
             // named template may have specific arguments
             tq = templateList.get(0);
         }
-        Mapping m = getMapping(args, dt1, tq);
+        // Mapping of tq or default Mapping ?in = dt
+        Mapping m = getMapping(tq, args, dt);
 
         for (Query qq : templateList) {
             
@@ -743,14 +739,14 @@ public class Transformer  {
                 qq.setDebug(true);
             }
                         
-            if (!qq.isFail() && !stack.contains(dt1, args, qq)) {
+            if (!qq.isFail() && !stack.contains(dt, args, qq)) {
 
                 nbt++;
 
                 if (allTemplates) {
                     count++;
                 }
-                stack.push(dt1, args, qq);
+                stack.push(dt, args, qq);
                if (stack.size() > max) {
                     max = stack.size();
                 }
@@ -762,19 +758,12 @@ public class Transformer  {
                 n++;
                 if (qq != tq && qq.getArgList() != null){
                     // std template has arg list: create appropriate Mapping
-                    // TODO: we may want to check that card(arg) = card(param)
-                    bm = getMapping(args, dt1, qq);
+                    bm = getMapping(qq, args, dt);
                 }
                 
                 Mappings map = exec.query(qq, bm);
-                stack.visit(dt1);
-
-                if (!allTemplates) {
-                    // if execute all templates, keep them in the stack 
-                    // to prevent loop same template on same focus node
-                    stack.pop();
-                }
-
+                stack.visit(dt);
+                stack.pop();
                 IDatatype res = getResult(map);
 
                 if (res != null) {
@@ -793,48 +782,38 @@ public class Transformer  {
                 }
             }
         }
-
-        if (allTemplates) {
-            // gather results of several templates
-
-            for (int i = 0; i < count; i++) {
-                // pop the templates that have been executed
-                stack.pop();
-            }
-
-            if (result.size() > 0) {
-
-                if (start) {
-                    stack.pop();
-                }
-
-                IDatatype res = result(result, separator(sep));
-                return res;
-            }
-        }
-        
-        
-        // **** no template match dt ****
-
-
+              
         if (start) {
             stack.pop();
         }
 
+        if (allTemplates) {
+            // gather results of several templates
+            if (result.size() > 0) {
+                IDatatype res = result(result, separator(sep));
+                return res;
+            }
+        }
+               
+        // **** no template match dt ****      
+
         if (temp != null) {
-            // named template fail
+            // named template does not match focus node dt
+            if (isBoolean()){
+                return defaultBooleanResult();
+            }
             return EMPTY;
         }
         else if (isHasDefault()) {
             // apply st:default named template
-            IDatatype res = process(args, dt1, STL_DEFAULT, allTemplates, sep, exp, q);
+            IDatatype res = process(args, dt, STL_DEFAULT, allTemplates, sep, exp, q);
             if (res != EMPTY) {
                 return res;
             }
         }
 
         // use a default display (may be dt1 as is or st:turtle)
-        return display(dt1, q);
+        return defaut(dt, q);
     }
     
     void trace(IDatatype dt1, IDatatype[] args, Expr exp) {
@@ -857,36 +836,84 @@ public class Transformer  {
     
     /**
      * when st:call-template(name, v1, ... vn)
-     * ldt = [name, v1, ... vn]
+     * ldt = [v1, ... vn]
      * otherwise ldt = null
      */
-    Mapping getMapping(IDatatype[] ldt, IDatatype dt1, Query q) {
-        if (ldt != null && q != null && ! q.getArgList().isEmpty()){
-            return getMapping(ldt, q.getArgList());
+    Mapping getMapping(Query q, IDatatype[] ldt, IDatatype dt) {
+        if (ldt != null && q != null && !q.getArgList().isEmpty()) {
+            return getMapping(q, ldt);
         }
-        
-        Node qn1 = NodeImpl.createVariable(getArg(q, 0));
-        Node n1 = getNode(dt1);
-        return Mapping.create(qn1, n1);
-//        if (dt2 == null) {
-//            return Mapping.create(qn1, n1);
-//        } else {
-//            Node qn2 = NodeImpl.createVariable(getArg(q, 1));
-//            Node n2 = getNode(dt2);
-//            return Mapping.create(qn1, n1, qn2, n2);
-//        }
+        else {
+            return getMappingCache(q, dt);
+        } 
     }
     
+    Mapping getMappingCache(Query q, IDatatype dt){
+        if (q == null){
+            return getSimpleMapping(dt);
+        }
+        else {
+            Mapping map = q.getMapping();
+            if (map == null || map.getNodes().length != 1){
+                map = getMapping(q, dt);
+                q.setMapping(map);
+            }
+            else {
+                map.getNodes()[0] = getNode(dt);
+            }
+
+            return map;
+        }
+    }
+    
+    Mapping getSimpleMapping(IDatatype dt){
+        Mapping map = getMapping();
+        if (map == null){
+            map = Mapping.create(NodeImpl.createVariable(IN), getNode(dt));
+            setMapping(map);
+        }
+        else {
+            map.getNodes()[0] = getNode(dt);
+        }
+        return map;
+    }
+    
+    
+    Mapping getMapping(Query q, IDatatype dt){
+        Node qn = NodeImpl.createVariable(getArg(q, 0));
+        Node n = getNode(dt);
+        return Mapping.create(qn, n);
+    }
+    
+
+    Mapping getMapping(Query q, IDatatype[] values) {
+        Mapping map = q.getMapping();
+        if (map == null || map.getNodes().length != values.length){
+            map = getMapping(q.getArgList(), values);
+            q.setMapping(map);
+        }
+        else {
+            // reuse template Mapping
+            for (int i = 0; i<values.length; i++){
+                map.getNodes()[i] = values[i];
+            }
+        }
+        
+        return map;
+    }
+    
+    
     /**
-     * 
+     * args:   template arguments
+     * values: call-template arguments
      */  
-    Mapping getMapping(IDatatype[] ldt, List<Node> args){
-        int size = Math.min(ldt.length, args.size());
+    Mapping getMapping(List<Node> args, IDatatype[] values){
+        int size = Math.min(values.length, args.size());
         Node[] qn = new Node[size];
         Node[] tn = new Node[size];
         for (int i = 0; i<size; i++){
-           qn[i] = NodeImpl.createVariable(args.get(i).getLabel());
-           tn[i] = getNode(ldt[i]);
+           qn[i] = args.get(i); //NodeImpl.createVariable(args.get(i).getLabel());
+           tn[i] = getNode(values[i]);
         }
         return Mapping.create(qn, tn);
     }
@@ -914,7 +941,6 @@ public class Transformer  {
     Node getNode(IDatatype dt) {
         Node n = graph.getNode(dt, false, false);
         if (n == null) {
-            // use case: st:apply-templates("header")
             n = fake.getNode(dt, true, true);
         }
         return n;
@@ -952,12 +978,7 @@ public class Transformer  {
     }
 
     private List<Query> getTemplate(String temp) {
-        Query q = qe.getTemplate(temp);
-        ArrayList<Query> l = new ArrayList<Query>(1);
-        if (q != null) {
-            l.add(q);
-        }
-        return l;
+       return qe.getTemplateList(temp);       
     }
 
     /**
@@ -1016,7 +1037,7 @@ public class Transformer  {
             if (dt == null) {
                 isError = true;
             } else {
-                try {
+                try {                  
                     boolean b = dt.isTrue();
                     and &= b;
 
@@ -1064,13 +1085,17 @@ public class Transformer  {
         }
         return sb;
     }
+     
+     IDatatype defaultBooleanResult(){
+         return DatatypeMap.TRUE;
+     }
 
     /**
-     * Default display when all templates fail
+     * Default result when all templates fail
      */
-    IDatatype display(IDatatype dt, Query q) {
+    IDatatype defaut(IDatatype dt, Query q) {
         if (isBoolean()){
-            return DatatypeMap.TRUE;
+            return defaultBooleanResult();
         }
         int ope = defaut;
         if (q != null) {
@@ -1283,14 +1308,6 @@ public class Transformer  {
 
     public void setHide(boolean isHide) {
         this.isHide = isHide;
-    }
-
-    private boolean isAllResult() {
-        return isAllResult;
-    }
-
-    public void setAllResult(boolean isAllResult) {
-        this.isAllResult = isAllResult;
     }
 
     public Graph getGraph() {
@@ -1532,6 +1549,20 @@ public class Transformer  {
      */
     public void setTransformerMap(HashMap<String, Transformer> transformerMap) {
         this.transformerMap = transformerMap;
+    }
+
+    /**
+     * @return the mapping
+     */
+    public Mapping getMapping() {
+        return mapping;
+    }
+
+    /**
+     * @param mapping the mapping to set
+     */
+    public void setMapping(Mapping mapping) {
+        this.mapping = mapping;
     }
           
 }

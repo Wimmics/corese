@@ -686,11 +686,11 @@ public class Eval implements ExpType, Plugin {
             pathFinder.set(manager);
         }
         pathFinder.set(listener);
-        pathFinder.setList(query.getOuterQuery().isListPath());
+        pathFinder.setList(query.getGlobalQuery().isListPath());
         // rdf:type/rdfs:subClassOf* generated system path does not store the list of edges
         // to be optimized
-        pathFinder.setStorePath(query.getOuterQuery().isStorePath() && !exp.isSystem());
-        pathFinder.setCache(query.getOuterQuery().isCachePath());
+        pathFinder.setStorePath(query.getGlobalQuery().isStorePath() && !exp.isSystem());
+        pathFinder.setCache(query.getGlobalQuery().isCachePath());
         // TODO: subQuery 
         pathFinder.setCheckLoop(query.isCheckLoop());
         pathFinder.setCountPath(query.isCountPath());
@@ -995,7 +995,7 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case EDGE:
-                    if (query.getOuterQuery().isPathType() && exp.hasPath()) {
+                    if (query.getGlobalQuery().isPathType() && exp.hasPath()) {
                         backtrack = path(p, gNode, exp.getPath(), stack, n);
                     } else {
                             backtrack = edge(p, gNode, exp, stack, n);

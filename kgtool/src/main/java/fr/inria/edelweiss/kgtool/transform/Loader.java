@@ -75,13 +75,13 @@ public class Loader {
      QueryEngine load(String pp) {
         QueryEngine qe = QueryEngine.create(graph); 
         RuleEngine re  = RuleEngine.create(graph); 
+        // PP as list (not in a thread)
+        qe.getQueryProcess().setListPath(true);
         qe.setTransformation(true);
         re.setQueryEngine(qe);
         qe.setDataset(ds);
         re.setDataset(ds);
-        
-        visitor(qe); 
-        
+                
         if (pp == null) {
             // skip;
         } else {
@@ -97,25 +97,12 @@ public class Loader {
                 logger.error(e);
                 logger.error("Transformer Load Error: " + pp);
             }
-
-           //qe.complete(pp, trans);
         }
           
         return qe;
 
     }
-     
-     /**
-      * QueryVisitor may perform optimization
-      */
-     void visitor(QueryEngine qe){
-         if (trans.getTransformation()!=null && trans.getTransformation().contains("datashape")){
-            qe.setVisitor(new TransformerVisitor());
-         }
-     }
-     
-  
-    
+       
        /**
      * Predefined transformations loaded from Corese resource or ns.inria.fr server
      */

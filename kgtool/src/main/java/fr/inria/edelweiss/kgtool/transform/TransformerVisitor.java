@@ -16,7 +16,11 @@ import fr.inria.edelweiss.kgram.core.Query;
 public class TransformerVisitor implements QueryVisitor {
     static final String GRAPH = "?shape";
     static final String SHAPE = "?sh";
+    boolean optimize = false;
     
+    public TransformerVisitor(boolean b){
+        optimize = b;
+    }
     
     /**
      * ast is a template
@@ -33,15 +37,17 @@ public class TransformerVisitor implements QueryVisitor {
      */
     @Override
     public void visit(Query query) {
-        process(query);
+        if (optimize){
+            process(query);
+        }
     }
     
     
     
     /**
      * When first exp of template-where is graph ?shape { ?sh p v }, tag graph pattern as bgpAble
-     * kgram evaluate it as a BGP and computes Mappings that are cached
-     * in such a way not to recompute it several times for the same shape ?sh.
+     * kgram evaluate it as a BGP, computes Mappings and cache it in a table: ?sh -> Mappings
+     * next evaluation get Mappings from cache
      */
     void process(Query query){
         optimize(query);
@@ -57,8 +63,7 @@ public class TransformerVisitor implements QueryVisitor {
     
     
     /**
-     * 
-     * graph ?shape { ?sh sh:property ?cst }
+     * is it: graph ?shape { ?sh sh:property ?cst }
      */
     void optimize(Query query, String graph, String var) {
         if (query.getBody().size() > 0) {

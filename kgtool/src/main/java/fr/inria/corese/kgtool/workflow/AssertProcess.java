@@ -50,9 +50,11 @@ public class AssertProcess extends SemanticProcess {
     
     @Override
     void finish(Data data){
-       message(data);
+       if (isVerbose()){
+           message(data);
+       }
     }
-    
+       
     void message(Data data){
         if (data.isSuccess()){
             System.out.println(getName() + " ok");

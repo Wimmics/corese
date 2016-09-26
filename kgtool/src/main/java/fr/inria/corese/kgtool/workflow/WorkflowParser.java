@@ -82,6 +82,7 @@ public class WorkflowParser {
     public static final String VISITOR = PREF + "visitor";
     public static final String SPIN = PREF + "spin";
     public static final String NEW = PREF + "new";
+    public static final String SILENT = PREF +"silent";
     
     public static final String LOAD_PARAM = Context.STL_PARAM;
     public static final String MODE_PARAM = Context.STL_MODE;

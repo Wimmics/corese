@@ -102,6 +102,11 @@
 	  <artifactId>sesame-rio-nquads</artifactId>
 	  <version>4.1.1</version>
 	 </dependency>
+	 <dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>commons-configuration2</artifactId>
+	  <version>2.1</version>
+	 </dependency>
 	</dependencies>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

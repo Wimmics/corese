@@ -20,21 +20,20 @@ import java.util.logging.Logger;
  *
  * @author edemairy
  */
-public class CoreseAdapter implements CoreseAdapterInterface {
+public class CoreseAdapter {
 
 	private Mappings map;
 	private QueryProcess exec;
 
-	@Override
-	public void preProcessing(String fileName) {
+	public void preProcessing(String fileName, boolean load) {
 		Graph graph = Graph.create();
-		Load ld = Load.create(graph);
-
-		ld.load(fileName);
+		if (load) {
+			Load ld = Load.create(graph);
+			ld.load(fileName);
+		}
 		exec = QueryProcess.create(graph);
 	}
 
-	@Override
 	public void execQuery(String query) {
 		try {
 			map = exec.query(query);
@@ -55,7 +54,6 @@ public class CoreseAdapter implements CoreseAdapterInterface {
 		}
 	}
 
-	@Override
 	public void postProcessing() {
 		exec.close();
 	}

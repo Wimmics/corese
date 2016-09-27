@@ -98,7 +98,6 @@ public class RdfToGraph {
 				}
 			}
 		}
-
 	}
 
 	public RdfToGraph() {

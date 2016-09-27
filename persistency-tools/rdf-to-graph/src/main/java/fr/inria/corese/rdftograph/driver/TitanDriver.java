@@ -5,21 +5,14 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
-import com.thinkaurelius.titan.core.Cardinality;
-import com.thinkaurelius.titan.core.EdgeLabel;
-import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
-import com.thinkaurelius.titan.core.schema.SchemaStatus;
-import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
-import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
-import static fr.inria.corese.rdftograph.RdfToGraph.CONTEXT;
 import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
 import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
 import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
@@ -29,15 +22,15 @@ import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
 import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
 import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
 import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
-import java.time.temporal.ChronoUnit;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -53,20 +46,31 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public void openDb(String dbPath) {
-		BaseConfiguration configuration = new BaseConfiguration();
+		PropertiesConfiguration configuration = null;
+		File confFile = new File(dbPath + "/conf.properties");
+		try {
+			configuration = new PropertiesConfiguration(confFile);
+		} catch (ConfigurationException ex) {
+			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
+		}
 //		configuration.setProperty("storage.batch-loading", false);
 		configuration.setProperty("storage.backend", "berkeleyje");
-		configuration.setProperty("storage.directory", dbPath);
-//		configuration.setProperty("schema.default", "default");
-		configuration.setProperty("storage.buffer-size", 50_000);
-		configuration.setProperty("ids.block-size", 1_000_000);
+		configuration.setProperty("storage.directory", dbPath + "/db");
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
+//		configuration.setProperty("schema.default", "default");
+		configuration.setProperty("storage.buffer-size", 50_000);
+		configuration.setProperty("ids.block-size", 1_000_000);
+		try {
+			configuration.save();
+		} catch (ConfigurationException ex) {
+			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-		g = TitanFactory.open(dbPath + "/conf.properties");
-
+		g = TitanFactory.open(configuration);
+//		writeToPropertiesFile
 		makeIfNotExistProperty(EDGE_VALUE);
 		makeIfNotExistProperty(VERTEX_VALUE);
 		createIndexes();

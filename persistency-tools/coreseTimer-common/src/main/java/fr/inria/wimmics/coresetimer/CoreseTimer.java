@@ -25,8 +25,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
-	public final static String[] inputs = {
-		"data.nq"
+	public final static String[][] inputs = {
+		{"data.nq", "data_db"}
 	};
 
 	public final static String[] queries = {
@@ -41,18 +41,23 @@ public class CoreseTimer {
 	public final static int SAMPLES = 20;
 	public final static boolean DATA_IN_MEMORY = false;
 	public final static String PREFIX = "bd_";
-	public CoreseAdapterInterface adapter;
+	public CoreseAdapter adapter;
 	public String adapterName;
 	private static String outputRoot;
+
+	public enum Profile {
+		DB, MEMORY
+	};
+	private Profile profile;
 
 	/**
 	 *
 	 * @param adapterName class name for the adapter to the version of
 	 * corese used.
-	 * @param run_profile kind of usage of corese (currently "db" or
+	 * @param runProfile kind of usage of corese (currently "db" or
 	 * "memory"). Used to classify the results and stats done.
 	 */
-	public CoreseTimer(String adapterName, String runProfile) {
+	public CoreseTimer(String adapterName, Profile runProfile) {
 		this.adapterName = adapterName;
 		// create output directory of the form ${OUTPUT_ROOT}
 		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
@@ -60,6 +65,7 @@ public class CoreseTimer {
 		outputRoot += runProfile;
 		outputRoot = ensureEndWith(outputRoot, "/");
 		createDir(outputRoot, "rwxr-x---");
+		this.profile = runProfile;
 	}
 
 	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
@@ -74,9 +80,19 @@ public class CoreseTimer {
 		for (int nbInput = 0; nbInput < inputs.length; nbInput++) {
 			LOGGER.info("beginning with input #" + nbInput);
 			// require to have a brand new adapter for each new input set.
-			adapter = (CoreseAdapterInterface) Class.forName(adapterName).newInstance();
-			String inputFileName = inputRoot + inputs[nbInput];
-			adapter.preProcessing(inputFileName);
+			adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
+
+			String inputFileName = inputRoot;
+			if (profile == Profile.MEMORY) {
+				inputFileName += inputs[nbInput][0];
+				adapter.preProcessing(inputFileName, true);
+			} else if (profile == Profile.DB) {
+				inputFileName += inputs[nbInput][1];
+				System.setProperty("fr.inria.corese.tinkerpop.dbinput", inputFileName);
+				System.out.println("property = " + System.getProperty("fr.inria.corese.tinkerpop.dbinput"));
+				adapter.preProcessing(inputFileName, false);
+			}
+
 			for (int nbQuery = 0; nbQuery < queries.length; nbQuery++) {
 				String query = queries[nbQuery];
 				LOGGER.info("processing nbQuery #" + nbQuery);

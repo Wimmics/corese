@@ -19,15 +19,10 @@ import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 public class Factory {
 
 	public static String DRIVER = "com.thinkaurelius.titan.core.TitanFactory";
-	public static String DB_PATH = "/Users/edemairy/tp2/btc_titandb_1002";
-	public static String[] CONFIG = {
-//		"storage.backend", "berkeleyje",
-		DB_PATH+"/conf.properties"
-//		, "storage.directory", DB_PATH
-	};
+	public static String DB_PATH;
+	public static String[] CONFIG;
 //	public static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
 //	public static String DB_PATH = "/Users/edemairy/btc_neo4j_10m";
-	public static String[] CONFIG2 = {Neo4jGraph.CONFIG_DIRECTORY, DB_PATH};
 //		public static String DRIVER = "org.apache.tinkerpop.gremlin.orientdb.OrientGraph";
 //		public static String DB_PATH = "plocal:/Users/edemairy/btc_orientdb_1m";
 //		public static String[] CONFIG3 = {OrientGraph.CONFIG_URL, DB_PATH};
@@ -35,7 +30,10 @@ public class Factory {
 	private static Optional<TinkerpopGraph> graph = null;
 
 	public static Object create(Graph g) {
+		DB_PATH = System.getProperty("fr.inria.corese.tinkerpop.dbinput");
 		TinkerpopProducer p = new TinkerpopProducer(g);
+		CONFIG = new String[1];
+		CONFIG[0] = DB_PATH+"/conf.properties";
 		graph = TinkerpopGraph.create(DRIVER, CONFIG);
 		p.setTinkerpopGraph(graph.get());
 		return p;

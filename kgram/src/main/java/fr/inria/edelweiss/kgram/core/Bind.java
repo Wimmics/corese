@@ -54,8 +54,13 @@ public class Bind {
         return varList.size() > 0 || level.size()>0;
     }
 
+    /**
+     * Get variable value within current function call binding environment
+     * between top of stack and level
+     */
     public Node get(Expr var) {
-        for (int i = varList.size() - 1; i >= 0; i--) {
+        int end = (level.isEmpty()) ? 0 : level.get(level.size() - 1);                   
+        for (int i = varList.size() - 1; i >= end; i--) {
             if (varList.get(i).equals(var)) {
                 return valList.get(i);
             }
@@ -73,10 +78,11 @@ public class Bind {
     }
 
     /**
-     * TODO; scope of variable
+     * set(?x = ?x + 1)
      */
     public void bind(Expr exp, Expr var, Node val) {
-        for (int i = varList.size() - 1; i >= 0; i--) {
+        int end = (level.isEmpty()) ? 0 : level.get(level.size() - 1);                   
+        for (int i = varList.size() - 1; i >= end; i--) {
             if (varList.get(i).equals(var)) {
                 valList.set(i, val);
             }

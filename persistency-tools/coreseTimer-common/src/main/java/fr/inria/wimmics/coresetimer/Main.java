@@ -12,12 +12,12 @@ package fr.inria.wimmics.coresetimer;
 public class Main {
 	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 		System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
-		CoreseTimer timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName() , "db"); 
+		CoreseTimer timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName() , CoreseTimer.Profile.DB); 
 		timer.run();
 
 
 		System.setProperty("fr.inria.corese.factory", "");
-		timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName(), "memory"); 
+		timer = new CoreseTimer( CoreseAdapter.class.getCanonicalName(), CoreseTimer.Profile.MEMORY); 
 		timer.run();
 	}	
 }

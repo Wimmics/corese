@@ -28,13 +28,8 @@ import fr.inria.edelweiss.kgram.event.ResultListener;
 import fr.inria.edelweiss.kgram.path.PathFinder;
 import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.tool.ResultsImpl;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.logging.log4j.Level;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

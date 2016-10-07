@@ -39,6 +39,7 @@ public class And extends Exp {
 		return new And(exp1, exp2);
 	}
 	
+        @Override
 	public boolean isAnd(){
 		return true;
 	}

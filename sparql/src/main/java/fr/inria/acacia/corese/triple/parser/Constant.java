@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import java.util.List;
 
 /**
  * <p>Title: Corese</p>
@@ -21,6 +22,8 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Constant extends Atom {
+        public static Constant rootProperty;
+        
 	private static Logger logger = LogManager.getLogger(Constant.class);
 	private static NSManager nsm;
 	static DatatypeMap dm;
@@ -36,6 +39,7 @@ public class Constant extends Atom {
         static {        
             dm = DatatypeMap.create();
             nsm = NSManager.create();
+            rootProperty = Constant.createResource(RDFS.RootPropertyURI);
 	}
 
 	public Constant() {}
@@ -109,6 +113,7 @@ public class Constant extends Atom {
 		return cst;
 	}
         
+        @Override
         public String getDatatype() {
 		return datatype;
 	}
@@ -127,16 +132,8 @@ public class Constant extends Atom {
 		return true;				
 	}
 
-//	// only xsd/rdf datatype (no rdfs:Literal no rdfs:Resource)
-//	public String getRealDatatype() {
-//		if (! hasRealDatatype()){
-//			return null;
-//                }
-//                else {
-//			return datatype;
-//                }
-//	}
 
+        @Override
 	public String getLang() {
 		return dt.getLang();
 	}
@@ -147,6 +144,7 @@ public class Constant extends Atom {
 	}
 
 
+        @Override
        public StringBuffer toString(StringBuffer sb) { 
 		if (isLiteral()){						
 			if (hasLang()) {
@@ -274,10 +272,12 @@ public class Constant extends Atom {
 	   }
 
 	
+        @Override
 	public Constant getConstant() {
 		return this;
 	}
 	
+        @Override
 	public boolean equals(Object c){
 		if (c instanceof Constant){
 			Constant cc = (Constant) c;
@@ -296,6 +296,7 @@ public class Constant extends Atom {
 		return dt;
 	}
 	
+        @Override
 	public Expression prepare(ASTQuery ast){
 		getDatatypeValue();
 		return this;
@@ -324,27 +325,33 @@ public class Constant extends Atom {
 		dt = dd;
 	}
 
+        @Override
 	public int regLength(){
 		return 1;
 	}
 	
+        @Override
 	public int length(){
 		return 1;
 	}
 		
 
+        @Override
 	public boolean isConstant() {
 		return true;
 	}
 
+        @Override
 	public boolean isLiteral() {
            return dt.isLiteral();
     }
 	
+        @Override
 	public boolean isBlank(){
             return dt.isBlank();
 	}
 		
+        @Override
 	public void setWeight(String w){
 		try {
 			setWeight(Integer.parseInt(w));
@@ -358,6 +365,7 @@ public class Constant extends Atom {
 	}
 
 	
+        @Override
 	public int getWeight(){
 		return weight;
 	}
@@ -366,6 +374,7 @@ public class Constant extends Atom {
 		return false;
 	}
 	
+        @Override
 	public boolean isResource() {
             return dt.isURI();
 	}
@@ -379,11 +388,13 @@ public class Constant extends Atom {
         exp = e;
     }
     
+        @Override
     public Expression getExpression() {
         return exp;
     }
 
     // use when "get:name::?x" or "c:SomeRelation::?p" because we have both a variable and a constant
+        @Override
     public Variable getIntVariable() {
         return var;
     }
@@ -427,23 +438,12 @@ public class Constant extends Atom {
 		return cst;
 	}
         
-//        public Constant copySave(){
-//		Constant cst;
-//		if (isLiteral()){
-//			cst = new Constant(getLabel(), getDatatype(), getLang());                       
-//		}
-//		else {
-//			cst = new Constant(getLabel());
-//			cst.setQName(isQName);
-//		}
-//		cst.setLongName(getLongName());
-//		return cst;
-//	}
-        
+        @Override
          void visit(ExpressionVisitor v){
             v.visit(this);
         }
 	
+        @Override
 	public Expression transform(boolean isReverse){
 		Constant cst = this;
 		if (isReverse){
@@ -454,6 +454,13 @@ public class Constant extends Atom {
 		cst.setretype(cst.getretype());
 		return cst;
 	}
+        
+        @Override
+        void getConstants(List<Constant> l){
+            if (! l.contains(this)){
+                l.add(this);
+            }
+        }
         
         
 }

@@ -46,6 +46,7 @@ implements Regex, Filter, Expr {
 		name=str;
 	}
 	
+        @Override
 	public  int getArity(){
 		return -1;
 	}
@@ -54,6 +55,7 @@ implements Regex, Filter, Expr {
 		return null;
 	}
 	
+        @Override
 	public Expression getArg(int i){
 		return null;
 	}
@@ -96,14 +98,17 @@ implements Regex, Filter, Expr {
 		return Term.function(Term.STAR, this);
 	}
         
+        @Override
         public String getShortName(){
             return name;
         }
 	
+        @Override
 	public String getName(){
 		return name;
 	}
 	
+        @Override
 	public String getLongName(){
 		return longName;
 	}
@@ -116,6 +121,7 @@ implements Regex, Filter, Expr {
 		this.exp = exp;
 	}
 	
+        @Override
 	public Expression getExpr(){
 		return exp;
 	}
@@ -147,6 +153,7 @@ implements Regex, Filter, Expr {
             return false;
         }
         
+        @Override
         public boolean isTester(){
             return false;
         }
@@ -156,6 +163,7 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public void setPublic(boolean b){
 	}
         	
@@ -167,10 +175,12 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public boolean isConstant(){
 		return false;
 	}
 
+        @Override
 	public boolean isVariable(){
 		return false;
 	}
@@ -196,6 +206,7 @@ implements Regex, Filter, Expr {
 		return false;
 	}
         
+        @Override
         public boolean isFuncall(){
 		return false;
 	}
@@ -204,6 +215,7 @@ implements Regex, Filter, Expr {
 		return false;
 	}
         
+        @Override
         public boolean isRecExist(){
             return false;
         }
@@ -233,10 +245,12 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public boolean isSeq(){
 		return false;
 	}
 	
+        @Override
 	public boolean isAlt(){
 		return false;
 	}
@@ -245,10 +259,12 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public boolean isPara(){
 		return false;
 	}
 	
+        @Override
 	public boolean isNot(){
 		return false;
 	}
@@ -256,43 +272,53 @@ implements Regex, Filter, Expr {
 	public void setWeight(String w){
 	}
 	
+        @Override
 	public int getWeight(){
 		return -1;
 	}
 	
+        @Override
 	public boolean isInverse(){
 		return false;
 	}
 	
+        @Override
 	public void setInverse(boolean b){
 		//isInverse = b;
 	}
 	
+        @Override
 	public boolean isReverse(){
 		return isReverse;
 	}
 	
+        @Override
 	public void setReverse(boolean b){
 		isReverse = b;
 	}
 	
+        @Override
 	public Expression translate(){
 		return this;
 	}
 	
+        @Override
 	public boolean isNotOrReverse(){
 		return false;
 	}
 	
+        @Override
 	public int getMin(){
 		return -1;
 	}
 
+        @Override
 	public int getMax(){
 		return -1;
 	}
 	
 	// include isPlus()
+        @Override
 	public boolean isCounter(){
 		return false;
 	}
@@ -301,10 +327,12 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 		
+        @Override
 	public boolean isStar(){
 		return false;
 	}
 	
+        @Override
 	public boolean isOpt(){
 		return false;
 	}
@@ -321,10 +349,12 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public Expression reverse(){
 		return this;
 	}
 	
+        @Override
 	public Expression transform(){
 		return transform(false);
 	}
@@ -333,6 +363,7 @@ implements Regex, Filter, Expr {
 		return this;
 	}
 	
+        @Override
 	public int regLength(){
 		return 0;
 	}
@@ -341,6 +372,7 @@ implements Regex, Filter, Expr {
 		return 0;
 	}
 	
+        @Override
 	public boolean isPlus(){
 		return false;
 	}
@@ -364,6 +396,7 @@ implements Regex, Filter, Expr {
 		return false;
 	}
 	
+        @Override
 	public boolean isBound(){
 		return false;
 	}
@@ -391,6 +424,7 @@ implements Regex, Filter, Expr {
     }
 	
 	
+        @Override
 	public String toRegex() {
 		String str = toString();
 		if (isReverse()){
@@ -426,41 +460,56 @@ implements Regex, Filter, Expr {
 	 * 
 	 */
 	
+        @Override
 	public Filter getFilter(){
 		return this;
 	}
 
 	
+        @Override
 	public Expr getExp() {
 		
 		return this;
 	}
 
 	
+        @Override
 	public List<String> getVariables() {		
             return getVariables(false);
 	}
         
+        @Override
       public List<String> getVariables(boolean excludeLocal) {
         List<String> list = new ArrayList<String>();
         getVariables(list, excludeLocal);
         return list;
       }
-	
+               	
 	public void getVariables(List<String> list, boolean excludeLocal) {
 	}
 
+        public List<Constant> getConstants() {	
+            ArrayList<Constant> l = new ArrayList<Constant>();
+            getConstants(l);
+            return l;
+	}
+        
+        void getConstants(List<Constant> l) {		           
+	}
 	
+        @Override
 	public int arity() {
 		
 		return 0;
 	}
         
+        @Override
         public int place(){
             return -1;
         }
 
 	
+        @Override
 	public String getLabel() {
 		
 		if (longName!=null) return longName;
@@ -468,6 +517,7 @@ implements Regex, Filter, Expr {
 	}
 
 	
+        @Override
 	public Object getValue() {
 		return null;
 	}
@@ -478,11 +528,13 @@ implements Regex, Filter, Expr {
         }
 
 	
+        @Override
 	public boolean isAggregate() {
 		
 		return false;
 	}
 	
+        @Override
 	public boolean isExist(){
 		if (oper() == ExprType.EXIST){
 			return true;
@@ -498,31 +550,37 @@ implements Regex, Filter, Expr {
 	}
 	
 	
+        @Override
 	public boolean isRecAggregate() {
 		
 		return false;
 	}
 	
+        @Override
 	public boolean isFunctional() {
 		
 		return false;
 	}
 
 	
+        @Override
 	public int oper() {
 		
 		return -1;
 	}
         
+        @Override
         public void setOper(int n){
             
         }
 
 	
+        @Override
 	public int type() {
 		return ExprType.UNDEF;
 	}
 	
+        @Override
 	public int retype() {
 		return retype;
 	}
@@ -549,39 +607,48 @@ implements Regex, Filter, Expr {
 	}
 
 	
+        @Override
 	public List<Expr> getExpList() {
 		return empty;
 	}
 	
+        @Override
 	public Expr getExp(int i){
 		return null;
 	}
         
+        @Override
         public void setExp(int i, Expr e){
             
         }
         
+        @Override
         public void addExp(int i, Expr e){
             
         }
 	
+        @Override
 	public int getIndex() {
 		return -1;
 	}
 
 	
+        @Override
 	public void setIndex(int index) {		
 	}
 
 	
+        @Override
 	public void setArg(Expr exp) {
 		
 	}
 	
+        @Override
 	public Expression getArg(){
 		return null;
 	}
 	
+        @Override
 	public Object getPattern(){
 		return null;
 	}
@@ -589,6 +656,7 @@ implements Regex, Filter, Expr {
 	public void setDistinct(boolean b) {
 	}
 	
+        @Override
 	public boolean isDistinct() {
 		return false;
 	}
@@ -596,10 +664,12 @@ implements Regex, Filter, Expr {
 	public void setShort(boolean b) {
 	}
 	
+        @Override
 	public boolean isShort() {
 		return false;
 	}
 	
+        @Override
 	public String getModality() {
 		
 		return null;

@@ -55,10 +55,12 @@ public class BasicGraphPattern extends And {
     	add(Triple.create(e));
     }
     
+        @Override
     public boolean isBGP(){
 		return true;
 	}
     
+        @Override
     public StringBuffer toString(StringBuffer sb) {
     	sb.append ("{");
     	super.toString(sb);

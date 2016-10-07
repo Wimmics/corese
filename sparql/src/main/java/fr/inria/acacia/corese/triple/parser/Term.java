@@ -158,6 +158,7 @@ public class Term extends Expression {
 		min = n;
 	}
 	
+        @Override
 	public int getMin(){
 		return min;
 	}
@@ -166,10 +167,12 @@ public class Term extends Expression {
 		max = n;
 	}
 	
+        @Override
 	public int getMax(){
 		return max;
 	}
         
+        @Override
         public boolean isCounter(){
 		return (min!=-1 || max != -1);
 	}
@@ -180,18 +183,22 @@ public class Term extends Expression {
             setArg(el.getExpSeparator());
         }
 
+        @Override
 	public void setDistinct(boolean b){
 		isDistinct = b;
 	}
 	
+        @Override
 	public boolean isDistinct(){
 		return isDistinct;
 	}
 	
+        @Override
 	public void setShort(boolean b){
 		isShort = b;
 	}
 	
+        @Override
 	public boolean isShort(){
 		return isShort;
 	}
@@ -200,6 +207,7 @@ public class Term extends Expression {
 		modality = s;
 	}
 	
+        @Override
 	public String getModality(){
 		return modality;
 	}
@@ -208,14 +216,17 @@ public class Term extends Expression {
 		return new Term(SENOT, exp);
 	}
 	
+        @Override
 	public boolean isTerm(){
 		return true;
 	}
 	
+        @Override
 	public void setName(String name){
 		super.setName(name);
 	}
 	
+        @Override
 	public String toRegex() {
 		if (isCount()){
 			String str = paren(getArg(0).toRegex()) + "{";
@@ -274,6 +285,7 @@ public class Term extends Expression {
 		return "(" + s + ")";
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb) {
 
 		if (getName() == null) {
@@ -370,18 +382,9 @@ public class Term extends Expression {
 	static boolean isNegation(String name) {
 		return (name.equals(STNOT) || name.equals(SENOT));
 	}
+			
 	
-	
-//	public Variable getVariable(){
-//		Variable var;
-//		for (int i = 0; i < args.size(); i++) {
-//			var = getArg(i).getVariable();
-//			if (var != null) return var;
-//		}
-//		return null;
-//	}
-	
-	
+        @Override
 	Bind validate(Bind env){
 		for (Expression exp : getArgs()){
 			exp.validate(env);
@@ -389,6 +392,7 @@ public class Term extends Expression {
 		return env;
 	}
 	
+        @Override
 	public boolean validate(ASTQuery ast) {
 		
 		if (isExist()){
@@ -404,10 +408,12 @@ public class Term extends Expression {
 		return ok;
 	}
 	
+        @Override
 	public boolean isExist(){
 		return getExist() != null;
 	}
         
+        @Override
         public boolean isRecExist(){
 		if (isExist()){
                     return true;
@@ -420,26 +426,32 @@ public class Term extends Expression {
                 return false;
 	}
 	
+        @Override
 	public boolean isSeq(){
 		return getName().equals(RE_SEQ);
 	}
 	
+        @Override
 	public boolean isAnd(){
 		return getName().equals(SEAND);
 	}
 	
+        @Override
 	public boolean isOr(){
 		return getName().equals(SEOR);
 	}
 	
+        @Override
 	public boolean isAlt(){
 		return getName().equals(RE_ALT);
 	}
 	
+        @Override
 	public boolean isPara(){
 		return getName().equals(RE_PARA);
 	}
 	
+        @Override
 	public boolean isNot(){
 		return getName().equals(SENOT);
 	}
@@ -448,31 +460,38 @@ public class Term extends Expression {
 		return getretype() != UNDEF;
 	}
 	
+        @Override
 	public boolean isInverse(){
 		return getName().equals(SEINV) || super.isInverse() ;
 	}
 	
+        @Override
 	public boolean isReverse(){
 		return getName().equals(SREV) || super.isReverse();
 	}
 	
+        @Override
 	public boolean isStar(){
 		return isFunction(STAR);
 	}
 	
+        @Override
 	public boolean isOpt(){
 		return isFunction(OPT);
 	}
 	
+        @Override
 	public boolean isTest(){
 		return isFunction(TEST);
 	}
 	
+        @Override
 	public boolean isCheck(){
 		return isFunction(RE_CHECK);
 	}
 	
 	// final state in regexp
+        @Override
 	public boolean isFinal(){
 		if (isStar() || isOpt()) return true;
 		if (isAnd() || isAlt()){
@@ -496,6 +515,7 @@ public class Term extends Expression {
 	 * and set index = 1
 	 * 
 	 */
+        @Override
 	public Expression reverse(){
 		Term term = this;
 		if (isSeq()){
@@ -516,6 +536,20 @@ public class Term extends Expression {
 		}
 		return term;
 	}
+               
+        
+        void getConstants(List<Constant> list) {
+            if (isNot()) {
+                // ! p is a problem because we do not know the predicate nodes ...
+                // let's return top level property, it subsumes all properties
+                Constant.rootProperty.getConstants(list);
+            } else {
+                for (Expression e : getArgs()) {
+                    e.getConstants(list);
+                }
+            }
+        }
+        
 	
 	void copy(Term t){
 		setMax(t.getMax());
@@ -535,6 +569,7 @@ public class Term extends Expression {
 	 *  
 	 *  inside reverse, properties (and ! prop)  are setReverse(true)
 	 */
+        @Override
 	public Expression transform(boolean isReverse){
 		Term term = this;
 		Expression exp;
@@ -598,6 +633,7 @@ public class Term extends Expression {
 	 * ! (^ p) -> ^ !(p)
 	 * ! (p | ^q) -> (!p) | ^ (!q)
 	 */
+        @Override
 	public Expression translate(){
 		Expression exp = getArg(0);
 		
@@ -635,6 +671,7 @@ public class Term extends Expression {
 	/**
 	 * ! (p1 | ^p2)
 	 */
+        @Override
 	public boolean isNotOrReverse(){
 		if (! isNot()) return false;
 		Expression ee = getArg(0);
@@ -662,12 +699,14 @@ public class Term extends Expression {
 	/**
 	 * Length of shortest path that matches the regexp
 	 */
+        @Override
 	public int regLength(){
 		if (isStar())
 			return 0; //getArg(0).length();
 		else return length();
 	}
 	
+        @Override
 	public int length(){
 		if (isSeq()){
 			return getArg(0).length() + getArg(1).length();
@@ -683,6 +722,7 @@ public class Term extends Expression {
 	
 	
 	
+        @Override
 	public boolean isPlus(){
 		return isPlus;
 	}
@@ -699,14 +739,17 @@ public class Term extends Expression {
 		isCount = b;
 	}
 	
+        @Override
 	public boolean isTerm(String oper){
 		return name.equals(oper);
 	}
 	
+        @Override
 	public boolean isFunction(){
 		return isFunction;
 	}
         
+        @Override
         public boolean isFuncall(){
 		return isFunction;
 	}        
@@ -714,10 +757,12 @@ public class Term extends Expression {
             isFunction = b;
         }
 	
+        @Override
 	public boolean isFunction(String str){
 		return isFunction &&  getName().equals(str);
 	}
 	
+        @Override
 	public boolean isType(ASTQuery ast, int type) {
 		return isType(ast, null, type);
 	}
@@ -726,6 +771,7 @@ public class Term extends Expression {
 	 * 1. Is the exp of type aggregate or bound ?
 	 * 2. When var!=null: if exp contains var return false (sem checking)
 	 */
+        @Override
 	public boolean isType(ASTQuery ast, Variable var, int type) {
 		if (isFunction()) {
 			if (isType(getName(), type))
@@ -770,6 +816,7 @@ public class Term extends Expression {
 		return false;
 	}
 	
+        @Override
 	public boolean isRecAggregate(){
 		if (isAggregate(getLabel())){
 			return true;
@@ -782,10 +829,12 @@ public class Term extends Expression {
 		return false;
 	}
 	
+        @Override
 	public boolean isAggregate(){
 		return isAggregate(name);
 	}
 	
+        @Override
 	public boolean isFunctional() {
 		if (! isFunction()){
                     return false;
@@ -799,6 +848,7 @@ public class Term extends Expression {
 		str.equals(Processor.EXTERN)) ;
 	}
 	
+        @Override
 	public boolean isBound(){
 		if (isFunction()) {
 			return getName().equalsIgnoreCase(Processor.BOUND);   
@@ -809,17 +859,9 @@ public class Term extends Expression {
 		}
 		return false;
 	}
+			
 	
-	
-//	public Variable getOptionVar(Vector<String> stdVar) {
-//		for (int i = 0; i < getArity(); i++) {
-//			Variable var = getArg(i).getOptionVar(stdVar);
-//			if (var != null) return var;
-//		}
-//		return null;
-//	}
-	
-	
+        @Override
 	public  int getArity(){
 		return args.size();
 	}
@@ -828,6 +870,7 @@ public class Term extends Expression {
             args = list;
         }
 	
+        @Override
 	public ArrayList<Expression> getArgs(){
 		return args;
 	}
@@ -844,6 +887,7 @@ public class Term extends Expression {
 		args.set(i, exp);
 	}
 	
+        @Override
 	public Expression getArg(int n){
 		if (n > args.size() - 1)
 			return null;
@@ -867,6 +911,7 @@ public class Term extends Expression {
 	 * foo(?x) as ?y
 	 * sum(?y) as ?z
 	 */
+        @Override
 	public Expression process(ASTQuery ast){
 		if (isAggregate() || isFunctional()){ //(ast.isKgram() && isFunctional())){
                     return this;
@@ -909,6 +954,7 @@ public class Term extends Expression {
 	 */
 	
 	// Filter
+        @Override
 	public void getVariables(List<String> list, boolean excludeLocal) {
 		for (Expression ee : getArgs()){
 			ee.getVariables(list, excludeLocal);
@@ -929,6 +975,7 @@ public class Term extends Expression {
             return list;
         }
 	
+        @Override
         public String getShortName(){
             if (proc == null || proc.getShortName() == null){
                 return getName();
@@ -936,10 +983,12 @@ public class Term extends Expression {
             return proc.getShortName();
         }
 	
+        @Override
 	public Expr getExp(int i){
 		return lExp.get(i);
 	}
         
+        @Override
         public void setExp(int i, Expr e){
             if (i < lExp.size()){
                 lExp.set(i, e);
@@ -949,6 +998,7 @@ public class Term extends Expression {
             }
         }
         
+        @Override
         public void addExp(int i, Expr e){
             lExp.add(i, e);
         }
@@ -963,11 +1013,13 @@ public class Term extends Expression {
 		}
 	}
 	
+        @Override
 	public int arity(){
 		return lExp.size();
 	}
 	
 	
+        @Override
 	public Expression getArg(){
 		return exp;
 	}
@@ -976,6 +1028,7 @@ public class Term extends Expression {
 		exp = e;
 	}
 	
+        @Override
 	public List<Expr> getExpList(){
 		return lExp;
 	}
@@ -984,6 +1037,7 @@ public class Term extends Expression {
             lExp = l;
         }
 	
+        @Override
 	public ExpPattern getPattern(){
 		if (proc == null){
                     return null;
@@ -1007,6 +1061,7 @@ public class Term extends Expression {
 	
 	// Exp
 	
+        @Override
 	public Expression prepare(ASTQuery ast){
 		if (proc != null){
                     return this;
@@ -1035,6 +1090,7 @@ public class Term extends Expression {
 	}
         
 	
+        @Override
 	public int type(){
 		return type;
 	}
@@ -1046,10 +1102,12 @@ public class Term extends Expression {
             this.type = type;
         }
 	
+        @Override
 	public int oper(){
 		return oper;
 	}
         
+        @Override
         public void setOper(int n){
             oper = n;
         }
@@ -1063,6 +1121,7 @@ public class Term extends Expression {
             proc = p;
         }
 	              
+        @Override
         public Term copy(Variable o, Variable n) {
             Term f = null;
             if (isFunction()) {
@@ -1082,6 +1141,7 @@ public class Term extends Expression {
             return f;
     }
         
+        @Override
     void visit(ExpressionVisitor v){
          v.visit(this);
     }   
@@ -1101,6 +1161,7 @@ public class Term extends Expression {
     public void setPublic(boolean isExport) {
     }
 
+        @Override
     public Term getTerm(){
         return this;
     }
@@ -1108,6 +1169,7 @@ public class Term extends Expression {
     /**
      * @return the place
      */
+        @Override
     public int place() {
         return place;
     }

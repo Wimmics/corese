@@ -46,7 +46,7 @@ public class JSONTest {
     public void tearDown() {
     }
 
-    @Test
+    //@Test
     public void helloJsonD3() throws LoadException, EngineException {
         InputStream is = JSONTest.class.getClassLoader().getResourceAsStream("kgram1-persons.rdf");
         Graph g = Graph.create();

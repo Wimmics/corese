@@ -13,6 +13,7 @@ import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
+import static fr.inria.corese.rdftograph.RdfToGraph.CONTEXT;
 import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
 import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
 import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
@@ -28,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -60,7 +60,6 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
-//		configuration.setProperty("schema.default", "default");
 		configuration.setProperty("storage.buffer-size", 50_000);
 		configuration.setProperty("ids.block-size", 1_000_000);
 		try {
@@ -70,11 +69,9 @@ public class TitanDriver extends GdbDriver {
 		}
 
 		g = TitanFactory.open(configuration);
-//		writeToPropertiesFile
 		makeIfNotExistProperty(EDGE_VALUE);
 		makeIfNotExistProperty(VERTEX_VALUE);
 		createIndexes();
-
 	}
 
 	void makeIfNotExistProperty(String propertyName) {
@@ -95,21 +92,21 @@ public class TitanDriver extends GdbDriver {
 
 				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
+				PropertyKey contextValue = manager.getPropertyKey(CONTEXT);
 
 				manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
 				manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
+				manager.buildIndex("byContextValue", Edge.class).addKey(contextValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
 				manager.commit();
 
-				manager.awaitGraphIndexStatus(g, "byVertexValue").call();
-				manager.awaitGraphIndexStatus(g, "byEdgeValue").call();
+				String[] indexNames = {"byVertexValue", "byEdgeValue", "byContextValue"};
+				for (String indexName : indexNames) {
+					manager.awaitGraphIndexStatus(g, indexName).call();
+					manager = (ManagementSystem) g.openManagement();
+					manager.updateIndex(manager.getGraphIndex(indexName), SchemaAction.REINDEX).get();
+					manager.commit();
 
-				manager = (ManagementSystem) g.openManagement();
-				manager.updateIndex(manager.getGraphIndex("byVertexValue"), SchemaAction.REINDEX).get();
-				manager.commit();
-
-				manager = (ManagementSystem) g.openManagement();
-				manager.updateIndex(manager.getGraphIndex("byEdgeValue"), SchemaAction.REINDEX).get();
-				manager.commit();
+				}
 			}
 
 		} catch (Exception ex) {

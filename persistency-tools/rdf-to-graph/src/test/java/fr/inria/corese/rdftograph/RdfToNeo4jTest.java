@@ -87,5 +87,4 @@ public class RdfToNeo4jTest {
 		}
 		return true;
 	}
-
 }

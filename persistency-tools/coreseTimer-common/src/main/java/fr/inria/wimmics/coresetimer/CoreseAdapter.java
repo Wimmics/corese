@@ -26,7 +26,7 @@ public class CoreseAdapter {
 	private QueryProcess exec;
 
 	public void preProcessing(String fileName, boolean load) {
-		Graph graph = Graph.create();
+		Graph graph = Graph.create(false); // without rdfs.entailment
 		if (load) {
 			Load ld = Load.create(graph);
 			ld.load(fileName);

@@ -61,32 +61,32 @@ public class W3CRDFa10Test {
         return TestHelper.toObjectArray(list);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testHtml4(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testHtml5(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testXhtml1(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testXhtml5(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testXml(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testSvg(TestCase tc) {
         eval.run(tc);
     }

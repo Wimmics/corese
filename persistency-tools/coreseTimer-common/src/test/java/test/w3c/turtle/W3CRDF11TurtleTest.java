@@ -59,24 +59,24 @@ public class W3CRDF11TurtleTest {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     //The name of the method should be ["test"+ "filed name of test type"],
     //the field name(*public static*) is defined in another class
     public void testPositiveEval(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testNegativeEval(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testPositiveSyntax(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testNegativeSyntax(TestCase tc) {
         eval.run(tc);
     }

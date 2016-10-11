@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
@@ -63,6 +64,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 /**
  * KGRAM benchmark on W3C SPARQL 1.1 Query & Update Test cases
@@ -77,7 +79,7 @@ import org.junit.BeforeClass;
  *
  */
 
-public class TestW3C11KGraph {
+public class TestW3C11KGraphNew {
     // root of test case RDF data
 
     static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
@@ -190,15 +192,15 @@ public class TestW3C11KGraph {
     public void tearDown() {
     }
 
-    public TestW3C11KGraph() {
+    public TestW3C11KGraphNew() {
         DatatypeMap.setSPARQLCompliant(true);
         tko = new Testing();
         tok = new Testing();
-		earl = new Earl();
+        earl = new Earl(); 
     }
 
     public static void main(String[] args) {
-        new TestW3C11KGraph().process();
+        new TestW3C11KGraphNew().process();
     }
 
     /**
@@ -238,7 +240,11 @@ public class TestW3C11KGraph {
         test(root0 + "construct");
     }
     
-    
+    void test00() {
+        sparql1 = false;
+        test(root0 + "open-world");
+
+    }
 
     void testRDF() {
         sparql1 = true;
@@ -306,12 +312,17 @@ public class TestW3C11KGraph {
         sparql1 = false;
         test(root0 + "bind");
     }
+    
+    public void process() {
+        process(1);
+    }
 
    // @Test
-    public void process() {
+    public void process(int version) {
         gok = 0;
         gko = 0;
 
+        // 25 (june 2016)
         // 28 errors  416 success
         // 29 errors 04/05/12
         // 31 errors 11/05/12 because of optional DOT 
@@ -320,12 +331,14 @@ public class TestW3C11KGraph {
         if (true) {
             //QueryProcess.setJoin(true);
             //Graph.setValueTable(true);
-            Graph.setCompareIndex(true);
-            test1();
-            testUpdate();
-            //testRDF();
-            // TODO: blank should not span BGP
-           // test0(); //24 errorstest
+            //Graph.setCompareIndex(true);
+            if (version == 1){
+                test1();
+                testUpdate();
+            }
+            else {
+                test0(); //25 errorstest
+            }
         } else {
             test();
         }
@@ -417,7 +430,7 @@ public class TestW3C11KGraph {
         Graph ge = Graph.create();
         Load le = Load.create(ge);
         try {
-            le.loadWE(more + "earl.ttl");
+            le.parse(more + "earl.ttl");
             //System.out.println(ge);
         } catch (LoadException ex) {
             LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
@@ -474,7 +487,7 @@ public class TestW3C11KGraph {
             Graph g = Graph.create();
             Load load = Load.create(g);
             try {
-                load.loadWE(manifest);
+                load.parse(manifest);
             } catch (LoadException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -560,10 +573,10 @@ public class TestW3C11KGraph {
         //System.out.println(map);
 
         String defbase = uri(path + File.separator);
-
-        Dataset input = new Dataset().init(map.getMappings(), "?name", "?g");
+        // Dataset with named graphs only
+        Dataset input  = new Dataset().init(map.getMappings(), "?name", "?g");
         Dataset output = new Dataset().init(map.getMappings(), "?nres", "?gr");
-
+        // dEFAULT GRAPH
         List<String> fdefault = getValueList(map, "?d");
 
         String test     = getValue(map, "?x");
@@ -622,7 +635,7 @@ public class TestW3C11KGraph {
             qg.set(Entailment.DATATYPE_INFERENCE, true);
             Load ld = Load.create(qg);
             try {
-                ld.loadWE(fquery);
+                ld.parse(fquery);
             } catch (LoadException ex) {
                 LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                 earl.define(test, false);
@@ -659,11 +672,11 @@ public class TestW3C11KGraph {
         Load load = Load.create(graph);
         //graph.setOptimize(true);
         load.reset();
+        QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED);
         QueryProcess exec = QueryProcess.create(graph, true);
         //exec.setSPARQLCompliant(true);
         // for update:
         exec.setLoader(load);
-
 
 
 
@@ -686,12 +699,12 @@ public class TestW3C11KGraph {
             } else {
                 Load ld = Load.create(gres);
                 try {
-                    ld.loadWE(fresult);
+                    ld.parse(fresult);
                 } catch (LoadException ex) {
                     LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                 }
             }
-        } else if (fresult == null && output.getURIs().size() == 0) { //frnamed.size()==0){
+        } else if (fresult == null && output.getURIs().isEmpty()) { //frnamed.size()==0){
             if (isEmpty) {
                 gres = Graph.create();
             }
@@ -731,28 +744,25 @@ public class TestW3C11KGraph {
                 || (fresult != null && (fresult.endsWith(".ttl") || fresult.endsWith(".rdf")))) {
 
             if (sparql1 || path.contains("construct")) {
-                // Graph Result 
+                // Result Dataset
                 gres = Graph.create();
                 Load rl = Load.create(gres);
                 rl.reset();
 
                 if (fresult != null && !isBlankResult) {
                     try {
-                        rl.loadWE(ttl2rdf(fresult));
+                        rl.parse(ttl2rdf(fresult));
                     } catch (LoadException ex) {
                         LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
 
                 int i = 0;
-//				for (String g : frnamed){
-//					rl.reset();
-//					rl.load(ttl2rdf(g), frnames.get(i++));
-//				}
+
                 for (String g : output.getURIs()) {
                     rl.reset();
                     try {
-                        rl.loadWE(g, output.getNameOrURI(i++));
+                        rl.parse(g, output.getNameOrURI(i++));
                     } catch (LoadException ex) {
                         LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                     }
@@ -832,49 +842,44 @@ public class TestW3C11KGraph {
         ds.setUpdate(isUpdate);
 
         if (!isRDF) {
-            // default graph
+            
+            // Dataset may be specified by query from/named:
             if (fdefault.isEmpty()) {
+                // get query from
                 for (Node node : qq.getFrom()) {
                     String name = node.getLabel();
                     fdefault.add(name);
                 }
             }
-
-            // named graphs
             if (input.getURIs().isEmpty()) {
+                // get query from named
                 for (Node node : qq.getNamed()) {
                     String name = node.getLabel();
-                    //fnamed.add(name);
                     input.addURI(name);
                 }
             }
-
-
-            // default graph
+           
             if (fdefault.size() > 0) {
                 // Load RDF files for default graph
                 ds.defFrom();
                 for (String file : fdefault) {
                     ds.addFrom(file);
                     try {
-                        load.loadWE(file, file);
+                        load.parse(file , file);
                     } catch (LoadException ex) {
                         LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
             }
 
-
-            // named graphs
             if (input.getURIs().size() > 0) {
                 // Load RDF files for named graphs
-                //namedGraph = new ArrayList<String>();
                 ds.defNamed();
                 int i = 0;
                 for (String file : input.getURIs()) {
                     String name = input.getNameOrURI(i++);
                     try {
-                        load.loadWE(file, name);
+                        load.parse(file, name);
                     } catch (LoadException ex) {
                         LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                     }
@@ -891,8 +896,8 @@ public class TestW3C11KGraph {
                 entail = QueryProcess.RDFS_ENTAILMENT;
                 ds.addFrom(RDFS.RDFS);
                 try {
-                    load.loadWE(RDFS.RDFS);
-                    load.loadWE(RULE);
+                    load.parse(RDFS.RDFS);
+                    load.parse(RULE);
                 } catch (LoadException e) {
                     e.printStackTrace();
                 }
@@ -905,7 +910,7 @@ public class TestW3C11KGraph {
             // exclude dublin core:
             load.exclude(DC);
             try {
-                load.loadWE(RDF.RDF, RDF.RDF);
+                load.parse(RDF.RDF, RDF.RDF);
             } catch (LoadException ex) {
                 LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
             }
@@ -1010,6 +1015,7 @@ public class TestW3C11KGraph {
                     kg = graph;
                 }
                gres.setDebug(true);
+               // compare SPARQL result kg and Test case result gres
                 if (kg != null && !gres.compare(kg)) {
                     System.out.println("kgram:");
                     System.out.println(kg.display());
@@ -1120,7 +1126,7 @@ public class TestW3C11KGraph {
             Graph g = Graph.create();
             Load load = Load.create(g);
             try {
-                load.loadWE(name);
+                load.parse(name);
             } catch (LoadException ex) {
                 LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
             }
@@ -1155,7 +1161,7 @@ public class TestW3C11KGraph {
     /**
      * KGRAM vs W3C result
      */
-    boolean validate(Mappings kgram, Mappings w3c) {
+    public boolean validate(Mappings kgram, Mappings w3c) {
         boolean result = true, printed = false;
         Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 
@@ -1429,7 +1435,7 @@ public class TestW3C11KGraph {
         Graph g = Graph.create();
         Load load = Load.create(g);
         try {
-            load.loadWE(fresult);
+            load.parse(fresult);
         } catch (LoadException ex) {
             LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
         }

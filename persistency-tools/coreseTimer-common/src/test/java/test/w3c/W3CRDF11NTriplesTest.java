@@ -58,12 +58,12 @@ public class W3CRDF11NTriplesTest {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testNTPositiveSyntax(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testNTNegativeSyntax(TestCase tc) {
         eval.run(tc);
     }

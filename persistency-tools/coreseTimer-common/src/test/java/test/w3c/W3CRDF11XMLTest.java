@@ -58,14 +58,14 @@ public class W3CRDF11XMLTest {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     //The name of the method should be ["test"+ "filed name of test type"],
     //the field name(*public static*) is defined in another class
     public void testXMLPositiveEval(TestCase tc) {
         eval.run(tc);
     }
 
-    @Test(dataProvider = "data")
+    //@Test(dataProvider = "data")
     public void testXMLNegativeSyntax(TestCase tc) {
         eval.run(tc);
     }

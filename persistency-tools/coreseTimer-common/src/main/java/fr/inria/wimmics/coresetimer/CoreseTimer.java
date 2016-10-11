@@ -26,15 +26,22 @@ public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
 	public final static String[][] inputs = {
-		{"data.nq", "data_db"}
+		{"test1.nq", "/test1_db"}
 	};
 
 	public final static String[] queries = {
+		// @TODO afficher pour chaque requête le nombre de résultats.
+		// @TODO jointure
+
+		// @ select distinct ?p  where {?e ?p ?y}  [order by ?p]
+		// @TODO tester les littéraux
 		//		"select (count(*) as ?count) where { graph ?g {?x ?p ?y}}",
-		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
-		"select * where { ?x  a ?y } limit 10000",
-		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
-//		"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges
+		//		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
+		//		"select * where { ?x  a ?y }", // biaisé car beaucoup de données sont typées
+		//		"select (count(*) as ?c) where {?x a ?y}", // permet de supprimer le coût de construction du résultat.
+		//		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
+		//		"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges. @TODO Traiter la jointure.
+		"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"
 	};
 
 	public final static int WARMUP_THRESHOLD = 20;
@@ -107,11 +114,10 @@ public class CoreseTimer {
 						stats.addValue(delta);
 					}
 				}
-
-				String resultsFileName = makeFileName("result_", ".txt", nbInput, nbQuery);
+				String resultsFileName = makeFileName("result_", ".txt", 1, nbQuery);
+//				String resultsFileName = makeFileName("result_", ".txt", nbInput, nbQuery);
 				adapter.saveResults(resultsFileName);
 				writeStats(nbInput, nbQuery, stats);
-
 			}
 		}
 		adapter.postProcessing();
@@ -160,6 +166,7 @@ public class CoreseTimer {
 		LOGGER.info("Directory created at: " + dirPath.toString());
 	}
 
+	// Add end string wether dirName does not ends with it.
 	private String ensureEndWith(String dirName, String end) {
 		String result = (dirName.endsWith(end)) ? dirName : dirName + "/";
 		return result;

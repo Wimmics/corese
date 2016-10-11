@@ -8,6 +8,9 @@
             <goals>
                 <goal>install</goal>
             </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
         </action>
         <action>
             <actionName>run</actionName>
@@ -22,6 +25,8 @@
                 <exec.args>-Xms10g -Xmx10g -classpath %classpath fr.inria.wimmics.coresetimer.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data</Env.INPUT_ROOT>
+                <skipTests>true</skipTests>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -38,6 +43,9 @@
                 <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Xms10g -Xmx10g -classpath %classpath fr.inria.wimmics.coresetimer.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
+                <skipTests>true</skipTests>
+                <maven.test.skip>true</maven.test.skip>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -52,6 +60,7 @@
             <properties>
                 <exec.args>-Xms10g -Xmx10g -classpath %classpath fr.inria.wimmics.coresetimer.Main</exec.args>
                 <exec.executable>java</exec.executable>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>

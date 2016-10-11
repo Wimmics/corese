@@ -3,8 +3,10 @@
  */
 package fr.inria.corese.tinkerpop;
 
+import static fr.inria.corese.tinkerpop.MappingRdf.CONTEXT;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -196,11 +198,17 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		tGraph.tx().commit();
 	}
 
-	public void close(){
+	public boolean isGraphNode(Node node) {
+		GraphTraversalSource traversal = tGraph.traversal();
+		GraphTraversal<Edge, Edge> result = traversal.E().has(CONTEXT, node.getLabel());
+		return result.hasNext();
+	}
+
+	public void close() {
 		try {
 			tGraph.close();
 		} catch (Exception ex) {
 			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, "Exception when closing: ", ex);
 		}
-	}	
+	}
 }

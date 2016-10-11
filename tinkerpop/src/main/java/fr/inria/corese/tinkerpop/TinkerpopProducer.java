@@ -3,8 +3,7 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import static fr.inria.corese.tinkerpop.MappingRdf.EDGE_VALUE;
-import static fr.inria.corese.tinkerpop.MappingRdf.VERTEX_VALUE;
+import static fr.inria.corese.tinkerpop.MappingRdf.*;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -41,7 +40,7 @@ public class TinkerpopProducer extends ProducerImpl {
 
 	/**
 	 * @todo use env to obtain values given by Corese
-	 * 
+	 *
 	 * @param gNode @TODO Not used for the moment
 	 * @param from @TODO Not used for the moment
 	 * @param qEdge Requested edge.
@@ -55,51 +54,58 @@ public class TinkerpopProducer extends ProducerImpl {
 
 		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
 		StringBuilder key = new StringBuilder();
+		key.append((gNode == null) || (gNode.getLabel().compareTo("?g") == 0) ? "?g" : "G");
 		key.append((subject.isVariable()) ? "?s" : "S");
 		key.append((isPredicateFree(qEdge)) ? "?p" : "P");
 		key.append((object.isVariable()) ? "?o" : "O");
 
+		String g = (gNode == null) ? "" : gNode.getLabel();
 		String s = (subject.isVariable()) ? "" : subject.getLabel();
 		String p = (isPredicateFree(qEdge)) ? "" : qEdge.getEdgeNode().getLabel();
 		String o = (object.isVariable()) ? "" : object.getLabel();
 
 		switch (key.toString()) {
-			case "?sPO":
+			case "?g?sPO":
 				filter = t -> {
 					return t.E().has(EDGE_VALUE, p).where(inV().has(VERTEX_VALUE, o));
 				};
 				break;
-			case "?sP?o":
+			case "?g?sP?o":
 				filter = t -> {
 					return t.E().has(EDGE_VALUE, p);
 				};
 				break;
-			case "?s?pO":
+			case "?g?s?pO":
 				filter = t -> {
 					return t.V().has(VERTEX_VALUE, o).inE();
 				};
 				break;
-			case "SPO":
+			case "?gSPO":
 				filter = t -> {
 					return t.E().has(EDGE_VALUE, p).where(inV().has(VERTEX_VALUE, o)).where(outV().has(VERTEX_VALUE, s));
 				};
 				break;
-			case "SP?o":
+			case "?gSP?o":
 				filter = t -> {
 					return t.E().has(EDGE_VALUE, p).where(outV().has(VERTEX_VALUE, s));
 				};
 				break;
-			case "S?pO":
+			case "?gS?pO":
 				filter = t -> {
 					return t.V().has(VERTEX_VALUE, s).outE().where(inV().has(VERTEX_VALUE, o));
 				};
 				break;
-			case "S?p?o":
+			case "?gS?p?o":
 				filter = t -> {
 					return t.V().has(VERTEX_VALUE, s).outE();
 				};
 				break;
-			case "?s?p?o":
+			case "G?sP?o":
+				filter = t -> {
+					return t.E().has(EDGE_VALUE, p).has(CONTEXT, g);
+				};
+				break;
+			case "?g?s?p?o":
 			default:
 				filter = t -> {
 					return t.E().has(EDGE_VALUE, gt(""));
@@ -114,9 +120,32 @@ public class TinkerpopProducer extends ProducerImpl {
 		return name.equals(Graph.TOPREL);
 	}
 
-	public void close(){
-		tpGraph.close();
+	@Override
+	public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
+		Node node = env.getNode(gNode);
+		if (!tpGraph.isGraphNode(node)) {
+			return false;
+		}	
+		if (from.isEmpty()) {
+			return true;
+		}
+		// @TODO what should be done.
+		LOGGER.error("behaviour not defined in that case");
+		return false;
+		//return ei.getCreateDataFrom().isFrom(from, node);
+		
+//		Node node = env.getNode(gNode);
+//		if (!graph.isGraphNode(node)) {
+//			return false;
+//		}
+//		if (from.isEmpty()) {
+//			return true;
+//		}
+//
+//		return ei.getCreateDataFrom().isFrom(from, node);
 	}
 
-
+	public void close() {
+		tpGraph.close();
+	}
 }

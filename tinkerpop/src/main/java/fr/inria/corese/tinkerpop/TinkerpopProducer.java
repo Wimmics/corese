@@ -108,7 +108,8 @@ public class TinkerpopProducer extends ProducerImpl {
 			case "?g?s?p?o":
 			default:
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, gt(""));
+//					return t.E().has(EDGE_VALUE, gt(""));
+					return t.E(); //.has(EDGE_VALUE, gt(""));
 				};
 		}
 		return tpGraph.getEdges(filter);

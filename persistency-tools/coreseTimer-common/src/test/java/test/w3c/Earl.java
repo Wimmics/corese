@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Formatter;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -73,10 +72,4 @@ public class Earl {
 		define("aggregates/test1", true);
 		System.out.println(this);
 	}
-	
-	
-	public static void main(String[] args){
-		new Earl().process();
-	}
-
 }

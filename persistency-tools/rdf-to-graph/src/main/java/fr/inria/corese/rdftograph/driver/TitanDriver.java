@@ -71,6 +71,7 @@ public class TitanDriver extends GdbDriver {
 		g = TitanFactory.open(configuration);
 		makeIfNotExistProperty(EDGE_VALUE);
 		makeIfNotExistProperty(VERTEX_VALUE);
+		makeIfNotExistProperty(CONTEXT);
 		createIndexes();
 	}
 
@@ -89,7 +90,6 @@ public class TitanDriver extends GdbDriver {
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
 			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
-
 				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
 				PropertyKey contextValue = manager.getPropertyKey(CONTEXT);

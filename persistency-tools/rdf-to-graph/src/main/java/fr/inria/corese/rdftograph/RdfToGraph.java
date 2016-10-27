@@ -43,6 +43,9 @@ import org.openrdf.rio.helpers.NTriplesParserSettings;
  */
 public class RdfToGraph {
 
+	public enum DbDriver {
+		NEO4J, ORIENTDB, TITANDB
+	}
 	public static final String LITERAL = "literal";
 	public static final String IRI = "IRI";
 	public static final String BNODE = "bnode";
@@ -58,18 +61,17 @@ public class RdfToGraph {
 	private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
 	protected Model model;
 	protected GdbDriver driver;
-	private static final Map<String, String> DRIVER_TO_CLASS;
+	private static final Map<DbDriver, String> DRIVER_TO_CLASS;
 
 	static {
 		DRIVER_TO_CLASS = new HashMap<>();
-		DRIVER_TO_CLASS.put("neo4j", "fr.inria.corese.rdftograph.driver.Neo4jDriver");
-		DRIVER_TO_CLASS.put("orientdb", "fr.inria.corese.rdftograph.driver.OrientDbDriver");
-		DRIVER_TO_CLASS.put("titandb", "fr.inria.corese.rdftograph.driver.TitanDriver");
+		DRIVER_TO_CLASS.put(DbDriver.NEO4J, "fr.inria.corese.rdftograph.driver.Neo4jDriver");
+		DRIVER_TO_CLASS.put(DbDriver.ORIENTDB, "fr.inria.corese.rdftograph.driver.OrientDbDriver");
+		DRIVER_TO_CLASS.put(DbDriver.TITANDB, "fr.inria.corese.rdftograph.driver.TitanDriver");
 	}
 
 	private class StatementCounter extends AbstractRDFHandler {
 
-		private int countedStatements = 0;
 		private int triples = 0;
 
 		@Override
@@ -89,11 +91,11 @@ public class RdfToGraph {
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
-				LOGGER.info("" + triples);
+				LOGGER.log(Level.INFO, "{0}", triples);
 				try {
 					driver.commit();
 				} catch (Exception ex) {
-					LOGGER.severe("Trying to pursue after: " + ex.getMessage());
+					LOGGER.log(Level.SEVERE, "Trying to pursue after: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 			}
@@ -105,17 +107,18 @@ public class RdfToGraph {
 
 	/**
 	 *
-	 * @param driverName Short name given in DRIVER_TO_CLASS for the driver
-	 * to use.
+	 * @param driver Short name given in DRIVER_TO_CLASS for the driver to
+	 * use.
 	 */
-	public void setDriver(String driverName) {
+	public RdfToGraph setDriver(DbDriver driver) {
 		try {
-			String driverClassName = DRIVER_TO_CLASS.get(driverName);
+			String driverClassName = DRIVER_TO_CLASS.get(driver);
 			this.driver = buildDriver(driverClassName);
 		} catch (Exception ex) {
-			LOGGER.log(Level.SEVERE, "Impossible to set driver to {0}, caused by ", driverName);
+			LOGGER.log(Level.SEVERE, "Impossible to set driver to {0}, caused by ", driver);
 			ex.printStackTrace();
 		}
+		return this;
 	}
 
 	private static GdbDriver buildDriver(String driverName) throws Exception {
@@ -125,43 +128,15 @@ public class RdfToGraph {
 		return result;
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		if (args.length < 2) {
-			System.err.println("Usage: rdfToGraph fileName db_path [backend]");
-			System.err.println("if the parser cannot guess the format of the input file, NQUADS is used.");
-			System.err.println("backend = neo4j | orientdb");
-			System.err.println("  neo4j     = neo4j directly");
-			System.err.println("  orientdb  = orientdb directly");
-			System.exit(1);
-		}
-		String driverName = "neo4j";
-		if (args.length >= 3) {
-			String driverParam = args[2];
-			if (DRIVER_TO_CLASS.keySet().contains(driverParam)) {
-				driverName = driverParam;
-			}
-		}
-
-		RdfToGraph converter = new RdfToGraph();
-		converter.setDriver(driverName);
-
-		String rdfFileName = args[0];
+	public RdfToGraph convertFileToDb(String rdfFileName, RDFFormat format, String dbPath) throws FileNotFoundException, IOException {
 		InputStream inputStream;
 		if (rdfFileName.endsWith(".gz")) {
 			inputStream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(rdfFileName)));
 		} else {
 			inputStream = new FileInputStream(new File(rdfFileName));
 		}
-		String dbPath = args[1];
-
-		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
-		if (format.isPresent()) {
-			LOGGER.info("Using format: " + format.get());
-			converter.convert(inputStream, format.get(), dbPath);
-		} else {
-			LOGGER.warning("Format of the input file unkown.");
-			converter.convert(inputStream, RDFFormat.NQUADS, dbPath);
-		}
+		convertStreamToDb(inputStream, format, dbPath);
+		return this;
 	}
 
 	/**
@@ -172,7 +147,7 @@ public class RdfToGraph {
 	 * stream
 	 * @param dbPath Where to store the rdf data.
 	 */
-	public void convert(InputStream rdfStream, RDFFormat format, String dbPath) {
+	public void convertStreamToDb(InputStream rdfStream, RDFFormat format, String dbPath) {
 		try {
 			LOGGER.info("** begin of convert **");
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
@@ -221,6 +196,11 @@ public class RdfToGraph {
 			LOGGER.severe(e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	public RdfToGraph setWipeOnOpen(boolean b) {
+		driver.setWipeOnOpen(b);
+		return this;
 	}
 
 	final static private int CHUNK_SIZE = 50_000; //Integer.MAX_VALUE;
@@ -282,8 +262,29 @@ public class RdfToGraph {
 		return isType(BNode.class, resource);
 	}
 
-	void setWipeOnOpen(boolean b) {
-		driver.setWipeOnOpen(b);
-	}
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		if (args.length < 2) {
+			System.err.println("Usage: rdfToGraph fileName db_path [backend]");
+			System.err.println("if the parser cannot guess the format of the input file, NQUADS is used.");
+			System.err.print("knwown backends ");
+			for (DbDriver driver : DbDriver.values()) {
+				System.err.print(driver + " ");
+			}
+			System.exit(1);
+		}
+		DbDriver driver = DbDriver.NEO4J;
+		if (args.length >= 3) {
+			try {
+				DbDriver driverParam = DbDriver.valueOf(args[2]);
+				driver = driverParam;
+			} catch (IllegalArgumentException ex) {
+				ex.printStackTrace();
+			}
+		}
+		String rdfFileName = args[0];
+		String dbPath = args[1];	
+		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
 
+		RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
+	}
 }

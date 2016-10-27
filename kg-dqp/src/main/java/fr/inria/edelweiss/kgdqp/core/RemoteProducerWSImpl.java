@@ -813,4 +813,9 @@ public class RemoteProducerWSImpl implements Producer {
         return ent;
     }
 
+    @Override
+    public void close() {
+
+    }
+
 }

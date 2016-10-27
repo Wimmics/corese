@@ -5,6 +5,8 @@
  */
 package fr.inria.wimmics.coresetimer;
 
+import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
+import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,37 +27,20 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
-	public final static String[][] inputs = {
-		{"test1.nq", "/test1_db"}
-	};
 
-	public final static String[] queries = {
-		// @TODO afficher pour chaque requête le nombre de résultats.
-		// @TODO jointure
-
-		// @ select distinct ?p  where {?e ?p ?y}  [order by ?p]
-		// @TODO tester les littéraux
-		//		"select (count(*) as ?count) where { graph ?g {?x ?p ?y}}",
-		//		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
-		//		"select * where { ?x  a ?y }", // biaisé car beaucoup de données sont typées
-		//		"select (count(*) as ?c) where {?x a ?y}", // permet de supprimer le coût de construction du résultat.
-		//		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
-		//		"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges. @TODO Traiter la jointure.
-		"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"
-	};
-
-	public final static int WARMUP_THRESHOLD = 20;
+	public final static int WARMUP_THRESHOLD = 10;
 	public final static int SAMPLES = 20;
-	public final static boolean DATA_IN_MEMORY = false;
-	public final static String PREFIX = "bd_";
 	public CoreseAdapter adapter;
 	public String adapterName;
-	private static String outputRoot;
 
 	public enum Profile {
 		DB, MEMORY
 	};
-	private Profile profile;
+
+	private static String outputRoot;
+	private Profile mode = Profile.MEMORY;
+	private boolean initialized;
+	private DescriptiveStatistics stats;
 
 	/**
 	 *
@@ -64,112 +49,101 @@ public class CoreseTimer {
 	 * @param runProfile kind of usage of corese (currently "db" or
 	 * "memory"). Used to classify the results and stats done.
 	 */
-	public CoreseTimer(String adapterName, Profile runProfile) {
-		this.adapterName = adapterName;
+	public CoreseTimer() {
+		this.adapterName = CoreseAdapter.class.getCanonicalName();
+		initialized = false;
+	}
+
+	public CoreseTimer setMode(Profile mode) {
+		this.mode = mode;
+		return this;
+	}
+
+	public CoreseTimer init() {
+		switch (mode) {
+			case DB: {
+				System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
+				break;
+			}
+			case MEMORY: {
+				System.setProperty("fr.inria.corese.factory", "");
+				break;
+			}
+		};
+
 		// create output directory of the form ${OUTPUT_ROOT}
 		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
 		outputRoot = ensureEndWith(outputRoot, "/");
-		outputRoot += runProfile;
+		outputRoot += mode;
 		outputRoot = ensureEndWith(outputRoot, "/");
 		createDir(outputRoot, "rwxr-x---");
-		this.profile = runProfile;
+		initialized = true;
+		return this;
 	}
 
 	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
 		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
 	}
 
-	public void run() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-		String inputRoot = getEnvWithDefault("INPUT_ROOT", "./");
-		inputRoot = ensureEndWith(inputRoot, "/");
+	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+		assert (initialized);
 
 		// Loading the nq data in corese, then applying several times the query.
-		for (int nbInput = 0; nbInput < inputs.length; nbInput++) {
-			LOGGER.info("beginning with input #" + nbInput);
-			// require to have a brand new adapter for each new input set.
-			adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
+		LOGGER.log(Level.FINE, "beginning with input #{0}", test.getInput());
+		// require to have a brand new adapter for each new input set.
+		adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
 
-			String inputFileName = inputRoot;
-			if (profile == Profile.MEMORY) {
-				inputFileName += inputs[nbInput][0];
+		String inputFileName = "";
+		switch (mode) {
+			case MEMORY: {
+				inputFileName += test.getInput();
 				adapter.preProcessing(inputFileName, true);
-			} else if (profile == Profile.DB) {
-				inputFileName += inputs[nbInput][1];
+				break;
+			}
+			case DB: {
+				inputFileName += test.getInputDb();
 				System.setProperty("fr.inria.corese.tinkerpop.dbinput", inputFileName);
 				System.out.println("property = " + System.getProperty("fr.inria.corese.tinkerpop.dbinput"));
 				adapter.preProcessing(inputFileName, false);
-			}
-
-			for (int nbQuery = 0; nbQuery < queries.length; nbQuery++) {
-				String query = queries[nbQuery];
-				LOGGER.info("processing nbQuery #" + nbQuery);
-				DescriptiveStatistics stats = new DescriptiveStatistics();
-				for (int i = 0; i < SAMPLES + WARMUP_THRESHOLD; i++) {
-					LOGGER.info("iteration #" + i);
-					final long startTime = System.currentTimeMillis();
-					adapter.execQuery(query);
-					final long endTime = System.currentTimeMillis();
-					long delta = endTime - startTime;
-					if (i > WARMUP_THRESHOLD) {
-						stats.addValue(delta);
-					}
-				}
-				String resultsFileName = makeFileName("result_", ".txt", 1, nbQuery);
-//				String resultsFileName = makeFileName("result_", ".txt", nbInput, nbQuery);
-				adapter.saveResults(resultsFileName);
-				writeStats(nbInput, nbQuery, stats);
+				break;
 			}
 		}
+
+		String query = test.getRequest();
+		LOGGER.log(Level.FINE, "processing nbQuery #{0}", query);
+		stats = new DescriptiveStatistics();
+		for (int i = 0; i < SAMPLES + WARMUP_THRESHOLD; i++) {
+			LOGGER.log(Level.FINE, "iteration #{0}", i);
+			final long startTime = System.currentTimeMillis();
+			adapter.execQuery(query);
+			final long endTime = System.currentTimeMillis();
+			long delta = endTime - startTime;
+			if (i > WARMUP_THRESHOLD) {
+				stats.addValue(delta);
+			}
+		}
+		adapter.saveResults(test.getResult(mode));
 		adapter.postProcessing();
+		return this;
 	}
 
-	/**
-	 *
-	 * @param envName Environment variable to read.
-	 * @param defaultResult Default result provided if the environment
-	 * variable is not set.
-	 * @return The content of the environment variable if set, defaultResult
-	 * otherwise.
-	 */
-	private String getEnvWithDefault(String envName, String defaultResult) {
-		String result = System.getenv(envName);
-		if (result == null) {
-			result = defaultResult;
-		}
-		return result;
+	public DescriptiveStatistics getStats() {
+		return stats;
 	}
 
-	private void writeStats(int nbInput, int nbQuery, DescriptiveStatistics stats) {
-		String query = queries[nbQuery];
-		String statsFilename = makeFileName("stats_", ".stats", nbInput, nbQuery);
-		try {
-			FileWriter output = new FileWriter(statsFilename);
-			output.append(query);
-			output.append(stats.toString());
-			output.append("Q25 = " + stats.getPercentile(25));
-			output.append("Q75 = " + stats.getPercentile(75));
-			output.close();
-		} catch (IOException ex) {
-			LOGGER.log(Level.SEVERE, "Exception when trying to save results in " + statsFilename, ex);
-		}
-	}
 
-	private void createDir(String dirName, String permissions) {
-		Path dirPath = Paths.get(dirName);
-		Set<PosixFilePermission> filePermissions = PosixFilePermissions.fromString(permissions);
-		FileAttribute<Set<PosixFilePermission>> attributes = PosixFilePermissions.asFileAttribute(filePermissions);
-		try {
-			Files.createDirectories(dirPath, attributes);
-		} catch (IOException ex) {
-			Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		LOGGER.info("Directory created at: " + dirPath.toString());
-	}
-
-	// Add end string wether dirName does not ends with it.
-	private String ensureEndWith(String dirName, String end) {
-		String result = (dirName.endsWith(end)) ? dirName : dirName + "/";
-		return result;
-	}
+//	private void writeStats(TestDescription test, DescriptiveStatistics stats) {
+//		try {
+//			FileWriter output = new FileWriter(test.getStatsFilename());
+//			output.append(test.getRequest());
+//			output.append(stats.toString());
+//			output.append("Q25 = " + stats.getPercentile(25));
+//			output.append("Q75 = " + stats.getPercentile(75));
+//			output.close();
+//		} catch (IOException ex) {
+//			LOGGER.log(Level.SEVERE, "Exception when trying to save results in " + test.getStatsFilename(), ex);
+//		}
+//	}
 
 }

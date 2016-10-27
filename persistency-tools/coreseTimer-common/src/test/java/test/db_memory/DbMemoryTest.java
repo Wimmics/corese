@@ -9,12 +9,10 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 import test.w3c.TestW3C11KGraphNew;
@@ -27,9 +25,9 @@ public class DbMemoryTest {
 
 	@DataProvider(name = "getResults")
 	public static Object[][] getResults() {
-		int nbResults = 3;
-		String dbInputTemplate = "/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/MEMORY/result_input_1_query_%d.xml";
-		String memoryInputTemplate = "/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/MEMORY/result_input_1_query_%d.xml";
+		int nbResults = 1;
+		String dbInputTemplate = "/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/MEMORY/result_input_0_query_%d.xml";
+		String memoryInputTemplate = "/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/MEMORY/result_input_0_query_%d.xml";
 		Object[][] result = new Object[nbResults][];
 		for (int i = 0; i < nbResults; i++) {
 			String s1 = String.format(dbInputTemplate, i);

@@ -21,11 +21,13 @@ import java.util.logging.Logger;
  * @author edemairy
  */
 public class CoreseAdapter {
-
+	private final static Logger logger = Logger.getLogger(CoreseAdapter.class.getName());
+	
 	private Mappings map;
 	private QueryProcess exec;
 
 	public void preProcessing(String fileName, boolean load) {
+		logger.log(Level.INFO, "using {0}", fileName);
 		Graph graph = Graph.create(false); // without rdfs.entailment
 		if (load) {
 			Load ld = Load.create(graph);
@@ -38,7 +40,7 @@ public class CoreseAdapter {
 		try {
 			map = exec.query(query);
 		} catch (EngineException ex) {
-			Logger.getLogger(CoreseAdapter.class.getName()).log(Level.SEVERE, "Exception when attempting to execute a query: ", ex);
+			logger.log(Level.SEVERE, "Exception when attempting to execute a query: ", ex);
 		}
 	}
 
@@ -50,7 +52,7 @@ public class CoreseAdapter {
 			output.append(formattedResult.toString());
 			output.close();
 		} catch (IOException ex) {
-			Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, "Exception when trying to save results in " + resultsFileName, ex);
+			logger.log(Level.SEVERE, "Exception when trying to save results in " + resultsFileName, ex);
 		}
 	}
 

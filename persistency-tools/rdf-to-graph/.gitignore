@@ -1,2 +1,6 @@
+hs_err*log
 target
 data
+src/test/resources/testConvertExpected.neo4jdb
+src/test/resources/testConvertExpected.titandb
+plocal:src

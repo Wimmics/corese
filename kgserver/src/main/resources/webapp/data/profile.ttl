@@ -77,6 +77,7 @@ st:dbedit a st:Profile ;
     # st:plink() include in hyperlink: mode = dbo:Artist
     st:include (("mode" st:mode))
   ] ;
+#  st:transform "/home/corby/AAData/sttl/dbedit" .
   st:transform st:dbedit .
   
 
@@ -193,6 +194,10 @@ st:dbpediacopy a st:Profile ;
   
 
 st:navlab a st:Profile ;
+ st:param [ 
+        st:mapzoom 7 ;
+        st:mapsize "maplarge" 
+ ] ;
   st:workflow [ 
     sw:body ( [ a sw:Transformation ; sw:uri st:navlab ] ) 
   ] .
@@ -227,9 +232,7 @@ st:rdfs a st:Profile ;
 #
 # ******************************************************
  
-st:default3 a st:Server ;
-st:shareContent st:romecontent
-.
+
 
 st:default2 a st:Server ;
 st:content st:humancontent
@@ -284,6 +287,13 @@ st:tutorial1 a st:Server ;
   st:content st:tutocontent
 .
 
+st:tutorial2 a st:Server ;
+  st:param [ st:lang 'en' ] ;
+  st:service "sparql" ;
+  st:transform st:web ;
+  st:content st:tutocontent
+.
+
 st:tutocontent a sw:Workflow ; sw:body ( 
     [ a sw:Parallel ; sw:body (    
       # main dataset
@@ -292,8 +302,8 @@ st:tutocontent a sw:Workflow ; sw:body (
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
 	  #[ a sw:Query ; sw:body "construct where {}" ]
 	  [ a sw:Load ; sw:path <tutorial/workflow.ttl>  ; sw:name st:context ]
-	  st:indexQuery )]
-    )]    
+	  st:indexQuery ) ]
+    ) ]    
     # set st:context graph as named graph of main
     [a sw:Dataset]
 ).
@@ -342,6 +352,41 @@ st:geocontent a sw:Workflow ; sw:body (
 .
     
 
+st:inria a st:Server ;
+  st:service "inria" ;
+  st:transform st:navlab ; 
+  st:param [ 
+    st:lang "en"   ;
+    st:mapzoom 6 ;
+    st:mapsize "mapmedium" ;
+    st:import  st:mapParam  ;
+  ] ;  
+  st:content st:inriacontent
+.  
+  
+st:inriacontent a sw:Workflow ; sw:body ( 
+    [ a sw:Load ; sw:path <dbpedia/inria.ttl>  ] )
+.  
+    
+    
+st:west a st:Server ;
+  st:service "west" ;
+  st:transform st:navlab ; 
+  st:param [ 
+    st:lang "en"   ;
+    st:mapzoom 8 ;
+    st:mapsize "maplarge" ;
+    st:import  st:mapParam  ;
+  ] ;  
+  st:content st:westcontent
+.  
+  
+st:westcontent a sw:Workflow ; sw:body ( 
+    [ a sw:Load ; sw:path <dbpedia/west.ttl>  ] )
+.
+    
+    
+    
   
 @prefix cn: <http://cdn.fr/schema/>
   
@@ -408,12 +453,11 @@ st:owlrl2 a st:Server ;
 st:shape a st:Server ;
     st:service "shape" ;
     st:workflow st:shape  ;
-# get param(graph) and mode(shape) from server Context
+# get param=graph&mode=shape from server Context
 # parser get them from Context when creating ShapeProcess
 sw:body (
     [ a sw:Shape ]
     [ a sw:Transformation ; sw:uri st:dsresult ]
-    #[ a sw:Transformation ; sw:uri "/home/corby/AAData/sttl/datashape/result" ]
 ) .
 
 

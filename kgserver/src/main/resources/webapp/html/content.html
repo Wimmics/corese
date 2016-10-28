@@ -14,6 +14,35 @@
 </div>
 <!-- Siste description end-->
 
+
+<div class="container">
+    <h1>DataShape Validator</h1>
+    <div class="row">
+<div class="col-md-4">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">Data Shape</h3>
+    </div>
+    <div class="panel-body">
+        <form method='POST' action='/tutorial/shape' id='datashape'>
+            <label for='uri'>RDF Graph: </label>
+            <input type='text' id='param' name='param' value = '/data/shape/shape4shape.ttl' class="form-control custom-control" /><br/>
+            <label for='sel'>Shape: </label><br>
+            <input type="text"  name='mode' class="form-control" id='sel2' value='/data/shape/shape4shape.ttl'/>               
+            <br/><br><br>
+            <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+        </form>
+
+    </div>
+</div>
+</div> 
+</div>
+</div>
+
+
+
+
+
 <!-- LD boowser-->     
 <div class="container">
     <h1>Linked Data Navigators</h1>

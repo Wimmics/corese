@@ -242,6 +242,7 @@ WHERE {
 	}
 	group by ?p
   }
+  filter bound(?p)
   bind(unnest(kg:sparql(?query)) as (?u, ?v)) 
 }
 </value>

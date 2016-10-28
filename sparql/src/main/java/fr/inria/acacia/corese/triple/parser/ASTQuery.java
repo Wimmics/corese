@@ -823,6 +823,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         if (nsm == null) {
             nsm = NSManager.create(getDefaultNamespaces());
             nsm.setBase(getDefaultBase());
+            nsm.setRecord(true);
         }
         return nsm;
     }

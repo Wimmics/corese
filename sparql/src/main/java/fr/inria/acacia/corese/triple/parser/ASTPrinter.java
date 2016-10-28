@@ -18,6 +18,7 @@ public class ASTPrinter {
     }
     
     
+    @Override
      public String toString() {
         StringBuffer sb = new StringBuffer();
         toString(sb);
@@ -50,7 +51,8 @@ public class ASTPrinter {
     }
 
     public StringBuffer getSparqlPrefix(Exp exp, StringBuffer sb) {
-
+        sb.append(ast.getNSM().toString(null, false, false));
+        
         for (Exp e : exp.getBody()) {
             Triple t = e.getTriple();
             String r = t.getSubject().getName();
@@ -63,12 +65,14 @@ public class ASTPrinter {
                 v = v.substring(0, v.length() - 1);
             }
 
-            if (r.equalsIgnoreCase(KeywordPP.PREFIX)) {
-                sb.append(KeywordPP.PREFIX + KeywordPP.SPACE + p + ": "
-                        + KeywordPP.OPEN + v + KeywordPP.CLOSE + NL);
+            if (r.equalsIgnoreCase(KeywordPP.PREFIX)
+                    
+                    ) {
+                sb.append(KeywordPP.PREFIX + KeywordPP.SPACE).append(p)
+                        .append(": " + KeywordPP.OPEN).append(v).append(KeywordPP.CLOSE).append(NL);
             } else if (r.equalsIgnoreCase(KeywordPP.BASE)) {
-                sb.append(KeywordPP.BASE + KeywordPP.SPACE
-                        + KeywordPP.OPEN + v + KeywordPP.CLOSE + NL);
+                sb.append(KeywordPP.BASE + KeywordPP.SPACE + KeywordPP.OPEN)
+                        .append(v).append(KeywordPP.CLOSE).append(NL);
             }
         }
         return sb;
@@ -87,22 +91,22 @@ public class ASTPrinter {
 
         // Select
         if (ast.isSelect()) {
-            sb.append(KeywordPP.SELECT + SPACE);
+            sb.append(KeywordPP.SELECT).append(SPACE);
 
             if (ast.isDebug()) {
-                sb.append(KeywordPP.DEBUG + SPACE);
+                sb.append(KeywordPP.DEBUG).append(SPACE);
             }
 
             if (ast.isMore()) {
-                sb.append(KeywordPP.MORE + SPACE);
+                sb.append(KeywordPP.MORE).append(SPACE);
             }
 
             if (ast.isDistinct()) {
-                sb.append(KeywordPP.DISTINCT + SPACE);
+                sb.append(KeywordPP.DISTINCT).append(SPACE);
             }
 
             if (ast.isSelectAll()) {
-                sb.append(KeywordPP.STAR + SPACE);
+                sb.append(KeywordPP.STAR).append(SPACE);
             }
 
             if (select != null && select.size() > 0) {
@@ -118,44 +122,44 @@ public class ASTPrinter {
             }
 
         } else if (ast.isAsk()) {
-            sb.append(KeywordPP.ASK + SPACE);
+            sb.append(KeywordPP.ASK).append(SPACE);
         } else if (ast.isDelete()) {
-            sb.append(KeywordPP.DELETE + SPACE);
+            sb.append(KeywordPP.DELETE).append(SPACE);
             if (ast.isDeleteData()) {
-                sb.append(KeywordPP.DATA + SPACE);
+                sb.append(KeywordPP.DATA).append(SPACE);
             }
             ast.getDelete().toString(sb);
 
             if (ast.isInsert()) {
-                sb.append(KeywordPP.INSERT + SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 ast.getInsert().toString(sb);
             }
 
         } else if (ast.isConstruct()) {
             if (ast.isInsert()) {
-                sb.append(KeywordPP.INSERT + SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 if (ast.isInsertData()) {
-                    sb.append(KeywordPP.DATA + SPACE);
+                    sb.append(KeywordPP.DATA).append(SPACE);
                 }
                 ast.getInsert().toString(sb);
             } else if (ast.getConstruct() != null) {
-                sb.append(KeywordPP.CONSTRUCT + SPACE);
+                sb.append(KeywordPP.CONSTRUCT).append(SPACE);
                 ast.getConstruct().toString(sb);
             } else if (ast.getInsert() != null) {
-                sb.append(KeywordPP.INSERT + SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 ast.getInsert().toString(sb);
             } else if (ast.getDelete() != null) {
-                sb.append(KeywordPP.DELETE + SPACE);
+                sb.append(KeywordPP.DELETE).append(SPACE);
                 if (ast.isDeleteData()) {
-                    sb.append(KeywordPP.DATA + SPACE);
+                    sb.append(KeywordPP.DATA).append(SPACE);
                 }
                 ast.getDelete().toString(sb);
             }
         } else if (ast.isDescribe()) {
-            sb.append(KeywordPP.DESCRIBE + SPACE);
+            sb.append(KeywordPP.DESCRIBE).append(SPACE);
 
             if (ast.isDescribeAll()) {
-                sb.append(KeywordPP.STAR + SPACE);
+                sb.append(KeywordPP.STAR).append(SPACE);
             } else if (ast.adescribe != null && ast.adescribe.size() > 0) {
 
                 for (Atom at : ast.adescribe) {
@@ -171,21 +175,21 @@ public class ASTPrinter {
 
         // From
         for (Atom name : from) {
-            sb.append(KeywordPP.FROM + SPACE);
+            sb.append(KeywordPP.FROM).append(SPACE);
             name.toString(sb);
             sb.append(NL);
         }
 
         // From Named
         for (Atom name : named) {
-            sb.append(KeywordPP.FROM + SPACE + KeywordPP.NAMED + SPACE);
+            sb.append(KeywordPP.FROM).append(SPACE).append(KeywordPP.NAMED).append(SPACE);
             name.toString(sb);
             sb.append(NL);
         }
 
         // Where
         if ((!(ast.isDescribe() && !ast.isWhere())) && !ast.isData()) {
-            sb.append(KeywordPP.WHERE + NL);
+            sb.append(KeywordPP.WHERE).append(NL);
         }
 
         return sb;
@@ -224,16 +228,16 @@ public class ASTPrinter {
         List<Boolean> reverse = ast.getReverse();
 
         if (ast.getGroupBy().size() > 0) {
-            sb.append(KeywordPP.GROUPBY + SPACE);
+            sb.append(KeywordPP.GROUPBY).append(SPACE);
             for (Expression exp : ast.getGroupBy()) {
-                sb.append(exp.toString() + SPACE);
+                sb.append(exp.toString()).append(SPACE);
             }
             sb.append(NL);
         }
 
         if (sort.size() > 0) {
             int i = 0;
-            sb.append(KeywordPP.ORDERBY + SPACE);
+            sb.append(KeywordPP.ORDERBY).append(SPACE);
 
             for (Expression exp : ast.getOrderBy()) {
 
@@ -251,11 +255,11 @@ public class ASTPrinter {
         }
 
         if (ast.getOffset() > 0) {
-            sb.append(KeywordPP.OFFSET + SPACE + ast.getOffset() + SPACE);
+            sb.append(KeywordPP.OFFSET).append(SPACE).append(ast.getOffset()).append(SPACE);
         }
 
         if (ast.getMaxResult() != ast.getDefaultMaxResult()) {
-            sb.append(KeywordPP.LIMIT + SPACE + ast.getMaxResult() + KeywordPP.SPACE);
+            sb.append(KeywordPP.LIMIT).append(SPACE).append(ast.getMaxResult()).append(KeywordPP.SPACE);
         }
 
         if (ast.getHaving() != null) {

@@ -11,6 +11,7 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 
 public class TopExp implements ASTVisitable  {
 	
+        @Override
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		toString(sb);
@@ -25,6 +26,7 @@ public class TopExp implements ASTVisitable  {
 		return toString();
 	}
         
+        @Override
         public void accept(ASTVisitor visitor) {
 		
 	}

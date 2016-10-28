@@ -64,10 +64,12 @@ public class Source extends And {
 	  return state;
   }
   
+        @Override
   public boolean isGraph(){
 	  return true;
   }
   
+        @Override
   public void setRec(boolean b){
 	  isRec = b;
   }
@@ -88,6 +90,7 @@ public class Source extends And {
   }
 
 
+        @Override
     public StringBuffer toString(StringBuffer sb) {
         sb.append(KeywordPP.GRAPH + KeywordPP.SPACE);
         if (state) sb.append(KeywordPP.STATE + KeywordPP.SPACE);
@@ -100,6 +103,7 @@ public class Source extends And {
     }
 
  
+        @Override
   public boolean validateData(ASTQuery ast){
 	  if (asource.isVariable()) return false;
 
@@ -118,6 +122,7 @@ public class Source extends And {
   }
   
   
+        @Override
   public boolean validate(ASTQuery ast, boolean exist){
 	  if (asource.isVariable()){
 		  ast.bind(asource.getVariable());

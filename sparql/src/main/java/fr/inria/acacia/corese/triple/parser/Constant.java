@@ -150,7 +150,7 @@ public class Constant extends Atom {
 			if (hasLang()) {
 				//return name + "@" + lang;
 				toString(name, sb);
-				sb.append(KeywordPP.LANG + getLang());
+				sb.append(KeywordPP.LANG).append(getLang());
 			} 
 			else if (hasRealDatatype()) {
 				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger)){
@@ -158,12 +158,12 @@ public class Constant extends Atom {
 				}
 				else if (datatype.startsWith("http://")){
 					toString(name, sb);
-					sb.append(KeywordPP.SDT + "<"+ datatype +">");
+					sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
 				}
 				else {
 					toString(name, sb);
 					if (! datatype.equals(RDF.qxsdString)){
-						sb.append(KeywordPP.SDT + datatype);
+						sb.append(KeywordPP.SDT).append(datatype);
 					}
 				}
 			} 
@@ -179,7 +179,7 @@ public class Constant extends Atom {
 			sb.append(name);
 		} 
 		else {
-			sb.append(KeywordPP.OPEN + getLongName() + KeywordPP.CLOSE);
+			sb.append(KeywordPP.OPEN).append(getLongName()).append(KeywordPP.CLOSE);
 		}
 		return sb;
 	}

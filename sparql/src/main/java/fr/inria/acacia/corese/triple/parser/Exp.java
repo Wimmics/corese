@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
-import fr.inria.acacia.corese.triple.cst.RDFS;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -71,6 +70,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return body.add(exp);
 	}
         
+        @Override
         public Iterator<Exp> iterator(){
             return body.iterator();
         }
@@ -172,6 +172,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	  }
 	
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb) {
             return display(sb);
         }
@@ -218,6 +219,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	public boolean isFilter(){
 		return false;
 	}
+        
+        public boolean isStatement(){
+            return isBGP() || isUnion() || isMinus() || isOptional() || isGraph();
+        }
 	
 	public boolean isOption(){
 		return false;

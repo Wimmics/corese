@@ -212,6 +212,7 @@ public class Processor {
 	static final String STL_ISSTART             = STL + "isStart"; 
 	static final String STL_SET                 = STL + "set"; 
 	static final String STL_GET                 = STL + "get";
+	static final String STL_HASGET              = STL + "getp";
         static final String STL_CSET                = STL + "cset"; 
 	static final String STL_CGET                = STL + "cget";         
 	static final String STL_EXPORT              = STL + "export"; 
@@ -727,6 +728,7 @@ public class Processor {
                 defoper(STL_ISSTART,            ExprType.STL_ISSTART);
                 defoper(STL_SET,                ExprType.STL_SET);
                 defoper(STL_GET,                ExprType.STL_GET);
+                defoper(STL_HASGET,             ExprType.STL_HASGET);
                 defoper(STL_CSET,               ExprType.STL_CSET);
                 defoper(STL_CGET,               ExprType.STL_CGET);                
                 defoper(STL_EXPORT,             ExprType.STL_EXPORT);

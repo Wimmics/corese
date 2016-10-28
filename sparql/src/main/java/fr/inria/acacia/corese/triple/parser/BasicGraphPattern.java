@@ -212,6 +212,7 @@ public class BasicGraphPattern extends And {
      * SPARQL Constraint:
      * Two occurrences of same blank must not be separated by a pattern
      */
+        @Override
     public boolean validateBlank (ASTQuery ast){
     	boolean isBefore = true, isTriple = false;
     	Table table = new Table();

@@ -45,6 +45,7 @@ public class Or extends Exp {
 	}
 	
 	
+        @Override
 	public boolean isUnion(){
 		return true;
 	}
@@ -71,6 +72,7 @@ public class Or extends Exp {
 	/**
 	 * Each branch of union binds its variable (in parallel)
 	 */
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist){
 		boolean ok = true;
 		

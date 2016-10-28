@@ -409,6 +409,9 @@ public class NSManager extends ASTObject {
         return str;
     }
     
+    /**
+     * Remember namespace is used for later pprint
+     */
     void record(String ns){
          if (isRecord() && ! trecord.containsKey(ns)){
             trecord.put(ns, ns);
@@ -428,6 +431,7 @@ public class NSManager extends ASTObject {
 
         for (String p : tprefix.keySet()) {
             if (pname.startsWith(p) && pname.indexOf(pchar) == p.length()) {
+                record(getNamespace(p));
                 return getNamespace(p) + pname.substring(p.length() + 1);
             }
         }
@@ -512,10 +516,14 @@ public class NSManager extends ASTObject {
     }
         
     boolean isDisplayable(String ns){
-        if (isRecord()){
-            return trecord.containsKey(ns);
+        if (isRecorded(ns)){
+            return true;
         }
         return ! isSystem(ns);
+    }
+    
+    public boolean isRecorded(String ns){
+        return isRecord() && trecord.containsKey(ns);
     }
 
     public void setBase(String s) {
@@ -581,6 +589,7 @@ public class NSManager extends ASTObject {
         return toNamespaceB(str);
     }
 
+    @Override
     public int size() {
         return tns.size();
     }

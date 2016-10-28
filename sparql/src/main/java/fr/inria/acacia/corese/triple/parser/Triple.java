@@ -413,6 +413,7 @@ public class Triple extends Exp {
 	}
 	
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb) {
 		
 		if (isExpression()) {

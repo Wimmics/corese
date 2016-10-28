@@ -56,6 +56,7 @@ public class Context extends ASTObject {
     public static final String STL_SOLUTION = STL + "solution";
     public static final String STL_VALUE    = STL + "value";
     public static final String STL_VISITOR  = STL + "visitor";
+    public static final String STL_DEFAULT  = STL + "default";
     
     
     HashMap<String, IDatatype> table;
@@ -314,6 +315,11 @@ public class Context extends ASTObject {
 
     public IDatatype get(String name) {
         return table.get(name);
+    }
+    
+    public boolean hasValue(String name, String value) {
+        IDatatype dt = table.get(name);
+        return dt != null && dt.getLabel().equals(value);
     }
     
     public IDatatype getName(String name) {

@@ -61,6 +61,9 @@ public class LoadException extends Exception {
 		if (getPath() != null) {
 			str += "\n" + getPath();
 		}
+                else {
+                    str += "\n" + "unknown location";
+                }
 		return str;
 	}
 

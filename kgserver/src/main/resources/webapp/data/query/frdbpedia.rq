@@ -28,7 +28,6 @@ construct  {
   
 }
 where {
-#bind (st:set(st:bind, st:values) as ?tmp)
 bind (st:get(st:uri) as ?uri)
 bind (coalesce(st:get(st:lang), "fr") as ?lang)
 
@@ -54,7 +53,7 @@ service <http://fr.dbpedia.org/sparql> {
       ?pl p:longitude|geo:long ?plon
   }
   optional {
-  ?uri o:spouse |o:child
+    ?uri o:spouse |o:child
     |p:mère   |o:mother
     |p:père   |o:father
     |p:successeur   |o:successor 
@@ -77,8 +76,10 @@ service <http://fr.dbpedia.org/sparql> {
      filter isURI(?s) . ?s rdfs:label ?ls . 
      filter(langMatches(lang(?ls), 'fr')) 
     
-    ?q rdfs:label ?lq 
-    filter(langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))    
+    optional {
+        ?q rdfs:label ?lq 
+        filter (langMatches(lang(?lq), "fr") || langMatches(lang(?lq), "en"))
+    }
 
     optional { 
         ?s o:wikiPageRedirects ?uris        

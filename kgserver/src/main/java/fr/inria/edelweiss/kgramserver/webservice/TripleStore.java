@@ -103,7 +103,7 @@ public class TripleStore {
 
         if (owl) {
             RuleEngine re = RuleEngine.create(graph);
-            re.setProfile(RuleEngine.OWL_RL_LITE);
+            re.setProfile(RuleEngine.OWL_RL);
             graph.addEngine(re);
             if (owl) {
                 logger.info("Endpoint successfully reset with OWL RL entailments.");

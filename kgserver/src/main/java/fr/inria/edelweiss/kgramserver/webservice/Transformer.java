@@ -267,6 +267,7 @@ public class Transformer {
         if (transform != null) {
             wp.addTemplate(transform, isDefault);
             wp.getContext().setTransform(transform);
+            wp.getContext().set(Context.STL_DEFAULT, true);
         }
     }
              

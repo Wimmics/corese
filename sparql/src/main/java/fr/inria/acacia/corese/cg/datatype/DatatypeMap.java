@@ -448,7 +448,10 @@ public class DatatypeMap implements Cst, RDF {
     }
     
     public static IDatatype createObject(Object obj) {
-        return createObject("tmp", obj);
+        if (obj == null){
+            return null;
+        }
+        return createObject(Integer.toString(obj.hashCode()), obj);
     }
 
     public static IDatatype createObject(String name, Object obj) {      

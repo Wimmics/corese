@@ -17,6 +17,7 @@ import fr.inria.edelweiss.engine.model.api.LBind;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgpipe.Pipe;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -57,7 +58,7 @@ public class TestRuleEngine {
 
 		graph = createGraph(true);
 		Load load = Load.create(graph);
-                //QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED);
+                QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED);
             try {
                 load.parse(data + "engine/ontology/test.rdfs");
                 load.parse(data + "engine/data/test.rdf");

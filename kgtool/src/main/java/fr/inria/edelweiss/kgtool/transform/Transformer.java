@@ -823,13 +823,17 @@ public class Transformer  {
             for (int i = 0; i < args.length; i++) {
                 System.out.print(args[i] + " ");
                 if (args[i].isBlank()){
-                    System.out.println(Transformer.create(graph, TURTLE).process(args[i]).getLabel());
+                    Transformer t = Transformer.create(graph, TURTLE);
+                    t.setDebug(false);
+                    System.out.println(t.process(args[i]).getLabel());
                 }
             }
             System.out.println();
         }
         else if (dt1 != null && dt1.isBlank()) {
-            System.out.println(Transformer.create(graph, TURTLE).process(dt1).getLabel());
+            Transformer t = Transformer.create(graph, TURTLE);
+            t.setDebug(false);
+            System.out.println(t.process(dt1).getLabel());
         }
         System.out.println("__");
     }

@@ -60,12 +60,9 @@ import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
@@ -78,7 +75,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int LOAD = 1;
-	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-06-21";
+	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-11-01";
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
 	// Compteur pour le nombre d'onglets query créés 

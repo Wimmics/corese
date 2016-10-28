@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -532,7 +533,7 @@ public class Transformer implements ExpType {
         q.setHasFunctional(ast.hasFunctional());
         q.setService(ast.getService());
         // use same compiler
-        bindings(q, ast);
+        values(q, ast);
         path(q, ast);
 
         return q;
@@ -667,24 +668,35 @@ public class Transformer implements ExpType {
         isSPARQL1 = b;
     }
 
-    void bindings(Query q, ASTQuery ast) {
-
+    void values(Query q, ASTQuery ast){
         if (ast.getValues() == null) {
             return;
         }
-
+        bindings(q, ast);
+        if (q.getValues() != null && Eval.testAlgebra){
+            if (q.getBody().size() == 0){
+                q.setBody(q.getValues());
+            }
+            else {
+                Exp exp = Exp.create(JOIN, Exp.create(BGP, q.getValues()), q.getBody());
+                q.setBody(Exp.create(BGP, exp));
+            }
+        }
+    }
+    
+    void bindings(Query q, ASTQuery ast) {
         Exp bind = bindings(ast.getValues());
-
-        if (bind != null) {
+        if (bind == null) {
+            q.setCorrect(false);
+            q.addError("Value Bindings: ", "#values != #variables");
+        } else {
+            q.setValues(bind);
             if (ast.getValues().isMoved()) {
                 q.setTemplateMappings(bind.getMappings());
             } else {
                 q.setMappings(bind.getMappings());
                 q.setBindingNodes(bind.getNodeList());
             }
-        } else {
-            q.setCorrect(false);
-            q.addError("Value Bindings: ", "#values != #variables");
         }
     }
 
@@ -1190,37 +1202,48 @@ public class Transformer implements ExpType {
 
                 for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()) {
 
-                    Exp tmp = compile(ee, opt, level + 1);
+                    Exp cpl = compile(ee, opt, level + 1);
 
-                    if (tmp != null) {
+                    if (cpl != null) {
 
-                        if (tmp.isGraph() && tmp.getBind() != null) {
+                        if (cpl.isGraph() && cpl.getBind() != null) {
                             // see compileGraph()
-                            exp.add(tmp.getBind());
-                            tmp.setBind(null);
+                            exp.add(cpl.getBind());
+                            cpl.setBind(null);
                         }
 
-                        if (ee.isScope()) {
-                            // add AND as a whole
-                            exp.add(tmp);
-
-                        } else if (isJoinable(ee)) {
-                            exp.join(tmp);
+//                        if (ee.isScope()) {
+//                            // add AND as a whole
+//                            exp.add(cpl);
+//
+//                        } else 
+                            if (isJoinable(exp, ee)) {
+                            exp.join(cpl, bgpType());
                         } else {
                             // add elements of AND one by one
-                            exp.insert(tmp);
+                            exp.insert(cpl);
                         }
                     }
                 }
 
                 // PRAGMA: do it after loop above to have filter compiled
                 query.validateBlank(ast);
-
+                
                 exp = complete(exp, query, opt);
+                
+                if (Eval.testAlgebra && exp.isBGP()){
+                    // possibly join arguments
+                    exp.dispatch();
+                }
+                
         }
 
         return exp;
 
+    }
+    
+    int bgpType(){
+       return (ISBGP) ? BGP : AND;
     }
 
     Exp compileEdge(Triple t, boolean opt) {
@@ -1294,6 +1317,9 @@ public class Transformer implements ExpType {
             case GRAPH:
                 compileGraph(ast, exp, query);
                 break;
+                
+//            case OPTIONAL:
+//                exp.optional();
 
         }
 
@@ -1509,8 +1535,8 @@ public class Transformer implements ExpType {
             return BIND;
         } else if (query.isValues()) {
             return VALUES;
-        } else if (ISBGP && query.isBGP()) {
-            return BGP;
+        } else if (query.isBGP()) {
+            return bgpType();
         } else if (query.isAnd()) {
             return AND;
         } else {
@@ -1648,7 +1674,18 @@ public class Transformer implements ExpType {
         this.dataset = dataset;
     }
 
-    private boolean isJoinable(fr.inria.acacia.corese.triple.parser.Exp ee) {
+    /**
+     * Must exp ee be joined with preceding statements ?
+     */
+    private boolean isJoinable(Exp exp, fr.inria.acacia.corese.triple.parser.Exp ee) {
+        return (Eval.testAlgebra) ? isJoinableAlgebra(exp, ee) : isJoinableBasic(ee) ;        
+    }
+    
+    private boolean isJoinableBasic(fr.inria.acacia.corese.triple.parser.Exp ee) {
+        return ee.isBGP() || ee.isUnion();
+    }
+    
+    private boolean isJoinableAlgebra(Exp exp, fr.inria.acacia.corese.triple.parser.Exp ee) {
         return ee.isBGP() || ee.isUnion();
     }
 

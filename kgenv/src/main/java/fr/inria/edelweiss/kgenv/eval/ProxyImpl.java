@@ -1216,6 +1216,7 @@ public class ProxyImpl implements Proxy, ExprType {
     /**
      * sum(?x)
      */
+    @Override
     public Object aggregate(Expr exp, Environment env, Producer p, Node qNode) {
         exp = decode(exp, env, p);
         Walker walk = new Walker(exp, qNode, this, env, p);
@@ -1227,6 +1228,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return res;
     }
     
+    @Override
     public Expr decode (Expr exp, Environment env, Producer p){
         switch (exp.oper()){
             case STL_AGGREGATE:

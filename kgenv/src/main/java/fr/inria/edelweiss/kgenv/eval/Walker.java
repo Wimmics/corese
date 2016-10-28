@@ -208,6 +208,7 @@ class Walker extends Interpreter {
     /**
      * map is a Mapping
      */
+    @Override
     public Node eval(Filter f, Environment env, Producer p) {
         Mapping map = (Mapping) env;
 
@@ -244,7 +245,7 @@ class Walker extends Interpreter {
         }
 
         Expr arg = exp.getExp(0);
-        Node node = null;        
+        Node node = null;  
         IDatatype dt = (IDatatype) eval.eval(arg, map, p);;
               
         if (dt != null) {

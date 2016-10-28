@@ -678,7 +678,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
         IDatatype dt = DatatypeMap.cast(value);
         if (dt == null){
-            dt = DatatypeMap.createObject("tmp", value);
+            dt = DatatypeMap.createObject(value);
         }
         return dt;
     }
@@ -714,7 +714,7 @@ public class ProducerImpl implements Producer, IProducerQP {
      synchronized public Node getNode(Object value) {
         // TODO Auto-generated method stub
         if (!(value instanceof IDatatype)) {
-            return DatatypeMap.createObject("tmp", value);
+            return DatatypeMap.createObject(value);
         }
         IDatatype dt = (IDatatype) value;
         if (dt.isFuture()) {

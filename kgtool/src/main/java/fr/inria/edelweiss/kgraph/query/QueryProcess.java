@@ -89,6 +89,11 @@ public class QueryProcess extends QuerySolver {
             Query.isOptional = false;
         }
     }
+    
+    public static void testAlgebra(boolean b){
+         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = b;
+         Eval.testAlgebra = b;
+    }
 
     protected QueryProcess(Producer p, Evaluator e, Matcher m) {
         super(p, e, m);

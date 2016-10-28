@@ -57,23 +57,28 @@ public class CoreseDatatype
 	/**
 	 * Default lang is "" for literals, But for URI which is null (see CoreseURI)
 	 */
+        @Override
 	public IDatatype getDataLang() {
 		return empty;
 	}
 	
+        @Override
 	public String toString(){
 		return toSparql(true, false);
 	}       
 	
+        @Override
 	public String toSparql(){
 		return toSparql(true, false);
 	}
 	
 
+        @Override
 	public String toSparql(boolean prefix){          
             return toSparql(prefix, false);
         }
         
+        @Override
         public String toSparql(boolean prefix, boolean xsd){          
 		String value = getLabel();
 		if (getCode() == INTEGER && ! xsd){

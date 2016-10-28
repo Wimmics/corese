@@ -22,11 +22,24 @@ function st:protocol(?uri) {
 function st:link(?uri) {
     concat(
       st:get(st:service),
+      "?uri=", encode_for_uri(?uri), 
+      if (coalesce(isURI(st:get(st:profile)), false),
+        concat("&profile=",   st:qname(st:get(st:profile))),
+        if (coalesce(isURI(st:get(st:transform)), false),
+            concat("&transform=", st:qname(st:get(st:transform))),
+            "") ),              
+      st:include()
+    )
+} 
+
+function st:link123(?uri) {
+    concat(
+      st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
       coalesce(
-	concat("&profile=",   st:qname(st:get(st:profile))), 
-	concat("&transform=", st:qname(st:get(st:transform))), 
-	""),
+        concat("&profile=",   st:qname(st:get(st:profile))), 
+        concat("&transform=", st:qname(st:get(st:transform))), 
+        ""),
       st:include()
     )
 } 

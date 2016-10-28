@@ -1,0 +1,483 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+@prefix o: <http://dbpedia.org/ontology/>
+@prefix dbo: <http://dbpedia.org/ontology/>
+@prefix p: <http://fr.dbpedia.org/property/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+
+
+
+r:Albi rdfs:label "Albi"@fr .
+
+r:Capinghem rdfs:label "Capinghem"@fr .
+
+r:Castelnau-le-Lez rdfs:label "Castelnau-le-Lez"@fr .
+
+r:Clapiers rdfs:label "Clapiers"@fr .
+
+r:Englos rdfs:label "Englos"@fr .
+
+r:Ennetières-en-Weppes rdfs:label "Ennetières-en-Weppes"@fr .
+
+r:Faches-Thumesnil rdfs:label "Faches-Thumesnil"@fr .
+
+r:Grabels rdfs:label "Grabels"@fr .
+
+r:Grenoble a dbo:Place ;
+  dbo:dbpedia r:Grenoble ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Panorama_grenoble.png?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Grenoble" ;
+  p:latitude "45.1878"^^xsd:float ;
+  p:longitude "5.72694"^^xsd:double ;
+  rdfs:comment "Grenoble (prononcé [gʁə.ˈnɔbl], Grenoblo en arpitan) est une commune du sud-est de la France, chef-lieu du département de l'Isère, ancienne capitale du Dauphiné. Troisième commune de la région Auvergne-Rhône-Alpes, derrière Lyon et Saint-Étienne, Grenoble est la commune-centre de la deuxième agglomération de cette région après celle de Lyon."@fr ;
+  rdfs:label "Grenoble"@fr .
+
+r:Juvignac rdfs:label "Juvignac"@fr .
+
+<http://fr.dbpedia.org/resource/La_Madeleine_(Nord)> rdfs:label "La Madeleine (Nord)"@fr .
+
+r:Lambersart rdfs:label "Lambersart"@fr .
+
+r:Lattes rdfs:label "Lattes"@fr .
+
+r:Lezennes rdfs:label "Lezennes"@fr .
+
+r:Lille a dbo:Place ;
+  dbo:dbpedia r:Lille ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Lille_vue_gd_place.JPG?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Lille" ;
+  p:est <http://fr.dbpedia.org/resource/Villeneuve-d'Ascq> ;
+  p:latitude "50.6372"^^xsd:double ;
+  p:longitude "3.06333"^^xsd:double ;
+  p:nord <http://fr.dbpedia.org/resource/La_Madeleine_(Nord)> ;
+  p:nord r:Saint-André-lez-Lille ;
+  p:nordEst r:Marcq-en-Barœul ;
+  p:nordEst r:Mons-en-Barœul ;
+  p:nordOuest r:Lambersart ;
+  p:nordOuest <http://fr.dbpedia.org/resource/Lompret_(Nord)> ;
+  p:ouest r:Capinghem ;
+  p:ouest r:Ennetières-en-Weppes ;
+  p:ouest r:Prémesques ;
+  p:ouest r:Pérenchies ;
+  p:sud r:Faches-Thumesnil ;
+  p:sud r:Wattignies ;
+  p:sudEst r:Lezennes ;
+  p:sudEst r:Ronchin ;
+  p:sudOuest r:Englos ;
+  p:sudOuest <http://fr.dbpedia.org/resource/Loos_(Nord)> ;
+  p:sudOuest r:Sequedin ;
+  rdfs:comment "Lille (prononcé [lil]) est une commune française, préfecture du département du Nord et chef-lieu en région Nord-Pas-de-Calais-Picardie. Surnommée la « Capitale des Flandres », en France, Lille est, avec ses 231 491 habitants au dernier recensement de 2013, la principale ville, aux côtés de Roubaix, Tourcoing et Villeneuve-d'Ascq, de la Métropole européenne de Lille, métropole qui regroupe 85 communes et compte  1 129 061 habitants au 1er janvier 2013 ."@fr ;
+  rdfs:label "Lille"@fr .
+
+<http://fr.dbpedia.org/resource/Lompret_(Nord)> rdfs:label "Lompret (Nord)"@fr .
+
+<http://fr.dbpedia.org/resource/Loos_(Nord)> rdfs:label "Loos (Nord)"@fr .
+
+r:Lyon rdfs:label "Lyon"@fr .
+
+r:Marcq-en-Barœul rdfs:label "Marcq-en-Barœul"@fr .
+
+r:Mauguio rdfs:label "Mauguio"@fr .
+
+r:Mons-en-Barœul rdfs:label "Mons-en-Barœul"@fr .
+
+r:Montferrier-sur-Lez rdfs:label "Montferrier-sur-Lez"@fr .
+
+r:Montpellier a dbo:Place ;
+  dbo:dbpedia r:Montpellier ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Montpellier_montage_couv.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Montpellier" ;
+  p:est r:Saint-Aunès ;
+  p:latitude "43.6119"^^xsd:double ;
+  p:longitude "3.87722"^^xsd:double ;
+  p:nord r:Montferrier-sur-Lez ;
+  p:nord r:Paris ;
+  p:nord r:Saint-Clément-de-Rivière ;
+  p:nordEst r:Castelnau-le-Lez ;
+  p:nordEst r:Clapiers ;
+  p:nordEst r:Lyon ;
+  p:nordOuest r:Grabels ;
+  p:ouest r:Albi ;
+  p:ouest r:Juvignac ;
+  p:sud r:Lattes ;
+  p:sudEst r:Mauguio ;
+  p:sudOuest r:Saint-Jean-de-Védas ;
+  rdfs:comment "Montpellier (prononcé [mɔ̃.pə.lje], en occitan Montpelhièr /mumpeˈʎɛ:/), est une commune française située dans le département de l’Hérault, et la région Languedoc-Roussillon-Midi-Pyrénées. Montpellier se situe sur un grand axe de communication joignant l'Espagne à l'ouest, à l'Italie à l'est."@fr ;
+  rdfs:label "Montpellier"@fr .
+
+r:Paris rdfs:label "Paris"@fr .
+
+r:Prémesques rdfs:label "Prémesques"@fr .
+
+r:Pérenchies rdfs:label "Pérenchies"@fr .
+
+r:Ronchin rdfs:label "Ronchin"@fr .
+
+r:Saint-André-lez-Lille rdfs:label "Saint-André-lez-Lille"@fr .
+
+r:Saint-Aunès rdfs:label "Saint-Aunès"@fr .
+
+r:Saint-Clément-de-Rivière rdfs:label "Saint-Clément-de-Rivière"@fr .
+
+r:Saint-Jean-de-Védas rdfs:label "Saint-Jean-de-Védas"@fr .
+
+r:Sequedin rdfs:label "Sequedin"@fr .
+
+r:Sophia_Antipolis a dbo:Place ;
+  dbo:dbpedia r:Sophia_Antipolis ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Pierre_Laffitte_p1130908.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Sophia_Antipolis" ;
+  p:latitude "43.6155"^^xsd:float ;
+  p:longitude "7.055"^^xsd:double ;
+  rdfs:comment "Sophia Antipolis, située dans le département des Alpes-Maritimes, est la plus importante technopole de France et d'Europe, fondée en 1969 par l'Association Sophia Antipolis et le groupement d'intérêt économique SAVALOR.Pôle de compétitivité à vocation mondiale, Sophia regroupe actuellement 1 400 entreprises générant environ 31 000 emplois directs en recherche scientifique de pointe dans le domaine des technologies de l'information et de la communication (TIC), du multimédia, des sciences de la vie (médecine, biochimie et agronomie), de l'énergie, de la gestion de l'eau, des risques et du développement durable. "@fr ;
+  rdfs:label "Sophia Antipolis"@fr .
+
+<http://fr.dbpedia.org/resource/Villeneuve-d'Ascq> rdfs:label "Villeneuve-d'Ascq"@fr .
+
+
+r:Capinghem rdfs:label "Capinghem"@fr .
+
+r:Englos rdfs:label "Englos"@fr .
+
+r:Ennetières-en-Weppes rdfs:label "Ennetières-en-Weppes"@fr .
+
+r:Faches-Thumesnil rdfs:label "Faches-Thumesnil"@fr .
+
+<http://fr.dbpedia.org/resource/La_Madeleine_(Nord)> rdfs:label "La Madeleine (Nord)"@fr .
+
+r:Lambersart rdfs:label "Lambersart"@fr .
+
+r:Lezennes rdfs:label "Lezennes"@fr .
+
+r:Lille a dbo:Place ;
+  dbo:dbpedia r:Lille ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Lille_vue_gd_place.JPG?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Lille" ;
+  p:est <http://fr.dbpedia.org/resource/Villeneuve-d'Ascq> ;
+  p:latitude "50.6372"^^xsd:double ;
+  p:longitude "3.06333"^^xsd:double ;
+  p:nord <http://fr.dbpedia.org/resource/La_Madeleine_(Nord)> ;
+  p:nord r:Saint-André-lez-Lille ;
+  p:nordEst r:Marcq-en-Barœul ;
+  p:nordEst r:Mons-en-Barœul ;
+  p:nordOuest r:Lambersart ;
+  p:nordOuest <http://fr.dbpedia.org/resource/Lompret_(Nord)> ;
+  p:ouest r:Capinghem ;
+  p:ouest r:Ennetières-en-Weppes ;
+  p:ouest r:Prémesques ;
+  p:ouest r:Pérenchies ;
+  p:sud r:Faches-Thumesnil ;
+  p:sud r:Wattignies ;
+  p:sudEst r:Lezennes ;
+  p:sudEst r:Ronchin ;
+  p:sudOuest r:Englos ;
+  p:sudOuest <http://fr.dbpedia.org/resource/Loos_(Nord)> ;
+  p:sudOuest r:Sequedin ;
+  rdfs:comment "Lille (prononcé [lil]) est une commune française, préfecture du département du Nord et chef-lieu en région Nord-Pas-de-Calais-Picardie. Surnommée la « Capitale des Flandres », en France, Lille est, avec ses 231 491 habitants au dernier recensement de 2013, la principale ville, aux côtés de Roubaix, Tourcoing et Villeneuve-d'Ascq, de la Métropole européenne de Lille, métropole qui regroupe 85 communes et compte  1 129 061 habitants au 1er janvier 2013 ."@fr ;
+  rdfs:label "Lille"@fr .
+
+<http://fr.dbpedia.org/resource/Lompret_(Nord)> rdfs:label "Lompret (Nord)"@fr .
+
+<http://fr.dbpedia.org/resource/Loos_(Nord)> rdfs:label "Loos (Nord)"@fr .
+
+r:Marcq-en-Barœul rdfs:label "Marcq-en-Barœul"@fr .
+
+r:Mons-en-Barœul rdfs:label "Mons-en-Barœul"@fr .
+
+r:Prémesques rdfs:label "Prémesques"@fr .
+
+r:Pérenchies rdfs:label "Pérenchies"@fr .
+
+r:Ronchin rdfs:label "Ronchin"@fr .
+
+r:Saint-André-lez-Lille rdfs:label "Saint-André-lez-Lille"@fr .
+
+r:Sequedin rdfs:label "Sequedin"@fr .
+
+<http://fr.dbpedia.org/resource/Villeneuve-d'Ascq> rdfs:label "Villeneuve-d'Ascq"@fr .
+
+r:Wattignies rdfs:label "Wattignies"@fr .
+
+r:Betton rdfs:label "Betton"@fr .
+
+r:Cesson-Sévigné rdfs:label "Cesson-Sévigné"@fr .
+
+r:Chantepie rdfs:label "Chantepie"@fr .
+
+r:Le_Rheu rdfs:label "Le Rheu"@fr .
+
+r:Montgermont rdfs:label "Montgermont"@fr .
+
+r:Noyal-Châtillon-sur-Seiche rdfs:label "Noyal-Châtillon-sur-Seiche"@fr .
+
+<http://fr.dbpedia.org/resource/Pacé_(Ille-et-Vilaine)> rdfs:label "Pacé (Ille-et-Vilaine)"@fr .
+
+r:Rennes a dbo:Place ;
+  dbo:dbpedia r:Rennes ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Blason_Rennes.svg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Rennes" ;
+  p:est r:Cesson-Sévigné ;
+  p:latitude "48.1147"^^xsd:double ;
+  p:longitude "-1.67944"^^xsd:double ;
+  p:nord <http://fr.dbpedia.org/resource/Saint-Grégoire_(Ille-et-Vilaine)> ;
+  p:nordEst r:Betton ;
+  p:nordOuest r:Montgermont ;
+  p:nordOuest <http://fr.dbpedia.org/resource/Pacé_(Ille-et-Vilaine)> ;
+  p:ouest r:Le_Rheu ;
+  p:ouest r:Vezin-le-Coquet ;
+  p:sud r:Noyal-Châtillon-sur-Seiche ;
+  p:sudEst r:Chantepie ;
+  p:sudOuest r:Saint-Jacques-de-la-Lande ;
+  rdfs:comment "Rennes (prononcer [ʁɛn]11px Écouter) est une commune française située dans l'Ouest de la France. C'est le chef-lieu du département d’Ille-et-Vilaine et de la région Bretagne."@fr ;
+  rdfs:label "Rennes"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Grégoire_(Ille-et-Vilaine)> rdfs:label "Saint-Grégoire (Ille-et-Vilaine)"@fr .
+
+r:Saint-Jacques-de-la-Lande rdfs:label "Saint-Jacques-de-la-Lande"@fr .
+
+
+
+p:est rdfs:label "est"@fr .
+
+p:nord rdfs:label "nord"@fr .
+
+p:nordEst rdfs:label "nord-est"@fr .
+
+p:nordOuest rdfs:label "nord-ouest"@fr .
+
+p:ouest rdfs:label "ouest"@fr .
+
+p:sud rdfs:label "sud"@fr .
+
+p:sudEst rdfs:label "sud-est"@fr .
+
+p:sudOuest rdfs:label "sud-ouest"@fr .
+
+r:Aubervilliers rdfs:label "Aubervilliers"@fr .
+
+r:Bagnolet rdfs:label "Bagnolet"@fr .
+
+r:Boulogne-Billancourt rdfs:label "Boulogne-Billancourt"@fr .
+
+r:Charenton-le-Pont rdfs:label "Charenton-le-Pont"@fr .
+
+r:Clichy rdfs:label "Clichy"@fr .
+
+r:Fontenay-sous-Bois rdfs:label "Fontenay-sous-Bois"@fr .
+
+<http://fr.dbpedia.org/resource/Gentilly_(Val-de-Marne)> rdfs:label "Gentilly (Val-de-Marne)"@fr .
+
+r:Issy-les-Moulineaux rdfs:label "Issy-les-Moulineaux"@fr .
+
+r:Ivry-sur-Seine rdfs:label "Ivry-sur-Seine"@fr .
+
+r:Joinville-le-Pont rdfs:label "Joinville-le-Pont"@fr .
+
+r:Le_Kremlin-Bicêtre rdfs:label "Le Kremlin-Bicêtre"@fr .
+
+r:Le_Pré-Saint-Gervais rdfs:label "Le Pré-Saint-Gervais"@fr .
+
+r:Les_Lilas rdfs:label "Les Lilas"@fr .
+
+r:Levallois-Perret rdfs:label "Levallois-Perret"@fr .
+
+<http://fr.dbpedia.org/resource/Malakoff_(Hauts-de-Seine)> rdfs:label "Malakoff (Hauts-de-Seine)"@fr .
+
+<http://fr.dbpedia.org/resource/Montreuil_(Seine-Saint-Denis)> rdfs:label "Montreuil (Seine-Saint-Denis)"@fr .
+
+r:Montrouge rdfs:label "Montrouge"@fr .
+
+r:Neuilly-sur-Seine rdfs:label "Neuilly-sur-Seine"@fr .
+
+r:Nogent-sur-Marne rdfs:label "Nogent-sur-Marne"@fr .
+
+r:Pantin rdfs:label "Pantin"@fr .
+
+r:Paris a dbo:Place ;
+  dbo:dbpedia r:Paris ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Paris_-_Eiffelturm_und_Marsfeld2.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Paris" ;
+  p:est r:Bagnolet ;
+  p:est r:Fontenay-sous-Bois ;
+  p:est <http://fr.dbpedia.org/resource/Montreuil_(Seine-Saint-Denis)> ;
+  p:est r:Nogent-sur-Marne ;
+  p:est r:Saint-Mandé ;
+  p:est r:Vincennes ;
+  p:latitude "48.8217"^^xsd:float ;
+  p:latitude "48.8566"^^xsd:double ;
+  p:longitude "2.33778"^^xsd:float ;
+  p:longitude "2.35183"^^xsd:double ;
+  p:nord r:Aubervilliers ;
+  p:nord <http://fr.dbpedia.org/resource/Saint-Denis_(Seine-Saint-Denis)> ;
+  p:nord <http://fr.dbpedia.org/resource/Saint-Ouen_(Seine-Saint-Denis)> ;
+  p:nordEst r:Le_Pré-Saint-Gervais ;
+  p:nordEst r:Les_Lilas ;
+  p:nordEst r:Pantin ;
+  p:nordOuest r:Clichy ;
+  p:nordOuest r:Levallois-Perret ;
+  p:nordOuest r:Neuilly-sur-Seine ;
+  p:ouest r:Puteaux ;
+  p:ouest r:Saint-Cloud ;
+  p:ouest r:Suresnes ;
+  p:sud <http://fr.dbpedia.org/resource/Gentilly_(Val-de-Marne)> ;
+  p:sud r:Le_Kremlin-Bicêtre ;
+  p:sud <http://fr.dbpedia.org/resource/Malakoff_(Hauts-de-Seine)> ;
+  p:sud r:Montrouge ;
+  p:sudEst r:Charenton-le-Pont ;
+  p:sudEst r:Ivry-sur-Seine ;
+  p:sudEst r:Joinville-le-Pont ;
+  p:sudEst <http://fr.dbpedia.org/resource/Saint-Maurice_(Val-de-Marne)> ;
+  p:sudOuest r:Boulogne-Billancourt ;
+  p:sudOuest r:Issy-les-Moulineaux ;
+  p:sudOuest r:Vanves ;
+  rdfs:comment "Paris (prononcé [pa.ʁi]) est la capitale de la République française. Elle se situe au cœur d'un vaste bassin sédimentaire aux sols fertiles et au climat tempéré, le Bassin parisien, sur une boucle de la Seine, entre les confluents de celle-ci avec la Marne et l'Oise. Ses habitants s’appellent les Parisiens.Paris est également le chef-lieu de la région Île-de-France et l'unique commune française qui est en même temps un département."@fr ;
+  rdfs:label "Paris"@fr .
+
+r:Puteaux rdfs:label "Puteaux"@fr .
+
+r:Saint-Cloud rdfs:label "Saint-Cloud"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Denis_(Seine-Saint-Denis)> rdfs:label "Saint-Denis (Seine-Saint-Denis)"@fr .
+
+r:Saint-Mandé rdfs:label "Saint-Mandé"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Maurice_(Val-de-Marne)> rdfs:label "Saint-Maurice (Val-de-Marne)"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Ouen_(Seine-Saint-Denis)> rdfs:label "Saint-Ouen (Seine-Saint-Denis)"@fr .
+
+r:Suresnes rdfs:label "Suresnes"@fr .
+
+r:Vanves rdfs:label "Vanves"@fr .
+
+r:Vincennes rdfs:label "Vincennes"@fr.
+
+
+
+r:Jarville-la-Malgrange rdfs:label "Jarville-la-Malgrange"@fr .
+
+r:Laxou rdfs:label "Laxou"@fr .
+
+r:Malzéville rdfs:label "Malzéville"@fr .
+
+r:Maxéville rdfs:label "Maxéville"@fr .
+
+r:Nancy a dbo:Place ;
+  dbo:dbpedia r:Nancy ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Nancy,_Place_Stanislas,_E.Héré,_1752-60.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Nancy" ;
+  p:est r:Tomblaine ;
+  p:latitude "48.6936"^^xsd:double ;
+  p:longitude "6.1846"^^xsd:double ;
+  p:nord r:Malzéville ;
+  p:nordEst r:Saint-Max ;
+  p:nordOuest r:Maxéville ;
+  p:ouest r:Laxou ;
+  p:sud r:Vandœuvre-lès-Nancy ;
+  p:sudEst r:Jarville-la-Malgrange ;
+  p:sudOuest r:Villers-lès-Nancy ;
+  rdfs:comment "Nancy [nɑ̃.si] est une commune française située en Lorraine au bord de la Meurthe à quelques kilomètres en amont de son point de confluence avec la Moselle, à 281 kilomètres à l'est de Paris et 116 kilomètres à l'ouest de Strasbourg. C'est la préfecture du département de Meurthe-et-Moselle, en région Alsace-Champagne-Ardenne-Lorraine."@fr ;
+  rdfs:label "Nancy"@fr .
+
+r:Saint-Max rdfs:label "Saint-Max"@fr .
+
+r:Tomblaine rdfs:label "Tomblaine"@fr .
+
+r:Vandœuvre-lès-Nancy rdfs:label "Vandœuvre-lès-Nancy"@fr .
+
+r:Villers-lès-Nancy rdfs:label "Villers-lès-Nancy"@fr .
+
+<http://fr.dbpedia.org/resource/Rocquencourt_(Yvelines)> a dbo:Place ;
+  dbo:dbpedia <http://fr.dbpedia.org/resource/Rocquencourt_(Yvelines)> ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Rocquencourt_78_Mairie.JPG?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Rocquencourt_(Yvelines)" ;
+  p:latitude "48.8375"^^xsd:float ;
+  p:longitude "2.1125"^^xsd:double ;
+  rdfs:comment "Rocquencourt est une commune du département des Yvelines, dans la région Île-de-France, en France, à six km environ au nord-ouest de Versailles et à 21 km à l'ouest de Paris.Ses habitants sont appelés les Rocquencourtois."@fr ;
+  rdfs:label "Rocquencourt (Yvelines)"@fr .
+
+
+
+
+
+<http://fr.dbpedia.org/resource/Bassens_(Gironde)> rdfs:label "Bassens (Gironde)"@fr .
+
+r:Betton rdfs:label "Betton"@fr .
+
+<http://fr.dbpedia.org/resource/Blanquefort_(Gironde)> rdfs:label "Blanquefort (Gironde)"@fr .
+
+r:Bordeaux a dbo:Place ;
+  dbo:dbpedia r:Bordeaux ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/138_-_Place_de_la_Bourse_et_le_miroir_d'eau_-_Bordeaux.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Bordeaux" ;
+  p:est r:Cenon ;
+  p:latitude "44.8379"^^xsd:float ;
+  p:longitude "-0.579541"^^xsd:double ;
+  p:nord <http://fr.dbpedia.org/resource/Blanquefort_(Gironde)> ;
+  p:nordEst <http://fr.dbpedia.org/resource/Bassens_(Gironde)> ;
+  p:nordEst r:Lormont ;
+  p:nordOuest <http://fr.dbpedia.org/resource/Bruges_(Gironde)> ;
+  p:nordOuest r:Eysines ;
+  p:nordOuest r:Le_Bouscat ;
+  p:ouest <http://fr.dbpedia.org/resource/Mérignac_(Gironde)> ;
+  p:sud r:Talence ;
+  p:sudEst r:Bègles ;
+  p:sudEst <http://fr.dbpedia.org/resource/Floirac_(Gironde)> ;
+  p:sudOuest r:Pessac ;
+  rdfs:comment "Bordeaux (prononcé [bɔʁ.ˈd̪o]) est une commune du Sud-Ouest de la France, préfecture du département de la Gironde et chef-lieu de la région Aquitaine-Limousin-Poitou-Charentes.Capitale de l'ancienne Guyenne, Bordeaux, située en bordure des Landes de Gascogne, fait partie de la Gascogne.En 2012, la commune était la neuvième commune de France par sa population."@fr ;
+  rdfs:label "Bordeaux"@fr .
+
+<http://fr.dbpedia.org/resource/Bruges_(Gironde)> rdfs:label "Bruges (Gironde)"@fr .
+
+r:Bègles rdfs:label "Bègles"@fr .
+
+r:Cenon rdfs:label "Cenon"@fr .
+
+r:Cesson-Sévigné rdfs:label "Cesson-Sévigné"@fr .
+
+r:Chantepie rdfs:label "Chantepie"@fr .
+
+r:Eysines rdfs:label "Eysines"@fr .
+
+<http://fr.dbpedia.org/resource/Floirac_(Gironde)> rdfs:label "Floirac (Gironde)"@fr .
+
+r:Le_Bouscat rdfs:label "Le Bouscat"@fr .
+
+r:Le_Rheu rdfs:label "Le Rheu"@fr .
+
+r:Lormont rdfs:label "Lormont"@fr .
+
+r:Montgermont rdfs:label "Montgermont"@fr .
+
+<http://fr.dbpedia.org/resource/Mérignac_(Gironde)> rdfs:label "Mérignac (Gironde)"@fr .
+
+r:Noyal-Châtillon-sur-Seiche rdfs:label "Noyal-Châtillon-sur-Seiche"@fr .
+
+<http://fr.dbpedia.org/resource/Pacé_(Ille-et-Vilaine)> rdfs:label "Pacé (Ille-et-Vilaine)"@fr .
+
+r:Pessac rdfs:label "Pessac"@fr .
+
+r:Rennes a dbo:Place ;
+  dbo:dbpedia r:Rennes ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Blason_Rennes.svg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Rennes" ;
+  p:est r:Cesson-Sévigné ;
+  p:latitude "48.1147"^^xsd:double ;
+  p:longitude "-1.67944"^^xsd:float ;
+  p:nord <http://fr.dbpedia.org/resource/Saint-Grégoire_(Ille-et-Vilaine)> ;
+  p:nordEst r:Betton ;
+  p:nordOuest r:Montgermont ;
+  p:nordOuest <http://fr.dbpedia.org/resource/Pacé_(Ille-et-Vilaine)> ;
+  p:ouest r:Le_Rheu ;
+  p:ouest r:Vezin-le-Coquet ;
+  p:sud r:Noyal-Châtillon-sur-Seiche ;
+  p:sudEst r:Chantepie ;
+  p:sudOuest r:Saint-Jacques-de-la-Lande ;
+  rdfs:comment "Rennes (prononcer [ʁɛn]11px Écouter) est une commune française située dans l'Ouest de la France. C'est le chef-lieu du département d’Ille-et-Vilaine et de la région Bretagne."@fr ;
+  rdfs:label "Rennes"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Grégoire_(Ille-et-Vilaine)> rdfs:label "Saint-Grégoire (Ille-et-Vilaine)"@fr .
+
+r:Saint-Jacques-de-la-Lande rdfs:label "Saint-Jacques-de-la-Lande"@fr .
+
+r:Talence rdfs:label "Talence"@fr .
+
+r:Vezin-le-Coquet rdfs:label "Vezin-le-Coquet"@fr .

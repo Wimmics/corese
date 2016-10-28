@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -10,38 +10,13 @@ Fri Jun 03 09:40:29 CEST 2016
 <body>
 <![CDATA[
 #
-# Starting point of DataShape
-# Select toplevel shapes: have scope, nobody points to them 
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template st:main(?shape) {
-   st:apply-templates-all(?shape, ?sh, true)
-}
-where {
-   graph ?shape {
-     select distinct ?sh where {
-       ?sh sh:scope|sh:scopeClass|sh:scopeNode|sh:scopeProperty|sh:scopeInverseProperty ?scope
-       filter not exists { ?x ?p ?sh }
-     }
-   }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Data Shape Validator
 # http://w3c.github.io/data-shapes/shacl/
 #
-# main: shapes with scopes
-# core: shape constraints (property, inverseProperty, constraint, and, or, not, closed)
-# property:   property constraint
-# inverse:    inverse property constraint
+# main: shapes with targets
+# core: shape constraints (property, path, constraint, and, or, not, closed)
+# property:   property predicate constraint
+# path:       property path constraint
 # constraint: node constraint
 #
 # Olivier Corby - Inria I3S - 2016
@@ -49,11 +24,12 @@ where {
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template st:start {
-  st:call-template(st:main, ?shape)
+  st:apply-templates(?shape)
 }
 where {
   bind (st:visit(st:start, st:trace) as ?vis) 
   bind (coalesce(st:get(st:shape), st:shape) as ?shape)
+  bind (sh:start() as ?st)
 }
 
 ]]>
@@ -63,7 +39,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
 template st:profile {}
@@ -74,42 +50,54 @@ function st:aggregate(?x) {
   st:agg_and(?x)
 }
 
-@export {
+#
+# Template optimizer
+# Results of graph ?shape { ?sh sh:predicate ?cst } are cached in table: ?sh -> Mappings
+# Next evaluations are retrieved from cache: 40% faster
+#
+function st:optimize(?shape, ?sh){
+    true
+}
+
+@public {
 
 function sh:test(){
     st:get(st:test, true)
 }
 
+function sh:package(?test, ?name){
+    if (sh:test(), concat("/user/corby/home/AAData/sttl/datashape/", ?test), ?name)
+}
+
 function sh:main(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/main", st:dsmain)
+    sh:package("main", st:dsmain)
 }
 
 function sh:core(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/core", st:dscore)
+    sh:package("core", st:dscore)
 }
 
 function sh:constraint(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/constraint", st:dsconstraint)
+    sh:package("constraint", st:dsconstraint)
 }
 
 function sh:property(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/property", st:dsproperty)
+    sh:package("property", st:dsproperty)
 }
 
-function sh:inverse(){
-    if (sh:test(), "/user/corby/home/AAData/sttl/datashape/inverse", st:dsinverse)
+function sh:path(){
+    sh:package("path", st:dspath)
 }
+
 
 # test and may report error
-function sh:hasShape(?shape, ?sh, ?vis, ?s){
-    st:apply-templates-with-all(sh:core(), ?shape, ?sh, ?vis, ?s)
+# main target & noscope
+function sh:hasShape(?shape, ?sh, ?vis, ?ls){
+    st:apply-templates-with-all(sh:core(), ?shape, ?sh, ?vis, ?ls)
 }
 
-# test with scope and do not report error
-function sh:testShape(?shape, ?sh, ?s){
-    st:apply-templates-with-all(sh:main(), ?shape, ?sh, false, ?s)
-}
-
+# test without target and do not report error
+# sh:shape sh:filterShape sh:or sh:and sh:not
 function sh:testShapeCore(?shape, ?sh, ?s){
     st:apply-templates-with-all(sh:core(), ?shape, ?sh, false, ?s)
 }
@@ -119,19 +107,52 @@ function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
 }
 
 function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p){
-    st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
+   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
-function sh:hasInverseProperty(?shape, ?sh, ?vis, ?s, ?p){
-    st:apply-templates-with-all(sh:inverse(), ?shape, ?sh, ?vis, ?s, ?p)
+function sh:predicate(?shape, ?sh, ?vis, ?s, ?p){
+   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
+function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p, ?o){
+   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
+}
+
+function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
+}
+
+function sh:path(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
+}
+
+function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o){
+    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
+}
 
 function sh:safe(?shape, ?sh, ?suc){
     if (?suc) { true }
     else {
         let (?b = exists { graph ?shape { ?sh sh:severity ?sev filter (?sev != sh:Violation) } } )
         { ?b }
+    }
+}
+
+
+#
+# node ?s must verify all filter shapes if any
+# skip target in filter shapes => testShapeCore
+#
+function sh:filterShape2(?shape, ?sh, ?s){
+    true
+}
+
+function sh:filterShape(?shape, ?sh, ?s){
+    not exists {
+        graph ?shape {
+            ?sh sh:filterShape ?fs 
+        }
+        filter ( ! sh:testShapeCore(?shape, ?fs, ?s) )
     }
 }
 
@@ -145,17 +166,17 @@ function st:report(?name, ?s, ?suc, ?vis){
 # ?suc is success/failure of the shape
 # ?vis true means generate a ValidationResult
 #
-function st:report(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o, ?suc, ?vis){
+function st:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
     if (?vis && ! ?suc) { 
-        sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o) ;
-        st:visit(?name, ?s, ?suc)
+        sh:result(?name, ?sh, ?shape, ?foc,  ?p, ?o) ;
+        st:visit(?name, ?foc, ?suc)
     }
 }
 
 function st:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
     if (?vis && ! ?suc) { 
-        sh:result(?name, ?sh, ?shape, ?foc, st:null, st:null, st:null) ;
-        st:visit(?name, ?s, ?suc)
+        sh:result(?name, ?sh, ?shape, ?foc,  st:null, st:null) ;
+        st:visit(?name, ?foc, ?suc)
     }
 }
 
@@ -163,65 +184,131 @@ function sh:value(?v){
     if (?v = st:null, error(), ?v)
 }
 
+function sh:result2(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
+    true
+}
+
+
 #
 # create a validation result  graph
 # stored in the visitor graph
 # get it with st:visitedGraph()
 #
-function sh:result(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
+function sh:result(?name, ?cst, ?shape, ?foc, ?p, ?o){
     let (?g = 
        construct {
         ?r rdf:type sh:ValidationResult ;
             sh:severity ?sev ;
             sh:focusNode ?foc ;
-            sh:subject ?ss ;
-            sh:predicate ?pp ;
-            sh:object ?oo ;
+            sh:focusNodeDetail ?focDetail ;
+            sh:path ?pp ; 
+            sh:pathDetail ?pathDetail ; 
+            sh:value ?oo ;
+            sh:valueDetail ?valueDetail ;
             sh:message ?mes ;
-            rdfs:isDefinedBy ?def
+            sh:sourceConstraintComponent ?def
+            #?sr ?pr ?or
         } 
         where { 
             bind (uuid() as ?r)
             graph ?shape { 
-                # first triple pattern needed to bind ?sh
-                ?sh sh:predicate|sh:constraint|^sh:constraint ?any 
-                optional { ?sh sh:severity ?se } 
+                # first triple pattern needed to bind ?cst
+                ?cst sh:predicate|sh:path|sh:constraint|^sh:constraint|sh:or|sh:and|sh:not|sh:closed ?any 
+                optional { ?cst sh:severity ?se } 
                 bind (coalesce(?se, sh:Violation) as ?sev)
-                bind (st:apply-templates-with(st:turtle, ?sh) as ?mes)
+                bind (concat("Fail at: ", st:apply-templates-with(st:turtle, ?cst)) as ?mes)
                 bind (sh:isdefby(?name) as ?def)
-                bind (sh:value(?s) as ?ss)
                 bind (sh:value(?p) as ?pp)
                 bind (sh:value(?o) as ?oo)
+                bind (if (bound(?pp),sh:graph(?pp), error())  as ?pathDetail)
+                
+                #values (?sr ?pr ?or) { unnest(sh:rec(?shape, ?pp, xt:list())) }
             }
+            bind (sh:graph(?foc) as ?focDetail)
+            bind (if (bound(?oo), sh:graph(?oo), error())  as ?valueDetail)
         } 
-        values (?name ?sh ?shape ?foc ?s ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
+        values (?name ?cst ?shape ?foc  ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
     {
         st:visit(st:trace, st:graph, ?g)
     }
 }
 
+function sh:graph(?var){
+    if (isBlank(?var),  
+        strdt(st:apply-templates-with(st:turtle, ?var), xt:graph),
+        error())
+}
+
+
+function sh:rec(?g, ?x, ?l){
+    if (isBlank(?x)){
+        let (?res = select * where { graph ?g { ?x ?p ?y }}){
+            for ((?xx, ?p, ?y) in ?res){
+                xt:add(xt:list(?x, ?p, ?y), ?l) ;             
+                sh:rec(?g, ?y, ?l)
+            } 
+        }
+    } ;
+    ?l
+    
+}
+
+function sh:start(){
+    sh:init()
+}
+
+function sh:init(){
+    map (sh:define, sh:def())
+}
+
+function sh:define(?def){
+    let ((?name, ?value) = ?def){
+        st:cset(sh:def, ?name, ?value)
+    }
+}
+
 function sh:def(){
     let (?list = @(
-        (sh:class doc:ClassConstraintComponent)
-        (sh:classIn doc:ClassInConstraintComponent)
-        (sh:datatype doc:DatatypeConstraintComponent)
-        (sh:datatypeIn doc:DatatypeInConstraintComponent)
-        (sh:nodeKind doc:NodeKindConstraintComponent)
-    )){
+        (sh:class       sh:ClassConstraintComponent)
+        (sh:datatype    sh:DatatypeConstraintComponent)
+        (sh:nodeKind    sh:NodeKindConstraintComponent)
+        (sh:minCount    sh:MinCountConstraintComponent)
+        (sh:maxCount    sh:MaxCountConstraintComponent)
+        
+        (sh:minExclusive	sh:MinExclusiveConstraintComponent)
+        (sh:minInclusive	sh:MinInclusiveConstraintComponent)
+        (sh:maxExclusive    sh:MaxExclusiveConstraintComponent)
+        (sh:maxInclusive    sh:MaxInclusiveConstraintComponent)
+        (sh:minLength       sh:MinLengthConstraintComponent)
+        (sh:maxLength       sh:MaxLengthConstraintComponent)
+        (sh:pattern	        sh:PatternConstraintComponent)
+        (sh:stem            sh:StemConstraintComponent)
+        (sh:languageIn      sh:LanguageInConstraintComponent)
+        (sh:uniqueLang      sh:UniqueLangConstraintComponent)
+        (sh:equals          sh:EqualsConstraintComponent)
+        (sh:disjoint        sh:DisjointConstraintComponent)
+        (sh:lessThan        sh:LessThanConstraintComponent)
+        (sh:lessThanOrEquals sh:LessThanOrEqualsConstraintComponent)
+        (sh:not             sh:NotConstraintComponent)
+        (sh:and             sh:AndConstraintComponent)
+        (sh:or              sh:OrConstraintComponent)
+        (sh:shape           sh:ShapeConstraintComponent)
+        
+        (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
+        
+        (sh:closed      sh:ClosedConstraintComponent)
+        (sh:hasValue    sh:HasValueConstraintComponent)
+        (sh:in          sh:InConstraintComponent)
+    ) ) {
         ?list
     }
 } 
 
 function sh:isdefby(?name){
-    let (?def = mapfind(sh:isdef, ?name, sh:def())){
-        xt:get(?def, 1)
-    }
+    st:cget(sh:def, ?name)
 }
 
-function sh:isdef(?name, ?def){
-    ?name = xt:get(?def, 0)
-}
 
 function sh:count(?s, ?p){
   let ((?c) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o } )
@@ -234,9 +321,7 @@ function sh:invCount(?o, ?p){
 }
 
 function sh:hasKind(?value, ?kind){
-    (isIRI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
-    (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
-    (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+    sh:nodeKind(?value, ?kind) 
 }
 
 function sh:mlength(?q, ?s, ?m){
@@ -246,130 +331,395 @@ function sh:mlength(?q, ?s, ?m){
         false) 
 }
 
-function sh:mcount(?q, ?s, ?m){
-    if (?q = sh:minCount, ?s >= ?m, ?s <= ?m)
+
+function sh:minCount(?s, ?p, ?m){
+    sh:count(?s, ?p) >= ?m
 }
 
-# used by inverse/property and
+function sh:maxCount(?s, ?p, ?m){
+    sh:count(?s, ?p) <= ?m
+}
+
+function sh:nodeKind(?value, ?kind){
+    (isIRI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
+    (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+}
+
+function sh:minLength(?s, ?m){
+    ! isBlank(?s) && coalesce(strlen(?s) >= ?m, false) 
+}
+
+function sh:maxLength(?s, ?m){
+    ! isBlank(?s) && coalesce(strlen(?s) <= ?m, false) 
+}
+
+function sh:minInclusive(?o, ?m){
+    ?o >= ?m
+}
+
+function sh:minExclusive(?o, ?m){
+    ?o > ?m
+}
+
+function sh:maxInclusive(?o, ?m){
+    ?o <= ?m
+}
+
+function sh:maxExclusive(?o, ?m){
+    ?o < ?m
+}
+
+function sh:datatype(?o, ?d){
+    isLiteral(?o) && datatype(?o) = ?d
+}
+
+function sh:stem(?o, ?exp){
+    isURI(?o) && strstarts(?o, ?exp)
+}
+
+function sh:minCount(?s, ?m){
+    ?s >= ?m
+}
+
+function sh:maxCount(?s, ?m){
+    ?s <= ?m
+}
+
+function sh:class(?o, ?c){
+  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+}
+
+function sh:in(?shape, ?o, ?lv){
+  exists { 
+    graph ?shape { ?lv rdf:rest*/rdf:first ?v  
+        filter (?o = ?v && ( isURI(?o) || datatype(?o) = datatype(?v)))
+    }
+  } 
+}
+
+function sh:languageIn(?shape, ?o, ?lv){
+  exists { 
+    bind (lang(?o) as ?lang)
+    filter bound(?lang)
+    graph ?shape { 
+        ?lv rdf:rest*/rdf:first ?l  
+        filter langMatches(?lang, ?l)
+    }
+  } 
+}
+
+# with target ???
+function sh:shape(?shape, ?o, ?cst){
+    sh:testShapeCore(?shape, ?cst, ?o)
+}
+
+
+
+# used by predicate/path 
 # count fail
-function sh:and(?fun, ?and, ?s, ?p, ?shape){
-    sh:bool(?fun, ?and, ?s, ?p, ?shape, 0, 1)
+function sh:and(?fun, ?and, ?s, ?p, ?o, ?shape){
+    (sh:bool(?fun, ?and, ?s, ?p, ?o, ?shape, 0, 1) = 0)
 }
 
-# used by inverse/property or
+# used by predicate/path 
 # count success
-function sh:or(?fun, ?or, ?s, ?p, ?shape){
-    sh:bool(?fun, ?or, ?s, ?p, ?shape, 1, 0)
+function sh:or(?fun, ?or, ?s, ?p, ?o, ?shape){
+    (sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)  > 0)
 }
 
-function sh:bool(?fun, ?bool, ?s, ?p, ?shape, ?suc, ?fail){
+
+# property (predicate or path)
+function sh:bool(?fun, ?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
     let ((?count) = 
-        SELECT ?fun ?bool ?s ?p ?shape ?suc ?fail (SUM(?val) AS ?count)
+        SELECT ?fun ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
 			GRAPH ?shape {
-				?bool rdf:rest*/rdf:first ?sh
+				?sh rdf:rest*/rdf:first ?cst
 			}
-			BIND (funcall(?fun, ?shape, ?sh, false, ?s, ?p) AS ?hasShape)
+			BIND (funcall(?fun, ?shape, ?cst, false, ?s, ?p, ?o) AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
 		})
 		{ ?count }
 }
 
-# constraint
-function sh:bool(?bool, ?s, ?shape, ?suc, ?fail){
+
+# used by core
+# count fail
+function sh:and(?and, ?s, ?shape){
+    (sh:bool(?and, ?s, ?shape, 0, 1) = 0)
+}
+
+# used by core
+# count success
+function sh:or(?or, ?s, ?shape){
+    (sh:bool(?or, ?s, ?shape, 1, 0) > 0)
+}
+
+# core
+function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
     let ((?count) = 
-        SELECT ?bool ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
-			GRAPH ?shape {
-				?bool rdf:rest*/rdf:first ?sh 			    
-			}
-			BIND (sh:testShapeCore(?shape, ?sh, ?s) AS ?hasShape)
-			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+            graph ?shape { 
+                ?sh rdf:rest*/rdf:first ?cst
+            }			
+			BIND (sh:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
 		})
 		{ ?count }
 }
 
+
+# used by constraint
+# count fail
+function sh:andcst(?and, ?s, ?shape){
+    (sh:boolcst(?and, ?s, ?shape, 0, 1) = 0)
 }
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  ?suc
+# used by constraint
+# count success
+function sh:orcst(?or, ?s, ?shape){
+    (sh:boolcst(?or, ?s, ?shape, 1, 0) > 0)
 }
-where {
 
-  graph ?shape {
-    ?sh sh:scopeClass ?c       
-    optional { ?sh sh:filterShape ?fs }  
+# used by constraint
+function sh:boolcst(?sh, ?s, ?shape, ?suc, ?fail){
+    let ((?count) = 
+        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+            graph ?shape { 
+                ?sh rdf:rest*/rdf:first ?cst
+            }			
+			BIND (sh:hasConstraint(?shape, ?cst, false, ?s) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
+		})
+		{ ?count }
+}
+
+
+function sh:disjoint(?l1, ?l2){
+    coalesce(
+        for (?x in ?l1){
+            if (xt:member(?x, ?l2)){
+                error() 
+            }     
+        }, 
+        false)
+}
+
+function sh:equal(?l1, ?l2){
+    if (xt:size(?l1) != xt:size(?l2), false,
+    coalesce(
+        for (?x in ?l1){
+            if (! xt:member(?x, ?l2)){
+                error() 
+            }     
+        }, 
+        false) )
+}
+
+
+
+#
+# Data Shape Property Path Interpreter
+# PP expressions are searched in graph ?shape 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016
+#
+
+
+#
+# Rewrite Property Path shape expression as a LDScript list
+#
+# ([sh:zeroOrMorePath rdf:rest] rdf:first)
+# ->
+# (sh:sequence ((sh:zeroOrMorePath rdf:rest) rdf:first))
+# URI may be URI of a subpath such as:
+# [sh:path ex:parent] .
+# ex:parent sh:alternativePath (ex:father ex:mother)
+#
+function sh:path(?shape, ?pp){
+  let ((?q, ?path) = 
+      select ?shape ?pp ?q ?path where {
+        graph ?shape { 
+            # rdf:rest is for a sequence
+            values ?q { 
+                sh:inversePath sh:alternativePath 
+                sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath rdf:rest }
+            ?pp ?q ?path   
+        }
+      } ) {
+      
+      if (! bound(?q)){
+        if (isURI(?pp)){ ?pp }
+        else { error() }
+      }
+      else if (?q = rdf:rest) { xt:list(sh:sequence, sh:list(?shape, ?pp)) }
+      else { xt:list(?q, sh:path(?shape, ?path)) }
+   }
+}
+
+
+#
+# Rewrite recursively RDF list ?pp as a list
+#
+function sh:list(?shape, ?pp){
+   let ( (?l) = 
+        select ?shape ?pp (aggregate(sh:path(?shape, ?e)) as ?l)  
+        where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
+        ?l
+    }
+}
+
+
+
+
+#
+# Return list of nodes related to node ?s by path ?p
+# ?s is subject, ?p is PP expression
+# ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
+#
+function sh:path(?shape, ?s, ?p){    
+    sh:path(?shape, ?s, sh:getPath(?shape, ?p), false)
+}
+
+
+#
+# rewrite PP once as a list and record it
+#
+function sh:getPath(?shape, ?p){
+    coalesce(
+        st:cget(sh:path, ?p), 
+        st:cset(sh:path, ?p, sh:path(?shape, ?p)))
+}
+
+#
+# Evaluate PP ?p as a list
+# Return list of target nodes that match the path
+# ?inv = true means within inverse path
+#
+function sh:path(?shape, ?s, ?p, ?inv){
+  if (isURI(?p)){
+     sh:property(?s, ?p, ?inv)
   }
-  
-  ?s a ?c
-
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-  
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  ?suc
-}
-where {
-
-  graph ?shape {   
-    ?sh sh:scopeProperty ?p  
-    optional { ?sh sh:filterShape ?fs }  
-  }
-  
-
-  { select distinct ?s ?p where { ?s ?p ?o } }
-  
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-  
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
+  else {
+    let ((?oper, ?path) = ?p) {      
+      funcall(?oper, ?shape, ?s, ?path, ?inv)
+   }
+  } 
 }
 
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?o) {
-  ?suc
+function sh:zeroOrOnePath(?shape, ?s, ?p, ?inv){
+    let (?l = sh:path(?shape, ?s, ?p, ?inv)){
+        if (xt:member(?s, ?l), ?l, xt:cons(?s, ?l))
+    }
 }
-where {
 
-  graph ?shape {
-    ?sh sh:scope [ a sh:AllObjectsScope ]       
-    optional { ?sh sh:filterShape ?fs }   
-  }
-  
-  { select distinct ?o where { ?s ?p ?o } }
-  
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?o) )
+function sh:zeroOrMorePath(?shape, ?s, ?p, ?inv){
+    sh:rec(?shape, ?s, ?p, xt:list(?s), ?inv)
+}
 
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?o) as ?suc)
+function sh:oneOrMorePath(?shape, ?s, ?p, ?inv){
+    sh:rec(?shape, ?s, ?p, xt:list(), ?inv)
+}
+
+#
+# ?p is a PP expression exp
+# compute exp*
+# ?res is the list of nodes already reached by exp*
+# ?res prevents loops
+#
+function sh:rec(?shape, ?s, ?p, ?res, ?inv){
+    let (?l = sh:path(?shape, ?s, ?p, ?inv)){
+        if (xt:size(?l) = 0){ ?res }
+        else {
+            for (?e in ?l){
+                if (! xt:member(?e, ?res)){
+                    xt:add(?e, ?res) ; 
+                    sh:rec(?shape, ?e, ?p, ?res, ?inv)
+                }             
+            } ;
+            ?res             
+        }
+    }
+}
+
+
+#
+# s ^exp
+# inverse PP expression
+#
+function sh:inversePath(?shape, ?s, ?p, ?inv){
+    sh:path(?shape, ?s, ?p, ! ?inv)
+}
+
+
+#
+# ?p is  a sequence list
+#
+function sh:sequence(?shape, ?s, ?p, ?inv){
+    let (?l = if (?inv, xt:reverse(?p), ?p)) {
+        sh:seqlist(?shape, ?s, ?l, ?inv)
+    }
+}
+
+
+#
+# Recursive traversal of sequence list ?lp
+# recurse on xt:rest(?lp)
+#
+function sh:seqlist(?shape, ?s, ?lp, ?inv){
+    if (xt:size(?lp) = 0){
+        # reach end of sequence: add target node ?s
+        xt:list(?s)
+    }
+    else {
+        let (?l = sh:path(?shape, ?s, xt:first(?lp), ?inv), 
+            ?res = xt:list()){
+            for (?e in ?l){
+                # merge removes duplicate nodes
+                set(?res = xt:merge(?res, sh:seqlist(?shape, ?e, xt:rest(?lp), ?inv)))
+            } ;
+            ?res
+        }
+    }
+}
+
+# ?p = (sh:sequence (exp .. exp))
+function sh:alternativePath(?shape, ?s, ?p, ?inv){
+    let (?l = xt:get(?p, 1)) {
+        mapmerge(sh:path, ?shape, ?s, ?l, ?inv)
+    }
+}
+
+function sh:property(?s, ?p, ?inv){
+    if (?inv) {
+        sh:inverse(?s, ?p)
+    }
+    else {
+        sh:predicate(?s, ?p)    
+    }
+}
+
+function sh:predicate(?s, ?p){
+    let ((?l) = select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
+        ?l
+    }
+}
+
+function sh:inverse(?o, ?p){
+    let ((?l) = select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
+        ?l
+    }
+}
+
+
+
+
+
 }
 
 ]]>
@@ -380,103 +730,69 @@ where {
 <body>
 <![CDATA[
 #
-# Inner shapes may have no scope
+# Select target nodes
+# for each shape ?sh, aggregate target nodes in ?list
+# call sh:hasShape for each shape ?sh with list of target nodes ?list
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s) {
+template (?shape) {
   ?suc
 }
 where {
 
-  graph ?shape {
-    ?x sh:shape|sh:filterShape|sh:and|sh:or|sh:not ?sh
-    filter not exists { ?sh sh:scodeNode|sh:scopeClass|sh:scope|sh:scopeProperty|sh:scopeInverseProperty ?scope }
-    optional { ?sh sh:filterShape ?fs }  
-  }
+  {
+   select  ?s ?shape ?sh  (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
         
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-  
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?o) {
-  ?suc
-}
-where {
-
-  graph ?shape {
-    ?sh sh:scopeInverseProperty ?p 				
-    optional { ?sh sh:filterShape ?fs }  
-  
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)} 
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:Shape, rdfs:Class
+        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)} 
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
+    }
+                  
+    filter (?ok || sh:filterShape(?shape, ?sh, ?s))
+    
+  } group by ?sh
   }
-  
-  { select distinct ?p ?o where { ?s ?p ?o } }
-  
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?o) ) 
-  
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?o) as ?suc)
+  #filter xt:display("target: ", ?list) 
+  filter (xt:size(?list) > 0)
+  bind (sh:hasShape(?shape, ?sh, true, ?list) as ?suc)
+
 }
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  ?suc
-}
-where {
-
-  graph ?shape {
-    ?sh sh:scopeNode ?s
-    optional { ?sh sh:filterShape ?fs }  
-  }
-  
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-  
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?s) {
-  ?suc
-}
-where {
-
-  graph ?shape {
-    ?sh sh:scope [ a sh:AllSubjectsScope ] 
-    optional { ?sh sh:filterShape ?fs }  
-  }
-  
-  { select distinct ?s where { ?s ?p ?o } } 
-  
-  filter ( ! bound(?fs) || sh:testShape(?shape, ?fs, ?s) )
-
-  bind (sh:hasShape(?shape, ?sh, ?vis, ?s) as ?suc)
-}
 
 ]]>
 </body>

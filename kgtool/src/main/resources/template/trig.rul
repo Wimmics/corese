@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -14,11 +14,15 @@ Fri Jun 03 09:40:29 CEST 2016
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:graph {
-  "graph " ?g " {" 
-   box {
-       st:apply-templates-with-graph(st:turtle, ?g) 
+  format {
+  """graph %s {%s}"""
+  
+  xt:turtle(?g)
+  box {
+       st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/turtle#main>, ?g) 
     }
-  "}"
+  }
+  ; separator = "\n\n"
 }
 where {
   select ?g where {
@@ -42,10 +46,11 @@ order by ?g
 #
 template st:start {
   st:prolog("@prefix")
-  
-  st:call-template(st:graph)
+  st:nl()
+  str(?str)
 }
 where {
+    bind (st:call-template(st:graph) as ?str)
 }
 
 ]]>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -85,7 +85,7 @@ where {
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:main {
       
-    replace(st:prolog("prefix"), "<", "&lt;")
+    st:clean(st:prolog("prefix"))
     st:nl()
     str(?main)
 
@@ -206,6 +206,53 @@ where {
 <body>
 <![CDATA[
 #
+# Trig Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:trigmain {
+format {
+"""
+graph %s {%s}
+"""
+  
+  st:clean(st:turtle(?g))
+  box {
+       st:apply-templates-with-graph(st:turtlehtml, ?g) 
+  }
+}
+}
+where {
+  select ?g where {
+    graph ?g {
+      filter exists { ?x ?p ?y }
+    }
+  }
+}
+order by ?g 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+
+function st:clean(?in){
+    replace(?in, "<", "&lt;") 		
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
@@ -226,6 +273,33 @@ where {
   
 }
 order by ?i ?var
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Trig Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:trig {
+
+  st:call-template(st:open)
+  
+  st:clean(st:prolog("prefix"))
+  st:nl()
+  
+  str(?res)
+    
+  st:call-template(st:close)
+  
+}
+where {
+   bind (st:call-template(st:trigmain) as ?res)
+}
 
 ]]>
 </body>

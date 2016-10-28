@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -56,9 +56,10 @@ where {
       isURI(?x) 
       || not exists { ?z ?q ?x }
       || (isBlank(?x) 
-	  && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
-	   || exists { ?x ?q ?x }
-	  ))
+        && not exists { ?x rdf:first ?e }
+        && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
+            || exists { ?x ?q ?x })
+	     )
     )
   } order by ?x
 }
@@ -113,8 +114,9 @@ where {
   
   filter(?p not in (rdf:type))
   
-  bind(
+  bind (
     isBlank(?y) 
+    && not exists { ?y rdf:first ?e }
     && ( (st:isStart() && exists { ?x ?q ?y . filter(?in != ?x) })
          || exists { ?y ?q ?y } 
          || ?in = ?y
@@ -288,7 +290,14 @@ template st:profile(?in) {
 where {}
 
  function st:process(?in) {
-      if (isBlank(?in), st:apply-templates(?in), st:turtle(?in))
+      if (isBlank(?in), st:apply-templates(?in), 
+      if (isLiteral(?in), st:pretty(?in),
+      st:turtle(?in)))
+ }
+ 
+ function st:pretty(?in){
+    if (datatype(?in) = xt:graph) {str(?in)}
+    else {st:turtle(?in)}
  }
       
  function st:default(?in) {
@@ -314,13 +323,12 @@ template  {
       ; separator = "\n"
     } 
   ")"
-  
 }
 where {
   ?in rdf:rest* ?r
   ?r  rdf:first ?e
   
-  bind(isBlank(?e) && 
+  bind (isBlank(?e) && 
     ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
     || exists { ?e ?q ?e })
     as ?refer)
@@ -380,8 +388,8 @@ template {
 }
 where {
   ?in ?p ?y   
-  filter(isBlank(?in))
-  filter not exists { ?in rdf:first ?e }
+  filter isBlank(?in)
+  filter not exists { ?in rdf:first ?e } 
   
   bind (exists { ?a ?q ?in } as ?nested)
   

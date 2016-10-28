@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -48,24 +48,10 @@ where {
 <body>
 <![CDATA[
 template st:tableconsuri {
-    format {
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
+    us:triple(st:number(), ?x, ?p, ?y)
 }
 where {
-  bind (st:get(st:uri) as ?uri)
+  bind (st:focus() as ?uri)
   ?x ?p ?y
   filter (?uri in (?x, ?p, ?y))
 }
@@ -173,6 +159,23 @@ function st:init(){
   }
 }
 
+function us:triple(?n, ?x, ?p, ?y){
+    st:format (
+        """
+        <tr>
+        <th>%s</th>
+        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
+        </tr>
+        """,
+        
+        ?n,
+        st:call-template(st:show,    ?x),
+        st:display(?x), 
+        st:display(?p), 
+        st:display(?y), 
+        st:call-template(st:show,    ?y)
+    )
+}
 
 ]]>
 </body>
@@ -330,12 +333,16 @@ template st:tablecons {
   if (bound(?uri)) {
     st:call-template(st:tableconsuri)
   }
+  else if (bound(?lim)){
+    st:call-template(st:tableconslimit)
+  }
   else {
     st:call-template(st:tableconsall)
   }
 }
 where {
   bind (st:focus() as ?uri)
+  bind (st:get(st:default) as ?lim)
 }
 
 
@@ -519,26 +526,32 @@ where {
 <body>
 <![CDATA[
 template st:tableconsall {
-    format {
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
+    us:triple(st:number(), ?x, ?p, ?y)
 }
 where {
   ?x ?p ?y
 }
 order by ?x ?p ?y
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tableconslimit {
+    us:triple(st:number(), ?x, ?p, ?y)
+}
+where {
+    select * where {
+        ?x ?p ?y
+    }
+    order by ?x ?p ?y
+    limit 100
+}
 
 
 

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 03 09:40:29 CEST 2016
+Thu Oct 27 18:22:48 CEST 2016
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
   xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
@@ -171,6 +171,36 @@ order by ?x
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
+template st:list {
+  "(" 
+    group { 
+      if (?refer, st:turtle(?e), ?e) 
+      ; separator = "\n"
+    } 
+  ")"
+  
+}
+where {
+  ?in rdf:rest* ?r
+  ?r  rdf:first ?e
+  
+  bind (isBlank(?e) && 
+    ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
+    || exists { ?e ?q ?e })
+    as ?refer)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
 template st:rdf {
   st:apply-templates(?x)
   ; separator = "\n\n"
@@ -250,7 +280,7 @@ template st:pperror(?in) {
 	format {
         "<span class='fail'>%s</span>"
 	
-        st:call-template(st:ibox, ?in)
+        ?in
 	}
 }
 where {
@@ -274,11 +304,17 @@ template st:profile(?in) {
 }
 where {}
 
+#
+# extended datatype xt:graph is a string which represents a Turtle (sub)graph
+# display it as is
+#
 function st:process(?in) { 
   if (isBlank(?in), st:blank(?in),	  
   if (isURI(?in), st:clean(st:turtle(?in)),
-  st:literal(st:clean(st:turtle(?in)))))
+  if (datatype(?in) = xt:graph, st:clean(str(?in)),
+  st:literal(st:clean(st:turtle(?in))))))
 }
+
 
 function st:clean(?in){
     replace(?in, "<", "&lt;") 		
@@ -303,6 +339,8 @@ function st:id(?in){
 function st:default(?in) {
    st:turtle(?in)
 }
+
+
 
 
 ]]>
@@ -335,22 +373,13 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template  {
-  "(" 
-    group { 
-      if (?refer, st:turtle(?e), ?e) 
-      ; separator = "\n"
-    } 
-  ")"
-  
+    if (st:visited(?in), 
+        st:call-template(st:pperror, st:call-template(st:list, ?in)),
+        st:call-template(st:list, ?in)
+  )
 }
 where {
-  ?in rdf:rest* ?r
-  ?r  rdf:first ?e
-  
-  bind (isBlank(?e) && 
-    ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
-    || exists { ?e ?q ?e })
-    as ?refer)
+    ?in rdf:first ?e
 }
 
 ]]>
@@ -399,9 +428,8 @@ limit 1
 template {
   if (?refer, concat(st:turtle(?in), " "), "[")     
   
-  #if display fail tag
-  if (st:visited(?in), st:call-template(st:pperror, ?in),
-  	# else not visited
+  if (st:visited(?in), 
+    st:call-template(st:pperror, st:call-template(st:ibox, ?in)),
   	st:call-template(st:ibox, ?in)
   )
   

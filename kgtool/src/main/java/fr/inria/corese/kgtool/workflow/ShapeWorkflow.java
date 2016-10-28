@@ -1,9 +1,12 @@
 package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,17 +18,19 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
 public class ShapeWorkflow extends SemanticWorkflow {
     public static final String SHAPE_NAME  = NSManager.STL + "shape";
     public static final String SHAPE_TRANS_TEST = "/user/corby/home/AAData/sttl/datashape/main";
+    public static final String SHAPE_SHAPE      = "/data/shape4shape.ttl";
     public static final String SHAPE_TRANS = Transformer.DATASHAPE;
     public static final String FORMAT = Transformer.TURTLE;
     public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
     private static final String NL = System.getProperty("line.separator");
-    static final String SHAPE_TEMPLATE = "/query/shape.rq";
     
     private String format = FORMAT;
+    private String shape ;
     TransformationProcess transformer;
     LoadProcess load;
-    
-    SPARQLProcess sp;
+    // draft: evaluate shape4shape on the shape
+    ShapeWorkflow validator;
+    private boolean validate = false;
     
     public ShapeWorkflow(String shape, String data){
         create(shape, data, format, false);
@@ -50,13 +55,19 @@ public class ShapeWorkflow extends SemanticWorkflow {
     
     @Override
     public void start(Data data){
-        if (hasMode() && getMode().isNumber()){
-            load.setMode(getMode());
+        try {
+            if (hasMode() && getMode().isNumber()){
+                load.setMode(getMode());
+            }
+            super.start(data);
+            validate();
+        } catch (EngineException ex) {
+            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
         }
-        super.start(data);
     }
     
     private void create(String shape, String data, String trans, boolean test){
+        this.setShape(shape);
         if (trans != null){
             format = trans;
         }
@@ -76,8 +87,30 @@ public class ShapeWorkflow extends SemanticWorkflow {
                       
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
-        }       
+        }        
     }
+    
+    /**
+     * Draft: validate shape with shape4shape.ttl
+     * use case:  sw:param [sw:mode sw:validate]
+     */
+    void validate() throws EngineException {
+        if (pgetWorkflow().getContext().hasValue(WorkflowParser.MODE, WorkflowParser.VALIDATE) 
+                && ! isValidate()) {
+            validator = new ShapeWorkflow(ShapeWorkflow.class.getResource(SHAPE_SHAPE).toString(), shape);
+            validator.setValidate(true);
+            Data res = validator.process();
+            System.out.println("Validate: " + getShape());
+            if (res.getVisitedGraph().size() > 0) {
+                System.out.println("Result: \n" + res);
+            }
+        }
+    }
+    
+//    @Override
+//    public Data run(Data data) throws EngineException {
+//        return super.run(data);
+//    }
     
     public TransformationProcess getTransformer(){
         return transformer;
@@ -99,7 +132,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
     @Override
     public String stringValue(Data data){
         String res ;
-        if (data.getGraph().size() == 0){
+        if (data.getVisitedGraph().size() == 0){
             res = success();
         }
         else {
@@ -112,7 +145,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
     
     String success(){
         if (format.equals(FORMAT_HTML)){
-            return "<h2>Data Shape Validation</h2><pre>sucess</pre>";
+            return "<h2>Data Shape Validation</h2><pre>success</pre>";
         }
         else {
             return "Data Shape Validation success";
@@ -123,5 +156,33 @@ public class ShapeWorkflow extends SemanticWorkflow {
    public String getTransformation(){
        return format;
    }
+
+    /**
+     * @return the shape
+     */
+    public String getShape() {
+        return shape;
+    }
+
+    /**
+     * @param shape the shape to set
+     */
+    public void setShape(String shape) {
+        this.shape = shape;
+    }
+
+    /**
+     * @return the validate
+     */
+    public boolean isValidate() {
+        return validate;
+    }
+
+    /**
+     * @param validate the validate to set
+     */
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
    
 }

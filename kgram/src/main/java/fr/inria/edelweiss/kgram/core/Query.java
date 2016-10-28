@@ -250,14 +250,24 @@ public class Query extends Exp implements Graphable {
         return new Query();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
+    }
+    
+    @Override
+    public StringBuilder toString(StringBuilder sb) {
+    
         if (selectExp.size() > 0) {
             sb.append("select ");
             sb.append(selectExp);
             sb.append("\n");
         }
-        sb.append(super.toString());
+        
+        super.toString(sb);
+        
         if (!getOrderBy().isEmpty()) {
             sb.append("\n");
             sb.append("order by ");
@@ -281,8 +291,8 @@ public class Query extends Exp implements Graphable {
             sb.append(getMappings());
             sb.append("}");
         }
-
-        return sb.toString();
+        
+        return sb;
     }
 
     public void set(Sorter s) {
@@ -412,6 +422,11 @@ public class Query extends Exp implements Graphable {
     public Exp getBody() {
         return first();
     }
+    
+    public void setBody(Exp exp){
+        args.clear();
+        args.add(exp);
+    }
 
     void setGlobalQuery(Query q) {
         query = q;
@@ -462,6 +477,15 @@ public class Query extends Exp implements Graphable {
                 && getSelectFun().isEmpty()
                 && getBody().size() == 0
                 && getMappings() == null;            
+    }
+    
+    public boolean isSelectExpression(){
+         for (Exp e : getSelectFun()) {
+             if (e.getFilter() != null){
+                 return true;
+             }
+         }
+         return false;
     }
 
     boolean isCheckLoop() {
@@ -2308,7 +2332,7 @@ public class Query extends Exp implements Graphable {
         this.templateNL = nl;
     }
 
-    public boolean isOptional() {
+    public boolean isStdOptional() {
         return isOptional;
     }
 

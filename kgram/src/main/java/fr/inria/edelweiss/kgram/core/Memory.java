@@ -28,6 +28,7 @@ import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
  *
  */
 public class Memory implements Environment {
+
     public static boolean IS_EDGE = !true;
     static final Edge[] emptyEdges = new Edge[0];
     static final Entity[] emptyEntities = new Entity[0];
@@ -171,20 +172,20 @@ public class Memory implements Environment {
             // because index may vary from 0 to max in any sub query
             q = q.getGlobalQuery();
         }
-        if (q.isRecordEdge()){
+        if (q.isRecordEdge()) {
             isEdge = true;
         }
         int nmax = q.nbNodes();
         int emax = q.nbEdges();
         nbNodes = new int[nmax];
         stackIndex = new int[nmax];
-        if (! isEdge) {
+        if (!isEdge) {
             emax = 0;
         }
         nbEdges = new int[emax];
         result = new Entity[emax];
         qEdges = new Edge[emax];
-        
+
         nodes = new Node[nmax];
         qNodes = new Node[nmax];
         lPath = new Path[nmax];
@@ -232,9 +233,8 @@ public class Memory implements Environment {
     }
 
     /**
-     * Copy this Bind local variable stack into this memory 
-     * Use case: 
-     * function xt:foo(?x) { exists { ?x ex:pp ?y } } 
+     * Copy this Bind local variable stack into this memory Use case: function
+     * xt:foo(?x) { exists { ?x ex:pp ?y } }
      */
     void copy(Bind bind) {
         for (Expr var : bind.getVariables()) {
@@ -246,7 +246,7 @@ public class Memory implements Environment {
                 push(qn, bind.get(var));
             }
         }
-        setBind(bind);       
+        setBind(bind);
     }
 
     /**
@@ -344,9 +344,10 @@ public class Memory implements Environment {
      * need select exp
      */
     Mapping store(Query q, Producer p, boolean subEval, boolean func) {
+        boolean complete = !Eval.testAlgebra;
         clear();
         int nb = nbNode;
-        if (!subEval) {
+        if (!subEval && complete) {
             //nb += q.nbFun();
             /**
              * select (exp as var) it may happen that var is already bound in
@@ -361,9 +362,9 @@ public class Memory implements Environment {
         }
         Edge[] qedge = emptyEdges;
         Entity[] tedge = emptyEntities;
-        Node[] qnode = new Node[nb], tnode = new Node[nb],
-                // order by
-                snode = new Node[q.getOrderBy().size()],
+        Node[] qnode = new Node[nb], tnode = new Node[nb];
+        // order by
+        Node[] snode = new Node[q.getOrderBy().size()],
                 gnode = new Node[q.getGroupBy().size()];
         Path[] lp = null;
 
@@ -375,7 +376,7 @@ public class Memory implements Environment {
                 if (edge != null) {
                     qedge[n] = edge;
                     //tedge[n] = result[i];
-                    tedge[n] = p.copy(result[i]);                    
+                    tedge[n] = p.copy(result[i]);
                     n++;
                 }
                 i++;
@@ -402,70 +403,71 @@ public class Memory implements Environment {
             i++;
         }
 
-        if (subEval) {
-            if (func) {
-                orderGroup(q.getOrderBy(), snode, p);
-                orderGroup(q.getGroupBy(), gnode, p);
-            }
-        } else {
-            int count = 0;
-            for (Exp e : q.getSelectFun()) {
+        if (complete) {
+            if (subEval) {
+                if (func) {
+                    orderGroup(q.getOrderBy(), snode, p);
+                    orderGroup(q.getGroupBy(), gnode, p);
+                }
+            } else {
+                int count = 0;
+                for (Exp e : q.getSelectFun()) {
 
-                Filter f = e.getFilter();
+                    Filter f = e.getFilter();
 
-                if (f != null) {
-                    // select fun(?x) as ?y
-                    Node node = null;
-                    boolean isBound = isBound(e.getNode());
+                    if (f != null) {
+                        // select fun(?x) as ?y
+                        Node node = null;
+                        boolean isBound = isBound(e.getNode());
 
-                    if (!e.isAggregate()) {
-                        node = eval.eval(f, this, p);
-                        // bind fun(?x) as ?y
-                        boolean success = push(e.getNode(), node);
-                        if (success) {
-                            count++;
-                        } else {
-                            // use case: var was already bound and there is a select (exp as var)
-                            // and the two values of var are different
-                            // pop previous exp nodes and return null
-                            int j = 0;
+                        if (!e.isAggregate()) {
+                            node = eval.eval(f, this, p);
+                            // bind fun(?x) as ?y
+                            boolean success = push(e.getNode(), node);
+                            if (success) {
+                                count++;
+                            } else {
+                                // use case: var was already bound and there is a select (exp as var)
+                                // and the two values of var are different
+                                // pop previous exp nodes and return null
+                                int j = 0;
 
-                            for (Exp ee : q.getSelectFun()) {
-                                // pop previous exp nodes if any
-                                if (j >= count) {
-                                    // we have poped all exp nodes
-                                    return null;
-                                }
+                                for (Exp ee : q.getSelectFun()) {
+                                    // pop previous exp nodes if any
+                                    if (j >= count) {
+                                        // we have poped all exp nodes
+                                        return null;
+                                    }
 
-                                if (ee.getFilter() != null) {
-                                    pop(ee.getNode());
-                                    j++;
+                                    if (ee.getFilter() != null) {
+                                        pop(ee.getNode());
+                                        j++;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (!isBound) {
-                        // use case: select (exp as var) where var is already bound
-                        qnode[n] = e.getNode();
-                        tnode[n] = node;
-                        n++;
+                        if (!isBound) {
+                            // use case: select (exp as var) where var is already bound
+                            qnode[n] = e.getNode();
+                            tnode[n] = node;
+                            n++;
+                        }
                     }
                 }
-            }
 
-            orderGroup(q.getOrderBy(), snode, p);
-            orderGroup(q.getGroupBy(), gnode, p);
+                orderGroup(q.getOrderBy(), snode, p);
+                orderGroup(q.getGroupBy(), gnode, p);
 
-            for (Exp e : q.getSelectFun()) {
-                Filter f = e.getFilter();
-                if (f != null && !e.isAggregate()) {
-                    // pop fun(?x) as ?y
-                    pop(e.getNode());
+                for (Exp e : q.getSelectFun()) {
+                    Filter f = e.getFilter();
+                    if (f != null && !e.isAggregate()) {
+                        // pop fun(?x) as ?y
+                        pop(e.getNode());
+                    }
                 }
             }
         }
-
         Mapping map = new Mapping(qedge, tedge, qnode, tnode);
         map.init();
         map.setPath(lp);
@@ -474,7 +476,7 @@ public class Memory implements Environment {
         clear();
         return map;
     }
-    
+
     /**
      * BNode table cleared for new solution
      */
@@ -809,7 +811,7 @@ public class Memory implements Environment {
                         // pop
                         for (int i = 0; i < k; i++) {
                             Node qq = map.getQueryNode(i);
-                            if (qq != null){
+                            if (qq != null) {
                                 Node tt = list.get(qq.getLabel());
                                 if (tt != null) {
                                     pop(tt);
@@ -827,8 +829,8 @@ public class Memory implements Environment {
         }
         return true;
     }
-    
-     void pop(HashMap<String, Node> list, Mapping map) {
+
+    void pop(HashMap<String, Node> list, Mapping map) {
         int n = 0;
         for (Node qNode : map.getQueryNodes()) {
             if (qNode != null) {
@@ -842,8 +844,7 @@ public class Memory implements Environment {
             }
             n++;
         }
-     }
-  
+    }
 
     /**
      * Pop elementary result

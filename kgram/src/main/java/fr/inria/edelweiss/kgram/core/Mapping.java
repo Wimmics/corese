@@ -21,6 +21,10 @@ import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
+import java.lang.reflect.Array;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 
 /*
  * An elementary result of a query or a subquery
@@ -59,6 +63,7 @@ public class Mapping
 	Node[] distinct, group;
 	
 	Mappings lMap;
+        HashMap<String, Node> values;
 	Query query;
 	Map bnode;
 	
@@ -68,16 +73,15 @@ public class Mapping
 	Mapping(){
 		this.qEdges = emptyEdge;;
 		this.edges = emptyEntity;
-		this.qNodes = emptyNode;
-		this.nodes = qNodes;
+                init(emptyNode, emptyNode);
+//		this.qNodes = emptyNode;
+//		this.nodes = qNodes;
 	}
 	
 	Mapping(Edge[] query, Entity[] result, Node[] qnodes, Node[] nodes){
 		this.qEdges = query;
 		this.edges = result;
                 init(qnodes, nodes);
-//		this.qNodes = qnodes;
-//		this.nodes = nodes;
 	}
 	
 	Mapping(Node[] qnodes, Node[] nodes){
@@ -190,6 +194,26 @@ public class Mapping
 		tn = t.toArray(tn);
 		init(qn, tn);
 	}
+        
+        /**
+         * Complete Mapping with select (exp as var)
+         * pragma: setNodeValue already done
+         * 
+         **/
+        void complete(List<Node> q, List<Node> t){
+            Node[] qn = new Node[qNodes.length + q.size()];
+            Node[] tn = new Node[nodes.length + t.size()];
+            System.arraycopy(qNodes, 0, qn, 0, qNodes.length);
+            System.arraycopy(nodes, 0, tn, 0, nodes.length);
+            int j = 0;
+            for (int i = qNodes.length; i<qn.length; i++){
+                qn[i] = q.get(j);
+                tn[i] = t.get(j);
+                j++;
+            }
+            this.qNodes = qn;
+            this.nodes = tn;  
+        }
 	
 	
 	void init(List<Path> lp){
@@ -199,9 +223,25 @@ public class Mapping
 
 	void init(Node[] qnodes, Node[] nodes){
 		this.qNodes = qnodes;
-		this.nodes = nodes;                 
+		this.nodes = nodes;  
+                initValues();
 	}
+        
+        void initValues(){
+             if (values == null){
+                 // use case: select (exp as var), values already exists
+                 values = new HashMap<String, Node>();
+             }
+             int i = 0;
+             for (Node q : qNodes){
+                 if (q.isVariable() && nodes[i] != null){
+                      setNodeValue(q, nodes[i]);
+                 }
+                 i++;
+             }
+        }
 	
+        @Deprecated
 	public void bind(Node qNode, Node tNode){
 		Node[] qq = new Node[qNodes.length+1];
 		Node[] tt = new Node[nodes.length+1];
@@ -217,6 +257,7 @@ public class Mapping
 		nodes = tt;
 	}
         
+        @Override
         public int count() {
             if (lMap == null){
                 return 0;
@@ -224,6 +265,7 @@ public class Mapping
             return lMap.count();
 	}
         
+        @Override
         public int size(){
             return qNodes.length;
         }
@@ -277,6 +319,7 @@ public class Mapping
 		gNodes = nodes;
 	}
 	
+        @Override
 	public Mappings getMappings(){
 		return lMap;
 	}
@@ -298,6 +341,7 @@ public class Mapping
 		bnode = m;
 	}
 	
+        @Override
 	public Map getMap(){
 		return bnode;
 	}
@@ -322,7 +366,7 @@ public class Mapping
 		setPath(getIndex(qNode), path);
 	}
 	
-	
+	@Deprecated
 	public void rename(Node oName, Node nName){
 		int i = 0;
 		for (Node qn : qNodes){
@@ -334,6 +378,7 @@ public class Mapping
 		}
 	}
 	
+        @Override
 	public Path getPath(Node qNode){
 		return getPath(getIndex(qNode));
 	}
@@ -359,6 +404,7 @@ public class Mapping
 	}
 	
 	
+        @Override
 	public int pathLength(Node qNode){
 		if (lPath == null){
 			return -1;
@@ -366,6 +412,7 @@ public class Mapping
 		return getPath(qNode).length();
 	}
 
+        @Override
 	public int pathWeight(Node qNode){
 		if (lPath == null){
 			return -1;
@@ -381,10 +428,16 @@ public class Mapping
 		return lPath != null && lPath[n] != null;
 	}
 	
-	Path getPath(int n){
-		if (lPath == null) return null;
+	public Path getPath(int n){
+		if (lPath == null){
+                    return null;
+                }
 		return lPath[n];
 	}
+        
+        public Path[] getPaths(){
+            return lPath;
+        }
 	
 	public Node getQueryPathNode(){
 		if (! isPath()) return null;
@@ -404,7 +457,9 @@ public class Mapping
 	}
 	
 	void setPath(int n, Path p){
-		if (lPath == null) lPath = new Path[qNodes.length];
+		if (lPath == null){
+                    lPath = new Path[qNodes.length];
+                }
 		lPath[n] = p;
 	}
 	
@@ -412,11 +467,9 @@ public class Mapping
 		lPath = lp;
 	}
 		
+        @Override
 	public String toString(){
 		String str = "";
-//		for (Edge e : edges){
-//			str += e + "\n";
-//		}
 		int i = 0;
 		for (Node e : nodes){
 			str += qNodes[i] + " = " + e + "\n";
@@ -456,6 +509,7 @@ public class Mapping
 	}
 	
 	
+        @Override
 	public Node getNode(Node node){
 		int n = 0;
 		for (Node qnode : qNodes){
@@ -532,6 +586,9 @@ public class Mapping
 		for (Node qrNode : qNodes){
 			if (qNode.same(qrNode)){
 				 nodes[n] = node;
+                                 if (qNode.isVariable()){
+                                     setNodeValue(qNode, node);
+                                 }
 				 return;
 			}
 			n++;
@@ -592,6 +649,7 @@ public class Mapping
 		t[t.length-1] = node;
 		qNodes = q;
 		nodes = t;
+                setNodeValue(qNode, node);
 	}
 	
 	public void setOrderBy(int n, Node node){
@@ -618,6 +676,37 @@ public class Mapping
             }
             return node.getObject();
         }
+        
+        public HashMap<String, Node> getNodeValues(){
+            return values;
+        }
+        
+        
+        // variable name only
+        public Node getNodeValue(String name){
+            return values.get(name);
+        }
+                
+        public Node getNodeValue(Node q){
+            if (q.isVariable()){
+                return getNodeValue(q.getLabel());
+            }
+            return null;
+        }
+        
+        public void setNodeValue(Node q, Node t){
+            if (q.isVariable()){
+                setNodeValue(q.getLabel(), t);
+            }
+        }
+        
+        public void setNodeValue(String q, Node t){
+            values.put(q, t);
+        }
+        
+        public Set<String> getVariableNames(){
+            return values.keySet();
+        }
 	
 	public Object getValue(String name){
 		Node n = getNode(name);
@@ -633,11 +722,11 @@ public class Mapping
         }
 	
 	public Object getValue(Node qn){
-		Node n = getNode(qn);
-		if (n == null){
-                    return null;
-                }
-		return n.getValue();
+            Node n = (qn.isVariable()) ? getNodeValue(qn.getLabel()) : getNode(qn);           
+            if (n == null){
+                return null;
+            }
+            return n.getValue();
 	}
 	
         @Override
@@ -669,7 +758,7 @@ public class Mapping
         @Override
 	public Node[] getNodes(){
 		return nodes;
-	}
+	}       
 	
 	public Edge[] getQueryEdges(){
 		return qEdges;
@@ -706,9 +795,11 @@ public class Mapping
 			if (qNode.isVariable()){
 				Node qqNode = getSelectQueryNode(qNode.getLabel());
 				if (qqNode != null){
-					Node n1 = getNode(qqNode);
-					Node n2 = minus.getNode(qNode);
-					if (n1 == null || n2 == null){
+//					Node n1 = getNode(qqNode);
+//					Node n2 = minus.getNode(qNode);
+                                        Node n1 = getNodeValue(qqNode);
+					Node n2 = minus.getNodeValue(qNode);
+                                        if (n1 == null || n2 == null){
 						// do nothing as if variable were not in Mapping
 						// use case: select count(*) as ?c
 						// ?c is in QueryNodes but has no value
@@ -746,14 +837,18 @@ public class Mapping
 		return -1;
 	}
 	
+        @Override
 	public Node getNode(Expr var){
             switch (var.subtype()){
                 case ExprType.LOCAL: 
                     return get(var);
             }
-            int i = getIndex(var.getLabel());
-            if (i == -1) return null;                  
-            return nodes[i];
+            return getNodeValue(var.getLabel());
+//            int i = getIndex(var.getLabel());
+//            if (i == -1){
+//                return null;
+//            }                  
+//            return nodes[i];
 	}
 
 	@Override
@@ -790,11 +885,6 @@ public class Mapping
 		return n != -1 && nodes[n] != null;
 	}
 
-//	public boolean isSafeIndex() {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-	
 	
 	
 	/*********************************************************************
@@ -839,6 +929,83 @@ public class Mapping
 		Mapping map = new Mapping(qNodes, tNodes);
 		return map;
 	}
+        
+        // common variables have compatible values
+        boolean isJoinable(Mapping m){
+            for (String var : getVariableNames()){
+                Node v1 = getNodeValue(var);
+                Node v2 = m.getNodeValue(var);
+                if (v2 != null && ! v2.equals(v1)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        Mapping joiner(Mapping m){
+            if (! isJoinable(m)){
+                return null;
+            }
+           
+            List<Node> q = new ArrayList<Node>();
+            List<Node> t = new ArrayList<Node>();
+            
+            List<Path> p = null;
+            boolean isPath = isPath() || m.isPath();
+            if (isPath){
+                p = new ArrayList<Path>();
+            }
+            
+            int n = 0;
+            for (Node qn : getQueryNodes()){
+                if (qn.isVariable()){
+                    Node tn = getNodeValue(qn.getLabel());
+                    if (tn != null){                        
+                        q.add(qn);
+                        t.add(tn);
+                        if (isPath){
+                            p.add(getPath(n));
+                        }
+                    }
+                }
+                n++;
+            }
+            
+            n = 0;
+            for (Node qn : m.getQueryNodes()) {
+                if (qn.isVariable()) {
+                    Node tn = m.getNodeValue(qn.getLabel());
+                    if (tn != null && getNodeValue(qn.getLabel()) == null) {
+                        q.add(qn);
+                        t.add(tn);
+                        if (isPath){
+                            p.add(m.getPath(n)); 
+                        }
+                    }
+                }
+                n++;
+            }
+            
+            Mapping map = new Mapping(q, t);
+            if (isPath){
+                map.init(p);
+            }
+            return map;
+        }
+        
+        // common variable between two Mapping
+      Node common(Mapping m2) {
+        for (Node qn : getQueryNodes()) {
+            if (qn.isVariable()) {
+                Node qq = m2.getQueryNode(qn.getLabel());
+                if (qq != null) {
+                    return qn;
+                }
+            }
+        }
+        return null;
+    }
+
 	
 	Mapping project(List<Exp> lExp){
 		
@@ -948,6 +1115,7 @@ public class Mapping
         bind.set(exp, var, value);
     }
    
+        @Override
       public void set(Expr exp, List<Expr> lvar, Object[] value) {
         if (bind == null){
             bind = new Bind();
@@ -971,6 +1139,7 @@ public class Mapping
         bind.unset(exp, var);
     }
     
+        @Override
      public void unset(Expr exp, List<Expr> lvar) {
         if (bind == null){
             bind = new Bind();

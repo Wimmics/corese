@@ -61,33 +61,40 @@ public class Interpreter implements Evaluator, ExprType {
         FALSE = (DatatypeValue) proxy.getValue(false);        
     }
 
+    @Override
     public void setProducer(Producer p) {
         producer = p;
     }
 
+    @Override
     public void setKGRAM(Object o) {
         if (o instanceof Eval) {
             kgram = (Eval) o;
         }
     }
     
+    @Override
     public void setDebug(boolean b){
         isDebug = b;
     }
     
+    @Override
     public Eval getEval(){
         return kgram;
     }
 
+    @Override
     public Proxy getProxy() {
         return proxy;
     }
 
+    @Override
     public void addResultListener(ResultListener rl) {
         listener = rl;
         hasListener = rl != null;
     }
 
+    @Override
     public Node eval(Filter f, Environment env, Producer p) {
         Expr exp = f.getExp();
         Object value = eval(exp, env, p);
@@ -97,6 +104,7 @@ public class Interpreter implements Evaluator, ExprType {
         return producer.getNode(value);
     }
 
+    @Override
     public List<Node> evalList(Filter f, Environment env) {
 
         Expr exp = f.getExp();
@@ -116,6 +124,7 @@ public class Interpreter implements Evaluator, ExprType {
      * Functions that return several variables as result such as: sql("select
      * from where") as (?x ?y)
      */
+    @Override
     public Mappings eval(Filter f, Environment env, List<Node> nodes) {
         Expr exp = f.getExp();
         switch (exp.oper()) {
@@ -133,10 +142,12 @@ public class Interpreter implements Evaluator, ExprType {
         }
     }
 
+    @Override
     public boolean test(Filter f, Environment env) {
         return test(f, env, producer);
     }
 
+    @Override
     public boolean test(Filter f, Environment env, Producer p) {
         Expr exp = f.getExp();
         Object value = eval(exp, env, p);
@@ -425,6 +436,7 @@ public class Interpreter implements Evaluator, ExprType {
         return eval(exp, env, p, args);
     }
     
+    @Override
     public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
         switch (exp.oper()) {
 
@@ -648,6 +660,7 @@ public class Interpreter implements Evaluator, ExprType {
         proxy.setMode(m);
     }
 
+    @Override
     public int getMode() {
         return mode;
     }
@@ -657,6 +670,7 @@ public class Interpreter implements Evaluator, ExprType {
         proxy.start(producer, env);
     }
  
+    @Override
     public void finish(Environment env) {
         proxy.finish(producer, env);
     }

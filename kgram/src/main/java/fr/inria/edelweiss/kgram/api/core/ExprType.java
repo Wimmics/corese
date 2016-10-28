@@ -231,6 +231,7 @@ public interface ExprType {
  	public static int STL_VISITED_GRAPH         = 278;
  	public static int STL_CGET                  = 279;
  	public static int STL_CSET                  = 280;
+ 	public static int STL_HASGET                = 281;
         
               
 	public static int ISSKOLEM 	= 300;

@@ -200,15 +200,20 @@ public class QuerySorter implements ExpType {
 
         }
 
-        if (exp.isOptional()) {
+        if (exp.isOptional()) {            
             // A optional B
             // variables bound by A
-            exp.first().setNodeList(exp.first().getNodes());
+            optional(exp);
         } else if (exp.isJoin()) {
             exp.bindNodes();
         }
 
         return exp;
+    }
+    
+    void optional(Exp exp){
+        exp.first().setNodeList(exp.first().getNodes());
+        exp.optional();
     }
     
     void setBind(Query q, Exp exp){
@@ -458,6 +463,7 @@ public class QuerySorter implements ExpType {
             }
         }
 
+        @Override
         public boolean add(String var) {
             if (!contains(var)) {
                 super.add(var);

@@ -61,6 +61,8 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_START   = PREF + "start";
     private static final String FUN_FINISH  = PREF + "finish";
     private static final String FUN_PRODUCE = PREF + "produce";
+    
+    public static boolean testAlgebra = false;
 
     static final int STOP = -2;
     public static int count = 0;
@@ -88,6 +90,8 @@ public class Eval implements ExpType, Plugin {
     Mappings results,
             // initial results to be completed
             initialResults;
+    EvalSPARQL evalSparql;
+    CompleteSPARQL completeSparql;
     List<Node> empty = new ArrayList<Node>(0);
     HashMap<String, Boolean> local;
 
@@ -229,6 +233,10 @@ public class Eval implements ExpType, Plugin {
                 if (q.getQueryProfile() == Query.COUNT_PROFILE) {
                     countProfile();
                 } else {
+                    if (testAlgebra){
+                        memory.setResults(results);
+                        completeSparql.complete(producer, results);
+                    }
                     aggregate();
                     // order by
                     complete();
@@ -254,7 +262,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     int query(Node gNode, Query q) {
-        if (q.getMappings() != null) {
+        if (q.getMappings() != null && ! testAlgebra) {
             for (Mapping m : q.getMappings()) {
                 if (binding(m)) {
                     eval(gNode, q);
@@ -287,8 +295,48 @@ public class Eval implements ExpType, Plugin {
         } else {
             Stack stack = Stack.create(q.getBody());
             set(stack);
-            return eval(gNode, stack, 0);
+            return eval(gNode, stack, 0);           
         }
+    }
+    
+    /**
+     * SPARQL algebra requires kgram to compute BGP exp and return Mappings
+     */
+     Mappings exec(Node gNode, Producer p, Exp exp, Mapping m){
+        Stack stack = Stack.create(exp);
+        set(stack); 
+        if (m != null){
+            process(exp, m);
+        }
+        eval(p, gNode, stack, 0);
+        Mappings map = Mappings.create(query);
+        map.add(results);
+        memory.start();
+        results.clear();
+        return map;
+    }
+     
+     
+    void process(Exp exp, Mapping m) {
+        if (exp.getNodeList() != null){
+            for (Node qnode : exp.getNodeList()) {
+                Node node = m.getNodeValue(qnode);
+                if (node != null) {
+                    memory.push(qnode, node, -1);
+                }
+            }
+        }
+        else {
+            memory.push(m, 0);
+        }
+    }
+    
+    /**
+     * Evaluate exp with SPARQL Algebra on Mappings, not with Memory stack
+     * 
+     * */
+    void process(Node gNode, Producer p, Exp exp){        
+        results = evalSparql.eval(gNode, p, exp);        
     }
 
     /**
@@ -426,20 +474,22 @@ public class Eval implements ExpType, Plugin {
     Eval copy() {
         return copy(copyMemory(query), producer, evaluator);
     }
-
+    
     public Eval copy(Memory m, Producer p, Evaluator e) {
+        return copy(m, p, e, query);
+    }
+    
+    // q may be the subQuery
+    Eval copy(Memory m, Producer p, Evaluator e, Query q) {
         Eval ev = create(p, e, match);
+        ev.complete(q);
         ev.setSPARQLEngine(getSPARQLEngine());
         ev.setMemory(m);
         ev.set(provider);
         ev.setPathType(isPathType);
-        //ev.setSubEval(true);
         if (hasEvent) {
             ev.setEventManager(manager);
         }
-//        if (hasListener){
-//            ev.addResultListener(listener);
-//        }
         return ev;
     }
 
@@ -568,9 +618,20 @@ public class Eval implements ExpType, Plugin {
             producer.init(q.nbNodes(), q.nbEdges());
             evaluator.start(memory);
             debug = q.isDebug();
+            if (testAlgebra){
+                complete(q);
+            }
+            if (debug){
+                System.out.println(q);
+            }
         }
         start(q);
         profile(q);
+    }
+    
+    void complete(Query q){
+       evalSparql = new EvalSPARQL(q, this);
+       completeSparql = new CompleteSPARQL(q, this); 
     }
 
     void profile(Query q) {
@@ -826,11 +887,27 @@ public class Eval implements ExpType, Plugin {
             }
             
             if (exp.isBGPAble()){
+                // evaluate and record result for next time
+                // template optimization 
                 exp.setBGPAble(false);
                 backtrack = bgpAble(p, gNode, exp, stack, n);
                 exp.setBGPAble(true);
             }
-            else 
+            else {
+                // draft test
+                if (testAlgebra){
+                    switch (exp.type()){
+                        case BGP:
+                        case JOIN:
+                        case MINUS:
+                        case OPTIONAL:
+                        case GRAPH:
+                        case UNION: 
+                            process(gNode, p, exp);
+                            return backtrack;
+                    } 
+                };
+                
             switch (exp.type()) {
 
                 case NEXT:
@@ -1083,6 +1160,7 @@ public class Eval implements ExpType, Plugin {
                     break;
 
             }
+        }
         }
 
         if (isEvent) {
@@ -1491,7 +1569,7 @@ public class Eval implements ExpType, Plugin {
             // no variable in common : simple cartesian product
             backtrack = simpleJoin(p, gNode, stack, env, map1, map2, n);
         } else {
-             // map1 and map2 share a variable q
+            // map1 and map2 share a variable q
             // sort map2 on q
             // enumerate map1
             // retreive the index of value of q in map2 by dichotomy
@@ -1996,11 +2074,8 @@ public class Eval implements ExpType, Plugin {
         Memory env = memory;
 
         env.setGraphNode(gNode);
-        //memory.setStack(stack);
-        //exp.getFilter().getExp().isExist();
-        boolean success = evaluator.test(exp.getFilter(), env, p);
+        boolean success = (exp.isPostpone()) ? true : evaluator.test(exp.getFilter(), env, p);
         env.setGraphNode(null);
-        //memory.setStack(null);
 
         if (hasEvent) {
             send(Event.FILTER, exp, success);
@@ -2008,7 +2083,8 @@ public class Eval implements ExpType, Plugin {
 
         if (success) {
             backtrack = eval(p, gNode, stack, n + 1);
-        } else if (exp.status()) {
+        } 
+        else if (exp.status()) {
             // this is deprecated, it was used with OPTION() semantics
             // it is not used with OPTIONAL()
             if (exp.getNode() != null) {
@@ -2399,7 +2475,7 @@ public class Eval implements ExpType, Plugin {
         } else {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
-            Eval ev = copy(copyMemory(query, subQuery), p, evaluator);
+            Eval ev = copy(copyMemory(query, subQuery), p, evaluator, subQuery);
 
             Node subNode = null;
 
@@ -2411,9 +2487,9 @@ public class Eval implements ExpType, Plugin {
                     ev.getMemory().push(subNode, env.getNode(gNode));
                 }
             }
-
+            
             lMap = ev.eval(subNode, subQuery, null);
-            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null) {
+            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null && ! testAlgebra) {
                 exp.setObject(lMap);
             }
         }
@@ -2427,8 +2503,8 @@ public class Eval implements ExpType, Plugin {
                 send(evENUM, exp, map, bmatch);
             }
 
-            if (bmatch) {
-                backtrack = eval(gNode, stack, n + 1);
+            if (bmatch) {              
+                backtrack = eval(p, gNode, stack, n + 1);
                 pop(subQuery, map);
                 if (backtrack < n) {
                     return backtrack;
@@ -2502,24 +2578,40 @@ public class Eval implements ExpType, Plugin {
             boolean success = false;
 
             Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1, false);
-
+            int nbsuc = 0;
             for (Mapping r2 : map2) {
 
                 success = true;
-
-                if (env.push(r2, n)) {
-                    if (hasGraph) {
-                        env.pop(qNode);
+                
+                if (exp.isPostpone()){
+                    // A optional B
+                    // filters of B must be evaluated now
+                    for (Exp f : exp.getPostpone()) {
+                        r2.setQuery(query);
+                        r2.setMap(memory.getMap());
+                        success = evaluator.test(f.getFilter(), r2);
+                        if (!success) {
+                            break;
+                        }
                     }
-                    backtrack = eval(p, gNode, stack, n + 1);
-                    env.pop(r2);
-                    if (backtrack < n) {
-                        return backtrack;
+                }
+
+                if (success){
+                    nbsuc++;
+                    if (env.push(r2, n)) {
+                        if (hasGraph) {
+                            env.pop(qNode);
+                        }
+                        backtrack = eval(p, gNode, stack, n + 1);
+                        env.pop(r2);
+                        if (backtrack < n) {
+                            return backtrack;
+                        }
                     }
                 }
             }
 
-            if (!success) {
+            if (nbsuc == 0) {
                 // all r2 fail
                 if (env.push(r1, n)) {
                     if (hasGraph) {
@@ -2691,6 +2783,7 @@ public class Eval implements ExpType, Plugin {
         return false;
     }
 
+    @Override
     public void exec(Exp exp, Environment env, int n) {
         if (exp.getObject() instanceof String) {
             String label = (String) exp.getObject();
@@ -2726,7 +2819,15 @@ public class Eval implements ExpType, Plugin {
     }
 
     void submit(Mapping map) {
-        results.submit(map);
+        if (testAlgebra){
+            // eval distinct later
+            if (map != null){
+                results.add(map);
+            }
+        }
+        else {
+            results.submit(map);
+        }
     }
 
     public int nbResult() {

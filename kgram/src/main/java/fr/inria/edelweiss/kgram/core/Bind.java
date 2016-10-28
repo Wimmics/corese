@@ -65,6 +65,7 @@ public class Bind {
                 return valList.get(i);
             }
         }
+       // logger.warn("Unbound variable: " + var );
         return null;
     }
     

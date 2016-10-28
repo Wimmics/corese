@@ -111,17 +111,10 @@ public class Mappings extends PointerObject
             distinct.setDistinct(true);
             distinct.setDuplicate(q.isDistribute());
         }
-//                else if (q.isRule() 
-//                        && q.getConstructNodes() != null
-//                        && q.getConstructNodes().size() > 0){
-//                    // construct where
-//                    // simulate distinct * on construct variables
-//                    isDistinct = true;
-//                    setSelect(q.getConstructNodes());
-//                    distinct = Group.create(q.getConstructNodes());
-//                    distinct.setDistinct(true);
-//                    distinct.setDuplicate(q.isDistribute());
-//                }
+    }
+    
+    public boolean isDistinct(){
+        return isDistinct;
     }
 
     int count() {
@@ -163,10 +156,12 @@ public class Mappings extends PointerObject
         list.addAll(lm.getList());
     }
 
+    @Override
     public Iterator<Mapping> iterator() {
         return list.iterator();
     }
 
+    @Override
     public int size() {
         return list.size();
     }
@@ -183,6 +178,7 @@ public class Mappings extends PointerObject
         list.clear();
     }
 
+    @Override
     public Query getQuery() {
         return query;
     }
@@ -312,6 +308,7 @@ public class Mappings extends PointerObject
         return node.getValue();
     }
 
+    @Override
     public Object getValue(String var, int n) {
         return getValue(var);
     }
@@ -379,8 +376,9 @@ public class Mappings extends PointerObject
         return (distinct == null) ? true : distinct.accept(node);
     }
 
+    // TODO: check select == null
     boolean accept(Mapping r) {
-        if (select.size() == 0) {
+        if (select == null || select.isEmpty()) {
             return true;
         }
         if (isDistinct) {
@@ -757,7 +755,6 @@ public class Mappings extends PointerObject
             setValid(res);
         } else {
             Node node;
-
             if (exp.getFilter() == null) {
                 // order by ?count
                 node = memory.getNode(exp.getNode());
@@ -978,7 +975,7 @@ public class Mappings extends PointerObject
             eval.eval(f, map, p);
         }
     }
-
+    
     /**
      * *******************************************************************
      *
@@ -989,7 +986,7 @@ public class Mappings extends PointerObject
      ********************************************************************
      */
     public Mappings union(Mappings lm) {
-        Mappings res = new Mappings();
+        Mappings res = Mappings.create(getQuery());
         for (Mapping m : this) {
             res.add(m);
         }
@@ -1014,6 +1011,75 @@ public class Mappings extends PointerObject
             }
         }
 
+        return res;
+    }
+    
+     public Mappings joiner(Mappings lm) {
+        Mappings res =  Mappings.create(getQuery());
+        for (Mapping m1 : this) {
+            for (Mapping m2 : lm) {
+                Mapping map = m1.joiner(m2);
+                if (map != null) {
+                    res.add(map);
+                }
+            }
+        }
+        return res;
+    }
+     
+     // join with cmn common variable, map2 is sorted on cmn, null value first
+     public Mappings joiner(Mappings map2, Node cmn) {
+        Mappings map1 = this;
+        Mappings res =  Mappings.create(map1.getQuery());
+        
+        for (Mapping m1 : map1){
+            Node val = m1.getNodeValue(cmn);
+            if (val == null){
+                // common unbound in m1
+                for (Mapping m2 : map2){
+                    Mapping m = m1.joiner(m2);
+                    if (m != null){
+                        res.add(m);
+                    }
+                }
+            }
+            else {
+                for (Mapping m2 : map2){
+                    Node val2 = m2.getNodeValue(cmn);
+                    if (val2 == null){
+                        // common unbound in m2
+                         Mapping m = m1.joiner(m2);
+                         if (m != null){
+                             res.add(m);
+                         }                         
+                    }
+                    else {
+                        break;
+                    }
+                }
+                
+                // index of common value in map2
+                int index = map2.find(val, cmn);
+
+                if (index >= 0 && index < map2.size()) {
+
+                    for (int i = index; i < map2.size(); i++) {
+
+                        // get value of common in map2
+                        Mapping m2 = map2.get(i);
+                        Node n2 = m2.getNodeValue(cmn);
+
+                        if (n2 == null || !val.equals(n2)) {
+                            break;
+                        }
+                        Mapping m = m1.joiner(m2);
+                        if (m != null){
+                             res.add(m);
+                         }   
+                    }
+                }                
+            }
+        }
         return res;
     }
 

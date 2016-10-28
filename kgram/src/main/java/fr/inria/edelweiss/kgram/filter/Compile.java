@@ -84,13 +84,13 @@ public class Compile implements ExprType {
 				
 		switch (ee.oper()){
                     
-		case NOT: 
-                    if (! q.isOptional()){
-                        // no use to detect !bound(?x) with SPARQL semantics
-                        // because std backtrack is OK in this case
-			not(exp);
-                    }
-			break;
+//		case NOT: 
+//                    if (! q.isOptional()){
+//                        // no use to detect !bound(?x) with SPARQL semantics
+//                        // because std backtrack is OK in this case
+//			not(exp);
+//                    }
+//			break;
 						
 		case OR:
 			or(exp);

@@ -8,7 +8,7 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
 
-[] owl:imports <profile-test.ttl>
+#[] owl:imports <profile-test.ttl>
 
 
 st:dbpedia a st:Profile ;   
@@ -367,24 +367,6 @@ st:inria a st:Server ;
 st:inriacontent a sw:Workflow ; sw:body ( 
     [ a sw:Load ; sw:path <dbpedia/inria.ttl>  ] )
 .  
-    
-    
-st:west a st:Server ;
-  st:service "west" ;
-  st:transform st:navlab ; 
-  st:param [ 
-    st:lang "en"   ;
-    st:mapzoom 8 ;
-    st:mapsize "maplarge" ;
-    st:import  st:mapParam  ;
-  ] ;  
-  st:content st:westcontent
-.  
-  
-st:westcontent a sw:Workflow ; sw:body ( 
-    [ a sw:Load ; sw:path <dbpedia/west.ttl>  ] )
-.
-    
     
     
   

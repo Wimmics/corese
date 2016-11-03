@@ -3,13 +3,15 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import static fr.inria.corese.tinkerpop.MappingRdf.CONTEXT;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -39,6 +41,10 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		private class GremlinIterator<T> implements Iterator<Entity> {
 
 			private final Iterator<Edge> edges;
+			private Optional<Edge> previousEdge = Optional.empty();
+			private ArrayList<Entity> previousEntity = new ArrayList<>(); // @TODO Must be removed after debugging.
+			private Optional<Edge> nextEdge = Optional.empty();
+			private boolean nextSearched = false; // flag to know whether a hasNext() has launched and find a nextEdge element before nextEdge() was called.
 
 			GremlinIterator(Iterator<Edge> edges) {
 				this.edges = edges;
@@ -46,13 +52,53 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 			@Override
 			public boolean hasNext() {
-				return edges.hasNext();
+				if (!edges.hasNext()) {
+					return false;
+				} else {
+					return findNext();
+				}
 			}
 
 			@Override
 			public Entity next() {
-				Edge gremlinCurrent = edges.next();
-				return unmapper.buildEntity(gremlinCurrent);
+				if (!nextSearched) {
+					if (!findNext()) {
+						throw new NoSuchElementException();
+					}
+				}
+				nextSearched = false;
+				Entity nextEntity = unmapper.buildEntity(nextEdge.get());
+
+				previousEntity.add(nextEntity);
+				if (nextEdge.get().property(EDGE_P).value().toString().contains("dateOfWork")) {
+					LOGGER.info("dateOfWork found "+edgeEquals(nextEdge, previousEdge)  );
+				}
+				previousEdge = Optional.of(nextEdge.get());
+				return nextEntity;
+			}
+
+			private boolean findNext() {
+				do {
+					nextEdge = Optional.of(edges.next());
+				} while (edgeEquals(nextEdge, previousEdge) && edges.hasNext());
+				if (!nextEdge.equals(previousEdge)) {
+					nextSearched = true;
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			private boolean edgeEquals(Optional<Edge> current, Optional<Edge> other) {
+				boolean result;
+				if (current.isPresent() && other.isPresent()) {
+					result = current.get().property(EDGE_P).value().equals(other.get().property(EDGE_P).value())
+						&& current.get().property(EDGE_S).value().equals(other.get().property(EDGE_S).value())
+						&& current.get().property(EDGE_O).value().equals(other.get().property(EDGE_O).value());
+				} else {
+					result = !(current.isPresent() ^ other.isPresent());
+				}
+				return result;
 			}
 		}
 
@@ -73,8 +119,8 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
 		this.tGraph = tGraph;
-//		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().next()});
-//		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().next()});
+//		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().nextEdge()});
+//		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().nextEdge()});
 		LOGGER.info("** Variables of the graph **");
 		try {
 			for (String key : tGraph.variables().keys()) {
@@ -131,8 +177,8 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			result.setTinkerpopGraph(actualGraph);
 			return Optional.of(result);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, ex.getMessage());
 			ex.printStackTrace();
-//			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, ex.getMessage());
 		}
 		return null;
 	}
@@ -164,12 +210,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);
-			Iterator<Entity> result = edges.map(e -> unmapper.buildEntity(e.get()));
-			return new Iterable<Entity>() {
-				public Iterator<Entity> iterator() {
-					return result;
-				}
-			};
+			return new GremlinIterable<Entity>(edges);//{
 		} catch (Exception ex) {
 			LOGGER.severe("An error occurred: " + ex.toString());
 			return null;
@@ -200,7 +241,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	public boolean isGraphNode(Node node) {
 		GraphTraversalSource traversal = tGraph.traversal();
-		GraphTraversal<Edge, Edge> result = traversal.E().has(CONTEXT, node.getLabel());
+		GraphTraversal<Edge, Edge> result = traversal.E().has(EDGE_G, node.getLabel());
 		return result.hasNext();
 	}
 

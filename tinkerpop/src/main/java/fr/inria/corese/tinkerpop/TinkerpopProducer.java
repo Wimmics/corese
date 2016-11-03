@@ -3,7 +3,7 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import static fr.inria.corese.tinkerpop.MappingRdf.*;
+//import static fr.inria.corese.tinkerpop.MappingRdf.*;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -14,11 +14,13 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.List;
 import java.util.function.Function;
 import org.apache.log4j.Logger;
-import static org.apache.tinkerpop.gremlin.process.traversal.P.gt;
+import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
+import static org.apache.tinkerpop.gremlin.process.traversal.Order.incr;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 
 /**
  *
@@ -67,12 +69,12 @@ public class TinkerpopProducer extends ProducerImpl {
 		switch (key.toString()) {
 			case "?g?sPO":
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, p).where(inV().has(VERTEX_VALUE, o));
+					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o));
 				};
 				break;
 			case "?g?sP?o":
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, p);
+					return t.E().has(EDGE_P, p);
 				};
 				break;
 			case "?g?s?pO":
@@ -82,12 +84,12 @@ public class TinkerpopProducer extends ProducerImpl {
 				break;
 			case "?gSPO":
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, p).where(inV().has(VERTEX_VALUE, o)).where(outV().has(VERTEX_VALUE, s));
+					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o)).where(outV().has(VERTEX_VALUE, s));
 				};
 				break;
 			case "?gSP?o":
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, p).where(outV().has(VERTEX_VALUE, s));
+					return t.E().has(EDGE_P, p).where(outV().has(VERTEX_VALUE, s));
 				};
 				break;
 			case "?gS?pO":
@@ -102,14 +104,14 @@ public class TinkerpopProducer extends ProducerImpl {
 				break;
 			case "G?sP?o":
 				filter = t -> {
-					return t.E().has(EDGE_VALUE, p).has(CONTEXT, g);
+					return t.E().has(EDGE_P, p).has(EDGE_G, g);
 				};
 				break;
 			case "?g?s?p?o":
 			default:
 				filter = t -> {
-//					return t.E().has(EDGE_VALUE, gt(""));
-					return t.E(); //.has(EDGE_VALUE, gt(""));
+//					return t.E().has(EDGE_P, gt(""));
+					return t.E().order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr); //.has(EDGE_P, gt(""));
 				};
 		}
 		return tpGraph.getEdges(filter);
@@ -126,7 +128,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node node = env.getNode(gNode);
 		if (!tpGraph.isGraphNode(node)) {
 			return false;
-		}	
+		}
 		if (from.isEmpty()) {
 			return true;
 		}
@@ -134,7 +136,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		LOGGER.error("behaviour not defined in that case");
 		return false;
 		//return ei.getCreateDataFrom().isFrom(from, node);
-		
+
 //		Node node = env.getNode(gNode);
 //		if (!graph.isGraphNode(node)) {
 //			return false;

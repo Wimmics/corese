@@ -7,16 +7,7 @@ package fr.inria.corese.rdftograph.driver;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import fr.inria.corese.rdftograph.RdfToGraph;
-import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
-import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
-import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
-import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
-import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
-import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
-import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,7 +50,7 @@ public class OrientDbDriver extends GdbDriver {
 		nodeConfig.setProperty("type", "NOTUNIQUE");
 		nodeConfig.setProperty("keytype", OType.STRING);
 		graph.getTx().createVertexIndex(VERTEX_VALUE, RDF_VERTEX_LABEL, nodeConfig);
-		graph.getTx().createEdgeIndex(EDGE_VALUE, RDF_EDGE_LABEL, nodeConfig);
+		graph.getTx().createEdgeIndex(EDGE_P, RDF_EDGE_LABEL, nodeConfig);
 		g = graph.getTx();
 	}
 
@@ -145,7 +136,7 @@ public class OrientDbDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
-		p.add(EDGE_VALUE);
+		p.add(EDGE_P);
 		p.add(predicate);
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();

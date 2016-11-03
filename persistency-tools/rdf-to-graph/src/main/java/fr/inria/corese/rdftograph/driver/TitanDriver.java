@@ -12,17 +12,7 @@ import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
 import fr.inria.corese.rdftograph.RdfToGraph;
-import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
-import static fr.inria.corese.rdftograph.RdfToGraph.CONTEXT;
-import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
-import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
-import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
-import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
-import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
-import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,9 +59,9 @@ public class TitanDriver extends GdbDriver {
 		}
 
 		g = TitanFactory.open(configuration);
-		makeIfNotExistProperty(EDGE_VALUE);
+		makeIfNotExistProperty(EDGE_P);
 		makeIfNotExistProperty(VERTEX_VALUE);
-		makeIfNotExistProperty(CONTEXT);
+		makeIfNotExistProperty(EDGE_G);
 		createIndexes();
 	}
 
@@ -90,16 +80,29 @@ public class TitanDriver extends GdbDriver {
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
 			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
-				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
-				PropertyKey edgeValue = manager.getPropertyKey(EDGE_VALUE);
-				PropertyKey contextValue = manager.getPropertyKey(CONTEXT);
+//				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+				PropertyKey graphKey = manager.getPropertyKey(EDGE_G);
+				PropertyKey subjectKey = manager.getPropertyKey(EDGE_S);
+				PropertyKey predicateKey = manager.getPropertyKey(EDGE_P);
+				PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
 
-				manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
-				manager.buildIndex("byEdgeValue", Edge.class).addKey(edgeValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
-				manager.buildIndex("byContextValue", Edge.class).addKey(contextValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
+//				manager.buildIndex("byVertexValue", Vertex.class).addKey(vertexValue, Mapping.STRING.asParameter()).buildMixedIndex("search");
+//				manager.buildIndex("byEdgeValue", Edge.class).addKey(graphKey, Mapping.STRING.asParameter()).buildMixedIndex("search");
+//				manager.buildIndex("byContextValue", Edge.class).addKey(predicateKey, Mapping.STRING.asParameter()).buildMixedIndex("search");
+				manager.buildIndex("allIndex", Edge.class).
+					addKey(predicateKey, Mapping.STRING.asParameter()).
+					addKey(subjectKey, Mapping.STRING.asParameter()).
+					addKey(objectKey, Mapping.STRING.asParameter()).
+					addKey(graphKey, Mapping.STRING.asParameter()).
+					buildMixedIndex("search");
 				manager.commit();
 
-				String[] indexNames = {"byVertexValue", "byEdgeValue", "byContextValue"};
+				String[] indexNames = {
+//					"byVertexValue", 
+//					"byEdgeValue", 
+//					"byContextValue", 
+					"allIndex"
+				};
 				for (String indexName : indexNames) {
 					manager.awaitGraphIndexStatus(g, indexName).call();
 					manager = (ManagementSystem) g.openManagement();
@@ -189,8 +192,13 @@ public class TitanDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
-		p.add(EDGE_VALUE);
+		p.add(EDGE_P);
 		p.add(predicate);
+		p.add(EDGE_S);
+		p.add(vSource.property(VERTEX_VALUE).toString());
+		p.add(EDGE_O);
+		p.add(vObject.property(VERTEX_VALUE).toString());
+
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
 		return result;

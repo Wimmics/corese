@@ -49,11 +49,13 @@ public class RdfToGraph {
 	public static final String LITERAL = "literal";
 	public static final String IRI = "IRI";
 	public static final String BNODE = "bnode";
-	public static final String CONTEXT = "context";
 	public static final String KIND = "kind";
 	public static final String LANG = "lang";
 	public static final String TYPE = "type";
-	public static final String EDGE_VALUE = "e_value";
+	public static final String EDGE_G = "g_value";
+	public static final String EDGE_P = "p_value";
+	public static final String EDGE_S = "s_value";
+	public static final String EDGE_O = "o_value";
 	public static final String VERTEX_VALUE = "v_value";
 	public static final String RDF_EDGE_LABEL = "rdf_edge";
 	public static final String RDF_VERTEX_LABEL = "rdf_vertex";
@@ -87,7 +89,7 @@ public class RdfToGraph {
 			Object objectNode = driver.createNode(object);
 
 			Map<String, Object> properties = new HashMap();
-			properties.put(CONTEXT, contextString);
+			properties.put(EDGE_G, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
@@ -219,7 +221,7 @@ public class RdfToGraph {
 			Object objectNode = driver.createNode(object);
 
 			Map<String, Object> properties = new HashMap();
-			properties.put(CONTEXT, contextString);
+			properties.put(EDGE_G, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
@@ -275,7 +277,7 @@ public class RdfToGraph {
 		DbDriver driver = DbDriver.NEO4J;
 		if (args.length >= 3) {
 			try {
-				DbDriver driverParam = DbDriver.valueOf(args[2]);
+				DbDriver driverParam = DbDriver.valueOf(args[2].toUpperCase());
 				driver = driverParam;
 			} catch (IllegalArgumentException ex) {
 				ex.printStackTrace();

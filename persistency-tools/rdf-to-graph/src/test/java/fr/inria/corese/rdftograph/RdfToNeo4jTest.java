@@ -8,14 +8,15 @@ package fr.inria.corese.rdftograph;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import static org.neo4j.helpers.collection.IteratorUtil.count;
 import org.neo4j.tooling.GlobalGraphOperations;
 import org.openrdf.rio.RDFFormat;
+import static org.neo4j.helpers.collection.IteratorUtil.count;
 
 /**
  *
@@ -24,65 +25,72 @@ import org.openrdf.rio.RDFFormat;
 public class RdfToNeo4jTest {
 
 	private static final String ROOT_RESOURCES = "src/test/resources/";
-
+	private static final String[] INPUTS = {
+		ROOT_RESOURCES + "testConvert/input1.nq"
+	};
 	/**
-	 * Test of convert method, of class RdfToNeo4jBatch.
+	 * Test of convertStreamToDb method, of class RdfToNeo4jBatch.
+	 *
+	 * @throws java.io.FileNotFoundException
 	 */
 	@Test
-	public void testConvertGraphNeo4j() throws FileNotFoundException {
-		String inputFile = ROOT_RESOURCES + "testConvert/input1.nq";
-		String outputDb = ROOT_RESOURCES + "testConvertNeo4jResult.neo4jdb";
+	public void testConvertGraphNeo4j() throws FileNotFoundException, IOException {
+		String dbPath = ROOT_RESOURCES + "testConvertResult.neo4jdb";
 		String expectedDb = ROOT_RESOURCES + "testConvertExpected.neo4jdb";
 
 		RdfToGraph converter = new RdfToGraph();
-		converter.setDriver("neo4j");
-		converter.setWipeOnOpen(true);
+		converter.setDriver(RdfToGraph.DbDriver.NEO4J).setWipeOnOpen(true);
+		converter.convertFileToDb(INPUTS[0], RDFFormat.NQUADS, dbPath);
 
-		FileInputStream inputStream = new FileInputStream(new File(inputFile));
-		converter.convert(inputStream, RDFFormat.NQUADS, outputDb);
-
-		GraphDatabaseService result = new GraphDatabaseFactory().newEmbeddedDatabase(new File(outputDb));
-		GraphDatabaseService expected = new GraphDatabaseFactory().newEmbeddedDatabase(new File(expectedDb));
-		assert (areEquals(result, expected));
-		result.shutdown();
-		expected.shutdown();
+//		checkDbEqual(expectedDb, dbPath);
 	}
 
 	/**
-	 * Test of convert method, of class RdfToNeo4jBatch.
+	 * Test of convertStreamToDb method, of class RdfToNeo4jBatch.
+	 *
+	 * @throws java.io.FileNotFoundException
 	 */
 	@Test
 	public void testConvertGraphOrientdb() throws FileNotFoundException {
-		String inputFile = ROOT_RESOURCES + "testConvert/input1.nq";
-		String outputDb = "plocal:" + ROOT_RESOURCES + "testConvertOrientdbResult.orientdb";
+		String dbPath = "plocal:" + ROOT_RESOURCES + "testConvertResult.orientdb";
 		String expectedDb = ROOT_RESOURCES + "testConvertExpected.neo4jdb";
 
-		RdfToGraph converter = new RdfToGraph();
-		converter.setDriver("orientdb");
-		converter.setWipeOnOpen(true);
+		RdfToGraph converter = new RdfToGraph().setDriver(RdfToGraph.DbDriver.ORIENTDB).setWipeOnOpen(true);
 
-		FileInputStream inputStream = new FileInputStream(new File(inputFile));
-		converter.convert(inputStream, RDFFormat.NQUADS, outputDb);
+		FileInputStream inputStream = new FileInputStream(new File(INPUTS[0]));
+		converter.convertStreamToDb(inputStream, RDFFormat.NQUADS, dbPath);
 
-//		GraphDatabaseService result = new GraphDatabaseFactory().newEmbeddedDatabase(new File(outputDb));
-//		GraphDatabaseService expected = new GraphDatabaseFactory().newEmbeddedDatabase(new File(expectedDb));
-//		assert (areEquals(result, expected));
-//		result.shutdown();
-//		expected.shutdown();
-		// @TODO generic reader to add
+//		checkDbEqual(expectedDb, dbPath);
 	}
 
-	private boolean areEquals(GraphDatabaseService result, GraphDatabaseService expected) {
-		result.beginTx();
+	@Test
+	public void testConvertGraphTitandb() {
+		String dbPath = ROOT_RESOURCES + "testConvertResult.titandb";
+		String expectedDb = ROOT_RESOURCES + "testConvertExpected.titandb";
+
+		RdfToGraph converted = new RdfToGraph().setDriver(RdfToGraph.DbDriver.TITANDB).setWipeOnOpen(true);
+		checkDbEqual(expectedDb, dbPath);
+	}
+	
+	private void checkDbEqual(String expectedDbPath, String resultDbPath) {
+		GraphDatabaseService actual = new GraphDatabaseFactory().newEmbeddedDatabase(new File(resultDbPath));
+		GraphDatabaseService expected = new GraphDatabaseFactory().newEmbeddedDatabase(new File(expectedDbPath));
+		assert (areEqual(expected, actual));
+		actual.shutdown();
+		expected.shutdown();
+	}
+
+	private boolean areEqual(GraphDatabaseService actual, GraphDatabaseService expected) {
+		actual.beginTx();
 		expected.beginTx();
-		int nbResultNodes = count(GlobalGraphOperations.at(result).getAllNodes());
+		int nbResultNodes = count(GlobalGraphOperations.at(actual).getAllNodes());
 		int nbExpectedNodes = count(GlobalGraphOperations.at(expected).getAllNodes());
 		assert (nbResultNodes == nbExpectedNodes);
-		assert (count(GlobalGraphOperations.at(result).getAllRelationships()) == count(GlobalGraphOperations.at(expected).getAllRelationships()));
+		assert (count(GlobalGraphOperations.at(actual).getAllRelationships()) == count(GlobalGraphOperations.at(expected).getAllRelationships()));
 		for (Node n : GlobalGraphOperations.at(expected).getAllNodes()) {
 			Iterable<Label> labels = n.getLabels();
 			for (Label l : labels) {
-				assert (result.findNodes(l) != null);
+				assert (actual.findNodes(l) != null);
 			}
 		}
 		return true;

@@ -5,7 +5,7 @@
  */
 package fr.inria.corese.tinkerpop.mapper;
 
-import static fr.inria.corese.tinkerpop.MappingRdf.*;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
@@ -32,11 +32,10 @@ public class TinkerpopToCorese {
 	 * @param e
 	 */
 	public Entity buildEntity(Edge e) {
-		String context = e.value(CONTEXT);
-		Entity result = EdgeQuad.create(
-			coreseGraph.createNode(context),
+		String graph = e.value(EDGE_G);
+		Entity result = EdgeQuad.create(coreseGraph.createNode(graph),
 			unmapNode(e.outVertex()),
-			coreseGraph.createNode((String) e.value(EDGE_VALUE)),
+			coreseGraph.createNode((String) e.value(EDGE_P)),
 			unmapNode(e.inVertex())
 		);
 		return result;

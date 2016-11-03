@@ -52,5 +52,11 @@
             <artifactId>titan-all</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>rdf-to-graph</artifactId>
+            <version>3.2.1p-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>

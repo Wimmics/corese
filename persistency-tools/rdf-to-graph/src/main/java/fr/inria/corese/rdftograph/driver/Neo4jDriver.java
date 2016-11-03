@@ -6,16 +6,7 @@
 package fr.inria.corese.rdftograph.driver;
 
 import fr.inria.corese.rdftograph.RdfToGraph;
-import static fr.inria.corese.rdftograph.RdfToGraph.BNODE;
-import static fr.inria.corese.rdftograph.RdfToGraph.IRI;
-import static fr.inria.corese.rdftograph.RdfToGraph.KIND;
-import static fr.inria.corese.rdftograph.RdfToGraph.LANG;
-import static fr.inria.corese.rdftograph.RdfToGraph.LITERAL;
-import static fr.inria.corese.rdftograph.RdfToGraph.TYPE;
-import static fr.inria.corese.rdftograph.RdfToGraph.EDGE_VALUE;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_EDGE_LABEL;
-import static fr.inria.corese.rdftograph.RdfToGraph.RDF_VERTEX_LABEL;
-import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
+import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +16,6 @@ import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 import org.openrdf.model.Literal;
@@ -74,11 +64,11 @@ public class Neo4jDriver extends GdbDriver {
 			switch (RdfToGraph.getKind(object)) {
 				case BNODE:
 				case IRI:
-					result &= endNode.getProperty(EDGE_VALUE).equals(object.stringValue());
+					result &= endNode.getProperty(EDGE_P).equals(object.stringValue());
 					break;
 				case LITERAL:
 					Literal l = (Literal) object;
-					result &= endNode.getProperty(EDGE_VALUE).equals(l.getLabel());
+					result &= endNode.getProperty(EDGE_P).equals(l.getLabel());
 					result &= endNode.getProperty(TYPE).equals(l.getDatatype().stringValue());
 					if (l.getLanguage().isPresent()) {
 						result &= endNode.hasProperty(LANG) && endNode.getProperty(LANG).equals(l.getLanguage().get());
@@ -179,12 +169,12 @@ public class Neo4jDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
-		p.add(EDGE_VALUE);
+		p.add(EDGE_P);
 		p.add(predicate);
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
 		return result;
-		//properties.put(EDGE_VALUE, predicate);
+		//properties.put(EDGE_P, predicate);
 		//return g.createRelationship((Long) source, (Long) object, rdfEdge, properties);
 	}
 

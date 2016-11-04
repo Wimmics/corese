@@ -11,11 +11,9 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import fr.inria.wimmics.coresetimer.CoreseTimer.Profile;
-import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.DB_INITIALIZED;
+import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -164,6 +162,8 @@ public class Main {
 	};
 
 	public final static TestDescription[] TESTS = {
+//		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+//		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
 		new TestDescription("test1").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")
 	};
 

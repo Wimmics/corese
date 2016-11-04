@@ -7,15 +7,6 @@ package fr.inria.wimmics.coresetimer;
 
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -28,8 +19,10 @@ public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
 
-	public final static int WARMUP_THRESHOLD = 10;
-	public final static int SAMPLES = 20;
+//	public final static int WARMUP_THRESHOLD = 10;
+	public final static int WARMUP_THRESHOLD = 1;
+	public final static int SAMPLES = 1;
+//	public final static int SAMPLES = 20;
 	public CoreseAdapter adapter;
 	public String adapterName;
 

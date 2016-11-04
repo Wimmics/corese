@@ -195,9 +195,9 @@ public class TitanDriver extends GdbDriver {
 		p.add(EDGE_P);
 		p.add(predicate);
 		p.add(EDGE_S);
-		p.add(vSource.property(VERTEX_VALUE).toString());
+		p.add(vSource.property(VERTEX_VALUE).value());
 		p.add(EDGE_O);
-		p.add(vObject.property(VERTEX_VALUE).toString());
+		p.add(vObject.property(VERTEX_VALUE).value());
 
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();

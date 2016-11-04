@@ -1,0 +1,2 @@
+<http://lab.environment.data.gov.au/data/acorn/climate/slice.rdf> <http://a9.com/-/spec/opensearch/1.1/itemsPerPage> "120"^^<http://www.w3.org/2001/XMLSchema#long> <http://lab.environment.data.gov.au/data/acorn/climate/slice.rdf> .
+<http://lab.environment.data.gov.au/data/acorn/climate/slice/station/year.rdf> <http://a9.com/-/spec/opensearch/1.1/itemsPerPage> "120"^^<http://www.w3.org/2001/XMLSchema#long> <http://lab.environment.data.gov.au/data/acorn/climate/slice/station/year.rdf> .

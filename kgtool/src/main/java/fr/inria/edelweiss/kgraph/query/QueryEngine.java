@@ -105,26 +105,26 @@ public class QueryEngine implements Engine {
 
     /**
      * called once with this transformer map and 
-     * may be called again with outer transformar map if any
+     * may be called again with outer transformer map if any
      * map belongs to current or outer transformer
      * current transformer may inherit table from outer transformer
      * hence all subtransformers share same table
      * table: transformation -> Transformer
      */
-    public void complete(Transformer trans, HashMap<String, Transformer> map) {
+    public void complete(Transformer trans) {
         complete();
-        trans.setTransformerMap(map);
+        //trans.setTransformerMap(map);
         for (Query q : getTemplates()) {
-            complete(q, trans);
+            trans.complete(q);
+            complete(q);
         }
         for (Query q : getNamedTemplates()) {
-            complete(q, trans);
+            trans.complete(q);
+            complete(q);
         }
     }
     
-    void complete(Query q, Transformer trans) {
-        q.setEnvironment(trans.getTransformerMap());
-        q.setTransformer(trans.getTransformation(), trans);
+    void complete(Query q) {
         q.setTransformationTemplate(true);
         q.setListPath(true);
     }

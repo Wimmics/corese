@@ -320,40 +320,40 @@ public class PluginTransform implements ExprType {
         return plugin.getValue(String.format(dt1.stringValue(), dt2.stringValue()));
     }
     
-    IDatatype format(IDatatype[] param){
-        String f = param[0].stringValue();
-        switch (param.length){
-            case 2: return plugin.getValue(String.format(f, param[1].stringValue()));
-            case 3: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue()));
-            case 4: return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), param[3].stringValue()));
+    IDatatype format(IDatatype[] par){
+        String f = par[0].stringValue();
+        switch (par.length){
+            case 2: return plugin.getValue(String.format(f, par[1].stringValue()));
+            case 3: return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue()));
+            case 4: return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), par[3].stringValue()));
             case 5: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue()));
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue()));
             case 6: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue()));                                   
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue()));                                   
             case 7: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
-                        param[6].stringValue()));                                   
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
+                        par[6].stringValue()));                                   
             case 8: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
-                        param[6].stringValue(), param[7].stringValue())); 
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
+                        par[6].stringValue(), par[7].stringValue())); 
             case 9: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
-                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue()));
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
+                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue()));
 
             case 10: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
-                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), param[9].stringValue()));        
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
+                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue(), par[9].stringValue()));        
             case 11: 
-                return plugin.getValue(String.format(f, param[1].stringValue(), param[2].stringValue(), 
-                        param[3].stringValue(), param[4].stringValue(), param[5].stringValue(),
-                        param[6].stringValue(), param[7].stringValue(), param[8].stringValue(), 
-                        param[9].stringValue(), param[10].stringValue())); 
+                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
+                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
+                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue(), 
+                        par[9].stringValue(), par[10].stringValue())); 
         
         }
         return null;
@@ -367,26 +367,36 @@ public class PluginTransform implements ExprType {
         return TRUE;
     }
 
+    /**
+     * Return or create current transformer (create in case of different graph)
+     */
     Transformer getTransformer(Environment env, Producer p) {
         return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null);
     }
-
+    
+    /**
+     * Return current transformer (do not create in case of different graph)
+     */
+    Transformer getTransformerCurrent(Environment env, Producer p) {
+        return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null, true);
+    }
+    
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
+        return getTransformer(exp, env, prod, uri, temp, dtgname, false);
+    }
+    
     /**
      * uri: transformation URI 
      * gname: named graph 
      * If uri == null, get current transformer
+     * current = true: return current transformer even if not same graph
+     * use case: graph ?shape {  st:cget(sh:def, ?name)  }
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
+    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname, boolean current) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         String transform = getTrans(uri, temp);
-        
-        // @deprecated:
-//        if (transform == null && q.hasPragma(Pragma.TEMPLATE)) {
-//            transform = (String) q.getPragma(Pragma.TEMPLATE);
-//        }
-
         Transformer t = (Transformer) q.getTransformer(transform);
 
         if (transform == null && t != null) {
@@ -416,7 +426,7 @@ public class PluginTransform implements ExprType {
             t = Transformer.create(prod, transform);
             complete(q, t, uri);
             q.setTransformer(transform, t);
-        } else {
+        } else if (! current){
             Graph g = t.getGraph();
             if (g != prod.getGraph()) {
                 // Transformer exist but with another graph
@@ -620,8 +630,11 @@ public class PluginTransform implements ExprType {
          return exp;        
      }
     
+     /**
+      * Context of current Transformer
+      */
    Context getTransformerContext(Environment env, Producer p){
-       Transformer t = getTransformer(env, p);
+       Transformer t = getTransformerCurrent(env, p);
        return t.getContext();
    }
    
@@ -648,7 +661,7 @@ public class PluginTransform implements ExprType {
         }
         return c;
     }
-           
+          
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt) {
         return get(exp, env, p, dt.getLabel());
     }

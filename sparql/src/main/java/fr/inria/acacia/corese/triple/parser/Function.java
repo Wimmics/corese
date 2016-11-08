@@ -30,6 +30,7 @@ public class Function extends Statement {
         return getArg(1);
     }
 
+    @Override
     public StringBuffer toString(StringBuffer sb) {
         sb.append(getLabel());
         sb.append(" ");

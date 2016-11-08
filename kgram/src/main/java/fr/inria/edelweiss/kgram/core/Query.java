@@ -2288,7 +2288,9 @@ public class Query extends Exp implements Graphable {
                 // next kg:pprint() will use this one
                 this.transformer = transformer;
             }
-            tprinter.put(p, transformer);
+            if (! tprinter.containsKey(p)){
+                tprinter.put(p, transformer);
+            }
         }
     }
 

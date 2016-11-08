@@ -1219,7 +1219,7 @@ public class Transformer  {
        // templates share profile functions
        qe.profile();
        // templates share table: transformation -> Transformer
-       qe.complete(this, this.getTransformerMap());
+       complete();
        if (isCheck()) {
             check();
        }
@@ -1403,33 +1403,54 @@ public class Transformer  {
     * Transformer ct is current Transformer (of template q)
     * this new Transformer  inherit information from query and current transformer (if any)
     */
-    public void complete(Query q, Transformer ct) {             
-       ASTQuery ast = (ASTQuery) q.getAST();
-       Context c = getContext(q, ct);
-       if (c != null){
-           // inherit context exported properties:
-           getContext().complete(c);
-           init(getContext());
-       }
-       if (ct != null) {
+    public void complete(Query q, Transformer ct) {
+        ASTQuery ast = (ASTQuery) q.getAST();
+        Context c = getContext(q, ct);
+        if (c != null) {
+            // inherit context exported properties:
+            getContext().complete(c);
+            init(getContext());
+        }
+        if (ct != null) {
             complete(ct);
-       }
-       TemplateVisitor vis = getVisitor(q, ct);
-       if (vis != null){
-           setVisitor(vis);
-       }
+        }
+        TemplateVisitor vis = getVisitor(q, ct);
+        if (vis != null) {
+            setVisitor(vis);
+        }
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         complete(ast.getNSM());
     }
+           
     
-    /**
+    void complete(){
+        if (! getTransformerMap().containsKey(getTransformation())){
+            // Record Transformer for transformation
+            // Do not overload transformer if one already exists
+            // use case: same transformer on different graph
+            getTransformerMap().put(getTransformation(), this);
+        }
+        getQueryEngine().complete(this);
+    }
+    
+       /**
      * this transformer inherits outer transformer table: transformation -> Transformer
     */
     void complete(Transformer t){
         setNSM(t.getNSM()); 
-        getQueryEngine().complete(this, t.getTransformerMap());
+        setTransformerMap(t.getTransformerMap());
+        // this templates share outer transformer table:
+        complete();
     }
+    
+       /**
+     * QueryEngine call complete(q) for all templates
+     */
+     public void complete(Query q) {
+        q.setEnvironment(getTransformerMap());
+        q.setTransformer(getTransformation(), this);
+     }
     
     void init(Context c) {
         if (c.get(Context.STL_DEBUG) != null && c.get(Context.STL_DEBUG).booleanValue()) {
@@ -1486,12 +1507,6 @@ public class Transformer  {
         }
     }
     
-//    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
-////        if (visitor == null){
-////            initVisit(name, obj, arg);
-////        }
-//        defVisitor().visit(name, obj, arg);        
-//   }
     
     public TemplateVisitor defVisitor(){
         if (visitor == null){
@@ -1500,30 +1515,6 @@ public class Transformer  {
         return visitor;
     }
     
-//    public IDatatype vset(IDatatype obj, IDatatype prop, IDatatype arg){
-//        return defVisitor().set(obj, prop, arg);
-//    }
-//    
-//    public IDatatype vget(IDatatype obj, IDatatype prop){
-//        return defVisitor().get(obj, prop);
-//    }
-//    
-//    public Collection<IDatatype> visited(){
-//        return defVisitor().visited();
-////        if (visitor != null){
-////           return visitor.visited();
-////        }
-////        return new ArrayList<IDatatype>();
-//    }
-//    
-//    public boolean visited(IDatatype dt){
-//        return defVisitor().isVisited(dt);
-////        if (visitor != null){
-////            return visitor.isVisited(dt);
-////        }
-////        return false;
-//    }
-// 
     
     public IDatatype visitedGraph(){
  //       return defVisitor().visitedGraph();
@@ -1533,9 +1524,6 @@ public class Transformer  {
         return visitor.visitedGraphNode();
     } 
     
-//    void initVisit(IDatatype name, IDatatype obj, IDatatype arg){
-//        initVisit();
-//    }
     
     void initVisit(){
         setVisitor(new DefaultVisitor());

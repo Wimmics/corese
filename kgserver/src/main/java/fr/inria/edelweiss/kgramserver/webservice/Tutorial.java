@@ -1,9 +1,9 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
+
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -14,6 +14,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 /**
  * HTML SPARQL endpoint apply transformation (like Transformer)
@@ -26,12 +32,11 @@ import javax.ws.rs.core.Response;
 @Path("tutorial/{serv}")
 public class Tutorial {
 
-    static final String SERVICE           = "/tutorial/"; 
-    
-    static Manager man;
+    private final Logger logger = LogManager.getLogger(Tutorial.class);
 
+    static final String SERVICE = "/tutorial/"; 
+    
     static {
-        //man = new Manager();
         Manager.getManager().init();
     }
 
@@ -64,6 +69,10 @@ public class Tutorial {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri")   List<String> namedGraphUris) {
 
+    	if (logger.isDebugEnabled())
+    		logger.debug("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
         return get(serv, profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
@@ -83,11 +92,15 @@ public class Tutorial {
             @FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
             @FormDataParam("named-graph-uri")   List<FormDataBodyPart> namedGraphUris) {
 
+    	if (logger.isDebugEnabled())
+    		logger.debug("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
         return get(serv, profile, resource, mode, param, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
 
     @GET
-    @Produces("text/html")
+    //@Produces(MediaType.TEXT_HTML)
     public Response get(
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
@@ -100,7 +113,13 @@ public class Tutorial {
             @QueryParam("transform") String transform, // Transformation URI to post process result
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")  List<String> namedGraphUris) {
-        // Dataset URI of the service
+    	
+    	if (logger.isDebugEnabled())
+    		logger.debug("GET. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
+
+    	// Dataset URI of the service
         String uri = getManager().getURI(serv);        
         Param par = new Param(SERVICE + serv, getProfile(uri, profile, transform), transform, resource, name, query);
         par.setValue(value);
@@ -125,7 +144,6 @@ public class Tutorial {
            return uri;
        }
        return profile;
-   }
-    
-   
+	}
+
 }

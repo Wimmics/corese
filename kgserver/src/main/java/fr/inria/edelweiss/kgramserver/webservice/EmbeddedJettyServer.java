@@ -26,7 +26,6 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
@@ -80,18 +79,16 @@ public class EmbeddedJettyServer {
 
 	public static void main(String args[]) throws Exception {
 
-		// PropertyConfigurator.configure(EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties"));
-//		String overrideLlog4j = System.getProperty("log4j.configuration");
-//		URL log4jfile = null;
-//		if (overrideLlog4j != null && overrideLlog4j != "")
-//			log4jfile = new URL(overrideLlog4j);
-//		else {
-//			System.out.println("To override log4j configuration add JVM option: -Dlog4j.configuration=file:/home/.../your_log4j.properties");
-//			log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
-//		}
-//
-//		System.out.println("Loading log4j configuration: " + log4jfile);
-//		PropertyConfigurator.configure(log4jfile);
+		// Checking if Log4j is overriden by system property
+		String overrideLog4j = System.getProperty("log4j.configurationFile");
+		URL log4jfile = null;
+		if (overrideLog4j != null && overrideLog4j != "")
+			log4jfile = new URL(overrideLog4j);
+		else
+			log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
+		System.out.println("Loading log4j configuration: " + log4jfile);
+		System.out.println("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
+
 		logger = LogManager.getLogger(EmbeddedJettyServer.class);
 
 		HOME_PAGE = SPARQLRestAPI.isAjax ? "demo_new.html" : "demo.html";

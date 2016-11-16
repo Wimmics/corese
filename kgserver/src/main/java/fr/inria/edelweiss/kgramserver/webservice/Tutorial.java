@@ -32,7 +32,7 @@ import com.sun.jersey.multipart.FormDataParam;
 @Path("tutorial/{serv}")
 public class Tutorial {
 
-    private final Logger logger = LogManager.getLogger(Tutorial.class);
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     static final String SERVICE = "/tutorial/"; 
     

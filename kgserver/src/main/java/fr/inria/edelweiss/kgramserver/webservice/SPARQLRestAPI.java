@@ -312,7 +312,7 @@ public class SPARQLRestAPI {
 	}
 
 	@GET
-	@Produces("text/turtle")
+	@Produces({"text/turtle", "application/turtle", "text/nt"})
 	public Response getRDFGraphNTripleForGet(@QueryParam("query") String query, @QueryParam("default-graph-uri") List<String> defaultGraphUris,
 			@QueryParam("named-graph-uri") List<String> namedGraphUris) {
 		try {
@@ -444,7 +444,7 @@ public class SPARQLRestAPI {
 	}
 
 	@POST
-	@Produces("text/nt")
+	@Produces({"text/turtle", "application/turtle", "text/nt"})
 	public Response getRDFGraphNTripleForPost(@DefaultValue("") @FormParam("query") String query, @FormParam("default-graph-uri") List<String> defaultGraphUris,
 			@FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
 		try {

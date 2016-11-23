@@ -3,6 +3,8 @@
  */
 package fr.inria.corese.tinkerpop;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
@@ -21,6 +23,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -68,11 +72,12 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 				}
 				nextSearched = false;
 				Entity nextEntity = unmapper.buildEntity(nextEdge.get());
+				if (nextEdge.get().property(EDGE_P).value().toString().contains("PopulatedPlace/areaTotal")) {
+					LOGGER.info("nextEntity = " + nextEntity.toString());
+				}
 
 				previousEntity.add(nextEntity);
-				if (nextEdge.get().property(EDGE_P).value().toString().contains("dateOfWork")) {
-					LOGGER.info("dateOfWork found "+edgeEquals(nextEdge, previousEdge)  );
-				}
+
 				previousEdge = Optional.of(nextEdge.get());
 				return nextEntity;
 			}
@@ -80,8 +85,13 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			private boolean findNext() {
 				do {
 					nextEdge = Optional.of(edges.next());
+					// @TODO to be removed begin
+					if (nextEdge.get().property(EDGE_P).value().toString().contains("PopulatedPlace/areaTotal")) {
+						LOGGER.info("itemsPerPage found " + edgeEquals(nextEdge, previousEdge));
+					}
+					// @TODO to be removed end
 				} while (edgeEquals(nextEdge, previousEdge) && edges.hasNext());
-				if (!nextEdge.equals(previousEdge)) {
+				if (!edgeEquals(nextEdge, previousEdge)) {
 					nextSearched = true;
 					return true;
 				} else {
@@ -92,12 +102,38 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			private boolean edgeEquals(Optional<Edge> current, Optional<Edge> other) {
 				boolean result;
 				if (current.isPresent() && other.isPresent()) {
+					Edge currentEdge = current.get();
+					Edge otherEdge = other.get();
 					result = current.get().property(EDGE_P).value().equals(other.get().property(EDGE_P).value())
-						&& current.get().property(EDGE_S).value().equals(other.get().property(EDGE_S).value())
-						&& current.get().property(EDGE_O).value().equals(other.get().property(EDGE_O).value());
+						&& nodeEquals(currentEdge.inVertex(), otherEdge.inVertex())
+						&& nodeEquals(currentEdge.outVertex(), otherEdge.outVertex());
 				} else {
 					result = !(current.isPresent() ^ other.isPresent());
 				}
+				return result;
+			}
+
+			private boolean nodeEquals(Vertex v1, Vertex v2) {
+				if (v1.property(KIND).value().equals(v2.property(KIND).value())) {
+					switch (v1.property(KIND).value().toString()) {
+						case BNODE:
+						case IRI:
+							return (v1.property(VERTEX_VALUE).value().equals(v2.property(VERTEX_VALUE).value()));
+						case LITERAL:
+							IDatatype literal1 = makeLiteral(v1);
+							IDatatype literal2 = makeLiteral(v2);
+							return literal1.compareTo(literal2) == 0;
+					}
+
+				}
+				return false;
+			}
+
+			private IDatatype makeLiteral(Vertex v) {
+				String value = v.property(VERTEX_VALUE).value().toString();
+				String kind = v.property(TYPE).value().toString();
+				VertexProperty<Vertex> lang = v.property(LANG);
+				IDatatype result = lang.isPresent() ? DatatypeMap.createLiteral(value, kind, v.property(LANG).value().toString()) : DatatypeMap.createLiteral(value, kind);
 				return result;
 			}
 		}

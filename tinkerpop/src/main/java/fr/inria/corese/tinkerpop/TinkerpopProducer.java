@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.function.Function;
 import org.apache.log4j.Logger;
 import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
-import static org.apache.tinkerpop.gremlin.process.traversal.Order.incr;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
@@ -30,7 +29,6 @@ public class TinkerpopProducer extends ProducerImpl {
 
 	private final Logger LOGGER = Logger.getLogger(TinkerpopProducer.class.getName());
 	private TinkerpopGraph tpGraph;
-	private TinkerpopToCorese unmapper;
 
 	public TinkerpopProducer(Graph graph) {
 		super(graph);

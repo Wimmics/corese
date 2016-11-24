@@ -43,7 +43,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		private final Iterator<Edge> edges;
 
 		private class GremlinIterator<T> implements Iterator<Entity> {
-
+			
 			private final Iterator<Edge> edges;
 			private Optional<Edge> previousEdge = Optional.empty();
 			private ArrayList<Entity> previousEntity = new ArrayList<>(); // @TODO Must be removed after debugging.

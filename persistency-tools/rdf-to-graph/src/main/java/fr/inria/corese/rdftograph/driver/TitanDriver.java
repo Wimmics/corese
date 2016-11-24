@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
@@ -377,16 +376,32 @@ public class TitanDriver extends GdbDriver {
 			p.add(key);
 			p.add(properties.get(key));
 		});
+		p.add(EDGE_S);
+		p.add(serializeNode(vSource));
 		p.add(EDGE_P);
 		p.add(predicate);
-		p.add(EDGE_S);
-		p.add(vSource.property(VERTEX_VALUE).value());
 		p.add(EDGE_O);
-		p.add(vObject.property(VERTEX_VALUE).value());
+		p.add(serializeNode(vObject));
 
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
 		return result;
+	}
+
+	private String serializeNode(Vertex node) {
+		StringBuilder result = new StringBuilder();
+		result.append(node.property(KIND).value());
+		result.append("|");
+		result.append(node.property(VERTEX_VALUE).value());
+		if (node.property(KIND).value().equals(LITERAL)) {
+			result.append("|");
+			result.append(node.property(TYPE).value());
+			if (node.property(LANG).isPresent()) {
+				result.append("|");
+				result.append(node.property(LANG).value());
+			}
+		}
+		return result.toString();
 	}
 
 	@Override

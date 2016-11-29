@@ -811,6 +811,7 @@ public class QueryProcess extends QuerySolver {
 	public void close() {
 		if (p != null) {
 			p.close();
+			p = null;
 		}
 	}
 }

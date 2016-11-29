@@ -19,10 +19,8 @@ public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
 
-//	public final static int WARMUP_THRESHOLD = 10;
-	public final static int WARMUP_THRESHOLD = 1;
-	public final static int SAMPLES = 1;
-//	public final static int SAMPLES = 20;
+	public final static int WARMUP_THRESHOLD = 5;
+	public final static int SAMPLES = 20;
 	public CoreseAdapter adapter;
 	public String adapterName;
 

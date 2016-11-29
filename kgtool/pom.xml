@@ -1,15 +1,22 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	
-	<parent>
-		<groupId>fr.inria.wimmics</groupId>
-		<artifactId>corese-parent</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>fr.inria.wimmics</groupId>
+        <artifactId>corese-parent</artifactId>
         <version>3.2.1p-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+        <relativePath>..</relativePath>
+    </parent>
 
     <artifactId>corese-core</artifactId>
+
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/src/main/resources/repo/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
@@ -49,7 +56,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-	
+        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -108,7 +115,6 @@
 			<artifactId>sparql</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-	
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
@@ -158,11 +164,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
-		<artifactId>sesame-rio-nquads</artifactId>
-		<version>2.8.0-beta2</version>
-	</dependency>
-	<dependency>
-		<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-model</artifactId>
 		</dependency>
         
@@ -184,29 +185,28 @@
 			<artifactId>testng</artifactId>
 			<scope>test</scope>
 			<version>6.8.21</version>
-            <type>jar</type>
 		</dependency>
         
-		<!--estimate the size of objects in memeory in bytes-->
-		<!--
-		<dependency>
-		    <groupId>com.javamex.classmexer</groupId>
-		    <artifactId>classmexer</artifactId>
-		    <version>0.3</version>  
-		</dependency> 
-		--> 
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-arq</artifactId>
-			<version>2.10.0</version>
-			<scope>test</scope>
-		</dependency>
+        <!--estimate the size of objects in memeory in bytes-->
+        <!--
+        <dependency>
+            <groupId>com.javamex.classmexer</groupId>
+            <artifactId>classmexer</artifactId>
+            <version>0.3</version>  
+        </dependency> 
+        --> 
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>2.10.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tinkerpop</artifactId>
             <version>${project.version}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<resources>
@@ -224,15 +224,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
-<!--            <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				</configuration>
-            </plugin>-->
+			</plugin>
 			<!--            <plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-assembly-plugin</artifactId>
@@ -254,7 +254,7 @@
 				</execution>
 			    </executions>
 			</plugin>-->
-            
+      	 	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>

@@ -5,7 +5,6 @@
  */
 package fr.inria.corese.tinkerpop.mapper;
 
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.EdgeQuad;
@@ -13,6 +12,7 @@ import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
  *

@@ -5,13 +5,14 @@ package fr.inria.corese.rdftograph.driver;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.attribute.AttributeSerializer;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
-import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.diskstorage.ScanBuffer;
 import com.thinkaurelius.titan.diskstorage.WriteBuffer;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
@@ -229,7 +230,7 @@ public class TitanDriver extends GdbDriver {
 
 		g = TitanFactory.open(configuration);
 		makeIfNotExistProperty(EDGE_P);
-		makeIfNotExistProperty(VERTEX_VALUE);
+//		makeIfNotExistProperty(VERTEX_VALUE, VertexValue.class);
 		makeIfNotExistProperty(EDGE_G);
 		makeIfNotExistProperty(EDGE_S);
 		makeIfNotExistProperty(EDGE_O);
@@ -256,8 +257,8 @@ public class TitanDriver extends GdbDriver {
 			g.tx().commit();
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
-			if (!manager.containsGraphIndex("vertices") && !manager.containsGraphIndex("allIndex")) {
-				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
+//				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey kindValue = manager.getPropertyKey(KIND);
 
 				PropertyKey graphKey = manager.getPropertyKey(EDGE_G);
@@ -265,10 +266,10 @@ public class TitanDriver extends GdbDriver {
 				PropertyKey predicateKey = manager.getPropertyKey(EDGE_P);
 				PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
 
-				manager.
-					buildIndex("vertices", Vertex.class).
-					addKey(vertexValue, Mapping.STRING.asParameter()).
-					buildMixedIndex("search");
+//				manager.
+//					buildIndex("vertices", Vertex.class).
+//					addKey(vertexValue).
+//					buildMixedIndex("search");
 				manager.
 					buildIndex("allIndex", Edge.class).
 					addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -279,7 +280,10 @@ public class TitanDriver extends GdbDriver {
 				manager.commit();
 
 				String[] indexNames = {
-					"vertices",
+					//					"byVertexValue", 
+					//					"byEdgeValue", 
+					//					"byContextValue", 
+//					"vertices",
 					"allIndex"
 				};
 				for (String indexName : indexNames) {
@@ -299,11 +303,11 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public void closeDb() {
-		ManagementSystem manager = (ManagementSystem) g.openManagement();
-		TitanGraphIndex index = manager.getGraphIndex("allIndex");
-		for (edge: index.) // comment iterer sur les valeurs de l'index ?	
+
 		g.close();
 	}
+
+	Map<VertexValue, Object> alreadySeen = new HashMap<>();
 
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
@@ -332,31 +336,36 @@ public class TitanDriver extends GdbDriver {
 	@Override
 	public Object createNode(Value v) {
 		VertexValue newVV = new VertexValue(v);
-		Object result = null;
-		Vertex newVertex = null;
-		switch (RdfToGraph.getKind(v)) {
-			case IRI:
-			case BNODE: {
-				newVertex = g.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, v.stringValue());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
-				result = newVertex.id();
-				break;
-			}
-			case LITERAL: {
-				Literal l = (Literal) v;
-				newVertex = g.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, l.getLabel());
-				newVertex.property(TYPE, l.getDatatype().toString());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
-				if (l.getLanguage().isPresent()) {
-					newVertex.property(LANG, l.getLanguage().get());
+		if (alreadySeen.containsKey(newVV)) {
+			return alreadySeen.get(newVV);
+		} else {
+			Object result = null;
+			Vertex newVertex = null;
+			switch (RdfToGraph.getKind(v)) {
+				case IRI:
+				case BNODE: {
+					newVertex = g.addVertex(RDF_VERTEX_LABEL);
+					newVertex.property(VERTEX_VALUE, v.stringValue());
+					newVertex.property(KIND, RdfToGraph.getKind(v));
+					result = newVertex.id();
+					break;
 				}
-				result = newVertex.id();
-				break;
+				case LITERAL: {
+					Literal l = (Literal) v;
+					newVertex = g.addVertex(RDF_VERTEX_LABEL);
+					newVertex.property(VERTEX_VALUE, l.getLabel());
+					newVertex.property(TYPE, l.getDatatype().toString());
+					newVertex.property(KIND, RdfToGraph.getKind(v));
+					if (l.getLanguage().isPresent()) {
+						newVertex.property(LANG, l.getLanguage().get());
+					}
+					result = newVertex.id();
+					break;
+				}
 			}
+			alreadySeen.put(newVV, result);
+			return result;
 		}
-		return result;
 	}
 
 	@Override

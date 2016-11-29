@@ -28,8 +28,13 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>kgtool</artifactId>
-            <version>${global.version}</version>
+            <artifactId>rdf-to-bd-map</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>corese-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -51,12 +56,6 @@
             <groupId>com.thinkaurelius.titan</groupId>
             <artifactId>titan-all</artifactId>
             <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>rdf-to-graph</artifactId>
-            <version>3.2.1p-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

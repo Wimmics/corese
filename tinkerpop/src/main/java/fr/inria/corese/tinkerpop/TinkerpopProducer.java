@@ -19,7 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
  *

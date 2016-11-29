@@ -14,7 +14,7 @@ import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.example.GraphOfTheGodsFactory;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
-import static fr.inria.corese.rdftograph.RdfToGraph.VERTEX_VALUE;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.VERTEX_VALUE;
 import java.util.concurrent.ExecutionException;
 import static org.apache.tinkerpop.gremlin.process.traversal.P.inside;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

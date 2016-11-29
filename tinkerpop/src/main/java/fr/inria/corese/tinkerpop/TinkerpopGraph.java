@@ -5,7 +5,6 @@ package fr.inria.corese.tinkerpop;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -25,6 +24,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -46,7 +46,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			
 			private final Iterator<Edge> edges;
 			private Optional<Edge> previousEdge = Optional.empty();
-			private ArrayList<Entity> previousEntity = new ArrayList<>(); // @TODO Must be removed after debugging.
 			private Optional<Edge> nextEdge = Optional.empty();
 			private boolean nextSearched = false; // flag to know whether a hasNext() has launched and find a nextEdge element before nextEdge() was called.
 
@@ -73,8 +72,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 				nextSearched = false;
 				Entity nextEntity = unmapper.buildEntity(nextEdge.get());
 
-				previousEntity.add(nextEntity);
-
 				previousEdge = Optional.of(nextEdge.get());
 				return nextEntity;
 			}
@@ -82,12 +79,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			private boolean findNext() {
 				do {
 					nextEdge = Optional.of(edges.next());
-					// @TODO to be removed begin
-					String searched = "8.12";
-					if (nextEdge.get().property(EDGE_O).value().toString().contains(searched)) {
-						LOGGER.info("{} found. equality with previous edge = {} ", searched, Boolean.toString(edgeEquals(nextEdge, previousEdge)));
-					}
-					// @TODO to be removed end
 				} while (edgeEquals(nextEdge, previousEdge) && edges.hasNext());
 				if (!edgeEquals(nextEdge, previousEdge)) {
 					nextSearched = true;

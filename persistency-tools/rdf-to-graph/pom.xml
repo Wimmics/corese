@@ -51,6 +51,16 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rdf-to-bd-map</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sparql</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-nativerdf</artifactId>
 			<version>4.1.1</version>
@@ -63,22 +73,12 @@
 			<type>pom</type>
 		</dependency>
 	 <dependency>
-	  <groupId>org.apache.tinkerpop</groupId>
-	  <artifactId>neo4j-gremlin</artifactId>
-	  <version>3.0.2-incubating</version>
-	  <type>jar</type>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-nquads</artifactId>
+			<version>4.1.1</version>
 	 </dependency>
-	 <dependency>
-	  <groupId>org.neo4j</groupId>
-	  <artifactId>neo4j-tinkerpop-api-impl</artifactId>
-	  <version>0.3-2.3.3</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.michaelpollmeier</groupId>
-	  <artifactId>orientdb-gremlin</artifactId>
-	  <version>3.0.2.incubating.0</version>
-	  <type>jar</type>
-	 </dependency>
+
+
 	 <dependency>
 	  <groupId>junit</groupId>
 	  <artifactId>junit</artifactId>
@@ -97,22 +97,13 @@
 	  <artifactId>gremlin-core</artifactId>
 	  <version>3.0.2-incubating</version>
 	 </dependency>
-	 <dependency>
-	  <groupId>org.openrdf.sesame</groupId>
-	  <artifactId>sesame-rio-nquads</artifactId>
-	  <version>4.1.1</version>
-	 </dependency>
+
 	 <dependency>
 	  <groupId>org.apache.commons</groupId>
 	  <artifactId>commons-configuration2</artifactId>
 	  <version>2.1</version>
 	 </dependency>
-	 <dependency>
-	  <groupId>fr.inria.wimmics</groupId>
-	  <artifactId>sparql</artifactId>
-	  <version>3.2.1p-SNAPSHOT</version>
-	  <type>jar</type>
-	 </dependency>
+		
 	</dependencies>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

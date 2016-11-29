@@ -1,26 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * and openDb the template in the editor.
  */
 package fr.inria.corese.rdftograph.driver;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import fr.inria.corese.rdftograph.RdfToGraph;
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
+import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.RelationshipType;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 
@@ -28,44 +25,73 @@ import org.openrdf.model.Value;
  *
  * @author edemairy
  */
-public class OrientDbDriver extends GdbDriver {
+public class Neo4jDriver extends GdbDriver {
 
-	OrientGraphFactory graph;
-	private OrientGraph g;
+	Neo4jGraph graph;
+	private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
 
 	@Override
 	public void openDb(String dbPath) {
 		try {
+			File dbDir = new File(dbPath);
 			if (getWipeOnOpen()) {
-				String path = dbPath.replaceFirst("plocal:", "");
-				if (Files.exists(Paths.get(path))) {
-					delete(path);
-				}
+				delete(dbPath);
 			}
-		} catch (IOException ex) {
-			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
+			graph = Neo4jGraph.open(dbPath);
+			graph.cypher("CREATE INDEX ON :rdf_edge(e_value)");
+			graph.cypher("CREATE INDEX ON :rdf_vertex(v_value)");
+			graph.tx().commit();
+		} catch (Exception e) {
+			LOGGER.severe(e.toString());
+			e.printStackTrace();
 		}
-		graph = new OrientGraphFactory(dbPath);
-		BaseConfiguration nodeConfig = new BaseConfiguration();
-		nodeConfig.setProperty("type", "NOTUNIQUE");
-		nodeConfig.setProperty("keytype", OType.STRING);
-		graph.getTx().createVertexIndex(VERTEX_VALUE, RDF_VERTEX_LABEL, nodeConfig);
-		graph.getTx().createEdgeIndex(EDGE_P, RDF_EDGE_LABEL, nodeConfig);
-		g = graph.getTx();
 	}
-
 
 	@Override
 	public void closeDb() {
 		try {
-			graph.getTx().close();
+			graph.tx().commit();
+			graph.close();
 		} catch (Exception ex) {
-			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Neo4jDriver.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
+	protected boolean nodeEquals(Node endNode, Value object) {
+		boolean result = true;
+		result &= endNode.getProperty(KIND).equals(RdfToGraph.getKind(object));
+		if (result) {
+			switch (RdfToGraph.getKind(object)) {
+				case BNODE:
+				case IRI:
+					result &= endNode.getProperty(EDGE_P).equals(object.stringValue());
+					break;
+				case LITERAL:
+					Literal l = (Literal) object;
+					result &= endNode.getProperty(EDGE_P).equals(l.getLabel());
+					result &= endNode.getProperty(TYPE).equals(l.getDatatype().stringValue());
+					if (l.getLanguage().isPresent()) {
+						result &= endNode.hasProperty(LANG) && endNode.getProperty(LANG).equals(l.getLanguage().get());
+					} else {
+						result &= !endNode.hasProperty(LANG);
+					}
+			}
+		}
+		return result;
+	}
+
+	private static enum RelTypes implements RelationshipType {
+		CONTEXT
+	}
 	Map<String, Object> alreadySeen = new HashMap<>();
 
+	/**
+	 * Returns a unique id to store as the key for alreadySeen, to prevent
+	 * creation of duplicates.
+	 *
+	 * @param v
+	 * @return
+	 */
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
 		String kind = RdfToGraph.getKind(v);
@@ -90,9 +116,16 @@ public class OrientDbDriver extends GdbDriver {
 		return result.toString();
 	}
 
+	/**
+	 * Returns a new node if v does not exist yet.
+	 *
+	 * @param v
+	 * @param context
+	 * @return
+	 */
 	@Override
 	public Object createNode(Value v) {
-//		OrientGraph g = graph.getTx();
+//		Graph g = graph.getTx();
 		Object result = null;
 		String nodeId = nodeId(v);
 		if (alreadySeen.containsKey(nodeId)) {
@@ -101,7 +134,7 @@ public class OrientDbDriver extends GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
 				newVertex.property(VERTEX_VALUE, v.stringValue());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
 				result = newVertex.id();
@@ -109,7 +142,7 @@ public class OrientDbDriver extends GdbDriver {
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
 				newVertex.property(VERTEX_VALUE, l.getLabel());
 				newVertex.property(TYPE, l.getDatatype().toString());
 				newVertex.property(KIND, RdfToGraph.getKind(v));
@@ -120,17 +153,17 @@ public class OrientDbDriver extends GdbDriver {
 				break;
 			}
 		}
-//		g.commit();
 		alreadySeen.put(nodeId, result);
 		return result;
 	}
 
 	@Override
-	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
+	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties
+	) {
 		Object result = null;
 //		OrientGraph g = graph.getTx();
-		Vertex vSource = g.vertices(source).next();
-		Vertex vObject = g.vertices(object).next();
+		Vertex vSource = graph.vertices(source).next();
+		Vertex vObject = graph.vertices(object).next();
 		ArrayList<Object> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
 			p.add(key);
@@ -140,12 +173,13 @@ public class OrientDbDriver extends GdbDriver {
 		p.add(predicate);
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
-//		g.commit();
 		return result;
+		//properties.put(EDGE_P, predicate);
+		//return g.createRelationship((Long) source, (Long) object, rdfEdge, properties);
 	}
 
 	@Override
 	public void commit() {
-		graph.getTx().commit();
+		graph.tx().commit();
 	}
 }

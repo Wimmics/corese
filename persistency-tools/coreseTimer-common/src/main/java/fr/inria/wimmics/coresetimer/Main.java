@@ -70,7 +70,7 @@ public class Main {
 		private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
 		private boolean resultsEqual; // Wether the request has returned the same results in memory and db version.
 		private DbDriver driver = RdfToGraph.DbDriver.TITANDB;
-		private DB_INITIALIZATION dbState = DB_INITIALIZATION.DB_UNITIALIZED;
+		private DB_INITIALIZATION dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
 
 		String getResult(Profile mode) {
 			return String.format(RDF_OUTPUT_FILE_FORMAT, TestDescription.getOutputRoot(), testId, mode);
@@ -78,7 +78,7 @@ public class Main {
 
 		public enum DB_INITIALIZATION {
 			DB_INITIALIZED, // The db is provided already filled.
-			DB_UNITIALIZED  // The db has to be filled with the data of the inputMem file.
+			DB_UNINITIALIZED  // The db has to be filled with the data of the inputMem file.
 		}
 
 		public TestDescription(String id) {
@@ -86,7 +86,7 @@ public class Main {
 		}
 
 		public TestDescription init() throws IOException {
-			if (dbState == DB_INITIALIZATION.DB_UNITIALIZED) {
+			if (dbState == DB_INITIALIZATION.DB_UNINITIALIZED) {
 				RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			}
 			return this;
@@ -162,8 +162,8 @@ public class Main {
 	};
 
 	public final static TestDescription[] TESTS = {
-//		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-//		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
 		new TestDescription("test1").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")
 	};
 
@@ -183,7 +183,6 @@ public class Main {
 			test.setResultsEqual(result);
 			writeResult(test, timerDb, timerMemory);
 		}
-
 	}
 
 	public static boolean compareResults(TestDescription test) {

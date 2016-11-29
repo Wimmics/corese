@@ -1,9 +1,11 @@
+package fr.inria.corese.rdftograph.driver;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.corese.rdftograph.driver;
+
 
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
@@ -17,7 +19,7 @@ import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.rdftograph.RdfToGraph;
-import static fr.inria.corese.rdftograph.RdfToGraph.*;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.text.MessageFormat.format;
@@ -256,7 +258,7 @@ public class TitanDriver extends GdbDriver {
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
 			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
-				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+//				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey kindValue = manager.getPropertyKey(KIND);
 
 				PropertyKey graphKey = manager.getPropertyKey(EDGE_G);
@@ -264,10 +266,10 @@ public class TitanDriver extends GdbDriver {
 				PropertyKey predicateKey = manager.getPropertyKey(EDGE_P);
 				PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
 
-				manager.
-					buildIndex("vertices", Vertex.class).
-					addKey(vertexValue).
-					buildMixedIndex("search");
+//				manager.
+//					buildIndex("vertices", Vertex.class).
+//					addKey(vertexValue).
+//					buildMixedIndex("search");
 				manager.
 					buildIndex("allIndex", Edge.class).
 					addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -281,7 +283,7 @@ public class TitanDriver extends GdbDriver {
 					//					"byVertexValue", 
 					//					"byEdgeValue", 
 					//					"byContextValue", 
-					"vertices",
+//					"vertices",
 					"allIndex"
 				};
 				for (String indexName : indexNames) {

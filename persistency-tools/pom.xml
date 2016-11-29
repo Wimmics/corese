@@ -13,6 +13,10 @@
 		<module>persistency</module>
 		<module>rdf-to-graph</module>
 	 <module>coreseTimer-common</module>
+	 <module>rdf-to-bd-map</module>
+	 <module>rdt-to-graph-titandb</module>
+	 <module>rdf-to-graph-neo4j</module>
+	 <module>rdf-to-graph-orientdb</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

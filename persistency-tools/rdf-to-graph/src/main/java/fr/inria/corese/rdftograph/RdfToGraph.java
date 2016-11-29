@@ -4,6 +4,7 @@
 package fr.inria.corese.rdftograph;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,19 +47,6 @@ public class RdfToGraph {
 	public enum DbDriver {
 		NEO4J, ORIENTDB, TITANDB
 	}
-	public static final String LITERAL = "literal";
-	public static final String IRI = "IRI";
-	public static final String BNODE = "bnode";
-	public static final String KIND = "kind";
-	public static final String LANG = "lang";
-	public static final String TYPE = "type";
-	public static final String EDGE_G = "g_value";
-	public static final String EDGE_P = "p_value";
-	public static final String EDGE_S = "s_value";
-	public static final String EDGE_O = "o_value";
-	public static final String VERTEX_VALUE = "v_value";
-	public static final String RDF_EDGE_LABEL = "rdf_edge";
-	public static final String RDF_VERTEX_LABEL = "rdf_vertex";
 
 	private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
 	protected Model model;

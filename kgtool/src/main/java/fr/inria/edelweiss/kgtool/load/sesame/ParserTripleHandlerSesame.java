@@ -64,7 +64,7 @@ public class ParserTripleHandlerSesame extends RDFHandlerBase {
         //** 3. process literal and add to graph
         if (object instanceof Literal) {
             Literal lit = (Literal) object;
-            String lang = lit.getLanguage();
+            String lang = lit.getLanguage().isPresent() ? lit.getLanguage().get() : null;
             String datatype = getValue(lit.getDatatype());
             helper.addTriple(subject, predicate, lit.getLabel(), lang, datatype, ILoadSerialization.LITERAL, graphSource);
         } else {//non-literal

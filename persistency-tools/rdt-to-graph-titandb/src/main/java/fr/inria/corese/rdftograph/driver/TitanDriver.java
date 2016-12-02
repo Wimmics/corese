@@ -230,7 +230,7 @@ public class TitanDriver extends GdbDriver {
 
 		g = TitanFactory.open(configuration);
 		makeIfNotExistProperty(EDGE_P);
-//		makeIfNotExistProperty(VERTEX_VALUE, VertexValue.class);
+		makeIfNotExistProperty(VERTEX_VALUE);
 		makeIfNotExistProperty(EDGE_G);
 		makeIfNotExistProperty(EDGE_S);
 		makeIfNotExistProperty(EDGE_O);
@@ -258,7 +258,7 @@ public class TitanDriver extends GdbDriver {
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
 			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
-//				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
+				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey kindValue = manager.getPropertyKey(KIND);
 
 				PropertyKey graphKey = manager.getPropertyKey(EDGE_G);
@@ -266,10 +266,10 @@ public class TitanDriver extends GdbDriver {
 				PropertyKey predicateKey = manager.getPropertyKey(EDGE_P);
 				PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
 
-//				manager.
-//					buildIndex("vertices", Vertex.class).
-//					addKey(vertexValue).
-//					buildMixedIndex("search");
+				manager.
+					buildIndex("vertices", Vertex.class).
+					addKey(vertexValue, Mapping.STRING.asParameter()).
+					buildMixedIndex("search");
 				manager.
 					buildIndex("allIndex", Edge.class).
 					addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -280,10 +280,7 @@ public class TitanDriver extends GdbDriver {
 				manager.commit();
 
 				String[] indexNames = {
-					//					"byVertexValue", 
-					//					"byEdgeValue", 
-					//					"byContextValue", 
-//					"vertices",
+					"vertices",
 					"allIndex"
 				};
 				for (String indexName : indexNames) {

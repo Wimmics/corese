@@ -42,6 +42,8 @@ public class Main {
 
 	public static class TestDescription {
 
+		public final static int DEFAULT_WARMUP_CYCLES = 5;
+		public final static int DEFAULT_MEASURED_SAMPLES = 20;
 		private static String INPUT_ROOT;
 		private static String OUTPUT_ROOT;
 
@@ -71,6 +73,8 @@ public class Main {
 		private boolean resultsEqual; // Wether the request has returned the same results in memory and db version.
 		private DbDriver driver = RdfToGraph.DbDriver.TITANDB;
 		private DB_INITIALIZATION dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
+		private int warmupCycles;
+		private int measuredCycles;
 
 		String getResult(Profile mode) {
 			return String.format(RDF_OUTPUT_FILE_FORMAT, TestDescription.getOutputRoot(), testId, mode);
@@ -83,6 +87,8 @@ public class Main {
 
 		public TestDescription(String id) {
 			testId = id;
+			measuredCycles = DEFAULT_MEASURED_SAMPLES;
+			warmupCycles = DEFAULT_WARMUP_CYCLES;
 		}
 
 		public TestDescription init() throws IOException {
@@ -144,27 +150,80 @@ public class Main {
 			String result = String.format(OUTPUT_FILE_FORMAT, TestDescription.getOutputRoot(), testId);
 			return result;
 		}
+
+		public TestDescription setWarmupCycles(int n) {
+			this.warmupCycles = n;
+			return this;
+		}
+
+		public int getWarmupCycles() {
+			return this.warmupCycles;
+		}
+
+		public TestDescription setMeasuredCycles(int n) {
+			this.measuredCycles = n;
+			return this;
+		}
+
+		public int getMeasuredCycles() {
+			return this.measuredCycles;
+		}
 	}
 
-	public final static String[] queries = {
-		// @TODO afficher pour chaque requête le nombre de résultats.
-		// @TODO jointure
+	public final static String[] queries = { // @TODO afficher pour chaque requête le nombre de résultats.
+	// @TODO jointure
+	// @ select distinct ?p  where {?e ?p ?y}  [order by ?p]
+	// @TODO tester les littéraux
+	//		"select (count(*) as ?count) where { graph ?g {?x ?p ?y}}",
+	//		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
+	//		"select * where { ?x  a ?y }", // biaisé car beaucoup de données sont typées
+	//		"select (count(*) as ?c) where {?x a ?y}", // permet de supprimer le coût de construction du résultat.
+	//				"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
+	//				"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges. @TODO Traiter la jointure.
+	//		"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"
 
-		// @ select distinct ?p  where {?e ?p ?y}  [order by ?p]
-		// @TODO tester les littéraux
-		//		"select (count(*) as ?count) where { graph ?g {?x ?p ?y}}",
-		//		"select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}",// limit 10000",
-		//		"select * where { ?x  a ?y }", // biaisé car beaucoup de données sont typées
-		//		"select (count(*) as ?c) where {?x a ?y}", // permet de supprimer le coût de construction du résultat.
-		//		"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
-		//		"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges. @TODO Traiter la jointure.
-		"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"
+
+	// Campagne de tests
+	// 
+        // 
+	// Famille de tests 1	
+	// BGP: on connait une valeur, la bd sait rechercher cette valeur instantanément ? Efficacité 
+        /*		s ?p ?o 
+	               ?s ?p o 2 cas principaux :URI (1cas), Literal (String, int, double, 
+		humans : avec des requêtes 	
+		  X ?p ?y . ?z ?q ?y
+		  X ?p ?y . ?y ?q ?z
+		 URI ?p ?y . 
+		 ?x ?p URI. ?p ?z ?t
+		 ?x p ?x
+
+		 tester d'abord les propriétés fixées 
+		 tester ensuite les propriétés libres
+
+	Famille de tests 2
+		?x ?p ?y . filter(contains(?y, " ")) . ?y ?q ?z  (même chose que précédemment, mais avec des filtres)
+	Famille de tests 3 
+		Cycles de longueur 2, 3, etc.	
+
+	Famille de tests 4
+		tester les 16 cas.
+
+	1. Sémantique
+	2. Benchmark
+		*/
+
+		
+
 	};
 
 	public final static TestDescription[] TESTS = {
-		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-		new TestDescription("test1").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")
+//		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+//		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+//		new TestDescription("test1_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+//		new TestDescription("test1_search_s").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
+		new TestDescription("test1_search_jointure").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {?x ?p ?y . ?y ?q ?x}"),
+//		new TestDescription("1m_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
+//		new TestDescription("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
 	};
 
 	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
@@ -255,7 +314,7 @@ public class Main {
 			Text statsDbText = doc.createTextNode(timerDb.getStats().toString());
 			statsDb.appendChild(statsDbText);
 
-			Element[] subElements2 = {statsMemory, statsDb};
+			Element[] subElements2 = {result, statsMemory, statsDb};
 			for (Element e : subElements2) {
 				outputs.appendChild(e);
 			}

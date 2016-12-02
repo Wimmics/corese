@@ -38,23 +38,18 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
-            <artifactId>neo4j-gremlin</artifactId>
-            <version>3.0.2-incubating</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-tinkerpop-api-impl</artifactId>
-            <version>0.3-2.3.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tinkerpop</groupId>
             <artifactId>tinkergraph-gremlin</artifactId>
             <version>3.0.2-incubating</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.thinkaurelius.titan</groupId>
-            <artifactId>titan-all</artifactId>
+            <artifactId>titan-es</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thinkaurelius.titan</groupId>
+            <artifactId>titan-berkeleyje</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

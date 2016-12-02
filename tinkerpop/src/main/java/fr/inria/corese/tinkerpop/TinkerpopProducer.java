@@ -3,8 +3,6 @@
  */
 package fr.inria.corese.tinkerpop;
 
-//import static fr.inria.corese.tinkerpop.MappingRdf.*;
-import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -54,16 +52,14 @@ public class TinkerpopProducer extends ProducerImpl {
 
 		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
 		StringBuilder key = new StringBuilder();
-		key.append((gNode == null) || (gNode.getLabel().compareTo("?g") == 0) ? "?g" : "G");
-		key.append((subject.isVariable()) ? "?s" : "S");
-		key.append((isPredicateFree(qEdge)) ? "?p" : "P");
-		key.append((object.isVariable()) ? "?o" : "O");
 
 		String g = (gNode == null) ? "" : gNode.getLabel();
-		String s = (subject.isVariable()) ? "" : subject.getLabel();
-		String p = (isPredicateFree(qEdge)) ? "" : qEdge.getEdgeNode().getLabel();
-		String o = (object.isVariable()) ? "" : object.getLabel();
-
+		key.append((gNode == null) || (gNode.getLabel().compareTo("?g") == 0) ? "?g" : "G");
+		
+		String s = updateVariable(subject.isVariable(), subject, env, key, "?s", "S");
+		String p = updateVariable(isPredicateFree(qEdge), qEdge.getEdgeNode(), env, key, "?p", "P");
+		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
+		
 		switch (key.toString()) {
 			case "?g?sPO":
 				filter = t -> {
@@ -149,4 +145,23 @@ public class TinkerpopProducer extends ProducerImpl {
 	public void close() {
 		tpGraph.close();
 	}
+
+	private String updateVariable(boolean isVariableFree, Node node, Environment env, StringBuilder key, String freeVar, String boundVar) {
+		String result;
+		if (isVariableFree) {
+			if (env.getNode(node.getLabel()) != null) {
+				key.append(boundVar);
+				result = env.getNode(node.getLabel()).getLabel();
+			} else {
+				key.append(freeVar);
+				result = "";
+			}
+		} else {
+				key.append(boundVar);
+				result = node.getLabel();	
+		}
+		return result;
+	}
+
+	
 }

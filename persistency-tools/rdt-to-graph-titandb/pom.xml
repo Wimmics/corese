@@ -36,5 +36,10 @@
 			<artifactId>titan-es</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+	 <dependency>
+	  <groupId>com.thinkaurelius.titan</groupId>
+	  <artifactId>titan-berkeleyje</artifactId>
+	  <version>1.0.0</version>
+	 </dependency>
 	</dependencies>
 </project>

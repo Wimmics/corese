@@ -77,6 +77,11 @@
 			<artifactId>sesame-rio-nquads</artifactId>
 			<version>4.1.1</version>
 	 </dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<version>4.1.1</version>
+		</dependency>
 
 
 	 <dependency>
@@ -84,12 +89,6 @@
 	  <artifactId>junit</artifactId>
 	  <version>4.12</version>
 	  <scope>test</scope>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.thinkaurelius.titan</groupId>
-	  <artifactId>titan-all</artifactId>
-	  <version>1.0.0</version>
 	  <type>jar</type>
 	 </dependency>
 	 <dependency>
@@ -121,6 +120,7 @@
 	  <version>${project.version}</version>
 	  <scope>runtime</scope>
 	 </dependency>
+		
 	</dependencies>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

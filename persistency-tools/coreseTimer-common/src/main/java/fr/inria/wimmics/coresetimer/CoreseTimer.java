@@ -19,8 +19,6 @@ public class CoreseTimer {
 
 	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
 
-	public final static int WARMUP_THRESHOLD = 5;
-	public final static int SAMPLES = 20;
 	public CoreseAdapter adapter;
 	public String adapterName;
 
@@ -104,13 +102,14 @@ public class CoreseTimer {
 		String query = test.getRequest();
 		LOGGER.log(Level.FINE, "processing nbQuery #{0}", query);
 		stats = new DescriptiveStatistics();
-		for (int i = 0; i < SAMPLES + WARMUP_THRESHOLD; i++) {
+		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
+		for (int i = 0; i < nbCycles; i++) {
 			LOGGER.log(Level.FINE, "iteration #{0}", i);
 			final long startTime = System.currentTimeMillis();
 			adapter.execQuery(query);
 			final long endTime = System.currentTimeMillis();
 			long delta = endTime - startTime;
-			if (i > WARMUP_THRESHOLD) {
+			if (i > test.getWarmupCycles()) {
 				stats.addValue(delta);
 			}
 		}

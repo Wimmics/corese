@@ -7,7 +7,7 @@
 		<version>3.2.1p-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>coreseTimer-common</artifactId>
+	<artifactId>coresedb-benchmark</artifactId>
 	
 	<dependencies>
 		<dependency>
@@ -100,4 +100,5 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+    <name>coresedb-benchmark</name>
 </project>

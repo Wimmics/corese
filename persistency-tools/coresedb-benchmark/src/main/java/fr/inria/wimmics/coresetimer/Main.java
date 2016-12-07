@@ -14,8 +14,6 @@ import fr.inria.wimmics.coresetimer.CoreseTimer.Profile;
 import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,12 +31,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author edemairy
  */
 public class Main {
+
+	private static Logger logger = Logger.getLogger(Main.class.getName());
 
 	public static class TestDescription {
 
@@ -84,18 +86,28 @@ public class Main {
 			DB_INITIALIZED, // The db is provided already filled.
 			DB_UNINITIALIZED  // The db has to be filled with the data of the inputMem file.
 		}
+
 		public TestDescription setFormat(RDFFormat newFormat) {
 			format = newFormat;
 			return this;
 		}
+
 		public RDFFormat getFormat() {
 			return format;
 		}
 
-		public TestDescription(String id) {
+		private TestDescription(String id) {
 			testId = id;
 			measuredCycles = DEFAULT_MEASURED_SAMPLES;
 			warmupCycles = DEFAULT_WARMUP_CYCLES;
+		}
+
+		static public TestDescription build(String id) {
+			return new TestDescription(id);
+		}
+
+		public String getId() {
+			return testId;
 		}
 
 		public TestDescription init() throws IOException {
@@ -188,14 +200,12 @@ public class Main {
 	//				"select * where { <http://prefix.cc/popular/all.file.vann>  ?p ?y . ?y ?q <http://prefix.cc/popular/all.file.vann> .} limit 10000"
 	//				"select * where { ?x ?p ?y . ?y ?q ?x }" // Intractable: if there are 10^6 edges, requests for 10^12 edges. @TODO Traiter la jointure.
 	//		"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"
-
-
 	// Campagne de tests
 	// 
-        // 
+	// 
 	// Famille de tests 1	
 	// BGP: on connait une valeur, la bd sait rechercher cette valeur instantanément ? Efficacité 
-        /*		s ?p ?o 
+	/*		s ?p ?o 
 	               ?s ?p o 2 cas principaux :URI (1cas), Literal (String, int, double, 
 		humans : avec des requêtes 	
 		  X ?p ?y . ?z ?q ?y
@@ -217,23 +227,27 @@ public class Main {
 
 	1. Sémantique
 	2. Benchmark
-		*/
-
-		
-
-	};
+	 */};
 
 	public final static TestDescription[] TESTS = {
-//		new TestDescription("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-//		new TestDescription("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-//		new TestDescription("test1_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
-//		new TestDescription("test1_search_s").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
-//		new TestDescription("test1_search_jointure") .setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {?x ?p ?y . ?y ?q ?x}"),
-		new TestDescription("humans_question1").setInput("human_2007_04_17.rdf").setFormat(RDFFormat.RDFXML).setInputDb("/human_db", DB_UNINITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }"),
-		new TestDescription("humans_question2").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }"),
-		new TestDescription("humans_question3").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }"),
-//		new TestDescription("1m_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
-//		new TestDescription("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
+		//		TestDescription.build("minimal_1").setInput("minimal_1.nq").setInputDb("/minimal_1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+		//		TestDescription.build("minimal_2").setInput("minimal_2.nq").setInputDb("/minimal_2_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+		//		TestDescription.build("test1_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c"),
+		//		TestDescription.build("test1_search_s").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
+		//		TestDescription.build("test1_search_jointure") .setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {?x ?p ?y . ?y ?q ?x}"),
+		TestDescription.build("humans_question1").setInput("human_2007_04_17.rdf").setFormat(RDFFormat.RDFXML).setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }"),
+		TestDescription.build("humans_question2").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }"),
+		TestDescription.build("humans_question3").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }"),
+		TestDescription.build("humans_question4").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#> \nSELECT * WHERE { ?x humans:hasSpouse ?y}"),
+		TestDescription.build("humans_question5_1").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?x rdf:type humans:Male}"),
+		TestDescription.build("humans_question5_2").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?y rdf:type humans:Male}"),
+		TestDescription.build("humans_question6").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x ?y (count(?x) as ?count) group ?y WHERE { ?x humans:hasFriend ?y }"),
+		TestDescription.build("humans_question7").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x WHERE { { ?y humans:hasChild ?x } UNION { ?x humans:hasParent ?y }}"),
+		TestDescription.build("humans_question8").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?person ?age\n" + "WHERE\n" + "{\n" + " ?person rdf:type humans:Person\n" + " OPTIONAL { ?person humans:age ?age }\n" + "}"),
+		TestDescription.build("humans_question9").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}"),
+		TestDescription.build("humans_question10").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "ASK\n" + "WHERE\n" + "{\n" + " <http://www.inria.fr/2007/04/17/humans.rdfs-instances#Mark> humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}"),
+//		TestDescription.build("1m_count").setWarmupCycles(0).setMeasuredCycles(1).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
+//		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
 	};
 
 	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
@@ -251,6 +265,7 @@ public class Main {
 			boolean result = compareResults(test);
 			test.setResultsEqual(result);
 			writeResult(test, timerDb, timerMemory);
+			logger.info("Test " + test.getId() + ". Passed: " + Boolean.toString(result));
 		}
 	}
 
@@ -261,7 +276,7 @@ public class Main {
 		try {
 			map_db = result_db.parse(test.getResult(Profile.DB));
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			Logger.getLogger(DbMemoryTest.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DbMemoryTest.class.getName()).log(Level.ERROR, null, ex);
 		}
 
 		Graph g_memory = new Graph();
@@ -270,7 +285,7 @@ public class Main {
 		try {
 			map_memory = result_memory.parse(test.getResult(Profile.MEMORY));
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			Logger.getLogger(DbMemoryTest.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DbMemoryTest.class.getName()).log(Level.ERROR, null, ex);
 		}
 
 		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();
@@ -335,7 +350,7 @@ public class Main {
 			doc.appendChild(rootElement);
 
 		} catch (ParserConfigurationException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
 		}
 
 		try {
@@ -345,9 +360,9 @@ public class Main {
 			StreamResult result = new StreamResult(new File(test.getOutputPath()));
 			transformer.transform(source, result);
 		} catch (TransformerConfigurationException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
 		} catch (TransformerException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
 		}
 	}
 

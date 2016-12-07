@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -252,29 +251,5 @@ public class RdfToGraph {
 		return isType(BNode.class, resource);
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		if (args.length < 2) {
-			System.err.println("Usage: rdfToGraph fileName db_path [backend]");
-			System.err.println("if the parser cannot guess the format of the input file, NQUADS is used.");
-			System.err.print("knwown backends ");
-			for (DbDriver driver : DbDriver.values()) {
-				System.err.print(driver + " ");
-			}
-			System.exit(1);
-		}
-		DbDriver driver = DbDriver.NEO4J;
-		if (args.length >= 3) {
-			try {
-				DbDriver driverParam = DbDriver.valueOf(args[2].toUpperCase());
-				driver = driverParam;
-			} catch (IllegalArgumentException ex) {
-				ex.printStackTrace();
-			}
-		}
-		String rdfFileName = args[0];
-		String dbPath = args[1];	
-		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
 
-		RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
-	}
 }

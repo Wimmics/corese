@@ -28,7 +28,7 @@ public class CoreseAdapter {
 
 	public void preProcessing(String fileName, boolean load) {
 		logger.log(Level.INFO, "using {0}", fileName);
-		Graph graph = Graph.create(false); // false = without rdfs.entailment
+		Graph graph = Graph.create(false); // without rdfs.entailment
 		if (load) {
 			Load ld = Load.create(graph);
 			ld.load(fileName);
@@ -58,9 +58,5 @@ public class CoreseAdapter {
 
 	public void postProcessing() {
 		exec.close();
-	}
-
-	public Mappings getMappings() {
-		return map;
 	}
 }

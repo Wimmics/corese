@@ -6,9 +6,7 @@
 package fr.inria.wimmics.coresetimer;
 
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
-import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -23,7 +21,6 @@ public class CoreseTimer {
 
 	public CoreseAdapter adapter;
 	public String adapterName;
-	private Mappings mappings;
 
 	public enum Profile {
 		DB, MEMORY
@@ -116,14 +113,9 @@ public class CoreseTimer {
 				stats.addValue(delta);
 			}
 		}
-		adapter.saveResults(test.getResultFileName(mode));
-		mappings = adapter.getMappings();
+		adapter.saveResults(test.getResult(mode));
 		adapter.postProcessing();
 		return this;
-	}
-
-	public Mappings getMapping() {
-		return mappings;
 	}
 
 	public DescriptiveStatistics getStats() {

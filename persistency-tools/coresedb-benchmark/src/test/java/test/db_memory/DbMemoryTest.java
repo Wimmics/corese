@@ -38,7 +38,8 @@ public class DbMemoryTest {
 		return result;
 	}
 
-	@Test(dataProvider = "getResults")
+	
+	@Test(dataProvider = "getResults", enabled=false)
 	public static void checkEqual(String inputMemory, String inputDb) {
 		System.out.println("inputMemory = " + inputMemory);
 		System.out.println("inputDb = " + inputDb);

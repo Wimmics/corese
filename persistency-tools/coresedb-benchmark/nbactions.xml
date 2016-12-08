@@ -8,9 +8,6 @@
             <goals>
                 <goal>install</goal>
             </goals>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
         </action>
         <action>
             <actionName>run</actionName>
@@ -24,11 +21,11 @@
             <properties>
                 <exec.args>-Xms10g -Xmx10g -classpath %classpath fr.inria.wimmics.coresetimer.Main</exec.args>
                 <exec.executable>java</exec.executable>
-                <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data</Env.INPUT_ROOT>
+                <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data</Env.INPUT_ROOT>
                 
                 <exec.workingdir></exec.workingdir>
                 
-                <skipTests>true</skipTests>
+                
             </properties>
         </action>
         <action>
@@ -47,13 +44,16 @@
                 
                 
                 
-                <skipTests>true</skipTests>
+                
                 
                 
                 <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data</Env.INPUT_ROOT>
                 
                 
                 <jpda.listen>true</jpda.listen>
+                
+                
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -80,9 +80,6 @@
                 <goal>clean</goal>
                 <goal>install</goal>
             </goals>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
         </action>
         <action>
             <actionName>run.single.main</actionName>
@@ -98,6 +95,32 @@
                 <exec.executable>java</exec.executable>
                 <exec.classpathScope>${classPathScope}</exec.classpathScope>
                 
+            </properties>
+        </action>
+        <action>
+            <actionName>test</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test</goal>
+            </goals>
+            <properties>
+                <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data</Env.INPUT_ROOT>
+            </properties>
+        </action>
+        <action>
+            <actionName>test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test-compile</goal>
+                <goal>surefire:test</goal>
+            </goals>
+            <properties>
+                <test>${packageClassName}</test>
+                <Env.INPUT_ROOT>/Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data</Env.INPUT_ROOT>
             </properties>
         </action>
     </actions>

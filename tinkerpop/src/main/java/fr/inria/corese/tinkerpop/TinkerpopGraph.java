@@ -1,4 +1,5 @@
 /*
+
  * Copyright Inria 2016
  */
 package fr.inria.corese.tinkerpop;
@@ -10,7 +11,6 @@ import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -144,33 +144,31 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
 		this.tGraph = tGraph;
-//		LOGGER.log(Level.INFO, "#vertices = {0}", new Object[]{tGraph.traversal().V().count().nextEdge()});
-//		LOGGER.log(Level.INFO, "#edges = {0}", new Object[]{tGraph.traversal().E().count().nextEdge()});
-		LOGGER.info("** Variables of the graph **");
+		LOGGER.debug("** Variables of the graph **");
 		try {
 			for (String key : tGraph.variables().keys()) {
 				LOGGER.info("key = " + key);
 			}
 		} catch (Exception ex) {
-			LOGGER.info("Impossible to show graph variables. Cause: " + ex.toString());
+			LOGGER.error("Impossible to show graph variables. Cause: " + ex.toString());
 		}
-		LOGGER.info("****************************");
-		LOGGER.info("** configuration **");
+		LOGGER.debug("****************************");
+		LOGGER.debug("** configuration **");
 		Configuration config = tGraph.configuration();
 		for (Iterator<String> c = config.getKeys(); c.hasNext();) {
 			String key = c.next();
-			LOGGER.info("{0} {1}", key, config.getString(key));
+			LOGGER.debug("{0} {1}", key, config.getString(key));
 		}
-		LOGGER.info("****************************");
+		LOGGER.debug("****************************");
 	}
 
 	@Override
 	public void finalize() throws Throwable {
-		LOGGER.info("calling close");
+		LOGGER.debug("calling close");
 		tGraph.close();
-		LOGGER.info("close called");
+		LOGGER.debug("close called");
 		super.finalize();
-		LOGGER.info("after finalize");
+		LOGGER.debug("after finalize");
 	}
 
 	/**
@@ -188,7 +186,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			return Optional.of(result);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			ex.printStackTrace();
-//			Logger.getLogger(TinkerpopGraph.class.getName()).log(Level.SEVERE, ex.getMessage());
 		}
 		return null;
 	}

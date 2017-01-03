@@ -59,4 +59,8 @@ public class CoreseAdapter {
 	public void postProcessing() {
 		exec.close();
 	}
+
+	public Mappings getMappings() {
+		return map;
+	}
 }

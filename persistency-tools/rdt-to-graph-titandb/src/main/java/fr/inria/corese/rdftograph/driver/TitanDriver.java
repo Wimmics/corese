@@ -5,14 +5,13 @@ package fr.inria.corese.rdftograph.driver;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.attribute.AttributeSerializer;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
+import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.diskstorage.ScanBuffer;
 import com.thinkaurelius.titan.diskstorage.WriteBuffer;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
@@ -257,7 +256,7 @@ public class TitanDriver extends GdbDriver {
 			g.tx().commit();
 			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
-			if (!manager.containsGraphIndex("byVertexValue") && !manager.containsGraphIndex("byEdgeValue")) {
+			if (!manager.containsGraphIndex("vertices") && !manager.containsGraphIndex("allIndex")) {
 				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 				PropertyKey kindValue = manager.getPropertyKey(KIND);
 
@@ -300,11 +299,11 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public void closeDb() {
-
+		ManagementSystem manager = (ManagementSystem) g.openManagement();
+		TitanGraphIndex index = manager.getGraphIndex("allIndex");
+		for (edge: index.) // comment iterer sur les valeurs de l'index ?	
 		g.close();
 	}
-
-	Map<VertexValue, Object> alreadySeen = new HashMap<>();
 
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
@@ -333,36 +332,31 @@ public class TitanDriver extends GdbDriver {
 	@Override
 	public Object createNode(Value v) {
 		VertexValue newVV = new VertexValue(v);
-		if (alreadySeen.containsKey(newVV)) {
-			return alreadySeen.get(newVV);
-		} else {
-			Object result = null;
-			Vertex newVertex = null;
-			switch (RdfToGraph.getKind(v)) {
-				case IRI:
-				case BNODE: {
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, v.stringValue());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					result = newVertex.id();
-					break;
-				}
-				case LITERAL: {
-					Literal l = (Literal) v;
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, l.getLabel());
-					newVertex.property(TYPE, l.getDatatype().toString());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					if (l.getLanguage().isPresent()) {
-						newVertex.property(LANG, l.getLanguage().get());
-					}
-					result = newVertex.id();
-					break;
-				}
+		Object result = null;
+		Vertex newVertex = null;
+		switch (RdfToGraph.getKind(v)) {
+			case IRI:
+			case BNODE: {
+				newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, v.stringValue());
+				newVertex.property(KIND, RdfToGraph.getKind(v));
+				result = newVertex.id();
+				break;
 			}
-			alreadySeen.put(newVV, result);
-			return result;
+			case LITERAL: {
+				Literal l = (Literal) v;
+				newVertex = g.addVertex(RDF_VERTEX_LABEL);
+				newVertex.property(VERTEX_VALUE, l.getLabel());
+				newVertex.property(TYPE, l.getDatatype().toString());
+				newVertex.property(KIND, RdfToGraph.getKind(v));
+				if (l.getLanguage().isPresent()) {
+					newVertex.property(LANG, l.getLanguage().get());
+				}
+				result = newVertex.id();
+				break;
+			}
 		}
+		return result;
 	}
 
 	@Override

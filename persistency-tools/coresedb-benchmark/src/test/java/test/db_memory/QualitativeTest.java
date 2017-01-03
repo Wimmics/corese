@@ -15,6 +15,7 @@ import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.IOException;
 import org.openrdf.rio.RDFFormat;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -36,14 +37,13 @@ public class QualitativeTest {
 			//		TestDescription.build("test1_search_s").setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}"),
 			//		TestDescription.build("test1_search_jointure") .setInput("test1.nq").setInputDb("/test1_db", DB_INITIALIZED).setRequest("select * where {?x ?p ?y . ?y ?q ?x}"),
 			{TestDescription.build("humans_question1").setInput("human_2007_04_17.rdf").setFormat(RDFFormat.RDFXML).setInputDb("/human_db", DB_UNINITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
-			//		TestDescription.build("humans_question1_fake").setInput("human_2007_04_17.rdfs").setFormat(RDFFormat.RDFXML).setInputDb("/human_db", DB_UNINITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }"),
+//					TestDescription.build("humans_question1_fake").setInput("human_2007_04_17.rdfs").setFormat(RDFFormat.RDFXML).setInputDb("/human_db", DB_UNINITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }"),
 			{TestDescription.build("humans_question2").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }")},
 			{TestDescription.build("humans_question3").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }")},
 			{TestDescription.build("humans_question4").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#> \nSELECT * WHERE { ?x humans:hasSpouse ?y}")},
 			{TestDescription.build("humans_question5_1").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?x rdf:type humans:Male}")},
 			{TestDescription.build("humans_question5_2").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?y rdf:type humans:Male}")},
-			{TestDescription.build("humans_question6").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x ?y WHERE { ?x humans:hasFriend ?y }")},
-			//		TestDescription.build("humans_question6").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x ?y (count(?x) as ?count) group ?y WHERE { ?x humans:hasFriend ?y }"),
+			{TestDescription.build("humans_question6").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT (count(?x) as ?count) WHERE { ?y humans:hasFriend ?z }")},
 			{TestDescription.build("humans_question7").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x WHERE { { ?y humans:hasChild ?x } UNION { ?x humans:hasParent ?y }}")},
 			{TestDescription.build("humans_question8").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?person ?age\n" + "WHERE\n" + "{\n" + " ?person rdf:type humans:Person\n" + " OPTIONAL { ?person humans:age ?age }\n" + "}")},
 			{TestDescription.build("humans_question9").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}")},
@@ -67,22 +67,22 @@ public class QualitativeTest {
 	}
 
 	@Test(dataProvider = "getResults")
-	public static void testFirst(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
-		String inputRoot = getEnvWithDefault("INPUT_ROOT", "./");
+		String inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
 		inputRoot = ensureEndWith(inputRoot, "/");
 		TestDescription.setInputRoot(inputRoot);
-		String outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
+		String outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
 		outputRoot = ensureEndWith(inputRoot, "/");
 		TestDescription.setOutputRoot(outputRoot);
 
 		test.init();
 		CoreseTimer timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
 		CoreseTimer timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
-		boolean result = compareResults(test);
+		boolean result = compareResults(timerDb.getMapping(), timerMemory.getMapping());
 		test.setResultsEqual(result);
 		writeResult(test, timerDb, timerMemory);
-		assert(result);
+		assertTrue(result, test.getId());
 	}
 
 }

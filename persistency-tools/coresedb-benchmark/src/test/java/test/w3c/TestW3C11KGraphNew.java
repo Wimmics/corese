@@ -1214,6 +1214,7 @@ public class TestW3C11KGraphNew {
             }
 
         }
+	result &= (w3c.size() == kgram.size());
         return result;
     }
 

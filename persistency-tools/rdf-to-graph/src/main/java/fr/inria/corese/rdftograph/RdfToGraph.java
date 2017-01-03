@@ -144,7 +144,6 @@ public class RdfToGraph {
 			LOGGER.info("Loading file");
 			readFile(rdfStream, format);
 			LOGGER.info("Writing graph in db");
-//			writeModelToNeo4j();
 			LOGGER.info("closing DB");
 			driver.closeDb();
 			LOGGER.info("** end of convert **");
@@ -160,16 +159,6 @@ public class RdfToGraph {
 	 * @param format Format used to represent the RDF in the file.
 	 * @throws IOException
 	 */
-	public void readFile_old(InputStream in, RDFFormat format) throws IOException {
-		RDFParser rdfParser = Rio.createParser(format);
-		ParserConfig config = new ParserConfig();
-		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
-		rdfParser.setParserConfig(config);
-		model = new org.openrdf.model.impl.LinkedHashModel();
-		rdfParser.setRDFHandler(new StatementCollector(model));
-		rdfParser.parse(in, "");
-	}
 
 	public void readFile(InputStream in, RDFFormat format) throws IOException {
 		StatementCounter myCounter = new StatementCounter();

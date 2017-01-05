@@ -1,0 +1,16 @@
+#
+#  ?ls is the list of target nodes of shape ?sh
+#  evaluate  sh:and sh:or sh:not
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template  (?shape, ?sh, ?vis, ?ls) {
+   st:call-template(?bool, ?shape, ?sh, ?cst, ?vis, ?ls)
+}
+where {
+    graph ?shape {  
+        values ?bool { sh:and sh:or sh:not } 
+        ?sh ?bool ?cst
+    }
+}
+

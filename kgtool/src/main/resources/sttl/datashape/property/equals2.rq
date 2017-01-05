@@ -1,16 +1,13 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+template sh:equals2 (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-
-  graph ?shape {
-    ?sh sh:equals ?q 
-  }
-  
-  ?s ?q ?o  bind ( exists { ?s ?p ?o }   as ?suc)  
+ 
+  ?s ?q ?o  
+  bind ( exists { ?s ?p ?o }   as ?suc)  
     
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:equals, ?sh, ?shape, ?s,  ?q, ?o, ?suc, ?vis) as ?b)
   
 }

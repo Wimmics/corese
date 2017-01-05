@@ -1,16 +1,15 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+template sh:hasValue (?shape, ?sh, ?vis, ?s, ?p, ?v, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
-  graph ?shape {  
-    ?sh sh:hasValue ?v  
-  }
+  bind ( exists {
+    values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+    filter coalesce(?o = ?v, false) }
+  as ?suc)
   
-  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
-  bind (coalesce(?o = ?v, false) as ?suc)
   
-  bind (st:report(sh:hasValue, ?sh, ?shape, ?s, ?s, ?p, st:null, ?suc, ?vis) as ?b)
+  bind (st:report(sh:hasValue, ?sh, ?shape, ?s, ?p, ?v, ?suc, ?vis) as ?b)
 }

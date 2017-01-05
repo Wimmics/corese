@@ -1,0 +1,34 @@
+#
+# ?o may be bound or not bount
+# case core -> property, ?o is not bound
+# case property boolean, ?o is bound
+# ?sh = [ sh:predicate ?p ; sh:class ?m ]
+# ?ls = list of target nodes of ?sh
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  graph ?shape {  
+    values ?q { 
+        sh:minLength sh:maxLength sh:datatype sh:stem 
+        sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
+        sh:nodeKind sh:class sh:in sh:languageIn sh:shape
+    }
+    ?sh ?q ?m 
+  }
+  values ?s { unnest(?ls) }  
+  ?s ?p ?o
+
+  bind (
+  coalesce(
+    if (?q in (sh:in, sh:languageIn, sh:shape), 
+        funcall(?q, ?shape, ?o, ?m), funcall(?q, ?o, ?m)), 
+    false) 
+  as ?suc )
+  
+  bind (st:report(?q, ?sh, ?shape, ?s,  ?p, ?o, ?suc, ?vis) as ?b)
+}
+

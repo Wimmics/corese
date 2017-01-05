@@ -1,13 +1,11 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s){
+template sh:class (?shape, ?sh, ?vis, ?s, ?c){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-  graph ?shape {
-    ?sh sh:class ?c 
-  }
+
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
-  bind (st:report(sh:class, ?sh, ?shape, ?s, ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
+  bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
 }
 

@@ -8,7 +8,9 @@ function st:aggregate(?x) {
 }
 
 
-
+function st:optimize(?shape, ?sh){
+    true
+}
 
 
 

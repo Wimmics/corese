@@ -7,6 +7,9 @@ function st:aggregate(?x) {
   st:agg_and(?x)
 }
 
+function st:optimize(?shape, ?sh){
+    true
+}
 
 
 

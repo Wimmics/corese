@@ -1,15 +1,12 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p, ?o){
+template sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
 
-  graph ?shape {  
-    ?sh sh:not ?cst  
-  }
-    
-  bind (! sh:hasPath(?shape, ?cst, false, ?s, ?p) as ?suc)
+  bind (! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o) as ?suc)
   
   bind (st:report(sh:shape, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }

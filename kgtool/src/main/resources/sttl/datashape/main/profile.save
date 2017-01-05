@@ -160,19 +160,15 @@ function sh:result2(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
 function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
     let (?g = 
        construct {
-        ?bnode a sh:ValidationReport ; 
-            sh:result ?r ; 
-            sh:conforms false .
-        
         ?r rdf:type sh:ValidationResult ;
-            sh:resultSeverity ?sev ;
+            sh:severity ?sev ;
             sh:focusNode ?foc ;
             sh:focusNodeDetail ?focDetail ;
             sh:path ?pp ; 
             sh:pathDetail ?pathDetail ; 
             sh:value ?oo ;
             sh:valueDetail ?valueDetail ;
-            sh:resultMessage ?mes ;
+            sh:message ?mes ;
             sh:sourceConstraintComponent ?def
             #?sr ?pr ?or
         } 
@@ -193,28 +189,12 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
             }
             bind (sh:graph(?foc) as ?focDetail)
             bind (if (bound(?oo), sh:graph(?oo), error())  as ?valueDetail)
-            bind (sh:bnode() as ?bnode)
         } 
         values (?name ?sh ?shape ?foc  ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
     {
         st:visit(st:trace, st:graph, ?g)
     }
-}
-
-function sh:success(?b){
-    if (?b){
-        let (?g = 
-            construct { [] a sh:ValidationReport ; sh:conforms true }
-            where { }
-            ) {
-            st:visit(st:trace, st:graph, ?g)
-        }
-    }
-}
-
-function sh:bnode(){
-    coalesce(st:get(sh:bnode), st:set(sh:bnode, bnode()))
 }
 
 function sh:graph(?var){
@@ -376,7 +356,7 @@ function sh:class(?o, ?c){
 function sh:in(?shape, ?o, ?lv){
   exists { 
     graph ?shape { ?lv rdf:rest*/rdf:first ?v  
-        filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
+        filter (?o = ?v && ( isURI(?o) || datatype(?o) = datatype(?v)))
     }
   } 
 }
@@ -522,26 +502,25 @@ function sh:equal(?l1, ?l2){
 # [sh:path ex:parent] .
 # ex:parent sh:alternativePath (ex:father ex:mother)
 #
-function sh:path(?shape, ?pp) {
-  if (isURI(?pp)) { ?pp }
-  else {
-    let ((?q, ?path) = 
-        select ?shape ?pp ?q ?path where {
-            graph ?shape { 
-                # rdf:rest is for a sequence
-                values ?q { 
-                    sh:inversePath sh:alternativePath 
-                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath rdf:rest }
-                ?pp ?q ?path   
-            }
-        } ) {
-        
-        if (! bound(?q))
-            { error() }      
-        else if (?q = rdf:rest) { xt:list(sh:sequence, sh:list(?shape, ?pp)) }
-        else { xt:list(?q, sh:path(?shape, ?path)) }
-    }
-  }
+function sh:path(?shape, ?pp){
+  let ((?q, ?path) = 
+      select ?shape ?pp ?q ?path where {
+        graph ?shape { 
+            # rdf:rest is for a sequence
+            values ?q { 
+                sh:inversePath sh:alternativePath 
+                sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath rdf:rest }
+            ?pp ?q ?path   
+        }
+      } ) {
+      
+      if (! bound(?q)){
+        if (isURI(?pp)){ ?pp }
+        else { error() }
+      }
+      else if (?q = rdf:rest) { xt:list(sh:sequence, sh:list(?shape, ?pp)) }
+      else { xt:list(?q, sh:path(?shape, ?path)) }
+   }
 }
 
 

@@ -1,18 +1,15 @@
+#
+#  ?ls is the list of target nodes of shape ?sh
+#  evaluate sh:constraint
+#
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template  (?shape, ?sh, ?vis, ?s) {
+template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape {
-        ?sh sh:constraint ?cst 
-        filter (?cst != sh:Closed)
-        filter not exists { ?cst sh:closed ?bool }
-        
-        optional { ?cst sh:filterShape ?fs } 
-        filter (! bound(?fs) || st:testShape(?shape, ?fs, ?s))         
-   }
-   
-    bind (sh:hasConstraint(?shape, ?cst, ?vis, ?s) as ?suc)
+       
+    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
+

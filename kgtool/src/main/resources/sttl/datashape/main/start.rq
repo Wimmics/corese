@@ -2,10 +2,10 @@
 # Data Shape Validator
 # http://w3c.github.io/data-shapes/shacl/
 #
-# main: shapes with scopes
-# core: shape constraints (property, inverseProperty, constraint, and, or, not, closed)
-# property:   property constraint
-# inverse:    inverse property constraint
+# main: shapes with targets
+# core: shape constraints (property, path, constraint, and, or, not, closed)
+# property:   property predicate constraint
+# path:       property path constraint
 # constraint: node constraint
 #
 # Olivier Corby - Inria I3S - 2016
@@ -13,9 +13,13 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template st:start {
-  st:call-template(st:main, ?shape)
+    ?suc
 }
 where {
   bind (st:visit(st:start, st:trace) as ?vis) 
   bind (coalesce(st:get(st:shape), st:shape) as ?shape)
+  bind (sh:start() as ?st)
+  
+  bind (st:apply-templates(?shape) as ?suc)
+  bind (sh:success(?suc) as ?b)
 }

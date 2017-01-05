@@ -1,13 +1,11 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s) {
+template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape {
-        ?sh sh:not ?cst 
-    }
 
+    values ?s { unnest(?ls) }
     bind (! sh:testShapeCore(?shape, ?cst, ?s) as ?suc)
     
     bind (st:report(sh:not, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)

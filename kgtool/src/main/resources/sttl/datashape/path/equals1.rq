@@ -1,6 +1,6 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
+template sh:equals1 (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
@@ -9,8 +9,8 @@ where {
   bind (sh:path(?shape, ?s, ?q) as ?l2)
   
   values ?o { unnest(?l1) }  
-  bind (! xt:member(?o, ?l2) as ?suc) 
+  bind (xt:member(?o, ?l2) as ?suc)
   
-  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }

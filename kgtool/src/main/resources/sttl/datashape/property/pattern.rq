@@ -1,6 +1,6 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s, ?p, ?o) {
+template sh:pattern (?shape, ?sh, ?vis, ?s, ?p, ?exp, ?o) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
@@ -8,7 +8,9 @@ where {
     ?sh sh:pattern ?exp   
     optional { ?sh sh:flags ?flag }
   }
+  
   ?s ?p ?o
+  
   bind ( 
     coalesce(
         ! isBlank(?o) && 
@@ -16,6 +18,6 @@ where {
         false) 
   as ?suc )
 
-  bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
 

@@ -1,22 +1,17 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?s) {
+template sh:and (?shape, ?sh, ?and, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    GRAPH ?shape {
-        ?sh sh:and ?and 
-    }
-    
+    values ?s { unnest(?ls) }
+ 
     bind (sh:and(?and, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count = 0)  as ?suc)
+	bind (IF (?failure, false, ?count)  as ?suc)
 	
     bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
 
-# count failure
-function sh:and(?and, ?s, ?shape){
-    sh:bool(?and, ?s, ?shape, 0, 1)
-}
+

@@ -32,14 +32,17 @@ public  class CoreseDecimal extends CoreseDouble {
 	}
 	
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
+        @Override
 	 public int getCode(){
 			return code;
 		}
 	
+        @Override
 	public boolean isDecimal(){
 		return true;
 	}

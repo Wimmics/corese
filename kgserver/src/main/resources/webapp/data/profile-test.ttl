@@ -1,6 +1,42 @@
 #
 #  Additional profile for testing purpose
 #
+@prefix r: <http://fr.dbpedia.org/resource/>
+
+st:dbtest a st:Profile ;
+  st:query     "/home/corby/AAServer/data/query/frdbpediains.rq" ;
+  st:transform st:navlab ;
+  st:param [
+  # where to save graph resulting from query
+    st:file "/home/corby/dbpedia.ttl";
+    st:list (r:Bordeaux r:Rennes);
+    #r:Paris r:Rocquencourt r:Lille   r:Grenoble r:Sophia_Antipolis r:Montpellier) ;
+#   st:list (r:El_Paso r:Window_Rock r:Albuquerque r:Monument_Valley  <http://fr.dbpedia.org/resource/Santa_Fe_(Nouveau-Mexique)>) ;
+        st:mapzoom 6 ;
+        st:mapsize "maplarge" ;
+        st:mapicon1 "/img/bmarker.png" ;
+        st:mapicon2 "/img/smarker.png" 
+          
+  ] .
+  
+  
+  st:west a st:Server ;
+  st:service "west" ;
+  st:transform st:navlab ; 
+  st:param [ 
+    st:lang "en"   ;
+    st:mapzoom 8 ;
+    st:mapsize "maplarge" ;
+    st:import  st:mapParam  ;
+  ] ;  
+  st:content st:westcontent
+.  
+  
+st:westcontent a sw:Workflow ; sw:body ( 
+    [ a sw:Load ; sw:path <dbpedia/west.ttl>  ] )
+.
+    
+    
 
 
 
@@ -125,7 +161,9 @@ st:dbpediains a st:Profile ;
   st:param [
   # where to save graph resulting from query
     st:file "/home/corby/dbpedia.ttl";
-    st:list (
+    st:list (r:El_Paso r:Window_Rock r:Albuquerque r:Monument_Valley
+    ) ;
+    st:list2 (
  # r:Gibraltar r:Ceuta r:Melilla r:Enclave_des_papes
    r:Andorre r:Monaco  r:Kaliningrad r:Liechtenstein
     r:Llívia r:Saint-Marin r:Vatican     r:Büsingen_am_Hochrhein r:Jungholz r:Baerle-Duc

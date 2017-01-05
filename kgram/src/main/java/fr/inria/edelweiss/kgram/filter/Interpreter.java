@@ -567,7 +567,7 @@ public class Interpreter implements Evaluator, ExprType {
         
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);
-                   
+        
         Mappings map = null;
         
         if (exp.isSystem()) {
@@ -798,10 +798,20 @@ public class Interpreter implements Evaluator, ExprType {
         }
         Object res;
         // TODO: check also getGlobalQuery()
-        if (def.isSystem() && def.isPublic() && env.getQuery() != def.getPattern()){
+        if (def.isSystem() 
+                && def.isPublic() 
+                && env.getQuery() != def.getPattern()){
             // function is export and has exists {}
             // use function query
-            res = funEval(def, env, p); 
+            res = funEval(def, (Query) def.getPattern(), env, p); 
+        }
+        else if (def.isSystem()){
+            // function has exists {}
+            // use fresh Memory for not to screw Bind & Memory
+            // use case: exists { exists { } }
+            // the inner exists need outer exists BGP to be bound
+            // hence we need a fresh Memory to start
+            res = funEval(def, env.getQuery(), env, p); 
         }
         else {
             res = eval(def.getBody(), env, p); 
@@ -818,12 +828,12 @@ public class Interpreter implements Evaluator, ExprType {
      * use case: export function with exists {}
      * @param exp function ex:name() {}
      */
-    Object funEval(Expr exp, Environment env, Producer p){
+    Object funEval(Expr exp, Query q, Environment env, Producer p){
         Interpreter in = new Interpreter(proxy);
         in.setProducer(p);
         Eval eval = Eval.create(p, in, kgram.getMatcher());
         eval.setSPARQLEngine(kgram.getSPARQLEngine());
-        eval.init((Query) exp.getPattern());
+        eval.init(q);
         eval.getMemory().setBind(env.getBind());
         return in.eval(exp.getBody(), eval.getMemory(), p);
     }

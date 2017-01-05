@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
@@ -1180,5 +1181,5 @@ public class Term extends Expression {
     public void setPlace(int place) {
         this.place = place;
     }
-
+    
 }

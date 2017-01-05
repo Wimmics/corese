@@ -169,11 +169,13 @@ public class Variable extends Atom {
 	 * KGRAM
 	 */
 	
+        @Override
 	public int type(){
 		return ExprType.VARIABLE;
 	}
 	
 
+        @Override
         public void getVariables(List<String> list, boolean excludeLocal) {
                 // TODO Auto-generated method stub
 		if (! list.contains(getName()) 
@@ -182,6 +184,7 @@ public class Variable extends Atom {
 		}
         }
         
+        @Override
 	public int getIndex() {
 		return index ;
 	}
@@ -194,6 +197,7 @@ public class Variable extends Atom {
 	// fake value in case where a variable node is used as a target value node
 	// see ProducerDefault
 	// use case: project a query graph on itself
+        @Override
 	public Object getValue(){
 		return getDatatypeValue();
 	}

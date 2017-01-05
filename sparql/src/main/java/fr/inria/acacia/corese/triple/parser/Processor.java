@@ -305,7 +305,7 @@ public class Processor {
 	
 	static final String RANDOM 	= "rand"; 
 	static final String ABS 	= "abs"; 
-	static final String CEILING = "ceil"; 
+	static final String CEILING     = "ceil"; 
 	static final String FLOOR 	= "floor"; 
 	static final String ROUND 	= "round";
 	static final String POWER 	= "power";
@@ -316,9 +316,9 @@ public class Processor {
 	static final String MONTH 	= "month"; 
 	static final String DAY 	= "day"; 
 	static final String HOURS 	= "hours";
-	static final String MINUTES = "minutes";
-	static final String SECONDS = "seconds";
-	static final String TIMEZONE = "timezone";
+	static final String MINUTES     = "minutes";
+	static final String SECONDS     = "seconds";
+	static final String TIMEZONE    = "timezone";
 	static final String TZ 		= "tz";
 
 	static final String MD5 	= "md5";
@@ -338,7 +338,13 @@ public class Processor {
         static final String RQ_NOT 	= SPARQL + "not";
         static final String RQ_EQUAL 	= SPARQL + "equal";
         static final String RQ_DIFF 	= SPARQL + "diff";
-        
+        static final String RQ_EQ 	= SPARQL + "eq";
+        static final String RQ_NE 	= SPARQL + "ne";
+        static final String RQ_LE 	= SPARQL + "le";
+        static final String RQ_LT 	= SPARQL + "lt";
+        static final String RQ_GE 	= SPARQL + "ge";
+        static final String RQ_GT 	= SPARQL + "gt";
+                      
         static final String XT_DISPLAY 	= EXT + "display";
         static final String XT_TUNE 	= EXT + "tune";
         static final String XT_UNION 	= EXT + "union";
@@ -786,6 +792,13 @@ public class Processor {
                 defoper(RQ_NOT,    ExprType.NOT);
                 defoper(RQ_EQUAL,  ExprType.EQ);
                 defoper(RQ_DIFF,   ExprType.NEQ); 
+                defoper(RQ_EQ,     ExprType.EQ);                 
+                defoper(RQ_NE,     ExprType.NEQ);                 
+                defoper(RQ_LT,     ExprType.LT); 
+                defoper(RQ_LE,     ExprType.LE); 
+                defoper(RQ_GT,     ExprType.GT); 
+                defoper(RQ_GE,     ExprType.GE); 
+                
                 
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 

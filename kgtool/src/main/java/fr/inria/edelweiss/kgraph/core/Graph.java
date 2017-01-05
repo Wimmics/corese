@@ -380,7 +380,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         this.defaultGraphMode = defaultGraph;
     }
    
-    class TreeNode extends TreeMap<IDatatype, Entity> {
+    public class TreeNode extends TreeMap<IDatatype, Entity> {
 
         TreeNode() {
             this(true);

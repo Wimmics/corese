@@ -951,6 +951,7 @@ public class PluginImpl extends ProxyImpl {
         return pt.getVisitor(env, p);
     }
     
+    @Override
     public Expr decode(Expr exp, Environment env, Producer p){
         return pt.decode(exp, env, p);
     }
@@ -962,6 +963,7 @@ public class PluginImpl extends ProxyImpl {
     /**
      * create concat(str, st:number(), str)
      */
+    @Override
     public Expr createFunction(String name, List<Object> args, Environment env){
         return pt.createFunction(name, args, env);
     }

@@ -49,11 +49,9 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
-import java.io.IOException;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
-import javax.swing.JEditorPane;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -78,6 +76,12 @@ public final class MyJPanelQuery extends JPanel {
     private static final long serialVersionUID = 1L;
     static final String SERVICE = ""; //"@service <http://fr.dbpedia.org/sparql>";
     static final String NL = System.getProperty("line.separator");
+    static int FontSize = SparqlQueryEditor.FontSize;
+    
+    static final int GRAPH_PANEL    = 0;
+    static final int XML_PANEL      = 1;
+    static final int TABLE_PANEL    = 2;
+
 
     //Boutton du panneau Query
     private JButton buttonRun, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
@@ -146,13 +150,15 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneTable = new JScrollPane();
         tableResults = new JTable(new DefaultTableModel());
         textAreaXMLResult = new JTextArea();
+        textAreaXMLResult.setFont(new Font("Sanserif", Font.BOLD, FontSize));
+
         scrollPaneValidation = new JScrollPane();
         textPaneValidation = new JTextPane();
         textPaneStyleGraph = new JTextPane();
 
         //compteur de ligne pour la feuille de style de graphe
         textAreaLinesGraph = new JTextArea();
-        textAreaLinesGraph.setFont(new Font("Sanserif", Font.PLAIN, 12));
+        textAreaLinesGraph.setFont(new Font("Sanserif", Font.BOLD, 12));
         textAreaLinesGraph.setEditable(false);
         textAreaLinesGraph.setFocusable(false);
         textAreaLinesGraph.setBackground(new Color(230, 230, 230));
@@ -475,9 +481,13 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     void fillTable(Mappings map) {
-        List<fr.inria.edelweiss.kgram.api.core.Node> vars = map.getQuery().getSelect();
+        Query q = map.getQuery();
+        List<fr.inria.edelweiss.kgram.api.core.Node> vars = q.getSelect();
+        if (q.isUpdate() && map.size() > 0){            
+           vars = map.get(0).getQueryNodeList();           
+        }
         DefaultTableModel model = new DefaultTableModel();
-
+        
         for (fr.inria.edelweiss.kgram.api.core.Node var : vars) {
             String columnName = var.getLabel();
             //System.out.println(sv);
@@ -492,27 +502,30 @@ public final class MyJPanelQuery extends JPanel {
                         colmunData[j] = dt.getValues().toString();
                     } else if (dt.isPointer()) {
                         colmunData[j] = dt.getPointerObject().toString();
-                    } else {
+                    } 
+                    else if (dt.hasLang()){
+                        colmunData[j] = dt.toString();
+                    }
+                    else {
                         colmunData[j] = dt.getLabel();
                     }
                 }
             }
             model.addColumn(columnName, colmunData);
         }
-       
+
         this.tableResults.setModel(model);
     }
 
     void display(Mappings map, MainFrame coreseFrame) {
         if (map == null) {
                     // go to XML for error message
-                    tabbedPaneResults.setSelectedIndex(1);
+                    tabbedPaneResults.setSelectedIndex(XML_PANEL);
                     return;
         }
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
-
         resultXML = toString(map);
         textAreaXMLResult.setText(resultXML.toString());
 
@@ -530,11 +543,11 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneTreeResult.setViewportView(treeResult);
 
         //afficher les resultats dans une tableau sauf pour les templates
-        if(q.isTemplate()){
-            tabbedPaneResults.setSelectedIndex(1);
-        }else{
+        if (q.isTemplate() || ast.isAsk()){
+            tabbedPaneResults.setSelectedIndex(XML_PANEL);
+        } else{
             this.fillTable(map);
-            tabbedPaneResults.setSelectedIndex(2);
+            tabbedPaneResults.setSelectedIndex(TABLE_PANEL);
         }
 
         if (q.isConstruct()) {
@@ -599,7 +612,7 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneTreeResult.setViewportView(jpGraph);
 
         //pointe sur l'onglet Graph
-        tabbedPaneResults.setSelectedIndex(0);
+        tabbedPaneResults.setSelectedIndex(GRAPH_PANEL);
 
     }
 
@@ -715,12 +728,12 @@ public final class MyJPanelQuery extends JPanel {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSparql(query);
                         coreseFrame.getPanel().getTextArea().setText(str);
-                        tabbedPaneResults.setSelectedIndex(1);
+                        tabbedPaneResults.setSelectedIndex(XML_PANEL);
                     } else if (ev.getSource() == buttonToSPIN) {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSpin(query);
                         coreseFrame.getPanel().getTextArea().setText(str);
-                        tabbedPaneResults.setSelectedIndex(1);
+                        tabbedPaneResults.setSelectedIndex(XML_PANEL);
                     } else if (ev.getSource() == buttonProve) {
                         l_Results = engine.SPARQLProve(query);
                         if (l_Results != null) {

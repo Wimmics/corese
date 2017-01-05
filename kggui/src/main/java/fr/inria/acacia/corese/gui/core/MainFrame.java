@@ -57,6 +57,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
+import javax.swing.JTextPane;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -75,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int LOAD = 1;
-	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-11-01";
+	private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2016-12-25";
 	// On déclare notre conteneur d'onglets
 	protected static JTabbedPane conteneurOnglets;
 	// Compteur pour le nombre d'onglets query créés 
@@ -331,7 +335,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			listJMenuItems.get(i).setEnabled(false);
 		}
 	}
-
+              
 	void execPlus() {
 		execPlus(defaultQuery);
 	}

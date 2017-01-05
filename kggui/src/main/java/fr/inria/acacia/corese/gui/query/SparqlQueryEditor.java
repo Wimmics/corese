@@ -57,6 +57,7 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
 	private Object start, end;
 	private Highlighter highlighter;
 	private MainFrame mainFrame;
+        static int FontSize = 16;
 
 	public SparqlQueryEditor() {
 		this(null);
@@ -67,12 +68,12 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
 		initComponents();
 		mainFrame = coreseFrame;
 	}
-
+              
 	private void initComponents() {
 		textPaneQuery = new JTextPane();
 		textPaneQuery.setName("textPaneQuery");
 
-		textPaneQuery.setFont(new Font("Sanserif", Font.PLAIN, 13));
+		textPaneQuery.setFont(new Font("Sanserif", Font.BOLD, FontSize));
 		textPaneQuery.setPreferredSize(new Dimension(400, 250));
 		textPaneQuery.setMargin(new Insets(1, 1, 1, 1));
 		textPaneQuery.setText("Default text");
@@ -84,7 +85,7 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
 
 		//compteur de ligne pour la query
 		textAreaLines = new JTextArea(10, 2);
-		textAreaLines.setFont(new Font("Sanserif", Font.PLAIN, 13));
+		textAreaLines.setFont(new Font("Sanserif", Font.PLAIN, FontSize));
 		textAreaLines.setEditable(false);
 		textAreaLines.setFocusable(false);
 		textAreaLines.setBackground(new Color(230, 230, 230));

@@ -4,8 +4,9 @@
 #
 template st:start {
   st:prolog("@prefix")
-  
-  st:call-template(st:graph)
+  st:nl()
+  str(?str)
 }
 where {
+    bind (st:call-template(st:graph) as ?str)
 }

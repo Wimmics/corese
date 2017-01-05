@@ -3,11 +3,15 @@
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
 template st:graph {
-  "graph " ?g " {" 
-   box {
-       st:apply-templates-with-graph(st:turtle, ?g) 
+  format {
+  """graph %s {%s}"""
+  
+  xt:turtle(?g)
+  box {
+       st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/turtle#main>, ?g) 
     }
-  "}"
+  }
+  ; separator = "\n\n"
 }
 where {
   select ?g where {

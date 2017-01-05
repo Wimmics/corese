@@ -26,6 +26,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -33,6 +34,9 @@ import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
+import fr.inria.edelweiss.kgraph.core.producer.DFFactory;
+import fr.inria.edelweiss.kgraph.core.producer.DataFilter;
+import fr.inria.edelweiss.kgraph.core.producer.DataFilterFactory;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -99,7 +103,10 @@ public class TestQuery1 {
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
         //fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = !true;
-        //QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
+        QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
+        
+        QueryProcess.testAlgebra(!true);
+
     }
     
     @AfterClass
@@ -133,7 +140,8 @@ public class TestQuery1 {
         return graph;
     }
     
-     @Test
+    
+     
     public void testJSON() throws EngineException, LoadException {
         String t =
                 "template  {  st:apply-templates-with(st:json)}"
@@ -157,6 +165,61 @@ public class TestQuery1 {
         assertEquals(g.size(), gg.size());
 
     }
+    
+    
+    @Test
+       public void testOptionalFilter() throws LoadException, EngineException{
+           Graph g = Graph.create();
+           QueryProcess exec = QueryProcess.create(g);
+           
+           String i = "insert data {"
+                   + "us:John foaf:knows us:James "
+                   + "us:James foaf:knows us:Jack, us:Jim "
+                   + "us:Jim foaf:knows us:John "
+                   + ""
+                   + "}";
+           
+           String q = 
+                   "prefix c: <http://www.inria.fr/acacia/comma#>"
+                   + "select  *  "
+                   + ""
+                   + "where { "
+                   + " ?x foaf:knows ?y "
+                   + "optional { "
+                   + "?y foaf:knows ?z filter (?x != us:John) optional { ?z ?p ?x }"
+                   + "}  "
+                   + "} ";
+           
+           exec.query(i);
+           Mappings map = exec.query(q);
+           assertEquals(map.size(), 4);
+           
+       }
+       
+    
+     @Test
+       public void testDataset2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        g.getDataStore().addDefaultGraph();
+        
+        Load ld = Load.create(g);
+        ld.setDefaultGraph(true);
+        
+        ld.parse(data + "test/primerdata.ttl");
+        int size = g.size();
+        ld.parse(data + "test/primer.owl", NSManager.KGRAM+"ontology");
+
+        String q = "select  * where {"
+                + "?x ?p ?y "
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);       
+        assertEquals(size, map.size());
+        
+        
+    }
+    
      
     @Test
        public void testDataStore() throws EngineException{
@@ -207,11 +270,22 @@ public class TestQuery1 {
            assertEquals(3, count(g.getNamed().minus(g1).iterate()));
            assertEquals(3, count(g.getDefault().minus(g1).iterate()));  
            assertEquals(0, count(g.getDefault().minus(list2).iterate()));
+           DataFilterFactory df = new DataFilterFactory();
+           assertEquals(5, count(g.getDefault().iterate().filter(df.init().object(ExprType.ISURI))));          
+           assertEquals(0, count(g.getDefault().iterate().filter(df.init().object(ExprType.ISBLANK))));           
+           assertEquals(5, count(g.getDefault().iterate().filter(df.init().not().subject(ExprType.ISBLANK))));
            
-//           assertEquals(5, count(g.getDefault().iterate().filter(ExprType.ISURI)));          
-//           assertEquals(0, count(g.getDefault().iterate().filter(ExprType.ISBLANK)));           
-//           assertEquals(5, count(g.getDefault().iterate().filter(ExprType.ISBLANK).not()));
-      }
+           assertEquals(4, count(g.getNamed().iterate().filter(df.init().or()
+                    .and().graph(ExprType.EQ, g1).subject(ExprType.EQ, n)
+                    .and().graph(ExprType.EQ, g2).not().subject(ExprType.EQ, n))));
+           
+            assertEquals(5, count(g.getDefault().iterate().filter(df.init().object(ExprType.ISURI))));          
+           assertEquals(0, count(g.getDefault().iterate().filter(df.init().object(ExprType.ISBLANK))));           
+           assertEquals(5, count(g.getDefault().iterate().filter(df.init().not().subject(ExprType.ISBLANK))));
+           
+           assertEquals(0, count(g.getDefault().iterate()
+                   .filter(df.init().edge(ExprType.EQ, DataFilter.SUBJECT, DataFilter.OBJECT))));
+    }
     
     int count(Iterable<Entity> it){
           int c = 0;
@@ -2536,7 +2610,7 @@ public class TestQuery1 {
                 + "}";
         Mappings map = exec.query(q);
         //System.out.println(map.getTemplateStringResult());
-        assertEquals(203, map.getTemplateStringResult().length());
+        assertEquals(250, map.getTemplateStringResult().length());
 
 
     }
@@ -2824,17 +2898,18 @@ public class TestQuery1 {
 
         Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
         String str = t.transform();
-        assertEquals(3934, str.length());
+        //System.out.println("result:\n" + str);
+        assertEquals(4031, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(3271, str.length());
+        assertEquals(3368, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(7047, str.length());
+        assertEquals(7144, str.length());
     }
 
     @Test
@@ -2852,17 +2927,17 @@ public class TestQuery1 {
         Mappings map = exec.query(t1);
         String str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3934, str.length());
+        assertEquals(3981, str.length());
 
         map = exec.query(t2);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3271, str.length());
+        assertEquals(3318, str.length());
 
         map = exec.query(t3);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(7047, str.length());
+        assertEquals(7094, str.length());
     }
 
     @Test
@@ -2908,7 +2983,7 @@ public class TestQuery1 {
 
         Transformer pp = Transformer.create(g, Transformer.TRIG);
         String str = pp.transform();
-        assertEquals(10314, str.length());
+        assertEquals(10150, str.length());
 
 
     }
@@ -2936,7 +3011,7 @@ public class TestQuery1 {
 
         map = exec.query(t2);
 
-        assertEquals(9245, map.getTemplateResult().getLabel().length());
+        assertEquals(9292, map.getTemplateResult().getLabel().length());
 
     }
 
@@ -2954,7 +3029,7 @@ public class TestQuery1 {
 
 
         Mappings map = exec.query(t1);
-        assertEquals(3024, map.getTemplateResult().getLabel().length());
+        assertEquals(4353, map.getTemplateResult().getLabel().length());
 
     }
 
@@ -4403,7 +4478,7 @@ public class TestQuery1 {
     }
 
     String concat(IDatatype dt1, IDatatype dt2) {
-        return dt1.getLabel() + "." + dt2.getLabel();
+        return dt1.stringValue()+ "." + dt2.getLabel();
     }
 
     @Test
@@ -4619,7 +4694,7 @@ public class TestQuery1 {
     }
 
     
-    @Test
+    
     public void test30() {
 
         String query =

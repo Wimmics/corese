@@ -1,0 +1,25 @@
+#
+# defaut processing of a variable is st:apply-templates 
+#
+# Olivier Corby, Wimmics Inria I3S, 2014
+#
+template st:profile(?in) {
+  
+}
+where {}
+
+ function st:process(?in) {
+      if (isBlank(?in), st:apply-templates(?in), 
+      if (isLiteral(?in), st:pretty(?in),
+      st:turtle(?in)))
+ }
+ 
+ function st:pretty(?in){
+    if (datatype(?in) = xt:graph) {str(?in)}
+    else {st:turtle(?in)}
+ }
+      
+ function st:default(?in) {
+    st:turtle(?in)
+ }
+ 

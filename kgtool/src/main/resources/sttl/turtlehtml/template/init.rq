@@ -8,11 +8,17 @@ template st:profile(?in) {
 }
 where {}
 
+#
+# extended datatype xt:graph is a string which represents a Turtle (sub)graph
+# display it as is
+#
 function st:process(?in) { 
   if (isBlank(?in), st:blank(?in),	  
   if (isURI(?in), st:clean(st:turtle(?in)),
-  st:literal(st:clean(st:turtle(?in)))))
+  if (datatype(?in) = xt:graph, st:clean(str(?in)),
+  st:literal(st:clean(st:turtle(?in))))))
 }
+
 
 function st:clean(?in){
     replace(?in, "<", "&lt;") 		
@@ -37,4 +43,6 @@ function st:id(?in){
 function st:default(?in) {
    st:turtle(?in)
 }
+
+
 

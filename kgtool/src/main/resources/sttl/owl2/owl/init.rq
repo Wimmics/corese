@@ -14,27 +14,31 @@ where {}
 
  function st:process(?in) {  
       if (isURI(?in), owlfs:pretty(?in),	
-	st:apply-templates(?in))
-    }
+        st:apply-templates(?in))
+}
     
 # export to sub transformations (export to Interpreter)    
-export {
+@public {
 
     function owlfs:pretty(?in) {
       let (?t = st:turtle(?in)){
-	if (st:get(st:html, true), 
+        if (st:get(st:html, true), 
 	      owlfs:protect(?t), ?t)
       }
+    }
+    
+    function owlfs:display(?in) {
+        if (st:get(st:html, true), owlfs:protect(?in), ?in)
     }
   
    function owlfs:protect(?s) {
         replace(replace(?s, "&", "&amp;"), "<", "&lt;")
-    }
+   }
     
     # used by sub transformations, with st:owlexp
     function owlfs:process(?in) {
       if (isURI(?in), owlfs:pretty(?in),	
-	st:apply-templates-with(st:owlexp, ?in))
+        st:apply-templates-with(st:owlexp, ?in))
     }
 }
     

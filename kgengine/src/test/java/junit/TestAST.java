@@ -42,6 +42,18 @@ import fr.inria.edelweiss.kgtool.print.ResultFormat;
  */
 public class TestAST {
 
+    
+        @Test
+        public void testNumber(){
+            IDatatype dt1 = DatatypeMap.newInstance(10);
+            IDatatype res = dt1.div(DatatypeMap.newInstance(2));
+            assertEquals(5, res.intValue());
+            assertEquals(res.getCode(), IDatatype.DECIMAL);
+            
+            IDatatype dt3 = DatatypeMap.newInstance(Integer.MAX_VALUE);
+            IDatatype dt4 = dt3.plus(DatatypeMap.ONE);
+            assertEquals(dt4, null);
+        }
 
 	@Test
 	public void test1(){

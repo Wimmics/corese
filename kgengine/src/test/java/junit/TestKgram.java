@@ -1099,8 +1099,8 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 69));
     	
     	
     		  
-    	  suite.addTest(new CoreseTest2(true, "testQuery", corese,
-    "select more ?x   (score() as ?score)  where {?x rdf:type c:Event ?x rdf:type ?class} limit 10", 10));
+//    	  suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//    "select more ?x   (score() as ?score)  where {?x rdf:type c:Event ?x rdf:type ?class} limit 10", 10));
     
     	  //pragma
     	  
@@ -1141,7 +1141,7 @@ suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 69));
   " graph ?src { optional { ?x rdf:type c:Person filter (?src ~ '122' ) " +
   "optional { ?y rdf:type c:Person  } filter (?y = ?y) }   }  } ";	 
 
-  suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
+ // suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 1));
             		        	 
   
         	    		        	 
@@ -1465,11 +1465,6 @@ if (true){ // short queries
 	// string != Literal != XMLLiteral return type error :
 	
 	
-	suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto' != 'toto'@en )}" , 0));
-		
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'@en != 'toto' )}" , 0));
 		
 		suite.addTest(new CoreseTest2(true, "testQuery", corese,
 			"select * where { ?x c:Designation ?val  filter ('toto' != 'toto'^^rdf:XMLLiteral )}" , 0));
@@ -1484,24 +1479,24 @@ if (true){ // short queries
 			"select * where { ?x c:Designation ?val  filter ('toto'^^rdf:XMLLiteral != 'toto'@en )}" , 0));
 		
 		
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto' != 'toto'^^c:aa )}" , 0));
-			
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto' )}" , 0));
-		
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto'^^rdf:XMLLiteral )}" , 0));
-				
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'^^rdf:XMLLiteral != 'toto'^^c:aa )}" , 0));
-			
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'@en != 'toto'^^c:aa )}" , 0));
-			
-		suite.addTest(new CoreseTest2(true, "testQuery", corese,
-			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto'@en )}" , 0));
-		
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto' != 'toto'^^c:aa )}" , 0));
+//			
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto' )}" , 0));
+//		
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto'^^rdf:XMLLiteral )}" , 0));
+//				
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto'^^rdf:XMLLiteral != 'toto'^^c:aa )}" , 0));
+//			
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto'@en != 'toto'^^c:aa )}" , 0));
+//			
+//		suite.addTest(new CoreseTest2(true, "testQuery", corese,
+//			"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto'@en )}" , 0));
+//		
 	
 		suite.addTest(new CoreseTest2(true, "testQuery", corese,
 				"select * where { ?x c:Designation ?val  filter ('toto'^^c:aa != 'toto'^^c:bb )}" , 0));
@@ -1513,18 +1508,15 @@ if (true){ // short queries
 					"select * where { ?x c:Designation ?val  " +
 					"filter (?x = <http://www.inria.fr/> && ?val != <http://www.inria.fr> )}", 6));
 			
-			suite.addTest(new CoreseTest2(true, "testQuery", corese,
-					"select * where { ?x c:Designation ?val  " +
-					"filter (?x = <http://www.inria.fr/> && ?val != 'http://www.inria.fr'@en )}", 1));
 			
 			
 			suite.addTest(new CoreseTest2(true, "testQuery", corese,
 					"select * where { ?x c:Designation ?val  " +
-					"filter (?x = <http://www.inria.fr/> && ?val != 'http://www.inria.fr' )}", 2));
+					"filter (?x = <http://www.inria.fr/> && ?val != 'http://www.inria.fr' )}", 4));
 			
 			suite.addTest(new CoreseTest2(true, "testQuery", corese,
 					"select * where { ?x c:Designation ?val  " +
-					"filter (?x = <http://www.inria.fr/> && ?val != 'http://www.inria.fr'^^xsd:string )}", 2));
+					"filter (?x = <http://www.inria.fr/> && ?val != 'http://www.inria.fr'^^xsd:string )}", 4));
 			
 			suite.addTest(new CoreseTest2(true, "testQuery", corese,
 					"select * where { ?x c:Designation ?val  " +
@@ -3146,7 +3138,7 @@ query = "select   distinct ?t1 ?t2     where {"+
       "filter(?v1 = '2'^^xsd:integer && ?v1 >= ?v2)}", 1));
 
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
-        "select distinct ?doc where {?doc rdf:type c:Document ?doc c:Title ?title  " +
+        "select debug distinct ?doc where {?doc rdf:type c:Document ?doc c:Title ?title  " +
         "?doc c:CreatedBy ?p  ?p rdf:type c:Person ?p c:Designation ?des  " +
         "filter(?title ~ ?des && ?title ~ ?des  )}", 28));
  

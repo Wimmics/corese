@@ -3,10 +3,8 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:main {
-  group { 
     st:apply-templates(?x)
     ; separator = "\n\n"
-  }
 }
 where {
   select distinct ?x where { 
@@ -16,9 +14,10 @@ where {
       isURI(?x) 
       || not exists { ?z ?q ?x }
       || (isBlank(?x) 
-	  && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
-	   || exists { ?x ?q ?x }
-	  ))
+        && not exists { ?x rdf:first ?e }
+        && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
+            || exists { ?x ?q ?x })
+	     )
     )
   } order by ?x
 }

@@ -9,18 +9,16 @@ template st:value {
 	if (?refer, st:turtle(?y), 
 	if (isURI(?y) && ?y = rdf:nil, "()", ?y))
           
-        ; separator = concat(" ;", st:nl()) 
-        
-#        ; separator = " ;\n" 
-     
+    ; separator = concat(" ;", st:nl()) 
 }
 where {
   ?in ?p ?y 
   
-  filter(?p not in (rdf:type))
+  filter (?p not in (rdf:type))
   
-  bind(
+  bind (
     isBlank(?y) 
+    && not exists { ?y rdf:first ?e }
     && ( (st:isStart() && exists { ?x ?q ?y . filter(?in != ?x) })
          || exists { ?y ?q ?y } 
          || ?in = ?y

@@ -162,6 +162,7 @@ public class ProxyImpl implements Proxy, ExprType {
      }
      
      // TODO: check ExprLabel.COMPARE
+    @Override
      public int compare(Environment env, Producer p, Node o1, Node o2) {
         IDatatype dt1 = (IDatatype) o1.getValue();
         IDatatype dt2 = (IDatatype) o2.getValue();
@@ -372,6 +373,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case ISNUMERIC:
                 return (dt.isNumber()) ? TRUE : FALSE;
+                
+            case NOT:
+                return not(dt);
 
             case URI:
                 return uri(exp, dt);
@@ -520,6 +524,10 @@ public class ProxyImpl implements Proxy, ExprType {
             case DIV:
             case EQ:
             case NEQ:
+            case LT:
+            case LE:
+            case GT:
+            case GE:
                 return term(exp, env, p, o1, o2);
                 
             case OR:
@@ -1781,6 +1789,7 @@ public class ProxyImpl implements Proxy, ExprType {
      /**
      * exp = xt:fun(?x)
      */
+    @Override
     public IDatatype let(Expr exp, Environment env, Producer p, Object val) {
         return let(exp, exp.getExp(0), (IDatatype) val, env, p);
     }
@@ -1852,6 +1861,13 @@ public class ProxyImpl implements Proxy, ExprType {
         } else {
             return getValue(dt1.booleanValue() && dt2.booleanValue());
         }
+    }
+    
+    private IDatatype not(IDatatype dt){
+        if (error(dt)){
+            return error();
+        }
+        return getValue(! dt.booleanValue());
     }
 
     @Override

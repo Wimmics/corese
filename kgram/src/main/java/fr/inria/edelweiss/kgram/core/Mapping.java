@@ -21,8 +21,7 @@ import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
 import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
-import java.lang.reflect.Array;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -754,6 +753,10 @@ public class Mapping
 	public Node[] getQueryNodes(){
 		return qNodes;
 	}
+        
+        public List<Node> getQueryNodeList(){
+            return Arrays.asList(getQueryNodes());
+        }
 	
         @Override
 	public Node[] getNodes(){

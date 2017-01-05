@@ -471,9 +471,9 @@ public class Eval implements ExpType, Plugin {
      * Copy current evaluator to eval subquery same memory (share bindings) new
      * exp stack
      */
-    Eval copy() {
-        return copy(copyMemory(query), producer, evaluator);
-    }
+//    Eval copy() {
+//        return copy(copyMemory(memory, query, null), producer, evaluator);
+//    }
     
     public Eval copy(Memory m, Producer p, Evaluator e) {
         return copy(m, p, e, query);
@@ -482,7 +482,9 @@ public class Eval implements ExpType, Plugin {
     // q may be the subQuery
     Eval copy(Memory m, Producer p, Evaluator e, Query q) {
         Eval ev = create(p, e, match);
-        ev.complete(q);
+        if (q != null){
+            ev.complete(q);
+        }
         ev.setSPARQLEngine(getSPARQLEngine());
         ev.setMemory(m);
         ev.set(provider);
@@ -506,19 +508,16 @@ public class Eval implements ExpType, Plugin {
     }
 
     // copy memory for path
-    private Memory copyMemory(Query query) {
-        return copyMemory(memory, query, null);
-    }
+//    private Memory copyMemory(Query query) {
+//        return copyMemory(memory, query, null);
+//    }
 
     /**
-     * copy memory for sub query copy sub query select variables that are
+     * copy memory for sub query 
+     * copy sub query select variables that are
      * already bound in current memory
-     *
+     * Use case: subquery and exists
      */
-    private Memory copyMemory(Query query, Query sub) {
-        return copyMemory(memory, query, sub);
-    }
-
     private Memory copyMemory(Memory memory, Query query, Query sub) {
         Memory mem = new Memory(match, evaluator);
         if (sub == null) {
@@ -533,14 +532,17 @@ public class Eval implements ExpType, Plugin {
         return mem;
     }
 
-    /**
-     * copy of Memory may be stored in exp. Reuse data structure after cleaning
-     * and init copy current memory content into target memory
-     */
-    public Memory getMemory(Exp exp) {
-        return getMemory(memory, exp);
-    }
+    
+//    public Memory getMemory(Exp exp) {
+//        return getMemory(memory, exp);
+//    }
 
+    /**
+     * copy of Memory may be stored in exp. 
+     * Reuse data structure after cleaning
+     * and init copy current memory content into target memory
+     * Use case: exists {}
+     */
     public Memory getMemory(Memory memory, Exp exp) {
         Memory mem;
         if (memory.isFake()) {
@@ -2475,7 +2477,7 @@ public class Eval implements ExpType, Plugin {
         } else {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
-            Eval ev = copy(copyMemory(query, subQuery), p, evaluator, subQuery);
+            Eval ev = copy(copyMemory(memory, query, subQuery), p, evaluator, subQuery);
 
             Node subNode = null;
 

@@ -252,7 +252,8 @@ public class Memory implements Environment {
     /**
      * mem is a fresh new Memory, init() has been done Copy this memory into mem
      * Use case: exists {} , sub query Can bind all Memory nodes or bind only
-     * subquery select nodes (2 different semantics) TODO: let ( .., exists {}),
+     * subquery select nodes (2 different semantics) 
+     * TODO: let ( .., exists {}),
      * MUST push BGP solution and then push Bind
      *
      */
@@ -260,16 +261,7 @@ public class Memory implements Environment {
         int n = 0;
         if (sub == null) {
             // exists {}
-            if (hasBind()) {
-                mem.copy(bind);
-            } else {
-                // bind all nodes
-                // use case: inpath copy the memory
-                for (Node qNode : qNodes) {
-                    copyInto(qNode, qNode, mem, n);
-                    n++;
-                }
-            }
+           copyInto(mem);
         } // subquery
         else if (eval.getMode() == Evaluator.SPARQL_MODE
                 && !sub.isBind()) {
@@ -294,6 +286,32 @@ public class Memory implements Environment {
             }
         }
         return mem;
+    }
+    
+    void copyInto(Memory mem) {
+        if (hasBind()) {
+            mem.copy(bind);
+        } 
+        copyIntoMem(mem);
+    }
+    
+    void copyIntoMem(Memory mem) {
+        int n = 0;
+        // bind all nodes
+        // use case: inpath copy the memory
+        for (Node qNode : qNodes) {
+            copyInto(qNode, qNode, mem, n);
+            n++;
+        }
+    }
+       
+    // old version
+    void copyInto2(Memory mem) {
+        if (hasBind()) {
+            mem.copy(bind);
+        } else {
+            copyIntoMem(mem);
+        }
     }
 
     /**

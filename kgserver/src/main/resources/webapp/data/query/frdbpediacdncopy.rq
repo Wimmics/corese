@@ -1,0 +1,28 @@
+#
+# SPARQL Query 
+# Extract a subgraph from dbpedia, to be processed by HTML Transformation st:navlab
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix cn:   <http://cdn.fr/schema/>
+
+insert  {
+
+  ?uri cn:date ?date
+  ?uri rdfs:comment ?cc
+  
+}
+where {
+
+  bind (st:get(st:uri) as ?uri)
+  optional { ?uri p:dateDeNaissance ?dn ; p:dateDeDécès ?dd }   
+  bind (coalesce(concat (?dn, "-", ?dd), "") as ?cc)
+  bind (coalesce(xsd:integer(?dn), "") as ?date)
+
+}

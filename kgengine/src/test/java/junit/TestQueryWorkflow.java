@@ -40,6 +40,15 @@ public class TestQueryWorkflow {
         Load.setDefaultGraphValue(true);       
     }
     
+     @Test
+      public void testShapePath() throws EngineException, LoadException{
+          for (int i = 0; i<1; i++){
+            SemanticWorkflow sw = new WorkflowParser().parse(data + "shape/test/workflowpath.ttl");
+            Data data = sw.process();
+          }
+      }
+      
+    
     @Test
       public void testShape2() throws EngineException, LoadException{
           for (int i = 0; i<1; i++){

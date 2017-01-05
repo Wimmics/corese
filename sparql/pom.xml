@@ -10,13 +10,32 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>sparql</artifactId>
-
 	<dependencies>
+		<!--<dependency>
+			<groupId>StringHelper</groupId>
+			<artifactId>StringHelper</artifactId>
+			<version>1.0</version>
+		</dependency>-->
+		<!--<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+		</dependency>-->
+                
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+            <groupId>fr.inria.wimmics</groupId>
 			<artifactId>kgram</artifactId>
-			<version>${project.parent.version}</version>
+            <version>${global.version}</version>
+        </dependency>
+    
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
 		</dependency>
 
 		<dependency>

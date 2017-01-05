@@ -16,22 +16,22 @@
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgram</artifactId>
-            <version>${parent.version}</version>
+            <version>${global.version}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgengine</artifactId>
-            <version>${parent.version}</version>
+            <version>${global.version}</version>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>corese-core</artifactId>
-            <version>${parent.version}</version>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>kgtool</artifactId>
+            <version>${global.version}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
-            <version>${parent.version}</version>
+            <version>${global.version}</version>
         </dependency>
         
 	<dependency>

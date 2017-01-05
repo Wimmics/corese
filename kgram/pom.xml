@@ -9,6 +9,7 @@
 		<relativePath>..</relativePath>
 	</parent> 
  
+    <groupId>fr.inria.wimmics</groupId>
 	<artifactId>kgram</artifactId>
 	
 	<dependencies>

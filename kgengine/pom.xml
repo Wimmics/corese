@@ -8,25 +8,28 @@
 		<relativePath>..</relativePath>
 	</parent>
     
+    <groupId>fr.inria.wimmics</groupId>
 	<artifactId>kgengine</artifactId>
+    <packaging>jar</packaging>
 	<dependencies>
+        
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>corese-core</artifactId>
-			<version>${project.parent.version}</version>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>kgtool</artifactId>
+            <version>${global.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+            <groupId>fr.inria.wimmics</groupId>
 			<artifactId>kgram</artifactId>
-			<version>${project.parent.version}</version>
+            <version>${global.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+            <groupId>fr.inria.wimmics</groupId>
 			<artifactId>kgenv</artifactId>
-			<version>${project.parent.version}</version>
+            <version>${global.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+            <groupId>fr.inria.wimmics</groupId>
 			<artifactId>sparql</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
@@ -40,6 +43,12 @@
 			<artifactId>arp</artifactId>
 			<version>2.2.b</version>
 		</dependency>
+        
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -58,21 +67,17 @@
 			<artifactId>xml-apis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.6.2</version>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.6.2</version>
-		</dependency>
+        
 		<dependency>
 			<groupId>com.tngtech.java</groupId>
 			<artifactId>junit-dataprovider</artifactId>
 			<version>1.5.0</version>
 			<scope>test</scope>
 		</dependency>
+        
 	</dependencies>
 
 	<build>

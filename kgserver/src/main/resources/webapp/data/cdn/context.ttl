@@ -141,6 +141,14 @@ r:Inquisition_médiévale cn:date 1233 ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Konrad_von_Marburg.jpg/190px-Konrad_von_Marburg.jpg> ;
 rdfs:label "Inquisition en France" .
 
+
+r:Marco_Polo a foaf:Person ;
+cn:date 1254 ;
+rdfs:label "Marco Polo" ;
+rdfs:comment "1254-1324" .
+
+
+
 r:Guerre_de_Cent_Ans cn:date 1337  ; rdfs:label "Guerre de cent ans"  .
 
 
@@ -149,7 +157,7 @@ cn:date 1244 ;
 rdfs:label "Château de Monségur" ;
 rdfs:comment "Prise du château, 200 cathares brulés vifs" . 
 
-r:Duguesclin a foaf:Person ;
+r:Bertrand_Du_Guesclin a foaf:Person ;
 cn:date 1320 ;
 rdfs:label "Bertrand Du Guesclin" ;
 rdfs:comment "1320-1380" .
@@ -208,6 +216,17 @@ cn:date 1469 ;
 rdfs:label "Nicolas Machiavel";
 rdfs:comment "1469 - 1527" .
 
+r:Nicolas_Copernic a foaf:Person ;
+cn:date 1473 ;
+rdfs:label "Nicolas Copernic" ;
+rdfs:comment "Théorie de l'héliocentrisme (1473-1543)" .
+
+
+r:François_Rabelais a foaf:Person ;
+  <http://cdn.fr/schema/date> 1483 ;  
+  rdfs:comment "1483-1553" ;  
+  rdfs:label "François Rabelais"@fr .
+
 
 r:Christophe_Colomb a foaf:Person ;
 cn:date 1492  ; rdfs:label "Christophe Colomb" ;
@@ -218,6 +237,12 @@ cn:date 1492 ;
 rdfs:label "Reconquista";
 rdfs:comment "Expulsion des Musulmans et des Juifs d'Espagne par les Rois catholiques"  .
 
+
+r:Soliman_le_Magnifique a foaf:Person ;
+  <http://cdn.fr/schema/date> 1494 ;
+   rdfs:label "Soliman le Magnifique"@fr ;
+   rdfs:comment  "1494-1566" .
+   
 
 r:Bataille_de_Marignan a o:Place ;
 cn:date 1515  ; rdfs:label "Bataille de Marignan"  .
@@ -232,17 +257,23 @@ rdfs:label "Martin Luther" ;
 rdfs:comment "Thèses de la Réforme" ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
 
+r:Michel_de_Montaigne a foaf:Person ;
+  rdfs:label "Michel de Montaigne"@fr ;
+  cn:date 1533 ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Montaigne-Dumonstier.jpg?width=300> ;
+  rdfs:comment "1533-1592" .
 
-r:Nicolas_Copernic a foaf:Person ;
-cn:date 1543 ;
-rdfs:label "Nicolas Copernic" ;
-rdfs:comment "Théorie de l'héliocentrisme (1473-1543)" .
+
 
 <http://fr.dbpedia.org/resource/Bataille_de_Saint-Quentin_(1557)> a o:Place ;
 cn:date 1557 ;
 rdfs:label "Bataille de Saint-Quentin" ;
 rdfs:comment "A la tête de l'armée impériale, Emmanuel-Philibert défait les français" .
 
+<http://fr.dbpedia.org/resource/Galilée_(savant)> a foaf:Person ;
+cn:date 1564 ;
+rdfs:label "Galilée" ;
+rdfs:comment "1564-1642"  .
 
 r:Bataille_de_Lépante a o:Place ;
 cn:date 1571 ;
@@ -258,6 +289,10 @@ r:Massacre_de_la_Saint-Barthélemy
 cn:date 1572  ; rdfs:label "Saint Barthélemy" ;
 rdfs:comment "Massacre des Protestants"  .
 
+r:Armand_Jean_du_Plessis_de_Richelieu a foaf:Person ;
+rdfs:label "Richelieu" ;
+cn:date 1585 ;
+rdfs:comment "1585-1642" .
 
 
 r:Édit_de_Nantes 
@@ -268,10 +303,7 @@ cn:date 1602 ;
 rdfs:label "Mazarin" ;
 rdfs:comment "1602-1661" .
 
-<http://fr.dbpedia.org/resource/Galilée_(savant)> a foaf:Person ;
-cn:date 1616 ;
-rdfs:label "Galilée" ;
-rdfs:comment "Condamné par l'inquisition (1564-1642)"  .
+
 
 r:Jean-Baptiste_Colbert a foaf:Person ;
 cn:date 1619 ;
@@ -288,18 +320,30 @@ cn:date 1633 ;
 rdfs:label "Sébastien Le Prestre de Vauban" ;
 rdfs:comment "1633-1707" .
 
-r:Armand_Jean_du_Plessis_de_Richelieu a foaf:Person ;
-rdfs:label "Richelieu" ;
-cn:date 1642 ;
-rdfs:comment "1585-1642" .
-
-r:Isaac_Newton a foaf:Person ; cn:date 1684 ;
+r:Isaac_Newton a foaf:Person ; cn:date 1643 ;
 rdfs:label "Isaac Newton" ;
 rdfs:comment "Loi de la gravitation (1643-1727)"  .
+
+r:John_Law_de_Lauriston a foaf:Person ;
+  <http://cdn.fr/schema/date> 1671 ;
+  rdfs:comment "1671-1729" ;
+  rdfs:label "John Law de Lauriston"@fr .
+  
+
 
 
 <http://fr.dbpedia.org/resource/Édit_de_Fontainebleau_(1685)> 
 cn:date 1685  ; rdfs:label "Révocation de l'Edit de Nantes" .
+
+r:Johann_Sebastian_Bach a foaf:Person ;
+cn:date 1685 ;
+rdfs:label "Johann Sebastian Bach";
+rdfs:comment "1685-1750" .
+
+r:Montesquieu a foaf:Person ;
+  <http://cdn.fr/schema/date> 1689 ;
+  rdfs:comment "1689-1755" ;
+  rdfs:label "Montesquieu"@fr .
 
 
 r:Invasion_du_Dauphiné_en_1692 cn:date 1692 ;
@@ -315,11 +359,31 @@ rdfs:comment "(1701-1714)" .
 
 <http://fr.dbpedia.org/resource/Traités_d'Utrecht_(1713)> cn:date 1713 ; rdfs:label "Traité d'Utrecht"  .
 
-r:Johann_Sebastian_Bach a foaf:Person ;
-cn:date 1750 ;
-rdfs:label "Johann Sebastian Bach";
-rdfs:comment "1685-1750" .
+r:Denis_Diderot a foaf:Person ;
+  <http://cdn.fr/schema/date> 1713 ;
+  rdfs:comment "1713-1784" ;
+  rdfs:label "Denis Diderot"@fr .
 
+r:Emmanuel_Kant a foaf:Person ;
+  <http://cdn.fr/schema/date> 1724 ;
+  rdfs:comment "1724-1804" ;  
+  rdfs:label "Emmanuel Kant" .
+  
+r:Nicolas_de_Condorcet a foaf:Person ;
+  <http://cdn.fr/schema/date> 1743 ;
+  rdfs:comment "1743-1794" ;
+  rdfs:label "Nicolas de Condorcet"@fr .  
+
+r:Jacques_Necker a foaf:Person ;
+  <http://cdn.fr/schema/date> 1732 ; 
+  rdfs:comment "1732-1804" ;
+  rdfs:label "Jacques Necker"@fr .
+
+r:Wolfgang_Amadeus_Mozart a foaf:Person ;
+cn:date 1756 ;
+rdfs:label "Mozart";
+rdfs:comment "1756-1791" . 
+  
 <http://fr.dbpedia.org/resource/Traité_de_Turin_(1760)> cn:date 1760 ; rdfs:label "Traité de Turin"  .
 
 r:François-Jean_Lefebvre_de_La_Barre a foaf:Person ;
@@ -342,10 +406,11 @@ cn:date 1789 ;
 rdfs:label "Déclaration des droits de l'homme et du citoyen" ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/a/aa/Le_Barbier_Dichiarazione_dei_diritti_dell%27uomo.jpg> .
 
-r:Wolfgang_Amadeus_Mozart a foaf:Person ;
-cn:date 1791 ;
-rdfs:label "Mozart";
-rdfs:comment "1756-1791" .
+
+
+r:Bataille_de_Valmy a o:Place ;
+cn:date 1792 ;
+rdfs:label "Bataille de Valmy".
 
 <http://fr.dbpedia.org/resource/Première_République_(France)> cn:date 1792  ; 
 rdfs:label "République française" ; 
@@ -359,7 +424,40 @@ rdfs:label "Abolition de l'esclavage" .
 #st:icon 
 #<http://commons.wikimedia.org/wiki/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png#/media/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png>.
 
+r:Bataille_de_Marengo a o:Place ;
+cn:date 1800 ;
+rdfs:label "Bataille de Marengo".
 
+r:Victor_Hugo a foaf:Person ;
+  <http://cdn.fr/schema/date> 1802 ; 
+  rdfs:comment "1802-1885" ;  
+  rdfs:label "Victor Hugo"@fr .
+
+r:Bataille_de_Trafalgar a o:Place ;
+cn:date 1805 ;
+rdfs:label "Bataille de Trafalgar".
+   
+  
+<http://fr.dbpedia.org/resource/Bataille_d'Austerlitz> a o:Place ;
+cn:date 1805 ;
+rdfs:label "Bataille d'Austerlitz".
+
+
+r:Charles_Darwin a foaf:Person ;
+  <http://cdn.fr/schema/date> 1809 ; 
+  rdfs:comment "1809-1882" ;
+  rdfs:label "Charles Darwin"@fr .
+
+r:Bataille_de_la_Bérézina a o:Place ;
+cn:date 1812 ;
+rdfs:label "Bataille de la Bérézina".
+
+
+r:Émile_Zola a foaf:Person ;
+  <http://cdn.fr/schema/date> 1840 ; 
+  rdfs:comment "1840-1902" ;
+  rdfs:label "Émile Zola"@fr .  
+  
 <http://fr.dbpedia.org/resource/Coup_d'État_du_18_brumaire> cn:date 1799  ; 
 rdfs:label "Coup d'Etat du 18 Brumaire" .
 
@@ -385,6 +483,12 @@ cn:date 1861  ;
 rdfs:label "Unification italienne" ;
 rdfs:comment "Victor-Emmanuel II roi d'Italie" .
 
+
+r:Guerre_franco-allemande_de_1870 a o:Place ;
+cn:date 1870 ;
+rdfs:label "Guerre de 1870".
+
+
 <http://fr.dbpedia.org/resource/Commune_de_Paris_(1871)>
 cn:date 1871 ;
 st:icon <http://upload.wikimedia.org/wikipedia/commons/6/67/La_barricade_de_la_place_Blanche_d%C3%A9fendue_par_des_femmes_lors_de_la_Semaine_sanglante.jpg> ;
@@ -394,6 +498,12 @@ rdfs:label "Commune de Paris" .
 <http://fr.dbpedia.org/resource/Humbert_Ier_d'Italie> a foaf:Person ;
 cn:date 1878 ; rdfs:comment "Roi d'Italie" ;
 rdfs:label "Humbert Ier"  .
+
+
+r:Albert_Einstein a foaf:Person ;
+  <http://cdn.fr/schema/date> 1879 ; 
+  rdfs:comment "1879-1955" ;
+  rdfs:label "Albert Einstein"@fr .
 
 <http://fr.dbpedia.org/resource/Victor-Emmanuel_III_d'Italie> a foaf:Person ;
 cn:date 1900 ; rdfs:comment "Roi d'Italie";

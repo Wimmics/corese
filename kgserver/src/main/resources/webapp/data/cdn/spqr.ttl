@@ -14,6 +14,25 @@ cn:date -501 ;
 rdfs:label "Tombe de Vix" .
 
 
+r:Archimède a foaf:Person ;
+cn:date -287 ;
+  rdfs:label "Archimède"@fr ;
+  rdfs:comment "-287 -212".
+
+  
+
+r:Pythagore a foaf:Person ;
+cn:date -495 ;
+rdfs:comment "-580 -495";
+rdfs:label "Pythagore"@fr .
+
+ 
+r:Thalès a foaf:Person ;
+cn:date -547 ;
+rdfs:comment "-625 -547" ;
+rdfs:label "Thalès"@fr .
+
+
 r:Platon a foaf:Person ;
 cn:date -427 ;
 rdfs:label "Platon" .

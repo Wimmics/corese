@@ -224,10 +224,40 @@ r:Napoléon_III a foaf:Person ;
 cn:date 1852  ; rdfs:label "Napoléon III" ;
 rdfs:comment "Empereur" .
 
+
+
 r:Adolphe_Thiers a foaf:Person ;
-cn:date 1871  ; rdfs:label "Adolphe Thiers" ; 
-rdfs:comment "Président de la République" .
+cn:date 1871  ; rdfs:label "Adolphe Thiers" .
 
+r:Patrice_de_Mac_Mahon a foaf:Person ;
+  <http://cdn.fr/schema/date> 1873 ;
+  rdfs:label "Patrice de Mac Mahon"@fr .
+  
+r:Jules_Grévy a foaf:Person ;
+  <http://cdn.fr/schema/date> 1879 ;
+  rdfs:label "Jules Grévy"@fr .  
 
+<http://fr.dbpedia.org/resource/Sadi_Carnot_(homme_politique)> a foaf:Person ;
+  <http://cdn.fr/schema/date> 1887 ;  
+  rdfs:label "Sadi Carnot"@fr .
+  
+r:Jean_Casimir-Perier a foaf:Person ;
+  <http://cdn.fr/schema/date> 1894 ;
+  rdfs:label "Jean Casimir-Perier"@fr .
 
+r:Félix_Faure a foaf:Person ;
+  <http://cdn.fr/schema/date> 1895 ;  
+  rdfs:label "Félix Faure"@fr .
+  
+r:Émile_Loubet a foaf:Person ;
+  <http://cdn.fr/schema/date> 1899 ;
+  rdfs:label "Émile Loubet"@fr .    
+  
+r:Armand_Fallières a foaf:Person ;
+  <http://cdn.fr/schema/date> "1906" ;
+  rdfs:label "Armand Fallières"@fr .
 
+  
+r:Raymond_Poincaré a foaf:Person ;
+  <http://cdn.fr/schema/date> 1913 ;
+  rdfs:label "Raymond Poincaré"@fr .

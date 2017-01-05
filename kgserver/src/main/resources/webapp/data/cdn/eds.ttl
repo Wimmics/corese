@@ -234,4 +234,8 @@ a foaf:Person ;
 cn:begin 1849 ; cn:end 1878 ;
 rdfs:label "Victor-Emmanuel II" ; p:title "Roi de Sardaigne".
 
+r:Camillo_Cavour a foaf:Person ;
+cn:date 1858 ;
+rdfs:label "Camillo Cavour" ;
+rdfs:comment "Entrevue de Plombières avec Napoléon III" .
 

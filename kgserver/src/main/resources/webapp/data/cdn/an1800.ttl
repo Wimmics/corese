@@ -5,6 +5,13 @@
 
 <> cn:topic cn:cdn
 
+
+r:Marc_Joseph_de_Gratet_Dubouchage a foaf:Person;
+cn:date 1803 ;
+rdfs:label "Dubouchage" ;
+rdfs:comment "Préfet des Alpes-Maritimes, de 1803 à 1814.".
+
+
 r:Giuseppe_Garibaldi a foaf:Person ;
 cn:date 1807 ;
 rdfs:label "Garibaldi" ;
@@ -28,10 +35,6 @@ rdfs:label "Gênes";
 cn:date 1853 ; 
 rdfs:comment "Suppression du port franc de Nice au profit de Gênes" .
 
-r:Camillo_Cavour a foaf:Person ;
-cn:date 1858 ;
-rdfs:label "Camillo Cavour" ;
-rdfs:comment "Entrevue de Plombières avec Napoléon III" .
 
 r:Annexion_du_comté_de_Nice_à_la_France 
 cn:date 1860 ; rdfs:label "La France annexe Nice et la Savoie".

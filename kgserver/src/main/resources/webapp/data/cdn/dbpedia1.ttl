@@ -1,0 +1,50 @@
+@prefix w: <http://fr.wikipedia.org/wiki/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix p: <http://fr.dbpedia.org/property/>
+dbo:birthPlace rdfs:label "birth place"@en ;
+  rdfs:label "lieu de naissance"@fr .
+
+dbo:deathPlace rdfs:label "death place"@en ;
+  rdfs:label "lieu de décès"@fr .
+
+dbo:residence rdfs:label "residence"@en .
+
+dbo:wikiPageWikiLink rdfs:label "Link from a Wikipage to another Wikipage"@en .
+
+p:lieuDeDécès rdfs:label "lieu de décès"@fr .
+
+p:lieuDeNaissance rdfs:label "lieu de naissance"@fr .
+
+p:paysDeRésidence rdfs:label "pays de résidence"@fr .
+
+r:Fernand_de_Magellan a foaf:Person ;
+  dbo:dbpedia r:Fernand_de_Magellan ;
+  dbo:deathDate "1521-04-27+02:00"^^xsd:date ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Fernão_de_Magalhães_por_Charles_Legrand.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Fernand_de_Magellan" ;
+  p:dateDeDécès "1521-04-27+02:00"^^xsd:date ;
+  p:dateDeNaissance "Aux environs de 1480"@fr ;
+  rdfs:comment "Fernand de Magellan (Fernão de Magalhães en portugais, Fernando de Magallanes en castillan), né dans le nord du Portugal aux environs de 1480 et mort sur l\'île de Mactan aux Philippines le 27 avril 1521, est un navigateur et explorateur portugais de l\'époque des Grandes découvertes."@fr ;
+  rdfs:label "Fernand de Magellan"@fr .
+
+
+
+r:Marco_Polo a foaf:Person ;
+  dbo:birthDate "1254-09-15+02:00"^^xsd:date ;
+  dbo:birthPlace r:Venise ;
+  dbo:dbpedia r:Marco_Polo ;
+  dbo:deathDate "1324-01-08+02:00"^^xsd:date ;
+  dbo:deathPlace r:Venise ;
+  dbo:residence r:Venise ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Marco_Polo_portrait.jpg?width=300> ;
+  dbo:wikiPageWikiLink r:Venise ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Marco_Polo" ;
+  p:dateDeDécès "1324-01-08+02:00"^^xsd:date ;
+  p:dateDeNaissance "1254-09-15+02:00"^^xsd:date ;
+  p:lieuDeDécès r:Venise ;
+  p:lieuDeNaissance r:Venise ;
+  p:paysDeRésidence r:Venise ;
+  rdfs:comment "Marco Polo (15 septembre 1254 à Venise - 8 janvier 1324 à Venise) était un marchand vénitien, célèbre pour son Livre des Merveilles, un livre qui a fait connaître l’Asie centrale et orientale aux Européens et a eu un succès considérable. Il part avec son père et son oncle Niccolò et Maffeo pour l’Asie où il servit, avec eux, Kubilai Khan, l\'empereur mongol."@fr ;
+  rdfs:label "Marco Polo"@fr .
+
+r:Venise rdfs:label "Venise"@fr .

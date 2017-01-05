@@ -1,22 +1,8 @@
 template st:tableconsuri {
-    format {
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
+    us:triple(st:number(), ?x, ?p, ?y)
 }
 where {
-  bind (st:get(st:uri) as ?uri)
+  bind (st:focus() as ?uri)
   ?x ?p ?y
   filter (?uri in (?x, ?p, ?y))
 }

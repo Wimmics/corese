@@ -1,19 +1,5 @@
 template st:tableconsall {
-    format {
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
+    us:triple(st:number(), ?x, ?p, ?y)
 }
 where {
   ?x ?p ?y

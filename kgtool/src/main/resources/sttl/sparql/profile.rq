@@ -35,3 +35,20 @@ function st:init(){
   }
 }
 
+function us:triple(?n, ?x, ?p, ?y){
+    st:format (
+        """
+        <tr>
+        <th>%s</th>
+        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
+        </tr>
+        """,
+        
+        ?n,
+        st:call-template(st:show,    ?x),
+        st:display(?x), 
+        st:display(?p), 
+        st:display(?y), 
+        st:call-template(st:show,    ?y)
+    )
+}

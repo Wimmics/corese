@@ -1,0 +1,12 @@
+template st:tableconslimit {
+    us:triple(st:number(), ?x, ?p, ?y)
+}
+where {
+    select * where {
+        ?x ?p ?y
+    }
+    order by ?x ?p ?y
+    limit 100
+}
+
+

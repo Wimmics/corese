@@ -2,12 +2,16 @@ template st:tablecons {
   if (bound(?uri)) {
     st:call-template(st:tableconsuri)
   }
+  else if (bound(?lim)){
+    st:call-template(st:tableconslimit)
+  }
   else {
     st:call-template(st:tableconsall)
   }
 }
 where {
   bind (st:focus() as ?uri)
+  bind (st:get(st:default) as ?lim)
 }
 
 

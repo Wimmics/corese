@@ -31,7 +31,7 @@ where {
 
 bind (coalesce(st:get(st:lang), "fr") as ?lang)
 
-values ?uri { unnest(st:get(st:list)) }
+values ?uri { unnest(coalesce(st:get(st:list), xt:list(st:get(st:uri)))) }
 
 service <http://fr.dbpedia.org/sparql> {
   

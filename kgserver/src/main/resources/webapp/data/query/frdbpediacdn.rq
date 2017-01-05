@@ -1,0 +1,40 @@
+#
+# SPARQL Query 
+# Extract a subgraph from dbpedia, to be processed by HTML Transformation st:navlab
+#
+# Olivier Corby - Wimmics INRIA I3S - 2014
+#
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+insert  {
+  ?uri a foaf:Person .
+  ?uri rdfs:label ?label ; rdfs:comment ?com . 
+  ?uri ?pp ?vv .   
+}
+where {
+
+bind (st:get(st:uri) as ?uri)
+
+service <http://fr.dbpedia.org/sparql> {
+  
+  ?uri rdfs:label ?label . filter(langMatches(lang(?label), "fr")) 
+  
+  optional {  
+    ?uri rdfs:comment ?com . filter(langMatches(lang(?com) , "fr")) 
+   }
+ 
+  optional { 
+    ?uri p:dateDeNaissance |  p:dateDeDécès ?vv
+    ?uri ?pp ?vv . 
+    filter isLiteral(?vv)   
+  }
+  
+ 
+}
+  
+}

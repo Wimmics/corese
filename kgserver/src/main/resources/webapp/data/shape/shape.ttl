@@ -104,8 +104,8 @@ ex:PersonNodeShape
 	sh:property [
         sh:predicate foaf:knows ;
         sh:shape [
-            sh:inverseProperty [
-                sh:predicate rdf:value ;
+            sh:property [
+                sh:path [ sh:inversePath rdf:value ];
                 sh:minCount 1
             ] 
         ]
@@ -133,8 +133,8 @@ ex:PropertyScopeExampleShape
 		sh:predicate ex:email ;
 		sh:minCount 1 
 	] ;
-	sh:inverseProperty [
-		sh:predicate foaf:knows ;
+	sh:property [
+		sh:path [sh:inversePath foaf:knows] ;
 		sh:class foaf:Person 
 	] ;
 	.	
@@ -164,8 +164,8 @@ ex:ObjPropertyScopeExampleShape
 	sh:scope [
 		a sh:AllObjectsScope ;
 	];
-	sh:inverseProperty [
-		sh:predicate ex:member ;
+	sh:property [
+		sh:path [sh:inversePath ex:member] ;
 		sh:maxCount 1 
 	]
 	.

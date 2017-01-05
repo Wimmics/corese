@@ -1,17 +1,238 @@
+#
+# Shape for Data Shape
+# Olivier Corby - Inria I3S - 2016
+#
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <http://www.example.org/> .
 
 
-	
-ex:SubPropertyScopeExampleShape
-	a sh:Shape ;
-	sh:scope [
-		a sh:AllSubjectsScope ;
-	];
-		
-	sh:property [
-        sh:predicate rdf:type ;
-        sh:nodeKind sh:BlankNode
-	]
-	.	
-	
+ex:s1 a sh:Shape ;
+sh:targetClass sh:Shape ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:targetSubjectsOf ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:targetObjectsOf ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:targetClass ;
+    sh:nodeKind sh:IRI 
+] ;
+sh:property [
+    sh:predicate sh:targetNode ;
+    sh:nodeKind sh:IRIOrLiteral 
+] ;
+sh:property [
+    sh:predicate sh:constraint
+] ;
+sh:property [
+    sh:predicate sh:property
+] ;
+sh:property [
+    sh:predicate sh:path ;
+    sh:nodeKind sh:BlankNodeOrIRI 
+] ;
+sh:property [
+    sh:predicate sh:and ;
+    sh:nodeKind sh:BlankNodeOrIRI 
+] ;
+sh:property [
+    sh:predicate sh:or ;
+    sh:nodeKind sh:BlankNodeOrIRI 
+] ;
+sh:property [
+    sh:predicate sh:not ;
+    sh:nodeKind sh:BlankNodeOrIRI 
+] ;
+
+.
+
+
+
+ex:s2 a sh:Shape ;
+sh:targetObjectsOf sh:property ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:predicate ;
+    sh:maxCount 1 ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:path ;
+    sh:maxCount 1 ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:shape
+] ;
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:and, sh:or, sh:not
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:class
+] ;
+sh:property [
+    sh:predicate sh:datatype ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:in
+] ;
+sh:property [
+    sh:predicate sh:pattern
+] ;
+sh:property [
+    sh:predicate sh:stem
+] ;
+sh:property [
+    sh:predicate sh:hasValue
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength ;
+    sh:datatype xsd:integer    
+] ;
+sh:property [
+    sh:predicate sh:minCount, sh:maxCount ;
+    sh:datatype xsd:integer
+] ;
+sh:property [
+    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+] ;
+sh:property [
+    sh:predicate sh:uniqueLang
+] ;
+sh:property [
+    sh:predicate sh:lessThan, sh:lessThanOrEquals, sh:equals, sh:disjoint
+] .
+
+
+
+
+
+ex:s4 a sh:Shape ;
+sh:targetObjectsOf sh:constraint ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:ignoredProperties ;
+    sh:nodeKind sh:BlankNode
+] ;
+sh:property [
+    sh:predicate sh:shape
+] ;
+sh:property [
+    sh:predicate sh:filterShape
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:closed ;
+    sh:datatype xsd:boolean
+] ;
+sh:property [
+    sh:predicate sh:not, sh:and, sh:or
+] ;
+
+sh:property [
+    sh:predicate sh:class
+] ;
+sh:property [
+    sh:predicate sh:datatype
+] ;
+sh:property [
+    sh:predicate sh:in
+] ;
+sh:property [
+    sh:predicate sh:pattern
+] ;
+sh:property [
+    sh:predicate sh:stem
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength
+] ;
+sh:property [
+    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+]  .
+
+
+
+
+ex:pathShape a sh:Shape ;
+#sh:targetObjectsOf sh:path ;
+sh:constraint [ sh:closed true ; sh:ignoredProperties (rdf:type) ];
+sh:property [
+    sh:predicate sh:alternativePath ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:inversePath ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:zeroOrMorePath ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:oneOrMorePath ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate sh:zeroOrOnePath ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate rdf:first ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:predicate rdf:rest ;
+    sh:severity sh:Warning
+] 
+.
+
+
+ex:s6 a sh:Shape ;
+sh:targetObjectsOf sh:path ;
+sh:property [
+    sh:path ([sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:severity sh:Warning
+] ;
+sh:property [
+    sh:path ([sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:shape ex:pathShape ;
+    sh:severity sh:Warning
+
+.
+
+
+
+
+
+
+
+
+

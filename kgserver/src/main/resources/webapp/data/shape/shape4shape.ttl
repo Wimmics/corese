@@ -14,7 +14,14 @@ sh:closed true ;
 sh:ignoredProperties (rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
+    sh:predicate sh:deactivated ;
+    sh:datatype xsd:boolean
+] ;
+sh:property [
     sh:predicate sh:name ;
+] ;
+sh:property [
+    sh:predicate sh:message ;
 ] ;
 sh:property [
     sh:predicate sh:description ;
@@ -60,9 +67,6 @@ sh:property [
     sh:nodeKind sh:IRIOrLiteral 
 ] ;
 sh:property [
-    sh:predicate sh:constraint
-] ;
-sh:property [
     sh:predicate sh:property
 ] ;
 sh:property [
@@ -85,6 +89,61 @@ sh:property [
     sh:nodeKind sh:BlankNodeOrIRI ;
     sh:shape ds:shape
 ] ;
+
+# node constraint
+
+sh:property [
+    sh:predicate sh:shape ;
+    sh:shape ds:shape
+] ;
+sh:property [
+    sh:predicate sh:severity ;
+    sh:in (sh:violation sh:Warning sh:Info)
+] ;
+sh:property [
+    sh:predicate sh:class ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:datatype ;
+    sh:nodeKind sh:IRI
+] ;
+sh:property [
+    sh:predicate sh:in ;
+    sh:shape ds:list
+] ;
+sh:property [
+    sh:predicate sh:pattern ;
+    sh:datatype xsd:string
+] ;
+sh:property [
+    sh:predicate sh:flags ;
+    sh:datatype xsd:string
+] ;
+sh:property [
+    sh:predicate sh:stem ;
+    sh:datatype xsd:string    
+] ;
+sh:property [
+    sh:predicate sh:languageIn ;
+    sh:shape ds:list
+] ;
+sh:property [
+    sh:path (sh:languageIn [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:datatype xsd:string
+] ;
+sh:property [
+    sh:predicate sh:minLength, sh:maxLength ;
+    sh:datatype xsd:integer    
+] ;
+sh:property [
+    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
+    sh:datatype xsd:integer
+] ;
+sh:property [
+    sh:predicate sh:nodeKind ;
+    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
+]
 
 .
 
@@ -118,16 +177,16 @@ sh:property [
     sh:predicate sh:predicate ;
     sh:nodeKind sh:IRI 
 ] ;
-sh:constraint [
-    sh:shape ds:propertycst
-]
+
+sh:shape ds:shapecst
 .
 
 
-ds:propertycst a sh:Shape ;
+ds:shapecst a sh:Shape ;
 rdfs:comment "Constraint in sh:property [ ] or in sh:property [ sh:or( ) ]" ;
 sh:closed true ; 
-sh:ignoredProperties (sh:predicate sh:path rdf:type rdfs:comment rdfs:label) ;
+sh:ignoredProperties 
+(sh:predicate sh:path sh:deactivated sh:name sh:message sh:description sh:order sh:group rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
     sh:predicate sh:shape ;
@@ -144,12 +203,12 @@ sh:property [
 ] ;
 sh:property [
     sh:path ([sh:alternativePath (sh:and sh:or)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
-    sh:shape ds:propertycst
+    sh:shape ds:shapecst
 ];
 sh:property [
     sh:predicate  sh:not ; 
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:propertycst
+    sh:shape ds:shapecst
 ] ;
 sh:property [
     sh:predicate sh:severity ;
@@ -217,95 +276,17 @@ sh:property [
 
 
 
-ds:constraint a sh:Shape ;
-rdfs:comment "Value of sh:constraint [ ]" ;
-sh:targetObjectsOf sh:constraint ;
-sh:closed true ; 
-sh:ignoredProperties (rdf:type rdfs:comment rdfs:label) ;
-
-sh:property [
-    sh:predicate sh:shape ;
-    sh:shape ds:shape
-] ;
-sh:property [
-    sh:predicate sh:filterShape ;
-    sh:shape ds:shape
-] ;
-sh:property [
-    sh:predicate sh:severity ;
-    sh:in (sh:violation sh:Warning sh:Info)
-] ;
-sh:property [
-    sh:predicate sh:and, sh:or ;
-    sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:list
-] ;
-sh:property [
-    sh:path ([sh:alternativePath (sh:and sh:or)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
-    sh:shape ds:constraint
-];
-sh:property [
-    sh:predicate sh:not ;
-    sh:shape ds:constraint
-] ;
-sh:property [
-    sh:predicate sh:class ;
-    sh:nodeKind sh:IRI
-] ;
-sh:property [
-    sh:predicate sh:datatype ;
-    sh:nodeKind sh:IRI
-] ;
-sh:property [
-    sh:predicate sh:in ;
-    sh:shape ds:list
-] ;
-sh:property [
-    sh:predicate sh:pattern ;
-    sh:datatype xsd:string
-] ;
-sh:property [
-    sh:predicate sh:flags ;
-    sh:datatype xsd:string
-] ;
-sh:property [
-    sh:predicate sh:stem ;
-    sh:datatype xsd:string    
-] ;
-sh:property [
-    sh:predicate sh:languageIn ;
-    sh:shape ds:list
-] ;
-sh:property [
-    sh:path (sh:languageIn [sh:zeroOrMorePath rdf:rest] rdf:first) ;
-    sh:datatype xsd:string
-] ;
-sh:property [
-    sh:predicate sh:minLength, sh:maxLength ;
-    sh:datatype xsd:integer    
-] ;
-sh:property [
-    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
-    sh:datatype xsd:integer
-] ;
-sh:property [
-    sh:predicate sh:nodeKind ;
-    sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
-]  .
-
-
 
 
 ds:path a sh:Shape ;
 rdfs:comment "sh:path value: URI,  RDF list of path or well formed path " ;
 sh:targetObjectsOf sh:path ;
 
-sh:constraint [ 
 sh:or (
-  [ sh:shape ds:pathExp ]
+  [ sh:shape ds:pathExp  ]
   [ sh:shape ds:pathList ]
-  [ sh:nodeKind sh:IRI ]
-)]
+  [ sh:nodeKind sh:IRI   ]
+)
 .
 
 

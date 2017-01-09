@@ -25,6 +25,11 @@ import org.xml.sax.SAXException;
 import test.w3c.TestW3C11KGraphNew;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import java.io.File;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -84,7 +89,8 @@ public class Main {
 
 		public enum DB_INITIALIZATION {
 			DB_INITIALIZED, // The db is provided already filled.
-			DB_UNINITIALIZED  // The db has to be filled with the data of the inputMem file.
+			DB_UNINITIALIZED, // The db has to be filled with the data of the inputMem file.
+			DB_RESET // delete the db directory, then apply DB_UNITIALIZED behaviour
 		}
 
 		public TestDescription setFormat(RDFFormat newFormat) {
@@ -111,6 +117,15 @@ public class Main {
 		}
 
 		public TestDescription init() throws IOException {
+			if (dbState == DB_RESET) {
+				Path rootPath = Paths.get(getInputDb());
+				Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.peek(System.out::println)
+					.forEach(File::delete);
+				dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
+			}
 			if (dbState == DB_INITIALIZATION.DB_UNINITIALIZED) {
 				RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			}
@@ -228,7 +243,6 @@ public class Main {
 	1. Sémantique
 	2. Benchmark
 	 */};
-
 
 	public static boolean compareResults(Mappings map_db, Mappings map_memory) {
 		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();

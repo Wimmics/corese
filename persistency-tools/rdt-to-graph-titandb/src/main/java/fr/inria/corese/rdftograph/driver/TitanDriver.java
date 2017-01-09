@@ -301,7 +301,7 @@ public class TitanDriver extends GdbDriver {
 	public void closeDb() {
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
 		TitanGraphIndex index = manager.getGraphIndex("allIndex");
-		for (edge: index.) // comment iterer sur les valeurs de l'index ?	
+//		for (edge: index.) // comment iterer sur les valeurs de l'index ?	
 		g.close();
 	}
 

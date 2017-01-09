@@ -10,8 +10,6 @@
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>corese-server</artifactId>
 
-	<artifactId>corese-server</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

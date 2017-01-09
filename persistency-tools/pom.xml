@@ -6,7 +6,6 @@
 		<artifactId>corese-parent</artifactId>
 		<version>3.2.1p-SNAPSHOT</version>
 	</parent>
-	<groupId>fr.inria.corese</groupId>
 	<artifactId>persistency-tools</artifactId>
 	<packaging>pom</packaging>
 	<modules>

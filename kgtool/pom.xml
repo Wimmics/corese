@@ -56,11 +56,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
         <dependency>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
@@ -93,8 +88,6 @@
 		<artifactId>sesame-model</artifactId>
 		<version>2.8.0-beta2</version>
 	</dependency>
-
-	<dependencies>
 		<dependency>
 			<groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
 			<artifactId>arp</artifactId>
@@ -201,11 +194,6 @@
             <version>2.10.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tinkerpop</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 	<build>
@@ -231,6 +219,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 			<!--            <plugin>

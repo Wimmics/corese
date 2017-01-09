@@ -2940,6 +2940,19 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Entity ee = addEdgeWithNode(e);
         return ee;
     }
+    /**
+     * Add Edge, not add nodes
+     */
+    public Edge addEdge(Node source, Node subject, Node predicate, Node value) {
+        Entity e = fac.create(source, subject, predicate, value);
+        Entity ee = addEdge(e);
+        if (ee != null) {
+            return ee.getEdge();
+        }
+        return null;
+    }
+
+    public Edge addEdge(Node subject, Node predicate, Node value) {
         Node g = addDefaultGraphNode();
         return addEdge(g, subject, predicate, value);
     }

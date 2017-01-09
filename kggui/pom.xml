@@ -40,7 +40,7 @@
 			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.inria.corese</groupId>
+			<groupId>fr.inria.wimmics</groupId>
 			<artifactId>persistency</artifactId>
 			<version>${global.version}</version>
 		</dependency>
@@ -68,6 +68,7 @@
 	  <groupId>org.slf4j</groupId>
 	  <artifactId>slf4j-api</artifactId>
 	  <version>1.7.21</version>
+	</dependency>
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>tinkerpop</artifactId>

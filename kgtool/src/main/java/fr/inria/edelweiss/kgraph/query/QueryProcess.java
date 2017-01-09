@@ -185,8 +185,8 @@ public class QueryProcess extends QuerySolver {
 				p = (ProducerImpl) method.invoke(null, g);
         p.setMatch(isMatch);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				LOGGER.fatal(ex);
-				LOGGER.fatal("impossible to create a producer, aborting");
+				logger.fatal(ex);
+				logger.fatal("impossible to create a producer, aborting");
 				System.exit(-1);
 			}
 		}
@@ -359,9 +359,9 @@ public class QueryProcess extends QuerySolver {
             Query q = compile(str);
             return q;
         } catch (LoadException ex) {
-			LOGGER.error(ex);
+			logger.error(ex);
         } catch (EngineException ex) {
-			LOGGER.error(ex);
+			logger.error(ex);
         }
         return null;
     }

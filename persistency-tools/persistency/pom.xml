@@ -6,7 +6,6 @@
         <artifactId>corese-parent</artifactId>
         <version>3.2.1p-SNAPSHOT</version>
     </parent>
-    <groupId>fr.inria.corese</groupId>
     <artifactId>persistency</artifactId>
     <packaging>jar</packaging>
     <build>
@@ -37,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgtool</artifactId>
+            <artifactId>corese-core</artifactId>
             <version>${global.version}</version>
         </dependency>
         <dependency>

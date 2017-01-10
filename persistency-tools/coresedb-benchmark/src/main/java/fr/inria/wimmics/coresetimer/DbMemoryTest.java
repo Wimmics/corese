@@ -47,7 +47,7 @@ public class DbMemoryTest {
 		}
 
 //		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();
-		boolean result = validate(map_db, map_memory);
+		boolean result = validate(map_db, map_memory) && validate(map_db, map_memory) && map_db.size() == map_memory.size();
 		System.out.println("result = " + result);
 		assert (result);
 	}

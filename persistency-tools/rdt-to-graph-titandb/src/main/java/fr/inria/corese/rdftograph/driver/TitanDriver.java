@@ -331,7 +331,6 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public Object createNode(Value v) {
-		VertexValue newVV = new VertexValue(v);
 		Object result = null;
 		Vertex newVertex = null;
 		switch (RdfToGraph.getKind(v)) {

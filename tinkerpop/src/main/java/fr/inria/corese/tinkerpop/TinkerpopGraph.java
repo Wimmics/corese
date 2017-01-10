@@ -25,6 +25,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -232,6 +233,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);
+			edges = edges.order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr);
 			return new GremlinIterable<Entity>(edges);//{
 		} catch (Exception ex) {
 			LOGGER.error("An error occurred: {}", ex.toString());

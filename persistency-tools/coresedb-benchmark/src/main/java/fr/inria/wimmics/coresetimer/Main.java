@@ -118,12 +118,14 @@ public class Main {
 
 		public TestDescription init() throws IOException {
 			if (dbState == DB_RESET) {
-				Path rootPath = Paths.get(getInputDb());
-				Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
-					.sorted(Comparator.reverseOrder())
-					.map(Path::toFile)
-					.peek(System.out::println)
-					.forEach(File::delete);
+				File varTmpDir = new File(getInputDb());
+				if (varTmpDir.exists()) {
+					Path rootPath = Paths.get(getInputDb());
+					Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
+						.sorted(Comparator.reverseOrder())
+						.map(Path::toFile)
+						.forEach(File::delete);
+				}
 				dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
 			}
 			if (dbState == DB_INITIALIZATION.DB_UNINITIALIZED) {
@@ -246,7 +248,7 @@ public class Main {
 
 	public static boolean compareResults(Mappings map_db, Mappings map_memory) {
 		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();
-		boolean result = tester.validate(map_db, map_memory);
+		boolean result = tester.validate(map_db, map_memory) && tester.validate(map_memory, map_db) && map_memory.size() == map_db.size();
 		return result;
 	}
 

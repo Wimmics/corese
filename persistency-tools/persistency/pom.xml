@@ -5,6 +5,7 @@
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
         <version>3.2.1p-SNAPSHOT</version>
+	<relativePath>..</relativePath>
     </parent>
     <artifactId>persistency</artifactId>
     <packaging>jar</packaging>

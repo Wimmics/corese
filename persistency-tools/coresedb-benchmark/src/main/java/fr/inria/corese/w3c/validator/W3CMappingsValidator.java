@@ -1,4 +1,4 @@
-package test.w3c;
+package fr.inria.corese.w3c.validator;
 
 import java.util.Hashtable;
 
@@ -20,7 +20,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
-public class TestW3C11KGraphNew {
+public class W3CMappingsValidator {
 
 	boolean strict = true;
 
@@ -50,9 +50,15 @@ public class TestW3C11KGraphNew {
 	 * KGRAM vs W3C result
 	 */
 	public boolean validate(Mappings kgram, Mappings w3c) {
-		boolean result = true, printed = false;
-		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
+		boolean result;
+		boolean printed = false;
+		result = isIncludedIn(kgram, w3c, printed) && isIncludedIn(w3c, kgram, printed) && w3c.size() == kgram.size();
+		return result;
+	}
 
+	boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed) {
+		boolean result = true;
+		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 		for (Mapping w3cres : w3c) {
 			// for each w3c result
 			boolean ok = false;
@@ -101,7 +107,6 @@ public class TestW3C11KGraphNew {
 			}
 
 		}
-//		result &= w3c.size() == kgram.size();
 		return result;
 	}
 

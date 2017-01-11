@@ -22,7 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
-import test.w3c.TestW3C11KGraphNew;
+import fr.inria.corese.w3c.validator.W3CMappingsValidator;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import java.io.File;
 import java.nio.file.FileVisitOption;
@@ -247,7 +247,7 @@ public class Main {
 	 */};
 
 	public static boolean compareResults(Mappings map_db, Mappings map_memory) {
-		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();
+		W3CMappingsValidator tester = new W3CMappingsValidator();
 		boolean result = tester.validate(map_db, map_memory) && tester.validate(map_memory, map_db) && map_memory.size() == map_db.size();
 		return result;
 	}

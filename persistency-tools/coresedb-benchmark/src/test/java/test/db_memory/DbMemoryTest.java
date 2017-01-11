@@ -15,7 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
-import test.w3c.TestW3C11KGraphNew;
+import fr.inria.corese.w3c.validator.W3CMappingsValidator;
 
 /**
  *
@@ -61,7 +61,7 @@ public class DbMemoryTest {
 			Logger.getLogger(DbMemoryTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
-		TestW3C11KGraphNew tester = new TestW3C11KGraphNew();
+		W3CMappingsValidator tester = new W3CMappingsValidator();
 		boolean result = tester.validate(map_db, map_memory);
 		System.out.println("result = " + result);
 		assert (result);

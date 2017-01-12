@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -200,7 +199,9 @@ public class TitanDriver extends GdbDriver {
 	TitanGraph g;
 
 	@Override
-	public void openDb(String dbPath) {
+	public void openDb(String dbPathTemp) {
+		File f = new File(dbPathTemp);
+		String dbPath = f.getAbsolutePath();
 		PropertiesConfiguration configuration = null;
 		File confFile = new File(dbPath + "/conf.properties");
 		try {

@@ -194,11 +194,6 @@ public class QueryProcess extends QuerySolver {
 
         exec.setMatch(isMatch);
         return exec;
-//		ProducerImpl p = ProducerImpl.create(g);
-//		p.setMatch(isMatch);
-//		QueryProcess exec = QueryProcess.create(p);
-//		exec.setMatch(isMatch);
-//		return exec;
     }
 
     public static QueryProcess create(Graph g, Graph g2) {

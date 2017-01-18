@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data/test1.nq /Users/edemairy/tmp/test1_db titandb</exec.args>
+                <exec.args>-classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_2007_04_17.rdf /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_db   titandb</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data/test1.nq /Users/edemairy/tmp/test1_db titandb</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_2007_04_17.rdf /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_db   titandb</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,8 +39,40 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/data/test1.nq /Users/edemairy/tmp/test1_db titandb</exec.args>
+                <exec.args>-classpath %classpath fr.inria.wimmics.rdf.to.graph.app.App /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_2007_04_17.rdf /Users/edemairy/Developpement/Corese-master/persistency-tools/coresedb-benchmark/data/human_db   titandb</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
+        </action>
+        <action>
+            <actionName>build</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+                <goal>-fn</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>rebuild</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>-fn</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>build-with-dependencies</actionName>
+            <reactor>also-make</reactor>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+                <goal>-fn</goal>
+            </goals>
         </action>
     </actions>

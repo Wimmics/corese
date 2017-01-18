@@ -3,6 +3,7 @@
  */
 package fr.inria.corese.tinkerpop;
 
+import static com.thinkaurelius.titan.core.attribute.Text.textRegex;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -104,7 +105,7 @@ public class TinkerpopProducer extends ProducerImpl {
 			case "?g?s?p?o":
 			default:
 				filter = t -> {
-					return t.E(); //.has(EDGE_P, gt(""));
+					return t.E().has(EDGE_P, textRegex(".*")).order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr); //.has(EDGE_P, gt(""));
 				};
 		}
 		return tpGraph.getEdges(filter);

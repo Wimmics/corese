@@ -233,7 +233,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);
-			edges = edges.order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr);
+//			edges = edges.order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr);
 			return new GremlinIterable<Entity>(edges);//{
 		} catch (Exception ex) {
 			LOGGER.error("An error occurred: {}", ex.toString());

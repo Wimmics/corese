@@ -79,6 +79,9 @@ public class RdfToGraph {
 			properties.put(EDGE_G, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
+			if (triples % 100_000 == 0) {
+				LOGGER.info("triples = "+triples);
+			}
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.log(Level.INFO, "{0}", triples);
 				try {

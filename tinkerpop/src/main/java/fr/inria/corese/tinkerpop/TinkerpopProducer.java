@@ -56,15 +56,15 @@ public class TinkerpopProducer extends ProducerImpl {
 
 		String g = (gNode == null) ? "" : gNode.getLabel();
 		key.append((gNode == null) || (gNode.getLabel().compareTo("?g") == 0) ? "?g" : "G");
-		
+
 		String s = updateVariable(subject.isVariable(), subject, env, key, "?s", "S");
 		String p = updateVariable(isPredicateFree(qEdge), qEdge.getEdgeNode(), env, key, "?p", "P");
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
-		
+		LOGGER.trace("in case " + key.toString());
 		switch (key.toString()) {
 			case "?g?sPO":
 				filter = t -> {
-					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o));
+					return t.E().has(EDGE_P, p).has(EDGE_O, o);
 				};
 				break;
 			case "?g?sP?o":
@@ -74,27 +74,27 @@ public class TinkerpopProducer extends ProducerImpl {
 				break;
 			case "?g?s?pO":
 				filter = t -> {
-					return t.V().has(VERTEX_VALUE, o).inE();
+					return t.E().has(EDGE_O, o);
 				};
 				break;
 			case "?gSPO":
 				filter = t -> {
-					return t.E().has(EDGE_P, p).where(inV().has(VERTEX_VALUE, o)).where(outV().has(VERTEX_VALUE, s));
+					return t.E().has(EDGE_P, p).has(EDGE_S, s).has(EDGE_O, o);
 				};
 				break;
 			case "?gSP?o":
 				filter = t -> {
-					return t.E().has(EDGE_P, p).where(outV().has(VERTEX_VALUE, s));
+					return t.E().has(EDGE_P, p).has(EDGE_S, s);
 				};
 				break;
 			case "?gS?pO":
 				filter = t -> {
-					return t.V().has(VERTEX_VALUE, s).outE().where(inV().has(VERTEX_VALUE, o));
+					return t.E().has(EDGE_S, s).has(EDGE_O, o);
 				};
 				break;
 			case "?gS?p?o":
 				filter = t -> {
-					return t.V().has(VERTEX_VALUE, s).outE();
+					return t.E().has(EDGE_S, s);
 				};
 				break;
 			case "G?sP?o":
@@ -105,7 +105,7 @@ public class TinkerpopProducer extends ProducerImpl {
 			case "?g?s?p?o":
 			default:
 				filter = t -> {
-					return t.E().has(EDGE_P, textRegex(".*")).order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr); //.has(EDGE_P, gt(""));
+					return t.E().has(EDGE_P, textRegex(".*"));
 				};
 		}
 		return tpGraph.getEdges(filter);
@@ -157,11 +157,10 @@ public class TinkerpopProducer extends ProducerImpl {
 				result = "";
 			}
 		} else {
-				key.append(boundVar);
-				result = node.getLabel();	
+			key.append(boundVar);
+			result = node.getLabel();
 		}
 		return result;
 	}
 
-	
 }

@@ -5,6 +5,7 @@ package fr.inria.corese.rdftograph.driver;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
@@ -12,6 +13,7 @@ import com.thinkaurelius.titan.core.attribute.AttributeSerializer;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
+import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.diskstorage.ScanBuffer;
 import com.thinkaurelius.titan.diskstorage.WriteBuffer;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
@@ -23,12 +25,15 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -211,15 +216,18 @@ public class TitanDriver extends GdbDriver {
 			Logger.getLogger(TitanDriver.class
 				.getName()).log(Level.SEVERE, null, ex);
 		}
-//		configuration.setProperty("storage.batch-loading", false);
+		configuration.setProperty("schema.default", "none");
+		configuration.setProperty("storage.batch-loading", true);
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
+		configuration.setProperty("index.search.refresh_interval", 600);
 		configuration.setProperty("storage.buffer-size", 50_000);
-		configuration.setProperty("ids.block-size", 1_000_000);
+		configuration.setProperty("ids.block-size", 100_000);
+		configuration.setProperty("cache.db-cache-size", 0.5);
 		try {
 			configuration.save();
 
@@ -227,35 +235,47 @@ public class TitanDriver extends GdbDriver {
 			Logger.getLogger(TitanDriver.class
 				.getName()).log(Level.SEVERE, null, ex);
 		}
-
 		g = TitanFactory.open(configuration);
+
+		TitanManagement mgmt = g.openManagement();
+		mgmt.makeVertexLabel(RDF_VERTEX_LABEL).make();
+		mgmt.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+		mgmt.commit();
+
 		makeIfNotExistProperty(EDGE_P);
 		makeIfNotExistProperty(VERTEX_VALUE);
 		makeIfNotExistProperty(EDGE_G);
 		makeIfNotExistProperty(EDGE_S);
 		makeIfNotExistProperty(EDGE_O);
-		createIndexes();
+		makeIfNotExistProperty(KIND);
+		makeIfNotExistProperty(TYPE);
+		makeIfNotExistProperty(LANG);
 
+		createIndexes();
+//		mgmt = g.openManagement();
+//		mgmt.commit();
 	}
 
 	void makeIfNotExistProperty(String propertyName) {
-		makeIfNotExistProperty(propertyName, String.class
-		);
+		makeIfNotExistProperty(propertyName, String.class);
 	}
 
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
-		g.tx().rollback();
+//		g.tx().rollback();
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
 		if (!manager.containsPropertyKey(propertyName)) {
 			manager.makePropertyKey(propertyName).dataType(c).make();
+			System.out.println("adding key "+propertyName);	
+			manager.commit();
+		} else {
+			manager.rollback();
 		}
-		manager.commit();
 	}
 
 	private void createIndexes() {
 		try {
-			g.tx().commit();
-			g.tx().rollback();
+//			g.tx().commit();
+//			g.tx().rollback();
 			ManagementSystem manager = (ManagementSystem) g.openManagement();
 			if (!manager.containsGraphIndex("vertices") && !manager.containsGraphIndex("allIndex")) {
 				PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
@@ -287,8 +307,7 @@ public class TitanDriver extends GdbDriver {
 					manager.awaitGraphIndexStatus(g, indexName).call();
 					manager = (ManagementSystem) g.openManagement();
 					manager.updateIndex(manager.getGraphIndex(indexName), SchemaAction.REINDEX).get();
-					manager.commit();
-
+//					manager.commit();
 				}
 			}
 
@@ -364,20 +383,26 @@ public class TitanDriver extends GdbDriver {
 		Object result = null;
 		Vertex vSource = g.vertices(source).next();
 		Vertex vObject = g.vertices(object).next();
+
 		ArrayList<Object> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
 			p.add(key);
 			p.add(properties.get(key));
 		});
 		p.add(EDGE_S);
-		p.add(serializeNode(vSource));
+		p.add(vSource.property(VERTEX_VALUE).value());
 		p.add(EDGE_P);
 		p.add(predicate);
 		p.add(EDGE_O);
-		p.add(serializeNode(vObject));
+		p.add(vObject.property(VERTEX_VALUE).value());
 
-		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
-		result = e.id();
+		GraphTraversal<Edge, Edge> alreadyExist = g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
+		if (alreadyExist.hasNext()) {
+			result = alreadyExist.next();
+		} else {
+			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
+			result = e.id();
+		}
 		return result;
 	}
 

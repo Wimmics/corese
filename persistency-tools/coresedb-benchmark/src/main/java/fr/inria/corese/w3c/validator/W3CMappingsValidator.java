@@ -43,7 +43,7 @@ public class W3CMappingsValidator {
 	// target value of a Node
 
 	IDatatype datatype(Node n) {
-		return (IDatatype) n.getValue();
+		return (IDatatype) ((n == null) ? null : n.getValue());
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class W3CMappingsValidator {
 					continue;
 				}
 
-				ok = compare(kres, w3cres);
+				ok = compare(kres, w3cres, w3c.getSelect().toArray(new Node[1]));
 
 				if (ok) {
 					//if (kgram.getSelect().size() != w3cres.size()) ok = false;
@@ -111,11 +111,12 @@ public class W3CMappingsValidator {
 	}
 
 	// compare two results
-	boolean compare(Mapping kres, Mapping w3cres) {
+	//
+	boolean compare(Mapping kres, Mapping w3cres, Node[] nodesToCheck) {
 		TBN tbn = new TBN();
 		boolean ok = true;
 
-		for (Node var : w3cres.getQueryNodes()) {
+		for (Node var : nodesToCheck) {
 			if (!ok) {
 				break;
 			}

@@ -47,7 +47,7 @@ public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class.getName());
 
-	public static class TestDescription {
+	public static class TestDescription implements Cloneable {
 
 		public final static int DEFAULT_WARMUP_CYCLES = 5;
 		public final static int DEFAULT_MEASURED_SAMPLES = 20;
@@ -110,6 +110,18 @@ public class Main {
 
 		static public TestDescription build(String id) {
 			return new TestDescription(id);
+		}
+
+		public static TestDescription build(String id, TestDescription rootTest) {
+			try {
+				TestDescription newTest = (TestDescription) rootTest.clone();
+				newTest.testId = id;
+				return newTest;
+			} catch (CloneNotSupportedException ex) {
+				logger.info("clone thrown an exception ");
+				ex.printStackTrace();
+				return build(id);
+			}
 		}
 
 		public String getId() {

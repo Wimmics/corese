@@ -8,15 +8,14 @@ package test.db_memory;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.ensureEndWith;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.getEnvWithDefault;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
-import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.DB_UNINITIALIZED;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
-import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.DB_INITIALIZED;
-import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.DB_RESET;
+import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.IOException;
 import org.openrdf.rio.RDFFormat;
 import static org.testng.Assert.assertTrue;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -25,83 +24,99 @@ import org.testng.annotations.Test;
  * @author edemairy
  */
 public class QualitativeTest {
+	String inputRoot;
+	String outputRoot;
 
 	public QualitativeTest() {
 	}
 
 	@DataProvider(name = "getResults", parallel = false)
 	public Object[][] getResults() {
-		TestDescription rootTest = TestDescription.build("rootTest").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED);
+		TestSuite suite = TestSuite.build("base_tests").
+			setWarmupCycles(2).
+			setMeasuredCycles(5).
+			setInput("human_2007_04_17.rdf", RDFFormat.RDFXML).
+			setInputDb("/human_db").
+			setInputRoot(inputRoot).
+			setOutputRoot(outputRoot);
+//			createDb();
 		TestDescription[][] tests = {
-			{TestDescription.build("count_properties", rootTest).setRequest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
-			{TestDescription.build("humans_question1", rootTest).setRequest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
-			{TestDescription.build("humans_question2", rootTest).setRequest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }")},
-			{TestDescription.build("humans_question3", rootTest).setRequest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }")},
-			{TestDescription.build("humans_question4", rootTest).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#> \nSELECT * WHERE { ?x humans:hasSpouse ?y}")},
-			{TestDescription.build("humans_question5_1", rootTest).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?x rdf:type humans:Male}")},
-			{TestDescription.build("humans_question5_2", rootTest).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?y rdf:type humans:Male}")},
-			{TestDescription.build("humans_question6", rootTest).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT (count(*) as ?count) WHERE { ?y humans:hasFriend ?z }")},
-			{TestDescription.build("humans_question7").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x WHERE { { ?y humans:hasChild ?x } UNION { ?x humans:hasParent ?y }}")},
-			{TestDescription.build("humans_question8").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?person ?age\n" + "WHERE\n" + "{\n" + " ?person rdf:type humans:Person\n" + " OPTIONAL { ?person humans:age ?age }\n" + "}")},
-			{TestDescription.build("humans_question9").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}")},
-			{TestDescription.build("humans_question10").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "ASK\n" + "WHERE\n" + "{\n" + " <http://www.inria.fr/2007/04/17/humans.rdfs-instances#Mark> humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}")},
-			{TestDescription.build("humans_question11").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?t\n" + "WHERE\n" + "{\n" + "  ?x rdf:type humans:Lecturer .\n" + "  ?x rdf:type ?t \n" + "}")},
-			{TestDescription.build("humans_question12").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?t\n" + "WHERE\n" + "{\n" + " ?x rdf:type humans:Male .\n" + " ?x rdf:type humans:Person .\n" + " ?x rdf:type ?t\n" + "}")},
-			{TestDescription.build("humans_question13").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT distinct ?person\n" + "WHERE\n" + "{\n" + " {\n" + "  ?person rdf:type humans:Lecturer\n" + " }\n" + " UNION\n" + " {\n" + "  ?person rdf:type humans:Researcher\n" + " }\n" + "}")},
-			{TestDescription.build("humans_question14_researchers").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT distinct ?person\n" + "WHERE\n" + "{\n" + " {\n" + "  ?person rdf:type humans:Lecturer\n" + " }\n" + " UNION\n" + " {\n" + "  ?person rdf:type humans:Researcher\n" + " }\n" + "}")},
-			{TestDescription.build("humans_question14_non_researchers").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x rdf:type humans:Person\n" + " OPTIONAL\n" + " {\n" + "   ?x rdf:type ?t\n" + "   FILTER ( ?t = humans:Researcher )\n" + " }\n" + " FILTER ( ! bound( ?t ) )\n" + "}")},
-			{TestDescription.build("humans_question15").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?y \n" + "WHERE\n" + "{\n" + " ?x humans:hasAncestor ?y\n" + "}")},
-			{TestDescription.build("humans_question16").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"size\"@en .\n" + "  ?t rdfs:label ?le .\n" + "  ?t rdfs:comment ?ce .\n" + "  FILTER ( lang(?le) = 'en' && lang(?ce) = 'en' )\n" + "}")},
-			{TestDescription.build("humans_question17").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * \n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"person\"@en .\n" + "  ?t rdfs:label ?syn .\n" + "  FILTER ( ?syn != \"person\"@en && lang(?syn) = 'en' )\n" + "}")},
-			{TestDescription.build("humans_question18").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?lf \n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"shoe size\"@en .\n" + "  ?t rdfs:label ?lf .\n" + "  FILTER ( lang(?lf) = 'fr' )\n" + "}")},
-			{TestDescription.build("humans_question19").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "  ?type rdfs:label ?l .\n" + "  {\n" + "   {\n" + "    ?laura rdf:type ?type\n" + "   }\n" + "   UNION\n" + "   {\n" + "    {\n" + "     ?laura ?type ?with\n" + "    }\n" + "    UNION\n" + "    {\n" + "     ?from ?type ?laura\n" + "    }\n" + "   }\n" + "  }\n" + "  FILTER ( lang(?l) = 'en' )\n" + "}")},
-			{TestDescription.build("humans_question20").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "DESCRIBE ?laura\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "}")},
-			{TestDescription.build("humans_question21").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "CONSTRUCT \n" + "{\n" + " ?x rdf:type humans:Man\n" + "}\n" + "WHERE\n" + "{\n" + " {\n" + "  ?x rdf:type humans:Man\n" + " }\n" + "  UNION\n" + " {\n" + "  ?x rdf:type humans:Male .\n" + "  ?x rdf:type humans:Person\n" + " }\n" + "}")},
-			{TestDescription.build("humans_question22").setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, //		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
+			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
+			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
+			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }")},
+			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#> \nSELECT * WHERE { ?x humans:hasSpouse ?y}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?x rdf:type humans:Male}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?y rdf:type humans:Male}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT (count(*) as ?count) WHERE { ?y humans:hasFriend ?z }")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT ?x WHERE { { ?y humans:hasChild ?x } UNION { ?x humans:hasParent ?y }}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?person ?age\n" + "WHERE\n" + "{\n" + " ?person rdf:type humans:Person\n" + " OPTIONAL { ?person humans:age ?age }\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "ASK\n" + "WHERE\n" + "{\n" + " <http://www.inria.fr/2007/04/17/humans.rdfs-instances#Mark> humans:age ?age\n" + " FILTER ( xsd:integer(?age) >= 18 )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?t\n" + "WHERE\n" + "{\n" + "  ?x rdf:type humans:Lecturer .\n" + "  ?x rdf:type ?t \n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?t\n" + "WHERE\n" + "{\n" + " ?x rdf:type humans:Male .\n" + " ?x rdf:type humans:Person .\n" + " ?x rdf:type ?t\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT distinct ?person\n" + "WHERE\n" + "{\n" + " {\n" + "  ?person rdf:type humans:Lecturer\n" + " }\n" + " UNION\n" + " {\n" + "  ?person rdf:type humans:Researcher\n" + " }\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT distinct ?person\n" + "WHERE\n" + "{\n" + " {\n" + "  ?person rdf:type humans:Lecturer\n" + " }\n" + " UNION\n" + " {\n" + "  ?person rdf:type humans:Researcher\n" + " }\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x\n" + "WHERE\n" + "{\n" + " ?x rdf:type humans:Person\n" + " OPTIONAL\n" + " {\n" + "   ?x rdf:type ?t\n" + "   FILTER ( ?t = humans:Researcher )\n" + " }\n" + " FILTER ( ! bound( ?t ) )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?x ?y \n" + "WHERE\n" + "{\n" + " ?x humans:hasAncestor ?y\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"size\"@en .\n" + "  ?t rdfs:label ?le .\n" + "  ?t rdfs:comment ?ce .\n" + "  FILTER ( lang(?le) = 'en' && lang(?ce) = 'en' )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * \n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"person\"@en .\n" + "  ?t rdfs:label ?syn .\n" + "  FILTER ( ?syn != \"person\"@en && lang(?syn) = 'en' )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT ?lf \n" + "WHERE\n" + "{\n" + "  ?t rdfs:label \"shoe size\"@en .\n" + "  ?t rdfs:label ?lf .\n" + "  FILTER ( lang(?lf) = 'fr' )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "  ?type rdfs:label ?l .\n" + "  {\n" + "   {\n" + "    ?laura rdf:type ?type\n" + "   }\n" + "   UNION\n" + "   {\n" + "    {\n" + "     ?laura ?type ?with\n" + "    }\n" + "    UNION\n" + "    {\n" + "     ?from ?type ?laura\n" + "    }\n" + "   }\n" + "  }\n" + "  FILTER ( lang(?l) = 'en' )\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "DESCRIBE ?laura\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "CONSTRUCT \n" + "{\n" + " ?x rdf:type humans:Man\n" + "}\n" + "WHERE\n" + "{\n" + " {\n" + "  ?x rdf:type humans:Man\n" + " }\n" + "  UNION\n" + " {\n" + "  ?x rdf:type humans:Male .\n" + "  ?x rdf:type humans:Person\n" + " }\n" + "}")},
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, 
+//		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
 		};
 		return tests;
 	}
 
 	@DataProvider(name = "getResultsPerfAnalysis")
 	public Object[][] getResultsPerfAnalysis() {
+		TestSuite testRoot = TestSuite.build("perf_analysis").
+			setWarmupCycles(2).
+			setMeasuredCycles(5).
+			setInput("human_2007_04_17.rdf").
+			setInputDb("/human_db").
+			createDb();
 		TestDescription[][] tests = {
-			{TestDescription.build("humans_count").setWarmupCycles(2).setMeasuredCycles(5).setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
-			{TestDescription.build("humans_count_without_build").setWarmupCycles(2).setMeasuredCycles(5).setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("select (count(*) as ?c) where {?x a ?y}")},
-			{TestDescription.build("humans_cycle").setWarmupCycles(2).setMeasuredCycles(5).setInput("human_2007_04_17.rdf").setInputDb("/human_db", DB_INITIALIZED).setRequest("select * where { ?x ?p ?y . ?y ?q ?x }")}
-
+			{testRoot.buildTest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
+			{testRoot.buildTest("select (count(*) as ?c) where {?x a ?y}")},
+			{testRoot.buildTest("select * where { ?x ?p ?y . ?y ?q ?x }")}
 		};
 		return tests;
 	}
 
-	@DataProvider(name = "getResultsLong")
+	@DataProvider(name = "getResults_1M", indices = {0})
 	public Object[][] getResultsLong() {
+		TestSuite rootTest = TestSuite.build("rootTest").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db");
 		TestDescription[][] tests = {
-			{TestDescription.build("1m_count").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
-			{TestDescription.build("1m_select").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}")}, //			{TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")},
+			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
+			{rootTest.buildTest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}")}, //			{TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")},
 		//			{TestDescription.build("1m_cycle").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where { ?x ?p ?y . ?y ?q ?x }")}
 		};
 		return tests;
 	}
 
-	@DataProvider(name = "getResults10m")
+	@DataProvider(name = "getResults_10m")
 	public Object[][] getResults10m() {
+		TestSuite rootTest = TestSuite.build("rootTest").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_10000.nq").setInputDb("/10m_db").createDb();
 		TestDescription[][] tests = {
-			{TestDescription.build("1m_count").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")}
+			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")}
 		};
 		return tests;
 	}
 
-	@Test(dataProvider = "getResults", groups = "")
-	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-
-		String inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
+	@BeforeClass
+	public void setup() {
+		inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
 		inputRoot = ensureEndWith(inputRoot, "/");
-		TestDescription.setInputRoot(inputRoot);
-		String outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
+		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
 		outputRoot = ensureEndWith(inputRoot, "/");
-		TestDescription.setOutputRoot(outputRoot);
+	}
 
-		test.init();
+	@Test(dataProvider = "getResults_10m", groups = "")
+	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		CoreseTimer timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
 		CoreseTimer timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
 		System.out.println("running test: " + test.getId());

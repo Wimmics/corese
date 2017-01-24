@@ -8,10 +8,7 @@ package fr.inria.wimmics.coresetimer;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.corese.rdftograph.RdfToGraph.DbDriver;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import fr.inria.wimmics.coresetimer.CoreseTimer.Profile;
-import static fr.inria.wimmics.coresetimer.Main.TestDescription.DB_INITIALIZATION.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,7 +18,6 @@ import org.openrdf.rio.RDFFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 import fr.inria.corese.w3c.validator.W3CMappingsValidator;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import java.io.File;
@@ -47,89 +43,83 @@ public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class.getName());
 
-	public static class TestDescription implements Cloneable {
+	public static class TestSuite {
 
-		public final static int DEFAULT_WARMUP_CYCLES = 5;
-		public final static int DEFAULT_MEASURED_SAMPLES = 20;
-		private static String INPUT_ROOT;
-		private static String OUTPUT_ROOT;
-
-		public static void setInputRoot(String path) {
-			INPUT_ROOT = ensureEndWith(path, "/");
-		}
-
-		public static String getInputRoot() {
-			return INPUT_ROOT;
-		}
-
-		public static void setOutputRoot(String path) {
-			OUTPUT_ROOT = ensureEndWith(path, "/");
-		}
-
-		public static String getOutputRoot() {
-			return OUTPUT_ROOT;
-		}
-
-		private String testId;
-		private String inputMem;
-		private RDFFormat format = RDFFormat.NQUADS;
-		private String request;
-		private String inputDb;
 		private final String OUTPUT_FILE_FORMAT = "%s/result_%s.xml";
-		private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
-		private boolean resultsEqual; // Wether the request has returned the same results in memory and db version.
+		
+		private String inputMem;
 		private DbDriver driver = RdfToGraph.DbDriver.TITANDB;
-		private DB_INITIALIZATION dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
-		private int warmupCycles;
-		private int measuredCycles;
+		private int defaultWarmupCycles = 5;
+		private int defaultMeasuredCycles = 20;
+		private String inputRoot;
+		private String outputRoot;
+		private String testId;
+		private int nbTests = 0;
+		private String inputDb;
+		private RDFFormat format;
 
-		String getResultFileName(Profile mode) {
-			return String.format(RDF_OUTPUT_FILE_FORMAT, TestDescription.getOutputRoot(), testId, mode);
+		private TestSuite(String id) {
+			this.testId = id;
 		}
 
-		public enum DB_INITIALIZATION {
-			DB_INITIALIZED, // The db is provided already filled.
-			DB_UNINITIALIZED, // The db has to be filled with the data of the inputMem file.
-			DB_RESET // delete the db directory, then apply DB_UNITIALIZED behaviour
-		}
-
-		public TestDescription setFormat(RDFFormat newFormat) {
-			format = newFormat;
-			return this;
-		}
-
-		public RDFFormat getFormat() {
-			return format;
-		}
-
-		private TestDescription(String id) {
-			testId = id;
-			measuredCycles = DEFAULT_MEASURED_SAMPLES;
-			warmupCycles = DEFAULT_WARMUP_CYCLES;
-		}
-
-		static public TestDescription build(String id) {
-			return new TestDescription(id);
-		}
-
-		public static TestDescription build(String id, TestDescription rootTest) {
-			try {
-				TestDescription newTest = (TestDescription) rootTest.clone();
-				newTest.testId = id;
-				return newTest;
-			} catch (CloneNotSupportedException ex) {
-				logger.info("clone thrown an exception ");
-				ex.printStackTrace();
-				return build(id);
-			}
+		static public TestSuite build(String id) {
+			return new TestSuite(id);
 		}
 
 		public String getId() {
 			return testId;
 		}
 
-		public TestDescription init() throws IOException {
-			if (dbState == DB_RESET) {
+		public TestSuite setWarmupCycles(int warmup) {
+			this.defaultWarmupCycles = warmup;
+			return this;
+		}
+
+		public TestSuite setMeasuredCycles(int warmup) {
+			this.defaultMeasuredCycles = warmup;
+			return this;
+		}
+
+		public TestSuite setInput(String input) {
+			return this.setInput(input, RDFFormat.NQUADS);
+		}
+
+		public TestSuite setInput(String input, RDFFormat format) {
+			this.inputMem = input;
+			this.format = format;
+			inputDb = input.replaceFirst("\\..+", "_db");
+			return this;
+		}
+
+		public String getInput() {
+			return inputRoot + inputMem;
+		}
+
+		public TestSuite setDriver(DbDriver driver) {
+			this.driver = driver;
+			return this;
+		}
+
+		public TestSuite setInputRoot(String path) {
+			inputRoot = ensureEndWith(path, "/");
+			return this;
+		}
+
+		public String getInputRoot() {
+			return inputRoot;
+		}
+
+		public TestSuite setOutputRoot(String path) {
+			outputRoot = ensureEndWith(path, "/");
+			return this;
+		}
+
+		public String getOutputRoot() {
+			return outputRoot;
+		}
+
+		public TestSuite createDb() {
+			try {
 				File varTmpDir = new File(getInputDb());
 				if (varTmpDir.exists()) {
 					Path rootPath = Paths.get(getInputDb());
@@ -138,42 +128,75 @@ public class Main {
 						.map(Path::toFile)
 						.forEach(File::delete);
 				}
-				dbState = DB_INITIALIZATION.DB_UNINITIALIZED;
-			}
-			if (dbState == DB_INITIALIZATION.DB_UNINITIALIZED) {
 				RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+			} catch (IOException ex) {
+				java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 			}
-			return this;
-		}
-
-		public TestDescription setInput(String input) {
-			return this.setInput(input, RDFFormat.NQUADS);
-		}
-
-		public TestDescription setInput(String input, RDFFormat format) {
-			this.inputMem = input;
-			this.format = format;
-			inputDb = input.replaceFirst("\\..+", "_db");
-			return this;
-		}
-
-		public String getInput() {
-			return INPUT_ROOT + inputMem;
-		}
-
-		public TestDescription setDriver(DbDriver driver) {
-			this.driver = driver;
-			return this;
-		}
-
-		public TestDescription setInputDb(String path, DB_INITIALIZATION dbState) {
-			this.inputDb = path;
-			this.dbState = dbState;
 			return this;
 		}
 
 		public String getInputDb() {
-			return INPUT_ROOT + inputDb;
+			return inputRoot + inputDb;
+		}
+
+		public TestSuite setInputDb(String path) {
+			this.inputDb = path;
+			return this;
+		}
+
+		public TestSuite setFormat(RDFFormat newFormat) {
+			format = newFormat;
+			return this;
+		}
+
+		public RDFFormat getFormat() {
+			return format;
+		}
+
+
+
+		public TestDescription buildTest(String request) {
+			String testId = this.testId + "_" + nbTests;
+			TestDescription newTest = TestDescription.build(testId, this)
+				.setMeasuredCycles(defaultMeasuredCycles)
+				.setWarmupCycles(defaultWarmupCycles)
+				.setInput(getInput())
+				.setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId))
+				.setRequest(request)
+				.setInputDb(getInputDb());
+
+			nbTests++;
+			return newTest;
+		}
+
+	}
+
+	public static class TestDescription implements Cloneable {
+		private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
+		
+		private String testId;
+		private String request;
+		private boolean resultsEqual;
+
+		private String input;
+		private String inputDb;
+		private int warmupCycles;
+		private int measuredCycles;
+		private String resultFileName;
+		private String outputPath;
+		private final TestSuite suite;
+
+		private TestDescription(String id, TestSuite suite) {
+			testId = id;
+			this.suite = suite;
+		}
+
+		public String getId() {
+			return testId;
+		}
+
+		static public TestDescription build(String id, TestSuite suite) {
+			return new TestDescription(id, suite);
 		}
 
 		public TestDescription setRequest(String request) {
@@ -194,11 +217,6 @@ public class Main {
 			return resultsEqual;
 		}
 
-		public String getOutputPath() {
-			String result = String.format(OUTPUT_FILE_FORMAT, TestDescription.getOutputRoot(), testId);
-			return result;
-		}
-
 		public TestDescription setWarmupCycles(int n) {
 			this.warmupCycles = n;
 			return this;
@@ -215,6 +233,38 @@ public class Main {
 
 		public int getMeasuredCycles() {
 			return this.measuredCycles;
+		}
+
+		String getResultFileName(Profile mode) {
+			resultFileName = String.format(RDF_OUTPUT_FILE_FORMAT, suite.getOutputRoot(), testId, mode);
+			return resultFileName;
+		}
+
+		public TestDescription setInput(String input) {
+			this.input = input;
+			return this;
+		}
+
+		String getInput() {
+			return input;
+		}
+
+		public TestDescription setInputDb(String input) {
+			this.inputDb = input;
+			return this;
+		}
+
+		String getInputDb() {
+			return inputDb;
+		}
+
+		public TestDescription setOutputPath(String oPath) {
+			outputPath = oPath;
+			return this;
+		}
+
+		public String getOutputPath() {
+			return outputPath;
 		}
 	}
 

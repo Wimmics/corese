@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
  * @author edemairy
  */
 public class QualitativeTest {
+
 	String inputRoot;
 	String outputRoot;
 
@@ -65,8 +66,7 @@ public class QualitativeTest {
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "  ?type rdfs:label ?l .\n" + "  {\n" + "   {\n" + "    ?laura rdf:type ?type\n" + "   }\n" + "   UNION\n" + "   {\n" + "    {\n" + "     ?laura ?type ?with\n" + "    }\n" + "    UNION\n" + "    {\n" + "     ?from ?type ?laura\n" + "    }\n" + "   }\n" + "  }\n" + "  FILTER ( lang(?l) = 'en' )\n" + "}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "DESCRIBE ?laura\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "CONSTRUCT \n" + "{\n" + " ?x rdf:type humans:Man\n" + "}\n" + "WHERE\n" + "{\n" + " {\n" + "  ?x rdf:type humans:Man\n" + " }\n" + "  UNION\n" + " {\n" + "  ?x rdf:type humans:Male .\n" + "  ?x rdf:type humans:Person\n" + " }\n" + "}")},
-			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, 
-//		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, //		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
 		};
 		return tests;
 	}
@@ -78,6 +78,8 @@ public class QualitativeTest {
 			setMeasuredCycles(5).
 			setInput("human_2007_04_17.rdf").
 			setInputDb("/human_db").
+			setInputRoot(inputRoot).
+			setOutputRoot(outputRoot).
 			createDb();
 		TestDescription[][] tests = {
 			{testRoot.buildTest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
@@ -89,7 +91,14 @@ public class QualitativeTest {
 
 	@DataProvider(name = "getResults_1M", indices = {0})
 	public Object[][] getResultsLong() {
-		TestSuite rootTest = TestSuite.build("rootTest").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db");
+		TestSuite rootTest = TestSuite.build("1M_tests").
+			setWarmupCycles(0).
+			setMeasuredCycles(1).
+			setInput("btc-2010-chunk-000_0001.nq").
+			setInputDb("/1M_db").
+			setInputRoot(inputRoot).
+			setOutputRoot(outputRoot);
+		rootTest.createDb();
 		TestDescription[][] tests = {
 			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{rootTest.buildTest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}")}, //			{TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")},
@@ -98,11 +107,19 @@ public class QualitativeTest {
 		return tests;
 	}
 
-	@DataProvider(name = "getResults_10m")
+	@DataProvider(name = "getResults_10m", indices = {1})
 	public Object[][] getResults10m() {
-		TestSuite rootTest = TestSuite.build("rootTest").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_10000.nq").setInputDb("/10m_db").createDb();
+		TestSuite rootTest = TestSuite.build("10m").
+			setWarmupCycles(2).
+			setMeasuredCycles(5).
+			setInput("btc-2010-chunk-000_10000.nq").
+			setInputDb("/10m_db").
+			setInputRoot(inputRoot).
+			setOutputRoot(outputRoot);
+//		rootTest.createDb();
 		TestDescription[][] tests = {
-			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")}
+			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
+			{rootTest.buildTest("select ?x ?y where { ?x rdf:type ?y}")}
 		};
 		return tests;
 	}
@@ -115,7 +132,7 @@ public class QualitativeTest {
 		outputRoot = ensureEndWith(inputRoot, "/");
 	}
 
-	@Test(dataProvider = "getResults_10m", groups = "")
+	@Test(dataProvider = "getResults_1M", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		CoreseTimer timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
 		CoreseTimer timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);

@@ -56,24 +56,24 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 			@Override
 			public boolean hasNext() {
-				if (!edges.hasNext()) {
-					return false;
-				} else {
-					return findNext();
-				}
+				return edges.hasNext();
+//				if (!edges.hasNext()) {
+//					return false;
+//				} else {
+//					return findNext();
+//				}
 			}
 
 			@Override
 			public Entity next() {
-				if (!nextSearched) {
-					if (!findNext()) {
-						throw new NoSuchElementException();
-					}
-				}
-				nextSearched = false;
-				Entity nextEntity = unmapper.buildEntity(nextEdge.get());
+//				if (!nextSearched) {
+//					if (!findNext()) {
+//						throw new NoSuchElementException();
+//					}
+//				}
+//				nextSearched = false;
+				Entity nextEntity = unmapper.buildEntity(edges.next());
 
-				previousEdge = Optional.of(nextEdge.get());
 				return nextEntity;
 			}
 

@@ -220,14 +220,20 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("storage.batch-loading", true);
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
+//		configuration.setProperty("storage.read-only", true);
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
 		configuration.setProperty("index.search.refresh_interval", 600);
 		configuration.setProperty("storage.buffer-size", 50_000);
-		configuration.setProperty("ids.block-size", 100_000);
-		configuration.setProperty("cache.db-cache-size", 0.5);
+		configuration.setProperty("ids.block-size", 50_000);
+		configuration.setProperty("cache.db-cache-size", 0.95);
+		// to make queries faster
+		configuration.setProperty("query.batch", true);
+		configuration.setProperty("query.fast-property", true);
+		configuration.setProperty("query.force-index", true);
+		configuration.setProperty("query.ignore-unknown-index-key", true);
 		try {
 			configuration.save();
 
@@ -297,11 +303,16 @@ public class TitanDriver extends GdbDriver {
 					addKey(objectKey, Mapping.STRING.asParameter()).
 					addKey(graphKey, Mapping.STRING.asParameter()).
 					buildMixedIndex("search");
+				manager.
+					buildIndex("pIndex", Edge.class).
+					addKey(predicateKey).
+					buildCompositeIndex();
 				manager.commit();
 
 				String[] indexNames = {
 					"vertices",
-					"allIndex"
+					"allIndex",
+					"pIndex"
 				};
 				for (String indexName : indexNames) {
 					manager.awaitGraphIndexStatus(g, indexName).call();

@@ -13,11 +13,8 @@ import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.List;
 import java.util.function.Function;
 import org.apache.log4j.Logger;
-import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
@@ -59,6 +56,7 @@ public class TinkerpopProducer extends ProducerImpl {
 
 		String s = updateVariable(subject.isVariable(), subject, env, key, "?s", "S");
 		String p = updateVariable(isPredicateFree(qEdge), qEdge.getEdgeNode(), env, key, "?p", "P");
+//		(IDatatype) dtObject = object.getValue(); pour obtenir le type des données demandées.
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
 		LOGGER.trace("in case " + key.toString());
 		switch (key.toString()) {

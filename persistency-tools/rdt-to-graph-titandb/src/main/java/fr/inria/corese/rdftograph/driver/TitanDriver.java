@@ -296,8 +296,8 @@ public class TitanDriver extends GdbDriver {
 			PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
 			manager.
 				buildIndex("vertices", Vertex.class).
-				addKey(vertexValue, Mapping.STRING.asParameter()).
-				buildMixedIndex("search");
+				addKey(vertexValue).
+				buildCompositeIndex();
 			manager.
 				buildIndex("allIndex", Edge.class).
 				addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -384,11 +384,11 @@ public class TitanDriver extends GdbDriver {
 					result = newVertex.id();
 					g.tx().commit();
 					logger.info("node " + result + "creation " + serializeNode(newVertex) + " ");
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException ex) {
-						Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-					}
+//					try {
+//						Thread.sleep(2000);
+//					} catch (InterruptedException ex) {
+//						Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
+//					}
 				}
 				break;
 			}

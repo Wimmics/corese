@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import java.util.HashMap;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -306,8 +307,8 @@ public class Interpreter implements Evaluator, ExprType {
                 }
                 return null;
                 
-            case SEQUENCE:
-                return sequence(exp, env, p);
+//            case SEQUENCE:
+//                return sequence(exp, env, p);
                 
             case FOR:
                 return proxy.function(exp, env, p);
@@ -362,9 +363,10 @@ public class Interpreter implements Evaluator, ExprType {
 
             case SELF:
                 return eval(exp.getExp(0), env, p);
-
+                
             case CONCAT:
             case STL_CONCAT:
+            case SEQUENCE:
             //case XT_CONCAT:
                 return proxy.function(exp, env, p);
 
@@ -675,17 +677,6 @@ public class Interpreter implements Evaluator, ExprType {
         proxy.finish(producer, env);
     }
     
-    private Object sequence(Expr exp, Environment env, Producer p) {
-        Object res = TRUE;
-        for (Expr e : exp.getExpList()){
-            res = eval(e, env, p);
-            if (res == ERROR_VALUE){
-                return ERROR_VALUE;
-            }
-        }
-        return res;
-    }
-
 
     /**
      * let (?x = ?y, exp) 
@@ -820,7 +811,10 @@ public class Interpreter implements Evaluator, ExprType {
         if (isDebug || def.isDebug()){
             System.out.println(exp + " : " + res);
         }
-        return res;
+        if (res == ERROR_VALUE){
+            return res;
+        }
+        return proxy.getResultValue(res);
     }
     
     /**

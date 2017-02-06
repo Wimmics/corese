@@ -45,6 +45,7 @@ public class QueryEngine implements Engine {
             isActivate = true,
             isWorkflow = false;
     private boolean transformation = false;
+    private String base;
 
     // focus type -> templates
     QueryEngine(Graph g) {
@@ -74,9 +75,11 @@ public class QueryEngine implements Engine {
 
     public Query defQuery(String q) throws EngineException {
         //System.out.println("** QE: \n" + q);
+        if (getBase() != null){
+            getQueryProcess().setBase(getBase());
+        }
         Query qq = getQueryProcess().compile(q, ds);
         if (qq != null) {
-            ASTQuery ast = (ASTQuery) qq.getAST();
             defQuery(qq);
         }
         return qq;
@@ -363,5 +366,19 @@ public class QueryEngine implements Engine {
      */
     public QueryProcess getQueryProcess() {
         return exec;
+    }
+
+    /**
+     * @return the base
+     */
+    public String getBase() {
+        return base;
+    }
+
+    /**
+     * @param base the base to set
+     */
+    public void setBase(String base) {
+        this.base = base;
     }
 }

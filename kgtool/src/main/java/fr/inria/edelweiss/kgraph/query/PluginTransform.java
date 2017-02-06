@@ -18,11 +18,13 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -117,6 +119,9 @@ public class PluginTransform implements ExprType {
 
             case STL_GET:
                 return get(exp, env, p, dt);
+                
+            case STL_CGET:
+                return cget(exp, env, p, dt);    
                 
             case STL_SET:                
                 return set(exp, env, p, dt, null);    
@@ -311,17 +316,34 @@ public class PluginTransform implements ExprType {
         arr[1] = dt2;
         return arr;
     }
+    
+    String getFormat(IDatatype dt){
+        if (dt.isURI()){
+            return getFormatURI(dt.stringValue());
+        }
+        return dt.stringValue();
+    }
+    
+    String getFormatURI(String uri){
+        QueryLoad ql = QueryLoad.create();
+        try {
+            return ql.readWE(uri);
+        } catch (LoadException ex) {
+            java.util.logging.Logger.getLogger(PluginTransform.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
           
-    IDatatype format(IDatatype dt1){
-        return plugin.getValue(dt1.stringValue());
+    IDatatype format(IDatatype dt){
+        return plugin.getValue(getFormat(dt));
     }
     
     IDatatype format(IDatatype dt1, IDatatype dt2){
-        return plugin.getValue(String.format(dt1.stringValue(), dt2.stringValue()));
+        return plugin.getValue(String.format(getFormat(dt1), dt2.stringValue()));
     }
     
     IDatatype format(IDatatype[] par){
-        String f = par[0].stringValue();
+        String f = getFormat(par[0]);
         switch (par.length){
             case 2: return plugin.getValue(String.format(f, par[1].stringValue()));
             case 3: return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue()));
@@ -593,7 +615,7 @@ public class PluginTransform implements ExprType {
      * exp = st:aggregate(?out)
      * Overload exp with actual transformer aggregate
      * May be defined in template st:profile 
-     * using st:define(st:aggregate(?x) = st:agg_and(?x)
+     * using function st:aggregate(?x) { st:agg_and(?x) }
      * otherwise, default is st:group_concat
      */
      Expr decode(Expr exp, Environment env, Producer p){
@@ -607,7 +629,6 @@ public class PluginTransform implements ExprType {
                  Expr def = null;
                  if (ext != null){
                      def = ext.get(exp);
-                     //q.getProfile(Transformer.STL_AGGREGATE);
                  }
                  // default aggregate
                  int oper = t.getAggregate();
@@ -624,7 +645,7 @@ public class PluginTransform implements ExprType {
       */
      Expr decode(Expr exp, Expr def, int oper){
          if (def != null){
-             oper = def.getBody().oper(); //getExp(1).oper();
+             oper = def.getBody().oper(); 
          }
          exp.setOper(oper);
          return exp;        
@@ -677,6 +698,10 @@ public class PluginTransform implements ExprType {
         }
         boolean b = dt.equals(dt2);
         return plugin.getValue(b);
+    }
+    
+    public IDatatype cget(Expr exp, Environment env, Producer p, IDatatype name) {
+        return getContext(env, p).getContext(name).getDatatypeValue();
     }
     
     public IDatatype cget(Expr exp, Environment env, Producer p, IDatatype name, IDatatype slot) {

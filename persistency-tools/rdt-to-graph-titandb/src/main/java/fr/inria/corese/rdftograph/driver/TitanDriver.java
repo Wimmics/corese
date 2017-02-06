@@ -223,7 +223,7 @@ public class TitanDriver extends GdbDriver {
 				.getName()).log(Level.SEVERE, null, ex);
 		}
 		configuration.setProperty("schema.default", "none");
-//		configuration.setProperty("storage.batch-loading", true);
+		configuration.setProperty("storage.batch-loading", true);
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
 //		configuration.setProperty("storage.read-only", true);
@@ -231,15 +231,15 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
-//		configuration.setProperty("index.search.refresh_interval", 600);
-//		configuration.setProperty("storage.buffer-size", 50_000);
-//		configuration.setProperty("ids.block-size", 50_000);
-//		configuration.setProperty("cache.db-cache-size", 0.95);
+		configuration.setProperty("index.search.refresh_interval", 600);
+		configuration.setProperty("storage.buffer-size", 50_000);
+		configuration.setProperty("ids.block-size", 50_000);
+		configuration.setProperty("cache.db-cache-size", 0.95);
 		// to make queries faster
-//		configuration.setProperty("query.batch", true);
-//		configuration.setProperty("query.fast-property", true);
-//		configuration.setProperty("query.force-index", true);
-//		configuration.setProperty("query.ignore-unknown-index-key", true);
+		configuration.setProperty("query.batch", true);
+		configuration.setProperty("query.fast-property", true);
+		configuration.setProperty("query.force-index", false);
+		configuration.setProperty("query.ignore-unknown-index-key", true);
 		try {
 			configuration.save();
 
@@ -264,8 +264,6 @@ public class TitanDriver extends GdbDriver {
 		makeIfNotExistProperty(LANG);
 
 		createIndexes();
-//		mgmt = g.openManagement();
-//		mgmt.commit();
 	}
 
 	void makeIfNotExistProperty(String propertyName) {
@@ -273,7 +271,6 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
-//		g.tx().rollback();
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
 		if (!manager.containsPropertyKey(propertyName)) {
 			manager.makePropertyKey(propertyName).dataType(c).make();
@@ -365,10 +362,6 @@ public class TitanDriver extends GdbDriver {
 	@Override
 	public Object createNode(Value v) {
 		StandardTitanGraph stg = (StandardTitanGraph) g;
-		logger.info(v.stringValue() +" #opened transactions = " + stg.getOpenTransactions());
-		while (!stg.getOpenTransactions().isEmpty()) {
-			g.tx().commit();
-		}
 		Object result = null;
 		Vertex newVertex = null;
 		switch (RdfToGraph.getKind(v)) {
@@ -383,12 +376,6 @@ public class TitanDriver extends GdbDriver {
 					newVertex.property(KIND, RdfToGraph.getKind(v));
 					result = newVertex.id();
 					g.tx().commit();
-					logger.info("node " + result + "creation " + serializeNode(newVertex) + " ");
-//					try {
-//						Thread.sleep(2000);
-//					} catch (InterruptedException ex) {
-//						Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-//					}
 				}
 				break;
 			}
@@ -409,11 +396,6 @@ public class TitanDriver extends GdbDriver {
 						newVertex.property(LANG, l.getLanguage().get());
 					}
 					result = newVertex.id();
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException ex) {
-						Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-					}
 				}
 				g.tx().commit();
 				break;
@@ -442,6 +424,7 @@ public class TitanDriver extends GdbDriver {
 		String o_value = vObject.property(VERTEX_VALUE).value().toString();
 		p.add(o_value);
 
+// 		@TODO: investigate wether the while loop can be replaced by a search with an index.
 //		GraphTraversal<Edge, Edge> alreadyExist = g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
 //		if (alreadyExist.hasNext()) {
 //			result = alreadyExist.next();
@@ -453,8 +436,9 @@ public class TitanDriver extends GdbDriver {
 			currentEdge = it.next();
 			found = currentEdge.property(EDGE_S).value().toString().equals(s_value)
 				&& currentEdge.property(EDGE_P).value().toString().equals(predicate)
-				&& currentEdge.property(EDGE_O).value().toString().equals(o_value);
-//				&& EDGE_G 
+				&& currentEdge.property(EDGE_O).value().toString().equals(o_value)
+				&& currentEdge.inVertex().id().equals(object);
+///				&& EDGE_G 
 		}
 		if (found) {
 			result = currentEdge.id();
@@ -464,11 +448,6 @@ public class TitanDriver extends GdbDriver {
 			result = e.id();
 			transaction.commit();
 		}
-//		try 
-//			Thread.sleep(1000);
-//		} catch (InterruptedException ex) {
-//			Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-//		}
 		return result;
 	}
 

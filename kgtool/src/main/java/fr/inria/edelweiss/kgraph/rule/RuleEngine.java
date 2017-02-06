@@ -102,6 +102,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isDuplicate = false;
     private boolean isSkipPath = false;
     private Context context;
+    private String base;
 
     public RuleEngine() {
         rules = new ArrayList<Rule>();
@@ -1035,6 +1036,20 @@ public class RuleEngine implements Engine, Graphable {
      */
     public boolean isTransformation() {
         return qengine != null && qengine.isTransformation();
+    }
+
+    /**
+     * @return the base
+     */
+    public String getBase() {
+        return base;
+    }
+
+    /**
+     * @param base the base to set
+     */
+    public void setBase(String base) {
+        this.base = base;
     }
 
     class STable extends Hashtable<Rule, Integer> {

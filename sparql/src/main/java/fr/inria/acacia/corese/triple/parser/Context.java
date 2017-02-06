@@ -62,7 +62,7 @@ public class Context extends ASTObject {
     HashMap<String, IDatatype> table;
     static  HashMap<String, Boolean> sexport;
     HashMap<String, Boolean> export;
-    HashMap<String, Context> context;
+    private HashMap<String, Context> context;
     NSManager nsm;
     
     private boolean userQuery = false;
@@ -117,6 +117,9 @@ public class Context extends ASTObject {
             // dataset, protocol
             include(source);
         }
+        if (source.getNamedContext() != null){
+            setNamedContext(source.getNamedContext());
+        }
      }
     
     public void copy(Context source){
@@ -159,24 +162,32 @@ public class Context extends ASTObject {
         return export.get(str) != null && export.get(str) && get(str) != null;
     }
     
+    public Context getContext(IDatatype name){
+        return getContext(name.getLabel());
+    }
+    
     Context getContext(String name){
-        if (context == null){
-            context = new HashMap<String, Context>();
+        if (getNamedContext() == null){
+            setNamedContext(new HashMap<String, Context>());
         }
-        Context c = context.get(name);
+        Context c = getNamedContext().get(name);
         if (c == null){
             c = new Context();
-            context.put(name, c);
+            getNamedContext().put(name, c);
         }
         return c;
     }
     
+    public IDatatype getDatatypeValue(){
+        return DatatypeMap.createObject(this);
+    }
+    
     public IDatatype cget(IDatatype name, IDatatype slot){
-        return getContext(name.getLabel()).get(slot.getLabel());
+        return getContext(name).get(slot.getLabel());
     }
     
     public IDatatype cset(IDatatype name, IDatatype slot, IDatatype value){
-        getContext(name.getLabel()).set(slot.getLabel(), value);
+        getContext(name).set(slot.getLabel(), value);
         return value;
     }
     
@@ -373,6 +384,20 @@ public class Context extends ASTObject {
             }
         }
         return DatatypeMap.createList(list);
+    }
+
+    /**
+     * @return the context
+     */
+    public HashMap<String, Context> getNamedContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setNamedContext(HashMap<String, Context> context) {
+        this.context = context;
     }
     
 }

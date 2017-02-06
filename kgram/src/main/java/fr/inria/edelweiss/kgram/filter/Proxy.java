@@ -47,6 +47,8 @@ public interface Proxy {
 	
 	Object getValue(String value);
         
+        Object getResultValue(Object obj);
+        
         Object getBufferedValue(StringBuilder sb, Environment env);
 
 	int compare(Environment env, Producer p, Node o1, Node o2);

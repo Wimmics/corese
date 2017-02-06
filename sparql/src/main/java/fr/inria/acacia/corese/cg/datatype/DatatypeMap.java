@@ -710,14 +710,16 @@ public class DatatypeMap implements Cst, RDF {
     
     // DRAFT
     public static IDatatype result(IDatatype dt){
+        dt.setIndex(IDatatype.RESULT);
         return dt;
     }
     
     public static boolean isResult(IDatatype dt){
-        return true;
+        return dt.getIndex() == IDatatype.RESULT;
     }
     
-    public static IDatatype getResult(IDatatype dt){
+    public static IDatatype getResultValue(IDatatype dt){
+        dt.setIndex(IDatatype.VALUE);
         return dt;
     }
     

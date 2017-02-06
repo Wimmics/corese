@@ -45,7 +45,7 @@ public class Compile {
         
         translate(root + "datashape/main",     lib + "dsmain.rul");
         translate(root + "datashape/core",     lib + "dscore.rul");
-        translate(root + "datashape/property", lib + "dsproperty.rul");
+        //translate(root + "datashape/property", lib + "dsproperty.rul");
         translate(root + "datashape/path",     lib + "dspath.rul");
         translate(root + "datashape/constraint",  lib + "dsconstraint.rul");
         translate(root + "datashape/result",   lib + "dsresult.rul");

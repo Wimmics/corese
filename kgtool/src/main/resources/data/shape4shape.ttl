@@ -1,45 +1,45 @@
 #
 # Shape for Data Shape
-# Olivier Corby - Inria I3S - 2016
+# Olivier Corby - Inria I3S - 2017
 # olivier.corby at inria.fr
 #
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ds: <http://ns.inria.fr/shacl-shape/> .
 
 
-ds:shape a sh:Shape ;
+ds:shape a sh:NodeShape ;
 rdfs:comment "Main shape" ;
-sh:targetClass sh:Shape ;
+sh:targetClass sh:NodeShape ;
 sh:closed true ; 
 sh:ignoredProperties (rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
-    sh:predicate sh:deactivated ;
+    sh:path sh:deactivated ;
     sh:datatype xsd:boolean
 ] ;
 sh:property [
-    sh:predicate sh:name ;
+    sh:path sh:name ;
 ] ;
 sh:property [
-    sh:predicate sh:message ;
+    sh:path sh:message ;
 ] ;
 sh:property [
-    sh:predicate sh:description ;
+    sh:path sh:description ;
 ] ;
 sh:property [
-    sh:predicate sh:order ;
+    sh:path sh:order ;
 ] ;
 sh:property [
-    sh:predicate sh:group ;
+    sh:path sh:group ;
 ] ;
 
 sh:property [
-    sh:predicate sh:closed ;
+    sh:path sh:closed ;
     sh:datatype xsd:boolean
 ] ;
 sh:property [
-    sh:predicate sh:ignoredProperties ;
-    sh:shape ds:list
+    sh:path sh:ignoredProperties ;
+    sh:node ds:list
 ] ;
 sh:property [
     sh:path (sh:ignoredProperties [sh:zeroOrMorePath rdf:rest] rdf:first) ;
@@ -47,230 +47,225 @@ sh:property [
 ];
 
 sh:property [
-    sh:predicate sh:filterShape ;
-    sh:shape ds:shape
-] ;
-sh:property [
-    sh:predicate sh:targetSubjectsOf ;
+    sh:path sh:targetSubjectsOf ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:targetObjectsOf ;
+    sh:path sh:targetObjectsOf ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:targetClass ;
+    sh:path sh:targetClass ;
     sh:nodeKind sh:IRI 
 ] ;
 sh:property [
-    sh:predicate sh:targetNode ;
+    sh:path sh:targetNode ;
     sh:nodeKind sh:IRIOrLiteral 
 ] ;
 sh:property [
-    sh:predicate sh:property
+    sh:path sh:property
 ] ;
 sh:property [
-    sh:predicate sh:and ;
+    sh:path sh:and ;
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:list
+    sh:node ds:list
 ] ;
 sh:property [
-    sh:predicate sh:or ;
+    sh:path sh:or ;
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:list
+    sh:node ds:list
 ] ;
 sh:property [
-    sh:path ([sh:alternativePath (sh:or sh:and)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:path sh:xor ;
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:shape 
+    sh:node ds:list
+] ;
+sh:property [
+    sh:path ([sh:alternativePath (sh:xor sh:or sh:and)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:node ds:shape 
 ];
 sh:property [
-    sh:predicate sh:not ;
+    sh:path sh:not ;
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:shape
+    sh:node ds:shape
 ] ;
 
 # node constraint
 
 sh:property [
-    sh:predicate sh:shape ;
-    sh:shape ds:shape
+    sh:path sh:node ;
+    sh:node ds:shape
 ] ;
 sh:property [
-    sh:predicate sh:severity ;
+    sh:path sh:severity ;
     sh:in (sh:violation sh:Warning sh:Info)
 ] ;
 sh:property [
-    sh:predicate sh:class ;
+    sh:path sh:class ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:datatype ;
+    sh:path sh:datatype ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:in ;
-    sh:shape ds:list
+    sh:path sh:in ;
+    sh:node ds:list
 ] ;
 sh:property [
-    sh:predicate sh:pattern ;
+    sh:path sh:pattern ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:flags ;
+    sh:path sh:flags ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:stem ;
-    sh:datatype xsd:string    
-] ;
-sh:property [
-    sh:predicate sh:languageIn ;
-    sh:shape ds:list
+    sh:path sh:languageIn ;
+    sh:node ds:list
 ] ;
 sh:property [
     sh:path (sh:languageIn [sh:zeroOrMorePath rdf:rest] rdf:first) ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:minLength, sh:maxLength ;
+    sh:path sh:minLength, sh:maxLength ;
     sh:datatype xsd:integer    
 ] ;
 sh:property [
-    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
+    sh:path sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
     sh:datatype xsd:integer
 ] ;
 sh:property [
-    sh:predicate sh:nodeKind ;
+    sh:path sh:nodeKind ;
     sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
 ]
 
 .
 
 
-ds:list a sh:Shape ;
+ds:list a sh:NodeShape ;
 rdfs:comment "Well formed RDF list" ;
 sh:closed true ; 
 sh:ignoredProperties (rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
-    sh:predicate rdf:first ;
+    sh:path rdf:first ;
     sh:minCount 1 ; sh:maxCount 1 ;
 ] ;
 sh:property [
-    sh:predicate rdf:rest ;
+    sh:path rdf:rest ;
     sh:minCount 1 ; sh:maxCount 1 ;
-    sh:or ([sh:shape ds:list] [sh:hasValue rdf:nil])
+    sh:or ([sh:node ds:list] [sh:hasValue rdf:nil])
 ] ;
 .
 
 
 
-ds:property a sh:Shape ;
+ds:property a sh:NodeShape ;
 rdfs:comment "Value of sh:property [ ]" ;
 sh:targetObjectsOf sh:property ;
 sh:property [
-    sh:path [ sh:alternativePath (sh:predicate sh:path) ] ; 
-    sh:minCount 1 ; sh:maxCount 1 
-] ;
-sh:property [
-    sh:predicate sh:predicate ;
-    sh:nodeKind sh:IRI 
+    sh:path sh:path ; 
+    sh:minCount 1 ; sh:maxCount 1 ;
 ] ;
 
-sh:shape ds:shapecst
+sh:node ds:shapecst
 .
 
 
-ds:shapecst a sh:Shape ;
+ds:shapecst a sh:NodeShape ;
 rdfs:comment "Constraint in sh:property [ ] or in sh:property [ sh:or( ) ]" ;
 sh:closed true ; 
 sh:ignoredProperties 
-(sh:predicate sh:path sh:deactivated sh:name sh:message sh:description sh:order sh:group rdf:type rdfs:comment rdfs:label) ;
+(sh:path sh:deactivated sh:name sh:message sh:description sh:order sh:group rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
-    sh:predicate sh:shape ;
-    sh:shape ds:shape
+    sh:path sh:node ;
+    sh:node ds:shape
+] ;
+
+sh:property [
+    sh:path sh:qualifiedValueShape ;
+    sh:node ds:shapecst
 ] ;
 sh:property [
-    sh:predicate sh:filterShape ;
-    sh:shape ds:shape
+    sh:path sh:qualifiedValueShapesDisjoint ;
+    sh:datatype xsd:boolean
 ] ;
+
 sh:property [
-    sh:predicate sh:and, sh:or ; 
+    sh:path sh:and, sh:or, sh:xor ; 
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:list
+    sh:node ds:list
 ] ;
 sh:property [
-    sh:path ([sh:alternativePath (sh:and sh:or)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
-    sh:shape ds:shapecst
+    sh:path ([sh:alternativePath (sh:and sh:or sh:xor)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:node ds:shapecst
 ];
 sh:property [
-    sh:predicate  sh:not ; 
+    sh:path  sh:not ; 
     sh:nodeKind sh:BlankNodeOrIRI ;
-    sh:shape ds:shapecst
+    sh:node ds:shapecst
 ] ;
 sh:property [
-    sh:predicate sh:severity ;
+    sh:path sh:severity ;
     sh:in (sh:violation sh:Warning sh:Info)
 ] ;
 sh:property [
-    sh:predicate sh:class ;
+    sh:path sh:class ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:datatype ;
+    sh:path sh:datatype ;
     sh:nodeKind sh:IRI
 ] ;
 sh:property [
-    sh:predicate sh:in ;
-    sh:shape ds:list
+    sh:path sh:in ;
+    sh:node ds:list
 ] ;
 sh:property [
-    sh:predicate sh:pattern ;
+    sh:path sh:pattern ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:flags ;
+    sh:path sh:flags ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:stem ;
-    sh:datatype xsd:string
+    sh:path sh:hasValue
 ] ;
 sh:property [
-    sh:predicate sh:hasValue
-] ;
-sh:property [
-    sh:predicate sh:minLength, sh:maxLength ;
+    sh:path sh:minLength, sh:maxLength ;
     sh:datatype xsd:integer    
 ] ;
 sh:property [
-    sh:predicate sh:minCount, sh:maxCount ;
+    sh:path sh:minCount, sh:maxCount ;
     sh:datatype xsd:integer
 ] ;
 sh:property [
-    sh:predicate sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
+    sh:path sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive ;
     sh:datatype xsd:integer
 ] ;
 sh:property [
-    sh:predicate sh:nodeKind ;
+    sh:path sh:nodeKind ;
     sh:in (sh:IRI sh:BlankNodeOrIRI sh:IRIOrLiteral sh:Literal sh:BlankNodeOrLiteral sh:BlankNode)
 ] ;
 sh:property [
-    sh:predicate sh:uniqueLang ;
+    sh:path sh:uniqueLang ;
     sh:datatype xsd:boolean
 ] ;
 sh:property [
-    sh:predicate sh:languageIn ;
-    sh:shape ds:list
+    sh:path sh:languageIn ;
+    sh:node ds:list
 ] ;
 sh:property [
     sh:path (sh:languageIn [sh:zeroOrMorePath rdf:rest] rdf:first) ;
     sh:datatype xsd:string
 ] ;
 sh:property [
-    sh:predicate sh:lessThan, sh:lessThanOrEquals, sh:equals, sh:disjoint ;
+    sh:path sh:lessThan, sh:lessThanOrEquals, sh:equals, sh:disjoint ;
     sh:nodeKind sh:IRI
 ] .
 
@@ -278,19 +273,19 @@ sh:property [
 
 
 
-ds:path a sh:Shape ;
+ds:path a sh:NodeShape ;
 rdfs:comment "sh:path value: URI,  RDF list of path or well formed path " ;
 sh:targetObjectsOf sh:path ;
 
 sh:or (
-  [ sh:shape ds:pathExp  ]
-  [ sh:shape ds:pathList ]
+  [ sh:node ds:pathExp  ]
+  [ sh:node ds:pathList ]
   [ sh:nodeKind sh:IRI   ]
 )
 .
 
 
-ds:pathExp a sh:Shape ;
+ds:pathExp a sh:NodeShape ;
 rdfs:comment "Well formed path expression" ;
 sh:closed true ; 
 sh:ignoredProperties (rdf:type) ;
@@ -302,42 +297,42 @@ sh:property [
     sh:minCount 1 ; sh:maxCount 1    
 ] ;
 sh:property [
-    sh:predicate sh:alternativePath ;
-    sh:shape ds:pathList
+    sh:path sh:alternativePath ;
+    sh:node ds:pathList
 ] ;
 sh:property [
-    sh:predicate sh:inversePath ;
-    sh:shape ds:path
+    sh:path sh:inversePath ;
+    sh:node ds:path
 ] ;
 sh:property [
-    sh:predicate sh:zeroOrMorePath ;
-    sh:shape ds:path
+    sh:path sh:zeroOrMorePath ;
+    sh:node ds:path
 ] ;
 sh:property [
-    sh:predicate sh:oneOrMorePath ;
-    sh:shape ds:path
+    sh:path sh:oneOrMorePath ;
+    sh:node ds:path
 ] ;
 sh:property [
-    sh:predicate sh:zeroOrOnePath ;
-    sh:shape ds:path
+    sh:path sh:zeroOrOnePath ;
+    sh:node ds:path
 ] ;
 .
 
 
-ds:pathList a sh:Shape ;
+ds:pathList a sh:NodeShape ;
 rdfs:comment "Well formed list of path expression" ;
 sh:closed true ; 
 sh:ignoredProperties (rdf:type) ;
 
 sh:property [
-    sh:predicate rdf:first ;
+    sh:path rdf:first ;
     sh:minCount 1 ; sh:maxCount 1 ;
-    sh:shape ds:path
+    sh:node ds:path
 ];
 sh:property [
-    sh:predicate rdf:rest ;
+    sh:path rdf:rest ;
     sh:minCount 1 ; sh:maxCount 1 ;
-    sh:or ([sh:shape ds:pathList] [sh:hasValue rdf:nil])
+    sh:or ([sh:node ds:pathList] [sh:hasValue rdf:nil])
 ]
 .
 

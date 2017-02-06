@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -85,8 +86,8 @@ public class TemplatePrinter {
                 write("Olivier Corby - Wimmics - Inria UNS CNRS I3S");
                 write(new Date().toString());
                 write("-->");
-		write("<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' ") ;
-		write("  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>");	
+		write("<rdf:RDF  xmlns:rdf='" + NSManager.RDF + "'");
+		write("  xmlns='" + NSManager.STL + "'>");	
 	}
 	
 	void trailer() throws IOException{

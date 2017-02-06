@@ -202,8 +202,16 @@ public class QuerySolver  implements SPARQLEngine {
 	}
 	
 	public void setDefaultBase(String str){
+		setBase(str);
+	}
+        
+        public void setBase(String str){
 		defaultBase = str;
 	}
+        
+        public String getBase(){
+            return defaultBase;
+        }
 	
 	protected Transformer transformer(){
 		Transformer transformer = Transformer.create();

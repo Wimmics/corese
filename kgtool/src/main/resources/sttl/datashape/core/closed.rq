@@ -12,18 +12,18 @@ where {
     ?sh sh:closed true 
     optional { ?sh sh:ignoredProperties ?skip }
   }
-  
+
   values ?s { unnest(?ls) }
 
   ?s ?p ?o
    
    bind (
-                     exists { graph ?shape { ?sh sh:property [ sh:predicate ?p ]} }
+                     exists { graph ?shape { ?sh sh:property [ sh:path ?p ]} }
     ||
     (bound(?skip) && exists { graph ?shape { ?skip rdf:rest*/rdf:first ?p } })
     
    as ?suc)
-
+   
    bind (st:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
     
 }

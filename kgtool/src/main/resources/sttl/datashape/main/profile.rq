@@ -11,7 +11,7 @@ function st:aggregate(?x) {
 
 #
 # Template optimizer
-# Results of graph ?shape { ?sh sh:predicate ?cst } are cached in table: ?sh -> Mappings
+# Results of graph ?shape { ?sh sh:property ?cst } are cached in table: ?sh -> Mappings
 # Next evaluations are retrieved from cache: 40% faster
 #
 function st:optimize(?shape, ?sh){
@@ -56,7 +56,7 @@ function sh:hasShape(?shape, ?sh, ?vis, ?ls){
 }
 
 # test without target and do not report error
-# sh:shape sh:filterShape sh:or sh:and sh:not
+# sh:node  sh:or sh:and sh:not
 function sh:testShapeCore(?shape, ?sh, ?s){
     st:apply-templates-with-all(sh:core(), ?shape, ?sh, false, ?s)
 }
@@ -65,17 +65,11 @@ function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
     st:apply-templates-with-all(sh:constraint(), ?shape, ?sh, ?vis, ?s)
 }
 
-function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p){
-   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
-}
 
 function sh:predicate(?shape, ?sh, ?vis, ?s, ?p){
    st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
-function sh:hasProperty(?shape, ?sh, ?vis, ?s, ?p, ?o){
-   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
-}
 
 function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p){
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
@@ -89,11 +83,11 @@ function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o){
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
 }
 
-function sh:safe(?shape, ?sh, ?suc){
+function sh:safe2(?shape, ?sh, ?suc){
     ?suc
 }
 
-function sh:safe2(?shape, ?sh, ?suc){
+function sh:safe(?shape, ?sh, ?suc){
     if (?suc) { true }
     else {
         let (?b = exists { graph ?shape { ?sh sh:severity ?sev filter (?sev != sh:Violation) } } )
@@ -102,22 +96,6 @@ function sh:safe2(?shape, ?sh, ?suc){
 }
 
 
-#
-# node ?s must verify all filter shapes if any
-# skip target in filter shapes => testShapeCore
-#
-function sh:filterShape2(?shape, ?sh, ?s){
-    true
-}
-
-function sh:filterShape(?shape, ?sh, ?s){
-    not exists {
-        graph ?shape {
-            ?sh sh:filterShape ?fs 
-        }
-        filter ( ! sh:testShapeCore(?shape, ?fs, ?s) )
-    }
-}
 
 function st:report(?name, ?s, ?suc, ?vis){
     if (?vis) {
@@ -266,7 +244,6 @@ function sh:def(){
         (sh:minLength       sh:MinLengthConstraintComponent)
         (sh:maxLength       sh:MaxLengthConstraintComponent)
         (sh:pattern	        sh:PatternConstraintComponent)
-        (sh:stem            sh:StemConstraintComponent)
         (sh:languageIn      sh:LanguageInConstraintComponent)
         (sh:uniqueLang      sh:UniqueLangConstraintComponent)
         (sh:equals          sh:EqualsConstraintComponent)
@@ -276,10 +253,9 @@ function sh:def(){
         (sh:not             sh:NotConstraintComponent)
         (sh:and             sh:AndConstraintComponent)
         (sh:or              sh:OrConstraintComponent)
-        (sh:shape           sh:ShapeConstraintComponent)
-        
+        (sh:xor             sh:XorConstraintComponent)
+        (sh:node            sh:NodeConstraintComponent)
         (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
-        
         (sh:closed      sh:ClosedConstraintComponent)
         (sh:hasValue    sh:HasValueConstraintComponent)
         (sh:in          sh:InConstraintComponent)
@@ -303,17 +279,6 @@ function sh:invCount(?o, ?p){
   { ?c }
 }
 
-function sh:hasKind(?value, ?kind){
-    sh:nodeKind(?value, ?kind) 
-}
-
-function sh:mlength(?q, ?s, ?m){
-    coalesce(
-        ! isBlank(?s) && 
-        if (?q = sh:minLength, strlen(?s) >= ?m, strlen(?s) <= ?m), 
-        false) 
-}
-
 
 function sh:minCount(?s, ?p, ?m){
     sh:count(?s, ?p) >= ?m
@@ -323,42 +288,42 @@ function sh:maxCount(?s, ?p, ?m){
     sh:count(?s, ?p) <= ?m
 }
 
-function sh:nodeKind(?value, ?kind){
+function sh:nodeKind(?shape, ?value, ?kind){
     (isIRI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
     (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
     (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
 }
 
-function sh:minLength(?s, ?m){
+function sh:minLength(?shape, ?s, ?m){
     ! isBlank(?s) && coalesce(strlen(?s) >= ?m, false) 
 }
 
-function sh:maxLength(?s, ?m){
+function sh:maxLength(?shape, ?s, ?m){
     ! isBlank(?s) && coalesce(strlen(?s) <= ?m, false) 
 }
 
-function sh:minInclusive(?o, ?m){
+function sh:minInclusive(?shape, ?o, ?m){
     ?o >= ?m
 }
 
-function sh:minExclusive(?o, ?m){
+function sh:minExclusive(?shape, ?o, ?m){
     ?o > ?m
 }
 
-function sh:maxInclusive(?o, ?m){
+function sh:maxInclusive(?shape, ?o, ?m){
     ?o <= ?m
 }
 
-function sh:maxExclusive(?o, ?m){
+function sh:maxExclusive(?shape, ?o, ?m){
     ?o < ?m
+}
+
+function sh:datatype(?shape, ?o, ?d){
+    isLiteral(?o) && datatype(?o) = ?d
 }
 
 function sh:datatype(?o, ?d){
     isLiteral(?o) && datatype(?o) = ?d
-}
-
-function sh:stem(?o, ?exp){
-    isURI(?o) && strstarts(?o, ?exp)
 }
 
 function sh:minCount(?s, ?m){
@@ -369,7 +334,7 @@ function sh:maxCount(?s, ?m){
     ?s <= ?m
 }
 
-function sh:class(?o, ?c){
+function sh:class(?shape, ?o, ?c){
   exists { ?o rdf:type/rdfs:subClassOf* ?c }
 }
 
@@ -379,6 +344,13 @@ function sh:in(?shape, ?o, ?lv){
         filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
     }
   } 
+}
+
+# every lists of values should be disjoint
+function sh:disjoint(?sh){
+    let (?list = st:cget(?sh)){
+    
+    }
 }
 
 function sh:languageIn(?shape, ?o, ?lv){
@@ -393,14 +365,16 @@ function sh:languageIn(?shape, ?o, ?lv){
 }
 
 # with target ???
-function sh:shape(?shape, ?o, ?cst){
+function sh:node(?shape, ?o, ?cst){
     sh:testShapeCore(?shape, ?cst, ?o)
 }
 
-
+function sh:qualifiedShape(?subject, ?shape, ?qsh){
+    sh:testShapeCore(?shape, ?qsh, ?subject)
+}
 
 # used by predicate/path 
-# count fail
+# count failure
 function sh:and(?fun, ?and, ?s, ?p, ?o, ?shape){
     (sh:bool(?fun, ?and, ?s, ?p, ?o, ?shape, 0, 1) = 0)
 }
@@ -411,8 +385,14 @@ function sh:or(?fun, ?or, ?s, ?p, ?o, ?shape){
     (sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)  > 0)
 }
 
+# used by predicate/path 
+# count success
+function sh:xor(?fun, ?or, ?s, ?p, ?o, ?shape){
+    (sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)  = 1)
+}
 
 # property (predicate or path)
+# ?fun = sh:hasPath
 function sh:bool(?fun, ?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
     let ((?count) = 
         SELECT ?fun ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
@@ -437,6 +417,12 @@ function sh:and(?and, ?s, ?shape){
 # count success
 function sh:or(?or, ?s, ?shape){
     (sh:bool(?or, ?s, ?shape, 1, 0) > 0)
+}
+
+# used by core
+# count success
+function sh:xor(?or, ?s, ?shape){
+    (sh:bool(?or, ?s, ?shape, 1, 0) = 1)
 }
 
 # core

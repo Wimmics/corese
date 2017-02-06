@@ -9,7 +9,7 @@ template  (?shape, ?sh, ?vis, ?ls) {
 }
 where {
     graph ?shape {  
-        values ?bool { sh:and sh:or sh:not } 
+        values ?bool { sh:and sh:or sh:xor sh:not } 
         ?sh ?bool ?cst
     }
 }

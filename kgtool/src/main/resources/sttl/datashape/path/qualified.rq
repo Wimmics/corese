@@ -1,0 +1,38 @@
+#
+# ?ns sh:property ?sh 
+# ?sh sh:path ?p ;
+#     sh:qualifiedValueShape ?qsh
+# ?s subject for path ?p
+# compute subList of values of path ?s ?p that match qualifiedValueShape ?qsh
+# subList size must match min and max
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:qualifiedValueShape (?shape, ?sh, ?vis, ?s, ?p, ?qsh, ?value) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?ns sh:property ?sh
+        optional { ?ns sh:qualifiedMinCount ?min }
+        optional { ?ns sh:qualifiedMaxCount ?max }
+    }
+            
+  bind (sh:path(?shape, ?s, ?p) as ?list)
+
+  bind (mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?qsh) as ?subList)
+  
+  bind (sh:record(?ns, ?s, ?subList) as ?record)
+  
+  bind (
+       (xt:size(?subList) >= coalesce(?min, 0)) 
+    && (xt:size(?subList) <= coalesce(?max, xt:size(?subList))) 
+  as ?suc)
+  
+  bind (st:report(sh:qualifiedValueShape, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
+}
+
+# record list of values in case of disjoint 
+function sh:record(?ns, ?s, ?subList){
+    st:cset(?ns, ?s, (xt:cons(?subList, coalesce(st:cget(?ns, ?s), xt:list()))))
+}

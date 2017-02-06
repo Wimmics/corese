@@ -1,0 +1,69 @@
+#
+# evaluate sh:qualifiedValueShapesDisjoint 
+# list of list of values are recorded in a table
+# check that thay are disjoint
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+    sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?sh sh:qualifiedValueShapesDisjoint true  
+        filter not exists { ?sh sh:deactivated true}
+    }
+        
+    bind (sh:disjoint(?shape, ?sh, ?vis) as ?suc)
+}
+pragma { st:template st:priority 1000 } 
+
+
+# test disjointness of qualifiedValueShapes of ?sh
+function sh:disjoint(?shape, ?sh, ?vis){
+    let (?b = true){
+        for ((?key, ?val) in st:cget(?sh)){
+            if (! sh:disjoint(?key, ?val, ?shape, ?sh, ?vis)) {
+                set(?b = false)
+            }
+        } ;
+        ?b
+    }
+}
+
+# test disjointness of qualifiedValueShapes of ?key
+# list of list of values of  subject ?key
+# test whether there is an intersection in any two lists
+function sh:disjoint(?key, ?list, ?shape, ?sh, ?vis){
+    let (?b = true, ?i = 0){
+        for (?l1 in ?list){
+            if (?b){
+                for (?j in xt:iota(?i+1, xt:size(?list) - 1)){
+                    if (?b){
+                        let (?l2 = xt:get(?list, ?j)) { 
+                            if (sh:intersect(?l1, ?l2)) {
+                                st:report(sh:qualifiedValueShapesDisjoint, ?sh, ?shape, ?key, false, ?vis);
+                                set(?b = false) 
+                            }
+                        }
+                    } ;
+                    set (?i = ?i + 1)
+                }
+            }
+        } ;
+        ?b
+    }
+}
+
+function sh:intersect(?l1, ?l2){
+    let (?b = false) {
+        for (?x in ?l1){
+            if (xt:member(?x, ?l2)){
+                set(?b = true)
+            }
+        } ;
+        ?b
+    }
+}
+
+

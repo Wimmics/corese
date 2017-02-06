@@ -1,0 +1,6 @@
+template st:profile {}
+where {}
+
+function st:getFormat(?name){
+    uri(concat(st:get(st:server), "/data/format/ds/", ?name))
+}

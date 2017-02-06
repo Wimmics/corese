@@ -10,10 +10,3 @@ function st:optimize(?shape, ?sh){
     true
 }
 
-function sh:checkFilter(?ls, ?shape, ?cst){
-    mapfindlist(sh:evalFilter, if (isList(?ls), ?ls, xt:list(?ls)), xt:list(?shape), ?cst)
-}
-
-function sh:evalFilter(?s, ?shape, ?cst){
-    sh:filterShape(?shape, ?cst, ?s)
-}

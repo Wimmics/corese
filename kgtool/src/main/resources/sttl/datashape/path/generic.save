@@ -3,17 +3,16 @@
 # ?sh sh:path ?p ; ?q ?m .
 # ?ls = list of subjects of path ?p
 #
-# ?value may be bound in the boolean cases:
+# ?o may be bound in the boolean cases:
 # ?sh sh:path ?p ; sh:or ([sh:class C1][sh:class C2])
 #
 # template sh:or enumerate objects of path and 
-# for each object ?value : check the or 
-# the or evaluates its elements by coming back here with ?value bound
-# this is done to use the very same templates whether ?value is bound or not
+# for each object o : check the or 
+# the or evaluates its elements by coming back here with ?o bound
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
+template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
@@ -21,13 +20,13 @@ where {
         values ?q { 
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
-            sh:in sh:languageIn sh:node
+            sh:in sh:languageIn sh:shape
         }
         ?sh ?q ?m    
     }
             
   values ?s { unnest(?ls) }
-  values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
+  values ?o { unnest(sh:path(?shape, ?s, ?p)) }
 
   bind (coalesce(funcall(?q, ?shape, ?o, ?m), false) as ?suc )
   

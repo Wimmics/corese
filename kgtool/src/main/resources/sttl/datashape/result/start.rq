@@ -1,3 +1,6 @@
+#
+# Display SHACL validation result on server 
+#
 prefix sh: <http://www.w3.org/ns/shacl#>
  
 template st:start {

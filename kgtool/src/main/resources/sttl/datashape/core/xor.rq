@@ -1,0 +1,17 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:xor (?shape, ?sh, ?or, ?vis, ?ls) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    values ?s { unnest(?ls) }
+
+    bind (sh:xor(?or, ?s, ?shape) as ?count)  
+	bind (! bound(?count) AS ?failure) .
+	bind (IF (?failure, false, ?count)  as ?suc)
+	
+    bind (st:report(sh:xor, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+

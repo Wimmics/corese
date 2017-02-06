@@ -16,7 +16,7 @@ where {
   
     {graph ?shape {
         ?sh sh:targetSubjectsOf ?p 				
-        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
+        filter not exists { ?sh sh:deactivated true} }
         
      ?s ?p ?o}
     
@@ -24,7 +24,7 @@ where {
     
     {graph ?shape {
         ?sh sh:targetObjectsOf ?p 				
-        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
+        filter not exists { ?sh sh:deactivated true} }
         
      ?x ?p ?s}
     
@@ -32,15 +32,15 @@ where {
     
     {graph ?shape {
         ?sh sh:targetClass ?c 
-        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)} 
+        filter not exists { ?sh sh:deactivated true} }
         
      ?s rdf:type/rdfs:subClassOf* ?c}
      
      union 
     
     {graph ?shape {
-        ?sh a sh:Shape, rdfs:Class
-        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)} 
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
         
      ?s rdf:type/rdfs:subClassOf* ?sh} 
      
@@ -48,11 +48,9 @@ where {
      
     {graph ?shape {
         ?sh sh:targetNode ?s
-        bind (not exists { ?sh sh:filterShape ?fs } as ?ok)}
+        filter not exists { ?sh sh:deactivated true} }
     }
-                  
-    filter (?ok || sh:filterShape(?shape, ?sh, ?s))
-    
+                      
   } group by ?sh
   }
   #filter xt:display("target: ", ?list) 

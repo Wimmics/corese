@@ -484,6 +484,7 @@ public class NSManager extends ASTObject {
         return res;
     }
 
+    @Override
     public String toString() {
         return toString(null, false, true);
     }
@@ -509,6 +510,9 @@ public class NSManager extends ASTObject {
             if (all || isDisplayable(ns)) {
                 sb.append(title).append(" ").append(p);
                 sb.append(": <").append(getNamespace(p)).append(">");
+                if (title.equals("@prefix")){
+                    sb.append(" ").append(".");
+                }
                 sb.append(NL);
             }
         }

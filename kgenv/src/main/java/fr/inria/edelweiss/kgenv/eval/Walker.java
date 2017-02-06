@@ -335,12 +335,6 @@ class Walker extends Interpreter {
 
     // with one argument
     Node groupConcat(Filter f, Environment map, Producer p) {
-        
-        
-//        if (count++ > 0) {
-//            sb.append(sep);
-//        }
-
         IDatatype dt = (IDatatype) eval.eval(f.getExp().getExp(0), map, p);
         
         if (dt != null && dt.isFuture()) {
@@ -399,55 +393,55 @@ class Walker extends Interpreter {
     }
      
     // with a list of arguments, without SPARQL semantics of @lang
-    Node groupConcat2(Filter f, Environment map, Producer p) {
-        boolean isDistinct = f.getExp().isDistinct();
-        IDatatype[] value = null;
-        Tuple t = null;
-        if (isDistinct) {
-            value = new IDatatype[exp.getExpList().size()];
-            t = new Tuple(value);
-        }
-
-        StringBuffer res = new StringBuffer();
-
-        if (count++ > 0) {
-            res.append(sep);
-        }
-
-        int i = 0;
-        for (Expr arg : exp.getExpList()) {
-
-            IDatatype dt = (IDatatype) eval.eval(arg, map, p);
-
-            if (dt != null && dt.isFuture()) {
-                Expr ee = (Expr) dt.getObject();
-                // template ?out = future(concat(str, st:number(), str))
-                // eval(concat(str, st:number(), str))
-                dt = (IDatatype) eval.eval(ee, map, p);
-            }
-
-            if (isDistinct) {
-                value[i++] = dt;
-            }
-
-            if (dt != null) {
-                if (dt.getStringBuilder() != null) {
-                    res.append(dt.getStringBuilder());
-                } else {
-                    res.append(dt.getLabel());
-                }
-            }
-
-        }
-
-
-        if (accept(f, t)) {
-            //res.append(sep);
-            sb.append(res);
-        }
-
-        return null;
-    }
+//    Node groupConcat2(Filter f, Environment map, Producer p) {
+//        boolean isDistinct = f.getExp().isDistinct();
+//        IDatatype[] value = null;
+//        Tuple t = null;
+//        if (isDistinct) {
+//            value = new IDatatype[exp.getExpList().size()];
+//            t = new Tuple(value);
+//        }
+//
+//        StringBuffer res = new StringBuffer();
+//
+//        if (count++ > 0) {
+//            res.append(sep);
+//        }
+//
+//        int i = 0;
+//        for (Expr arg : exp.getExpList()) {
+//
+//            IDatatype dt = (IDatatype) eval.eval(arg, map, p);
+//
+//            if (dt != null && dt.isFuture()) {
+//                Expr ee = (Expr) dt.getObject();
+//                // template ?out = future(concat(str, st:number(), str))
+//                // eval(concat(str, st:number(), str))
+//                dt = (IDatatype) eval.eval(ee, map, p);
+//            }
+//
+//            if (isDistinct) {
+//                value[i++] = dt;
+//            }
+//
+//            if (dt != null) {
+//                if (dt.getStringBuilder() != null) {
+//                    res.append(dt.getStringBuilder());
+//                } else {
+//                    res.append(dt.getLabel());
+//                }
+//            }
+//
+//        }
+//
+//
+//        if (accept(f, t)) {
+//            //res.append(sep);
+//            sb.append(res);
+//        }
+//
+//        return null;
+//    }
 
     
     

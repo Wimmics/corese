@@ -2610,7 +2610,7 @@ public class TestQuery1 {
                 + "}";
         Mappings map = exec.query(q);
         //System.out.println(map.getTemplateStringResult());
-        assertEquals(250, map.getTemplateStringResult().length());
+        assertEquals(256, map.getTemplateStringResult().length());
 
 
     }
@@ -2899,17 +2899,17 @@ public class TestQuery1 {
         Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
         String str = t.transform();
         //System.out.println("result:\n" + str);
-        assertEquals(4031, str.length());
+        assertEquals(4041, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(3368, str.length());
+        assertEquals(3378, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE);
         str = t.transform();
         //System.out.println(str);
-        assertEquals(7144, str.length());
+        assertEquals(7154, str.length());
     }
 
     @Test
@@ -2927,17 +2927,17 @@ public class TestQuery1 {
         Mappings map = exec.query(t1);
         String str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3981, str.length());
+        assertEquals(3989, str.length());
 
         map = exec.query(t2);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3318, str.length());
+        assertEquals(3326, str.length());
 
         map = exec.query(t3);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(7094, str.length());
+        assertEquals(7102, str.length());
     }
 
     @Test
@@ -2983,7 +2983,7 @@ public class TestQuery1 {
 
         Transformer pp = Transformer.create(g, Transformer.TRIG);
         String str = pp.transform();
-        assertEquals(10150, str.length());
+        assertEquals(10162, str.length());
 
 
     }
@@ -3011,7 +3011,7 @@ public class TestQuery1 {
 
         map = exec.query(t2);
 
-        assertEquals(9292, map.getTemplateResult().getLabel().length());
+        assertEquals(9304, map.getTemplateResult().getLabel().length());
 
     }
 

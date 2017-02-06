@@ -2,10 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 27 18:22:48 CEST 2016
+Mon Feb 06 09:30:26 CET 2017
 -->
-<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
-  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
@@ -37,17 +37,10 @@ prefix sh: <http://www.w3.org/ns/shacl#>
  
 template st:title {
     format {
-        """
-        <h2>Data Shape Validation</h2>
-        <p>
-        <a href='http://w3c.github.io/data-shapes/shacl/'>Data Shape: http://w3c.github.io/data-shapes/shacl/</a> <br/>
-        <a href='%s'>RDF: %s</a> <br/>
-        <a href='%s'>Shape: %s </a> 
-        </p>
-        """
+        st:getFormat("title.html")
         
-        st:get(st:param)st:get(st:param)
-        st:get(st:mode)st:get(st:mode)
+        st:get(st:param) st:get(st:server)
+        st:get(st:mode)  st:get(st:mode)
     } 
 }
 where {
@@ -61,6 +54,9 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Display SHACL validation result on server 
+#
 prefix sh: <http://www.w3.org/ns/shacl#>
  
 template st:start {
@@ -130,6 +126,20 @@ order by ?s
 <rule>
 <body>
 <![CDATA[
+template st:profile {}
+where {}
+
+function st:getFormat(?name){
+    uri(concat(st:get(st:server), "/data/format/ds/", ?name))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#>
  
 template st:shape {
@@ -159,12 +169,7 @@ prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
 template st:show {
 format {
-    """ 
-    <table>
-    <tr><th class="center">Data Shape</th><th class="center">Validation</th><th class="center">RDF</th></tr>
-    <tr class="top"><td>%s</td><td>%s</td><td>%s</td></tr>
-    </table>
-    """
+    st:getFormat("show.html")
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
     st:apply-templates-with-graph(st:hturtle, st:visitor)

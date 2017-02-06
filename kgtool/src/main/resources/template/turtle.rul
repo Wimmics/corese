@@ -2,10 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 27 18:22:48 CEST 2016
+Mon Feb 06 09:30:26 CET 2017
 -->
-<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
-  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
@@ -43,10 +43,8 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:main {
-  group { 
     st:apply-templates(?x)
     ; separator = "\n\n"
-  }
 }
 where {
   select distinct ?x where { 
@@ -104,15 +102,12 @@ template st:value {
 	if (?refer, st:turtle(?y), 
 	if (isURI(?y) && ?y = rdf:nil, "()", ?y))
           
-        ; separator = concat(" ;", st:nl()) 
-        
-#        ; separator = " ;\n" 
-     
+    ; separator = concat(" ;", st:nl()) 
 }
 where {
   ?in ?p ?y 
   
-  filter(?p not in (rdf:type))
+  filter (?p not in (rdf:type))
   
   bind (
     isBlank(?y) 
@@ -316,7 +311,7 @@ where {}
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template  {
+template {
   "(" 
     group { 
       if (?refer, st:turtle(?e), ?e) 
@@ -327,12 +322,15 @@ template  {
 where {
   ?in rdf:rest* ?r
   ?r  rdf:first ?e
+  filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
   
   bind (isBlank(?e) && 
     ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
     || exists { ?e ?q ?e })
     as ?refer)
 }
+# after URI and blank
+pragma { st:template st:priority 1000 }
 
 ]]>
 </body>
@@ -347,19 +345,17 @@ where {
 #
 template {
   ?in " "
-      ibox { 
   
-	st:call-template(st:type, ?in)
-	
-	st:call-template(st:value, ?in)
+  ibox {   
+	st:call-template(st:type, ?in)	
+	st:call-template(st:value, ?in)      
+  } 
       
-      } 
-      
-      " ."      
+  " ."      
 }
 where {
   ?in ?p ?y   
-  filter(isUri(?in))  
+  filter isUri(?in) 
 }
 limit 1
 
@@ -377,11 +373,10 @@ limit 1
 template {
   if (?refer, concat(st:turtle(?in), " "), "[")
   
-      ibox {
-	st:call-template(st:type, ?in)
-	  
+  ibox {
+	st:call-template(st:type, ?in)	  
 	st:call-template(st:value, ?in)
-      } 
+  } 
       
   if (?refer, " .", 
   if (?nested, "]", "] ."))

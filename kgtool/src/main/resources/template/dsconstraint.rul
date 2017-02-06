@@ -2,56 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 27 18:22:48 CEST 2016
+Mon Feb 06 09:30:26 CET 2017
 -->
-<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
-  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:not (?shape, ?sh, ?vis, ?s, ?cst) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-    bind (! sh:hasConstraint(?shape, ?cst, false, ?s) as ?suc)
-    
-    bind (st:report(sh:not, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:or (?shape, ?sh, ?vis, ?s, ?or) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-    bind (sh:orcst(?or, ?s, ?shape) as ?count)
-	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count)  as ?suc)
-
-    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-
-
-
-
-]]>
-</body>
-</rule>
-
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
@@ -93,32 +47,6 @@ where {
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
   bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
 }
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:and (?shape, ?sh, ?vis, ?s, ?and) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  
-    bind (sh:andcst(?and, ?s, ?shape) as ?count)
-	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count)  as ?suc)
-
-    bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
-  
-}
-
-
-
 
 
 ]]>
@@ -182,7 +110,7 @@ template (?shape, ?sh, ?vis, ?ls) {
 }
 where {
   graph ?shape {  
-    values ?q { sh:and sh:or sh:not sh:class sh:datatype sh:pattern }
+    values ?q { sh:class sh:datatype sh:pattern }
     ?sh ?q ?m    
   }
   
@@ -207,19 +135,14 @@ template (?shape, ?sh, ?vis, ?ls) {
 where {
   graph ?shape {  
     values ?q { 
-        sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:shape sh:in sh:languageIn sh:stem
+        sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
     }
     ?sh ?q ?m    
   }
     
     values ?s { unnest(?ls) }
     
-  bind (
-  coalesce(
-    if (?q in (sh:in, sh:languageIn, sh:shape), 
-        funcall(?q, ?shape, ?s, ?m), funcall(?q, ?s, ?m)), 
-    false) 
-  as ?suc )
+  bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   
   bind (st:report(?q, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }

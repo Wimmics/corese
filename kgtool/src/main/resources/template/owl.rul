@@ -2,10 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 27 18:22:48 CEST 2016
+Mon Feb 06 09:30:26 CET 2017
 -->
-<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
-  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
@@ -152,27 +152,31 @@ where {}
 
  function st:process(?in) {  
       if (isURI(?in), owlfs:pretty(?in),	
-	st:apply-templates(?in))
-    }
+        st:apply-templates(?in))
+}
     
 # export to sub transformations (export to Interpreter)    
-export {
+@public {
 
     function owlfs:pretty(?in) {
       let (?t = st:turtle(?in)){
-	if (st:get(st:html, true), 
+        if (st:get(st:html, true), 
 	      owlfs:protect(?t), ?t)
       }
+    }
+    
+    function owlfs:display(?in) {
+        if (st:get(st:html, true), owlfs:protect(?in), ?in)
     }
   
    function owlfs:protect(?s) {
         replace(replace(?s, "&", "&amp;"), "<", "&lt;")
-    }
+   }
     
     # used by sub transformations, with st:owlexp
     function owlfs:process(?in) {
       if (isURI(?in), owlfs:pretty(?in),	
-	st:apply-templates-with(st:owlexp, ?in))
+        st:apply-templates-with(st:owlexp, ?in))
     }
 }
     
@@ -322,8 +326,14 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix owlfs: <http://ns.inria.fr/sparql-template/owlfs/>
+
 template st:prefix {
-  "Prefix(" str(?p) ": = <" str(?n) ">)" "\n"
+  format {
+    "Prefix(%s: = %s%s>)\n"
+    str(?p) owlfs:display("<") str(?n)
+    }
+    ; separator= ""
 }
 where {
   bind (kg:unnest(st:prefix()) as (?p, ?n))

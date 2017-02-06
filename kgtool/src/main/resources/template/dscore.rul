@@ -2,10 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 27 18:22:48 CEST 2016
+Mon Feb 06 09:30:26 CET 2017
 -->
-<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
-  xmlns='http://ns.inria.fr/edelweiss/2011/rule#'>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
@@ -57,6 +57,31 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
+template sh:xor (?shape, ?sh, ?or, ?vis, ?ls) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    values ?s { unnest(?ls) }
+
+    bind (sh:xor(?or, ?s, ?shape) as ?count)  
+	bind (! bound(?count) AS ?failure) .
+	bind (IF (?failure, false, ?count)  as ?suc)
+	
+    bind (st:report(sh:xor, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+  
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
 template sh:and (?shape, ?sh, ?and, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
@@ -92,13 +117,6 @@ function st:optimize(?shape, ?sh){
     true
 }
 
-function sh:checkFilter(?ls, ?shape, ?cst){
-    mapfindlist(sh:evalFilter, if (isList(?ls), ?ls, xt:list(?ls)), xt:list(?shape), ?cst)
-}
-
-function sh:evalFilter(?s, ?shape, ?cst){
-    sh:filterShape(?shape, ?cst, ?s)
-}
 
 ]]>
 </body>
@@ -108,26 +126,122 @@ function sh:evalFilter(?s, ?shape, ?cst){
 <body>
 <![CDATA[
 #
-# evaluate sh:property sh:predicate of shape ?sh
+# evaluate sh:property sh:path of shape ?sh
 # ?ls is the list of target nodes of shape ?sh
-# select target nodes in ?ls that match sh:property filter shape if any
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?ls) {
+template (?shape, ?sh, ?vis, ?list) {
    sh:safe(?shape, ?sh, ?suc)
 }
 where {
     graph ?shape {  
         ?sh sh:property ?cst  
-        bind (not exists { ?cst sh:filterShape ?fs } as ?ok)
-        values ?oper { sh:predicate sh:path }
-        ?cst ?oper ?p 
+        ?cst sh:path ?p 
+        filter not exists { ?cst sh:deactivated true}
     }
-    bind (if (?ok, ?ls, sh:checkFilter(?ls, ?shape, ?cst)) 
-    as ?list)
+    
+    bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
+}
 
-    bind (funcall(?oper, ?shape, ?cst, ?vis, ?list, ?p) as ?suc)
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# evaluate sh:qualifiedValueShapesDisjoint 
+# list of list of values are recorded in a table
+# check that thay are disjoint
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+    sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?sh sh:qualifiedValueShapesDisjoint true  
+        filter not exists { ?sh sh:deactivated true}
+    }
+        
+    bind (sh:disjoint(?shape, ?sh, ?vis) as ?suc)
+}
+pragma { st:template st:priority 1000 } 
+
+
+# test disjointness of qualifiedValueShapes of ?sh
+function sh:disjoint(?shape, ?sh, ?vis){
+    let (?b = true){
+        for ((?key, ?val) in st:cget(?sh)){
+            if (! sh:disjoint(?key, ?val, ?shape, ?sh, ?vis)) {
+                st:report(sh:qualifiedValueShapesDisjoint, ?sh, ?shape, ?key, false, ?vis);
+                set(?b = false)
+            }
+        } ;
+        ?b
+    }
+}
+
+# test disjointness of qualifiedValueShapes of ?key
+# list of list of values of  subject ?key
+# test whether there is an intersection in any two lists
+function sh:disjoint(?key, ?list, ?shape, ?sh, ?vis){
+    let (?i = 0){
+        for (?l1 in ?list){
+            for (?j in xt:iota(?i+1, xt:size(?list) - 1)){
+                let (?l2 = xt:get(?list, ?j)) { 
+                    if (sh:intersect(?l1, ?l2)) {
+                        return (false) 
+                    }
+                } 
+            } ;
+            set (?i = ?i + 1)
+        } 
+    } ;
+    return (true)
+}
+
+function sh:intersect(?l1, ?l2){
+   for (?x in ?l1){
+        if (xt:member(?x, ?l2)){
+            return(true)
+        }
+    } ;
+    return(false)
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# evaluate sh:qualifiedValueShape sh:path of shape ?prop
+# ?list is the list of target nodes of shape ?sh
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+   sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?prop sh:qualifiedValueShape ?sh  
+        ?sh sh:path ?p 
+        ?gsh sh:property ?prop
+        filter not exists { ?sh sh:deactivated true}
+    }
+        
+    bind (sh:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
 }
 
 
@@ -145,21 +259,46 @@ where {
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template  (?shape, ?sh, ?vis, ?ls) {
+template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-   graph ?shape {
-        ?sh sh:constraint ?cst 
-        bind (not exists { ?cst sh:filterShape ?fs } as ?ok)
-   }
-   
-    bind (if (?ok, ?ls, sh:checkFilter(?ls, ?shape, ?cst)) 
-    as ?list)
-    
-    bind (sh:hasConstraint(?shape, ?cst, ?vis, ?ls) as ?suc)
+       
+    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# create a table for qualifiedValueShapesDisjoint
+# table is used by path/qualified
+# it records the list of list of values for each subject
+# table is used by core/disjoint2
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+    true
+}
+where {
+    graph ?shape {  
+        ?sh sh:qualifiedValueShapesDisjoint true  
+        filter not exists { ?sh sh:deactivated true}
+    }
+    
+    bind (st:cset(?sh, ?sh, xt:list()) as ?init)
+    
+}
+pragma { st:template st:priority 1 } 
+
+
 
 
 ]]>
@@ -180,7 +319,7 @@ template  (?shape, ?sh, ?vis, ?ls) {
 }
 where {
     graph ?shape {  
-        values ?bool { sh:and sh:or sh:not } 
+        values ?bool { sh:and sh:or sh:xor sh:not } 
         ?sh ?bool ?cst
     }
 }
@@ -207,18 +346,18 @@ where {
     ?sh sh:closed true 
     optional { ?sh sh:ignoredProperties ?skip }
   }
-  
+
   values ?s { unnest(?ls) }
 
   ?s ?p ?o
    
    bind (
-                     exists { graph ?shape { ?sh sh:property [ sh:predicate ?p ]} }
+                     exists { graph ?shape { ?sh sh:property [ sh:path ?p ]} }
     ||
     (bound(?skip) && exists { graph ?shape { ?skip rdf:rest*/rdf:first ?p } })
     
    as ?suc)
-
+   
    bind (st:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
     
 }

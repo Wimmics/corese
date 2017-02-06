@@ -51,7 +51,7 @@ public class CoreseDatatype
 	static boolean SPARQLCompliant = false; 
 	
 	static int cindex = 0;
-	private int index = -1;
+	private int index = IDatatype.VALUE;
 	
 		
 	/**
@@ -283,10 +283,12 @@ public class CoreseDatatype
 		return true;
 	}
 	
+        @Override
 	public boolean isXMLLiteral(){
 		return false;
 	}
 	
+        @Override
 	public IDatatype cast(IDatatype target, IDatatype javaType) {
 		String type = javaType.getNormalizedLabel();
 		IDatatype dt = cast(type);
@@ -320,59 +322,73 @@ public class CoreseDatatype
 	 * Following SPARQL EBV Effective Boolean Value cercion rule, RDF terms
 	 * coerce to type error but literals, see number and string
 	 */
+        @Override
 	public boolean isTrue() throws CoreseDatatypeException {
 		throw failure();
 	}
 	
+        @Override
 	public boolean isTrueAble()  {
 		return false;
 	}
 	
+        @Override
 	public boolean isArray(){
 		return false;
 	}
         
+        @Override
         public boolean isList(){
             return false;
         }
         
+        @Override
         public boolean isLoop(){
             return false;
         }
 		
+        @Override
 	public List<IDatatype> getValues(){
 		return null;
 	}
         
+        @Override
         public Iterable getLoop(){
             return null;
         }
 	
+        @Override
 	public IDatatype get(int n){
 		return null;
 	}
 	
+        @Override
 	public int size(){
 		return 0;
 	}
 	
 	
+        @Override
 	public boolean isBlank() {
 		return false;
 	}
         
+        @Override
         public boolean isSkolem() {
 		return false;
 	}
 	
+        @Override
 	public void setObject(Object obj){
 	}
 	
+        @Override
 	public Object getObject(){
 		return null;
 	}
 	
 	
+        @Override
 	public void setBlank(boolean b) {
 	}
 	
@@ -381,6 +397,7 @@ public class CoreseDatatype
 		return true;
 	}
         
+        @Override
         public boolean isFuture() {
 		return false;
 	}
@@ -395,6 +412,7 @@ public class CoreseDatatype
             return null;
         }
         
+        @Override
         public int pointerType(){
             return Pointerable.UNDEF_POINTER;
         }
@@ -882,18 +900,22 @@ public class CoreseDatatype
 		throw failure();
 	}
 	
+        @Override
 	public boolean less(IDatatype iod)  throws CoreseDatatypeException {
 		throw failure();
 	}
 	
+        @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		throw failure();
 	}
@@ -981,16 +1003,19 @@ public class CoreseDatatype
 	
 	
 	
+        @Override
 	public String getDatatypeURI() {
 		if (getDatatype() != null)
 			return getDatatype().getNormalizedLabel();
 		else return null;
 	}
 	
+        @Override
 	public double getDoubleValue() {
 		return getdValue();
 	}
 	
+        @Override
 	public int getIntegerValue() {
 		return getiValue();
 	}
@@ -1019,50 +1044,55 @@ public class CoreseDatatype
 	 ****************************************************************/
 
 
+        @Override
 	public int getIndex() {
-//		if (index == -1){
-//			index = cindex++;
-//		}
-		//return index;
             return index;
 	}
 
 
+        @Override
 	public void setIndex(int n) {
 		index = n;
 	}
 
 
+        @Override
 	public boolean same(Node n) {
             return sameTerm((IDatatype) n.getValue());
 	}
 
 
+        @Override
 	public int compare(Node n) {
             return compareTo((IDatatype) n.getValue());
 	}
 
 
+        @Override
 	public boolean isVariable() {
 		return false;
 	}
 
 
+        @Override
 	public boolean isConstant() {
 		return true;
 	}
 
 
+        @Override
 	public Object getValue() {
 		return this;
 	}
 
 
+        @Override
 	public Object getProperty(int p) {
 		return null;
 	}
 
 
+        @Override
 	public void setProperty(int p, Object o) {
 	}
 
@@ -1105,6 +1135,7 @@ public class CoreseDatatype
     public void setKey(String str) {
     }
 
+        @Override
     public String getID() {
         if (isLiteral()) {
             return toSparql();
@@ -1118,6 +1149,7 @@ public class CoreseDatatype
         return null;    
     }
     
+        @Override
     public void setProvenance(Object obj){
         
     }

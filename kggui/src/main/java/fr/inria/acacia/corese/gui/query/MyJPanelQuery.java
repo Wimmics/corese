@@ -473,7 +473,11 @@ public final class MyJPanelQuery extends JPanel {
         ASTQuery ast = (ASTQuery) map.getQuery().getAST();
         if (ast.isSPARQLQuery()) {
             // RDF or XML
-            return ResultFormat.create(map).toString();
+            String str = ResultFormat.create(map).toString();
+            if (str == "" && ast.getErrors() != null){
+                return ast.getErrorString();
+            }
+            return str;
         } else {
             // XML bindings only (do not display the whole graph)
             return XMLFormat.create(map).toString();
@@ -543,7 +547,7 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneTreeResult.setViewportView(treeResult);
 
         //afficher les resultats dans une tableau sauf pour les templates
-        if (q.isTemplate() || ast.isAsk()){
+        if (q.isTemplate() || ast.isAsk() || ast.getErrors() != null){
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
         } else{
             this.fillTable(map);

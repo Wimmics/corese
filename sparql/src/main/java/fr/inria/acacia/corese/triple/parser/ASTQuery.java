@@ -612,7 +612,15 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public List<String> getErrors() {
         return getGlobalAST().errors();
     }
-
+    
+    public String getErrorString() {
+        StringBuilder sb = new StringBuilder();
+        for (String str : getErrors()){
+            sb.append(str).append(NL);
+        }
+        return sb.toString();
+    }
+    
     public String getUpdateTitle() {
         if (isAdd()) {
             return KeywordPP.INSERT;

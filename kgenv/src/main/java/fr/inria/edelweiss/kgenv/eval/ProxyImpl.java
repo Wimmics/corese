@@ -88,15 +88,18 @@ public class ProxyImpl implements Proxy, ExprType {
         return (Eval) getEvaluator().getEval();
     }
      
+    @Override
     public void setPlugin(Proxy p) {
         plugin = p;
         plugin.setEvaluator(eval);
     }
 
+    @Override
     public Proxy getPlugin() {
         return plugin;
     }
 
+    @Override
     public void setMode(int mode) {
         switch (mode) {
 
@@ -273,6 +276,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return (b) ? TRUE : FALSE;
     }
 
+    @Override
     public Object function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
@@ -305,6 +309,9 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case FOR:
                 return loop(exp, env, p);
+                
+            case SEQUENCE:
+                return sequence(exp, env, p);
                 
             case XT_DISPLAY:
                 System.out.println();
@@ -443,7 +450,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return slice(env, dt);  
                 
             case RETURN:
-                return DatatypeMap.result(dt);
+                return result(dt);
                 
             case XT_COUNT:
                 return count(dt);
@@ -785,16 +792,6 @@ public class ProxyImpl implements Proxy, ExprType {
 
     boolean isStringLiteral(IDatatype dt) {
         return !SPARQLCompliant || DatatypeMap.isStringLiteral(dt);
-    }
-
-    IDatatype encode2(IDatatype dt) {
-        try {
-            String str = URLEncoder.encode(dt.getLabel(), UTF8);
-            return DatatypeMap.createLiteral(str);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
     
     IDatatype encode(IDatatype dt) {
@@ -1279,6 +1276,7 @@ public class ProxyImpl implements Proxy, ExprType {
         }
     }
 
+    @Override
     public boolean isTrueAble(Object value) {
         IDatatype dt = (IDatatype) value;
         return dt.isTrueAble();
@@ -1315,23 +1313,28 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
   
+    @Override
     public IDatatype getValue(long value) {
         return DatatypeMap.newInstance(value);
     }
 
+    @Override
     public IDatatype getValue(float value) {
         return DatatypeMap.newInstance(value);
     }
 
+    @Override
     public IDatatype getValue(double value) {
         return DatatypeMap.newInstance(value);
     }
 
+    @Override
     public IDatatype getValue(double value, String datatype) {
         return DatatypeMap.newInstance(value, datatype);
     }
 
     // return xsd:string
+    @Override
     public IDatatype getValue(String value) {
         return DatatypeMap.newInstance(value);
     }
@@ -1468,8 +1471,37 @@ public class ProxyImpl implements Proxy, ExprType {
         plugin.start(p, env);
     }
     
+    @Override
      public void finish(Producer p, Environment env) {
         plugin.finish(p, env);
+    }
+    
+    IDatatype result(IDatatype dt){
+        return DatatypeMap.result(dt);
+    }
+    
+    boolean isReturn(IDatatype dt){
+        return dt == null || DatatypeMap.isResult(dt);
+    }
+    
+     IDatatype getResultValue(IDatatype dt){
+        return DatatypeMap.getResultValue(dt);
+    }
+     
+    @Override
+     public IDatatype getResultValue(Object obj){       
+        return getResultValue((IDatatype) obj);
+    }
+     
+    private IDatatype sequence(Expr exp, Environment env, Producer p) {
+        IDatatype res = TRUE;
+        for (Expr e : exp.getExpList()){
+            res = (IDatatype) eval.eval(e, env, p);
+            if (isReturn(res)){
+                return res;
+            }
+        }
+        return res;
     }
 
      /**
@@ -1488,16 +1520,16 @@ public class ProxyImpl implements Proxy, ExprType {
         if (list.isList()){
             for (IDatatype dt : list.getValues()){           
                 IDatatype res = let(loop.getBody(), loop.getVariable(), dt, env, p);
-                if (res == null){
-                    return null;
+                if (isReturn(res)){
+                    return res;
                 }
             }
         }
         else { 
             for (Object obj : getValues(list)){ 
                 IDatatype res = let(loop.getBody(), loop.getVariable(), (IDatatype) p.getValue(obj), env, p);               
-                if (res == null){
-                    return null;
+                if (isReturn(res)){
+                    return res;
                 }
             }
         }
@@ -1535,7 +1567,7 @@ public class ProxyImpl implements Proxy, ExprType {
         boolean mapfindlist = exp.oper() == MAPFINDLIST;
         boolean mapfind = mapfindelem || mapfindlist;
         boolean hasList = maplist || mapmerge || mapappend;
-        
+
         IDatatype list = null;
         IDatatype ldt = null;
         Iterator loop = null ;
@@ -1589,9 +1621,9 @@ public class ProxyImpl implements Proxy, ExprType {
                     value[j] = dt;
                 }
             }
-            
+
             IDatatype val =  let(exp.getExp(0), env, p, value);
-            
+
             if (val == null){
                 return null;
             }

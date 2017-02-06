@@ -18,6 +18,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 
 /**
@@ -31,6 +32,7 @@ public class RuleLoad {
 
     private static Logger logger = LogManager.getLogger(Load.class);
     public static final String NS = "http://ns.inria.fr/edelweiss/2011/rule#";
+    static final String STL = NSManager.STL;
     static final String BRUL = "http://ns.inria.fr/corese/2008/rule#";
     static final String COS = "http://www.inria.fr/acacia/corese#";
     static final String BODY = "body";
@@ -43,6 +45,7 @@ public class RuleLoad {
     static final String CONST = "construct";
     static final String WHERE = "where";
     RuleEngine engine;
+    private String base;
 
     RuleLoad(RuleEngine e) {
         engine = e;
@@ -118,6 +121,10 @@ public class RuleLoad {
     void load(Document doc) {
 
         NodeList list = doc.getElementsByTagNameNS(NS, BODY);
+        
+        if (list.getLength() == 0) {
+            list = doc.getElementsByTagNameNS(STL, BODY);
+        }
 
         if (list.getLength() == 0) {
             list = doc.getElementsByTagNameNS(BRUL, VALUE);
@@ -160,7 +167,12 @@ public class RuleLoad {
     }
 
     void loadCorese(NodeList list) {
-
+        if (getBase() != null){
+            engine.setBase(getBase());
+            if (engine.getQueryEngine() != null){
+                engine.getQueryEngine().setBase(getBase());
+            }
+        }
         for (int i = 0; i < list.getLength(); i++) {
             Element node = (Element) list.item(i);
             NodeList lconst = node.getElementsByTagNameNS(COS, THEN);
@@ -239,5 +251,19 @@ public class RuleLoad {
         } catch (IOException e) {
             throw LoadException.create(e);
         }
+    }
+
+    /**
+     * @return the base
+     */
+    public String getBase() {
+        return base;
+    }
+
+    /**
+     * @param base the base to set
+     */
+    public void setBase(String base) {
+        this.base = base;
     }
 }

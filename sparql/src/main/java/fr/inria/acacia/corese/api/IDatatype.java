@@ -21,6 +21,8 @@ import java.util.List;
  */
 public interface IDatatype
         extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
+    static final int VALUE  = -1;
+    static final int RESULT = -2;
 
     static final int LITERAL = 0;
     static final int STRING = 1;

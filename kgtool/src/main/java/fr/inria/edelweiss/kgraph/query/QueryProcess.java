@@ -257,6 +257,7 @@ public class QueryProcess extends QuerySolver {
         return doQuery(squery, null, null);
     }
 
+    @Override
     public Mappings query(String squery) throws EngineException {
         return doQuery(squery, null, null);
     }
@@ -267,6 +268,7 @@ public class QueryProcess extends QuerySolver {
      * also used in the delete clause (when there is no with in the query) W3C
      * sparql test cases use this function
      */
+    @Override
     public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException {
         return doQuery(squery, map, ds);
     }
@@ -276,6 +278,7 @@ public class QueryProcess extends QuerySolver {
         return query(q, map, ds);
     }
 
+    @Override
     public Query compile(String squery, Dataset ds) throws EngineException {
         if (!hasVisitor()) {
             // Rewrite query when @relax annotation, otherwise do nothing
@@ -284,6 +287,7 @@ public class QueryProcess extends QuerySolver {
         return super.compile(squery, ds);
     }
 
+    @Override
     public Query compile(String squery) throws EngineException {
         return compile(squery, null);
     }
@@ -296,6 +300,7 @@ public class QueryProcess extends QuerySolver {
         return doQuery(squery, null, Dataset.create(c));
     }
     
+    @Override
     public Mappings query(String squery, Mapping map) throws EngineException {
         return query(squery, map, null);
     }

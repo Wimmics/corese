@@ -96,6 +96,7 @@ public class TemplateFormat {
 		
 	}
 	
+        @Override
 	public String toString(){
 		if (query != null && query.isTemplate()){
 			Node node = map.getTemplateResult();

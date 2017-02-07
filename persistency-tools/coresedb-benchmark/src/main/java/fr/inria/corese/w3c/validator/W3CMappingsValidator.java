@@ -58,6 +58,9 @@ public class W3CMappingsValidator {
 
 	boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed) {
 		boolean result = true;
+		if (1L*kgram.size()*w3c.size() > 1000000 ){
+			return false;
+		}
 		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 		for (Mapping w3cres : w3c) {
 			// for each w3c result

@@ -13,6 +13,7 @@ import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.IOException;
+import java.util.Iterator;
 import org.openrdf.rio.RDFFormat;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
@@ -32,7 +33,7 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "getResults", parallel = false)
-//	@DataProvider(name = "getResults", indices={0}, parallel = false)
+//	@DataProvider(name = "getResults", indices={0,1,2}, parallel = false)
 	public Object[][] getResults() {
 		TestSuite suite = TestSuite.build("base_tests").
 			setWarmupCycles(2).
@@ -41,7 +42,7 @@ public class QualitativeTest {
 			setInputDb("/human_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-			suite.createDb();
+		suite.createDb();
 		TestDescription[][] tests = {
 			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
@@ -90,18 +91,19 @@ public class QualitativeTest {
 		return tests;
 	}
 
-	@DataProvider(name = "getResults_1M", indices = {0})
+	@DataProvider(name = "getResults_1M")
 	public Object[][] getResultsLong() {
 		TestSuite rootTest = TestSuite.build("1M_tests").
-			setWarmupCycles(0).
-			setMeasuredCycles(1).
+			setWarmupCycles(2).
+			setMeasuredCycles(5).
 			setInput("btc-2010-chunk-000_0001.nq").
 			setInputDb("/1M_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-		rootTest.createDb();
+//		rootTest.createDb();
 		TestDescription[][] tests = {
 			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
+			{rootTest.buildTest("select * where { ?x ?p ?y . ?y ?q ?x }")},
 			{rootTest.buildTest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}")}, //			{TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")},
 		//			{TestDescription.build("1m_cycle").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where { ?x ?p ?y . ?y ?q ?x }")}
 		};
@@ -125,7 +127,7 @@ public class QualitativeTest {
 		return tests;
 	}
 
-	@DataProvider(name = "getResults_100m", indices = {1})
+	@DataProvider(name = "getResults_100m", indices = {0})
 	public Object[][] getResults100m() {
 		TestSuite rootTest = TestSuite.build("100m").
 			setWarmupCycles(2).
@@ -136,9 +138,26 @@ public class QualitativeTest {
 			setOutputRoot(outputRoot);
 		rootTest.createDb();
 		TestDescription[][] tests = {
+			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
 			{rootTest.buildTest("select ?x ?y where { ?x rdf:type ?y}")}
 		};
+		return tests;
+	}
+
+	@DataProvider(name = "getResults_bug_name", indices = {1})
+	public Object[][] getResults_bugName() {
+		TestSuite rootTest = TestSuite.build("bug_name").
+			setWarmupCycles(2).
+			setMeasuredCycles(5).
+			setInput("btc-2010-chunk-000_bug_name.nq").
+			setInputDb("/bug_name_db").
+			setInputRoot(inputRoot).
+			setOutputRoot(outputRoot);
+		rootTest.createDb();
+		TestDescription[][] tests = {
+			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
+			{rootTest.buildTest("select ?x ?p ?y where {?x ?p ?y}")},};
 		return tests;
 	}
 
@@ -150,7 +169,73 @@ public class QualitativeTest {
 		outputRoot = ensureEndWith(inputRoot, "/");
 	}
 
-	@Test(dataProvider = "getResults", groups = "")
+	@DataProvider(name = "input")
+	public Iterator<Object[]> buildTests() {
+		String[] inputFiles = {
+			"btc-2010-chunk-000_10k.nq",
+//			"btc-2010-chunk-000_100k.nq",
+//			"btc-2010-chunk-000_1M.nq",
+//			"btc-2010-chunk-000.nq" // 4,6 M
+		};
+		String[] requests = {
+//			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
+//			"select ?x ?y where { ?x rdf:type ?y}"
+			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}"	
+		};
+
+		return new Iterator<Object[]>() {
+			boolean started = false;
+			int cptInputFiles = 0;
+			int cptRequests = 0;
+			TestSuite currentSuite;
+
+			@Override
+			public boolean hasNext() {
+				if (inputFiles.length == 0 || requests.length == 0) {
+					return false;
+				}
+				if (started) {
+					return !(cptInputFiles == inputFiles.length-1 && cptRequests == requests.length - 1);
+				} else {
+					return true;
+				}
+			}
+
+			@Override
+			public Object[] next() {
+				if (started) {
+					cptRequests++;
+					if (cptRequests >= requests.length) {
+						cptRequests = 0;
+						cptInputFiles++;
+					}
+					if (cptInputFiles >= inputFiles.length) {
+						throw new IllegalArgumentException("no more elements");
+					}
+				} else {
+					started = true;
+				}
+
+				String inputFile = inputFiles[cptInputFiles];
+				String request = requests[cptRequests];
+
+				if (cptRequests == 0) {
+					currentSuite = TestSuite.build("test_" + inputFile).
+						setWarmupCycles(2).
+						setMeasuredCycles(5).
+						setInput(inputFile).
+						setInputDb("./" + inputFile + "_db").
+						setInputRoot(inputRoot).
+						setOutputRoot(outputRoot);
+					currentSuite.createDb();
+				}
+				TestDescription[] result = {currentSuite.buildTest(request)};
+				return result;
+			}
+		};
+	}
+
+	@Test(dataProvider = "input", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		CoreseTimer timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
 		CoreseTimer timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);

@@ -7,13 +7,16 @@ package fr.inria.corese.rdftograph.driver;
  */
 import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
+import com.thinkaurelius.titan.core.SchemaViolationException;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.TitanTransaction;
 import com.thinkaurelius.titan.core.attribute.AttributeSerializer;
+import com.thinkaurelius.titan.core.schema.ConsistencyModifier;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.core.schema.SchemaStatus;
+import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.diskstorage.ScanBuffer;
 import com.thinkaurelius.titan.diskstorage.WriteBuffer;
@@ -28,6 +31,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -286,15 +290,19 @@ public class TitanDriver extends GdbDriver {
 		if (!manager.containsGraphIndex("vertices") && !manager.containsGraphIndex("allIndex")) {
 			PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 			PropertyKey kindValue = manager.getPropertyKey(KIND);
+			PropertyKey typeValue = manager.getPropertyKey(TYPE);
+			PropertyKey langValue = manager.getPropertyKey(LANG);
 
 			PropertyKey graphKey = manager.getPropertyKey(EDGE_G);
 			PropertyKey subjectKey = manager.getPropertyKey(EDGE_S);
 			PropertyKey predicateKey = manager.getPropertyKey(EDGE_P);
 			PropertyKey objectKey = manager.getPropertyKey(EDGE_O);
-			manager.
+			TitanGraphIndex vIndex = manager.
 				buildIndex("vertices", Vertex.class).
 				addKey(vertexValue).
 				buildCompositeIndex();
+//			manager.setConsistency(vertexValue,ConsistencyModifier.LOCK);
+//			manager.setConsistency(vIndex, ConsistencyModifier.LOCK);
 			manager.
 				buildIndex("allIndex", Edge.class).
 				addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -360,22 +368,64 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	@Override
-	public Object createNode(Value v) {
-		StandardTitanGraph stg = (StandardTitanGraph) g;
-		Object result = null;
+	public void createNode(Value v) {
+//		StandardTitanGraph stg = (StandardTitanGraph) g;
 		Vertex newVertex = null;
+		try {
+			switch (RdfToGraph.getKind(v)) {
+				case IRI:
+				case BNODE: {
+//				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+//				if (it.hasNext()) {
+//					result = it.next().id();
+//				} else {
+					newVertex = g.addVertex(RDF_VERTEX_LABEL);
+					newVertex.property(VERTEX_VALUE, v.stringValue());
+					newVertex.property(KIND, RdfToGraph.getKind(v));
+//					g.tx().commit();
+//				}
+					break;
+				}
+				case LITERAL: {
+					Literal l = (Literal) v;
+//				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
+//				if (l.getLanguage().isPresent()) {
+//					it = it.has(LANG, l.getLanguage().get());
+//				}
+//				if (it.hasNext()) {
+//					result = it.next().id();
+//				} else {
+					newVertex = g.addVertex(RDF_VERTEX_LABEL);
+					newVertex.property(VERTEX_VALUE, l.getLabel());
+					newVertex.property(TYPE, l.getDatatype().toString());
+					newVertex.property(KIND, RdfToGraph.getKind(v));
+					if (l.getLanguage().isPresent()) {
+						newVertex.property(LANG, l.getLanguage().get());
+					}
+//				}
+//					g.tx().commit();
+					break;
+				}
+			}
+		} catch (SchemaViolationException ex) {
+			logger.info("ignoring a new occurence of vertex " + v);
+		}
+	}
+
+	HashMap<Value, Vertex> cache = new HashMap<>();
+	@Override
+	public Object getNode(Value v) {
+		if (cache.containsKey(v)) {
+			return cache.get(v);
+		}
+		Vertex result = null;
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
 				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
-				if (it.hasNext()) {
-					result = it.next().id();
-				} else {
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, v.stringValue());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					result = newVertex.id();
-					g.tx().commit();
+				result = it.next();
+				while (it.hasNext()) {
+					it.next().remove();
 				}
 				break;
 			}
@@ -385,30 +435,22 @@ public class TitanDriver extends GdbDriver {
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
-				if (it.hasNext()) {
-					result = it.next().id();
-				} else {
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, l.getLabel());
-					newVertex.property(TYPE, l.getDatatype().toString());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					if (l.getLanguage().isPresent()) {
-						newVertex.property(LANG, l.getLanguage().get());
-					}
-					result = newVertex.id();
+				result = it.next();
+				while (it.hasNext()) {
+					it.next().remove();
 				}
-				g.tx().commit();
 				break;
 			}
 		}
+		cache.put(v, result);
 		return result;
 	}
 
 	@Override
 	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
 		Object result = null;
-		Vertex vSource = g.vertices(source).next();
-		Vertex vObject = g.vertices(object).next();
+		Vertex vSource = (Vertex) source;
+		Vertex vObject = (Vertex) object;
 
 		ArrayList<String> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
@@ -429,24 +471,15 @@ public class TitanDriver extends GdbDriver {
 //		if (alreadyExist.hasNext()) {
 //			result = alreadyExist.next();
 //		} else {
-		Iterator<Edge> it = vSource.edges(Direction.OUT, RDF_EDGE_LABEL);
-		boolean found = false;
-		Edge currentEdge = null;
-		while (!found && it.hasNext()) {
-			currentEdge = it.next();
-			found = currentEdge.property(EDGE_S).value().toString().equals(s_value)
-				&& currentEdge.property(EDGE_P).value().toString().equals(predicate)
-				&& currentEdge.property(EDGE_O).value().toString().equals(o_value)
-				&& currentEdge.inVertex().id().equals(object);
-///				&& EDGE_G 
-		}
-		if (found) {
-			result = currentEdge.id();
+//		Iterator<Edge> it = vSource.edges(Direction.OUT, RDF_EDGE_LABEL);
+		GraphTraversal<Vertex, Vertex> found = g.traversal().V(vSource.id()).outE(RDF_EDGE_LABEL).has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value()).as("edge").inV().hasId(vObject.id()).select("edge");
+		if (found.hasNext()) {
+			result = found.next();
 		} else {
-			Transaction transaction = g.tx();
+//			Transaction transaction = g.tx();
 			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 			result = e.id();
-			transaction.commit();
+//			transaction.commit();
 		}
 		return result;
 	}

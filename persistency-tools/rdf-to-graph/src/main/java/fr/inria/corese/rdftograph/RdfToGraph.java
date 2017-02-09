@@ -31,7 +31,6 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.AbstractRDFHandler;
 import org.openrdf.rio.helpers.BasicParserSettings;
-import org.openrdf.rio.helpers.StatementCollector;
 
 import org.openrdf.rio.helpers.NTriplesParserSettings;
 
@@ -59,7 +58,21 @@ public class RdfToGraph {
 		DRIVER_TO_CLASS.put(DbDriver.TITANDB, "fr.inria.corese.rdftograph.driver.TitanDriver");
 	}
 
-	private class StatementCounter extends AbstractRDFHandler {
+	private class VerticesBuilder extends AbstractRDFHandler {
+
+		private int triples = 0;
+
+		@Override
+		public void handleStatement(Statement statement) {
+			Resource source = statement.getSubject();
+			Value object = statement.getObject();
+
+			driver.createNode(source);
+			driver.createNode(object);
+		}
+	}
+
+	private class EdgesBuilder extends AbstractRDFHandler {
 
 		private int triples = 0;
 
@@ -72,15 +85,15 @@ public class RdfToGraph {
 
 			String contextString = (context == null) ? "" : context.stringValue();
 
-			Object sourceNode = driver.createNode(source);
-			Object objectNode = driver.createNode(object);
+			Object sourceNode = driver.getNode(source);
+			Object objectNode = driver.getNode(object);
 
 			Map<String, Object> properties = new HashMap();
 			properties.put(EDGE_G, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
 			if (triples % 100_000 == 0) {
-				LOGGER.info("triples = "+triples);
+				LOGGER.info("triples = " + triples);
 			}
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.log(Level.INFO, "{0}", triples);
@@ -145,7 +158,11 @@ public class RdfToGraph {
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
 			driver.openDb(dbPath);
 			LOGGER.info("Loading file");
-			readFile(rdfStream, format);
+			BufferedInputStream bufferedInput = new BufferedInputStream(rdfStream);
+			bufferedInput.mark(Integer.MAX_VALUE);
+			createVertices(bufferedInput, format);
+			bufferedInput.reset();
+			createEdges(bufferedInput, format);
 			LOGGER.info("Writing graph in db");
 			LOGGER.info("closing DB");
 			driver.closeDb();
@@ -162,9 +179,8 @@ public class RdfToGraph {
 	 * @param format Format used to represent the RDF in the file.
 	 * @throws IOException
 	 */
-
-	public void readFile(InputStream in, RDFFormat format) throws IOException {
-		StatementCounter myCounter = new StatementCounter();
+	public void createVertices(InputStream in, RDFFormat format) throws IOException {
+		VerticesBuilder myCounter = new VerticesBuilder();
 		RDFParser rdfParser = Rio.createParser(format);
 		ParserConfig config = new ParserConfig();
 		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
@@ -177,6 +193,25 @@ public class RdfToGraph {
 			LOGGER.severe(e.getMessage());
 			e.printStackTrace();
 		}
+		driver.commit();
+	}
+
+	public void createEdges(InputStream in, RDFFormat format) throws IOException {
+		EdgesBuilder edgesBuilder = new EdgesBuilder();
+		RDFParser rdfParser = Rio.createParser(format);
+		ParserConfig config = new ParserConfig();
+		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
+		rdfParser.setParserConfig(config);
+		rdfParser.setRDFHandler(edgesBuilder);
+		in.reset();
+		try {
+			rdfParser.parse(in, "");
+		} catch (Exception e) {
+			LOGGER.severe(e.getMessage());
+			e.printStackTrace();
+		}
+		driver.commit();
 	}
 
 	public RdfToGraph setWipeOnOpen(boolean b) {
@@ -196,12 +231,12 @@ public class RdfToGraph {
 
 			String contextString = (context == null) ? "" : context.stringValue();
 
-			Object sourceNode = driver.createNode(source);
-			Object objectNode = driver.createNode(object);
+			driver.createNode(source);
+			driver.createNode(object);
 
 			Map<String, Object> properties = new HashMap();
 			properties.put(EDGE_G, contextString);
-			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
+			driver.createRelationship(source, object, predicat.stringValue(), properties);
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.info("" + triples);
@@ -242,6 +277,5 @@ public class RdfToGraph {
 	private static boolean isBNode(Value resource) {
 		return isType(BNode.class, resource);
 	}
-
 
 }

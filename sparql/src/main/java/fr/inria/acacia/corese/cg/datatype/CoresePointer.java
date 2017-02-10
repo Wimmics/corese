@@ -24,30 +24,37 @@ public class CoresePointer extends CoreseUndefLiteral {
         pobject = obj;
     } 
     
+    @Override
     public IDatatype getDatatype() {
         return dt;
     }
     
+    @Override
     public Pointerable getPointerObject(){
         return pobject;
     }
     
+    @Override
     public int pointerType(){
         return pobject.pointerType();
     }
     
+    @Override
     public boolean isPointer(){
         return true;
     }
     
+    @Override
     public Object getObject(){
         return pobject;
     }
     
+    @Override
     public boolean isLoop(){
         return pobject != null && pobject instanceof Loopable;
     }
     
+    @Override
     public Iterable getLoop(){
         return ((Loopable) pobject).getLoop();
     }

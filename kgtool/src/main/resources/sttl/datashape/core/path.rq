@@ -1,5 +1,5 @@
 #
-# evaluate sh:qualifiedValueShape sh:path of shape ?prop
+# evaluate sh:path of shape ?sh
 # ?list is the list of target nodes of shape ?sh
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
@@ -9,12 +9,10 @@ template (?shape, ?sh, ?vis, ?list) {
 }
 where {
     graph ?shape {  
-        ?prop sh:qualifiedValueShape ?sh  
         ?sh sh:path ?p 
-        ?gsh sh:property ?prop
         filter not exists { ?sh sh:deactivated true}
     }
-        
+    
     bind (sh:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
 }
 

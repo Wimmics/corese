@@ -11,7 +11,7 @@ where {
   bind (lang(?o) as ?lang)
   filter (bound(?lang) && ?lang != "")
   
-  bind (! mapfind(sh:sameLang, ?o, ?values) as ?suc)
+  bind (! mapany(sh:sameLang, ?o, ?values) as ?suc)
   
   bind (st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }

@@ -1,6 +1,6 @@
 #
 # evaluate sh:property sh:path of shape ?sh
-# ?ls is the list of target nodes of shape ?sh
+# ?list is the list of target nodes of shape ?sh
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
@@ -11,7 +11,7 @@ where {
     graph ?shape {  
         ?sh sh:property ?cst  
         ?cst sh:path ?p 
-        filter not exists { ?cst sh:deactivated true}
+        filter not exists { ?cst sh:deactivated true }
     }
     
     bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)

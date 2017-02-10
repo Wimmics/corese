@@ -7,7 +7,7 @@ where {
   
     values ?o { unnest(sh:path(?shape, ?s, ?p)) }
     
-    bind (sh:or(sh:hasPath, ?or, ?s, ?p, ?o, ?shape) as ?count)
+    bind (sh:or(?or, ?s, ?p, ?o, ?shape) as ?count)
 	bind (! bound(?count) AS ?failure) .
 	bind ( IF (?failure, false, ?count)  as ?suc)
 

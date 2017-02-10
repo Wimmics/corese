@@ -1,0 +1,35 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+   sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?sh sh:sparql ?cst
+        ?cst sh:select ?q
+        filter not exists { ?cst sh:deactivated true }
+        
+        # collect prefix definitions
+        # TBD: do it once and record it
+        {
+            select ?cst 
+              (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+              as ?define) 
+            where {
+                ?cst sh:prefixes ?ns
+                [] sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+            }
+        }
+    }
+        
+    values ?s { unnest(?list) }
+    
+    values ($this ?path ?value) { unnest(kg:sparql(concat(?define, ?q), "$this", ?s)) }
+        
+    bind (false as ?suc)
+    
+    bind (st:report(sh:sparql, ?cst, ?shape, ?s, ?path, ?value, ?suc, ?vis) as ?b)
+    
+}
+
+

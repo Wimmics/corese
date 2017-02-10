@@ -40,10 +40,6 @@ function sh:constraint(){
     sh:package("constraint", st:dsconstraint)
 }
 
-function sh:property(){
-    sh:package("property", st:dsproperty)
-}
-
 function sh:path(){
     sh:package("path", st:dspath)
 }
@@ -65,17 +61,7 @@ function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
     st:apply-templates-with-all(sh:constraint(), ?shape, ?sh, ?vis, ?s)
 }
 
-
-function sh:predicate(?shape, ?sh, ?vis, ?s, ?p){
-   st:apply-templates-with-all(sh:property(), ?shape, ?sh, ?vis, ?s, ?p)
-}
-
-
 function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p){
-    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
-}
-
-function sh:path(?shape, ?sh, ?vis, ?s, ?p){
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
@@ -83,19 +69,13 @@ function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o){
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
 }
 
-function sh:safe2(?shape, ?sh, ?suc){
-    ?suc
+function sh:path(?shape, ?sh, ?vis, ?s, ?p){
+    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
 function sh:safe(?shape, ?sh, ?suc){
-    if (?suc) { true }
-    else {
-        let (?b = exists { graph ?shape { ?sh sh:severity ?sev filter (?sev != sh:Violation) } } )
-        { ?b }
-    }
+    ?suc
 }
-
-
 
 function st:report(?name, ?s, ?suc, ?vis){
     if (?vis) {
@@ -146,7 +126,7 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
             sh:resultSeverity ?sev ;
             sh:focusNode ?foc ;
             sh:focusNodeDetail ?focDetail ;
-            sh:path ?pp ; 
+            sh:resultPath ?pp ; 
             sh:pathDetail ?pathDetail ; 
             sh:value ?oo ;
             sh:valueDetail ?valueDetail ;
@@ -165,9 +145,7 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
                 bind (coalesce(sh:isdefby(?name), ?name) as ?def)
                 bind (sh:value(?p) as ?pp)
                 bind (sh:value(?o) as ?oo)
-                bind (if (bound(?pp),sh:graph(?pp), error())  as ?pathDetail)
-                
-                #values (?sr ?pr ?or) { unnest(sh:rec(?shape, ?pp, xt:list())) }
+                bind (if (bound(?pp),sh:graph(?pp), error())  as ?pathDetail)                
             }
             bind (sh:graph(?foc) as ?focDetail)
             bind (if (bound(?oo), sh:graph(?oo), error())  as ?valueDetail)
@@ -201,19 +179,6 @@ function sh:graph(?var){
         error())
 }
 
-
-function sh:rec(?g, ?x, ?l){
-    if (isBlank(?x)){
-        let (?res = select * where { graph ?g { ?x ?p ?y }}){
-            for ((?xx, ?p, ?y) in ?res){
-                xt:add(xt:list(?x, ?p, ?y), ?l) ;             
-                sh:rec(?g, ?y, ?l)
-            } 
-        }
-    } ;
-    ?l
-    
-}
 
 function sh:start(){
     sh:init()
@@ -259,6 +224,8 @@ function sh:def(){
         (sh:closed      sh:ClosedConstraintComponent)
         (sh:hasValue    sh:HasValueConstraintComponent)
         (sh:in          sh:InConstraintComponent)
+        
+        (sh:sparql      sh:SPARQLConstraintComponent)
     ) ) {
         ?list
     }
@@ -375,32 +342,32 @@ function sh:qualifiedShape(?subject, ?shape, ?qsh){
 
 # used by predicate/path 
 # count failure
-function sh:and(?fun, ?and, ?s, ?p, ?o, ?shape){
-    (sh:bool(?fun, ?and, ?s, ?p, ?o, ?shape, 0, 1) = 0)
+function sh:and(?and, ?s, ?p, ?o, ?shape){
+    (sh:bool(?and, ?s, ?p, ?o, ?shape, 0, 1) = 0)
 }
 
 # used by predicate/path 
 # count success
-function sh:or(?fun, ?or, ?s, ?p, ?o, ?shape){
-    (sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)  > 0)
+function sh:or(?or, ?s, ?p, ?o, ?shape){
+    (sh:bool(?or, ?s, ?p, ?o, ?shape, 1, 0)  > 0)
 }
 
 # used by predicate/path 
 # count success
-function sh:xor(?fun, ?or, ?s, ?p, ?o, ?shape){
-    (sh:bool(?fun, ?or, ?s, ?p, ?o, ?shape, 1, 0)  = 1)
+function sh:xor(?or, ?s, ?p, ?o, ?shape){
+    (sh:bool(?or, ?s, ?p, ?o, ?shape, 1, 0)  = 1)
 }
 
 # property (predicate or path)
 # ?fun = sh:hasPath
-function sh:bool(?fun, ?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
+function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
     let ((?count) = 
-        SELECT ?fun ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
+        SELECT ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
 			GRAPH ?shape {
 				?sh rdf:rest*/rdf:first ?cst
 			}
-			BIND (funcall(?fun, ?shape, ?cst, false, ?s, ?p, ?o) AS ?hasShape)
+			BIND (sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o) AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
 		})
 		{ ?count }

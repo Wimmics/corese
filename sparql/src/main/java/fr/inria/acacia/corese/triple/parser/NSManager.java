@@ -222,7 +222,9 @@ public class NSManager extends ASTObject {
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);        
-        def.put(SHAPE, "sh");        
+        def.put(SHAPE, "sh");
+        def.put("http://example.org/ns#", "ex");        
+
     }
 
     // add default namespaces

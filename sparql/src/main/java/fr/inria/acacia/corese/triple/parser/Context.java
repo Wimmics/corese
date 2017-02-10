@@ -38,6 +38,7 @@ public class Context extends ASTObject {
     public static final String STL_EXPORT   = STL + "export";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PARAM    = STL + "param";   
+    public static final String STL_FORMAT   = STL + "format";   
     public static final String STL_LANG     = STL + "lang";
     public static final String STL_TITLE    = STL + "title";
     public static final String STL_VALUES   = STL + "values";
@@ -258,8 +259,12 @@ public class Context extends ASTObject {
         return setURI(STL_MODE, str);
     }
      
-     public Context setParam(String str) {
+    public Context setParam(String str) {
         return set(STL_PARAM, str);
+    }
+    
+    public Context setFormat(String str) {
+        return setURI(STL_FORMAT, str);
     }
 
     public String getURI() {

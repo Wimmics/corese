@@ -395,6 +395,7 @@ public class WorkflowProcess implements AbstractProcess {
     /**
      * @param name the name to set
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }

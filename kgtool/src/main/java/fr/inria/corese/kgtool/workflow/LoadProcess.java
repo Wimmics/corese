@@ -7,6 +7,9 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Load a directory.
@@ -14,13 +17,23 @@ import fr.inria.edelweiss.kgtool.util.SPINProcess;
  *
  */
 public class LoadProcess extends WorkflowProcess {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(LoadProcess.class);
+    
     public static final String FILE = "file://";
     String name;
     boolean rec = false;
     private boolean named = false;
+    String text;
+    int format = Load.UNDEF_FORMAT;
+    private int[] FORMATS =  { Load.TURTLE_FORMAT, Load.RDFXML_FORMAT, Load.JSONLD_FORMAT };
     
     public LoadProcess(String path){
         this.path = path;
+    }
+    
+    public LoadProcess(String str, int format){
+        this.text = str;
+        this.format = format;
     }
     
     public LoadProcess(String path, String name, boolean rec){
@@ -32,6 +45,14 @@ public class LoadProcess extends WorkflowProcess {
     public LoadProcess(String path, String name, boolean rec, boolean named){
         this(path, name, rec);
         this.named = named;
+    }
+    
+    public static LoadProcess createStringLoader(String str){
+        return new LoadProcess(str, Load.UNDEF_FORMAT);
+    }
+    
+    public static LoadProcess createStringLoader(String str, int format){
+        return new LoadProcess(str, format);
     }
     
     @Override
@@ -51,29 +72,52 @@ public class LoadProcess extends WorkflowProcess {
         Graph g = data.getGraph();
         Load ld = Load.create(g);
         try {
-            if (path.startsWith(FILE)){
-                path = path.substring(FILE.length());
-            }
             
-            if (! hasMode()){
-                ld.parseDir(path, name, rec); 
-            }
-            else if (getModeString().equals(WorkflowParser.SPIN)){
-                loadSPARQLasSPIN(path, g);
-            }
-            else if (getMode().isNumber()){
-                for (int i = 0; i<getMode().intValue(); i++){
-                 ld.parseDir(path, name, rec);
-                }
+            if (text != null){
+                loadString(ld);
             }
             else {
-               ld.parseDir(path, name, rec); 
+                if (path.startsWith(FILE)) {
+                    path = path.substring(FILE.length());
+                }
+
+                if (!hasMode()) {
+                    ld.parseDir(path, name, rec);
+                } else if (getModeString().equals(WorkflowParser.SPIN)) {
+                    loadSPARQLasSPIN(path, g);
+                } else if (getMode().isNumber()) {
+                    for (int i = 0; i < getMode().intValue(); i++) {
+                        ld.parseDir(path, name, rec);
+                    }
+                } else {
+                    ld.parseDir(path, name, rec);
+                }
             }
             
         } catch (LoadException ex) {
             throw new EngineException(ex);
         }
         return new Data(this, null, g);
+    }
+    
+    /**
+     * Try Turtle RDF/XML JSON-LD formats
+     */
+    void loadString(Load ld) throws LoadException {
+        if (format == Load.UNDEF_FORMAT) {
+            for (int ft : FORMATS) {
+                try {
+                    ld.loadString(text, ft);
+                    return;
+                } catch (LoadException ex) {
+                    // not right format
+                    logger.warn("Load RDF string format: " + ft);
+                    logger.warn(ex);
+                }
+            }
+        } else {
+            ld.loadString(text, format);
+        }
     }
     
     

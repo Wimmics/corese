@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.ContextBuilder;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -84,9 +85,11 @@ public class WorkflowParser {
     public static final String NEW = PREF + "new";
     public static final String SILENT = PREF +"silent";
     public static final String VALIDATE = PREF +"validate";
+    public static final String TEXT = PREF +"text";
     
-    public static final String LOAD_PARAM = Context.STL_PARAM;
-    public static final String MODE_PARAM = Context.STL_MODE;
+    public static final String FORMAT_PARAM = Context.STL_FORMAT; //PREF +"format";
+    public static final String LOAD_PARAM   = Context.STL_PARAM;
+    public static final String MODE_PARAM   = Context.STL_MODE;
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -459,14 +462,31 @@ public class WorkflowParser {
         IDatatype dtest  = getValue(TEST_VALUE, dt);
         boolean test  = (dtest == null) ? false : dtest.booleanValue();
         
-        String uri    = getParam(dt, URI, LOAD_PARAM, true);
-        String shape  = getParam(dt, SHAPE, MODE_PARAM, true);
-        String format = getParam(dt, PATH, PATH);
+        String uri     = getParam(dt, URI, LOAD_PARAM, true);
+        String shape   = getParam(dt, SHAPE, MODE_PARAM, true);
+        String result  = getParam(dt, PATH, PATH);
+        IDatatype dtformat  = getParam(FORMAT_PARAM);
+        boolean isText = (dtformat != null) ;
+        int format = (isText) ?  getFormat(dtformat.getLabel()) : Load.UNDEF_FORMAT ;
+        
         ShapeWorkflow ap = null;
         if (shape != null && uri != null) {
-            ap = new ShapeWorkflow(shape, uri, format, test);
+            ap = new ShapeWorkflow(shape, uri, result, isText, format, test);
         }
         return ap;
+    }
+    
+    int getFormat(String format){
+        if (format.equals(Transformer.TURTLE)){
+            return Load.TURTLE_FORMAT;
+        }
+        else if (format.equals(Transformer.RDFXML)){
+            return Load.RDFXML_FORMAT;
+        }
+        else if (format.equals(Transformer.JSON)){
+            return Load.JSONLD_FORMAT;
+        }
+        return Load.UNDEF_FORMAT;
     }
     
     
@@ -481,7 +501,7 @@ public class WorkflowParser {
     String getParam(IDatatype node, String pred, String name, boolean uri){
         IDatatype dt = getValue(pred, node);
         if (dt == null){
-            String value = getParam(name);
+            String value = getStringParam(name);
             if (value != null){
                 if (uri){
                     return resolve(value);
@@ -498,11 +518,18 @@ public class WorkflowParser {
         return dt.getLabel();
     }
     
-    String getParam(String name){
+    String getStringParam(String name){
         if (getContext() == null || getContext().get(name) == null){
             return null;
         }
         return getContext().get(name).getLabel();
+    }
+    
+    IDatatype getParam(String name){
+        if (getContext() == null || getContext().get(name) == null){
+            return null;
+        }
+        return getContext().get(name);
     }
     
     String resolve(String uri) {
@@ -564,7 +591,7 @@ public class WorkflowParser {
         }
         
         // get what to load from Context st:param
-        String uri  = getParam(LOAD_PARAM);
+        String uri  = getStringParam(LOAD_PARAM);
         if (uri != null){
             String pp = resolve(uri); 
             w.add(new LoadProcess(pp, getName(pp, name, named), rec));

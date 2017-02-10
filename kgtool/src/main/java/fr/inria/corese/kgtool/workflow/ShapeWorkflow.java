@@ -4,6 +4,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +26,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
     public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
     private static final String NL = System.getProperty("line.separator");
     
-    private String format = FORMAT;
+    private String resultFormat = FORMAT;
     private String shape ;
     TransformationProcess transformer;
     LoadProcess load;
@@ -33,20 +35,22 @@ public class ShapeWorkflow extends SemanticWorkflow {
     private boolean validate = false;
     
     public ShapeWorkflow(String shape, String data){
-        create(shape, data, format, false);
+        create(shape, data, resultFormat, false, -1, false);
     }
     
     public ShapeWorkflow(String shape, String data, String trans){
-        create(shape, data, trans, false);
+        create(shape, data, trans, false, -1, false);
     }
     
     public ShapeWorkflow(String shape, String data, boolean test){
-        create(shape, data, format, test);
+        create(shape, data, resultFormat, false, -1, test);
     }
     
-    public ShapeWorkflow(String shape, String data, String trans, boolean test){
-        create(shape, data, trans, test);
+    public ShapeWorkflow(String shape, String data, String trans, boolean text, int format, boolean test){
+        create(shape, data, trans, text, format, test);
     }
+    
+    
     
     @Override
     boolean isShape(){
@@ -66,14 +70,23 @@ public class ShapeWorkflow extends SemanticWorkflow {
         }
     }
     
-    private void create(String shape, String data, String trans, boolean test){
+    /**
+     * 
+     * @param shape input shape, may be text or URI (see text)
+     * @param data  input rdf,   may be text or URI (see text)
+     * @param trans
+     * @param text : true if input graph and shape are RDF text (not URI of document)
+     * @param format : possible RDF input format (may be UNDEF_FORMAT)
+     * @param test : false: use compiled datashape sttl, otherwise use uncompiled sttl
+     */
+    private void create(String shape, String data, String trans, boolean text, int format, boolean test){
         this.setShape(shape);
         if (trans != null){
-            format = trans;
+            resultFormat = trans;
         }
         setCollect(true);
-        load = new LoadProcess(data);
-        LoadProcess ls = new LoadProcess(shape);
+        load =           (text) ?  LoadProcess.createStringLoader(data, format) :  new LoadProcess(data);
+        LoadProcess ls = (text) ?  LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
         ParallelProcess para = new ParallelProcess();
         para.insert(new SemanticWorkflow().add(load));
         para.insert(new SemanticWorkflow(SHAPE_NAME).add(ls));
@@ -137,14 +150,14 @@ public class ShapeWorkflow extends SemanticWorkflow {
         }
         else {
             //res = data.getTemplateResult();
-            Transformer t = Transformer.create(data.getVisitedGraph(), format);
+            Transformer t = Transformer.create(data.getVisitedGraph(), resultFormat);
             res = t.transform();
         }
         return res;
     }
     
     String success(){
-        if (format.equals(FORMAT_HTML)){
+        if (resultFormat.equals(FORMAT_HTML)){
             return "<h2>Data Shape Validation</h2><pre>success</pre>";
         }
         else {
@@ -154,7 +167,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
 
    @Override
    public String getTransformation(){
-       return format;
+       return resultFormat;
    }
 
     /**

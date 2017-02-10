@@ -15,6 +15,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
+import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -68,6 +69,7 @@ public class PluginImpl extends ProxyImpl {
     public static final String LISTEN = EXT+"listen";
     public static final String SILENT = EXT+"silent";
     public static final String DEBUG  = EXT+"debug";
+    private static final String QM = "?";
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)
@@ -183,7 +185,7 @@ public class PluginImpl extends ProxyImpl {
                 
                 switch (exp.oper()) {
                     case KGRAM:
-                        return kgram(env, g, o);
+                        return kgram(env, g, dt);
 
                     case NODE:
                         return node(g, o);
@@ -354,7 +356,12 @@ public class PluginImpl extends ProxyImpl {
                 return edge(exp, env, p, param[0], param[1], param[2]);
                 
              case XT_TRIPLE:
-                return triple(exp, env, p, param[0], param[1], param[2]);    
+                return triple(exp, env, p, param[0], param[1], param[2]); 
+                 
+             case KGRAM:
+                 Graph g = getGraph(p);
+                 if (g == null){return null;}
+                 return kgram(env, p, g, param);
 
             default: 
                 return pt.eval(exp, env, p, param);  
@@ -868,17 +875,41 @@ public class PluginImpl extends ProxyImpl {
         }
     }
 
-    Node kgram(Environment env, Graph g, Object o) {
-        IDatatype dt = (IDatatype) o;
-        String query = dt.getLabel();
-        return kgram(env, g, query);
+    Node kgram(Environment env, Graph g, IDatatype dt) {
+        return kgram(env, g, dt.getLabel(), null);
+    }
+    
+    Node kgram(Environment env, Producer p, Graph g, IDatatype[] param) {
+        return kgram(env, g, param[0].getLabel(), createMapping(p, env, param));
+    }
+    
+    /**
+     * First param is query
+     * other param are variable bindings (variable, value)
+     */
+    Mapping createMapping(Producer p, Environment env, IDatatype[] param){
+        Query q = env.getQuery();
+        ArrayList<Node> var = new ArrayList<Node>();
+        ArrayList<Node> val = new ArrayList<Node>();
+        for (int i = 1; i < param.length; i += 2){
+            var.add(NodeImpl.createVariable(clean(param[i].getLabel())));
+            val.add(p.getNode(param[i+1]));
+        }
+        return Mapping.create(var, val);      
+    }
+    
+    String clean(String name){
+        if (name.startsWith("$")){
+            return QM.concat(name.substring(1));
+        }
+        return name;
     }
         
-    Node kgram(Environment env, Graph g, String  query) {    
+    Node kgram(Environment env, Graph g, String  query, Mapping m) {    
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {
-            Mappings map = exec.sparqlQuery(query);
+            Mappings map = exec.sparqlQuery(query, m);
             if (map.getGraph() == null){
                 return DatatypeMap.createObject("Mappings", map, IDatatype.MAPPINGS);
             }

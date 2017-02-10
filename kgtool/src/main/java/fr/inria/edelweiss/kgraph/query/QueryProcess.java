@@ -435,6 +435,14 @@ public class QueryProcess extends QuerySolver {
         }
         return query(q);
     }
+    
+    public Mappings sparqlQuery(String squery, Mapping map) throws EngineException {
+        Query q = compile(squery, null);
+        if (q.isUpdate()) {
+            throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
+        }
+        return eval(q, map);
+    }
 
     public Mappings sparqlUpdate(String squery) throws EngineException {
         Query q = compile(squery, null);

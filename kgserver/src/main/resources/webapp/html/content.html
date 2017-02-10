@@ -17,7 +17,8 @@
 
 <div class="container">
     <h1>DataShape Validator</h1>
-    <div class="row">
+<div class="row">
+
 <div class="col-md-4">
 <div class="panel panel-info">
     <div class="panel-heading">
@@ -25,17 +26,52 @@
     </div>
     <div class="panel-body">
         <form method='POST' action='/tutorial/shape' id='datashape'>
-            <label for='uri'>RDF Graph: </label>
-            <input type='text' id='param' name='param' value = '/data/shape/shape4shape.ttl' class="form-control custom-control" /><br/>
-            <label for='sel'>Shape: </label><br>
+            <label for='uri'>RDF Graph URL: </label>
+            <input type='text' id='param' name='param' value = '/data/shape/shacl-test.ttl' class="form-control custom-control" /><br/>
+            <label for='sel'>Shape URL: </label><br>
             <input type="text"  name='mode' class="form-control" id='sel2' value='/data/shape/shape4shape.ttl'/>               
-            <br/><br><br>
+            <br/>
             <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
         </form>
 
     </div>
 </div>
 </div> 
+
+
+<div class="col-md-4">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">Data Shape</h3>
+    </div>
+    <div class="panel-body">
+        <form method='POST' action='/tutorial/shape' id='datashape2'>
+        <label for='format'>Input Format</label>
+        <select name="format"   id='format'>
+            <option value='st:undef'>Undefined</option>
+            <option value='st:turtle'>Turtle</option>
+            <option value='st:rdfxml'>RDF/XML</option>
+            <option value='st:json'>JSON-LD</option>
+        </select>
+                <br/>
+
+            <label for='uri'>RDF Graph Text:</label>
+            <textarea  class="form-control custom-control"  rows='8' name='param'>
+            
+            </textarea>   
+            <br/>
+            <label for='sel'>Shape Text: </label><br>
+            <textarea  class="form-control custom-control"  rows='8' name='mode'>
+            
+            </textarea>  
+            <br/>
+            <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+        </form>
+        
+    </div>
+</div>
+</div> 
+
 </div>
 </div>
 

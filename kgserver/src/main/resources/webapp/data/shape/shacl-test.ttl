@@ -1,0 +1,26 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/ns#> .
+
+
+ex:PersonShape
+	a sh:NodeShape ;
+	sh:targetClass ex:Person ;    # Applies to all persons
+	sh:property [
+		sh:path ex:ssn ;     # This property shape is about the values of the ex:ssn property
+		sh:maxCount 1 ;
+		sh:datatype xsd:string ;
+		sh:pattern "^\\d{3}-\\d{2}-\\d{4}$" ;
+	] ;
+	sh:property [
+		sh:path ex:child ;
+		sh:class ex:Person ;
+		sh:nodeKind sh:IRI ;
+	] ;
+	sh:property [
+		rdfs:comment "A person's parents are represented via ex:child used in the inverse direction." ;
+		sh:path [ sh:inversePath ex:child ] ;
+		sh:name "parent" ;
+		sh:maxCount 2 ;
+	] ;
+	sh:closed true ;
+	sh:ignoredProperties ( rdf:type ) .

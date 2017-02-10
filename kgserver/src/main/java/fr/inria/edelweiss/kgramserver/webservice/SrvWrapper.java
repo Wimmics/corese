@@ -47,6 +47,7 @@ public class SrvWrapper {
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 
             @QueryParam("param") String param, 
+            @QueryParam("format") String format, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -57,7 +58,7 @@ public class SrvWrapper {
         Response rs;
 
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryGETHTML(profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryGETHTML(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPIN(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -65,7 +66,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdk(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().get(getService(path), profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().get(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
@@ -85,6 +86,7 @@ public class SrvWrapper {
             @FormParam("uri") String resource, // URI of resource focus
             @FormParam("mode") String mode, 
             @FormParam("param") String param, 
+            @FormParam("format") String format, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @FormParam("value") String value, // values clause that may complement query           
@@ -95,7 +97,7 @@ public class SrvWrapper {
         Response rs;
 
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryPOSTHTML(profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryPOSTHTML(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPINPOST(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -103,7 +105,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdk(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().post(getService(path), profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().post(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
@@ -123,6 +125,7 @@ public class SrvWrapper {
             @FormDataParam("uri") String resource, // URI of resource focus
             @FormDataParam("mode") String mode, // URI of resource focus
             @FormDataParam("param") String param, // URI of resource focus
+            @FormDataParam("format") String format, // URI of resource focus
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @FormDataParam("value") String value, // values clause that may complement query           
@@ -133,7 +136,7 @@ public class SrvWrapper {
         Response rs;
 
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryPOSTHTML_MD(profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryPOSTHTML_MD(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPINPOST_MD(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -141,7 +144,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdkPostMD(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().postMD(getService(path), profile, resource, mode, param, query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().postMD(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheckPost_MD(resource, "std", transform, query, getService(path));
         } else {

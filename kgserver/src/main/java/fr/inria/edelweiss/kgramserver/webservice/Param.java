@@ -20,6 +20,7 @@ public class Param {
     private String uri;
     private String mode;
     private String param;
+    private String format;
     private String name;
     private String query;
     private String value;
@@ -76,6 +77,9 @@ public class Param {
         }
          if (getParam()!= null) {
             ctx.setParam(getParam());
+        }
+        if (getFormat()!= null) {
+            ctx.setFormat(nsm.toNamespace(getFormat()));
         }
         if (getQuery() != null) {
             ctx.setQueryString(getQuery());
@@ -318,6 +322,20 @@ public class Param {
      */
     public void setParam(String param) {
         this.param = param;
+    }
+
+    /**
+     * @return the format
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(String format) {
+        this.format = format;
     }
 
 }

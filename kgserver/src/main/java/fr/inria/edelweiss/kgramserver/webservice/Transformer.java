@@ -82,6 +82,7 @@ public class Transformer {
             @FormParam("uri") String resource, // query + transform
             @FormParam("mode") String mode, 
             @FormParam("param") String param, 
+            @FormParam("format") String format, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query)
             @FormParam("value") String value, // values clause that may complement query           
@@ -93,6 +94,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setFormat(format);
         par.setDataset(from, named);
         return template(getTripleStore(), par);
     }
@@ -105,6 +107,7 @@ public class Transformer {
             @FormDataParam("uri") String resource, 
             @FormDataParam("mode") String mode, 
             @FormDataParam("param") String param, 
+            @FormDataParam("format") String format, 
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value") String value, // values clause that may complement query           
@@ -116,6 +119,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setFormat(format);
         par.setDataset(toStringList(from), toStringList(named));
         return template(getTripleStore(), par);
     }
@@ -127,6 +131,7 @@ public class Transformer {
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 
             @QueryParam("param") String param, 
+            @QueryParam("format") String format, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -138,6 +143,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setFormat(format);
         par.setDataset(namedGraphUris, namedGraphUris);
         return template(getTripleStore(), par);
     }

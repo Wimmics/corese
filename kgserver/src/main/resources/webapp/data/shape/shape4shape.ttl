@@ -179,7 +179,9 @@ ds:shapecst a sh:NodeShape ;
 rdfs:comment "Constraint in sh:property [ ] or in sh:property [ sh:or( ) ]" ;
 sh:closed true ; 
 sh:ignoredProperties 
-(sh:path sh:deactivated sh:name sh:message sh:description sh:order sh:group rdf:type rdfs:comment rdfs:label) ;
+(sh:path sh:deactivated 
+sh:name sh:message sh:description sh:order sh:group sh:defaultValue
+rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
     sh:path sh:node ;

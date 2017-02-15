@@ -472,15 +472,15 @@ public class TitanDriver extends GdbDriver {
 //			result = alreadyExist.next();
 //		} else {
 //		Iterator<Edge> it = vSource.edges(Direction.OUT, RDF_EDGE_LABEL);
-		GraphTraversal<Vertex, Vertex> found = g.traversal().V(vSource.id()).outE(RDF_EDGE_LABEL).has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value()).as("edge").inV().hasId(vObject.id()).select("edge");
-		if (found.hasNext()) {
-			result = found.next();
-		} else {
+//		GraphTraversal<Vertex, Vertex> found = g.traversal().V(vSource.id()).outE(RDF_EDGE_LABEL).has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value()).as("edge").inV().hasId(vObject.id()).select("edge");
+//		if (found.hasNext()) {
+//			result = found.next();
+//		} else {
 //			Transaction transaction = g.tx();
 			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 			result = e.id();
 //			transaction.commit();
-		}
+//		}
 		return result;
 	}
 

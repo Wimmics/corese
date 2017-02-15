@@ -66,9 +66,24 @@ public class RdfToGraph {
 		public void handleStatement(Statement statement) {
 			Resource source = statement.getSubject();
 			Value object = statement.getObject();
-
+			
+			triples++;
+			if (triples % CHUNK_SIZE == 0) {
+				LOGGER.log(Level.INFO, "{0}", triples);
+				try {
+					driver.commit();
+				} catch (Exception ex) {
+					LOGGER.log(Level.SEVERE, "Trying to pursue after: {0}", ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
 			driver.createNode(source);
 			driver.createNode(object);
+			try {
+					driver.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -219,7 +234,7 @@ public class RdfToGraph {
 		return this;
 	}
 
-	final static private int CHUNK_SIZE = 50_000; //Integer.MAX_VALUE;
+	final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;
 
 	public void writeModelToNeo4j() {
 		int triples = 0;

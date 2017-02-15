@@ -172,15 +172,19 @@ public class QualitativeTest {
 	@DataProvider(name = "input")
 	public Iterator<Object[]> buildTests() {
 		String[] inputFiles = {
-			"btc-2010-chunk-000_10k.nq",
+//			"test-1.nq"
+//			"human_2007_04_17.rdf",	
+			"btc-2010-chunk-000_test.nq",
+//			"btc-2010-chunk-000_10k.nq",
 //			"btc-2010-chunk-000_100k.nq",
 //			"btc-2010-chunk-000_1M.nq",
-//			"btc-2010-chunk-000.nq" // 4,6 M
+//			"btc-2010-chunk-000.nq" 
 		};
 		String[] requests = {
 //			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
-//			"select ?x ?y where { ?x rdf:type ?y}"
-			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}"	
+			"select ?x ?y where { ?x rdf:type ?y}"
+//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}"	
+//			"select ?x ?p ?y where { ?x ?p ?y}"
 		};
 
 		return new Iterator<Object[]>() {

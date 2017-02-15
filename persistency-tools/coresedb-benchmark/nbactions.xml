@@ -125,7 +125,7 @@
             <properties>
                 <exec.args>-Xms10g -Xmx10g</exec.args>
                 <test>${packageClassName}</test>
-                <test.run.args>-Xms10g -Xmx10g -Dlog4j.logger.com.thinkaurelius.titan=INFO</test.run.args>
+                <test.run.args>-Xms10g -Xmx10g -Dlog4j.logger.com.thinkaurelius.titan=INFO -Dorg.slf4j.simpleLogger.defaultLogLevel=info</test.run.args>
                 
             </properties>
         </action>

@@ -478,6 +478,10 @@ public class TitanDriver extends GdbDriver {
 				break;
 			}
 		}
+		if (cache.size() > 200_000) {
+			logger.info("Cleaning cache");
+			cache.clear();
+		}
 		cache.put(v, result);
 		return result;
 	}

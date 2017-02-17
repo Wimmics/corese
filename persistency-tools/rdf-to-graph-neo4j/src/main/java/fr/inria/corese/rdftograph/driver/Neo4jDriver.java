@@ -80,6 +80,11 @@ public class Neo4jDriver extends GdbDriver {
 		return result;
 	}
 
+	@Override
+	public Object getNode(Value v) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	private static enum RelTypes implements RelationshipType {
 		CONTEXT
 	}
@@ -124,13 +129,10 @@ public class Neo4jDriver extends GdbDriver {
 	 * @return
 	 */
 	@Override
-	public Object createNode(Value v) {
+	public void createNode(Value v) {
 //		Graph g = graph.getTx();
 		Object result = null;
 		String nodeId = nodeId(v);
-		if (alreadySeen.containsKey(nodeId)) {
-			return alreadySeen.get(nodeId);
-		}
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
@@ -153,8 +155,6 @@ public class Neo4jDriver extends GdbDriver {
 				break;
 			}
 		}
-		alreadySeen.put(nodeId, result);
-		return result;
 	}
 
 	@Override

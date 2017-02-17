@@ -80,7 +80,7 @@ public class RdfToGraph {
 			try {
 				driver.createNode(source);
 				driver.createNode(object);
-				driver.commit();
+//				driver.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -234,7 +234,7 @@ public class RdfToGraph {
 		return this;
 	}
 
-	final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;
+	final static private int CHUNK_SIZE = 100_000; //Integer.MAX_VALUE;
 
 	public void writeModelToNeo4j() {
 		int triples = 0;

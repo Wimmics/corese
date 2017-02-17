@@ -56,6 +56,15 @@ public class TinkerpopToCorese {
 				} else {
 					return coreseGraph.addLiteral(label, type);
 				}
+			case LARGE_LITERAL:
+				label = (String) node.value(VERTEX_LARGE_VALUE);
+				type = (String) node.value(TYPE);
+				lang = node.property(LANG);
+				if (lang.isPresent()) {
+					return coreseGraph.addLiteral(label, type, lang.value());
+				} else {
+					return coreseGraph.addLiteral(label, type);
+				}	
 			default:
 				throw new IllegalArgumentException("node " + node.toString() + " type is unknown.");
 		}

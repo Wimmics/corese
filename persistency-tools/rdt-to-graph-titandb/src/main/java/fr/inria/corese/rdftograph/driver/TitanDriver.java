@@ -59,6 +59,7 @@ public class TitanDriver extends GdbDriver {
 
 		private String kind;
 		private String value;
+		private Optional<String> largeValue;
 		private Optional<String> type;
 		private Optional<String> lang;
 
@@ -77,6 +78,17 @@ public class TitanDriver extends GdbDriver {
 				case LITERAL:
 					Literal l = (Literal) v;
 					value = l.getLabel();
+					type = Optional.of(l.getDatatype().toString());
+					if (l.getLanguage().isPresent()) {
+						lang = Optional.of(l.getLanguage().get());
+					} else {
+						lang = Optional.empty();
+					}
+					break;
+				case LARGE_LITERAL:
+					l = (Literal) v;
+					value = Integer.toString(l.getLabel().hashCode());
+					largeValue = Optional.of(l.getLabel());
 					type = Optional.of(l.getDatatype().toString());
 					if (l.getLanguage().isPresent()) {
 						lang = Optional.of(l.getLanguage().get());
@@ -120,6 +132,9 @@ public class TitanDriver extends GdbDriver {
 						IDatatype data_this = lang.isPresent() ? DatatypeMap.createLiteral(value, kind, lang.get()) : DatatypeMap.createLiteral(value, kind);
 						IDatatype data_o = o.lang.isPresent() ? DatatypeMap.createLiteral(o.value, o.kind, o.lang.get()) : DatatypeMap.createLiteral(o.value, o.kind);
 						return data_this.compareTo(data_o);
+					case LARGE_LITERAL:
+						data_this = lang.isPresent() ? DatatypeMap.createLiteral(largeValue.get(), kind, lang.get()) : DatatypeMap.createLiteral(largeValue.get(), kind);
+						data_o = o.lang.isPresent() ? DatatypeMap.createLiteral(o.largeValue.get(), o.kind, o.lang.get()) : DatatypeMap.createLiteral(o.largeValue.get(), o.kind);
 				}
 			}
 			throw new IllegalArgumentException(format("{0} and {1} vertex values seem incomparable.", this, o));
@@ -260,6 +275,7 @@ public class TitanDriver extends GdbDriver {
 
 		makeIfNotExistProperty(EDGE_P);
 		makeIfNotExistProperty(VERTEX_VALUE);
+		makeIfNotExistProperty(VERTEX_LARGE_VALUE);
 		makeIfNotExistProperty(EDGE_G);
 		makeIfNotExistProperty(EDGE_S);
 		makeIfNotExistProperty(EDGE_O);
@@ -301,8 +317,6 @@ public class TitanDriver extends GdbDriver {
 				buildIndex("vertices", Vertex.class).
 				addKey(vertexValue).
 				buildCompositeIndex();
-//			manager.setConsistency(vertexValue,ConsistencyModifier.LOCK);
-//			manager.setConsistency(vIndex, ConsistencyModifier.LOCK);
 			manager.
 				buildIndex("allIndex", Edge.class).
 				addKey(predicateKey, Mapping.STRING.asParameter()).
@@ -353,8 +367,19 @@ public class TitanDriver extends GdbDriver {
 				result.append("value=").append(v.stringValue()).append(";");
 				result.append("kind=").append(kind);
 				break;
-			case LITERAL:
+			case LARGE_LITERAL:
 				Literal l = (Literal) v;
+				result.append("label=").append(l.getLabel()).append(";");
+				result.append("value=").append(Integer.toString(l.getLabel().hashCode()));
+				result.append("large_value=").append(l.getLabel()).append(";");
+				result.append("type=").append(l.getDatatype().toString()).append(";");
+				result.append("kind=").append(kind);
+				if (l.getLanguage().isPresent()) {
+					result.append("lang=").append(l.getLanguage().get()).append(";");
+				}
+				break;
+			case LITERAL:
+				l = (Literal) v;
 				result.append("label=").append(l.getLabel()).append(";");
 				result.append("value=").append(l.getLabel()).append(";");
 				result.append("type=").append(l.getDatatype().toString()).append(";");
@@ -375,36 +400,34 @@ public class TitanDriver extends GdbDriver {
 			switch (RdfToGraph.getKind(v)) {
 				case IRI:
 				case BNODE: {
-//				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
-//				if (it.hasNext()) {
-//					result = it.next().id();
-//				} else {
 					newVertex = g.addVertex(RDF_VERTEX_LABEL);
 					newVertex.property(VERTEX_VALUE, v.stringValue());
 					newVertex.property(KIND, RdfToGraph.getKind(v));
-//					g.tx().commit();
-//				}
 					break;
 				}
 				case LITERAL: {
 					Literal l = (Literal) v;
-//				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
-//				if (l.getLanguage().isPresent()) {
-//					it = it.has(LANG, l.getLanguage().get());
-//				}
-//				if (it.hasNext()) {
-//					result = it.next().id();
-//				} else {
 					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, l.getLabel());
+					newVertex.property(VERTEX_VALUE, l.getLabel().toString());
 					newVertex.property(TYPE, l.getDatatype().toString());
 					newVertex.property(KIND, RdfToGraph.getKind(v));
 					if (l.getLanguage().isPresent()) {
 						newVertex.property(LANG, l.getLanguage().get());
 					}
-//				}
-//					g.tx().commit();
 					break;
+				}
+				case LARGE_LITERAL: {
+					Literal l = (Literal) v;
+					newVertex = g.addVertex(RDF_VERTEX_LABEL);
+					newVertex.property(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode()));
+					newVertex.property(VERTEX_LARGE_VALUE, l.getLabel());
+					newVertex.property(TYPE, l.getDatatype().toString());
+					newVertex.property(KIND, RdfToGraph.getKind(v));
+					if (l.getLanguage().isPresent()) {
+						newVertex.property(LANG, l.getLanguage().get());
+					}
+					break;
+
 				}
 			}
 		} catch (SchemaViolationException ex) {
@@ -413,6 +436,7 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	HashMap<Value, Vertex> cache = new HashMap<>();
+
 	@Override
 	public Object getNode(Value v) {
 		if (cache.containsKey(v)) {
@@ -423,6 +447,18 @@ public class TitanDriver extends GdbDriver {
 			case IRI:
 			case BNODE: {
 				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+				result = it.next();
+				while (it.hasNext()) {
+					it.next().remove();
+				}
+				break;
+			}
+			case LARGE_LITERAL: {
+				Literal l = (Literal) v;
+				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+				if (l.getLanguage().isPresent()) {
+					it = it.has(LANG, l.getLanguage().get());
+				}
 				result = it.next();
 				while (it.hasNext()) {
 					it.next().remove();
@@ -477,8 +513,8 @@ public class TitanDriver extends GdbDriver {
 //			result = found.next();
 //		} else {
 //			Transaction transaction = g.tx();
-			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
-			result = e.id();
+		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
+		result = e.id();
 //			transaction.commit();
 //		}
 		return result;

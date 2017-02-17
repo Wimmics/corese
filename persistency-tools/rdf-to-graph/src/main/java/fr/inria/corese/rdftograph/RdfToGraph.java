@@ -66,7 +66,7 @@ public class RdfToGraph {
 		public void handleStatement(Statement statement) {
 			Resource source = statement.getSubject();
 			Value object = statement.getObject();
-			
+
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.log(Level.INFO, "{0}", triples);
@@ -77,10 +77,10 @@ public class RdfToGraph {
 					ex.printStackTrace();
 				}
 			}
-			driver.createNode(source);
-			driver.createNode(object);
 			try {
-					driver.commit();
+				driver.createNode(source);
+				driver.createNode(object);
+				driver.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -262,7 +262,9 @@ public class RdfToGraph {
 	}
 
 	public static String getKind(Value resource) {
-		if (isLiteral(resource)) {
+		if (isLargeLiteral(resource)) {
+			return LARGE_LITERAL;
+		} else if (isLiteral(resource)) {
 			return LITERAL;
 		} else if (isIRI(resource)) {
 			return IRI;
@@ -281,6 +283,15 @@ public class RdfToGraph {
 		}
 	}
 
+	private static boolean isLargeLiteral(Value resource) {
+		if (isType(Literal.class, resource)) {
+			Literal l = (Literal) resource;	
+			return l.getLabel().length() > MAX_INDEXABLE_LENGTH;
+		} else {
+			return false;
+		}
+	}
+	
 	private static boolean isLiteral(Value resource) {
 		return isType(Literal.class, resource);
 	}

@@ -61,7 +61,7 @@ public class EmbeddedJettyServer {
 	static int port = 8080;
 	private static boolean entailments = false;
 	private static boolean owlrl = false;
-	private static String dataPath = null;
+	private static String[] dataPaths = null;
 	private static String localProfile = null;
 
 	// profile.ttl may contain data to be loaded
@@ -149,8 +149,8 @@ public class EmbeddedJettyServer {
 			}
 			if (cmd.hasOption("l")) {
 				// deprecated load
-				dataPath = cmd.getOptionValue("l");
-				System.out.println("Server: " + dataPath);
+				dataPaths = cmd.getOptionValues("l");
+				System.out.println("Server: " + String.join(" ", dataPaths));
 			}
 			if (cmd.hasOption("lp")) {
 				// load st:default server content into SPARQL endpoint
@@ -241,12 +241,14 @@ public class EmbeddedJettyServer {
 
 			service.path("sparql").path("reset").post(formData);
 
-			if (dataPath != null) {
-				String[] lp = dataPath.split(";");
-				for (String p : lp) {
-					formData = new MultivaluedMapImpl();
-					formData.add("remote_path", p);
-					service.path("sparql").path("load").post(formData);
+			if (dataPaths != null) {
+				for (String dataPath : dataPaths) {
+					String[] lp = dataPath.split(";");
+					for (String p : lp) {
+						formData = new MultivaluedMapImpl();
+						formData.add("remote_path", p);
+						service.path("sparql").path("load").post(formData);
+					}
 				}
 			}
 

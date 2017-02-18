@@ -40,6 +40,6 @@ public class App {
 		String dbPath = args[1];	
 		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
 
-		RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
+		new RdfToGraph().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
 	}	
 }

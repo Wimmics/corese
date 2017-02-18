@@ -128,7 +128,7 @@ public class Main {
 						.map(Path::toFile)
 						.forEach(File::delete);
 				}
-				RdfToGraph converter = new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+				new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			} catch (IOException ex) {
 				java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 			}

@@ -148,15 +148,14 @@ public class RdfToGraph {
 		return result;
 	}
 
-	public RdfToGraph convertFileToDb(String rdfFileName, RDFFormat format, String dbPath) throws FileNotFoundException, IOException {
-		InputStream inputStream;
-		if (rdfFileName.endsWith(".gz")) {
-			inputStream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(rdfFileName)));
+	private InputStream makeStream(String filename) throws IOException {
+		InputStream result;
+		if (filename.endsWith(".gz")) {
+			result = new GZIPInputStream(new BufferedInputStream(new FileInputStream(filename)));
 		} else {
-			inputStream = new FileInputStream(new File(rdfFileName));
+			result = new BufferedInputStream(new FileInputStream(new File(filename)));
 		}
-		convertStreamToDb(inputStream, format, dbPath);
-		return this;
+		return result;
 	}
 
 	/**
@@ -167,17 +166,14 @@ public class RdfToGraph {
 	 * stream
 	 * @param dbPath Where to store the rdf data.
 	 */
-	public void convertStreamToDb(InputStream rdfStream, RDFFormat format, String dbPath) {
+	public void convertFileToDb(String fileName, RDFFormat format, String dbPath) {
 		try {
 			LOGGER.info("** begin of convert **");
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
 			driver.openDb(dbPath);
 			LOGGER.info("Loading file");
-			BufferedInputStream bufferedInput = new BufferedInputStream(rdfStream);
-			bufferedInput.mark(Integer.MAX_VALUE);
-			createVertices(bufferedInput, format);
-			bufferedInput.reset();
-			createEdges(bufferedInput, format);
+			createVertices(makeStream(fileName), format);
+			createEdges(makeStream(fileName), format);
 			LOGGER.info("Writing graph in db");
 			LOGGER.info("closing DB");
 			driver.closeDb();
@@ -219,7 +215,6 @@ public class RdfToGraph {
 		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
 		rdfParser.setParserConfig(config);
 		rdfParser.setRDFHandler(edgesBuilder);
-		in.reset();
 		try {
 			rdfParser.parse(in, "");
 		} catch (Exception e) {
@@ -285,13 +280,13 @@ public class RdfToGraph {
 
 	private static boolean isLargeLiteral(Value resource) {
 		if (isType(Literal.class, resource)) {
-			Literal l = (Literal) resource;	
+			Literal l = (Literal) resource;
 			return l.getLabel().length() > MAX_INDEXABLE_LENGTH;
 		} else {
 			return false;
 		}
 	}
-	
+
 	private static boolean isLiteral(Value resource) {
 		return isType(Literal.class, resource);
 	}

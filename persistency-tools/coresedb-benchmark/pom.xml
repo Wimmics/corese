@@ -62,6 +62,11 @@
 			<artifactId>sesame-rio-nquads</artifactId>
 			<version>4.1.1</version>
 		</dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>rdf-to-graph-nulldriver</artifactId>
+	  <version>${project.version}</version>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>

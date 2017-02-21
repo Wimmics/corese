@@ -43,7 +43,7 @@ import org.openrdf.rio.helpers.NTriplesParserSettings;
 public class RdfToGraph {
 
 	public enum DbDriver {
-		NEO4J, ORIENTDB, TITANDB
+		NEO4J, ORIENTDB, TITANDB, NULLDRIVER
 	}
 
 	private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
@@ -56,6 +56,7 @@ public class RdfToGraph {
 		DRIVER_TO_CLASS.put(DbDriver.NEO4J, "fr.inria.corese.rdftograph.driver.Neo4jDriver");
 		DRIVER_TO_CLASS.put(DbDriver.ORIENTDB, "fr.inria.corese.rdftograph.driver.OrientDbDriver");
 		DRIVER_TO_CLASS.put(DbDriver.TITANDB, "fr.inria.corese.rdftograph.driver.TitanDriver");
+		DRIVER_TO_CLASS.put(DbDriver.NULLDRIVER, "fr.inria.wimmics.rdf.to.graph.nulldriver.NullDriver");
 	}
 
 	private class VerticesBuilder extends AbstractRDFHandler {
@@ -107,9 +108,6 @@ public class RdfToGraph {
 			properties.put(EDGE_G, contextString);
 			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
 			triples++;
-			if (triples % 100_000 == 0) {
-				LOGGER.info("triples = " + triples);
-			}
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.log(Level.INFO, "{0}", triples);
 				try {
@@ -229,7 +227,7 @@ public class RdfToGraph {
 		return this;
 	}
 
-	final static private int CHUNK_SIZE = 100_000; //Integer.MAX_VALUE;
+	final static private int CHUNK_SIZE = 1_000; //Integer.MAX_VALUE;
 
 	public void writeModelToNeo4j() {
 		int triples = 0;

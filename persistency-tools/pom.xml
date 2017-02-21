@@ -17,6 +17,7 @@
 	 <module>rdf-to-graph-orientdb</module>
 	 <module>rdf-to-graph-app</module>
 	 <module>coresedb-benchmark</module>
+	 <module>rdf-to-graph-nulldriver</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

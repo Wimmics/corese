@@ -76,12 +76,12 @@ sh:property [
     sh:node ds:list
 ] ;
 sh:property [
-    sh:path sh:xor ;
+    sh:path sh:xone ;
     sh:nodeKind sh:BlankNodeOrIRI ;
     sh:node ds:list
 ] ;
 sh:property [
-    sh:path ([sh:alternativePath (sh:xor sh:or sh:and)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:path ([sh:alternativePath (sh:xone sh:or sh:and)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
     sh:nodeKind sh:BlankNodeOrIRI ;
     sh:node ds:shape 
 ];
@@ -179,7 +179,9 @@ ds:shapecst a sh:NodeShape ;
 rdfs:comment "Constraint in sh:property [ ] or in sh:property [ sh:or( ) ]" ;
 sh:closed true ; 
 sh:ignoredProperties 
-(sh:path sh:deactivated sh:name sh:message sh:description sh:order sh:group rdf:type rdfs:comment rdfs:label) ;
+(sh:path sh:deactivated 
+sh:name sh:message sh:description sh:order sh:group sh:defaultValue
+rdf:type rdfs:comment rdfs:label) ;
 
 sh:property [
     sh:path sh:node ;
@@ -196,12 +198,12 @@ sh:property [
 ] ;
 
 sh:property [
-    sh:path sh:and, sh:or, sh:xor ; 
+    sh:path sh:and, sh:or, sh:xone ; 
     sh:nodeKind sh:BlankNodeOrIRI ;
     sh:node ds:list
 ] ;
 sh:property [
-    sh:path ([sh:alternativePath (sh:and sh:or sh:xor)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
+    sh:path ([sh:alternativePath (sh:and sh:or sh:xone)] [sh:zeroOrMorePath rdf:rest] rdf:first) ;
     sh:node ds:shapecst
 ];
 sh:property [

@@ -1,5 +1,5 @@
 template st:title {
-  "<th class='right'> &nbsp; " str(?t) "</th>"
+  format { us:format("title.html") str(?t) }
   ; separator = ""
 }
 where {

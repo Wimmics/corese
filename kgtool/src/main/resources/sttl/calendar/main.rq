@@ -1,12 +1,10 @@
 template st:main(?year) {
+  st:call-template(st:head, ?year)
 
-   st:call-template(st:head, ?year)
-
-  "<p class='center'>"
-
-   st:call-template(st:calendar, ?year)
-    
-  "</p>"
+  format {
+    us:format("main.html")
+    st:call-template(st:calendar, ?year)
+  }
 
 }
 where {

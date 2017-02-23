@@ -7,12 +7,7 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 template  cn:table(?min, ?max) {
 format {
 
-  """
-  <tr>
-  <th class='date'>%s</th>  
-   %s         
-  </tr>\n
-  """
+  us:format("date.html")
   
   st:call-template(cn:wikidate, ?d)
   st:call-template(cn:row, ?d)

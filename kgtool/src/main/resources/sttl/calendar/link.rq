@@ -1,6 +1,9 @@
 template st:link(?date) {
 
-  "<a href='#" str(?date) "'>"  day(?date)  "</a>"
+  format {
+    "<a href='#%s'>%s</a>" 
+    str(?date) day(?date)
+  }
   
 }
 where {

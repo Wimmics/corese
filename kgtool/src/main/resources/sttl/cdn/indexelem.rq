@@ -7,15 +7,10 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
   format {
-      """
-      <td>
-      <a href='%s'><span %s>%s</span></a>
-      </td>
-      <td>&nbsp;&nbsp;</td>
-      """
+      us:format("index.html")
   
       st:plink(?century)
-      ?class
+      if (?show, "bold", "undefined")
       ?date
   } 
 }
@@ -28,7 +23,7 @@ where {
   
   filter (?min >= ?fst && ?max <= ?rst)
   
-  bind (if (?date = ?title, " class='bold'", "") as ?class)
+  bind (?date = ?title as ?show)
      
 }
 order by ?min

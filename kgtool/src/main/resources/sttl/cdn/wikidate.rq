@@ -3,7 +3,10 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  cn:wikidate(?d) {
 
-  "<a href='http://fr.wikipedia.org/wiki/" ?d "'>" ?d "</a>"
+  format {
+    "<a href='http://fr.wikipedia.org/wiki/%s'>%s</a>"
+    ?d ?d
+  }
 
 }
 where {

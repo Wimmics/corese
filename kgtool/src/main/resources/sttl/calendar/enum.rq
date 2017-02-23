@@ -1,14 +1,9 @@
 template st:enum(?year, ?f, ?l) {
 format {
-  "<tr>%s</tr>\n"
-
+  us:format("enum1.html")      
   group {
     format {
-      """
-      <td>%s</td>
-      <td>&nbsp;&nbsp;</td>
-      """
-      
+      us:format("enum2.html")      
       st:call-template(st:monthtab, ?year, ?month)
      }
   }

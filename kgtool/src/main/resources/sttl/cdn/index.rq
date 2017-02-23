@@ -8,20 +8,16 @@ prefix cn: <http://cdn.fr/schema/>
 template cn:index(?title) {
 
 format {
-  """
-  <table class='margin'>
-  <tr>%s %s %s</tr>
-  </table>
-  """
+  us:format("indextable.html")
 
   if (bound(?before), 
-    st:format("<td><a href='%s'>Avant</a></td><td>&nbsp;&nbsp;</td>", st:plink(?before)), 
+    st:format(us:format("before.html"), st:plink(?before)), 
     "")
     
   st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    st:format("<td><a href='%s'>Après</a></td>", st:plink(?after)), 
+    st:format(us:format("after.html"), st:plink(?after)), 
     "")  
 }
 

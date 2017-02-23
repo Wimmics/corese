@@ -1,12 +1,6 @@
 template st:head(?year) {
 format {
-  """
-  <h1 class='year'>
-    <a href='%s'><span>%s</span></a>
-      - %s -  
-    <a href='%s'><span>%s</span></a>
-  </h1>
-  """
+  us:format("head.html")
   
   st:plink(concat(?uri,  (?year - 1)))
   us:display(?year - 1)

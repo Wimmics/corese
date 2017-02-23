@@ -17,3 +17,7 @@ function st:process(?x) {
       #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
+function us:format(?name) {
+    st:getFormat("cdn", ?name)
+}
+  

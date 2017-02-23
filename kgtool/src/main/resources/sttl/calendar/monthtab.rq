@@ -1,32 +1,23 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 template st:monthtab(?y, ?m) {
   format {
-      """
-      <h3 class='center'>%s</h3>   
-      <table class='month'>
-	<tr>%s</tr>
-	<tr>    
-	%s   
-	%s    
-	</tr>    
-	%s    
-      </table>
-      """
+  us:format("month.html")
       
   cal:month(?m)
   st:call-template(st:title)
   xt:td(?first - 1)
   
   group {            
-	  "<td class='day'>"          
-	  st:call-template(st:date, ?date)        
-	  "</td>"                       
-	  if (?day = "Sunday", "</tr>\n<tr>", "")
+	  format {
+        us:format("day.html")
+        st:call-template(st:date, ?date)
+	  }
+	  if (?day = "Sunday", st:format(us:format("sunday.html")), "")
 		  
 	  ; separator = ""
   }
   
-  if (?first + ?days - 1 <= 35 , "<tr><td>&nbsp;</td></tr>", "")   
+  if (?first + ?days - 1 <= 35 , st:format(us:format("last.html")), "")   
   }
 
 }

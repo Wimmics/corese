@@ -938,11 +938,14 @@ public class CoreseDatatype
         
 	
 	// Java equals (for list membership ...)
-        @Override
-	public boolean equals(Object obj) {
+        @Override  
+        public boolean equals(Object obj) {
 		if (obj instanceof IDatatype) {
 			return sameTerm((IDatatype) obj);
 		}
+                else if (obj instanceof Node){
+                    return sameTerm((IDatatype) ((Node)obj).getValue());
+                }
 		return false;	
 	}
 

@@ -6,6 +6,10 @@ template st:profile {
  
 }
 where {}
+
+function us:format(?name) {
+    st:getFormat("navlab", ?name)
+}
     
 #
 # Get the ?q = st:person st:param property from profile.ttl 

@@ -1,11 +1,6 @@
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
 format {
-  """
-  <tr>
-    <th class='left'>%s</th>
-    <td>%s</td>
-  </tr> 
-  """
+  us:format("triple.html")
  
   str(?title)
   st:call-template(?temp, ?r, ?p)

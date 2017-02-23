@@ -1,6 +1,6 @@
 template st:icon(?label, ?ic) {
   format {
-    "<img width='250' alt=\"%s\" src=\"%s\" />"
+    us:format("img.html")    
     str(?label) str(?ic)
   }
 }

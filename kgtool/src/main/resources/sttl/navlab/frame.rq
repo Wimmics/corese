@@ -5,23 +5,13 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:frame(?label, ?icon, ?body) {
 format {
-
-  """
-  <div class='center'><h2>%s</h2></div>
-  <p>
-    <table>
-      <tr class='top'>
-	<td>%s</td>
-	<td>&nbsp;<td/>
-	<td><table class='table'>%s</table></td>
-      </tr>
-    </table>
-  </p>
-  """
+  us:format("frame.html")
 
   str(?label)
+  
   if (?icon = "", "", 
       st:call-template(st:icon, ?label, ?icon)  )
+      
   str(?body)    
 }  
 }

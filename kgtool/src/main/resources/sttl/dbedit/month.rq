@@ -8,15 +8,7 @@ template st:month {
 
   format {
 
-    """
-    <p>
-    <table class='table'>
-      <tr style='vertical-align: bottom'>
-      %s
-      </tr>
-    </table>
-    </p>
-    """
+    """<p>%s</p>"""
     
     if (bound(?type), 
       st:call-template(st:dbpediafortype, ?date, ?type),
@@ -31,10 +23,6 @@ template st:month {
 }
 where {
 
-#   bind (st:set(st:uri, <http://ns.inria.fr/sparql-template/date/09/2015>) as ?dd)
-#   bind (st:set(st:profile, st:dbedit) as ?tt)
-#   bind (st:set(st:service, "template") as ?ss)
-
    bind (st:get(st:uri)  as ?uri)
    # type of resoures to focus on
    bind (st:get(st:mode) as ?type)
@@ -42,5 +30,4 @@ where {
    bind (strdt(?str, xsd:gYearMonth) as ?date)
    bind (st:set(st:date, ?date) as ?tmp)
    
-#   filter kg:display(?date)
 }

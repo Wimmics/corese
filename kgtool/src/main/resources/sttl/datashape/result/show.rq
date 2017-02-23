@@ -3,7 +3,7 @@ prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
 template st:show {
 format {
-    st:getFormat("show.html")
+    us:format("show.html")
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
     st:apply-templates-with-graph(st:hturtle, st:visitor)

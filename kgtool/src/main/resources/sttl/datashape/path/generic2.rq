@@ -9,8 +9,8 @@ where {
   graph ?shape {  
     values ?oper { 
       sh:equals sh:maxCount sh:minCount sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan sh:disjoint 
-      sh:and sh:or sh:xor sh:not 
-      sh:qualifiedValueShape
+      sh:and sh:or sh:xone sh:not 
+      sh:qualifiedValueShape sh:sparql
       }
     ?sh ?oper ?b    
   }

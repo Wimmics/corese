@@ -1,13 +1,16 @@
 prefix sh: <http://www.w3.org/ns/shacl#>
- 
 template st:title {
     format {
-        st:getFormat("title.html")
+        us:format("title.html")
         
-        st:get(st:param) st:get(st:server)
-        st:get(st:mode)  st:get(st:mode)
+        if (! ?text, st:get(st:param), "")
+        if (! ?text, st:get(st:mode), "")  
+        
+        if (?text, st:get(st:param), "")
+        if (?text, st:get(st:mode), "")  
     } 
 }
 where {
-    
+   bind (st:get(st:format) as ?format)
+   bind (bound(?format) as ?text)
 }

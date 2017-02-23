@@ -1,0 +1,9 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template st:profile {
+}
+where {
+}
+
+function st:process(?x) {
+    if (isBlank(?x), st:apply-templates(?x), st:turtle(?x))
+}

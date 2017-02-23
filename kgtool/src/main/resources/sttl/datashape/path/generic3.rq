@@ -1,0 +1,20 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
+  if (bound(?o), 
+    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value, ?o),
+    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value))
+}
+where {
+  graph ?shape {  
+    ?sh ?oper ?value    
+    filter (! sh:isPredicate(?oper))
+  }
+  
+  values ?s { unnest(?ls) }
+
+}
+
+function sh:isPredicate(?p) {
+    strstarts(?oper, sh:)
+}

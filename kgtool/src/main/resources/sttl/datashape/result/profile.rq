@@ -1,6 +1,10 @@
 template st:profile {}
 where {}
 
-function st:getFormat(?name){
-    uri(concat(st:get(st:server), "/data/format/ds/", ?name))
+#
+# Reference to HTML format defined in the Web server 
+# st:getFormat() defined in /server/data/query/function.rq
+#
+function us:format(?name) {
+    st:getFormat("ds", ?name)
 }

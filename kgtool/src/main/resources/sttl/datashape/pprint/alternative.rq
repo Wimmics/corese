@@ -1,0 +1,8 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" group { ?path ; separator = " | " } ")"
+}
+where {
+    ?in sh:alternativePath/rdf:rest*/rdf:first ?path
+}
+

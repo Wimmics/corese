@@ -5,12 +5,11 @@ template (?shape, ?sh, ?vis, ?ls) {
 }
 where {
   graph ?shape {  
-    values ?q { sh:class sh:datatype sh:pattern }
+    values ?q { sh:class sh:datatype sh:pattern sh:sparql }
     ?sh ?q ?m    
   }
   
-    values ?s { unnest(?ls) }
-
+  values ?s { unnest(?ls) }
 }
 
 

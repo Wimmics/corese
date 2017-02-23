@@ -218,7 +218,7 @@ function sh:def(){
         (sh:not             sh:NotConstraintComponent)
         (sh:and             sh:AndConstraintComponent)
         (sh:or              sh:OrConstraintComponent)
-        (sh:xor             sh:XorConstraintComponent)
+        (sh:xone            sh:XoneConstraintComponent)
         (sh:node            sh:NodeConstraintComponent)
         (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
         (sh:closed      sh:ClosedConstraintComponent)
@@ -354,7 +354,7 @@ function sh:or(?or, ?s, ?p, ?o, ?shape){
 
 # used by predicate/path 
 # count success
-function sh:xor(?or, ?s, ?p, ?o, ?shape){
+function sh:xone(?or, ?s, ?p, ?o, ?shape){
     (sh:bool(?or, ?s, ?p, ?o, ?shape, 1, 0)  = 1)
 }
 
@@ -388,7 +388,7 @@ function sh:or(?or, ?s, ?shape){
 
 # used by core
 # count success
-function sh:xor(?or, ?s, ?shape){
+function sh:xone(?or, ?s, ?shape){
     (sh:bool(?or, ?s, ?shape, 1, 0) = 1)
 }
 

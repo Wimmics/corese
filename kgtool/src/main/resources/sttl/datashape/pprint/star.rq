@@ -1,0 +1,8 @@
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" ?path ") *"
+}
+where {
+    ?in sh:zeroOrMorePath ?path
+}
+

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 06 09:30:26 CET 2017
+Thu Feb 23 09:12:10 CET 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -34,17 +34,20 @@ where {
 <body>
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#>
- 
 template st:title {
     format {
-        st:getFormat("title.html")
+        us:format("title.html")
         
-        st:get(st:param) st:get(st:server)
-        st:get(st:mode)  st:get(st:mode)
+        if (! ?text, st:get(st:param), "")
+        if (! ?text, st:get(st:mode), "")  
+        
+        if (?text, st:get(st:param), "")
+        if (?text, st:get(st:mode), "")  
     } 
 }
 where {
-    
+   bind (st:get(st:format) as ?format)
+   bind (bound(?format) as ?text)
 }
 
 ]]>
@@ -129,8 +132,12 @@ order by ?s
 template st:profile {}
 where {}
 
-function st:getFormat(?name){
-    uri(concat(st:get(st:server), "/data/format/ds/", ?name))
+#
+# Reference to HTML format defined in the Web server 
+# st:getFormat() defined in /server/data/query/function.rq
+#
+function us:format(?name) {
+    st:getFormat("ds", ?name)
 }
 
 ]]>
@@ -169,7 +176,7 @@ prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
 template st:show {
 format {
-    st:getFormat("show.html")
+    us:format("show.html")
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
     st:apply-templates-with-graph(st:hturtle, st:visitor)

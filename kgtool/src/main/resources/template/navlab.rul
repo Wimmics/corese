@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 06 09:30:26 CET 2017
+Thu Feb 23 09:12:11 CET 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -156,7 +156,7 @@ where {
 <![CDATA[
 template st:icon(?label, ?ic) {
   format {
-    "<img width='250' alt=\"%s\" src=\"%s\" />"
+    us:format("img.html")    
     str(?label) str(?ic)
   }
 }
@@ -222,23 +222,13 @@ prefix p:    <http://fr.dbpedia.org/property/>
 
 template st:frame(?label, ?icon, ?body) {
 format {
-
-  """
-  <div class='center'><h2>%s</h2></div>
-  <p>
-    <table>
-      <tr class='top'>
-	<td>%s</td>
-	<td>&nbsp;<td/>
-	<td><table class='table'>%s</table></td>
-      </tr>
-    </table>
-  </p>
-  """
+  us:format("frame.html")
 
   str(?label)
+  
   if (?icon = "", "", 
       st:call-template(st:icon, ?label, ?icon)  )
+      
   str(?body)    
 }  
 }
@@ -286,6 +276,10 @@ template st:profile {
  
 }
 where {}
+
+function us:format(?name) {
+    st:getFormat("navlab", ?name)
+}
     
 #
 # Get the ?q = st:person st:param property from profile.ttl 
@@ -370,12 +364,7 @@ where {
 <![CDATA[
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
 format {
-  """
-  <tr>
-    <th class='left'>%s</th>
-    <td>%s</td>
-  </tr> 
-  """
+  us:format("triple.html")
  
   str(?title)
   st:call-template(?temp, ?r, ?p)

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 06 09:30:26 CET 2017
+Thu Feb 23 09:12:11 CET 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -13,12 +13,7 @@ prefix cn: <http://cdn.fr/schema/>
 template cn:body(?c) {
  
  format {
-    """
-    <table class='margin hcentury table'>
-    <tr class='head'><th>Date</th>%s</tr>    
-    %s
-    </table>
-    """
+    us:format("body.html")
 
   st:call-template(cn:rowtitle, ?c)    
   st:call-template(cn:table, ?min, ?max)
@@ -47,12 +42,7 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 template  cn:table(?min, ?max) {
 format {
 
-  """
-  <tr>
-  <th class='date'>%s</th>  
-   %s         
-  </tr>\n
-  """
+  us:format("date.html")
   
   st:call-template(cn:wikidate, ?d)
   st:call-template(cn:row, ?d)
@@ -133,7 +123,7 @@ prefix o:  <http://dbpedia.org/ontology/>
 
 template cn:href(?r, ?u, ?t, ?i) {
 
-  if (?img, "<div class='margin'>", "")
+  "<div class='margin'>"
   
   if (?img, 
     concat(st:call-template(cn:img, ?i), "<br/>"), 
@@ -143,8 +133,7 @@ template cn:href(?r, ?u, ?t, ?i) {
 	st:call-template(st:navlab, ?r, ?t),
 	st:call-template(cn:hlink, ?u, ?t))
 
-  if (?img, "</div>", "")
-  
+  "</div>"
 }
 where {
 
@@ -208,6 +197,10 @@ function st:process(?x) {
       #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
+function us:format(?name) {
+    st:getFormat("cdn", ?name)
+}
+  
 
 ]]>
 </body>
@@ -224,16 +217,8 @@ template cn:sign {
 
    st:call-template(cn:icon, cn:icon)
    
-#   st:call-template(st:query)
-
-   """
-   <p>
-   This page is generated from an <a href='http://www.w3.org/RDF'>RDF</a> Dataset using 
-   <a href='http://ns.inria.fr/sparql-template'>SPARQL Template Transformation</a> and <a href='http://wimmics.inria.fr/corese'>Corese</a> server. The Transformation dynamically gets additional Linked Open Data from <a href='http://fr.dbpedia.org'>dbpedia.fr</a> using SPARQL 1.1 service.
-   <br/>
-   Most of the pictures are links to <a href='http://fr.wikipedia.org/'>Wikipedia</a>.
-   </p>
-   """
+   format { us:format("sign.html") }
+   
    now()
 }
 where {
@@ -250,21 +235,12 @@ prefix cn: <http://cdn.fr/schema/>
 template cn:icon {
 
 format {
-  """
-  <table class='margin'><tr>\n
-  %s
-  </tr></table>\n
-  """
+  us:format("icontable.html")
 
   group {
     format {
-	"""
-	<td> 
-	  <a href='%s'><img width='100' src='%s' /></a>" 
-	</td>
-	"""
-	
-	?i ?i 
+        us:format("icon.html")	
+        ?i ?i 
       }
     }
 }
@@ -386,15 +362,11 @@ order by ?n
 #
 prefix cn: <http://cdn.fr/schema/>
 template st:substart(?cent) {
-
-  # st:call-template(cn:head, cn:head)
    
    st:call-template(cn:content, ?cent)   
         
    st:call-template(cn:sign, cn:sign)
    
- #  st:call-template(cn:tail, cn:tail)
-
 }
 where {
 }  
@@ -436,9 +408,10 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:tail(?c, ?title) {
 
-    "<p>"    
+format {
+    us:format("tail.html")        
     st:call-template(cn:index,  ?title)        
-    "</p>"
+}
     
 }
 where {
@@ -461,20 +434,16 @@ prefix cn: <http://cdn.fr/schema/>
 template cn:index(?title) {
 
 format {
-  """
-  <table class='margin'>
-  <tr>%s %s %s</tr>
-  </table>
-  """
+  us:format("indextable.html")
 
   if (bound(?before), 
-    st:format("<td><a href='%s'>Avant</a></td><td>&nbsp;&nbsp;</td>", st:plink(?before)), 
+    st:format(us:format("before.html"), st:plink(?before)), 
     "")
     
   st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    st:format("<td><a href='%s'>Après</a></td>", st:plink(?after)), 
+    st:format(us:format("after.html"), st:plink(?after)), 
     "")  
 }
 
@@ -535,15 +504,10 @@ prefix cn: <http://cdn.fr/schema/>
 
 template cn:elem(?title) {
   format {
-      """
-      <td>
-      <a href='%s'><span %s>%s</span></a>
-      </td>
-      <td>&nbsp;&nbsp;</td>
-      """
+      us:format("index.html")
   
       st:plink(?century)
-      ?class
+      if (?show, "bold", "undefined")
       ?date
   } 
 }
@@ -556,7 +520,7 @@ where {
   
   filter (?min >= ?fst && ?max <= ?rst)
   
-  bind (if (?date = ?title, " class='bold'", "") as ?class)
+  bind (?date = ?title as ?show)
      
 }
 order by ?min
@@ -573,7 +537,10 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  cn:wikidate(?d) {
 
-  "<a href='http://fr.wikipedia.org/wiki/" ?d "'>" ?d "</a>"
+  format {
+    "<a href='http://fr.wikipedia.org/wiki/%s'>%s</a>"
+    ?d ?d
+  }
 
 }
 where {
@@ -646,12 +613,7 @@ prefix cn: <http://cdn.fr/schema/>
 template cn:head(?c, ?title) {
 format {
 
-  """
-  <a name='%s'></a>
-  <h2 class='century'>%se Siècle</h2>
-  %s
-  <p>%s</p>
-  """
+  us:format("head.html")
     
     str(?title)
     ?title
@@ -674,20 +636,13 @@ template cn:list {
 
 format {
 
-  """
-  <table class='margin'>
-  <tr>
-  <td><a href='%s'>Carte</a></td><td>&nbsp;</td>
-  %s  
-  </tr>
-  </table>
-  """
+  us:format("listtable.html")
   
   st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   
   group {
     format {
-      "<td><a href='%s'>%s</a></td><td>&nbsp;</td>"
+      us:format("list.html")
       
       st:misc(?query)
       str(?title)

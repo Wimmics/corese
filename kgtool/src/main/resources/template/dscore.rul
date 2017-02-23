@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 06 09:30:26 CET 2017
+Thu Feb 23 09:12:10 CET 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -57,17 +57,17 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:xor (?shape, ?sh, ?or, ?vis, ?ls) {
+template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
     values ?s { unnest(?ls) }
 
-    bind (sh:xor(?or, ?s, ?shape) as ?count)  
+    bind (sh:xone(?or, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (st:report(sh:xor, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:xone, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
 
@@ -127,7 +127,7 @@ function st:optimize(?shape, ?sh){
 <![CDATA[
 #
 # evaluate sh:property sh:path of shape ?sh
-# ?ls is the list of target nodes of shape ?sh
+# ?list is the list of target nodes of shape ?sh
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
@@ -138,7 +138,7 @@ where {
     graph ?shape {  
         ?sh sh:property ?cst  
         ?cst sh:path ?p 
-        filter not exists { ?cst sh:deactivated true}
+        filter not exists { ?cst sh:deactivated true }
     }
     
     bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
@@ -225,7 +225,7 @@ function sh:intersect(?l1, ?l2){
 <body>
 <![CDATA[
 #
-# evaluate sh:qualifiedValueShape sh:path of shape ?prop
+# evaluate sh:path of shape ?sh
 # ?list is the list of target nodes of shape ?sh
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
@@ -235,12 +235,10 @@ template (?shape, ?sh, ?vis, ?list) {
 }
 where {
     graph ?shape {  
-        ?prop sh:qualifiedValueShape ?sh  
         ?sh sh:path ?p 
-        ?gsh sh:property ?prop
         filter not exists { ?sh sh:deactivated true}
     }
-        
+    
     bind (sh:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
 }
 
@@ -263,7 +261,9 @@ template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-       
+
+    filter not exists { ?sh sh:path ?p }
+        
     bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
@@ -319,7 +319,7 @@ template  (?shape, ?sh, ?vis, ?ls) {
 }
 where {
     graph ?shape {  
-        values ?bool { sh:and sh:or sh:xor sh:not } 
+        values ?bool { sh:and sh:or sh:xone sh:not } 
         ?sh ?bool ?cst
     }
 }

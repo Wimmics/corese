@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Thu Feb 23 09:12:10 CET 2017
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template st:profile {
+}
+where {
+}
+
+function st:process(?x) {
+    if (isBlank(?x), st:apply-templates(?x), st:turtle(?x))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" ?path ") +"
+}
+where {
+    ?in sh:oneOrMorePath ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" ?path ") *"
+}
+where {
+    ?in sh:zeroOrMorePath ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "^ (" ?path ")"
+}
+where {
+    ?in sh:inversePath ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" ?path ") ?"
+}
+where {
+    ?in sh:zeroOrOnePath ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    group { ?path ; separator="/" }
+}
+where {
+    ?in rdf:rest*/rdf:first ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template {
+    "(" group { ?path ; separator = " | " } ")"
+}
+where {
+    ?in sh:alternativePath/rdf:rest*/rdf:first ?path
+}
+
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

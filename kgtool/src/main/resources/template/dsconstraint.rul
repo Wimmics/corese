@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 06 09:30:26 CET 2017
+Thu Feb 23 09:12:10 CET 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -47,6 +47,53 @@ where {
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
   bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
 }
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL Based Constraint
+# Evaluate SPARQL query with pre-bind of variable $this with focus nodes
+# SPARQL query returns solutions that fail the Constraint
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+template sh:sparql (?shape, ?sh, ?vis, ?s, ?cst) {
+   sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?sh sh:sparql ?cst 
+        ?cst sh:select ?q
+        filter not exists { ?cst sh:deactivated true }
+        
+        # collect prefix definitions
+        # TBD: do it once and record it
+        {
+            select ?cst 
+              (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+              as ?define) 
+            where {
+                ?cst sh:prefixes ?ns
+                [] sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+            }
+            group by ?cst
+        }
+    }
+    
+    values ($this ?path ?value) { unnest(kg:sparql(concat(?define, ?q), "$this", ?s)) }
+
+    # SPARQL query returns solutions that fail
+    bind (false as ?suc)
+    
+    bind (st:report(sh:sparql, ?cst, ?shape, ?s, ?path, ?value, ?suc, ?vis) as ?b)
+    
+}
+
 
 
 ]]>
@@ -110,12 +157,11 @@ template (?shape, ?sh, ?vis, ?ls) {
 }
 where {
   graph ?shape {  
-    values ?q { sh:class sh:datatype sh:pattern }
+    values ?q { sh:class sh:datatype sh:pattern sh:sparql }
     ?sh ?q ?m    
   }
   
-    values ?s { unnest(?ls) }
-
+  values ?s { unnest(?ls) }
 }
 
 

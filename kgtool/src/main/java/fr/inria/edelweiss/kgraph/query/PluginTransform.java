@@ -156,6 +156,9 @@ public class PluginTransform implements ExprType {
 
             case TURTLE:
                 return turtle(dt, env, p);
+                
+            case STL_STRIP:
+                return strip(dt, env, p);
 
             case PPURI:
             case URILITERAL:
@@ -832,6 +835,10 @@ public class PluginTransform implements ExprType {
         Transformer p = getTransformer(env, prod);
         IDatatype dt = p.turtle(o);
         return dt;
+    }
+    
+    IDatatype strip(IDatatype dt, Environment env, Producer prod){
+        return DatatypeMap.newInstance(NSManager.nstrip(dt.getLabel()));
     }
 
     IDatatype xsdLiteral(IDatatype o, Environment env, Producer prod) {

@@ -189,6 +189,7 @@ public class Processor {
         static final String CALL_TEMPLATE_WITH      = STL + "call-template-with";
         static final String CTW                     = STL + "ctw";
 	static final String STL_TURTLE              = STL + "turtle"; 
+	static final String STL_STRIP               = STL + "strip"; 
 	static final String STL_URI                 = STL + "uri"; 
 	static final String STL_URILITERAL          = STL + "uriLiteral"; 
 	static final String STL_XSDLITERAL          = STL + "xsdLiteral"; 
@@ -715,6 +716,7 @@ public class Processor {
                 defoper(STL_PROCESS,            ExprType.STL_PROCESS);
                 defoper(STL_PROCESS_URI,        ExprType.STL_PROCESS_URI);
 		defoper(STL_TURTLE,             ExprType.TURTLE);
+		defoper(STL_STRIP,              ExprType.STL_STRIP);
                 defoper(STL_URI,                ExprType.PPURI);
                 defoper(STL_PROLOG,             ExprType.PROLOG);
                 defoper(STL_PREFIX,             ExprType.STL_PREFIX);

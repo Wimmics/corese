@@ -172,6 +172,10 @@ function xt:split(?list, ?nc){
 
 # ____________________________________________________
 
+function st:getFormat(?dir, ?name) {
+    uri(concat(st:get(st:server), "/data/format/", ?dir, "/", ?name))
+}
+
 function st:server(?name){
   st:call-template-with(st:server, ?name)
 }

@@ -1,0 +1,7 @@
+template st:profile {}
+where {}
+
+
+function st:home(?name) {
+    concat(st:get(st:server), "/data/format/server/", ?name)
+}

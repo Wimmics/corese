@@ -91,6 +91,7 @@ public class Param {
             ctx.setService(getService());
         }      
         ctx.setServer(Profile.SERVER);
+        ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
         return ctx;
     }
     

@@ -34,6 +34,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.openrdf.rio.Rio;
 
 /**
  *
@@ -81,7 +82,7 @@ public class Main {
 		}
 
 		public TestSuite setInput(String input) {
-			return this.setInput(input, RDFFormat.NQUADS);
+			return this.setInput(input, Rio.getParserFormatForFileName(input).orElse(RDFFormat.NQUADS));
 		}
 
 		public TestSuite setInput(String input, RDFFormat format) {

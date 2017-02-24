@@ -10,39 +10,27 @@ import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.SchemaViolationException;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanTransaction;
-import com.thinkaurelius.titan.core.attribute.AttributeSerializer;
-import com.thinkaurelius.titan.core.schema.ConsistencyModifier;
+import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.core.schema.SchemaStatus;
 import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
-import com.thinkaurelius.titan.diskstorage.ScanBuffer;
-import com.thinkaurelius.titan.diskstorage.WriteBuffer;
 import com.thinkaurelius.titan.graphdb.database.StandardTitanGraph;
 import com.thinkaurelius.titan.graphdb.database.management.GraphIndexStatusReport;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import static java.text.MessageFormat.format;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Transaction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
@@ -55,183 +43,14 @@ public class TitanDriver extends GdbDriver {
 
 	static final Logger logger = Logger.getLogger(TitanDriver.class.getName());
 
-	static class VertexValue implements Comparable<VertexValue>, AttributeSerializer<VertexValue> {
-
-		private String kind;
-		private String value;
-		private Optional<String> largeValue;
-		private Optional<String> type;
-		private Optional<String> lang;
-
-		public VertexValue() {
-		}
-
-		public VertexValue(Value v) {
-			this.kind = RdfToGraph.getKind(v);
-			switch (this.kind) {
-				case BNODE:
-				case IRI:
-					value = v.stringValue();
-					type = Optional.empty();
-					lang = Optional.empty();
-					break;
-				case LITERAL:
-					Literal l = (Literal) v;
-					value = l.getLabel();
-					type = Optional.of(l.getDatatype().toString());
-					if (l.getLanguage().isPresent()) {
-						lang = Optional.of(l.getLanguage().get());
-					} else {
-						lang = Optional.empty();
-					}
-					break;
-				case LARGE_LITERAL:
-					l = (Literal) v;
-					value = Integer.toString(l.getLabel().hashCode());
-					largeValue = Optional.of(l.getLabel());
-					type = Optional.of(l.getDatatype().toString());
-					if (l.getLanguage().isPresent()) {
-						lang = Optional.of(l.getLanguage().get());
-					} else {
-						lang = Optional.empty();
-					}
-					break;
-			}
-		}
-
-		public VertexValue setKind(String kind) {
-			this.kind = kind;
-			return this;
-		}
-
-		public VertexValue setValue(String value) {
-			this.value = value;
-			return this;
-		}
-
-		public VertexValue setLang(String lang) {
-			this.lang = Optional.of(lang);
-			return this;
-		}
-
-		public VertexValue setType(String type) {
-			this.type = Optional.of(type);
-			return this;
-		}
-
-		@Override
-		public int compareTo(VertexValue o) {
-			if (this.kind.compareTo(o.kind) != 0) {
-				return this.kind.compareTo(o.kind);
-			} else {
-				switch (kind) {
-					case BNODE:
-					case IRI:
-						return this.value.compareTo(o.value);
-					case LITERAL:
-						IDatatype data_this = lang.isPresent() ? DatatypeMap.createLiteral(value, kind, lang.get()) : DatatypeMap.createLiteral(value, kind);
-						IDatatype data_o = o.lang.isPresent() ? DatatypeMap.createLiteral(o.value, o.kind, o.lang.get()) : DatatypeMap.createLiteral(o.value, o.kind);
-						return data_this.compareTo(data_o);
-					case LARGE_LITERAL:
-						data_this = lang.isPresent() ? DatatypeMap.createLiteral(largeValue.get(), kind, lang.get()) : DatatypeMap.createLiteral(largeValue.get(), kind);
-						data_o = o.lang.isPresent() ? DatatypeMap.createLiteral(o.largeValue.get(), o.kind, o.lang.get()) : DatatypeMap.createLiteral(o.largeValue.get(), o.kind);
-				}
-			}
-			throw new IllegalArgumentException(format("{0} and {1} vertex values seem incomparable.", this, o));
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (!(o instanceof VertexValue)) {
-				return false;
-			}
-			return this.compareTo((VertexValue) o) == 0;
-		}
-
-		@Override
-		public VertexValue read(ScanBuffer buffer) {
-			try {
-				VertexValue result = new VertexValue();
-				int nbAttributes = buffer.getInt();
-				result.setKind(readString(buffer));
-				result.setValue(readString(buffer));
-				if (result.kind.equals(LITERAL)) {
-					result.setType(readString(buffer));
-					if (nbAttributes == 4) {
-						result.setLang(readString(buffer));
-					}
-				}
-				return result;
-			} catch (UnsupportedEncodingException ex) {
-				Logger.getLogger(TitanDriver.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			return null;
-		}
-
-		private String readString(ScanBuffer buffer) throws UnsupportedEncodingException {
-			int length = buffer.getInt();
-			byte[] bytes = buffer.getBytes(length);
-			return new String(bytes, "UTF-8");
-		}
-
-		@Override
-		public int hashCode() {
-			switch (kind) {
-				case BNODE:
-				case IRI:
-					return kind.hashCode() ^ value.hashCode();
-				case LITERAL:
-					if (lang.isPresent()) {
-						return kind.hashCode() ^ value.hashCode() ^ type.hashCode() ^ lang.hashCode();
-					} else {
-						return kind.hashCode() ^ value.hashCode() ^ type.hashCode();
-					}
-			}
-			return -1;
-		}
-
-		@Override
-		public void write(WriteBuffer buffer, VertexValue attribute) {
-			if (!(attribute instanceof VertexValue)) {
-				throw new IllegalArgumentException();
-			}
-			switch (kind) {
-				case BNODE:
-				case IRI:
-					buffer.putInt(2);
-					buffer.putInt(kind.getBytes().length);
-					buffer.putBytes(kind.getBytes());
-					buffer.putInt(value.getBytes().length);
-					buffer.putBytes(value.getBytes());
-					break;
-				case LITERAL:
-					if (lang.isPresent()) {
-						buffer.putInt(4);
-					} else {
-						buffer.putInt(3);
-					}
-					buffer.putInt(kind.getBytes().length);
-					buffer.putBytes(kind.getBytes());
-					buffer.putInt(value.getBytes().length);
-					buffer.putBytes(value.getBytes());
-					buffer.putInt(type.get().getBytes().length);
-					buffer.putBytes(type.get().getBytes());
-					if (lang.isPresent()) {
-						buffer.putInt(lang.get().getBytes().length);
-						buffer.putBytes(lang.get().getBytes());
-					}
-					break;
-			}
-		}
-
-	}
-
 	TitanGraph g;
+
+	String dbPath;
 
 	@Override
 	public void openDb(String dbPathTemp) {
 		File f = new File(dbPathTemp);
-		String dbPath = f.getAbsolutePath();
+		dbPath = f.getAbsolutePath();
 		PropertiesConfiguration configuration = null;
 		File confFile = new File(dbPath + "/conf.properties");
 		try {
@@ -242,18 +61,24 @@ public class TitanDriver extends GdbDriver {
 				.getName()).log(Level.SEVERE, null, ex);
 		}
 		configuration.setProperty("schema.default", "none");
-		configuration.setProperty("storage.batch-loading", true);
+//		configuration.setProperty("storage.batch-loading", true);
+		configuration.setProperty("storage.batch-loading", false);
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
+		configuration.setProperty("storage.buffer-size", 50_000);
+		configuration.setProperty("storage.berkeleyje.cache-percentage", 10);
 //		configuration.setProperty("storage.read-only", true);
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
 		configuration.setProperty("index.search.elasticsearch.client-only", false);
 		configuration.setProperty("index.search.elasticsearch.local-mode", true);
 		configuration.setProperty("index.search.refresh_interval", 600);
-		configuration.setProperty("storage.buffer-size", 50_000);
 		configuration.setProperty("ids.block-size", 50_000);
-		configuration.setProperty("cache.db-cache-size", 0.95);
+
+		configuration.setProperty("cache.db-cache", true);
+		configuration.setProperty("cache.db-cache-size", 0.3);
+		configuration.setProperty("cache.db-cache-time", 0);
+		configuration.setProperty("cache.tx-dirty-size", 10_000);
 		// to make queries faster
 		configuration.setProperty("query.batch", true);
 		configuration.setProperty("query.fast-property", true);
@@ -269,8 +94,12 @@ public class TitanDriver extends GdbDriver {
 		g = TitanFactory.open(configuration);
 
 		TitanManagement mgmt = g.openManagement();
-		mgmt.makeVertexLabel(RDF_VERTEX_LABEL).make();
-		mgmt.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+		if (!mgmt.containsVertexLabel(RDF_VERTEX_LABEL)) {
+			mgmt.makeVertexLabel(RDF_VERTEX_LABEL).make();
+		}
+		if (!mgmt.containsEdgeLabel(RDF_EDGE_LABEL)) {
+			mgmt.makeEdgeLabel(RDF_EDGE_LABEL).multiplicity(Multiplicity.MULTI).make();
+		}
 		mgmt.commit();
 
 		makeIfNotExistProperty(EDGE_P);
@@ -357,6 +186,11 @@ public class TitanDriver extends GdbDriver {
 		g.close();
 	}
 
+	public void reopen() {
+		g.close();
+		g = TitanFactory.open(dbPath + "/conf.properties");
+	}
+
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
 		String kind = RdfToGraph.getKind(v);
@@ -394,8 +228,7 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public void createNode(Value v) {
-//		StandardTitanGraph stg = (StandardTitanGraph) g;
-		Vertex newVertex = null;
+		TitanVertex newVertex = null;
 		try {
 			switch (RdfToGraph.getKind(v)) {
 				case IRI:
@@ -427,7 +260,6 @@ public class TitanDriver extends GdbDriver {
 						newVertex.property(LANG, l.getLanguage().get());
 					}
 					break;
-
 				}
 			}
 		} catch (SchemaViolationException ex) {
@@ -436,6 +268,7 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	HashMap<Value, Vertex> cache = new HashMap<>();
+	int removedNodes = 0;
 
 	@Override
 	public Object getNode(Value v) {
@@ -446,35 +279,29 @@ public class TitanDriver extends GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
 				result = it.next();
-				while (it.hasNext()) {
-					it.next().remove();
-				}
+				cleanDuplicates(it);
 				break;
 			}
 			case LARGE_LITERAL: {
 				Literal l = (Literal) v;
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
 				result = it.next();
-				while (it.hasNext()) {
-					it.next().remove();
-				}
+				cleanDuplicates(it);
 				break;
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
+				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
 				result = it.next();
-				while (it.hasNext()) {
-					it.next().remove();
-				}
+				cleanDuplicates(it);
 				break;
 			}
 		}
@@ -483,6 +310,7 @@ public class TitanDriver extends GdbDriver {
 			cache.clear();
 		}
 		cache.put(v, result);
+
 		return result;
 	}
 
@@ -507,41 +335,42 @@ public class TitanDriver extends GdbDriver {
 		p.add(o_value);
 
 // 		@TODO: investigate wether the while loop can be replaced by a search with an index.
-//		GraphTraversal<Edge, Edge> alreadyExist = g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
-//		if (alreadyExist.hasNext()) {
-//			result = alreadyExist.next();
-//		} else {
+		GraphTraversal<Edge, Edge> alreadyExist = g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
+		if (alreadyExist.hasNext()) {
+			result = alreadyExist.next();
+		} else {
 //		Iterator<Edge> it = vSource.edges(Direction.OUT, RDF_EDGE_LABEL);
 //		GraphTraversal<Vertex, Vertex> found = g.traversal().V(vSource.id()).outE(RDF_EDGE_LABEL).has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value()).as("edge").inV().hasId(vObject.id()).select("edge");
 //		if (found.hasNext()) {
 //			result = found.next();
 //		} else {
 //			Transaction transaction = g.tx();
-		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
-		result = e.id();
+			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
+			result = e.id();
 //			transaction.commit();
-//		}
-		return result;
-	}
-
-	private String serializeNode(Vertex node) {
-		StringBuilder result = new StringBuilder();
-		result.append(node.property(KIND).value());
-		result.append("|");
-		result.append(node.property(VERTEX_VALUE).value());
-		if (node.property(KIND).value().equals(LITERAL)) {
-			result.append("|");
-			result.append(node.property(TYPE).value());
-			if (node.property(LANG).isPresent()) {
-				result.append("|");
-				result.append(node.property(LANG).value());
-			}
 		}
-		return result.toString();
+		return result;
 	}
 
 	@Override
 	public void commit() {
+		logger.fine("#transactions = " + ((StandardTitanGraph) g).getOpenTransactions().size());
 		g.tx().commit();
+	}
+
+	private void cleanDuplicates(GraphTraversal<Vertex, Vertex> it) {
+		if (true) {
+			return;
+		}
+		while (it.hasNext() && removedNodes < 100_000) {
+			removedNodes++;
+
+			it.next().remove();
+		}
+		if (removedNodes > 0) {
+			logger.info("Nodes removed: " + removedNodes);
+			g.tx().commit();
+			removedNodes = 0;
+		}
 	}
 }

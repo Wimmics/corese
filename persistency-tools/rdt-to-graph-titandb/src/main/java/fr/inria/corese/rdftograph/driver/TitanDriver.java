@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
@@ -61,12 +62,12 @@ public class TitanDriver extends GdbDriver {
 				.getName()).log(Level.SEVERE, null, ex);
 		}
 		configuration.setProperty("schema.default", "none");
-//		configuration.setProperty("storage.batch-loading", true);
-		configuration.setProperty("storage.batch-loading", false);
+		configuration.setProperty("storage.batch-loading", true);
+//		configuration.setProperty("storage.batch-loading", false);
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
 		configuration.setProperty("storage.buffer-size", 50_000);
-		configuration.setProperty("storage.berkeleyje.cache-percentage", 10);
+		configuration.setProperty("storage.berkeleyje.cache-percentage", 50);
 //		configuration.setProperty("storage.read-only", true);
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
@@ -145,6 +146,7 @@ public class TitanDriver extends GdbDriver {
 			TitanGraphIndex vIndex = manager.
 				buildIndex("vertices", Vertex.class).
 				addKey(vertexValue).
+				addKey(kindValue).
 				buildCompositeIndex();
 			manager.
 				buildIndex("allIndex", Edge.class).
@@ -153,16 +155,19 @@ public class TitanDriver extends GdbDriver {
 				addKey(objectKey, Mapping.STRING.asParameter()).
 				addKey(graphKey, Mapping.STRING.asParameter()).
 				buildMixedIndex("search");
+//g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
 			manager.
-				buildIndex("pIndex", Edge.class).
+				buildIndex("spoIndex", Edge.class).
+				addKey(subjectKey).
 				addKey(predicateKey).
+				addKey(objectKey).
 				buildCompositeIndex();
 
 			manager.commit();
 			String[] indexNames = {
 				"vertices",
 				"allIndex",
-				"pIndex"
+				"spoIndex"
 			};
 			for (String indexName : indexNames) {
 				try {
@@ -226,9 +231,15 @@ public class TitanDriver extends GdbDriver {
 		return result.toString();
 	}
 
-	@Override
 	public void createNode(Value v) {
+	}
+
+	public Vertex createOrGetNode(Value v) {
 		TitanVertex newVertex = null;
+		Vertex result = getNode(v);
+		if (result != null) {
+			return result;
+		}
 		try {
 			switch (RdfToGraph.getKind(v)) {
 				case IRI:
@@ -262,16 +273,18 @@ public class TitanDriver extends GdbDriver {
 					break;
 				}
 			}
+			return newVertex;
 		} catch (SchemaViolationException ex) {
 			logger.info("ignoring a new occurence of vertex " + v);
 		}
+		return null;
 	}
 
 	HashMap<Value, Vertex> cache = new HashMap<>();
 	int removedNodes = 0;
 
-	@Override
-	public Object getNode(Value v) {
+	public Vertex getNode(Value v) {
+		GraphTraversal<Vertex, Vertex> it = null;
 		if (cache.containsKey(v)) {
 			return cache.get(v);
 		}
@@ -279,46 +292,46 @@ public class TitanDriver extends GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
-				result = it.next();
-				cleanDuplicates(it);
+				it = g.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
 				break;
 			}
 			case LARGE_LITERAL: {
 				Literal l = (Literal) v;
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+				it = g.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
-				result = it.next();
-				cleanDuplicates(it);
 				break;
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				GraphTraversal<Vertex, Vertex> it = g.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
+				it = g.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
-				result = it.next();
-				cleanDuplicates(it);
 				break;
 			}
 		}
+
 		if (cache.size() > 200_000) {
 			logger.info("Cleaning cache");
 			cache.clear();
 		}
-		cache.put(v, result);
+		if (it.hasNext()) {
+			result = it.next();
+			cache.put(v, result);
+		} else {
+			result = null;
+		}
 
 		return result;
 	}
 
 	@Override
-	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
+	public Object createRelationship(Value source, Value object, String predicate, Map<String, Object> properties) {
 		Object result = null;
-		Vertex vSource = (Vertex) source;
-		Vertex vObject = (Vertex) object;
+		Vertex vSource = createOrGetNode(source);
+		Vertex vObject = createOrGetNode(object);
 
 		ArrayList<String> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
@@ -335,10 +348,13 @@ public class TitanDriver extends GdbDriver {
 		p.add(o_value);
 
 // 		@TODO: investigate wether the while loop can be replaced by a search with an index.
-		GraphTraversal<Edge, Edge> alreadyExist = g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
-		if (alreadyExist.hasNext()) {
+		GraphTraversal<Vertex, Edge> alreadyExist = g.traversal().V(vSource.id()).outE().has(EDGE_P, predicate).as("e").inV().hasId(vObject.id()).select("e");
+		try {
 			result = alreadyExist.next();
-		} else {
+		} catch (NoSuchElementException ex) {
+			result = null;
+		}
+		if (result == null) {
 //		Iterator<Edge> it = vSource.edges(Direction.OUT, RDF_EDGE_LABEL);
 //		GraphTraversal<Vertex, Vertex> found = g.traversal().V(vSource.id()).outE(RDF_EDGE_LABEL).has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value()).as("edge").inV().hasId(vObject.id()).select("edge");
 //		if (found.hasNext()) {

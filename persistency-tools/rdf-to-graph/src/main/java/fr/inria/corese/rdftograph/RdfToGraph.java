@@ -59,35 +59,34 @@ public class RdfToGraph {
 		DRIVER_TO_CLASS.put(DbDriver.NULLDRIVER, "fr.inria.wimmics.rdf.to.graph.nulldriver.NullDriver");
 	}
 
-	private class VerticesBuilder extends AbstractRDFHandler {
-
-		private int triples = 0;
-
-		@Override
-		public void handleStatement(Statement statement) {
-			Resource source = statement.getSubject();
-			Value object = statement.getObject();
-
-			triples++;
-			if (triples % CHUNK_SIZE == 0) {
-				LOGGER.log(Level.INFO, "{0}", triples);
-				try {
-					driver.commit();
-				} catch (Exception ex) {
-					LOGGER.log(Level.SEVERE, "Trying to pursue after: {0}", ex.getMessage());
-					ex.printStackTrace();
-				}
-			}
-			try {
-				driver.createNode(source);
-				driver.createNode(object);
-//				driver.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
+//	private class VerticesBuilder extends AbstractRDFHandler {
+//
+//		private int triples = 0;
+//
+//		@Override
+//		public void handleStatement(Statement statement) {
+//			Resource source = statement.getSubject();
+//			Value object = statement.getObject();
+//
+//			triples++;
+//			if (triples % CHUNK_SIZE == 0) {
+//				LOGGER.log(Level.INFO, "{0}", triples);
+//				try {
+//					driver.commit();
+//				} catch (Exception ex) {
+//					LOGGER.log(Level.SEVERE, "Trying to pursue after: {0}", ex.getMessage());
+//					ex.printStackTrace();
+//				}
+//			}
+//			try {
+//				driver.createNode(source);
+//				driver.createNode(object);
+////				driver.commit();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	private class EdgesBuilder extends AbstractRDFHandler {
 
 		private int triples = 0;
@@ -101,12 +100,9 @@ public class RdfToGraph {
 
 			String contextString = (context == null) ? "" : context.stringValue();
 
-			Object sourceNode = driver.getNode(source);
-			Object objectNode = driver.getNode(object);
-
 			Map<String, Object> properties = new HashMap();
 			properties.put(EDGE_G, contextString);
-			driver.createRelationship(sourceNode, objectNode, predicat.stringValue(), properties);
+			driver.createRelationship(source, object, predicat.stringValue(), properties);
 			triples++;
 			if (triples % CHUNK_SIZE == 0) {
 				LOGGER.log(Level.INFO, "{0}", triples);
@@ -170,7 +166,7 @@ public class RdfToGraph {
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
 			driver.openDb(dbPath);
 			LOGGER.info("Loading file");
-			createVertices(makeStream(fileName), format);
+//			createVertices(makeStream(fileName), format);
 			createEdges(makeStream(fileName), format);
 			LOGGER.info("Writing graph in db");
 			LOGGER.info("closing DB");
@@ -188,23 +184,23 @@ public class RdfToGraph {
 	 * @param format Format used to represent the RDF in the file.
 	 * @throws IOException
 	 */
-	public void createVertices(InputStream in, RDFFormat format) throws IOException {
-		VerticesBuilder verticesBuilder = new VerticesBuilder();
-		RDFParser rdfParser = Rio.createParser(format);
-		ParserConfig config = new ParserConfig();
-		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
-		rdfParser.setParserConfig(config);
-		rdfParser.setRDFHandler(verticesBuilder);
-		try {
-			rdfParser.parse(in, "");
-		} catch (Exception e) {
-			LOGGER.severe(e.getMessage());
-			e.printStackTrace();
-		}
-		in.close();
-		driver.commit();
-	}
+//	public void createVertices(InputStream in, RDFFormat format) throws IOException {
+////		VerticesBuilder verticesBuilder = new VerticesBuilder();
+//		RDFParser rdfParser = Rio.createParser(format);
+//		ParserConfig config = new ParserConfig();
+//		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
+//		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
+//		rdfParser.setParserConfig(config);
+//		rdfParser.setRDFHandler(verticesBuilder);
+//		try {
+//			rdfParser.parse(in, "");
+//		} catch (Exception e) {
+//			LOGGER.severe(e.getMessage());
+//			e.printStackTrace();
+//		}
+//		in.close();
+//		driver.commit();
+//	}
 
 	public void createEdges(InputStream in, RDFFormat format) throws IOException {
 		EdgesBuilder edgesBuilder = new EdgesBuilder();
@@ -255,7 +251,6 @@ public class RdfToGraph {
 //		}
 //		System.out.println(triples + " processed");
 //	}
-
 	public static String getKind(Value resource) {
 		if (isLargeLiteral(resource)) {
 			return LARGE_LITERAL;

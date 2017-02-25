@@ -103,7 +103,7 @@ public class TinkerpopProducer extends ProducerImpl {
 			case "?g?s?p?o":
 			default:
 				filter = t -> {
-					return t.E().has(EDGE_P, textRegex(".*"));
+					return t.E();//.has(EDGE_P, textRegex(".*"));
 				};
 		}
 		return tpGraph.getEdges(filter);

@@ -6,13 +6,16 @@
 package fr.inria.wimmics.coresetimer;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,12 +29,13 @@ public class CoreseAdapter {
 	private Mappings map;
 	private QueryProcess exec;
 
-	public void preProcessing(String fileName, boolean load) {
+	public void preProcessing(String fileName, boolean load) throws IOException, LoadException {
 		logger.log(Level.INFO, "using {0}", fileName);
 		Graph graph = Graph.create(false); // false = without rdfs.entailment
 		if (load) {
+			InputStream input = RdfToGraph.makeStream(fileName);
 			Load ld = Load.create(graph);
-			ld.load(fileName);
+			ld.parse(input, RdfToGraph.getCoreseRdfFormat(fileName));
 		}
 		exec = QueryProcess.create(graph);
 	}

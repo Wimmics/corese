@@ -121,14 +121,7 @@ public class Main {
 
 		public TestSuite createDb() {
 			try {
-				File varTmpDir = new File(getInputDb());
-				if (varTmpDir.exists()) {
-					Path rootPath = Paths.get(getInputDb());
-					Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
-						.sorted(Comparator.reverseOrder())
-						.map(Path::toFile)
-						.forEach(File::delete);
-				}
+				wipeDirectory(getInputDb());
 				new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			} catch (IOException ex) {
 				java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -136,6 +129,17 @@ public class Main {
 			return this;
 		}
 
+		private void wipeDirectory(String path) throws IOException {
+			File varTmpDir = new File(path);
+				if (varTmpDir.exists()) {
+					Path rootPath = Paths.get(path);
+					Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
+						.sorted(Comparator.reverseOrder())
+						.map(Path::toFile)
+						.forEach(File::delete);
+				}	
+		}
+		
 		public String getInputDb() {
 			return inputRoot + inputDb;
 		}

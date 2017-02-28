@@ -6,16 +6,20 @@ package fr.inria.corese.rdftograph;
 import fr.inria.corese.rdftograph.driver.GdbDriver;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import org.openrdf.model.BNode;
@@ -142,12 +146,144 @@ public class RdfToGraph {
 		return result;
 	}
 
-	private InputStream makeStream(String filename) throws IOException {
-		InputStream result;
-		if (filename.endsWith(".gz")) {
-			result = new GZIPInputStream(new BufferedInputStream(new FileInputStream(filename)));
+	public static class AddressesFilterInputStream extends FilterInputStream {
+
+		int start, end;
+		int currentLineNumber;
+
+		public AddressesFilterInputStream(InputStream input, int start, int end) {
+			super(input);
+			this.start = start;
+			this.end = end;
+			this.in = input;
+		}
+
+		/**
+		 * Read one byte *
+		 */
+		@Override
+		public int read() throws IOException {
+			if (currentLineNumber < start) {
+				int c;
+				while ((currentLineNumber < start) && ((c = in.read()) != -1)) {
+					if ((char) c == '\n') {
+						currentLineNumber++;
+					} // else the character is ignored
+				}
+			}
+			if (currentLineNumber >= start && currentLineNumber < end) {
+				char c = (char) in.read();
+				if (c == '\n') {
+					currentLineNumber++;
+				}
+				return c;
+			}
+			return -1;
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			int cpt = 0;
+			int curChar;
+			while (cpt < b.length && ((curChar = read()) != -1)) {
+				b[cpt++] = (byte) curChar;
+			}
+			if (cpt == 0) {
+				return -1;
+			} else {
+				return cpt;
+			}
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			byte[] temp = new byte[len];
+			int res = read(temp);
+			if (res == -1) {
+				return res;
+			} else {
+				for (int i = 0; i < len; i++) {
+					b[off + i] = temp[i];
+				}
+				return res;
+			}
+		}
+	}
+
+	public static Optional<RDFFormat> getRdfFormat(String completeFilename) {
+		String[] parts = completeFilename.split(":");
+		return Rio.getParserFormatForFileName(parts[0]);
+	}
+
+	/**
+	 * @TODO: refactor to have correct dependencies static final int
+	 * RDFXML_FORMAT = 0; static final int RDFA_FORMAT = 1; static final int
+	 * TURTLE_FORMAT = 2; static final int NT_FORMAT = 3; static final int
+	 * JSONLD_FORMAT = 4; static final int RULE_FORMAT = 5; static final int
+	 * QUERY_FORMAT = 6; static final int UNDEF_FORMAT = 7; static final int
+	 * TRIG_FORMAT = 8; static final int NQUADS_FORMAT = 9; static final int
+	 * WORKFLOW_FORMAT = 10;
+	 * @param completeFilename
+	 * @return
+	 */
+	public static int getCoreseRdfFormat(String completeFilename) {
+		Optional<RDFFormat> rdfFormat = getRdfFormat(completeFilename);
+		if (rdfFormat.isPresent()) {
+			RDFFormat format = rdfFormat.get();
+			if (format.equals(RDFFormat.RDFA)) {
+				return 1;
+			} else if (format.equals(RDFFormat.TURTLE)) {
+				return 2;
+			} else if (format.equals(RDFFormat.TURTLE)) {
+				return 3;
+			} else if (format.equals(RDFFormat.RDFJSON)) {
+				return 4;
+			} else if (format.equals(RDFFormat.TRIG)) {
+				return 8;
+			} else if (format.equals(RDFFormat.NQUADS)) {
+				return 9;
+			} else {
+				return 7;
+			}
 		} else {
-			result = new BufferedInputStream(new FileInputStream(new File(filename)));
+			return 7;
+		}
+	}
+
+	/**
+	 *
+	 * @param completeFilename possible syntax: * file.nq data in any format
+	 * (nq given only as an example) * file.nq.gz data compressed; *
+	 * file.nq:num data from line 0 to num-1; * file.nq:start, end data from
+	 * line start to end-1.
+	 * @return
+	 * @throws IOException
+	 */
+	public static InputStream makeStream(String completeFilename) throws IOException {
+		InputStream result;
+		String filename;
+		int start;
+		int end;
+		if (completeFilename.contains(":")) {
+			String[] parts = completeFilename.split(":");
+			filename = parts[0];
+			if (parts[1].contains(",")) {
+				String[] addresses = parts[1].split(",");
+				start = Integer.parseInt(addresses[0]);
+				end = Integer.parseInt(addresses[1]);
+			} else {
+				start = 0;
+				end = Integer.parseInt(parts[1]);
+			}
+		} else {
+			start = 0;
+			end = -1;
+			filename = completeFilename;
+		}
+		if (filename.endsWith(".gz")) {
+			result = new AddressesFilterInputStream(new GZIPInputStream(new FileInputStream(filename)), start, end);
+		} else {
+			result = new AddressesFilterInputStream(new BufferedInputStream(new FileInputStream(filename)), start, end);
 		}
 		return result;
 	}
@@ -201,7 +337,6 @@ public class RdfToGraph {
 //		in.close();
 //		driver.commit();
 //	}
-
 	public void createEdges(InputStream in, RDFFormat format) throws IOException {
 		EdgesBuilder edgesBuilder = new EdgesBuilder();
 		RDFParser rdfParser = Rio.createParser(format);

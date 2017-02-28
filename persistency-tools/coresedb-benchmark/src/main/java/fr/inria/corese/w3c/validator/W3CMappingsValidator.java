@@ -59,7 +59,7 @@ public class W3CMappingsValidator {
 	boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed) {
 		boolean result = true;
 		if (1L*kgram.size()*w3c.size() > 1000000 ){
-			return false;
+			throw new IllegalArgumentException("Too much results > 10^6");
 		}
 		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 		for (Mapping w3cres : w3c) {
@@ -96,7 +96,7 @@ public class W3CMappingsValidator {
 			if (!ok) {
 				result = false;
 
-				System.out.println("** Failure");
+				System.err.println("** Failure");
 				if (printed == false) {
 					System.out.println(kgram);
 					printed = true;

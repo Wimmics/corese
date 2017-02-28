@@ -172,11 +172,15 @@ public class QualitativeTest {
 	@DataProvider(name = "input")
 	public Iterator<Object[]> buildTests() {
 		String[] inputFiles = {
-//			"test-1.nq"
+//			"test-1.nq",
 //			"human_2007_04_17.rdf",	
-//			"btc-2010-chunk-000_10k.nq",
-//			"btc-2010-chunk-000_100k.nq",
-			"btc-2010-chunk-000_1M.nq",
+			"btc-2010-chunk-000.nq:1",
+			"btc-2010-chunk-000.nq:10",
+			"btc-2010-chunk-000.nq:100",
+			"btc-2010-chunk-000.nq:1000",
+			"btc-2010-chunk-000.nq:10000",
+			"btc-2010-chunk-000.nq:100000",
+			"btc-2010-chunk-000.nq:1000000",
 			"btc-2010-chunk-000.nq" 
 		};
 		String[] requests = {

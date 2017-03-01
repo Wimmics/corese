@@ -42,7 +42,7 @@ public class QualitativeTest {
 			setInputDb("/human_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-		suite.createDb();
+//		suite.createDb();
 		TestDescription[][] tests = {
 			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
@@ -172,21 +172,20 @@ public class QualitativeTest {
 	@DataProvider(name = "input")
 	public Iterator<Object[]> buildTests() {
 		String[] inputFiles = {
-//			"test-1.nq",
-//			"human_2007_04_17.rdf",	
-			"btc-2010-chunk-000.nq:1",
-			"btc-2010-chunk-000.nq:10",
-			"btc-2010-chunk-000.nq:100",
-			"btc-2010-chunk-000.nq:1000",
-			"btc-2010-chunk-000.nq:10000",
-			"btc-2010-chunk-000.nq:100000",
-			"btc-2010-chunk-000.nq:1000000",
-			"btc-2010-chunk-000.nq" 
+			//			"test-1.nq",
+			//			"human_2007_04_17.rdf",	
+			//			"btc-2010-chunk-000.nq:1",
+			//			"btc-2010-chunk-000.nq:10",
+			//			"btc-2010-chunk-000.nq:100",
+			//			"btc-2010-chunk-000.nq:1000",
+			//			"btc-2010-chunk-000.nq:10000",
+			//			"btc-2010-chunk-000.nq:100000",
+			"btc-2010-chunk-000.nq:1000000", //			"btc-2010-chunk-000.nq"
 		};
 		String[] requests = {
 			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
 			"select ?x ?y where { ?x rdf:type ?y}",
-			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",	
+			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
 			"select ?x ?p ?y where { ?x ?p ?y}"
 		};
 
@@ -202,7 +201,7 @@ public class QualitativeTest {
 					return false;
 				}
 				if (started) {
-					return !(cptInputFiles == inputFiles.length-1 && cptRequests == requests.length - 1);
+					return !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.length - 1);
 				} else {
 					return true;
 				}
@@ -234,7 +233,7 @@ public class QualitativeTest {
 						setInputDb("./" + inputFile + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
-					currentSuite.createDb();
+//					currentSuite.createDb();
 				}
 				TestDescription[] result = {currentSuite.buildTest(request)};
 				return result;
@@ -244,10 +243,22 @@ public class QualitativeTest {
 
 	@Test(dataProvider = "input", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-		CoreseTimer timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
-		CoreseTimer timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
+		CoreseTimer timerMemory = null;
+		CoreseTimer timerDb = null;
+		try {
+			timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
+			timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		System.out.println("running test: " + test.getId());
-		boolean result = compareResults(timerDb.getMapping(), timerMemory.getMapping());
+		boolean result;
+		try {
+			result = compareResults(timerDb.getMapping(), timerMemory.getMapping());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			result = false;
+		}
 		test.setResultsEqual(result);
 		writeResult(test, timerDb, timerMemory);
 		assertTrue(result, test.getId());

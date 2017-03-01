@@ -150,6 +150,7 @@ public class RdfToGraph {
 
 		int start, end;
 		int currentLineNumber;
+		public static int INFINITE = -1;
 
 		public AddressesFilterInputStream(InputStream input, int start, int end) {
 			super(input);
@@ -171,8 +172,8 @@ public class RdfToGraph {
 					} // else the character is ignored
 				}
 			}
-			if (currentLineNumber >= start && currentLineNumber < end) {
-				char c = (char) in.read();
+			if (currentLineNumber >= start && (currentLineNumber < end || end == INFINITE)) {
+				int c = in.read();
 				if (c == '\n') {
 					currentLineNumber++;
 				}

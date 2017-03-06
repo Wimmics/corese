@@ -71,7 +71,8 @@ public class TransformerVisitor implements QueryVisitor {
             if (exp.isGraph() && exp.getGraphName().getLabel().equals(graph)) {
                 Node n = query.getNode(var);
                 if (n != null) {
-                    exp.setNodeList(exp.getNodes());
+                    // bind exists node 
+                    exp.setNodeList(exp.getNodes(true, false));
                     exp.setBGPAble(true);
                     exp.cache(n);
                 }

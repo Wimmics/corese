@@ -21,6 +21,8 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +38,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class PluginTransform implements ExprType {
     static Logger logger = LogManager.getLogger(PluginTransform.class);
+    private static final String FORMAT_LIB = "/webapp/data/format/";
 
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
     private static final String VISIT_DEFAULT_NAME = NSManager.STL + "default";
@@ -328,6 +331,12 @@ public class PluginTransform implements ExprType {
     }
     
     String getFormatURI(String uri){
+        if (uri.startsWith(NSManager.STL_FORMAT)){
+            try {
+                return readResource(uri, NSManager.STL_FORMAT, FORMAT_LIB);
+            } catch (LoadException ex) {               
+            }
+        }
         QueryLoad ql = QueryLoad.create();
         try {
             return ql.readWE(uri);
@@ -336,6 +345,23 @@ public class PluginTransform implements ExprType {
         }
         return "";
     }
+    
+    /**
+     * ns = http://ns.inria.fr/sparql-template/format/
+     * resource = http://ns.inria.fr/sparql-template/format/navlab/title.html
+     * lib = /data/format/
+     */
+    String readResource(String resource, String ns, String lib) throws LoadException {
+        String name = lib + resource.substring(ns.length());
+        InputStream stream = getClass().getResourceAsStream(name);
+        if (stream == null) {
+            throw LoadException.create(new IOException(resource));
+        }
+        QueryLoad ql = QueryLoad.create();
+        return ql.readWE(stream);
+    }
+    
+    
           
     IDatatype format(IDatatype dt){
         return plugin.getValue(getFormat(dt));
@@ -587,7 +613,7 @@ public class PluginTransform implements ExprType {
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
-                exp.getModality(), exp, env.getQuery());
+                exp.getModality(), exp, env.getQuery(), env);
         return dt;
     }
 

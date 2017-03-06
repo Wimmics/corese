@@ -311,6 +311,7 @@ public class Transformer implements ExpType {
                 Node node = compiler.createNode(var);
                 q.defArg(node);
             }
+            q.setPriority(ast.getPriority());
         }
     }
 

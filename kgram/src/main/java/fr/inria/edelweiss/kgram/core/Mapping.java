@@ -594,6 +594,14 @@ public class Mapping
 		}
 		addNode(qNode, node);
 	}
+                      
+        public Mapping project(Node q){
+            Node value = getNodeValue(q);
+            if (value == null){
+                return null;
+            }
+            return create(q, value);
+        }
 	
 	/**
 	 * rename query nodes

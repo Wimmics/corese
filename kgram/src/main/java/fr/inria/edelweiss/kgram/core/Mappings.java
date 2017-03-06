@@ -102,6 +102,7 @@ public class Mappings extends PointerObject
     }
 
     void init(Query q, boolean subEval) {
+        this.query = q;
         isDistinct = !subEval && q.isDistinct();
         isListGroup = q.isListGroup();
         setSelect(q.getSelect());
@@ -712,7 +713,7 @@ public class Mappings extends PointerObject
     /**
      * Template perform additionnal group_concat(?out)
      */
-    private Node apply(Evaluator eval, Exp exp, Memory memory, Producer p) {
+    public Node apply(Evaluator eval, Exp exp, Memory memory, Producer p) {
         Mapping firstMap = get(0);
         // bind the Mapping in memory to retrieve group by variables
         memory.aggregate(firstMap);
@@ -850,6 +851,17 @@ public class Mappings extends PointerObject
             map.project(query);
         }
         return this;
+    }
+    
+    public Mappings project(Node q){
+        Mappings map = create(query);
+        for (Mapping m : this){
+            Mapping res = m.project(q);
+            if (res != null){
+                map.add(res);
+            }
+        }
+        return map;
     }
 
     /**

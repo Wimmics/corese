@@ -1369,7 +1369,7 @@ public class Exp extends PointerObject
         return list;
     }
 
-    List<Node> getNodes(boolean exist, boolean blank) {
+    public List<Node> getNodes(boolean exist, boolean blank) {
         List<Node> lNode = new ArrayList<Node>();
         List<Node> lSelNode = new ArrayList<Node>();
         List<Node> lExistNode = new ArrayList<Node>();

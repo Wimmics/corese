@@ -430,7 +430,7 @@ public class Interpreter implements Evaluator, ExprType {
         if (args == ERROR_VALUE) {
             switch (exp.oper()){
                 case UNDEF:
-                    logger.error("Error eval arguments: " + exp.getExpList());
+                    logger.error("Error eval arguments: " + exp);
             }
             return null;
         }
@@ -568,8 +568,7 @@ public class Interpreter implements Evaluator, ExprType {
         }
         
         Eval eval = kgram.copy(memory, p, this);
-        eval.setSubEval(true);
-        
+        eval.setSubEval(true);        
         Mappings map = null;
         
         if (exp.isSystem()) {
@@ -855,10 +854,6 @@ public class Interpreter implements Evaluator, ExprType {
     }
     
     public Expr getDefine(Expr exp, Environment env) {
-//        Expr ee = exp.getDefine();
-//        if (ee != null) {
-//            return ee;
-//        }
         Extension ext = env.getExtension();
         if (ext != null) {          
             Expr def = ext.get(exp);

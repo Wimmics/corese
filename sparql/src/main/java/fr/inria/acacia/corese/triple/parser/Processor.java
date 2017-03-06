@@ -54,6 +54,8 @@ public class Processor {
 	private static final String AVG = "avg";
 	private static final String ISURI = "isURI";
 	private static final String ISIRI = "isIRI";
+	private static final String ISUNDEF = "isUndefined";
+	private static final String ISWELLFORMED = "isWellFormed";
 	private static final String ISBLANK = "isBlank";
 	private static final String ISLITERAL = "isLiteral";
 	private static final String ISLIST = "isList";
@@ -566,6 +568,8 @@ public class Processor {
 		defoper(AVG, 	ExprType.AVG);
 		defoper(ISURI, 	ExprType.ISURI);
 		defoper(ISIRI, 	ExprType.ISURI);
+		defoper(ISUNDEF, ExprType.ISUNDEFINED);
+		defoper(ISWELLFORMED, ExprType.ISWELLFORMED);
 		defoper(ISBLANK, ExprType.ISBLANK);
 		defoper(ISLITERAL, ExprType.ISLITERAL);
 		defoper(ISLIST, ExprType.ISLIST);
@@ -762,7 +766,7 @@ public class Processor {
 		defoper(DEFINE,         ExprType.STL_DEFINE);                
 		defoper(LAMBDA,         ExprType.LAMBDA);
 		defoper(ERROR,          ExprType.ERROR);
-                defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
+                //defoper(STL_DEFAULT,    ExprType.STL_DEFAULT);
                 defoper(STL_CONCAT,     ExprType.STL_CONCAT);
                 defoper(STL_GROUPCONCAT, ExprType.STL_GROUPCONCAT);
                 defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);

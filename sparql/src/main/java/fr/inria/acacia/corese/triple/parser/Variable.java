@@ -37,6 +37,7 @@ public class Variable extends Atom {
 		return new Variable(str);
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb){
 		if (isBlankNode()) {
 			if (isBlankVariable(name)){
@@ -54,6 +55,7 @@ public class Variable extends Atom {
 		return sb;
 	}
 	
+        @Override
 	public boolean equals(Object o){
 		if (o instanceof Variable){
 			Variable var = (Variable) o;
@@ -68,6 +70,7 @@ public class Variable extends Atom {
 		isPath = b;
 	}
 	
+        @Override
 	public boolean isPath(){
 		return isPath;
 	}
@@ -81,10 +84,12 @@ public class Variable extends Atom {
 		return lVar;
 	}
 	
+        @Override
 	public boolean isVisited(){
 		return isVisited;
 	}
 	
+        @Override
 	public void setVisited(boolean b){
 		isVisited = b;
 	}
@@ -97,6 +102,7 @@ public class Variable extends Atom {
 	 * use case: select fun(?x) as ?y
 	 * rewrite occurrences of ?y as fun(?x)
 	 */
+        @Override
 	public Expression process(ASTQuery ast){
 		if (isVisited()){
 			setVisited(false);
@@ -121,15 +127,18 @@ public class Variable extends Atom {
 		return false;
 	}
 	
+        @Override
 	public boolean isVariable(){
 		return true;
 	}
 	
+        @Override
 	public boolean isSimpleVariable(){
 		return ! isBlankNode();
 	}
 	
 	
+        @Override
 	Bind validate(Bind env){
 		env.bind(getName());
 		return env;
@@ -145,6 +154,7 @@ public class Variable extends Atom {
 //		return true;
 //	}
 	
+        @Override
 	public Variable getVariable() {
 		return this;
 	}
@@ -156,6 +166,7 @@ public class Variable extends Atom {
 //		else return null;
 //	}
 	
+        @Override
 	public boolean isBlankNode() {
 		return isBlankNode;
 	}
@@ -218,6 +229,7 @@ public class Variable extends Atom {
 		}
 	}
         
+        @Override
         public IDatatype getDatatypeValue(){
 		if (dt == null){
 			dt = getConstant().getDatatypeValue();
@@ -225,10 +237,12 @@ public class Variable extends Atom {
 		return dt;
 	}
 	
+        @Override
 	public Constant getConstant(){
             return Constant.createBlank(getLabel());
 	}
 
+        @Override
         public Variable copy(Variable o, Variable n){
             if (this.equals(o)){
                 Variable var = create(n.getName());
@@ -239,6 +253,7 @@ public class Variable extends Atom {
             }
         }
         
+        @Override
         void visit(ExpressionVisitor v){
             v.visit(this);
         }
@@ -261,6 +276,7 @@ public class Variable extends Atom {
     /**
      * @return the type
      */
+        @Override
     public int subtype() {
         return type;
     }
@@ -270,6 +286,11 @@ public class Variable extends Atom {
      */
     public void setType(int type) {
         this.type = type;
+    }
+    
+        @Override
+     public void setSubtype(int type) {
+        setType(type);
     }
  
 	

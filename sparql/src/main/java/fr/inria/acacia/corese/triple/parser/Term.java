@@ -204,6 +204,7 @@ public class Term extends Expression {
 		return isShort;
 	}
 	
+        @Override
 	public void setModality(String s){
 		modality = s;
 	}

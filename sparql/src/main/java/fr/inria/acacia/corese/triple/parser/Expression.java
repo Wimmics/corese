@@ -670,10 +670,14 @@ implements Regex, Filter, Expr {
 	}
 	
         @Override
-	public String getModality() {
-		
+	public String getModality() {		
 		return null;
 	}
+        
+        @Override
+        public void setModality(String mod){
+            
+        }
         
         
         @Override
@@ -719,6 +723,10 @@ implements Regex, Filter, Expr {
     @Override
     public int subtype() {
         return ExprType.UNDEF;
+    }
+    
+        @Override
+    public void setSubtype(int t) {
     }
      
 }

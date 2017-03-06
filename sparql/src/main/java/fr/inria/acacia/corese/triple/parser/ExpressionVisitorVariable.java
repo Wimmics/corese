@@ -292,6 +292,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      * @param t 
      */
     void aggregate(Term t){
+        t.getArg(0).visit(this);
         if (t.getArgs().size() == 2){
             Expression fun = t.getArg(1);
             Expression arg = fun.getArg(0);

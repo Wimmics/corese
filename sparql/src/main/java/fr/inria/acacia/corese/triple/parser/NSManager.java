@@ -51,6 +51,7 @@ public class NSManager extends ASTObject {
 
     public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
+    public static final String STL_FORMAT = STL + "format/";
     public static final String EXT        = ExpType.EXT;
     public static final String USER       = ExpType.UXT;
     public static final String KGRAM      = ExpType.KGRAM;

@@ -290,7 +290,7 @@ public class ASTTemplate {
     /**
      *
      * additional aggregate(?out) default is st:group_concat it may be redefined
-     * in template st:profile using st:define(st:aggregate(?x) = st:agg_and(?x))
+     * in template st:profile using function st:aggregate(?x) { st:agg_and(?x) }
      */
     public Term createTemplateGroup() {
         Variable var = Variable.create(OUT);

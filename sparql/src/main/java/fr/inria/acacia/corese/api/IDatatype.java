@@ -63,7 +63,9 @@ public interface IDatatype
     boolean isSkolem();
 
     boolean isXMLLiteral();
-
+    
+    boolean isUndefined();
+    
     boolean isArray();
     
     boolean isList();

@@ -204,9 +204,33 @@ public class QueryEngine implements Engine {
     public Collection<Query> getNamedTemplates() {
         return table.values();
     }
+    
+    public Query getTemplate() {
+        Query q = getTemplate(STL_PROFILE);
+        if (q != null) {
+            return q;
+        } else if (getTemplates().isEmpty()) {
+            for (Query qq : table.values()){
+                    return qq;
+            }
+        } else {
+            return getTemplates().get(0);
+        }
+        return null;
+    }
+    
 
     public boolean isEmpty() {
         return list.isEmpty() && table.isEmpty();
+    }
+    
+    public boolean contains(Query q){
+        if (q.getName() == null){
+            return list.contains(q);
+        }
+        else {
+            return table.containsValue(q);
+        }
     }
 
     @Override

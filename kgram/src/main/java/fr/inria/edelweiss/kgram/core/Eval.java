@@ -717,7 +717,7 @@ public class Eval implements ExpType, Plugin {
      */
     void bind(Mapping map) {
         for (Node qNode : map.getSelectQueryNodes()) {
-            //Node qqNode = query.getSelectNode(qNode.getLabel());
+            //Node qqNode = query.getSelectNode(qNode.getLabel());            
             Node qqNode = query.getOuterNode(qNode);
             if (qqNode != null) {
                 Node node = map.getNode(qNode);
@@ -887,7 +887,7 @@ public class Eval implements ExpType, Plugin {
                 exp.setNext(next);
                 stack.add(n + 1, next);
             }
-            
+                        
             if (exp.isBGPAble()){
                 // evaluate and record result for next time
                 // template optimization 
@@ -909,7 +909,7 @@ public class Eval implements ExpType, Plugin {
                             return backtrack;
                     } 
                 };
-                
+                              
             switch (exp.type()) {
 
                 case NEXT:
@@ -938,7 +938,7 @@ public class Eval implements ExpType, Plugin {
                     backtrack = service(p, gNode, exp, stack, n);
                     break;
 
-                case GRAPH:
+                case GRAPH:                   
                     if (env.isPath(exp.getGraphName())) {
                         // graph $path { }
                         // switch Producer to path
@@ -951,7 +951,7 @@ public class Eval implements ExpType, Plugin {
                         if (gg != null && p.isProducer(gg)) {
                             // graph $path { }
                             // named graph in GraphStore 
-                            // switch Producer 
+                            // switch Producer                            
                             backtrack = inGraph(p, p.getProducer(gg, memory),
                                     gNode, exp, stack, n);
                         }                        
@@ -1760,11 +1760,11 @@ public class Eval implements ExpType, Plugin {
      * Use case: cache the Mappings
      */
      private int bgpAble(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
+        int backtrack = n - 1;      
         Mappings map = getMappings(p, gNode, exp);
         for (Mapping m : map) {
             m.fixQueryNodes(query);
-            boolean b = memory.push(m, n, false);
+            boolean b = memory.push(m, n, false);           
             if (b) {
                 int back = eval(p, gNode, stack, n + 1);
                 memory.pop(m);
@@ -1772,11 +1772,16 @@ public class Eval implements ExpType, Plugin {
                     return back;
                 }
             }
-        }
+        }       
         return backtrack;
     }
      
-     
+     /**
+      * Mappings of exp may be cached for specific query node
+      * Use case: datashape template exp = graph ?shape {?sh sh:path ?p} 
+      * exp is evaluated once for each value of ?sh and Mappings are cached
+      * successive evaluations of exp on ?sh get Mappings from cache 
+      */
     Mappings getMappings(Producer p, Node gNode, Exp exp) {
         if (exp.hasCache()) {
             Node n = memory.getNode(exp.getCacheNode());
@@ -1786,11 +1791,6 @@ public class Eval implements ExpType, Plugin {
                     m = subEval(p, gNode, gNode, exp, exp, null, true);
                     exp.cache(n, m);                      
                 }
-//                else {
-//                    System.out.println(query.getAST());
-//                    System.out.println(m.size());
-//                    System.out.println(m.toString(true, false));
-//                }
                 return m;
             }
         }

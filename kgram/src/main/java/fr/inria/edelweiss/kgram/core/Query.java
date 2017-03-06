@@ -165,6 +165,7 @@ public class Query extends Exp implements Graphable {
             isRule = false, isDetail = false;
     private boolean isMatch = false;
     private int id = -1;
+    private int priority = 100;
     int mode = Matcher.UNDEF;
 
     int planner = STD_PLAN;
@@ -2695,6 +2696,20 @@ public class Query extends Exp implements Graphable {
      */
     public void setMapping(Mapping mapping) {
         this.mapping = mapping;
+    }
+
+    /**
+     * @return the priority
+     */
+    public int getPriority() {
+        return priority;
+    }
+
+    /**
+     * @param priority the priority to set
+     */
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
 }

@@ -1,0 +1,10 @@
+construct {
+  ?x ?p ?y
+  us:test rdfs:label "test"
+}
+where {
+   { bind (st:get(st:uri) as ?x) ?x ?p ?y } union 
+   { bind (st:get(st:uri) as ?p) ?x ?p ?y } union 
+   { bind (st:get(st:uri) as ?y) ?x ?p ?y }   
+}
+limit 10

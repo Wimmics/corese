@@ -1,0 +1,12 @@
+select debug * 
+where {
+    bind (strlang(st:get(st:param), "fr") as ?name)
+    
+    service <http://fr.dbpedia.org/sparql> {
+        select ?uri ?name where {
+            ?uri rdfs:label ?name
+        } limit 1
+    }
+    
+    bind (st:export(st:uri, ?uri) as ?b)
+}

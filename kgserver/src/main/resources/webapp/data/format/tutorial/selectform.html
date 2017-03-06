@@ -1,0 +1,14 @@
+<h3>Select a query</h3>
+
+<form method='get' id ='select' action='%s'>
+<input type='hidden' name='profile' value='%s' />
+%s   
+<!--
+if (! st:get(st:protocol, st:ajax)) 
+<select class='form-control select' id='uri' name='uri' onChange='submit();'>
+-->
+<select class='form-control select' id='uri' name='uri' onChange='trans(this.form); return false;'>
+%s
+</select>   
+%s
+</form>

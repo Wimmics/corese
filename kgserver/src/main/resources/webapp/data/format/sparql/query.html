@@ -1,0 +1,12 @@
+<h3>Query</h3>
+
+<form method='post' id='sparql' action='%s'>  
+<select name="profile"> 
+%s
+<option value='st:sparql'>LDP</option>
+</select>   
+<br/>
+<textarea cols='60' rows='10' name='query'>%s</textarea>
+<br/>
+<input type='submit' value='submit' class='btn btn-warning' onClick='trans(this.form); return false;' />   
+</form>

@@ -1,0 +1,577 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sh='http://www.w3.org/ns/shacl#'>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/list'>
+  <rdfs:comment>Well formed RDF list</rdfs:comment>
+  <sh:closed rdf:datatype='&xsd;boolean'>true</sh:closed>
+  <sh:ignoredProperties rdf:parseType='Collection'>
+    <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#comment' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#label' />
+  </sh:ignoredProperties>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b62'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b63'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:or rdf:parseType='Collection'>
+        <rdf:Description rdf:nodeID='_:b64'>
+          <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+        </rdf:Description>
+        <rdf:Description rdf:nodeID='_:b65'>
+          <sh:hasValue rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#nil' />
+        </rdf:Description>
+      </sh:or>
+      <sh:path rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+    </rdf:Description>
+  </sh:property>  
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/path'>
+  <rdfs:comment>sh:path value: URI,  RDF list of path or well formed path </rdfs:comment>
+  <sh:or rdf:parseType='Collection'>
+    <rdf:Description rdf:nodeID='_:b122'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/pathExp' />
+    </rdf:Description>
+    <rdf:Description rdf:nodeID='_:b123'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/pathList' />
+    </rdf:Description>
+    <rdf:Description rdf:nodeID='_:b124'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+    </rdf:Description>
+  </sh:or>
+  <sh:targetObjectsOf rdf:resource='http://www.w3.org/ns/shacl#path' />
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/pathExp'>
+  <rdfs:comment>Well formed path expression</rdfs:comment>
+  <sh:closed rdf:datatype='&xsd;boolean'>true</sh:closed>
+  <sh:ignoredProperties rdf:parseType='Collection'>
+    <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' />
+  </sh:ignoredProperties>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b135'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path>
+        <rdf:Description rdf:nodeID='_:b134'>
+          <sh:alternativePath rdf:parseType='Collection'>
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#alternativePath' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#inversePath' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#zeroOrMorePath' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#oneOrMorePath' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#zeroOrOnePath' />
+          </sh:alternativePath>
+        </rdf:Description>
+      </sh:path>  
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b136'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/pathList' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#alternativePath' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b137'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/path' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#inversePath' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b138'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/path' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#zeroOrMorePath' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b139'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/path' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#oneOrMorePath' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b140'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/path' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#zeroOrOnePath' />
+    </rdf:Description>
+  </sh:property>  
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/pathList'>
+  <rdfs:comment>Well formed list of path expression</rdfs:comment>
+  <sh:closed rdf:datatype='&xsd;boolean'>true</sh:closed>
+  <sh:ignoredProperties rdf:parseType='Collection'>
+    <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' />
+  </sh:ignoredProperties>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b142'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/path' />
+      <sh:path rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b143'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:or rdf:parseType='Collection'>
+        <rdf:Description rdf:nodeID='_:b144'>
+          <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/pathList' />
+        </rdf:Description>
+        <rdf:Description rdf:nodeID='_:b145'>
+          <sh:hasValue rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#nil' />
+        </rdf:Description>
+      </sh:or>
+      <sh:path rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+    </rdf:Description>
+  </sh:property>  
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/property'>
+  <rdfs:comment>Value of sh:property [ ]</rdfs:comment>
+  <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shapecst' />
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b68'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#path' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:targetObjectsOf rdf:resource='http://www.w3.org/ns/shacl#property' />
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/shape'>
+  <rdfs:comment>Main shape</rdfs:comment>
+  <sh:closed rdf:datatype='&xsd;boolean'>true</sh:closed>
+  <sh:ignoredProperties rdf:parseType='Collection'>
+    <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#comment' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#label' />
+  </sh:ignoredProperties>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b10'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#ignoredProperties' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b15'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#ignoredProperties' />
+        <rdf:Description rdf:nodeID='_:b11'>
+          <sh:zeroOrMorePath rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+        </rdf:Description>
+        <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+      </sh:path>
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b16'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#targetSubjectsOf' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b17'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#targetObjectsOf' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b18'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#targetClass' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b19'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRIOrLiteral' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#targetNode' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b20'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#property' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b21'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#and' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b22'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#or' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b23'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#xor' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b3'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#boolean' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#deactivated' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b32'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shape' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:parseType='Collection'>
+        <rdf:Description rdf:nodeID='_:b27'>
+          <sh:alternativePath rdf:parseType='Collection'>
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#xor' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#or' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#and' />
+          </sh:alternativePath>
+        </rdf:Description>
+        <rdf:Description rdf:nodeID='_:b28'>
+          <sh:zeroOrMorePath rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+        </rdf:Description>
+        <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+      </sh:path>
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b33'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shape' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#not' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b34'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shape' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#node' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b35'>
+      <sh:in rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#violation' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Warning' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Info' />
+      </sh:in>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#severity' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b39'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#class' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b4'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#name' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b40'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#datatype' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b41'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#in' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b42'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#pattern' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b43'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#flags' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b44'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#languageIn' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b49'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#languageIn' />
+        <rdf:Description rdf:nodeID='_:b45'>
+          <sh:zeroOrMorePath rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+        </rdf:Description>
+        <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+      </sh:path>
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b5'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#message' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b50'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxLength' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minLength' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b51'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxExclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxInclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minExclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minInclusive' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b52'>
+      <sh:in rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#IRI' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#IRIOrLiteral' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Literal' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNodeOrLiteral' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNode' />
+      </sh:in>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#nodeKind' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b6'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#description' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b7'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#order' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b8'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#group' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b9'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#boolean' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#closed' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:targetClass rdf:resource='http://www.w3.org/ns/shacl#NodeShape' />
+</sh:NodeShape>
+
+<sh:NodeShape rdf:about='http://ns.inria.fr/shacl-shape/shapecst'>
+  <rdfs:comment>Constraint in sh:property [ ] or in sh:property [ sh:or( ) ]</rdfs:comment>
+  <sh:closed rdf:datatype='&xsd;boolean'>true</sh:closed>
+  <sh:ignoredProperties rdf:parseType='Collection'>
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#path' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#deactivated' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#name' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#message' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#description' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#order' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#group' />
+    <rdf:Description rdf:about='http://www.w3.org/ns/shacl#defaultValue' />
+    <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#comment' />
+    <rdf:Description rdf:about='http://www.w3.org/2000/01/rdf-schema#label' />
+  </sh:ignoredProperties>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b100'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#in' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b101'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#pattern' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b102'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#flags' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b103'>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#hasValue' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b104'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxLength' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minLength' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b105'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxCount' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minCount' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b106'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxExclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#maxInclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minExclusive' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#minInclusive' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b107'>
+      <sh:in rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#IRI' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#IRIOrLiteral' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Literal' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNodeOrLiteral' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#BlankNode' />
+      </sh:in>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#nodeKind' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b114'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#boolean' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#uniqueLang' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b115'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#languageIn' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b120'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:path rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#languageIn' />
+        <rdf:Description rdf:nodeID='_:b116'>
+          <sh:zeroOrMorePath rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+        </rdf:Description>
+        <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+      </sh:path>
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b121'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#disjoint' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#equals' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#lessThan' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#lessThanOrEquals' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b80'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shape' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#node' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b81'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shapecst' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#qualifiedValueShape' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b82'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#boolean' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#qualifiedValueShapesDisjoint' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b83'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/list' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#and' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#or' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#xor' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b92'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shapecst' />
+      <sh:path rdf:parseType='Collection'>
+        <rdf:Description rdf:nodeID='_:b87'>
+          <sh:alternativePath rdf:parseType='Collection'>
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#and' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#or' />
+            <rdf:Description rdf:about='http://www.w3.org/ns/shacl#xor' />
+          </sh:alternativePath>
+        </rdf:Description>
+        <rdf:Description rdf:nodeID='_:b88'>
+          <sh:zeroOrMorePath rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#rest' />
+        </rdf:Description>
+        <rdf:Description rdf:about='http://www.w3.org/1999/02/22-rdf-syntax-ns#first' />
+      </sh:path>
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b93'>
+      <sh:node rdf:resource='http://ns.inria.fr/shacl-shape/shapecst' />
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#not' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b94'>
+      <sh:in rdf:parseType='Collection'>
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#violation' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Warning' />
+        <rdf:Description rdf:about='http://www.w3.org/ns/shacl#Info' />
+      </sh:in>
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#severity' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b98'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#class' />
+    </rdf:Description>
+  </sh:property>  
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b99'>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://www.w3.org/ns/shacl#datatype' />
+    </rdf:Description>
+  </sh:property>  
+</sh:NodeShape>
+
+</rdf:RDF>

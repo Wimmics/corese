@@ -1,0 +1,18 @@
+<script>
+  function callback() {
+    var pos = new google.maps.LatLng(%1$s,%2$s);         
+    var mapOptions = {zoom: %3$s, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
+    google.maps.event.addListener(map, 'click', 
+    function(event){
+      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
+    });
+    
+    var marker = new google.maps.Marker({ position: pos, map: map, icon: '%4$s' });   
+    %5$s
+    }
+  %6$s   
+</script>      
+
+<p class='%7$s' id='map-canvas' ></p>

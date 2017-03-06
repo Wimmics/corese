@@ -1,0 +1,17 @@
+<form method='post'  id='form' 	action='%s' >   
+  <input type='hidden' name='profile' value='%s' /> 
+  <input type='hidden' id='tmp' 	value='%s' />
+  <input type='hidden' id='sol' 	value='%s' />
+  <input type='hidden' name='uri' 	value='%s' />
+  %s
+  <input type='submit' value='submit' class='btn btn-warning' onClick='trans(this.form); return false;' />
+  <br/>
+  <textarea cols='60' rows='10' id='query' name='query'>%s</textarea>
+</form>
+
+<script type="text/javascript">  
+function show(name){
+    document.getElementById('query').value = document.getElementById(name).value;
+}  
+</script>
+

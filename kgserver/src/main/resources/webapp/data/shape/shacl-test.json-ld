@@ -1,0 +1,39 @@
+{
+"@context": {
+  "sh": "http://www.w3.org/ns/shacl#" ,
+  "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "ex": "http://example.org/ns#"
+},
+
+"@graph":
+[
+
+{
+	"@id" : "ex:PersonShape",
+	"@type" : "NodeShape",
+	"targetClass" : "ex:Person",
+	"property" : [
+		{
+			"path" : "ex:ssn",
+			"maxCount" : 1,
+			"datatype" : "xsd:string" ,
+			"pattern" : "^\\d{3}-\\d{2}-\\d{4}$"
+		},
+		{
+			"path" : "ex:child",
+			"class" : "ex:Person",
+			"nodeKind" : "sh:IRI"
+		},
+		{
+			"comment" : "A person's parents are represented via ex:child used in the inverse direction." ,
+			"path" : { "inversePath" : "ex:child" },
+			"name" : "parent",
+			"maxCount" : 2
+		}
+	],
+	"closed" : true,
+	"ignoredProperties" : [ "rdf:type" ]
+}
+]
+}

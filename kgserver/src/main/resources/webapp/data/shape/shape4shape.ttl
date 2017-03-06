@@ -196,6 +196,10 @@ sh:property [
     sh:path sh:qualifiedValueShapesDisjoint ;
     sh:datatype xsd:boolean
 ] ;
+sh:property [
+    sh:path sh:qualifiedMinCount, sh:qualifiedMaxCount ;
+    sh:datatype xsd:integer
+] ;
 
 sh:property [
     sh:path sh:and, sh:or, sh:xone ; 

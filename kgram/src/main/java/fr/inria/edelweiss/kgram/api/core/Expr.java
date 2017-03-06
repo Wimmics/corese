@@ -26,6 +26,7 @@ public interface Expr {
         String getShortName();
 	
 	String getModality();
+        void setModality(String mod);
 
 	List<Expr> getExpList();
 
@@ -42,6 +43,8 @@ public interface Expr {
 	int type();
         
         int subtype();
+        
+        void setSubtype(int n);
 
 	int oper();
         

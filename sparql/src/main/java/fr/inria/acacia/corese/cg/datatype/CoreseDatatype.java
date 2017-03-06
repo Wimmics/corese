@@ -367,7 +367,11 @@ public class CoreseDatatype
 		return 0;
 	}
 	
-	
+	@Override
+	public boolean isUndefined() {
+		return false;
+	}
+        
         @Override
 	public boolean isBlank() {
 		return false;

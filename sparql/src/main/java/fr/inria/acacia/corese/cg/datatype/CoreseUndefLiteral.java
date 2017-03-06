@@ -57,6 +57,11 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
   public IDatatype getDatatype(){
     return datatype;
   }
+    
+    @Override
+    public boolean isUndefined() {
+        return true;
+    }
 
     @Override
   public boolean isTrue() throws CoreseDatatypeException {

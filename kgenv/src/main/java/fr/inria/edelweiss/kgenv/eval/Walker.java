@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -33,7 +34,7 @@ class Walker extends Interpreter {
     static IDatatype ZERO = DatatypeMap.ZERO;
     static IDatatype TRUE = DatatypeMap.TRUE;
     static final StringBuilder EMPTY = new StringBuilder(0);
-    Expr exp;
+    private Expr exp, function;
     Node qNode, tNode;
     IDatatype dtres;
     int num = 0, count = 0;
@@ -58,32 +59,33 @@ class Walker extends Interpreter {
         Query q = env.getQuery();
        
         eval = p.getEvaluator();
-        this.exp = exp;
         this.qNode = qNode;
-
-        if (exp.getArg() != null) {
-            // separator as an evaluable expression: st:nl()
-            IDatatype dt = (IDatatype) eval.eval(exp.getArg(), env, prod);
-            sep = dt.getLabel();
-        } else {
-            if (exp.getModality() != null) {
-                sep = exp.getModality();
-            }
-
-            if (env.getQuery().isTemplate()) {
-                if (sep.equals("\n") || sep.equals("\n\n")) {
-                    // get the indentation by evaluating a predefined st:nl()
-                    // computed by PluginImpl/Transformer
-                    // same as: separator = 'st:nl()'
-                    Expr nl = env.getQuery().getTemplateNL().getFilter().getExp();
-                    IDatatype dt = (IDatatype) eval.eval(nl, env, prod);
-                    String str = dt.getLabel();
-                    if (sep.equals("\n\n")) {
-                        str = NL + str;
-                    }
-                    sep = str;
+        
+        switch (exp.oper()){
+            case STL_AGGREGATE: 
+                // final aggregate for sttl template to gather individual ?out results 
+                // st:aggregate may be overloaded in st:profile  
+                // function st:aggregate(?x) { aggregate(?x, us:my_agg) }
+                // replace oper of st:agregate(?out) by oper of aggregate(?x, us:my_agg)
+                Expr fun = getDefine(exp, env);
+                if (fun == null){
+                    // default is st:group_concat
+                    exp.setOper(ExprType.STL_GROUPCONCAT);
                 }
-            }
+                else {
+                    setDefinition(fun);
+                }
+                break;
+                
+        }
+        
+        setExp(exp);
+
+        switch (exp.oper()){
+            case STL_AGGREGATE:
+                format(getDefinition().getBody(), env, prod); break;
+            default: 
+                format(getExp(), env, prod);
         }
            
         int size = env.getMappings().size();        
@@ -114,11 +116,43 @@ class Walker extends Interpreter {
                 break;
         }
     }
+    
+    
+    void format(Expr exp, Environment env, Producer prod) {
+        if (exp.getArg() != null) {
+            // separator as an evaluable expression: st:nl()
+            IDatatype dt = (IDatatype) eval.eval(exp.getArg(), env, prod);
+            sep = dt.getLabel();
+        } else {
+            if (exp.getModality() != null) {
+                sep = exp.getModality();
+            }
+
+            if (env.getQuery().isTemplate()) {
+                if (sep.equals("\n") || sep.equals("\n\n")) {
+                    // get the indentation by evaluating a predefined st:nl()
+                    // computed by PluginImpl/Transformer
+                    // same as: separator = 'st:nl()'
+                    Expr nl = env.getQuery().getTemplateNL().getFilter().getExp();
+                    IDatatype dt = (IDatatype) eval.eval(nl, env, prod);
+                    String str = dt.getLabel();
+                    if (sep.equals("\n\n")) {
+                        str = NL + str;
+                    }
+                    sep = str;
+                }
+            }
+        }
+    }
 
     Object getResult(Environment env, Producer p) {
-        if (isError) {
+        if (isError) {           
             return null;
         }
+        return getResult(getExp(), env, p);
+    }
+        
+    Object getResult(Expr exp, Environment env, Producer p){
 
         switch (exp.oper()) {
 
@@ -157,7 +191,7 @@ class Walker extends Interpreter {
                IDatatype res = result(sb, isString, (ok && lang != null)?lang:null);
                return res;
 
-            case AGGAND:               
+            case AGGAND:     
                 return DatatypeMap.newInstance(and);
                 
             case AGGLIST:                
@@ -170,8 +204,11 @@ class Walker extends Interpreter {
                 IDatatype dt = DatatypeMap.createList(list);
                 if (exp.arity() == 2){
                     return (IDatatype) eval.getProxy().let(exp.getExp(1), env, p, dt);
-                }
+                }                               
                 return dt;
+                
+            case STL_AGGREGATE: 
+                return getResult(getDefinition().getBody(), env, p);
 
         }
 
@@ -204,22 +241,22 @@ class Walker extends Interpreter {
         }
         return true;
     }
-
+    
     /**
      * map is a Mapping
      */
     @Override
     public Node eval(Filter f, Environment env, Producer p) {
         Mapping map = (Mapping) env;
-
-        switch (exp.oper()) {
+        
+        switch (f.getExp().oper()) {
 
             case GROUPCONCAT:
             case STL_GROUPCONCAT:
                 return groupConcat(f, env, p);
                                
             case COUNT:
-                if (exp.arity() == 0) {
+                if (f.getExp().arity() == 0) {
                     // count(*)
                     if (accept(f, map)) {                        
                         num++;
@@ -229,7 +266,7 @@ class Walker extends Interpreter {
                 break;
                 
             case AGGREGATE:
-                if (exp.arity() == 0) {
+                if (f.getExp().arity() == 0) {
                     if (accept(f, map)) {                        
                         list.add(DatatypeMap.createObject(map));
                     }
@@ -240,17 +277,23 @@ class Walker extends Interpreter {
         }
 
 
-        if (exp.arity() == 0) {
+        if (f.getExp().arity() == 0) {
             return null;
         }
 
-        Expr arg = exp.getExp(0);
+        Expr arg = f.getExp().getExp(0);
         Node node = null;  
-        IDatatype dt = (IDatatype) eval.eval(arg, map, p);;
-              
+        IDatatype dt = (IDatatype) eval.eval(arg, map, p);
         if (dt != null) {
 
-            switch (exp.oper()) {
+            switch (f.getExp().oper()) {
+                
+                case STL_AGGREGATE:
+                    Expr var = getDefinition().getFunction().getExp(0);
+                    env.set(exp, var, dt);
+                    eval(getDefinition().getBody().getFilter(), env, p);
+                    env.unset(exp, var);
+                    break;
 
                 case MIN:
                 case MAX:
@@ -262,7 +305,7 @@ class Walker extends Interpreter {
                         dtres = dt;
                     } else {
                         try {
-                            if (exp.oper() == MIN) {
+                            if (f.getExp().oper() == MIN) {
                                 if (dt.less(dtres)) {
                                     dtres = dt;
                                 }
@@ -325,7 +368,7 @@ class Walker extends Interpreter {
                     else if (accept(f, dt)) {
                           list.add(dt);
                     }                                                                 
-                    break;
+                    break;                    
 
             }
         }
@@ -392,56 +435,35 @@ class Walker extends Interpreter {
         }
     }
      
-    // with a list of arguments, without SPARQL semantics of @lang
-//    Node groupConcat2(Filter f, Environment map, Producer p) {
-//        boolean isDistinct = f.getExp().isDistinct();
-//        IDatatype[] value = null;
-//        Tuple t = null;
-//        if (isDistinct) {
-//            value = new IDatatype[exp.getExpList().size()];
-//            t = new Tuple(value);
-//        }
-//
-//        StringBuffer res = new StringBuffer();
-//
-//        if (count++ > 0) {
-//            res.append(sep);
-//        }
-//
-//        int i = 0;
-//        for (Expr arg : exp.getExpList()) {
-//
-//            IDatatype dt = (IDatatype) eval.eval(arg, map, p);
-//
-//            if (dt != null && dt.isFuture()) {
-//                Expr ee = (Expr) dt.getObject();
-//                // template ?out = future(concat(str, st:number(), str))
-//                // eval(concat(str, st:number(), str))
-//                dt = (IDatatype) eval.eval(ee, map, p);
-//            }
-//
-//            if (isDistinct) {
-//                value[i++] = dt;
-//            }
-//
-//            if (dt != null) {
-//                if (dt.getStringBuilder() != null) {
-//                    res.append(dt.getStringBuilder());
-//                } else {
-//                    res.append(dt.getLabel());
-//                }
-//            }
-//
-//        }
-//
-//
-//        if (accept(f, t)) {
-//            //res.append(sep);
-//            sb.append(res);
-//        }
-//
-//        return null;
-//    }
+   
+
+    /**
+     * @return the exp
+     */
+    public Expr getExp() {
+        return exp;
+    }
+
+    /**
+     * @param exp the exp to set
+     */
+    public void setExp(Expr exp) {
+        this.exp = exp;
+    }
+
+    /**
+     * @return the function
+     */
+    public Expr getDefinition() {
+        return function;
+    }
+
+    /**
+     * @param function the function to set
+     */
+    public void setDefinition(Expr function) {
+        this.function = function;
+    }
 
     
     

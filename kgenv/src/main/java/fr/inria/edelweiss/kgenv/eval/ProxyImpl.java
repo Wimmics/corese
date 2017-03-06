@@ -381,6 +381,9 @@ public class ProxyImpl implements Proxy, ExprType {
             case ISNUMERIC:
                 return (dt.isNumber()) ? TRUE : FALSE;
                 
+            case ISWELLFORMED:
+                return isWellFormed(dt);
+                
             case NOT:
                 return not(dt);
 
@@ -1223,7 +1226,7 @@ public class ProxyImpl implements Proxy, ExprType {
      */
     @Override
     public Object aggregate(Expr exp, Environment env, Producer p, Node qNode) {
-        exp = decode(exp, env, p);
+        //exp = decode(exp, env, p);
         Walker walk = new Walker(exp, qNode, this, env, p);
 
         // apply the aggregate on current group Mapping, 
@@ -1893,6 +1896,15 @@ public class ProxyImpl implements Proxy, ExprType {
         } else {
             return getValue(dt1.booleanValue() && dt2.booleanValue());
         }
+    }
+    
+    IDatatype isWellFormed(IDatatype dt){
+        if (dt.isLiteral() && dt.isUndefined()){
+            if (dt.getDatatypeURI().startsWith(RDF.XSD) || dt.getDatatypeURI().startsWith(RDF.RDF)){
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
     
     private IDatatype not(IDatatype dt){

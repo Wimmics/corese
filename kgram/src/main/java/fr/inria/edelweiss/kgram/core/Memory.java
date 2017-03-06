@@ -77,7 +77,7 @@ public class Memory implements Environment {
         this.appxSearchEnv = new ApproximateSearchEnv();
     }
 
-    void setResults(Mappings r) {
+    public void setResults(Mappings r) {
         results = r;
     }
 

@@ -20,9 +20,11 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -78,6 +80,7 @@ public class Transformer  {
     public static final String STL_START    = STL + "start";
     public static final String STL_TRACE    = STL + "trace";
     public static final String STL_DEFAULT  = Processor.STL_DEFAULT;   
+    public static final String STL_DEFAULT_NAMED  = STL + "defaultNamed";   
     public static final String STL_OPTIMIZE    = STL + "optimize";
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PROCESS  = Processor.STL_PROCESS;   
@@ -136,7 +139,9 @@ public class Transformer  {
     
     // st:process() of template variable, may be overloaded
     private int process   = ExprType.TURTLE;
+    // default template aggregate:
     private int aggregate = ExprType.STL_GROUPCONCAT;
+    // actual template aggregate (function st:aggregate (){} in profile):
     private int defAggregate = ExprType.STL_GROUPCONCAT;
     // st:default() process of template variable, may be overloaded
     // used when all templates fail
@@ -568,11 +573,12 @@ public class Transformer  {
     public IDatatype process(String temp, boolean all, String sep) {
         count++;
         query = null;
-        ArrayList<IDatatype> result = new ArrayList<IDatatype>();
+        //ArrayList<IDatatype> result = new ArrayList<IDatatype>();
+        ArrayList<Node> nodes = new ArrayList<Node>();
         if (temp == null) {
             temp = start;
         }
-        List<Query> list = getTemplate(temp);
+        List<Query> list = getTemplateList(temp);
         if (list == null) {
             list = qe.getTemplates();
         }
@@ -605,7 +611,8 @@ public class Transformer  {
 
             if (res != null) {
                 if (all) {
-                    result.add(res);
+                    //result.add(res);
+                    nodes.add(map.getTemplateResult());
                 } else {
                     return res;
                 }
@@ -615,11 +622,13 @@ public class Transformer  {
         query = null;
 
         if (all) {
-            IDatatype dt = result(result, separator(sep));
-            return dt;
+            //IDatatype dt = result(result, separator(sep));
+            IDatatype dt2 = result(null, nodes);
+            return dt2;
         }
 
-        return EMPTY;
+        return isBoolean()?defaultBooleanResult():EMPTY;
+        //eval(STL_DEFAULT, q, null, (isBoolean()?defaultBooleanResult():EMPTY), env); 
     }
 
     public int level() {
@@ -683,19 +692,27 @@ public class Transformer  {
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
     public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
-            boolean allTemplates, String sep, Expr exp, Query q) {   
+            boolean allTemplates, String sep, Expr exp, Query q){
+        return process(args, dt, temp, allTemplates, sep, exp, q, null); 
+   }
+    
+    public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
+            boolean allTemplates, String sep, Expr exp, Query q, Environment env) {   
         count++;
         if (dt == null) {
             return EMPTY;
         }
         
         if (level() >= levelMax){
-            return defaut(dt, q);
+           //return defaut(dt, q);
+            return eval(STL_DEFAULT, q, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
         }
 
-        ArrayList<IDatatype> result = null;
+        //ArrayList<IDatatype> result = null;
+        ArrayList<Node> nodes = null;
         if (allTemplates) {
-            result = new ArrayList<IDatatype>();
+            //result = new ArrayList<IDatatype>();
+            nodes = new ArrayList<Node>();
         }
         boolean start = false;
 
@@ -772,7 +789,8 @@ public class Transformer  {
                     }
 
                     if (allTemplates) {
-                        result.add(res);
+                        //result.add(res);                         
+                        nodes.add(map.getTemplateResult());
                     } else {
                         if (start) {
                             stack.pop();
@@ -789,9 +807,10 @@ public class Transformer  {
 
         if (allTemplates) {
             // gather results of several templates
-            if (result.size() > 0) {
-                IDatatype res = result(result, separator(sep));
-                return res;
+            if (nodes.size() > 0) {
+               // IDatatype res = result(result, separator(sep));
+                IDatatype mres = result(q, nodes); 
+                return mres;
             }
         }
                
@@ -799,21 +818,29 @@ public class Transformer  {
 
         if (temp != null) {
             // named template does not match focus node dt
-            if (isBoolean()){
-                return defaultBooleanResult();
-            }
-            return EMPTY;
+            return eval(STL_DEFAULT_NAMED, q, dt, (isBoolean()?defaultBooleanResult():EMPTY), env);
+//            if (isBoolean()){
+//                return defaultBooleanResult();
+//            }
+//            return EMPTY;
         }
         else if (isHasDefault()) {
             // apply st:default named template
-            IDatatype res = process(args, dt, STL_DEFAULT, allTemplates, sep, exp, q);
+            IDatatype res = process(args, dt, STL_DEFAULT, allTemplates, sep, exp, q, env);
             if (res != EMPTY) {
                 return res;
             }
         }
 
-        // use a default display (may be dt1 as is or st:turtle)
-        return defaut(dt, q);
+        // return a default result (may be dt)
+        // may be overloaded by function st:default(?x) { st:turtle(?x) }
+         //return defaut(dt, q);
+        return eval(STL_DEFAULT, q, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
+
+    }
+    
+    IDatatype result(IDatatype dt1, IDatatype dt2){
+        return dt2;
     }
     
     void trace(IDatatype dt1, IDatatype[] args, Expr exp) {
@@ -978,13 +1005,41 @@ public class Transformer  {
                 return qe.getTemplates();
             }
         }
-        return getTemplate(temp);
+        return getTemplateList(temp);
     }
 
-    private List<Query> getTemplate(String temp) {
+    private List<Query> getTemplateList(String temp) {
        return qe.getTemplateList(temp);       
     }
-
+         
+    /**
+     * use case: result of st:apply-templates-all()
+     * list = list of ?out results of templates
+     * create Mappings (?out = value)
+     * apply st:aggregate(?out) on Mappings
+     * Use the st:aggregate of the query q that called st:apply-templates-all()
+     * if q is member of this transformation, otherwise get the st:profile of 
+     * this transformation to get the appropriate st:aggregate definition if any
+     */
+    IDatatype result(Query q, List<Node> list){
+        Query tq =  (q != null && contains(q)) ? q : qe.getTemplate();        
+        Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
+        mem.init(tq);
+        Node out = tq.getExtNode(OUT, true);
+        Mappings map = Mappings.create(tq);
+        for (Node node : list){
+            map.add(Mapping.create(out, node));           
+        }
+        mem.setResults(map); 
+        // execute st:aggregate(?out)
+        Node node = map.apply(exec.getEvaluator(), tq.getTemplateGroup(), mem, exec.getProducer());       
+        return (IDatatype) node.getDatatypeValue();
+    }
+    
+    boolean contains(Query q){
+        return qe.contains(q);
+    }
+      
     /**
      * Concat results of several templates executed on same focus node
      * st:apply-all-templates(?x ; separator = sep)
@@ -1114,15 +1169,39 @@ public class Transformer  {
         }
         return display(dt, ope);
     }
-
+    
+    
     /**
-     * template [st:turtle]
-     * a template may overload the default display
-     * @deprecated
+     * st:default(?dt) return default value when transformer fail 
+     * st:defaultNamed(?dt)
      */
-    IDatatype profile(IDatatype dt, String profile){
-        return display(dt, proc.getOper(profile));
+    IDatatype eval(String name, Query q, IDatatype dt, IDatatype def, Environment env) {
+        Extension ext = q.getExtension();
+        if (ext != null) {
+            Expr exp = ext.get(name, (dt==null)?0:1);
+            if (exp != null) { 
+                IDatatype res = null;
+                if (dt == null){
+                    res =  (IDatatype) exec.getEvaluator().eval(exp.getFunction(), getEnvironment(env, q), exec.getProducer()) ;
+                }
+                else {
+                    res = (IDatatype) exec.getEvaluator().getProxy().let(exp.getFunction(), getEnvironment(env, q), exec.getProducer(), dt);
+                }
+                return res;
+            }
+        }
+        return def;
     }
+    
+    Environment getEnvironment(Environment env, Query q){
+        if (env == null){
+            Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
+            mem.init(q);
+            return mem;
+        }
+        return env;
+    }
+
     
    /**
      * Display when all templates fail

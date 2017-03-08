@@ -7,7 +7,9 @@ package fr.inria.wimmics.coresetimer;
 
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,7 +79,7 @@ public class CoreseTimer {
 		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
 	}
 
-	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
 
 		assert (initialized);
 

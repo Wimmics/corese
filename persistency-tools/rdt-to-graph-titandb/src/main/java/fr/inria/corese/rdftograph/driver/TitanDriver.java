@@ -149,6 +149,13 @@ public class TitanDriver extends GdbDriver {
 				addKey(kindValue).
 				buildCompositeIndex();
 			manager.
+				buildIndex("vertexIndex", Vertex.class).
+				addKey(vertexValue, Mapping.STRING.asParameter()).
+				addKey(kindValue, Mapping.STRING.asParameter()).
+				addKey(typeValue, Mapping.STRING.asParameter()).
+				addKey(langValue, Mapping.STRING.asParameter()).
+				buildMixedIndex("search");
+			manager.
 				buildIndex("allIndex", Edge.class).
 				addKey(predicateKey, Mapping.STRING.asParameter()).
 				addKey(subjectKey, Mapping.STRING.asParameter()).
@@ -167,7 +174,8 @@ public class TitanDriver extends GdbDriver {
 			String[] indexNames = {
 				"vertices",
 				"allIndex",
-				"spoIndex"
+				"spoIndex", 
+				"vertexIndex"
 			};
 			for (String indexName : indexNames) {
 				try {

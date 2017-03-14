@@ -2,24 +2,11 @@ template st:query(?q) {
 
 format {
 
-  """
-  <h3>Query</h3>
-  <form method='post' id='sparql' action='%s'>  
-    <select name="profile"> 
-      %s
-      <option value='st:sparql'>LDP</option>
-    </select>   
-      <br/>
-      <textarea cols='60' rows='10' name='query'>%s</textarea>
-      <br/>
-    <input type='submit' value='submit' %s/>       
-  </form>
-  """
+  us:format("query.html")
   
   st:get(st:service)
-  if (bound(?prof), st:format("<option value='%s'>Profile</option>", ?prof), "")
+  if (bound(?prof), st:format(us:format("option.html"), ?prof), "")
   str(?q)
-  st:submit()
   }
 }
 where {

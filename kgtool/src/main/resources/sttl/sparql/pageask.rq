@@ -2,14 +2,9 @@ prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:pageask {
 format {
-
-  """
-  <h3>Result</h3>
-  <p>%s</p>
-  """
-  
+  us:format("ask.html")
   ?b
-  }
+}
 }
 where {
   ?r rs:boolean ?b

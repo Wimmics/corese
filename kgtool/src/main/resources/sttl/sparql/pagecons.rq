@@ -1,11 +1,8 @@
 template st:pagecons {
-   
-  st:call-template(st:opencons)
-  
-  st:call-template(st:tablecons)
-  
-  st:call-template(st:close)
-    
+   format {
+    us:format("construct.html")
+    st:call-template(st:tablecons)
+   }
 }
 where {
 }

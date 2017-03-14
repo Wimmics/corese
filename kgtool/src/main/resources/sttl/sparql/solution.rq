@@ -2,8 +2,7 @@ prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
 
 format { 
-    "<td>%s</td>" 
-    
+    us:format("value.html")     
     coalesce(st:display(?val), "&nbsp;")
 }  
 ; separator = " "

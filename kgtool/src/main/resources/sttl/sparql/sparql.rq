@@ -11,7 +11,8 @@ template st:sparql {
 
   st:head()
    
-  st:call-template(st:query, coalesce(st:get(st:query), ""))  
+  #st:call-template(st:query, coalesce(st:get(st:query), ""))  
+  coalesce(st:call-template(st:query, st:get(st:query)), "")  
   
   st:call-template(st:page)
     

@@ -1,17 +1,10 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:table {
-format {
-
-  """
-  <tr> 
-  <th>%s</th>  
-  %s 
-  </tr>
-  """
-  
-  st:number()
-  st:apply-templates(?s)
-}
+    format {
+        us:format("table.html")  
+        st:number()
+        st:apply-templates(?s)
+    }
 }
 where {
   ?x rs:solution ?s 

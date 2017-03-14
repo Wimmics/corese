@@ -1,5 +1,15 @@
 template st:tableconsuri {
-    us:triple(st:number(), ?x, ?p, ?y)
+
+ format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
   bind (st:focus() as ?uri)

@@ -1,8 +1,8 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:th {
+template st:variable {
  
     format {
-      "<th>%s</th>" 
+      us:format("variable.html") 
       str(?v)
     } 
     ; separator = " "

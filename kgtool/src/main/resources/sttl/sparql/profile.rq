@@ -2,32 +2,36 @@ template st:profile {
   
 }
 where {}
+
+function us:format(?name) {
+    st:getFormat("sparql", ?name)
+}
   
   # LOD URI hypertext link generated as is 
   # set by profile.ttl : st:param [ st:lod (URI) ]
   #
-  function st:lod(?x){
+function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
-  }
+}
     
 
   # display resource uri
-  function st:display(?x){
+function st:display(?x){
     let (?profile = coalesce(st:get(st:profile), st:null)){
       if (?profile = st:null){ 
-	st:call-template(st:esc, ?x) 
+        st:call-template(st:esc, ?x) 
       }
       else if (?profile = st:std){ 
-	st:call-template(st:linkesc, ?x) 
+        st:call-template(st:linkesc, ?x) 
       }
-      else if (st:lod(?x)){
-	st:call-template(st:linkesc, ?x)
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:linkesc, ?x)
       }
       else {
-	st:call-template(st:linkprofile, ?x)
+        st:call-template(st:linkprofile, ?x)
       }     
     }
-  }
+}
   
 function st:init(){
   if (coalesce(st:get(st:service), st:null) = st:null){
@@ -35,20 +39,4 @@ function st:init(){
   }
 }
 
-function us:triple(?n, ?x, ?p, ?y){
-    st:format (
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """,
-        
-        ?n,
-        st:call-template(st:show,    ?x),
-        st:display(?x), 
-        st:display(?p), 
-        st:display(?y), 
-        st:call-template(st:show,    ?y)
-    )
-}
+

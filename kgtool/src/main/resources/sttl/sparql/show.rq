@@ -2,7 +2,7 @@
 #  Get an optional icon from the dataset and display it
 #
 template st:show(?x) {
-    format { "<img width='35' src='%s' />"  str(?l) }
+    format { us:format("img.html")  str(?l) }
 }
 where {
   bind (st:get(st:dataset) as ?g)

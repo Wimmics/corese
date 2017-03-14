@@ -1,11 +1,9 @@
 template st:pageselect {
-   
-  st:call-template(st:open)
-  
-  st:call-template(st:table)
-  
-  st:call-template(st:close)
-    
+    format {
+        us:format("select.html")
+        st:call-template(st:variable)
+        st:call-template(st:table)
+    }    
 }
 where {
 }

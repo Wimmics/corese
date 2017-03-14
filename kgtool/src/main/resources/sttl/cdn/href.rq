@@ -20,6 +20,6 @@ where {
   bind ( exists { ?r a ?tt . filter (?tt in (foaf:Person, o:Place)) 
   } as ?isp )
   
-  bind(bound(?i) && isURI(?i) as ?img)
+  bind (bound(?i) && strstarts(?i, "http://") as ?img)
   
 }

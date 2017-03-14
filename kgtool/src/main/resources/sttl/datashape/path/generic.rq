@@ -9,7 +9,7 @@
 # template sh:or enumerate objects of path and 
 # for each object ?value : check the or 
 # the or evaluates its elements by coming back here with ?value bound
-# this is done to use the very same templates whether ?value is bound or not
+# this is done to use the same templates whether ?value is bound or not
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 

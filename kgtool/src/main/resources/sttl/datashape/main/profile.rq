@@ -5,8 +5,16 @@ template st:profile {}
 where {}
 
 
-function st:aggregate(?x) {
-  st:agg_and(?x)
+function st:aggregate(?out) {
+  st:agg_and(?out)
+}
+
+function st:default(?term){
+    true
+}
+
+function st:defaultNamed(?term){
+    true
 }
 
 #
@@ -47,37 +55,37 @@ function sh:path(){
 
 # test and may report error
 # main target & noscope
-function sh:hasShape(?shape, ?sh, ?vis, ?ls){
+function sh:hasShape(?shape, ?sh, ?vis, ?ls) {
     st:apply-templates-with-all(sh:core(), ?shape, ?sh, ?vis, ?ls)
 }
 
 # test without target and do not report error
 # sh:node  sh:or sh:and sh:not
-function sh:testShapeCore(?shape, ?sh, ?s){
+function sh:testShapeCore(?shape, ?sh, ?s) {
     st:apply-templates-with-all(sh:core(), ?shape, ?sh, false, ?s)
 }
 
-function sh:hasConstraint(?shape, ?sh, ?vis, ?s){
+function sh:hasConstraint(?shape, ?sh, ?vis, ?s) {
     st:apply-templates-with-all(sh:constraint(), ?shape, ?sh, ?vis, ?s)
 }
 
-function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p){
+function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p) {
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
-function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o){
+function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o) {
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
 }
 
-function sh:path(?shape, ?sh, ?vis, ?s, ?p){
+function sh:path(?shape, ?sh, ?vis, ?s, ?p) {
     st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
 }
 
-function sh:safe(?shape, ?sh, ?suc){
+function sh:safe(?shape, ?sh, ?suc) {
     ?suc
 }
 
-function st:report(?name, ?s, ?suc, ?vis){
+function st:report(?name, ?s, ?suc, ?vis) {
     if (?vis) {
         st:visit(?name, ?s, ?suc)
     }
@@ -126,8 +134,9 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
             sh:resultSeverity ?sev ;
             sh:focusNode ?foc ;
             sh:focusNodeDetail ?focDetail ;
-            sh:resultPath ?pp ; 
-            sh:pathDetail ?pathDetail ; 
+            sh:resultPath ?pathDetail ; 
+            #sh:resultPath ?pp ; 
+            #sh:pathDetail ?pathDetail ; 
             sh:value ?oo ;
             sh:valueDetail ?valueDetail ;
             sh:resultMessage ?mes ;
@@ -145,10 +154,10 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
                 bind (coalesce(sh:isdefby(?name), ?name) as ?def)
                 bind (sh:value(?p) as ?pp)
                 bind (sh:value(?o) as ?oo)
-                bind (if (bound(?pp),sh:graph(?pp), error())  as ?pathDetail)                
+                bind (if (bound(?pp), sh:graph(?pp), error())  as ?pathDetail)                
             }
-            bind (sh:graph(?foc) as ?focDetail)
-            bind (if (bound(?oo), sh:graph(?oo), error())  as ?valueDetail)
+            bind (sh:graphbnode(?foc) as ?focDetail)
+            bind (if (bound(?oo), sh:graphbnode(?oo), error())  as ?valueDetail)
             bind (sh:bnode() as ?bnode)
         } 
         values (?name ?sh ?shape ?foc  ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
@@ -174,11 +183,16 @@ function sh:bnode(){
 }
 
 function sh:graph(?var){
-    if (isBlank(?var),  
-        strdt(st:apply-templates-with(st:turtle, ?var), xt:graph),
-        error())
+if (isBlank(?var), 
+    strdt(st:apply-templates-with(st:turtle, ?var), xt:graph), 
+    ?var)
 }
 
+function sh:graphbnode(?var){
+    if (isBlank(?var),  
+        sh:graph(?var),
+        error())
+}
 
 function sh:start(){
     sh:init()
@@ -221,6 +235,9 @@ function sh:def(){
         (sh:xone            sh:XoneConstraintComponent)
         (sh:node            sh:NodeConstraintComponent)
         (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
+        (sh:qualifiedMinCount   sh:QualifiedMinCountConstraintComponent)
+        (sh:qualifiedMaxCount   sh:QualifiedMaxCountConstraintComponent)
+        (sh:qualifiedValueShapeDisjoint sh:qualifiedValueShapeDisjointConstraintComponent)
         (sh:closed      sh:ClosedConstraintComponent)
         (sh:hasValue    sh:HasValueConstraintComponent)
         (sh:in          sh:InConstraintComponent)
@@ -286,11 +303,11 @@ function sh:maxExclusive(?shape, ?o, ?m){
 }
 
 function sh:datatype(?shape, ?o, ?d){
-    isLiteral(?o) && datatype(?o) = ?d
+    isLiteral(?o) && datatype(?o) = ?d && isWellFormed(?o)
 }
 
 function sh:datatype(?o, ?d){
-    isLiteral(?o) && datatype(?o) = ?d
+    isLiteral(?o) && datatype(?o) = ?d && isWellFormed(?o)
 }
 
 function sh:minCount(?s, ?m){
@@ -299,6 +316,10 @@ function sh:minCount(?s, ?m){
 
 function sh:maxCount(?s, ?m){
     ?s <= ?m
+}
+
+function sh:hasValue(?shape, ?s, ?v) {
+    ?s = ?v
 }
 
 function sh:class(?shape, ?o, ?c){
@@ -366,8 +387,13 @@ function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
 		WHERE {
 			GRAPH ?shape {
 				?sh rdf:rest*/rdf:first ?cst
+				optional { ?cst sh:property|sh:path|sh:closed ?prop }
 			}
-			BIND (sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o) AS ?hasShape)
+			BIND (
+                if (bound(?prop), 
+                    sh:testShapeCore(?shape, ?cst, ?o),
+                    sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o))
+			AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
 		})
 		{ ?count }

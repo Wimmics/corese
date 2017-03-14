@@ -16,5 +16,5 @@ where {
 }
 
 function sh:isPredicate(?p) {
-    strstarts(?oper, sh:)
+    strstarts(?p, sh:)
 }

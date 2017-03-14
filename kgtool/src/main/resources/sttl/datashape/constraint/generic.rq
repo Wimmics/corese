@@ -6,12 +6,14 @@ template (?shape, ?sh, ?vis, ?ls) {
 where {
   graph ?shape {  
     values ?q { 
-        sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
+        sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
     }
-    ?sh ?q ?m    
+    ?sh ?q ?m 
+    #filter not exists { ?sh sh:path ?p }
+ 
   }
-    
-    values ?s { unnest(?ls) }
+  
+  values ?s { unnest(?ls) }
     
   bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   

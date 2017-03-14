@@ -34,7 +34,7 @@ where {
         concat(?define, replace(?q, "\\$PATH", sh:display(?shape, ?p)), sh:values(sh:variable(?oper)))
     as ?qq)
     
-    filter xt:display(?qq)  
+    #filter xt:display(?qq)  
         
     values ($this ?value) { 
         unnest(kg:sparql(?qq, "$this", ?s, sh:variable(?oper), ?obj)) 

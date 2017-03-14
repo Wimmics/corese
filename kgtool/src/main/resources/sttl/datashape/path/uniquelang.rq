@@ -1,22 +1,21 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?l, ?o){
-  sh:safe(?shape, ?sh, ?suc)
+    let (?suc = false, ?b = st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
+        sh:safe(?shape, ?sh, ?suc)
+    } 
 }
 where {
- 
-  bind (sh:path(?shape, ?s, ?p) as ?values)
-  values ?o { unnest(?values) }
-  
-  bind (lang(?o) as ?lang)
-  filter (bound(?lang) && ?lang != "")
-  
-  bind (! mapany(sh:sameLang, ?o, ?values) as ?suc)
-  
-  bind (st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+
+    select ?shape ?s ?p ?lang (count(?val) as ?c)  
+    where {
+        values ?val { unnest(sh:path(?shape, ?s, ?p)) }
+        bind (lang(?val) as ?lang)
+        filter (bound(?lang) && ?lang != "")
+    } 
+    group by ?lang
+    having (?c > 1)
+    
 }
 
 
-function sh:sameLang(?x, ?y){
-    isLiteral(?y) && datatype(?y) = rdf:langString && lang(?y) = lang(?x) && ?x != ?y
-}

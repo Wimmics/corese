@@ -1,0 +1,20 @@
+#
+# Store sibling shapes of qualified shapes
+#
+template sh:sibling(?shape) {   
+    st:cset(sh:sibling, ?qsh, ?list)
+}
+where {
+    graph ?shape {
+        select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
+        where {
+            select distinct ?qsh ?sibling ?path
+            where {
+                ?root sh:property [ sh:qualifiedValueShape ?qsh ];
+                      sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
+                filter (?sibling != ?qsh)
+            }
+        }
+        group by ?qsh
+    }
+}

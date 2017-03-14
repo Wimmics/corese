@@ -19,7 +19,7 @@ where {
   bind (st:visit(st:start, st:trace) as ?vis) 
   bind (coalesce(st:get(st:shape), st:shape) as ?shape)
   bind (sh:start() as ?st)
-  
+  bind (st:call-template(sh:sibling, ?shape) as ?sib)
   bind (st:apply-templates(?shape) as ?suc)
   bind (sh:success(?suc) as ?b)
 }

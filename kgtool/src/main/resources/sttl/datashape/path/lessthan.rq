@@ -9,7 +9,7 @@ where {
   
   bind (coalesce(?o < ?v, false) as ?suc)
     
-  bind (st:report(sh:lessThan, ?sh, ?shape, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:lessThan, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
  

@@ -3,7 +3,7 @@
 #
 template st:submit {
       
-  " " st:call-template(st:bstyle) " onClick='trans(this.form); return false;'"
+  "onClick='trans(this.form); return false;'"
   
 }
 where {

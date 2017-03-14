@@ -3,22 +3,21 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
+
   if (st:visited(?in), "<span class='fail'>", "")
   ?in 
   if (st:visited(?in), "</span>", "")      
      
-      ibox { 
+ibox { 
 	st:nl()
-	st:call-template(st:type, ?in)
-	
+	st:call-template(st:type, ?in)	
 	st:call-template(st:value, ?in)
-      
-      } 
+} 
             
-      " ."      
+" ."      
 }
 where {
   ?in ?p ?y   
-  filter(isUri(?in))
+  filter isUri(?in)
 }
 limit 1

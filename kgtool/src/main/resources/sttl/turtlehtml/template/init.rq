@@ -3,7 +3,7 @@
 #
 # Olivier Corby, Wimmics Inria I3S, 2014
 #
-template st:profile(?in) {
+template st:profile {
 
 }
 where {}
@@ -14,7 +14,7 @@ where {}
 #
 function st:process(?in) { 
   if (isBlank(?in), st:blank(?in),	  
-  if (isURI(?in), st:clean(st:turtle(?in)),
+  if (isURI(?in), us:uri(?in),
   if (datatype(?in) = xt:graph, st:clean(str(?in)),
   st:literal(st:clean(st:turtle(?in))))))
 }
@@ -34,6 +34,11 @@ function st:blank(?in){
     st:id(?in), st:apply-templates(?in))
 }
 
+function us:uri(?in){
+if (st:get(st:hyperlink, true),    
+    st:display(?in), st:clean(st:turtle(?in)))
+}
+
 function st:id(?in){
   coalesce(
     concat("it", st:vget(?in, st:id)), 
@@ -46,3 +51,25 @@ function st:default(?in) {
 
 
 
+# LOD URI hypertext link generated as is 
+# set by profile.ttl : st:param [ st:lod (URI) ]
+#
+function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+}
+    
+
+# display resource uri
+function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+        st:call-template-with(st:sparql, st:esc, ?x) 
+      }
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template-with(st:sparql, st:linkesc, ?x)
+      }
+      else {
+        st:call-template-with(st:sparql, st:linkprofile, ?x)
+      }     
+    }
+}

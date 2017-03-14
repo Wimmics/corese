@@ -8,19 +8,11 @@
 template st:display(?n) {
 
 format {
-  """
-  <h3>%s</h3>
-  <p>  
-  %s
-  %s
-  </p>
-  %s
-  %s
-  """
+   us:format("display.html")
 
    str(?l)
    str(?c)   
-   if (bound(?r), st:format("<br/><a href='%s'>(%s)</a>", str(?r), str(?r)), "")
+   if (bound(?r), st:format(us:format("documentation.html"), str(?r)), "")
    
    st:call-template(st:form, 
      ?n,

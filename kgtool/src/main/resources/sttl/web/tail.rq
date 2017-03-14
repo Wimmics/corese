@@ -1,10 +1,6 @@
 template st:tail {
 format {
-  """ 
-  <h3>Dataset</h3>
-  %s
-  <p> <hr/> </p>
-  """
+  us:format("tail.html")
   
   st:call-template(st:content)
 }

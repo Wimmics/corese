@@ -4,31 +4,16 @@
 # ?q actual query, ?t query template, ?s query solution
 #
 template st:form(?n, ?q, ?t, ?s) {
-
-   st:call-template(st:script)
    
-   format {
-   
-    """
-    <form method='post'  id='form' 	action='%s' >   
-      <input type='hidden' name='profile' value='%s' />     
-      <input type='hidden' id='tmp' 	value='%s' />
-      <input type='hidden' id='sol' 	value='%s' />
-      <input type='hidden' name='uri' 	value='%s' />
-      %s
-      <input type='submit' value='submit' %s/>
-      <br/>
-      <textarea cols='60' rows='10' id='query' name='query'>%s</textarea>
-    </form>
-    """  
+   format {   
+    us:format("form.html")
    
     st:get(st:service) 
     st:get(st:profile)
     str(?t) 
     str(?s) 
     ?n 
-    if (?s = st:null, "", st:call-template(st:nav))
-    st:submit() 
+    if (?s = st:null, "", st:format(us:format("nav.html")))
     str(?q)
     }
    

@@ -1,8 +1,7 @@
 template st:head {
    
   format {
-  "<h2 class='center'>%s</h2>" 
-  str(?title)
+    us:format("head.html")  str(?title)
   }
   
 }

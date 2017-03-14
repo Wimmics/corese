@@ -4,14 +4,9 @@
 template st:list(?t) {
 
 format {
-  """
-  <option value='%s'" %s> 
-  %s . %s 
-  </option>
-  """
+  us:format(if (?q = ?t, "optionselected.html", "option.html") )
   
   ?q
-  if (?q = ?t, "selected='true'", "")
   str(?i)
   str(?title)
 }

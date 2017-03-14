@@ -1,14 +1,8 @@
 template st:prev(?t) {
 
 format {
-  """
-  <a  href='%s'>
-  <button type='button' %s>Previous</button>
-  </a>
-  """
-  
+  us:format("prev.html")
   st:plink(?n)
-  st:bstyle()
   }
   
 }

@@ -7,23 +7,11 @@ template st:selectform(?t) {
 
 format {
 
-  """
-  <h3>Select a query</h3>
-  <form method='get' id ='select' action='%s'>
-  <input type='hidden' name='profile' value='%s' />
-  %s   
-  <select %s id='uri' name='uri' onChange='%s'>
-  %s
-  </select>   
-  %s
-  </form>
-  """
+  us:format("selectform.html")
   
   st:get(st:service) 
   st:get(st:profile)   
   st:call-template(st:prev, ?t)  
-  st:sstyle() 
-  st:change() 
   st:call-template(st:list, ?t)  
   st:call-template(st:next, ?t)
 }

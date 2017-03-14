@@ -1,13 +1,8 @@
 template st:next(?t) {
 
 format {
-  """
-  <a  href='%s'>
-  <button type='button' %s>Next</button>
-  </a>
-  """ 
+  us:format("next.html")
   st:plink(?n)
-  st:bstyle()
  }
     
 }

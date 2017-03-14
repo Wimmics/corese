@@ -1,0 +1,20 @@
+construct {
+    ?ss ?p ?oo
+}
+where {
+    bind (st:get(st:uri) as ?uri)
+    bind (kg:load(?uri) as ?g)
+    graph ?g { 
+        ?s ?p ?o 
+       # filter xt:display(?s, concat(?p, " ", ?o))
+        bind (us:complete(?s) as ?ss)
+        bind (us:complete(?o) as ?oo)
+    }
+}
+
+function us:complete(?t) {
+    if (isURI(?t), 
+        if (strends(?t, "rdf") || ! coalesce(strstarts(st:getprofile(?t), st:hal), false), ?t, 
+            uri(concat(?t, if (strends(?t, "/"), "rdf", "/rdf")))),
+        ?t) 
+}

@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -58,6 +59,7 @@ public class Context extends ASTObject {
     public static final String STL_VALUE    = STL + "value";
     public static final String STL_VISITOR  = STL + "visitor";
     public static final String STL_DEFAULT  = STL + "default";
+    public static final String STL_REMOTE_HOST  = STL + "remoteHost";
     
     
     HashMap<String, IDatatype> table;
@@ -81,16 +83,13 @@ public class Context extends ASTObject {
     }
 
     @Override
-    public String toString() {
-        if (nsm == null){
-            nsm = NSManager.create();
-        }
+    public String toString() {        
         StringBuilder sb = new StringBuilder();
         String[] keys = new String[table.size()];
         table.keySet().toArray(keys);
         Arrays.sort(keys);
         for (String key : keys) {
-            sb.append(nsm.toPrefix(key, true));
+            sb.append(getNSM().toPrefix(key, true));
             sb.append(" : ");
             sb.append(table.get(key));
             sb.append(NL);
@@ -98,7 +97,29 @@ public class Context extends ASTObject {
         return sb.toString();
     }
     
+    NSManager getNSM(){
+        if (nsm == null){
+            nsm = NSManager.create();
+        }
+        return nsm;
+    }
     
+    public String trace() {
+        String str = "";
+        if (get(STL_URI) != null) {
+            str = "URI: " + get(STL_URI).getLabel() + "  Date: " + new Date();
+        }
+        if (getService() != null) {
+            str += "  Service: " + getService();
+        }
+        if (getProfile() != null) {
+            str += "  Profile: " + getNSM().toPrefix(getProfile());
+        }
+        if (get(STL_REMOTE_HOST) != null) {
+            str += "  Host: " + get(STL_REMOTE_HOST).getLabel();
+        }
+        return str;
+    }
     
     public Collection<String> keys(){
         return table.keySet();
@@ -307,7 +328,11 @@ public class Context extends ASTObject {
     public Context setServer(String str) {
         return setURI(STL_SERVER, str);
     }
-
+    
+    public Context setRemoteHost(String remoteHost) {
+         return set(STL_REMOTE_HOST, remoteHost);
+    }
+    
     public Context setTitle(String str) {
         return setURI(STL_TITLE, str);
     }
@@ -404,5 +429,5 @@ public class Context extends ASTObject {
     public void setNamedContext(HashMap<String, Context> context) {
         this.context = context;
     }
-    
+  
 }

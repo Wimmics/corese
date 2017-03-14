@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 public class SPARQLProcess extends  WorkflowProcess {
     private static Logger logger = LogManager.getLogger(SPARQLProcess.class);
     static final String NL = System.getProperty("line.separator");
+    static final NSManager nsm = NSManager.create();
 
     private String query;
     
@@ -89,18 +91,19 @@ public class SPARQLProcess extends  WorkflowProcess {
     
     void log1(Context c){
         if (isLog() || pgetWorkflow().isLog()){
-            if (c != null && c.get(Context.STL_URI) != null){
-                logger.info(getQuery() + NL + "URI: " + c.get(Context.STL_URI).getLabel() + NL);  
-            }
-            else {
-                logger.info(getQuery());
-            }
+            //logger.info(NL + getQuery());
+            if (c != null){ 
+                String str = c.trace();
+                if (str.length() > 0){
+                    logger.info(NL + str + NL);
+                }
+            }  
         }
     }
     
     void log2(Date d1, Date d2){
         if (isLog() || pgetWorkflow().isLog()){
-            logger.info("Time : " + (d2.getTime() - d1.getTime()) / 1000.0);
+            logger.info("Time: " + (d2.getTime() - d1.getTime()) / 1000.0);
         }
     }
     

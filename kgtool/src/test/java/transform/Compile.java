@@ -45,9 +45,9 @@ public class Compile {
         
         translate(root + "datashape/main",     lib + "dsmain.rul");
         translate(root + "datashape/core",     lib + "dscore.rul");
-        //translate(root + "datashape/property", lib + "dsproperty.rul");
         translate(root + "datashape/path",     lib + "dspath.rul");
         translate(root + "datashape/constraint",  lib + "dsconstraint.rul");
+        translate(root + "datashape/pprint",  lib + "dspprint.rul");
         translate(root + "datashape/result",   lib + "dsresult.rul");
 
         translate(root + "list", lib + "list.rul");
@@ -57,6 +57,7 @@ public class Compile {
         translate(root + "spinhtml", lib + "spinhtml.rul");
         translate(root + "sql", lib + "sql.rul");
         translate(root + "rdfxml", lib + "rdfxml.rul");
+        translate(root + "rdfxmlhtml", lib + "hrdfxml.rul");
         translate(root + "turtle", lib + "turtle.rul");
         translate(root + "json", lib + "json.rul");
         translate(root + "jsonterm", lib + "jsonterm.rul");

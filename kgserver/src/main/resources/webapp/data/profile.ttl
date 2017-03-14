@@ -27,6 +27,55 @@ st:dbpediawf a sw:Workflow ;
   )
 .
 
+#http://localhost:8080/srv/template?profile=st:hal&uri=https://aurehal.archives-ouvertes.fr/structure/178918/rdf
+
+
+
+st:hal a st:Server ;
+st:service "hal" ;
+st:param [ 
+    # export context parameters to subtransformation (st:profile, etc.):
+    st:export true;
+    # transformation does not focus on uri but display whole graph:
+    st:focus false ;
+    # transformation generates HTML hypertext links:
+    st:hyperlink true ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    )
+] ;
+st:workflow [
+    a sw:Workflow ;
+    sw:body (
+        <query/halrdf.rq>
+        [ a sw:Transformation ; sw:uri st:hturtle ]
+    )
+]
+.
+
+
+st:hal2 a st:Server ;
+st:service "hal2" ;
+st:param [ 
+    st:focus false ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal2)
+        (<http://www.w3c.org/ns/org> st:hal2)    
+        ("*" st:lod)
+    )
+] ;
+st:workflow [
+    a sw:Workflow ;
+    sw:body (
+        <query/halrdf.rq>
+        [ a sw:Transformation ; sw:uri st:sparql ]
+    )
+]
+.
+
+
 
 st:geoloc a st:Profile ;
 st:workflow st:geoloc ;
@@ -234,7 +283,7 @@ st:rdfs a st:Profile ;
  
 
 
-st:default2 a st:Server ;
+st:default a st:Server ;
 st:content st:humancontent
 .
 
@@ -265,6 +314,10 @@ sw:body (
 ).
 
 us:showWF a sw:Workflow ;
+st:param [
+    st:hyperlink true ;
+    st:export true
+];
 sw:body (  
   [ a sw:Parallel ; sw:body (
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/sparql#result>]
@@ -432,16 +485,17 @@ st:owlrl2 a st:Server ;
 # These Profile are also Workflow
 #
 
+
+# get param=graph&mode=shape&format=st:turtle from server Context
+# workflow parser get them from server Context when creating ShapeProcess
+
 st:shape a st:Server ;
     st:service "shape" ;
     st:workflow st:shape  ;
-# get param=graph&mode=shape from server Context
-# parser get them from Context when creating ShapeProcess
-sw:body (
-    [ a sw:Shape ]
+sw:body ( 
+    [ a sw:Shape  ]
     [ a sw:Transformation ; sw:uri st:dsresult ]
 ) .
-
 
 
 #

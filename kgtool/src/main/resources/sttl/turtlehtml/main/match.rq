@@ -1,0 +1,8 @@
+template (?in) {
+    st:call-template(st:open)
+    st:apply-templates-with(st:turtlehtml, ?in)
+    st:call-template(st:close)
+}
+where {
+
+}

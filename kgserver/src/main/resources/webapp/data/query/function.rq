@@ -74,12 +74,12 @@ function st:qname(?uri){
 function st:include(){
   coalesce(
     loop ((?name, ?val) in st:get(st:include)){
-      let (?value = st:get(?val)){
-	coalesce(
-	  concat("&", ?name, "=", 
-	    if (isURI(?value), st:qname(?value), ?value)),
-	  "")
-      }},
+        coalesce(
+            let (?value = st:get(?val)) {
+                concat("&", ?name, "=", 
+                    if (isURI(?value), st:qname(?value), ?value))
+            },"")
+    },
     "")
 }
 

@@ -1,0 +1,9 @@
+#
+# st:apply-templates-with(st:hrdfxml)
+#
+template st:start {
+    st:call-template-with(st:rdfxml, st:result)
+}
+where {
+   bind (st:export(st:uri,   st:focus())   as ?e)
+}

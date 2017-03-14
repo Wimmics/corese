@@ -1,0 +1,9 @@
+#
+# st:apply-templates-with(st:hrdfxml, ?in)
+#
+template (?in) {
+    st:call-template-with(st:rdfxml, st:focus, ?in)
+}
+where {
+
+}

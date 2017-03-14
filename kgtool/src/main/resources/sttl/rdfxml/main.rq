@@ -3,7 +3,7 @@
 # URI
 # Top level bnodes (not object of a property)
 #
-template st:main {
+template st:main(?in) {
    if (bound(?t), 
         st:call-template(st:resource, ?in, ?t),
         st:call-template(st:resource, ?in))

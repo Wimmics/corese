@@ -7,3 +7,7 @@ function st:literal(?x){
         #st:format("<span class='literal'>%s</span>", ?x), 
         ?x)
 }
+
+function us:clean(?x) {
+    replace(replace(?x, "&", "&amp;"), "<", "&lt;")
+}

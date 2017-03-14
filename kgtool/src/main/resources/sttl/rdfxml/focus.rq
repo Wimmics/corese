@@ -4,15 +4,15 @@
 # Olivier Corby - Wimmics INRIA I3S - 2015
 #
 
-template st:result {
+template st:focus(?in) {
   format { 
-    """<h3>RDF/XML</h3>
-    <pre>%s</pre>"""
-    us:clean(st:call-template(st:start))
+    """<pre>%s</pre>"""
+    us:clean(st:call-template(st:start, ?in))
   }
   
 }
 where {
     bind (st:set(st:html, true) as ?b)
+    bind (st:set(st:focus, false) as ?foc)
 }
 

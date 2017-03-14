@@ -4,7 +4,7 @@
 # Olivier Corby - Wimmics INRIA I3S - 2015
 #
 
-template st:start {
+template st:start(?in) {
 
   st:call-template(st:head)
   
@@ -13,5 +13,7 @@ template st:start {
   st:call-template(st:tail)
 }
 where {
-   bind(st:call-template(st:main) as ?body )
+   bind(
+    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+   as ?body )
 }

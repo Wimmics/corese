@@ -61,6 +61,10 @@ pre {
     background-color: #E4E5E7;
 } 
 
+pre  a { 
+     color: #00428C;
+}
+
 .shrink * {
     font-size: 15%;
 }
@@ -125,7 +129,7 @@ pre {
 }
 
 .maplarge {
-   height: 75%            
+   height: 100%            
 }
 
  .head { 

@@ -7,13 +7,12 @@ format {
     <input type='hidden' name='transform' value='%s' />    
     <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
     <br/>       
-    <input type='submit' value='submit' %s />      
+    <input type='submit' value='submit' class='btn btn-warning' onClick='trans(this.form); return false;' />      
   </form>
   """
   
   st:get(st:transform)
   str(?q)
-  st:submit()
   }
 }
 where {

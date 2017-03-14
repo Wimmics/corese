@@ -346,6 +346,7 @@ public class Load
      * format is a suggested format when path has no extension
      * default format is RDF/XML
      */
+    @Override
     public void parse(String path) throws LoadException {
         parse(path, null, null, UNDEF_FORMAT);
     }
@@ -354,6 +355,7 @@ public class Load
         parse(path, null, null, format);
     }
     
+    @Override
     public void parse(String path, String name) throws LoadException {
         parse(path, name, null, UNDEF_FORMAT);
     }

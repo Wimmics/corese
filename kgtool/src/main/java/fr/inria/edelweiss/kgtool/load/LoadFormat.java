@@ -1,6 +1,7 @@
 package fr.inria.edelweiss.kgtool.load;
 
 import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.util.HashMap;
 
 /**
@@ -30,7 +31,7 @@ public class LoadFormat {
     static final String JSONLD = ".jsonld";
     static final String SWF = ".sw";
 
-    static HashMap<String, Integer> ptable, utable;
+    static HashMap<String, Integer> ptable, utable, dtable;
     
     static {
         init();
@@ -65,6 +66,12 @@ public class LoadFormat {
         udefine("text/n-quads", Loader.NQUADS_FORMAT);
         udefine("application/rdf+xml", Loader.RDFXML_FORMAT);
         udefine("application/json", Loader.JSONLD_FORMAT);
+        
+        dtable = new HashMap<String, Integer>();
+        ddefine(Transformer.TURTLE, Loader.TURTLE_FORMAT);
+        ddefine(Transformer.RDFXML, Loader.RDFXML_FORMAT);
+        ddefine(Transformer.JSON,   Loader.JSONLD_FORMAT);
+        
    }
     
     static void define(String extension, int format){
@@ -73,6 +80,10 @@ public class LoadFormat {
     
      static void udefine(String extension, int format){
         utable.put(extension, format);
+    }
+     
+       static void ddefine(String extension, int format){
+        dtable.put(extension, format);
     }
     
     public static int getFormat(String path){
@@ -98,6 +109,14 @@ public class LoadFormat {
             }
         }
         return format;
+    }
+    
+    public static int getDTFormat(String format){
+        Integer ft = dtable.get(format);
+        if (ft == null){
+            return Loader.UNDEF_FORMAT;
+        }
+        return ft;
     }
       
 }

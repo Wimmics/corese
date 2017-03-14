@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -100,7 +101,16 @@ public class QueryLoad {
         }
     }
 
-    boolean isURL(String name) {
+     boolean isURL(String path) {
+        try {
+            new URL(path);
+        } catch (MalformedURLException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    boolean isURL2(String name) {
         for (String s : PROTOCOLS) {
             if (name.startsWith(s)) {
                 return true;

@@ -17,6 +17,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.edelweiss.kgtool.load.LoadFormat;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
@@ -152,15 +153,38 @@ public class ExtendGraph {
         return q;
     }
 
-      Object load(Producer p, Expr exp, Environment env, IDatatype dt) {
+    
+     Object load(Producer p, Expr exp, Environment env, IDatatype dt) {
+         return load(p, exp, env, dt, null);
+     }
+
+      Object load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
          Graph g = Graph.create();
          Load ld = Load.create(g);
          try {
              if (PluginImpl.readWriteAuthorized){
-                ld.parse(dt.getLabel(), Load.TURTLE_FORMAT);
+                ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
              }
          } catch (LoadException ex) {
              logger.error("Load error: " + dt);
+             logger.error(ex);
+             ex.printStackTrace();
+         }
+        IDatatype res = create("load", g, IDatatype.GRAPH);
+        return res;
+    }
+      
+         Object load2(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype undef_format) {
+         Graph g = Graph.create();
+         Load ld = Load.create(g);
+         try {
+             if (PluginImpl.readWriteAuthorized){
+                ld.parse(dt.getLabel(), (undef_format == null) ? Load.TURTLE_FORMAT : Load.UNDEF_FORMAT);
+             }
+         } catch (LoadException ex) {
+             logger.error("Load error: " + dt);
+             logger.error(ex);
+             ex.printStackTrace();
          }
         IDatatype res = create("load", g, IDatatype.GRAPH);
         return res;

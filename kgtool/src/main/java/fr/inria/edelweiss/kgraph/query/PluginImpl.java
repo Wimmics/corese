@@ -33,7 +33,6 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import fr.inria.edelweiss.kgraph.logic.Distance;
@@ -302,6 +301,9 @@ public class PluginImpl extends ProxyImpl {
                         // common ancestor
                         return ancestor(g, dt1, dt2);
                 }
+                
+             case LOAD:
+                return ext.load(p, exp, env, dt1, dt2);   
 
              case WRITE:                
                 return write(dt1, dt2);   

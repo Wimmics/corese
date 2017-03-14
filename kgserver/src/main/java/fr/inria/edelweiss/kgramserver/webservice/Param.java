@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -32,6 +33,7 @@ public class Param {
     private boolean protect = false;
     private boolean isUserQuery = false;
     private Context context;
+    private HttpServletRequest request;   
     
     static {
         nsm = NSManager.create();
@@ -50,6 +52,7 @@ public class Param {
         query = q;
     }
     
+    @Override
     public String toString(){
         String str = "";
         str += "profile: "   + getValue(profile) + "\n";
@@ -92,6 +95,11 @@ public class Param {
         }      
         ctx.setServer(Profile.SERVER);
         ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
+        ctx.setUserQuery(isUserQuery());
+        
+        if (getRequest() != null){
+            ctx.setRemoteHost(getRequest().getRemoteHost());
+        }
         return ctx;
     }
     
@@ -337,6 +345,20 @@ public class Param {
      */
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    /**
+     * @return the request
+     */
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    /**
+     * @param request the request to set
+     */
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
     }
 
 }

@@ -5,6 +5,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import static fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer.HOME_PAGE;
 import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 
 import javax.ws.rs.Consumes;
@@ -15,9 +16,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class enables to assign an URL to services
@@ -37,12 +40,14 @@ public class SrvWrapper {
     private static final String headerAccept = "Access-Control-Allow-Origin";
     static final String CONTENT_HTML = "<div class=\"content\" id=\"contentOfSite\">";
     private static final String pathRegex="/{path:template|spin/tospin|spin/tosparql|sdk|tutorial/.*|process/.*}";
-
+    private static Logger logger = LogManager.getLogger(SrvWrapper.class);
+    
     @GET
     @Path(pathRegex)
     @Produces("text/html")
     public Response transformGet(
-            @PathParam("path") String path,
+     @Context HttpServletRequest request,
+     @PathParam("path") String path,
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 
@@ -56,9 +61,8 @@ public class SrvWrapper {
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
 
         Response rs;
-
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryGETHTML(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryGETHTML(request, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPIN(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -66,7 +70,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdk(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().get(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().get(request, getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
@@ -75,12 +79,13 @@ public class SrvWrapper {
 
         return Response.status(rs.getStatus()).header(headerAccept, "*").entity(wrapper(rs).toString()).build();
     }
-
+    
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path(pathRegex)
     @Produces("text/html")
     public Response transformPost(
+     @Context HttpServletRequest request,
             @PathParam("path") String path,
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // URI of resource focus
@@ -97,7 +102,7 @@ public class SrvWrapper {
         Response rs;
 
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryPOSTHTML(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryPOSTHTML(request, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPINPOST(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -105,7 +110,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdk(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().post(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().post(request, getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
         } else {
@@ -120,6 +125,7 @@ public class SrvWrapper {
     @Path(pathRegex)
     @Produces("text/html")
     public Response transformPostMD(
+     @Context HttpServletRequest request,
             @PathParam("path") String path,
             @FormDataParam("profile") String profile, // query + transform
             @FormDataParam("uri") String resource, // URI of resource focus
@@ -136,7 +142,7 @@ public class SrvWrapper {
         Response rs;
 
         if (path.equalsIgnoreCase("template")) {
-            rs = new Transformer().queryPOSTHTML_MD(profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Transformer().queryPOSTHTML_MD(request, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.equalsIgnoreCase("spin/tospin")) {
             rs = new SPIN().toSPINPOST_MD(query);
         } else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -144,7 +150,7 @@ public class SrvWrapper {
         } else if (path.equalsIgnoreCase("sdk")) {
             rs = new SDK().sdkPostMD(query, name, value);
         } else if (path.startsWith("tutorial")) {
-            rs = new Tutorial().postMD(getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+            rs = new Tutorial().postMD(request, getService(path), profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
         } else if (path.startsWith("process")) {
             rs = new Processor().typecheckPost_MD(resource, "std", transform, query, getService(path));
         } else {
@@ -176,5 +182,5 @@ public class SrvWrapper {
     //get the string after first "/"
     private String getService(String s) {
         return (s == null || s.isEmpty()) ? "" : s.substring(s.indexOf("/") + 1);
-    }
+    }     
 }

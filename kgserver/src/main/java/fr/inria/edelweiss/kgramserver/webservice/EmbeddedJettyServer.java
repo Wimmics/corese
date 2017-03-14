@@ -206,7 +206,7 @@ public class EmbeddedJettyServer {
 			HandlerList handlers = new HandlerList();
 			handlers.setHandlers(new Handler[] { staticContextHandler, servletCtx });
 			server.setHandler(handlers);
-
+                        
 			// === SSL Connector begin ====
 			if (enableSsl) {
 				SslSocketConnector sslConnector = new SslSocketConnector();

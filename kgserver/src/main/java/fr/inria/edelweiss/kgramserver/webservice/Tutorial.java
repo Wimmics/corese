@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * HTML SPARQL endpoint apply transformation (like Transformer)
@@ -57,6 +58,7 @@ public class Tutorial {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("text/html")
     public Response post(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormParam("profile")   String profile, 
             @FormParam("uri")       String resource, 
@@ -74,13 +76,14 @@ public class Tutorial {
     		logger.debug("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(serv, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response postMD(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormDataParam("profile")   String profile, // query + transform
             @FormDataParam("uri")       String resource, // query + transform
@@ -98,12 +101,13 @@ public class Tutorial {
     		logger.debug("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(serv, profile, resource, mode, param, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
+        return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
 
     @GET
     //@Produces(MediaType.TEXT_HTML)
     public Response get(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
             @QueryParam("uri")      String resource, // URI of resource focus
@@ -131,6 +135,7 @@ public class Tutorial {
         par.setParam(param);
         par.setFormat(format);
         par.setDataset(namedGraphUris, namedGraphUris);
+        par.setRequest(request);
         return new Transformer().template(getTripleStore(serv), par);
     }
 

@@ -17,6 +17,7 @@ import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.HashMap;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -27,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -50,7 +52,7 @@ public class Transformer {
     boolean isDebug, isDetail;
     static boolean isTest = false;
     static HashMap<String, String> contentType;
-
+    
     static {
         init();
     }
@@ -78,6 +80,7 @@ public class Transformer {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("text/html")
     public Response queryPOSTHTML(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // query + transform
             @FormParam("mode") String mode, 
@@ -96,6 +99,7 @@ public class Transformer {
         par.setParam(param);
         par.setFormat(format);
         par.setDataset(from, named);
+        par.setRequest(request);
         return template(getTripleStore(), par);
     }
 
@@ -103,6 +107,7 @@ public class Transformer {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response queryPOSTHTML_MD(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @FormDataParam("profile") String profile, // query + transform
             @FormDataParam("uri") String resource, 
             @FormDataParam("mode") String mode, 
@@ -121,12 +126,14 @@ public class Transformer {
         par.setParam(param);
         par.setFormat(format);
         par.setDataset(toStringList(from), toStringList(named));
+        par.setRequest(request);
         return template(getTripleStore(), par);
     }
     
     @GET
     @Produces("text/html")
     public Response queryGETHTML(
+     @javax.ws.rs.core.Context HttpServletRequest request,
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 
@@ -145,6 +152,7 @@ public class Transformer {
         par.setParam(param);
         par.setFormat(format);
         par.setDataset(namedGraphUris, namedGraphUris);
+        par.setRequest(request);
         return template(getTripleStore(), par);
     }
 
@@ -152,7 +160,7 @@ public class Transformer {
         Context ctx = null;
         try {
 
-            par = mprofile.complete(par);
+            par = mprofile.complete(par);          
             ctx = create(par);
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
@@ -286,6 +294,7 @@ public class Transformer {
         context.set(Context.STL_SERVER_PROFILE, mprofile.getProfile());
     }
     
+    
     /**
      * Return transformation result as a HTML textarea
      * hence it is protected wrt img ...
@@ -340,9 +349,8 @@ public class Transformer {
     Context complete(Context c, Param par){
         if (SPARQLRestAPI.isAjax){
             c.setProtocol(Context.STL_AJAX);
+            c.export(Context.STL_PROTOCOL, c.get(Context.STL_PROTOCOL));
         }
-        c.setUserQuery(par.isUserQuery());
-        //c.setServerProfile(mprofile.getProfile());
         return c;
     }
 
@@ -361,6 +369,6 @@ public class Transformer {
             return null;
         }
     }
-
+    
    
 }

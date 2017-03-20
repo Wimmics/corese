@@ -110,11 +110,12 @@ public class CoreseTimer {
 		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
 		for (int i = 0; i < nbCycles; i++) {
 			LOGGER.log(Level.FINE, "iteration #{0}", i);
+			System.gc();
 			final long startTime = System.currentTimeMillis();
 			adapter.execQuery(query);
 			final long endTime = System.currentTimeMillis();
 			long delta = endTime - startTime;
-			if (i > test.getWarmupCycles()) {
+			if (i >= test.getWarmupCycles()) {
 				stats.addValue(delta);
 			}
 		}

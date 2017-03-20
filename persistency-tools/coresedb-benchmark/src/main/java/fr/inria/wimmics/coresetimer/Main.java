@@ -240,7 +240,7 @@ public class Main {
 			return this.measuredCycles;
 		}
 
-		String getResultFileName(Profile mode) {
+		public String getResultFileName(Profile mode) {
 			resultFileName = String.format(RDF_OUTPUT_FILE_FORMAT, suite.getOutputRoot(), testId, mode);
 			return resultFileName;
 		}
@@ -250,7 +250,10 @@ public class Main {
 			return this;
 		}
 
-		String getInput() {
+		/**
+		 * @return name of the RDF input file.
+		 */
+		public String getInput() {
 			return input;
 		}
 
@@ -259,7 +262,10 @@ public class Main {
 			return this;
 		}
 
-		String getInputDb() {
+		/**
+		 * @return Path for the DB.
+		 */
+		public String getInputDb() {
 			return inputDb;
 		}
 

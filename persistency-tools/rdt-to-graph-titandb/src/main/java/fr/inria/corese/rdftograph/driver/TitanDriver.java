@@ -5,6 +5,7 @@ package fr.inria.corese.rdftograph.driver;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import com.thinkaurelius.titan.core.Cardinality;
 import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.SchemaViolationException;
@@ -67,7 +68,7 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("storage.backend", "berkeleyje");
 		configuration.setProperty("storage.directory", dbPath + "/db");
 		configuration.setProperty("storage.buffer-size", 50_000);
-		configuration.setProperty("storage.berkeleyje.cache-percentage", 50);
+//		configuration.setProperty("storage.berkeleyje.cache-percentage", 50);
 //		configuration.setProperty("storage.read-only", true);
 		configuration.setProperty("index.search.backend", "elasticsearch");
 		configuration.setProperty("index.search.directory", dbPath + "/es");
@@ -76,15 +77,15 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("index.search.refresh_interval", 600);
 		configuration.setProperty("ids.block-size", 50_000);
 
-		configuration.setProperty("cache.db-cache", true);
-		configuration.setProperty("cache.db-cache-size", 0.3);
-		configuration.setProperty("cache.db-cache-time", 0);
-		configuration.setProperty("cache.tx-dirty-size", 10_000);
+		configuration.setProperty("cache.db-cache", false);
+//		configuration.setProperty("cache.db-cache-size", 100_000);
+//		configuration.setProperty("cache.db-cache-time", 0);
+//		configuration.setProperty("cache.tx-dirty-size", 100_000);
 		// to make queries faster
-		configuration.setProperty("query.batch", true);
-		configuration.setProperty("query.fast-property", true);
-		configuration.setProperty("query.force-index", false);
-		configuration.setProperty("query.ignore-unknown-index-key", true);
+//		configuration.setProperty("query.batch", true);
+//		configuration.setProperty("query.fast-property", true);
+//		configuration.setProperty("query.force-index", false);
+//		configuration.setProperty("query.ignore-unknown-index-key", true);
 		try {
 			configuration.save();
 
@@ -123,7 +124,7 @@ public class TitanDriver extends GdbDriver {
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
 		ManagementSystem manager = (ManagementSystem) g.openManagement();
 		if (!manager.containsPropertyKey(propertyName)) {
-			manager.makePropertyKey(propertyName).dataType(c).make();
+			manager.makePropertyKey(propertyName).dataType(c).cardinality(Cardinality.SINGLE).make();
 			System.out.println("adding key " + propertyName);
 			manager.commit();
 		} else {

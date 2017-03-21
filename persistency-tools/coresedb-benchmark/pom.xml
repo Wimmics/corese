@@ -67,6 +67,17 @@
 	  <artifactId>rdf-to-graph-nulldriver</artifactId>
 	  <version>${project.version}</version>
 	 </dependency>
+	 <dependency>
+	  <groupId>org.ehcache</groupId>
+	  <artifactId>sizeof</artifactId>
+	  <version>0.3.0</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>commons-beanutils</groupId>
+	  <artifactId>commons-beanutils</artifactId>
+	  <version>1.9.3</version>
+	  <scope>test</scope>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -12,8 +12,12 @@ import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 import org.openrdf.rio.RDFFormat;
 import static org.testng.Assert.assertTrue;
@@ -26,6 +30,19 @@ import org.testng.annotations.Test;
  * @author edemairy
  */
 public class QualitativeTest {
+
+	private static void setCacheForDb(TestDescription test) {
+		String confFileName = String.format("%s/conf.properties", test.getInputDb());
+		try {
+			PropertiesConfiguration config = new PropertiesConfiguration(new File(confFileName));
+			config.setProperty("storage.batch-loading", "false");
+			config.setProperty("cache.db-cache", "true");
+			config.setProperty("cache.db-cache-size", "250000000");
+			config.save();
+		} catch (ConfigurationException ex) {
+			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
 	String inputRoot;
 	String outputRoot;
@@ -177,14 +194,14 @@ public class QualitativeTest {
 		String[] inputFiles = {
 			//			"test-1.nq",
 			//			"human_2007_04_17.rdf",	
-									"btc-2010-chunk-000.nq:1",
-									"btc-2010-chunk-000.nq:10",
-									"btc-2010-chunk-000.nq:100",
-									"btc-2010-chunk-000.nq:1000",
-									"btc-2010-chunk-000.nq:10000",
-									"btc-2010-chunk-000.nq:100000",
-									"btc-2010-chunk-000.nq:1000000", 
-//			"btc-2010-chunk-000.nq"
+			"btc-2010-chunk-000.nq:1",
+			"btc-2010-chunk-000.nq:10",
+			"btc-2010-chunk-000.nq:100",
+			"btc-2010-chunk-000.nq:1000",
+			"btc-2010-chunk-000.nq:10000",
+			"btc-2010-chunk-000.nq:100000",
+			"btc-2010-chunk-000.nq:1000000", 
+			"btc-2010-chunk-000.nq"
 		};
 		String[] requests = {
 			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",
@@ -249,6 +266,7 @@ public class QualitativeTest {
 		CoreseTimer timerMemory = null;
 		CoreseTimer timerDb = null;
 		try {
+			setCacheForDb(test);
 			System.gc();
 			timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
 			System.gc();

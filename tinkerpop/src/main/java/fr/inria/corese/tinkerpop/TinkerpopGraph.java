@@ -116,9 +116,11 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 */
 	public static Optional<TinkerpopGraph> create(String driverName, Object config) {
 		try {
+			// call actualGraph = driverName.open(null, config)
 			Class gclass = Class.forName(driverName);
 			Method factoryMethod = gclass.getMethod("open", config.getClass());
 			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
+			
 			TinkerpopGraph result = new TinkerpopGraph();
 			result.setTinkerpopGraph(actualGraph);
 			return Optional.of(result);

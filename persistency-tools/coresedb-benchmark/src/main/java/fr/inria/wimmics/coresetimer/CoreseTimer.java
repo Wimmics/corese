@@ -132,19 +132,4 @@ public class CoreseTimer {
 	public DescriptiveStatistics getStats() {
 		return stats;
 	}
-
-
-//	private void writeStats(TestDescription test, DescriptiveStatistics stats) {
-//		try {
-//			FileWriter output = new FileWriter(test.getStatsFilename());
-//			output.append(test.getRequest());
-//			output.append(stats.toString());
-//			output.append("Q25 = " + stats.getPercentile(25));
-//			output.append("Q75 = " + stats.getPercentile(75));
-//			output.close();
-//		} catch (IOException ex) {
-//			LOGGER.log(Level.SEVERE, "Exception when trying to save results in " + test.getStatsFilename(), ex);
-//		}
-//	}
-
 }

@@ -172,7 +172,7 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String factory = System.getProperty("fr.inria.corese.factory");//"fr.inria.corese.tinkerpop.Factory";
+		String factory = System.getProperty("fr.inria.corese.factory");
 		if (factory == null || factory.compareTo("") == 0) {
 			logger.info("property fr.inria.corese.factory not defined, using the default ProducerImpl");
 				p = ProducerImpl.create(g);

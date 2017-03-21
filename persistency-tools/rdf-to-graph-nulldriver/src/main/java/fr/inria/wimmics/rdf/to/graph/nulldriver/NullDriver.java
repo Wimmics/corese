@@ -27,12 +27,7 @@ public class NullDriver extends GdbDriver {
 	}
 
 	@Override
-	public void createNode(Value value) {
-		logger.fine("Creating node "+value.toString());
-	}
-
-	@Override
-	public Object createRelationship(Object o, Object o1, String string, Map<String, Object> map) {
+	public Object createRelationship(Value o, Value o1, String string, Map<String, Object> map) {
 		logger.fine("Creating relationship bw "+o.toString()+" and "+o1.toString());
 		return null;
 	}
@@ -40,11 +35,5 @@ public class NullDriver extends GdbDriver {
 	@Override
 	public void commit() {
 		logger.fine("Commiting");
-	}
-
-	@Override
-	public Object getNode(Value v) {
-		logger.fine("returning "+v.toString());
-		return v;
 	}
 }

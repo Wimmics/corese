@@ -64,7 +64,7 @@ public class OrientDbDriver extends GdbDriver {
 		}
 	}
 
-	Map<String, Object> alreadySeen = new HashMap<>();
+	Map<Value, Vertex> alreadySeen = new HashMap<>();
 
 	String nodeId(Value v) {
 		StringBuilder result = new StringBuilder();
@@ -91,46 +91,10 @@ public class OrientDbDriver extends GdbDriver {
 	}
 
 	@Override
-	public Object createNode(Value v) {
-//		OrientGraph g = graph.getTx();
+	public Object createRelationship(Value source, Value object, String predicate, Map<String, Object> properties) {
 		Object result = null;
-		String nodeId = nodeId(v);
-		if (alreadySeen.containsKey(nodeId)) {
-			return alreadySeen.get(nodeId);
-		}
-		switch (RdfToGraph.getKind(v)) {
-			case IRI:
-			case BNODE: {
-				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, v.stringValue());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
-				result = newVertex.id();
-				break;
-			}
-			case LITERAL: {
-				Literal l = (Literal) v;
-				Vertex newVertex = g.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, l.getLabel());
-				newVertex.property(TYPE, l.getDatatype().toString());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
-				if (l.getLanguage().isPresent()) {
-					newVertex.property(LANG, l.getLanguage().get());
-				}
-				result = newVertex.id();
-				break;
-			}
-		}
-//		g.commit();
-		alreadySeen.put(nodeId, result);
-		return result;
-	}
-
-	@Override
-	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties) {
-		Object result = null;
-//		OrientGraph g = graph.getTx();
-		Vertex vSource = g.vertices(source).next();
-		Vertex vObject = g.vertices(object).next();
+		Vertex vSource = createOrGetNode(source);
+		Vertex vObject = createOrGetNode(object);
 		ArrayList<Object> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
 			p.add(key);
@@ -140,7 +104,6 @@ public class OrientDbDriver extends GdbDriver {
 		p.add(predicate);
 		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
 		result = e.id();
-//		g.commit();
 		return result;
 	}
 

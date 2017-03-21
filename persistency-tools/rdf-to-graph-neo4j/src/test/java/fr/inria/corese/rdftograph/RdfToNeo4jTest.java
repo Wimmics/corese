@@ -57,8 +57,7 @@ public class RdfToNeo4jTest {
 
 		RdfToGraph converter = new RdfToGraph().setDriver(RdfToGraph.DbDriver.ORIENTDB).setWipeOnOpen(true);
 
-		FileInputStream inputStream = new FileInputStream(new File(INPUTS[0]));
-		converter.convertStreamToDb(inputStream, RDFFormat.NQUADS, dbPath);
+		converter.convertFileToDb(INPUTS[0], RDFFormat.NQUADS, dbPath);
 
 //		checkDbEqual(expectedDb, dbPath);
 	}

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.neo4j.graphdb.Node;
@@ -80,11 +81,6 @@ public class Neo4jDriver extends GdbDriver {
 		return result;
 	}
 
-	@Override
-	public Object getNode(Value v) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
 	private static enum RelTypes implements RelationshipType {
 		CONTEXT
 	}
@@ -128,42 +124,71 @@ public class Neo4jDriver extends GdbDriver {
 	 * @param context
 	 * @return
 	 */
-	@Override
-	public void createNode(Value v) {
-//		Graph g = graph.getTx();
-		Object result = null;
-		String nodeId = nodeId(v);
+	public Vertex createOrGetNode(Value v) {
+		GraphTraversal<Vertex, Vertex> it = null;
+		Vertex result = null;
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, v.stringValue());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
-				result = newVertex.id();
+				it = graph.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+				if (it.hasNext()) {
+					result = it.next();
+				} else {
+					result = graph.addVertex(RDF_VERTEX_LABEL);
+					result.property(VERTEX_VALUE, v.stringValue());
+					result.property(KIND, RdfToGraph.getKind(v));
+				}
 				break;
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				Vertex newVertex = graph.addVertex(RDF_VERTEX_LABEL);
-				newVertex.property(VERTEX_VALUE, l.getLabel());
-				newVertex.property(TYPE, l.getDatatype().toString());
-				newVertex.property(KIND, RdfToGraph.getKind(v));
+				it = graph.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
 				if (l.getLanguage().isPresent()) {
-					newVertex.property(LANG, l.getLanguage().get());
+					it = it.has(LANG, l.getLanguage().get());
 				}
-				result = newVertex.id();
+				if (it.hasNext()) {
+					result = it.next();
+				} else {
+					result = graph.addVertex(RDF_VERTEX_LABEL);
+					result.property(VERTEX_VALUE, l.getLabel());
+					result.property(TYPE, l.getDatatype().toString());
+					result.property(KIND, RdfToGraph.getKind(v));
+					if (l.getLanguage().isPresent()) {
+						result.property(LANG, l.getLanguage().get());
+					}
+				}
+				break;
+			}
+			case LARGE_LITERAL: {
+				Literal l = (Literal) v;
+				it = graph.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+				if (l.getLanguage().isPresent()) {
+					it = it.has(LANG, l.getLanguage().get());
+				}
+				if (it.hasNext()) {
+					result = it.next();
+				} else {
+					result = graph.addVertex(RDF_VERTEX_LABEL);
+					result.property(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode()));
+					result.property(VERTEX_LARGE_VALUE, l.getLabel());
+					result.property(TYPE, l.getDatatype().toString());
+					result.property(KIND, RdfToGraph.getKind(v));
+					if (l.getLanguage().isPresent()) {
+						result.property(LANG, l.getLanguage().get());
+					}
+				}
 				break;
 			}
 		}
+		return result;
 	}
 
 	@Override
-	public Object createRelationship(Object source, Object object, String predicate, Map<String, Object> properties
-	) {
+	public Object createRelationship(Value sourceId, Value objectId, String predicate, Map<String, Object> properties) {
 		Object result = null;
-//		OrientGraph g = graph.getTx();
-		Vertex vSource = graph.vertices(source).next();
-		Vertex vObject = graph.vertices(object).next();
+		Vertex vSource = createOrGetNode(sourceId);
+		Vertex vObject = createOrGetNode(objectId);
+
 		ArrayList<Object> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
 			p.add(key);

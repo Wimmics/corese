@@ -14,6 +14,7 @@ import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.IOException;
 import java.util.Iterator;
+import org.apache.log4j.Logger;
 import org.openrdf.rio.RDFFormat;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
@@ -28,6 +29,8 @@ public class QualitativeTest {
 
 	String inputRoot;
 	String outputRoot;
+
+	private static final Logger logger = Logger.getLogger(QualitativeTest.class);
 
 	public QualitativeTest() {
 	}
@@ -174,19 +177,19 @@ public class QualitativeTest {
 		String[] inputFiles = {
 			//			"test-1.nq",
 			//			"human_2007_04_17.rdf",	
-			//			"btc-2010-chunk-000.nq:1",
-			//			"btc-2010-chunk-000.nq:10",
-			//			"btc-2010-chunk-000.nq:100",
-			//			"btc-2010-chunk-000.nq:1000",
-			//			"btc-2010-chunk-000.nq:10000",
-			//			"btc-2010-chunk-000.nq:100000",
-			"btc-2010-chunk-000.nq:1000000", //			"btc-2010-chunk-000.nq"
+									"btc-2010-chunk-000.nq:1",
+									"btc-2010-chunk-000.nq:10",
+									"btc-2010-chunk-000.nq:100",
+									"btc-2010-chunk-000.nq:1000",
+									"btc-2010-chunk-000.nq:10000",
+									"btc-2010-chunk-000.nq:100000",
+									"btc-2010-chunk-000.nq:1000000", 
+//			"btc-2010-chunk-000.nq"
 		};
 		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
-			"select ?x ?y where { ?x rdf:type ?y}",
-			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
-			"select ?x ?p ?y where { ?x ?p ?y}"
+			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",
+		//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
+		//			"select ?x ?p ?y where { ?x ?p ?y}"
 		};
 
 		return new Iterator<Object[]>() {
@@ -233,7 +236,7 @@ public class QualitativeTest {
 						setInputDb("./" + inputFile + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
-//					currentSuite.createDb();
+					currentSuite.createDb();
 				}
 				TestDescription[] result = {currentSuite.buildTest(request)};
 				return result;
@@ -246,8 +249,10 @@ public class QualitativeTest {
 		CoreseTimer timerMemory = null;
 		CoreseTimer timerDb = null;
 		try {
-			timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
+			System.gc();
 			timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
+			System.gc();
+			timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -264,4 +269,20 @@ public class QualitativeTest {
 		assertTrue(result, test.getId());
 	}
 
+//	@Test(dataProvider = "input", groups = "")
+//	public static void testProcess(TestDescription test) {
+//		try {
+//			logger.info("begin test: " + test.getId());
+//			Process buildBd = new ProcessBuilder("rdf-to-graph-build-bd", test.getInput(), test.getInputDb()).start();
+//			Process testMem = new ProcessBuilder("rdf-to-graph-test-mem", test.getInput(), test.getOutputPath(), test.getResultFileName(DB)).start();
+//			buildBd.waitFor();
+//			Process testBd = new ProcessBuilder("rdf-to-graph-test-bd", test.getInputDb(), test.getResultFileName(MEMORY)).start();
+//			testBd.waitFor();
+//			testMem.waitFor();
+//			// compare results	
+//			logger.info("end test: " + test.getId());
+//		} catch (IOException | InterruptedException ex) {
+//			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//	}
 }

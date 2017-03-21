@@ -12,7 +12,6 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +24,6 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
-import static org.apache.tinkerpop.gremlin.process.traversal.Order.decr;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -57,75 +55,14 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			@Override
 			public boolean hasNext() {
 				return edges.hasNext();
-//				if (!edges.hasNext()) {
-//					return false;
-//				} else {
-//					return findNext();
-//				}
 			}
 
 			@Override
 			public Entity next() {
-//				if (!nextSearched) {
-//					if (!findNext()) {
-//						throw new NoSuchElementException();
-//					}
-//				}
-//				nextSearched = false;
 				Entity nextEntity = unmapper.buildEntity(edges.next());
-
 				return nextEntity;
 			}
 
-			private boolean findNext() {
-				do {
-					nextEdge = Optional.of(edges.next());
-				} while (edgeEquals(nextEdge, previousEdge) && edges.hasNext());
-				if (!edgeEquals(nextEdge, previousEdge)) {
-					nextSearched = true;
-					return true;
-				} else {
-					return false;
-				}
-			}
-
-			private boolean edgeEquals(Optional<Edge> current, Optional<Edge> other) {
-				boolean result;
-				if (current.isPresent() && other.isPresent()) {
-					Edge currentEdge = current.get();
-					Edge otherEdge = other.get();
-					result = current.get().property(EDGE_P).value().equals(other.get().property(EDGE_P).value())
-						&& nodeEquals(currentEdge.inVertex(), otherEdge.inVertex())
-						&& nodeEquals(currentEdge.outVertex(), otherEdge.outVertex());
-				} else {
-					result = !(current.isPresent() ^ other.isPresent());
-				}
-				return result;
-			}
-
-			private boolean nodeEquals(Vertex v1, Vertex v2) {
-				if (v1.property(KIND).value().equals(v2.property(KIND).value())) {
-					switch (v1.property(KIND).value().toString()) {
-						case BNODE:
-						case IRI:
-							return (v1.property(VERTEX_VALUE).value().equals(v2.property(VERTEX_VALUE).value()));
-						case LITERAL:
-							IDatatype literal1 = makeLiteral(v1);
-							IDatatype literal2 = makeLiteral(v2);
-							return literal1.compareTo(literal2) == 0;
-					}
-
-				}
-				return false;
-			}
-
-			private IDatatype makeLiteral(Vertex v) {
-				String value = v.property(VERTEX_VALUE).value().toString();
-				String kind = v.property(TYPE).value().toString();
-				VertexProperty<Vertex> lang = v.property(LANG);
-				IDatatype result = lang.isPresent() ? DatatypeMap.createLiteral(value, kind, v.property(LANG).value().toString()) : DatatypeMap.createLiteral(value, kind);
-				return result;
-			}
 		}
 
 		GremlinIterable(Iterator<Edge> edges) {
@@ -177,30 +114,15 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 * @param dbPath
 	 * @return
 	 */
-	public static Optional<TinkerpopGraph> create(String driverName, Configuration config) {
+	public static Optional<TinkerpopGraph> create(String driverName, Object config) {
 		try {
 			Class gclass = Class.forName(driverName);
-			Method factoryMethod = gclass.getMethod("open", Configuration.class);
+			Method factoryMethod = gclass.getMethod("open", config.getClass());
 			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
 			TinkerpopGraph result = new TinkerpopGraph();
 			result.setTinkerpopGraph(actualGraph);
 			return Optional.of(result);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			ex.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Optional<TinkerpopGraph> create(String driverName, String config) {
-		try {
-			Class gclass = Class.forName(driverName);
-			Method factoryMethod = gclass.getMethod("open", String.class);
-			org.apache.tinkerpop.gremlin.structure.Graph actualGraph = (org.apache.tinkerpop.gremlin.structure.Graph) factoryMethod.invoke(null, config);
-			TinkerpopGraph result = new TinkerpopGraph();
-			result.setTinkerpopGraph(actualGraph);
-			return Optional.of(result);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			LOGGER.error(ex.getMessage());
 			ex.printStackTrace();
 		}
 		return null;
@@ -233,7 +155,6 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);
-//			edges = edges.order().by(EDGE_P, decr).by(EDGE_S, decr).by(EDGE_O, decr).by(EDGE_G, decr);
 			return new GremlinIterable<Entity>(edges);//{
 		} catch (Exception ex) {
 			LOGGER.error("An error occurred: {}", ex.toString());

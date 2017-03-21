@@ -45,10 +45,12 @@ public class TitanDriver extends GdbDriver {
 
 	static final Logger logger = Logger.getLogger(TitanDriver.class.getName());
 
-	TitanGraph g;
-
 	String dbPath;
 
+	public TitanGraph getTitanGraph() {
+		return (TitanGraph) g;
+	}
+	
 	@Override
 	public void openDb(String dbPathTemp) {
 		File f = new File(dbPathTemp);
@@ -95,7 +97,7 @@ public class TitanDriver extends GdbDriver {
 		}
 		g = TitanFactory.open(configuration);
 
-		TitanManagement mgmt = g.openManagement();
+		TitanManagement mgmt = getTitanGraph().openManagement();
 		if (!mgmt.containsVertexLabel(RDF_VERTEX_LABEL)) {
 			mgmt.makeVertexLabel(RDF_VERTEX_LABEL).make();
 		}
@@ -122,7 +124,7 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
-		ManagementSystem manager = (ManagementSystem) g.openManagement();
+		ManagementSystem manager = (ManagementSystem) getTitanGraph().openManagement();
 		if (!manager.containsPropertyKey(propertyName)) {
 			manager.makePropertyKey(propertyName).dataType(c).cardinality(Cardinality.SINGLE).make();
 			System.out.println("adding key " + propertyName);
@@ -133,7 +135,7 @@ public class TitanDriver extends GdbDriver {
 	}
 
 	private void createIndexes() {
-		ManagementSystem manager = (ManagementSystem) g.openManagement();
+		ManagementSystem manager = (ManagementSystem) getTitanGraph().openManagement();
 		if (!manager.containsGraphIndex("vertices") && !manager.containsGraphIndex("allIndex")) {
 			PropertyKey vertexValue = manager.getPropertyKey(VERTEX_VALUE);
 			PropertyKey kindValue = manager.getPropertyKey(KIND);
@@ -180,9 +182,9 @@ public class TitanDriver extends GdbDriver {
 			};
 			for (String indexName : indexNames) {
 				try {
-					GraphIndexStatusReport indexStatus = ManagementSystem.awaitGraphIndexStatus(g, indexName).status(SchemaStatus.REGISTERED).call();
+					GraphIndexStatusReport indexStatus = ManagementSystem.awaitGraphIndexStatus(getTitanGraph(), indexName).status(SchemaStatus.REGISTERED).call();
 					logger.log(Level.INFO, "status for {0} {1}", new Object[]{indexName, indexStatus});
-					manager = (ManagementSystem) g.openManagement();
+					manager = (ManagementSystem) getTitanGraph().openManagement();
 					manager.updateIndex(manager.getGraphIndex(indexName), SchemaAction.REINDEX).get();
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE, null, ex);
@@ -197,11 +199,11 @@ public class TitanDriver extends GdbDriver {
 
 	@Override
 	public void closeDb() {
-		g.close();
+		getTitanGraph().close();
 	}
 
 	public void reopen() {
-		g.close();
+		getTitanGraph().close();
 		g = TitanFactory.open(dbPath + "/conf.properties");
 	}
 
@@ -240,101 +242,7 @@ public class TitanDriver extends GdbDriver {
 		return result.toString();
 	}
 
-	public void createNode(Value v) {
-	}
-
-	public Vertex createOrGetNode(Value v) {
-		TitanVertex newVertex = null;
-		Vertex result = getNode(v);
-		if (result != null) {
-			return result;
-		}
-		try {
-			switch (RdfToGraph.getKind(v)) {
-				case IRI:
-				case BNODE: {
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, v.stringValue());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					break;
-				}
-				case LITERAL: {
-					Literal l = (Literal) v;
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, l.getLabel().toString());
-					newVertex.property(TYPE, l.getDatatype().toString());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					if (l.getLanguage().isPresent()) {
-						newVertex.property(LANG, l.getLanguage().get());
-					}
-					break;
-				}
-				case LARGE_LITERAL: {
-					Literal l = (Literal) v;
-					newVertex = g.addVertex(RDF_VERTEX_LABEL);
-					newVertex.property(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode()));
-					newVertex.property(VERTEX_LARGE_VALUE, l.getLabel());
-					newVertex.property(TYPE, l.getDatatype().toString());
-					newVertex.property(KIND, RdfToGraph.getKind(v));
-					if (l.getLanguage().isPresent()) {
-						newVertex.property(LANG, l.getLanguage().get());
-					}
-					break;
-				}
-			}
-			return newVertex;
-		} catch (SchemaViolationException ex) {
-			logger.info("ignoring a new occurence of vertex " + v);
-		}
-		return null;
-	}
-
-	HashMap<Value, Vertex> cache = new HashMap<>();
 	int removedNodes = 0;
-
-	public Vertex getNode(Value v) {
-		GraphTraversal<Vertex, Vertex> it = null;
-		if (cache.containsKey(v)) {
-			return cache.get(v);
-		}
-		Vertex result = null;
-		switch (RdfToGraph.getKind(v)) {
-			case IRI:
-			case BNODE: {
-				it = g.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
-				break;
-			}
-			case LARGE_LITERAL: {
-				Literal l = (Literal) v;
-				it = g.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
-				if (l.getLanguage().isPresent()) {
-					it = it.has(LANG, l.getLanguage().get());
-				}
-				break;
-			}
-			case LITERAL: {
-				Literal l = (Literal) v;
-				it = g.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
-				if (l.getLanguage().isPresent()) {
-					it = it.has(LANG, l.getLanguage().get());
-				}
-				break;
-			}
-		}
-
-		if (cache.size() > 10_000) {
-			logger.info("Cleaning cache");
-			cache.clear();
-		}
-		if (it.hasNext()) {
-			result = it.next();
-			cache.put(v, result);
-		} else {
-			result = null;
-		}
-
-		return result;
-	}
 
 	@Override
 	public Object createRelationship(Value source, Value object, String predicate, Map<String, Object> properties) {

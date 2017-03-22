@@ -250,7 +250,7 @@ public class QualitativeTest {
 						setWarmupCycles(2).
 						setMeasuredCycles(5).
 						setInput(inputFile).
-						setInputDb("./" + inputFile + "_db").
+						setInputDb("/tmp/" + inputFile + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					currentSuite.createDb();

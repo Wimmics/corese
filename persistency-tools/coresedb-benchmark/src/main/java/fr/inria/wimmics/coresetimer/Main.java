@@ -141,7 +141,7 @@ public class Main {
 		}
 		
 		public String getInputDb() {
-			return inputRoot + inputDb;
+			return inputDb;
 		}
 
 		public TestSuite setInputDb(String path) {

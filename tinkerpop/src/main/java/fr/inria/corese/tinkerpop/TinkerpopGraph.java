@@ -4,8 +4,6 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -21,8 +19,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**

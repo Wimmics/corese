@@ -6,10 +6,7 @@ package fr.inria.corese.rdftograph;
 import fr.inria.corese.rdftograph.driver.GdbDriver;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import org.openrdf.model.BNode;

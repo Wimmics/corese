@@ -14,6 +14,10 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -21,7 +25,24 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
  */
 public class TinkerpopToCorese {
 
+	LoadingCache<Edge, Entity> cache;
+
 	public TinkerpopToCorese(Graph g) {
+		this.cache = CacheBuilder.newBuilder().
+			maximumSize(1000000).
+			expireAfterAccess(100, TimeUnit.DAYS).
+			build(new CacheLoader<Edge, Entity>() {
+				@Override
+				public Entity load(Edge e) throws Exception {
+					String graph = e.value(EDGE_G);
+					Entity result = EdgeQuad.create(DatatypeMap.createResource(graph),
+						unmapNode(e.outVertex()),
+						DatatypeMap.createResource((String) e.value(EDGE_P)),
+						unmapNode(e.inVertex())
+					);
+					return result;
+				}
+			});
 	}
 
 	/**
@@ -30,33 +51,23 @@ public class TinkerpopToCorese {
 	 * @param e
 	 */
 	public Entity buildEntity(Edge e) {
-		String graph = e.value(EDGE_G);
-		Entity result = EdgeQuad.create(DatatypeMap.createResource(graph),
-			unmapNode(e.outVertex()),
-			DatatypeMap.createResource((String) e.value(EDGE_P)),
-			unmapNode(e.inVertex())
-		);
-		return result;
+		return cache.getUnchecked(e);
 	}
 
 	public Node unmapNode(Vertex node) {
 		String id = (String) node.value(VERTEX_VALUE);
 		switch ((String) node.value(KIND)) {
 			case IRI:
-//				return coreseGraph.createNode((String) node.value(VERTEX_VALUE));
 				return DatatypeMap.createResource(id);
 			case BNODE:
-//				return coreseGraph.createBlank((String) node.value(VERTEX_VALUE));
 				return DatatypeMap.createBlank(id);
 			case LITERAL:
 				String label = (String) node.value(VERTEX_VALUE);
 				String type = (String) node.value(TYPE);
 				VertexProperty<String> lang = node.property(LANG);
 				if (lang.isPresent()) {
-//					return coreseGraph.addLiteral(label, type, lang.value());
 					return DatatypeMap.createLiteral(label, type, lang.value());
 				} else {
-//					return coreseGraph.addLiteral(label, type);
 					return DatatypeMap.createLiteral(label, type);
 				}
 			case LARGE_LITERAL:
@@ -64,10 +75,8 @@ public class TinkerpopToCorese {
 				type = (String) node.value(TYPE);
 				lang = node.property(LANG);
 				if (lang.isPresent()) {
-//					return coreseGraph.addLiteral(label, type, lang.value());
 					return DatatypeMap.createLiteral(label, type, lang.value());
 				} else {
-//					return coreseGraph.addLiteral(label, type);
 					return DatatypeMap.createLiteral(label, type);
 				}
 			default:

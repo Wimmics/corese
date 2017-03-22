@@ -80,7 +80,6 @@ public class CoreseTimer {
 	}
 
 	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
-
 		assert (initialized);
 
 		// Loading the nq data in corese, then applying several times the query.
@@ -98,7 +97,6 @@ public class CoreseTimer {
 			case DB: {
 				inputFileName += test.getInputDb();
 				System.setProperty("fr.inria.corese.tinkerpop.dbinput", inputFileName);
-				System.out.println("property = " + System.getProperty("fr.inria.corese.tinkerpop.dbinput"));
 				adapter.preProcessing(inputFileName, false);
 				break;
 			}
@@ -115,6 +113,7 @@ public class CoreseTimer {
 			adapter.execQuery(query);
 			final long endTime = System.currentTimeMillis();
 			long delta = endTime - startTime;
+			LOGGER.info(String.format("elapsed time = %d ms", delta));
 			if (i >= test.getWarmupCycles()) {
 				stats.addValue(delta);
 			}

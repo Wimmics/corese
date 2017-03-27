@@ -12,6 +12,8 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
@@ -906,22 +908,42 @@ public class PluginImpl extends ProxyImpl {
         }
         return name;
     }
-        
-    Node kgram(Environment env, Graph g, String  query, Mapping m) {    
+      
+     Node kgram(Environment env, Graph g, String  query, Mapping m) {    
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {
-            Mappings map = exec.sparqlQuery(query, m);
+            Context c = null;
+            if (env.getQuery().getContext() != null){
+                c = (Context) env.getQuery().getContext();
+            }
+            Mappings map = exec.sparqlQuery(query, m, (c == null)?null:new Dataset(c));
             if (map.getGraph() == null){
-                return DatatypeMap.createObject("Mappings", map, IDatatype.MAPPINGS);
+                return DatatypeMap.createObject(map);
             }
             else {
-                return DatatypeMap.createObject("Graph", map.getGraph(), IDatatype.GRAPH);
+                return DatatypeMap.createObject(map.getGraph());
             }
         } catch (EngineException e) {
-            return DatatypeMap.createObject("Mappings", new Mappings(), IDatatype.MAPPINGS);
+            return DatatypeMap.createObject(new Mappings());
         }
     }
+    
+//    Node kgram2(Environment env, Graph g, String  query, Mapping m) {    
+//        QueryProcess exec = QueryProcess.create(g, true);
+//        exec.setRule(env.getQuery().isRule());
+//        try {
+//            Mappings map = exec.sparqlQuery(query, m);
+//            if (map.getGraph() == null){
+//                return DatatypeMap.createObject("Mappings", map, IDatatype.MAPPINGS);
+//            }
+//            else {
+//                return DatatypeMap.createObject("Graph", map.getGraph(), IDatatype.GRAPH);
+//            }
+//        } catch (EngineException e) {
+//            return DatatypeMap.createObject("Mappings", new Mappings(), IDatatype.MAPPINGS);
+//        }
+//    }
 
     IDatatype qname(IDatatype dt, Environment env) {
         if (!dt.isURI()) {

@@ -14,6 +14,9 @@ import org.apache.logging.log4j.LogManager;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -457,7 +460,7 @@ public class NSManager extends ASTObject {
                     str = resolve(str);
                 }
             } catch (Exception e) {
-                logger.error(e);
+                logger.error(e.getMessage());
             }
         }
         return str;
@@ -543,10 +546,28 @@ public class NSManager extends ASTObject {
                 baseURI = new URI(s);
             } catch (URISyntaxException e) {
                 baseURI = null;
-                logger.error(e);
+                logger.error(e.getMessage());
             }
         }
     }
+    
+    public static String toURI(String path) {
+        String str;
+        try {
+            str = new URL(path).toString();
+        } catch (MalformedURLException ex) {
+            try {
+                str = new File(path).toURL().toString();
+            } catch (MalformedURLException ex1) {
+                return path;
+            }
+        }
+        if (str.startsWith("file:/") && !str.startsWith("file://")) {
+            str = str.replace("file:", "file://");
+        }
+        return str;
+    }
+    
 
     /**
      * s can be relative to the actual base ...
@@ -602,9 +623,9 @@ public class NSManager extends ASTObject {
     }
 
     public boolean isUserDefine() {
-        if (base != null){
-            return true;
-        }
+//        if (base != null){
+//            return true;
+//        }
         return size() > def.size();
     }
 

@@ -2,39 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:type {
-  group {
-         "a " if (?refer, st:turtle(?c), ?c)           
-          ; separator = concat(" ;", st:nl()) 
-  }
-  if (?rest, concat(" ;", st:nl()), "")
-}
-where {
-  ?in rdf:type ?c 
-  
-    bind(
-    exists { ?in ?q ?v . filter (?q != rdf:type) }
-    as ?rest)
-    
-    bind(isBlank(?c) && exists { ?x ?q ?c . filter(?in != ?x) }
-    as ?refer)
-}
-
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -62,7 +33,6 @@ where {
   } order by ?x
 }
 
-
 ]]>
 </body>
 </rule>
@@ -83,7 +53,6 @@ where {
   bind (st:call-template(st:main) as ?main)
 }
 
-
 ]]>
 </body>
 </rule>
@@ -97,18 +66,17 @@ where {
 #
 template st:value {
              
-	?p " " 
-	       
-	if (?refer, st:turtle(?y), 
-	if (isURI(?y) && ?y = rdf:nil, "()", ?y))
-          
-    ; separator = concat(" ;", st:nl()) 
+   format {
+    "%s %s"
+	if (?p = rdf:type, "a", st:turtle(?p))  	       
+	if (?refer, st:turtle(?y), if (isURI(?y) && ?y = rdf:nil, "()", st:process(?y)))
+   }   
+             
+   ; separator = concat(" ;", st:nl()) 
 }
 where {
   ?in ?p ?y 
-  
-  filter (?p not in (rdf:type))
-  
+    
   bind (
     isBlank(?y) 
     && not exists { ?y rdf:first ?e }
@@ -119,8 +87,7 @@ where {
   as ?refer)
     
 }
-order by ?p ?y
-
+order by if (?p = rdf:type, 0, 1) ?p ?y
 ]]>
 </body>
 </rule>
@@ -143,48 +110,6 @@ where {
   }
 }
 order by ?x
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:test {
-  st:load(rdf:)
-  st:load(rdfs:)
-  st:call-template(st:start)
-}
-where {
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:list {
-  "(" 
-    group { ?e } 
-  ")"
-  
-}
-where {
-  ?in rdf:rest*/rdf:first ?e
-}
-
 ]]>
 </body>
 </rule>
@@ -216,27 +141,6 @@ where {
   }
 }
 order by ?x
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:test2 {
-  st:load(rdf:)
-  st:call-template(st:start)
-  st:apply-templates-with-graph(st:table, rdf:)  
-}
-where {
-}
-
-
 ]]>
 </body>
 </rule>
@@ -266,7 +170,6 @@ where {
   }
 }
 order by ?x
-
 ]]>
 </body>
 </rule>
@@ -299,7 +202,6 @@ where {}
     st:turtle(?in)
  }
  
-
 ]]>
 </body>
 </rule>
@@ -331,7 +233,6 @@ where {
 }
 # after URI and blank
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -347,7 +248,6 @@ template {
   ?in " "
   
   ibox {   
-	st:call-template(st:type, ?in)	
 	st:call-template(st:value, ?in)      
   } 
       
@@ -358,7 +258,6 @@ where {
   filter isUri(?in) 
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -374,7 +273,6 @@ template {
   if (?refer, concat(st:turtle(?in), " "), "[")
   
   ibox {
-	st:call-template(st:type, ?in)	  
 	st:call-template(st:value, ?in)
   } 
       
@@ -396,7 +294,6 @@ where {
   as ?refer)
 }
 limit 1
-
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -12,34 +12,15 @@ Thu Feb 23 09:12:11 CET 2017
 #
 # Geolocate resource on a map given lat et long
 #
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:gmap(?r, ?lat, ?lon, ?list) {
 
-  if (st:get(st:protocol, st:ajax), "", 
-  """<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>""")
+  if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
   
 format {
-
-"""
-  <script>
-  function callback() {
-    var pos = new google.maps.LatLng(%s,%s);         
-    var mapOptions = {zoom: %s, center: pos, mapTypeId: google.maps.MapTypeId.TERRAIN};            
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    
-    google.maps.event.addListener(map, 'click', 
-    function(event){
-      alert( "p:latitude: " + event.latLng.lat() + " " + "; p:longitude: " + event.latLng.lng() ); 
-    });
-    
-    var marker = new google.maps.Marker({ position: pos, map: map, icon: '%s' });   
-    %s
-    }
-  %s   
-  </script>      
-  <p class='%s' id='map-canvas' ></p>
-"""
-
+  ft:map.html
+  
   str(?lat)
   str(?lon)
   coalesce(st:get(st:mapzoom), 7)  
@@ -47,8 +28,7 @@ format {
   
   st:call-template(st:gmap2, ?list)
   
-  if (st:get(st:protocol, st:ajax), "",
-        "google.maps.event.addDomListener(window, 'load', callback);")
+  if (st:get(st:protocol, st:ajax), "", st:format(ft:script2.js))
         
   coalesce(st:get(st:mapsize), "mapmedium")
 }
@@ -56,7 +36,6 @@ format {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -75,7 +54,6 @@ where {
   ?r ?p ?n
   optional { ?n rdfs:label ?ln }
 }
-
 ]]>
 </body>
 </rule>
@@ -85,16 +63,11 @@ where {
 <![CDATA[
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:descresource(?r) {
 format {
-  """
-  <tr>
-  <th class='left'>%s</th>
-  <td>%s</td>
-  </tr>
-  """ 
-  
+  ft:resource.html
   str(?p)
   st:call-template(st:triple, ?r, ?p, ?v)
   }
@@ -102,7 +75,6 @@ format {
 where { 
     ?r ?p ?v
 }
-
 ]]>
 </body>
 </rule>
@@ -146,7 +118,6 @@ where {
    filter(! bound(?res) || ?in != ?res)
 
 }
-
 ]]>
 </body>
 </rule>
@@ -154,14 +125,14 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:icon(?label, ?ic) {
   format {
-    us:format("img.html")    
+    ft:img.html   
     str(?label) str(?ic)
   }
 }
 where {}
-
 ]]>
 </body>
 </rule>
@@ -183,7 +154,6 @@ template st:start {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -207,7 +177,6 @@ where {
   optional { ?x a ?t }
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -215,14 +184,15 @@ limit 1
 <rule>
 <body>
 <![CDATA[
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:    <http://fr.dbpedia.org/property/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix w:   <http://fr.wikipedia.org/wiki/>
+prefix r:   <http://fr.dbpedia.org/resource/>
+prefix p:   <http://fr.dbpedia.org/property/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:frame(?label, ?icon, ?body) {
 format {
-  us:format("frame.html")
+  ft:frame.html
 
   str(?label)
   
@@ -237,7 +207,6 @@ where {
 
     
 }
-
 ]]>
 </body>
 </rule>
@@ -260,7 +229,6 @@ template st:default {
 where {
     bind(st:get(st:uri) as ?uri)
 }
-
 ]]>
 </body>
 </rule>
@@ -330,7 +298,6 @@ function us:person(){
 }  
   
 
-
 ]]>
 </body>
 </rule>
@@ -354,7 +321,6 @@ template st:page {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -362,16 +328,16 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
 format {
-  us:format("triple.html")
+  ft:triple.html
  
   str(?title)
   st:call-template(?temp, ?r, ?p)
  }
 }
 where {} 
-
 ]]>
 </body>
 </rule>
@@ -407,7 +373,6 @@ function us:define(){
     if (xt:size(?m) = 0) { us:person() } else { ?m }
   }
 }
-
 ]]>
 </body>
 </rule>
@@ -421,7 +386,6 @@ template st:insert(?uri) {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -433,25 +397,15 @@ where {
 # Geolocate  resources on a map 
 # ?list = list(list(uri, lat, lon))
 #
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:gmap2(?list) {
   format {
-    """
-    var pos%s = new google.maps.LatLng(%s, %s);
-		    
-    var marker%s 
-    = new google.maps.Marker({ position: pos%s, map: map, icon: '%s' });
-    
-    google.maps.event.addListener(marker%s, 'click', 
-    function () {window.location.href = '%s';});
-    """
+    ft:map2.html
     
     st:number()
     str(?lat)
     str(?lon)
-    st:number()
-    st:number()
     coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    st:number()
     st:plink(?r)
   }
 }
@@ -460,7 +414,6 @@ where {
   bind (unnest(?list) as (?r, ?lat, ?lon))
   
 }
-
 ]]>
 </body>
 </rule>
@@ -491,7 +444,6 @@ template st:title(?r, ?l, ?i) {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -502,11 +454,12 @@ where {
 #
 # Link to external web site (eg Wikipedia)
 #
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template  st:href(?r, ?p) {
   format {
   
-  "<a href=\"%s\">%s</a>"
+  ft:link.html
 
    str(?v) str(?v) 
   }
@@ -516,7 +469,6 @@ where {
    ?r ?p ?v 
 }
  
-
 ]]>
 </body>
 </rule>
@@ -542,7 +494,6 @@ where {
  filter(?x = coalesce(st:get(st:uri), ?x))
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -566,7 +517,6 @@ template st:substart(?x) {
 }
 where { 
 }
-
 ]]>
 </body>
 </rule>
@@ -588,7 +538,6 @@ where {
   optional { ?n rdfs:label ?ln }
   
 }
-
 ]]>
 </body>
 </rule>
@@ -631,7 +580,6 @@ where {
   bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
 }
-
 ]]>
 </body>
 </rule>
@@ -647,12 +595,12 @@ prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 
 template  st:display(?r, ?l) {
   format {
-    "<a href='%s'>%s</a>"
-
+    ft:link.html
     st:pplink(?r)
     str(coalesce(?l, ?pr))
   }
@@ -664,7 +612,6 @@ where {
    as ?pr)   
 }
  
-
 ]]>
 </body>
 </rule>
@@ -695,7 +642,6 @@ where {
   optional { ?in o:thumbnail  ?ic  }
     
 }
-
 ]]>
 </body>
 </rule>
@@ -725,7 +671,6 @@ where {
   optional { ?in o:thumbnail  ?ic  }
     
 }
-
 ]]>
 </body>
 </rule>
@@ -755,7 +700,6 @@ where {
   
   
 }
-
 ]]>
 </body>
 </rule>

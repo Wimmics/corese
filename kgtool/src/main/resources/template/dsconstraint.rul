@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:43 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -29,7 +29,6 @@ where {
   bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }
 
-
 ]]>
 </body>
 </rule>
@@ -47,7 +46,6 @@ where {
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
   bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
 }
-
 
 ]]>
 </body>
@@ -95,7 +93,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -108,15 +105,21 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 template st:profile {}
 where {}
 
-function st:aggregate(?x) {
-  st:agg_and(?x)
+function st:aggregate(?out) {
+  st:agg_and(?out)
 }
 
+function st:default(?term){
+    true
+}
+
+function st:defaultNamed(?term){
+    true
+}
 
 function st:optimize(?shape, ?sh){
     true
 }
-
 
 
 
@@ -140,9 +143,8 @@ where {
   
   bind (sh:datatype(?s, ?d)  as ?suc)
   
-  bind (st:report(sh:datatype, ?sh, ?shape, ?s, sh:datatype, ?d, ?suc, ?vis) as ?b)
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }
-
 ]]>
 </body>
 </rule>
@@ -157,13 +159,14 @@ template (?shape, ?sh, ?vis, ?ls) {
 }
 where {
   graph ?shape {  
-    values ?q { sh:class sh:datatype sh:pattern sh:sparql }
-    ?sh ?q ?m    
+    values ?q { sh:class  sh:pattern sh:sparql }
+    ?sh ?q ?m            
+    #filter not exists { ?sh sh:path ?p }
+
   }
   
   values ?s { unnest(?ls) }
 }
-
 
 
 ]]>
@@ -181,18 +184,19 @@ template (?shape, ?sh, ?vis, ?ls) {
 where {
   graph ?shape {  
     values ?q { 
-        sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
+        sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
     }
-    ?sh ?q ?m    
+    ?sh ?q ?m 
+    #filter not exists { ?sh sh:path ?p }
+ 
   }
-    
-    values ?s { unnest(?ls) }
+  
+  values ?s { unnest(?ls) }
     
   bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   
   bind (st:report(?q, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }
-
 
 ]]>
 </body>

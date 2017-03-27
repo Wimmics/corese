@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -26,7 +26,6 @@ where {
   as ?start)  
       
 }
-
 
 ]]>
 </body>
@@ -56,7 +55,6 @@ where {
   order by ?in
         
 }
-
 
 ]]>
 </body>
@@ -93,7 +91,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -127,7 +124,6 @@ where {
   }
   order by ?in
 }
-
 
 ]]>
 </body>
@@ -193,7 +189,6 @@ where {}
        ||  strstarts(?t, xsd:))
   }
 
-
 ]]>
 </body>
 </rule>
@@ -212,7 +207,6 @@ template  st:body  {
 where {
     
 }
-
 
 ]]>
 </body>
@@ -250,7 +244,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -275,7 +268,6 @@ where {
       
 }
 
-
 ]]>
 </body>
 </rule>
@@ -292,7 +284,6 @@ template st:annotation(?in) {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -318,7 +309,6 @@ where {
      bind(st:export(st:html, true) as ?ctx) 
 }
 
-
 ]]>
 </body>
 </rule>
@@ -338,7 +328,6 @@ template st:prefix {
 where {
   bind (kg:unnest(st:prefix()) as (?p, ?n))
 }
-
 ]]>
 </body>
 </rule>
@@ -369,7 +358,6 @@ where {
   optional { ?in owl:versionIRI ?uri }
       
 }
-
 
 ]]>
 </body>
@@ -403,7 +391,6 @@ where {
         
 }
 
-
 ]]>
 </body>
 </rule>
@@ -423,7 +410,6 @@ template st:header {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -455,7 +441,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -482,7 +467,6 @@ values ?p {
   owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith 
   rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy 
 }
-
 ]]>
 </body>
 </rule>
@@ -504,7 +488,6 @@ where {
       ?in ?p ?t
      } limit 1
 }
-
 
 ]]>
 </body>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -18,7 +18,6 @@ template sql:or {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -39,7 +38,6 @@ template st:start {
 where {
   ?in a sql:Query
 }
-
 ]]>
 </body>
 </rule>
@@ -56,7 +54,6 @@ template sql:comma {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -73,7 +70,6 @@ template sql:semicolon {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -92,7 +88,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -109,7 +104,6 @@ template sql:line {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -132,7 +126,6 @@ values (?join ?label) {
 	(sql:LeftJoin "LEFT JOIN ")
 	(sql:RightJoin "RIGHT JOIN ")
 }
-
 
 
 ]]>
@@ -158,7 +151,6 @@ values (?clause ?label) {
 	(sql:ListOfValues "")
 }
 
-
 ]]>
 </body>
 </rule>
@@ -181,7 +173,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -199,7 +190,6 @@ where {
   { ?in sql:label ?value } union
   { ?in sql:value ?value } 
 }
-
 ]]>
 </body>
 </rule>
@@ -219,7 +209,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -236,7 +225,6 @@ where {
   ?in a sql:Or ;
      sql:args ?args
 }
-
 ]]>
 </body>
 </rule>
@@ -253,7 +241,6 @@ where {
   ?in a sql:Alias ;
      sql:label ?name
 }
-
 ]]>
 </body>
 </rule>
@@ -276,7 +263,6 @@ values (?drop ?label) {
 	(sql:DropDatabase 	"DROP DATABASE ")
 	(sql:TruncateTable  	"TRUNCATE TABLE ")
 }
-
 ]]>
 </body>
 </rule>
@@ -292,7 +278,6 @@ template  {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -312,7 +297,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -329,7 +313,6 @@ where {
   ?in a sql:As ;
      sql:args ?name
 }
-
 ]]>
 </body>
 </rule>
@@ -351,7 +334,6 @@ values (?alter ?label) {
 	(sql:AlterTableDrop "DROP COLUMN ")
 	(sql:AlterTableAlter "ALTER COLUMN ")
 }
-
 ]]>
 </body>
 </rule>
@@ -382,7 +364,6 @@ values (?function ?label) {
 	(sql:Upper "UPPER")
 	(sql:Lower "LOWER")
 }
-
 
 
 
@@ -426,7 +407,6 @@ values (?ope ?label) {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -447,7 +427,6 @@ values (?delete ?label) {
 	(sql:Delete 	"DELETE ")
 	(sql:Deletestar "DELETE * FROM ")
 }
-
 ]]>
 </body>
 </rule>
@@ -470,7 +449,6 @@ values (?create ?label) {
 	(sql:CreateIndex 	"CREATE INDEX ")
 	(sql:CreateIndexUnique 	"CREATE UNIQUE INDEX ")
 }
-
 ]]>
 </body>
 </rule>
@@ -489,7 +467,6 @@ where {
      	?in a sql:ColumnsTable ;
 	     sql:args ?columnstable     
 }
-
 
 
 
@@ -520,7 +497,6 @@ values (?clause ?label) {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -542,7 +518,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -559,7 +534,6 @@ where {
   ?in a sql:And ;
      sql:args ?args
 }
-
 ]]>
 </body>
 </rule>
@@ -576,7 +550,6 @@ where {
   ?in a sql:Column ;
      sql:label ?name
 }
-
 ]]>
 </body>
 </rule>
@@ -593,7 +566,6 @@ where {
   ?in a sql:Table ;
      sql:label ?name
 }
-
 ]]>
 </body>
 </rule>
@@ -610,7 +582,6 @@ where {
   ?in a sql:Select ;
      sql:args ?select
 }
-
 ]]>
 </body>
 </rule>

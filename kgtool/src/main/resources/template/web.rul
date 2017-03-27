@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -35,7 +35,6 @@ where {
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
 
 }
-
 ]]>
 </body>
 </rule>
@@ -52,7 +51,6 @@ template st:content {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -76,7 +74,6 @@ where {
   bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
   filter bound(?query)
 }
-
 ]]>
 </body>
 </rule>
@@ -86,11 +83,7 @@ where {
 <![CDATA[
 template st:tail {
 format {
-  """ 
-  <h3>Dataset</h3>
-  %s
-  <p> <hr/> </p>
-  """
+  us:format("tail.html")
   
   st:call-template(st:content)
 }
@@ -98,7 +91,6 @@ format {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -109,14 +101,8 @@ where {
 template st:prev(?t) {
 
 format {
-  """
-  <a  href='%s'>
-  <button type='button' %s>Previous</button>
-  </a>
-  """
-  
+  us:format("prev.html")
   st:plink(?n)
-  st:bstyle()
   }
   
 }
@@ -130,7 +116,6 @@ where {
 	st:name ?n 
   }
 }
-
 ]]>
 </body>
 </rule>
@@ -141,13 +126,8 @@ where {
 template st:next(?t) {
 
 format {
-  """
-  <a  href='%s'>
-  <button type='button' %s>Next</button>
-  </a>
-  """ 
+  us:format("next.html")
   st:plink(?n)
-  st:bstyle()
  }
     
 }
@@ -161,7 +141,6 @@ where {
 	st:name ?n 
   }
 }
-
 ]]>
 </body>
 </rule>
@@ -177,7 +156,10 @@ where {}
   function st:proto() {
     coalesce(st:get(st:protocol), st:std)
   }
-
+  
+function us:format(?name) {
+   st:getFormat("tutorial", ?name)
+}
 
 ]]>
 </body>
@@ -195,30 +177,17 @@ template st:selectform(?t) {
 
 format {
 
-  """
-  <h3>Select a query</h3>
-  <form method='get' id ='select' action='%s'>
-  <input type='hidden' name='profile' value='%s' />
-  %s   
-  <select %s id='uri' name='uri' onChange='%s'>
-  %s
-  </select>   
-  %s
-  </form>
-  """
+  us:format("selectform.html")
   
   st:get(st:service) 
   st:get(st:profile)   
   st:call-template(st:prev, ?t)  
-  st:sstyle() 
-  st:change() 
   st:call-template(st:list, ?t)  
   st:call-template(st:next, ?t)
 }
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -232,79 +201,22 @@ where {
 # ?q actual query, ?t query template, ?s query solution
 #
 template st:form(?n, ?q, ?t, ?s) {
-
-   st:call-template(st:script)
    
-   format {
-   
-    """
-    <form method='post'  id='form' 	action='%s' >   
-      <input type='hidden' name='profile' value='%s' />     
-      <input type='hidden' id='tmp' 	value='%s' />
-      <input type='hidden' id='sol' 	value='%s' />
-      <input type='hidden' name='uri' 	value='%s' />
-      %s
-      <input type='submit' value='submit' %s/>
-      <br/>
-      <textarea cols='60' rows='10' id='query' name='query'>%s</textarea>
-    </form>
-    """  
+   format {   
+    us:format("form.html")
    
     st:get(st:service) 
     st:get(st:profile)
     str(?t) 
     str(?s) 
     ?n 
-    if (?s = st:null, "", st:call-template(st:nav))
-    st:submit() 
+    if (?s = st:null, "", st:format(us:format("nav.html")))
     str(?q)
     }
    
 }
 where {
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:script {
-   """
-   <script type="text/javascript">           
-        function show(name){
-            document.getElementById('query').value = document.getElementById(name).value;
-        }                
-   </script>
-   """
-}
-where {}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:nav {
- 
- format {
- 
- """
- <input type='button' %s onclick="show('sol')" value='Solution' />      
- <input type='button' %s onclick="show('tmp')" value='Template' /> 
- """
-      
-  st:bstyle()
-  st:bstyle()   
-  }
-   
- }
-where {}
-
 ]]>
 </body>
 </rule>
@@ -318,14 +230,9 @@ where {}
 template st:list(?t) {
 
 format {
-  """
-  <option value='%s'" %s> 
-  %s . %s 
-  </option>
-  """
+  us:format(if (?q = ?t, "optionselected.html", "option.html") )
   
   ?q
-  if (?q = ?t, "selected='true'", "")
   str(?i)
   str(?title)
 }
@@ -342,7 +249,6 @@ where {
   }
 }
 order by ?i
-
 ]]>
 </body>
 </rule>
@@ -369,7 +275,6 @@ where {
     ?ds ?p [ st:uri ?d ]
   }
 }
-
 ]]>
 </body>
 </rule>
@@ -380,15 +285,13 @@ where {
 template st:head {
    
   format {
-  "<h2 class='center'>%s</h2>" 
-  str(?title)
+    us:format("head.html")  str(?title)
   }
   
 }
 where {
   bind (coalesce(st:get(st:title), "Tutorial") as ?title)
 }
-
 ]]>
 </body>
 </rule>
@@ -406,19 +309,11 @@ where {
 template st:display(?n) {
 
 format {
-  """
-  <h3>%s</h3>
-  <p>  
-  %s
-  %s
-  </p>
-  %s
-  %s
-  """
+   us:format("display.html")
 
    str(?l)
    str(?c)   
-   if (bound(?r), st:format("<br/><a href='%s'>(%s)</a>", str(?r), str(?r)), "")
+   if (bound(?r), st:format(us:format("documentation.html"), str(?r)), "")
    
    st:call-template(st:form, 
      ?n,
@@ -444,7 +339,6 @@ where {
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }
-
 ]]>
 </body>
 </rule>

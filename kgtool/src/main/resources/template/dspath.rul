@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:43 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -25,7 +25,6 @@ where {
   bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -45,7 +44,6 @@ where {
   
   bind (st:report(sh:not, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
 }
-
 ]]>
 </body>
 </rule>
@@ -69,7 +67,6 @@ where {
   bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -90,10 +87,9 @@ where {
   values ?o { unnest(?l2) }  
   bind (xt:member(?o, ?l1) as ?suc)
   
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -119,7 +115,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -139,7 +134,6 @@ where {
   values ?oper {sh:equals1 sh:equals2}
 
 }
-
 ]]>
 </body>
 </rule>
@@ -183,7 +177,7 @@ where {
         concat(?define, replace(?q, "\\$PATH", sh:display(?shape, ?p)), sh:values(sh:variable(?oper)))
     as ?qq)
     
-    filter xt:display(?qq)  
+    #filter xt:display(?qq)  
         
     values ($this ?value) { 
         unnest(kg:sparql(?qq, "$this", ?s, sh:variable(?oper), ?obj)) 
@@ -208,7 +202,6 @@ function sh:variable(?uri) {
 function sh:values(?oper){
     concat("values (?this ", ?oper, ") { (UNDEF UNDEF) }")
 }
-
 ]]>
 </body>
 </rule>
@@ -227,11 +220,10 @@ where {
   
   bind (coalesce(?o <= ?v, false) as ?suc)
     
-  bind (st:report(sh:lessThanOrEquals, ?sh, ?shape, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:lessThanOrEquals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
  
-
 ]]>
 </body>
 </rule>
@@ -254,7 +246,6 @@ where {
   
   bind (st:report(sh:hasValue, ?sh, ?shape, ?s, ?p, ?v, ?suc, ?vis) as ?b)
 }
-
 ]]>
 </body>
 </rule>
@@ -267,14 +258,21 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 template st:profile {}
 where {}
 
-function st:aggregate(?x) {
-  st:agg_and(?x)
+function st:aggregate(?out) {
+  st:agg_and(?out)
+}
+
+function st:default(?term){
+    true
+}
+
+function st:defaultNamed(?term){
+    true
 }
 
 function st:optimize(?shape, ?sh){
     true
 }
-
 
 
 
@@ -299,32 +297,54 @@ function st:optimize(?shape, ?sh){
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:qualifiedValueShape (?shape, ?sh, ?vis, ?s, ?p, ?qsh, ?value) {
-  sh:safe(?shape, ?sh, ?suc)
+  sh:safe(?shape, ?sh, ?suc1 && ?suc2)
 }
 where {
     graph ?shape {  
-        ?ns sh:property ?sh
-        optional { ?ns sh:qualifiedMinCount ?min }
-        optional { ?ns sh:qualifiedMaxCount ?max }
+        ?ns sh:property ?sh 
+        ?sh sh:qualifiedValueShape ?qsh
+        optional { ?sh sh:qualifiedMinCount ?min }
+        optional { ?sh sh:qualifiedMaxCount ?max }
+        optional { ?sh sh:qualifiedValueShapesDisjoint ?disjoint }
     }
             
-  bind (sh:path(?shape, ?s, ?p) as ?list)
-
-  bind (mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?qsh) as ?subList)
-  
-  bind (sh:record(?ns, ?s, ?subList) as ?record)
-  
+  bind (sh:qualified(?shape, ?qsh, ?s, ?p) as ?list)
+      
+  # test disjointness with sibling shapes
   bind (
-       (xt:size(?subList) >= coalesce(?min, 0)) 
-    && (xt:size(?subList) <= coalesce(?max, xt:size(?subList))) 
-  as ?suc)
-  
-  bind (st:report(sh:qualifiedValueShape, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
+    if (coalesce(?disjoint, false), 
+        # remove elements that are in sibling shapes
+        mapfindlist(sh:disjoint, ?list, xt:list(?shape), ?qsh, ?s),
+        ?list)
+    as ?qlist)
+    
+  bind (xt:size(?qlist) >= coalesce(?min, 0) as ?suc1) 
+  bind (xt:size(?qlist) <= coalesce(?max, xt:size(?qlist)) as ?suc2) 
+
+  bind (st:report(sh:qualifiedMinCount, ?sh, ?shape, ?s, ?p, ?s, ?suc1, ?vis) as ?b1)
+  bind (st:report(sh:qualifiedMaxCount, ?sh, ?shape, ?s, ?p, ?s, ?suc2, ?vis) as ?b2)
 }
 
-# record list of values in case of disjoint 
-function sh:record(?ns, ?s, ?subList){
-    st:cset(?ns, ?s, (xt:cons(?subList, coalesce(st:cget(?ns, ?s), xt:list()))))
+#
+# test disjointness of subject ?s value ?o with ?qsh sibling shapes
+# for each sibling shape ?sh, compute ?list of values and test ?o not in ?list
+#
+function sh:disjoint(?o, ?shape, ?qsh, ?s){
+   for ((?sh, ?path) in st:cget(sh:sibling, ?qsh)){
+        if (xt:member(?o, sh:qualified(?shape, ?sh, ?s, ?path))){
+            return (false)
+        }        
+   } ;
+   return (true)
+}
+
+#
+# Return the list of value nodes that match qualified shape ?sh 
+#
+function sh:qualified(?shape, ?sh, ?s, ?p){
+     let (?list = sh:path(?shape, ?s, ?p)) {
+        mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?sh)
+     }
 }
 
 ]]>
@@ -350,7 +370,6 @@ where {
     bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
-
 
 
 ]]>
@@ -381,7 +400,6 @@ where {
   bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
 
-
 ]]>
 </body>
 </rule>
@@ -402,7 +420,6 @@ where {
   bind (st:report(sh:maxCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis) as ?b)
 }
 
-
 ]]>
 </body>
 </rule>
@@ -416,7 +433,7 @@ where {
 # SPARQL query returns solutions that fail the Constraint
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
-template sh:sparql (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
+template  sh:sparql (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
    sh:safe(?shape, ?sh, ?suc)
 }
 where {
@@ -442,7 +459,7 @@ where {
     bind (sh:path(?shape, ?s, ?p) as ?list)
     
     values ?o { unnest(?list) }  
-
+    
     values ($this ?path ?value) { unnest(kg:sparql(concat(?define, ?q), "$this", ?o)) }
 
     # SPARQL query returns solutions that fail
@@ -451,7 +468,6 @@ where {
     bind (st:report(sh:sparql, ?cst, ?shape, ?o, ?path, ?value, ?suc, ?vis) as ?b)
     
 }
-
 
 
 ]]>
@@ -464,25 +480,23 @@ where {
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?l, ?o){
-  sh:safe(?shape, ?sh, ?suc)
+    let (?suc = false, ?b = st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
+        sh:safe(?shape, ?sh, ?suc)
+    } 
 }
 where {
- 
-  bind (sh:path(?shape, ?s, ?p) as ?values)
-  values ?o { unnest(?values) }
-  
-  bind (lang(?o) as ?lang)
-  filter (bound(?lang) && ?lang != "")
-  
-  bind (! mapany(sh:sameLang, ?o, ?values) as ?suc)
-  
-  bind (st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+
+    select ?shape ?s ?p ?lang (count(?val) as ?c)  
+    where {
+        values ?val { unnest(sh:path(?shape, ?s, ?p)) }
+        bind (lang(?val) as ?lang)
+        filter (bound(?lang) && ?lang != "")
+    } 
+    group by ?lang
+    having (?c > 1)
+    
 }
 
-
-function sh:sameLang(?x, ?y){
-    isLiteral(?y) && datatype(?y) = rdf:langString && lang(?y) = lang(?x) && ?x != ?y
-}
 
 ]]>
 </body>
@@ -509,7 +523,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -530,7 +543,6 @@ where {
   bind (st:report(sh:minCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis) as ?b)
 }
 
-
 ]]>
 </body>
 </rule>
@@ -549,11 +561,10 @@ where {
   
   bind (coalesce(?o < ?v, false) as ?suc)
     
-  bind (st:report(sh:lessThan, ?sh, ?shape, ?s, ?q, ?o, ?suc, ?vis) as ?b)
+  bind (st:report(sh:lessThan, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
  
-
 ]]>
 </body>
 </rule>
@@ -579,9 +590,8 @@ where {
 }
 
 function sh:isPredicate(?p) {
-    strstarts(?oper, sh:)
+    strstarts(?p, sh:)
 }
-
 ]]>
 </body>
 </rule>
@@ -602,14 +612,13 @@ where {
       sh:equals sh:maxCount sh:minCount sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan sh:disjoint 
       sh:and sh:or sh:xone sh:not 
       sh:qualifiedValueShape sh:sparql
-      }
+    }
     ?sh ?oper ?b    
   }
   
   values ?s { unnest(?ls) }
 
 }
-
 ]]>
 </body>
 </rule>
@@ -628,7 +637,7 @@ where {
 # template sh:or enumerate objects of path and 
 # for each object ?value : check the or 
 # the or evaluates its elements by coming back here with ?value bound
-# this is done to use the very same templates whether ?value is bound or not
+# this is done to use the same templates whether ?value is bound or not
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
@@ -652,7 +661,6 @@ where {
   
   bind (st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
-
 ]]>
 </body>
 </rule>

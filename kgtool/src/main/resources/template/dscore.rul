@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:43 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -22,7 +22,6 @@ where {
     bind (st:report(sh:not, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -45,7 +44,6 @@ where {
     bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
   
 }
-
 
 
 ]]>
@@ -72,7 +70,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -97,7 +94,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -108,15 +104,26 @@ where {
 template st:profile {}
 where {}
 
-function st:aggregate(?x) {
-  st:agg_and(?x)
+function st:aggregate(?out) {
+  st:agg_and(?out)
+  #aggregate(?out, us:merge)
 }
 
+function us:merge(?list) {
+    apply(rq:and, ?list)
+}
+
+function st:default(?term){
+    true
+}
+
+function st:defaultNamed(?term){
+    true
+}
 
 function st:optimize(?shape, ?sh){
     true
 }
-
 
 ]]>
 </body>
@@ -145,78 +152,6 @@ where {
 }
 
 
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# evaluate sh:qualifiedValueShapesDisjoint 
-# list of list of values are recorded in a table
-# check that thay are disjoint
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?list) {
-    sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    graph ?shape {  
-        ?sh sh:qualifiedValueShapesDisjoint true  
-        filter not exists { ?sh sh:deactivated true}
-    }
-        
-    bind (sh:disjoint(?shape, ?sh, ?vis) as ?suc)
-}
-pragma { st:template st:priority 1000 } 
-
-
-# test disjointness of qualifiedValueShapes of ?sh
-function sh:disjoint(?shape, ?sh, ?vis){
-    let (?b = true){
-        for ((?key, ?val) in st:cget(?sh)){
-            if (! sh:disjoint(?key, ?val, ?shape, ?sh, ?vis)) {
-                st:report(sh:qualifiedValueShapesDisjoint, ?sh, ?shape, ?key, false, ?vis);
-                set(?b = false)
-            }
-        } ;
-        ?b
-    }
-}
-
-# test disjointness of qualifiedValueShapes of ?key
-# list of list of values of  subject ?key
-# test whether there is an intersection in any two lists
-function sh:disjoint(?key, ?list, ?shape, ?sh, ?vis){
-    let (?i = 0){
-        for (?l1 in ?list){
-            for (?j in xt:iota(?i+1, xt:size(?list) - 1)){
-                let (?l2 = xt:get(?list, ?j)) { 
-                    if (sh:intersect(?l1, ?l2)) {
-                        return (false) 
-                    }
-                } 
-            } ;
-            set (?i = ?i + 1)
-        } 
-    } ;
-    return (true)
-}
-
-function sh:intersect(?l1, ?l2){
-   for (?x in ?l1){
-        if (xt:member(?x, ?l2)){
-            return(true)
-        }
-    } ;
-    return(false)
-}
-
-
-
 ]]>
 </body>
 </rule>
@@ -243,7 +178,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -261,44 +195,11 @@ template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-
-    filter not exists { ?sh sh:path ?p }
-        
+    graph ?shape { filter not exists { ?sh sh:path ?ppp } }
+    
     bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# create a table for qualifiedValueShapesDisjoint
-# table is used by path/qualified
-# it records the list of list of values for each subject
-# table is used by core/disjoint2
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?list) {
-    true
-}
-where {
-    graph ?shape {  
-        ?sh sh:qualifiedValueShapesDisjoint true  
-        filter not exists { ?sh sh:deactivated true}
-    }
-    
-    bind (st:cset(?sh, ?sh, xt:list()) as ?init)
-    
-}
-pragma { st:template st:priority 1 } 
-
-
 
 
 ]]>
@@ -323,7 +224,6 @@ where {
         ?sh ?bool ?cst
     }
 }
-
 
 ]]>
 </body>
@@ -361,7 +261,6 @@ where {
    bind (st:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
     
 }
-
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -21,7 +21,6 @@ where {
 	
 	#filter(st:alreadyVisited(?x, "classExp", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -41,7 +40,6 @@ where {}
   function st:alreadyVisited(?x, ?tag, ?suc) {
     if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
   }
-
 
 
 ]]>
@@ -64,7 +62,6 @@ where {
   )
   
 }
-
 ]]>
 </body>
 </rule>
@@ -99,7 +96,6 @@ where {
 	filter(! ?suc)
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -121,7 +117,6 @@ where {
 		union { ?in owl:hasSelf ?e }
 	} as ?suc)
 }
-
 ]]>
 </body>
 </rule>
@@ -148,7 +143,6 @@ where {
 		filter(st:visit(st:err("one"), ?in, ?suc))
 	}
 }
-
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -20,7 +20,6 @@ where {
     datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
   )
 }
-
 ]]>
 </body>
 </rule>
@@ -45,7 +44,6 @@ where {
   filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -72,7 +70,6 @@ where {
   
 }
 pragma { kg:template kg:priority 100 }
-
 ]]>
 </body>
 </rule>
@@ -93,7 +90,6 @@ where {
   filter (datatype(?in) = rdf:langString)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -117,7 +113,6 @@ where {
   )
   
 }
-
 ]]>
 </body>
 </rule>
@@ -133,7 +128,6 @@ where {
   filter isURI(?in)
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -155,7 +149,6 @@ where {
   )
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -172,7 +165,6 @@ where {
   bind (st:getFocusNode() as ?in)
   filter (datatype(?in) = xsd:string)
 }
-
 ]]>
 </body>
 </rule>

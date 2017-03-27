@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -25,7 +25,6 @@ where {
 }
 
     
-
 ]]>
 </body>
 </rule>
@@ -56,7 +55,6 @@ where {
   filter(?min <= ?d && ?d <= ?max)
 }
 order by asc(?d)
-
 ]]>
 </body>
 </rule>
@@ -72,7 +70,6 @@ where {
 #  bind(?u as ?uri)
 #  bind(?t as ?text)
 }
-
 ]]>
 </body>
 </rule>
@@ -93,7 +90,6 @@ template st:start {
 where {
 }  
 
-
 ]]>
 </body>
 </rule>
@@ -110,7 +106,6 @@ template cn:hlink(?u, ?t) {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -140,10 +135,9 @@ where {
   bind ( exists { ?r a ?tt . filter (?tt in (foaf:Person, o:Place)) 
   } as ?isp )
   
-  bind(bound(?i) && isURI(?i) as ?img)
+  bind (bound(?i) && strstarts(?i, "http://") as ?img)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -169,7 +163,6 @@ where {
 	  }
  
 }
-
 
 ]]>
 </body>
@@ -201,7 +194,6 @@ function us:format(?name) {
     st:getFormat("cdn", ?name)
 }
   
-
 ]]>
 </body>
 </rule>
@@ -223,7 +215,6 @@ template cn:sign {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -269,7 +260,6 @@ values ?i {
 
 
 }
-
 ]]>
 </body>
 </rule>
@@ -291,7 +281,6 @@ template st:navlab(?u, ?t) {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -318,7 +307,6 @@ format {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -349,7 +337,6 @@ where {
 }
 group by ?topicList
 order by ?n
-
 ]]>
 </body>
 </rule>
@@ -370,7 +357,6 @@ template st:substart(?cent) {
 }
 where {
 }  
-
 
 ]]>
 </body>
@@ -393,7 +379,6 @@ template st:servlet {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -416,7 +401,6 @@ format {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -463,7 +447,6 @@ where {
   optional { ?before cn:start ?be filter (?be >= ?fst) }
   optional { ?after  cn:start ?af filter (?af <= ?rst) }
 }
-
 ]]>
 </body>
 </rule>
@@ -487,7 +470,6 @@ template cn:content(?c) {
 where {
   ?c rdfs:label ?title
 }
-
 ]]>
 </body>
 </rule>
@@ -524,7 +506,6 @@ where {
      
 }
 order by ?min
-
 ]]>
 </body>
 </rule>
@@ -546,7 +527,6 @@ template  cn:wikidate(?d) {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -569,7 +549,6 @@ where {
   }
     
 }
-
 ]]>
 </body>
 </rule>
@@ -598,7 +577,6 @@ where {
  
 }
 pragma {kg:query kg:detail true}
-
 ]]>
 </body>
 </rule>
@@ -623,7 +601,6 @@ format {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -662,7 +639,6 @@ values (?query ?title){
   ("/data/query/cdneds.rq" 	"Savoie")
   ("/data/query/cdnmisc.rq" 	"Autre")
 }
-
 ]]>
 </body>
 </rule>
@@ -692,7 +668,6 @@ where {
   
 }
     
-
 ]]>
 </body>
 </rule>
@@ -717,7 +692,6 @@ where {
     bind(?in as ?d)
 }
 	
-
 ]]>
 </body>
 </rule>
@@ -758,7 +732,6 @@ where {
     as ?link)
       
 }
-
 ]]>
 </body>
 </rule>
@@ -782,7 +755,6 @@ where {
   union 
   { ?elem rdfs:comment ?c }
 }
-
 ]]>
 </body>
 </rule>
@@ -820,7 +792,6 @@ where {
       ?lnk) 
     as ?link)  
 }
-
 ]]>
 </body>
 </rule>

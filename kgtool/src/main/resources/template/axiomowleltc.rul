@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -21,7 +21,6 @@ where {}
   function st:alreadyVisited(?x, ?tag, ?suc) {
     if (st:visited(?x), true, st:visit(st:err(?tag), ?x, ?suc)) 
   }
-
 
 
 ]]>
@@ -49,7 +48,6 @@ where {
 	
 	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -104,7 +102,6 @@ where {
 	filter(st:alreadyVisited(?in, "fail", false))
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -127,7 +124,6 @@ where {
 	
 	filter(st:alreadyVisited(?in, "disjointClass", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -214,7 +210,6 @@ where {
  		  	filter(st:visit(st:err("anonymous"), ?in, ?sucx))
  }
 }
-
 ]]>
 </body>
 </rule>
@@ -234,7 +229,6 @@ where {
    
    filter(st:visit(st:err("key"), ?in, ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -260,7 +254,6 @@ where {
 	
 	filter(st:alreadyVisited(?in, "subClass", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -286,7 +279,6 @@ where {
 	
 	filter(st:alreadyVisited(?in, "equivClass", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -323,7 +315,6 @@ where {
 	filter(isURI(?y) && ! ?suc)
 	filter(st:visit(st:err("datatypeRes"), ?in, ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -344,7 +335,6 @@ where {
 	
 	filter(st:alreadyVisited(?in, "domain", ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -368,7 +358,6 @@ where {
 	as ?suc)
 	filter(st:visit(st:err("individual"), ?in, ?suc))
 }
-
 ]]>
 </body>
 </rule>
@@ -405,7 +394,6 @@ where {
 	filter(isLiteral(?y) && ! ?suc)
 	filter(st:visit(st:err("datatypeLit"), ?in, ?suc))
 }
-
 ]]>
 </body>
 </rule>

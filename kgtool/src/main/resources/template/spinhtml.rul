@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -22,7 +22,6 @@ template st:main {
 }
 where {
 }
-
 
 
 
@@ -46,7 +45,6 @@ template st:start {
 }
 where {
 }
-
 
 
 
@@ -88,7 +86,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -123,7 +120,6 @@ template st:next {
   
 }
 where {}
-
 ]]>
 </body>
 </rule>
@@ -137,7 +133,6 @@ template st:button {
   """<button type='button'  onClick='next(-1)'>prev</button>"""
 }
 where {}
-
 ]]>
 </body>
 </rule>

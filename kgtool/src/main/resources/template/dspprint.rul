@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -18,7 +18,6 @@ where {
 function st:process(?x) {
     if (isBlank(?x), st:apply-templates(?x), st:turtle(?x))
 }
-
 ]]>
 </body>
 </rule>
@@ -33,7 +32,6 @@ template {
 where {
     ?in sh:oneOrMorePath ?path
 }
-
 
 ]]>
 </body>
@@ -50,7 +48,6 @@ where {
     ?in sh:zeroOrMorePath ?path
 }
 
-
 ]]>
 </body>
 </rule>
@@ -65,7 +62,6 @@ template {
 where {
     ?in sh:inversePath ?path
 }
-
 
 ]]>
 </body>
@@ -82,7 +78,6 @@ where {
     ?in sh:zeroOrOnePath ?path
 }
 
-
 ]]>
 </body>
 </rule>
@@ -98,7 +93,6 @@ where {
     ?in rdf:rest*/rdf:first ?path
 }
 
-
 ]]>
 </body>
 </rule>
@@ -113,7 +107,6 @@ template {
 where {
     ?in sh:alternativePath/rdf:rest*/rdf:first ?path
 }
-
 
 ]]>
 </body>

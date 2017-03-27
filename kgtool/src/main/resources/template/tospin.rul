@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -17,7 +17,6 @@ template st:close {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -35,7 +34,6 @@ template st:tosparql {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -51,7 +49,6 @@ template st:sparql {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -64,7 +61,6 @@ template st:link(?uri, ?title) {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -89,7 +85,6 @@ template st:start {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -101,7 +96,6 @@ template st:profile {
     
 }
 where {}
-
 
 
 ]]>
@@ -124,7 +118,6 @@ template st:page {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -145,7 +138,6 @@ template st:open {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -169,7 +161,6 @@ where {
   filter (?x = coalesce(st:get(st:uri), ?x))
 }
 order by ?x ?p ?y
-
 ]]>
 </body>
 </rule>
@@ -186,7 +177,6 @@ template st:spin {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -202,18 +192,16 @@ format {
     <input type='hidden' name='transform' value='%s' />    
     <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
     <br/>           
-    <input type='submit' value='submit'"  %s  />      
+    <input type='submit' value='submit'"  class='btn btn-warning' onClick='trans(this.form); return false;'  />      
   </form>
   """
   
   st:get(st:transform)
   str(?q)
-  st:submit()
   }
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -230,18 +218,16 @@ format {
     <input type='hidden' name='transform' value='%s' />    
     <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
     <br/>       
-    <input type='submit' value='submit' %s />      
+    <input type='submit' value='submit' class='btn btn-warning' onClick='trans(this.form); return false;' />      
   </form>
   """
   
   st:get(st:transform)
   str(?q)
-  st:submit()
   }
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -263,7 +249,6 @@ where {
     as ?d) 
     
 }
-
 ]]>
 </body>
 </rule>
@@ -283,7 +268,6 @@ where {
   bind (st:call-template(st:esc, ?x) as ?e)
     
 }
-
 ]]>
 </body>
 </rule>
@@ -301,7 +285,6 @@ template st:tospin {
 where {
 
 }
-
 ]]>
 </body>
 </rule>

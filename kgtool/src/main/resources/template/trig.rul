@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -32,7 +32,6 @@ where {
   }
 }
 order by ?g 
-
 ]]>
 </body>
 </rule>
@@ -52,7 +51,6 @@ template st:start {
 where {
     bind (st:call-template(st:graph) as ?str)
 }
-
 ]]>
 </body>
 </rule>
@@ -73,7 +71,6 @@ where {}
 function st:process(?in) { st:turtle(?in) }
      
 function st:default(?in) { st:turtle(?in) }
-
 
 ]]>
 </body>

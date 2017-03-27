@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -26,7 +26,43 @@ where {
    
 }
 
+]]>
+</body>
+</rule>
 
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resourcetype(?in, ?t) {
+format {
+    us:format(if (?bnode, ft:tagbn.html, ft:tag.html))
+    
+    st:turtle(?t, true)
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in, ?t) }
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:link(?uri, ?title) {
+   format {
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
+   }
+}
+where {
+}
 ]]>
 </body>
 </rule>
@@ -39,9 +75,9 @@ where {
 # URI
 # Top level bnodes (not object of a property)
 #
-template st:main {
+template st:main(?in) {
    if (bound(?t), 
-        st:call-template(st:resource, ?in, ?t),
+        st:call-template(st:resourcetype, ?in, ?t),
         st:call-template(st:resource, ?in))
     
    ; separator = "\n\n"
@@ -63,7 +99,6 @@ where {
    }
    order by ?in
 }
-
 ]]>
 </body>
 </rule>
@@ -76,19 +111,20 @@ where {
 #
 # Olivier Corby - Wimmics INRIA I3S - 2015
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 
-template st:start {
-
-  st:call-template(st:head)
-  
-  str(?body)
-  
-  st:call-template(st:tail)
+template st:start(?in) {
+format {
+  us:format(ft:head.html)  
+  ibox { st:call-template(st:prefix) }
+  str(?body)  
+}
 }
 where {
-   bind(st:call-template(st:main) as ?body )
+   bind(
+    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+   as ?body )
 }
-
 ]]>
 </body>
 </rule>
@@ -106,14 +142,13 @@ template st:result {
   format { 
     """<h3>RDF/XML</h3>
     <pre>%s</pre>"""
-    replace(replace(st:call-template(st:start), "&", "&amp;"), "<", "&lt;")
+    us:clean(st:call-template(st:start))
   }
   
 }
 where {
-bind (st:set(st:html, true) as ?b)
+    bind (st:set(st:html, true) as ?b)
 }
-
 
 ]]>
 </body>
@@ -122,19 +157,18 @@ bind (st:set(st:html, true) as ?b)
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template st:listtriple(?x, ?p, ?y) {
 format {
-   "<%s>%s</%s>"
+   us:format(ft:property.html) 
    
    st:turtle(?p, true)
    box { st:call-template(st:listrec, ?y) }
-   st:turtle(?p, true)
 }
 }
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -142,19 +176,17 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template st:resourceref(?in) {
 format {
-  "<rdf:Description %s='%s' />" 
+  us:format(if (?bnode, ft:resourcerefbn.html, ft:resourceref.html)) 
   
-  st:turtle(?att)
-  str(?name)
+  st:linkuri(?in)
 }
 }
 where {
-   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+   bind (isBlank(?in) as ?bnode)
 }
-
 
 ]]>
 </body>
@@ -163,20 +195,18 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
 template st:collection(?x, ?p, ?y) {
 format {
-"<%s rdf:parseType='Collection'>%s</%s>"
-   
+    us:format(ft:collection.html)   
     st:turtle(?p, true)
-    box { st:call-template(st:list, ?y) }
-    st:turtle(?p, true)
-    
+    box { st:call-template(st:list, ?y) }    
    }
 }
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -184,13 +214,22 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:tail {
-  "\n\n"
-  "</rdf:RDF>"
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:focus(?in) {
+  format { 
+    """<pre>%s</pre>"""
+    us:clean(st:call-template(st:start, ?in))
+  }
   
 }
 where {
-
+    bind (st:set(st:html, true) as ?b)
+    bind (st:set(st:focus, false) as ?foc)
 }
 
 ]]>
@@ -200,6 +239,9 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+prefix ht: <http://ns.inria.fr/sparql-template/format/rdfxmlhtml/>
+
 template st:profile {}
 where {}
 
@@ -210,6 +252,49 @@ function st:literal(?x){
         ?x)
 }
 
+function us:clean(?x) {
+    ?x
+}
+
+function st:clean(?x) {
+   replace(replace(?x, "&", "&amp;"), "<", "&lt;") 
+}
+
+function st:html(?x){
+    if (st:get(st:html, true), st:clean(?x), ?x)
+}
+
+function us:format(?name){
+    if (st:get(st:html, true), uri(replace(?name, "rdfxml", "rdfxmlhtml")), ?name)
+}
+
+function st:linkuri(?x){
+    if (isURI(?x) && st:get(st:html, true) && st:get(st:hyperlink, true),
+        st:display(?x), str(?x))
+}
+
+# LOD URI hypertext link generated as is 
+# set by profile.ttl : st:param [ st:lod (URI) ]
+#
+function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+}
+    
+
+# display resource uri
+function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+        str(?x) 
+      }
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:link, str(?x), str(?x))
+      }
+      else {
+        st:call-template(st:link, coalesce(st:pplink(?x), ?x), str(?x))
+      }     
+    }
+}
 ]]>
 </body>
 </rule>
@@ -217,27 +302,19 @@ function st:literal(?x){
 <rule>
 <body>
 <![CDATA[
-template st:resource(?in, ?t) {
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resource(?in) {
 format {
-    "<%s %s='%s'>%s</%s>"
+    us:format(if (?bnode, ft:descriptionbn.html, ft:description.html))
     
-    st:turtle(?tag, true)
-    st:turtle(?att) 
-    str(?name)
-    box { 
-        if (bound(?t), 
-            st:call-template(st:property, ?in, ?t),
-            st:call-template(st:property, ?in))
-    }
-    st:turtle(?tag)
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in) }
 }
 }
 where {
-   bind (if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind (if (isBlank(?in), ?in, ?in) as ?name)
-   bind (if (bound(?t), ?t, rdf:Description) as ?tag)
+   bind (isBlank(?in) as ?bnode)
 }
-
 
 ]]>
 </body>
@@ -249,7 +326,7 @@ where {
 template st:blank (?x, ?p, ?y) {
 
    if (bound(?t), 
-     st:call-template(st:resource, ?y, ?t),
+     st:call-template(st:resourcetype, ?y, ?t),
      st:call-template(st:resource, ?y))
 
 }
@@ -262,7 +339,6 @@ where {
      }
     filter st:visit(?y)
 }
-
 ]]>
 </body>
 </rule>
@@ -281,7 +357,6 @@ where {
   ?in rdf:rest* ?r 
   ?r  rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -308,7 +383,6 @@ where {
       
 }
 
-
 ]]>
 </body>
 </rule>
@@ -329,7 +403,6 @@ template st:prefix {
 where {
   bind( kg:unnest(st:prefix()) as (?p, ?n))
 }
-
 ]]>
 </body>
 </rule>
@@ -337,9 +410,11 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
 template st:listrec(?y) {
 format {
-"<rdf:Description>%s</rdf:Description>" 
+    us:format(ft:desc.html)  
    
    box {
     
@@ -356,7 +431,6 @@ where {
   ?y rdf:first ?f ;
      rdf:rest  ?r
 }
-
 ]]>
 </body>
 </rule>
@@ -374,7 +448,6 @@ where {
    filter if (bound(?t), !(?p = rdf:type && ?y = ?t), true)
 }
 order by ?p ?y
-
 ]]>
 </body>
 </rule>
@@ -382,45 +455,20 @@ order by ?p ?y
 <rule>
 <body>
 <![CDATA[
-template st:head {
-format {
-"""
-<!DOCTYPE rdf:RDF [
-   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
-]>
-
-<%s %s>
-
-"""
-
-st:turtle(rdf:RDF)
-ibox { st:call-template(st:prefix) }
-}
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template st:listrecrest(?y) {  
 format {
-   "<rdf:rest>%s</rdf:rest>" 
+   us:format(ft:property.html) 
    
+   st:turtle(rdf:rest)
    box {
       st:call-template(st:listrec, ?y)
-      }
-   }
+    }
+}
 }
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -428,14 +476,14 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s rdf:datatype='%s'>%s</%s>"
+   us:format(ft:propertydt.html) 
    
    st:turtle(?p, true)
-   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, "&xsd;"), datatype(?y)) 
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, st:html("&xsd;")), datatype(?y)) 
    st:literal(str(?y)) 
-   st:turtle(?p, true)
 }
 }
 where {
@@ -444,7 +492,6 @@ where {
    && datatype(?y) != rdf:langString
    && datatype(?y) != xsd:string)
 }
-
 ]]>
 </body>
 </rule>
@@ -452,20 +499,19 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s>%s</%s>"
+   us:format(ft:property.html) 
    
    st:turtle(?p, true)
    st:literal(str(?y)) 
-   st:turtle(?p, true)
    }
 }
 where {
    ?x ?p ?y
    filter (isLiteral(?y) && datatype(?y) = xsd:string)
 }
-
 ]]>
 </body>
 </rule>
@@ -473,21 +519,20 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s xml:lang='%s'>%s</%s>"
+   us:format(ft:propertylang.html) 
    
    st:turtle(?p, true)
    lang(?y)
    st:literal(str(?y))
-   st:turtle(?p, true)
 }   
 }
 where {
    ?x ?p ?y
    filter (isLiteral(?y) && datatype(?y) = rdf:langString)
 }
-
 ]]>
 </body>
 </rule>
@@ -495,19 +540,18 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s rdf:resource='%s' />"
-   
+   us:format(ft:resource.html)
    st:turtle(?p, true)
-   str(?y)
+   st:linkuri(?y)
 }
 }
 where {
    ?x ?p ?y
    filter isURI(?y)
 }
-
 ]]>
 </body>
 </rule>
@@ -515,9 +559,10 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-"""<%s>%s</%s>  """
+  us:format(ft:property.html)
   
   st:turtle(?p, true)
   box {  
@@ -525,14 +570,12 @@ format {
         st:call-template(st:resourceref, ?y),
         st:call-template(st:blank, ?x, ?p, ?y))
     }
-  st:turtle(?p, true)  
  } 
 }
 where {
    ?x ?p ?y
    filter isBlank(?y)
 }
-
 ]]>
 </body>
 </rule>

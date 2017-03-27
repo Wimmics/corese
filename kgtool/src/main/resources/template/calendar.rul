@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -25,7 +25,6 @@ template st:date(?date) {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -44,7 +43,6 @@ template st:link(?date) {
 where {
    
 }
-
 ]]>
 </body>
 </rule>
@@ -64,7 +62,6 @@ template st:main(?year) {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -85,7 +82,6 @@ where {
   bind (xsd:integer(substr(?uri, strlen(st:) + 2))   as ?tmp)
   bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
 }
-
 ]]>
 </body>
 </rule>
@@ -126,7 +122,6 @@ where {
 }
 group by ?date
 order by ?date 
-
 ]]>
 </body>
 </rule>
@@ -161,7 +156,6 @@ where {
     ]
   }    
 }
-
 ]]>
 </body>
 </rule>
@@ -206,7 +200,6 @@ values ?y { 2015 }
 function xt:space(?n) {
       if (?n = 0, "", concat("   " , xt:space(?n - 1))) 
     }
-
 ]]>
 </body>
 </rule>
@@ -223,7 +216,6 @@ format {
 
 }
 where {}
-
 ]]>
 </body>
 </rule>
@@ -245,7 +237,6 @@ template st:romain(?date) {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -283,7 +274,6 @@ where {
     bind (cal:date(?y, ?m, ?n)   as ?date)
     bind (xt:day(?date)          as ?day)        
 }
-
 ]]>
 </body>
 </rule>
@@ -320,7 +310,6 @@ function us:format(?name){
 
 
     
-
 ]]>
 </body>
 </rule>
@@ -344,7 +333,6 @@ where {
 
     
 }
-
 ]]>
 </body>
 </rule>
@@ -359,7 +347,6 @@ template st:title {
 where {
 values ?t { "Mo" "Tu" "We" "Th" "Fr" "Sa" "Su" }
 }
-
 ]]>
 </body>
 </rule>
@@ -378,7 +365,6 @@ where {
   bind (?start + (?n * 10) - 1 as ?rst)
 }
 values ?start { 1901 }
-
 ]]>
 </body>
 </rule>
@@ -414,7 +400,6 @@ format {
 where {
   bind (unnest(xt:iota(?fst, ?rst)) as ?year)
 }
-
 ]]>
 </body>
 </rule>
@@ -433,7 +418,6 @@ where {
   bind (st:set(st:date,    st:romain)   as ?d)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -457,7 +441,6 @@ where {
 bind ("http://ns.inria.fr/sparql-template/y" as ?uri)
   
 }
-
 ]]>
 </body>
 </rule>
@@ -480,7 +463,6 @@ where {
 
     bind (unnest(xt:iota(?f, ?l)) as ?month)
 }
-
 ]]>
 </body>
 </rule>
@@ -529,7 +511,6 @@ where {
     bind (xsd:date(concat(?y, "-", ?m, "-", ?n)) as ?date)
     bind (xt:day(?date) as ?jour)  
 }
-
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -13,7 +13,6 @@ template st:default(?in) {
 }
 where {
 }
-
 
 ]]>
 </body>
@@ -40,7 +39,6 @@ where {
       (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
    
 }
-
 ]]>
 </body>
 </rule>
@@ -71,7 +69,6 @@ function st:process(?in) {  owlfs:process(?in) }
     if (?x = "", ?x, concat("\n", ?x))
   }
 
-
 ]]>
 </body>
 </rule>
@@ -90,7 +87,6 @@ values (?p ?l) {
   (owl:differentFrom "DifferentIndividuals")
   (owl:sameAs "SameIndividual")
 }
-
 ]]>
 </body>
 </rule>
@@ -106,7 +102,6 @@ template {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -130,7 +125,6 @@ values (?q ?l) {
   (owl:targetIndividual "NegativeObjectPropertyAssertion")
   (owl:targetValue      "NegativeDataPropertyAssertion")
 }
-
 ]]>
 </body>
 </rule>
@@ -158,7 +152,6 @@ where {
   filter not exists { ?in a owl:Axiom }
   filter not exists { ?in a owl:Annotation }
 }
-
 ]]>
 </body>
 </rule>
@@ -175,7 +168,6 @@ where {
   ?in a owl:allDifferent   
   ?in owl:members | owl:distinctMembers ?l 
 }
-
 ]]>
 </body>
 </rule>
@@ -195,7 +187,6 @@ where {
      || strstarts(?t, rdf:) 
      || strstarts(?t, rdfs:)) )
 }
-
 ]]>
 </body>
 </rule>
@@ -217,7 +208,6 @@ where {
   filter not exists { ?in a owl:Axiom }  
 }
 values ?p { rdfs:comment rdfs:label rdfs:seeAlso rdfs:isDefinedBy owl:priorVersion owl:backwardCompatibleWith owl:incompatibleWith }
-
 ]]>
 </body>
 </rule>
@@ -234,7 +224,6 @@ where {
   { ?in a owl:DeprecatedProperty }  
 
 }
-
 ]]>
 </body>
 </rule>

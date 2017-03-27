@@ -2,53 +2,25 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:th {
- 
-    format {
-      "<th>%s</th>" 
-      str(?v)
-    } 
-    ; separator = " "
- 
-}
-where {
-  ?x rs:resultVariable ?v
-}
-order by ?v
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:close {
-  
-  "</table>"
-   
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:tableconsuri {
-    us:triple(st:number(), ?x, ?p, ?y)
+
+ format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
   bind (st:focus() as ?uri)
@@ -56,7 +28,6 @@ where {
   filter (?uri in (?x, ?p, ?y))
 }
 order by ?x ?p ?y
-
 
 
 ]]>
@@ -68,13 +39,12 @@ order by ?x ?p ?y
 <![CDATA[
 template st:link(?uri, ?title) {
    format {
-   "<a href='%s'>%s</a>"
-   str(?uri) str(?title)
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
    }
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -97,7 +67,6 @@ template st:start {
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -114,7 +83,6 @@ template st:default {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -126,32 +94,36 @@ template st:profile {
   
 }
 where {}
+
+function us:format(?name) {
+    st:getFormat("sparql", ?name)
+}
   
   # LOD URI hypertext link generated as is 
   # set by profile.ttl : st:param [ st:lod (URI) ]
   #
-  function st:lod(?x){
+function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
-  }
+}
     
 
   # display resource uri
-  function st:display(?x){
+function st:display(?x){
     let (?profile = coalesce(st:get(st:profile), st:null)){
       if (?profile = st:null){ 
-	st:call-template(st:esc, ?x) 
+        st:call-template(st:esc, ?x) 
       }
       else if (?profile = st:std){ 
-	st:call-template(st:linkesc, ?x) 
+        st:call-template(st:linkesc, ?x) 
       }
-      else if (st:lod(?x)){
-	st:call-template(st:linkesc, ?x)
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:linkesc, ?x)
       }
       else {
-	st:call-template(st:linkprofile, ?x)
+        st:call-template(st:linkprofile, ?x)
       }     
     }
-  }
+}
   
 function st:init(){
   if (coalesce(st:get(st:service), st:null) = st:null){
@@ -159,23 +131,6 @@ function st:init(){
   }
 }
 
-function us:triple(?n, ?x, ?p, ?y){
-    st:format (
-        """
-        <tr>
-        <th>%s</th>
-        <td>%s</td><td>%s</td><td>%s</td><td>%s</th><td>%s</td>
-        </tr>
-        """,
-        
-        ?n,
-        st:call-template(st:show,    ?x),
-        st:display(?x), 
-        st:display(?p), 
-        st:display(?y), 
-        st:call-template(st:show,    ?y)
-    )
-}
 
 ]]>
 </body>
@@ -188,42 +143,13 @@ prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 
 template st:pageask {
 format {
-
-  """
-  <h3>Result</h3>
-  <p>%s</p>
-  """
-  
+  us:format("ask.html")
   ?b
-  }
+}
 }
 where {
   ?r rs:boolean ?b
 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:open {
-
-format {
-
-  """
-  <table class='table'>    
-  <tr><td/>%s</tr>\n
-  """
- 
- st:call-template(st:th)
- }
-}
-where {
-}
-
 ]]>
 </body>
 </rule>
@@ -235,31 +161,17 @@ template st:query(?q) {
 
 format {
 
-  """
-  <h3>Query</h3>
-  <form method='post' id='sparql' action='%s'>  
-    <select name="profile"> 
-      %s
-      <option value='st:sparql'>LDP</option>
-    </select>   
-      <br/>
-      <textarea cols='60' rows='10' name='query'>%s</textarea>
-      <br/>
-    <input type='submit' value='submit' %s/>       
-  </form>
-  """
+  us:format("query.html")
   
   st:get(st:service)
-  if (bound(?prof), st:format("<option value='%s'>Profile</option>", ?prof), "")
+  if (bound(?prof), st:format(us:format("option.html"), ?prof), "")
   str(?q)
-  st:submit()
   }
 }
 where {
   bind (st:get(st:profile) as ?prof)
 
 }
-
 ]]>
 </body>
 </rule>
@@ -273,17 +185,33 @@ template st:esc(?x) {
     
 }
 where {
-
-   bind(st:turtle(?x) as ?t)
    
    bind (
     let (?t = st:turtle(?x)) { replace(?t, "<", "&lt;") } 
    as ?tt)
-   
-#   bind(if (isURI(?x) && strstarts(?t, "<"), str(?x), ?t) as ?d) 
-    
+       
 }
+]]>
+</body>
+</rule>
 
+<rule>
+<body>
+<![CDATA[
+prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:variable {
+ 
+    format {
+      us:format("variable.html") 
+      str(?v)
+    } 
+    ; separator = " "
+ 
+}
+where {
+  ?x rs:resultVariable ?v
+}
+order by ?v
 ]]>
 </body>
 </rule>
@@ -292,17 +220,14 @@ where {
 <body>
 <![CDATA[
 template st:pageselect {
-   
-  st:call-template(st:open)
-  
-  st:call-template(st:table)
-  
-  st:call-template(st:close)
-    
+    format {
+        us:format("select.html")
+        st:call-template(st:variable)
+        st:call-template(st:table)
+    }    
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -311,17 +236,13 @@ where {
 <body>
 <![CDATA[
 template st:pagecons {
-   
-  st:call-template(st:opencons)
-  
-  st:call-template(st:tablecons)
-  
-  st:call-template(st:close)
-    
+   format {
+    us:format("construct.html")
+    st:call-template(st:tablecons)
+   }
 }
 where {
 }
-
 ]]>
 </body>
 </rule>
@@ -346,7 +267,6 @@ where {
 }
 
 
-
 ]]>
 </body>
 </rule>
@@ -358,7 +278,7 @@ where {
 #  Get an optional icon from the dataset and display it
 #
 template st:show(?x) {
-    format { "<img width='35' src='%s' />"  str(?l) }
+    format { us:format("img.html")  str(?l) }
 }
 where {
   bind (st:get(st:dataset) as ?g)
@@ -368,7 +288,6 @@ where {
   }
 }
 limit 1
-
 ]]>
 </body>
 </rule>
@@ -389,7 +308,8 @@ template st:sparql {
 
   st:head()
    
-  st:call-template(st:query, coalesce(st:get(st:query), ""))  
+  #st:call-template(st:query, coalesce(st:get(st:query), ""))  
+  coalesce(st:call-template(st:query, st:get(st:query)), "")  
   
   st:call-template(st:page)
     
@@ -399,7 +319,6 @@ template st:sparql {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -430,7 +349,6 @@ template st:graph {
 where {  
   
 }
-
 ]]>
 </body>
 </rule>
@@ -450,7 +368,6 @@ template st:result {
 where {
    bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
 }
-
 ]]>
 </body>
 </rule>
@@ -470,7 +387,6 @@ template st:test {
 where {
    bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
 }
-
 ]]>
 </body>
 </rule>
@@ -495,7 +411,6 @@ where {
   bind (st:call-template(st:esc, ?x) as ?e)
 
 }
-
 ]]>
 </body>
 </rule>
@@ -517,7 +432,6 @@ where {
       st:pagecons) 
     as ?page)
 }
-
 ]]>
 </body>
 </rule>
@@ -526,13 +440,21 @@ where {
 <body>
 <![CDATA[
 template st:tableconsall {
-    us:triple(st:number(), ?x, ?p, ?y)
+format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
   ?x ?p ?y
 }
 order by ?x ?p ?y
-
 
 
 ]]>
@@ -543,7 +465,16 @@ order by ?x ?p ?y
 <body>
 <![CDATA[
 template st:tableconslimit {
-    us:triple(st:number(), ?x, ?p, ?y)
+format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
     select * where {
@@ -552,7 +483,6 @@ where {
     order by ?x ?p ?y
     limit 100
 }
-
 
 
 ]]>
@@ -582,7 +512,6 @@ template st:core {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -592,45 +521,17 @@ where {
 <![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template st:table {
-format {
-
-  """
-  <tr> 
-  <th>%s</th>  
-  %s 
-  </tr>
-  """
-  
-  st:number()
-  st:apply-templates(?s)
-}
+    format {
+        us:format("table.html")  
+        st:number()
+        st:apply-templates(?s)
+    }
 }
 where {
   ?x rs:solution ?s 
   ?s rs:index ?i  
 }
 order by ?i
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:opencons {
-
-  """
-  <table class='table'>
-  <tr>
-  <th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
-  </tr>
-  """
-  
-}
-where {
-}
-
 ]]>
 </body>
 </rule>
@@ -654,7 +555,6 @@ where {
     bind (st:apply-templates-with(st:sparql) as ?res)
   }
 }
-
 ]]>
 </body>
 </rule>
@@ -678,7 +578,6 @@ template st:all {
 where {
     bind (st:set(st:all, true) as ?b)
 }
-
 ]]>
 </body>
 </rule>
@@ -698,7 +597,6 @@ where {
   bind (st:call-template(st:esc, ?x) as ?e)
     
 }
-
 ]]>
 </body>
 </rule>
@@ -710,8 +608,7 @@ prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 template  {
 
 format { 
-    "<td>%s</td>" 
-    
+    us:format("value.html")     
     coalesce(st:display(?val), "&nbsp;")
 }  
 ; separator = " "
@@ -727,7 +624,6 @@ where {
   
 }
 order by ?var
-
 ]]>
 </body>
 </rule>

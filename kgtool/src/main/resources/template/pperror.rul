@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:11 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -42,7 +42,6 @@ where {
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_3")
 	("super" "Not a valid Super Class Expression" "Class_Expressions_3")
 }
-
 ]]>
 </body>
 </rule>
@@ -56,7 +55,6 @@ template st:mainOWL(?tag) {
 where {
 	
 }
-
 ]]>
 </body>
 </rule>
@@ -89,7 +87,6 @@ where {
 	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
 	("classExp" "Not a valid Class Expression" "Class_Expressions")
 }
-
 ]]>
 </body>
 </rule>
@@ -111,7 +108,6 @@ where {
 	### classExp ###
 	("one" "individual" "Class_Expressions" "literal" "Data_Ranges")
 }
-
 ]]>
 </body>
 </rule>
@@ -126,7 +122,6 @@ template st:mainEL(?tag) {
 where {
 	
 }
-
 ]]>
 </body>
 </rule>
@@ -159,7 +154,6 @@ values (?type ?uri) {
 
 
 } 
-
 ]]>
 </body>
 </rule>
@@ -179,7 +173,6 @@ where {
     bind (st:call-template(st:main, ?in) as ?res)
     filter (bound(?res) && strlen(?res) > 0)
 } 
-
 ]]>
 </body>
 </rule>
@@ -193,7 +186,6 @@ template st:mainRL(?tag) {
 where {
 	
 }
-
 ]]>
 </body>
 </rule>
@@ -207,7 +199,6 @@ template st:mainQL(?tag) {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -227,7 +218,6 @@ function st:linkPro(?x) {
 function st:linkOWL(?x) { 
   URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
 }
-
 
 ]]>
 </body>
@@ -250,7 +240,6 @@ where {
 	### axiom ###
 	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
 }
-
 ]]>
 </body>
 </rule>
@@ -287,7 +276,6 @@ where {
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
 	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
 }
-
 ]]>
 </body>
 </rule>

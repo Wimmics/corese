@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -40,7 +40,6 @@ where {
         
 }
 
-
 ]]>
 </body>
 </rule>
@@ -70,7 +69,6 @@ values (?p ?lo ?ld) {
   (owl:complementOf 	"ObjectComplementOf" 	"DataComplementOf")
   (owl:datatypeComplementOf "DataComplementOf" 	"DataComplementOf")
 }
-
 ]]>
 </body>
 </rule>
@@ -93,7 +91,6 @@ where {
     owl:imports ?i 
       
 }
-
 
 ]]>
 </body>
@@ -119,7 +116,6 @@ where {
       
 }
 
-
 ]]>
 </body>
 </rule>
@@ -144,7 +140,6 @@ template st:html {
 where {
      bind(st:set(st:html, true) as ?ctx) 
 }
-
 
 ]]>
 </body>
@@ -173,7 +168,6 @@ where {
   ?in a owl:Ontology   
       
 }
-
 
 ]]>
 </body>
@@ -213,7 +207,6 @@ function st:protect(?in) {
     }
   }
 
-
 ]]>
 </body>
 </rule>
@@ -232,7 +225,6 @@ values (?p ?l) {
   (owl:differentFrom "DifferentIndividuals")
   (owl:sameAs "SameIndividual")
 }
-
 ]]>
 </body>
 </rule>
@@ -264,7 +256,6 @@ where {
       owl:complementOf | owl:datatypeComplementOf ?z 
   } 
 }
-
 ]]>
 </body>
 </rule>
@@ -280,7 +271,6 @@ where {
   filter(isURI(?in))
 }
 pragma { st:template st:priority 2 }
-
 
 ]]>
 </body>
@@ -302,7 +292,6 @@ values (?tt ?l) {
   (owl:ObjectProperty   "EquivalentObjectProperties")
   (owl:DatatypeProperty "EquivalentDataProperties")
 }
-
 ]]>
 </body>
 </rule>
@@ -325,7 +314,6 @@ where {
 }
 
 #pragma { st:template st:priority 2 }
-
 ]]>
 </body>
 </rule>
@@ -340,7 +328,6 @@ where {
   ?in owl:hasSelf true ;
     owl:onProperty ?y 
 }
-
 ]]>
 </body>
 </rule>
@@ -356,7 +343,6 @@ where {
   ?in a owl:FunctionalProperty 
   optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
 }
-
 ]]>
 </body>
 </rule>
@@ -388,7 +374,6 @@ where {
   } 
 
 }
-
 ]]>
 </body>
 </rule>
@@ -409,7 +394,6 @@ values (?t ?l) {
   (owl:IrreflexiveProperty 	"Irreflexive")
   (owl:InverseFunctionalProperty "InverseFunctional")
 }
-
 ]]>
 </body>
 </rule>
@@ -426,7 +410,6 @@ where {
   ?in rdf:rest*/rdf:first ?e
 }
 pragma {st:template st:priority 1}
-
 ]]>
 </body>
 </rule>
@@ -445,7 +428,6 @@ where {
   filter(isLiteral(?in))
 }
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -469,7 +451,6 @@ values (?q ?l) {
   (owl:targetIndividual "NegativeObjectPropertyAssertion")
   (owl:targetValue      "NegativeDataPropertyAssertion")
 }
-
 ]]>
 </body>
 </rule>
@@ -486,7 +467,6 @@ template {
 where {
   ?in owl:propertyChainAxiom ?l 
 }
-
 ]]>
 </body>
 </rule>
@@ -503,7 +483,6 @@ where {
     owl:onProperty ?y .
     optional { ?y a owl:DatatypeProperty, ?t }
 }
-
 ]]>
 </body>
 </rule>
@@ -525,7 +504,6 @@ values (?t ?l) {
   (owl:DatatypeProperty "DataProperty")
   (owl:AnnotationProperty "AnnotationProperty")
 }
-
 ]]>
 </body>
 </rule>
@@ -550,7 +528,6 @@ where {
     ?l rdf:rest*/rdf:first ?dp
     ?dp a owl:DatatypeProperty }
 }
-
 ]]>
 </body>
 </rule>
@@ -571,7 +548,6 @@ where {
       ?p a owl:DatatypeProperty
     }
 }
-
 ]]>
 </body>
 </rule>
@@ -586,7 +562,6 @@ where {
   ?in owl:inverseOf ?y
   filter(isURI(?in))
 }
-
 ]]>
 </body>
 </rule>
@@ -607,7 +582,6 @@ values (?tt ?l) {
   (owl:ObjectProperty   "DisjointObjectProperties")
   (owl:DatatypeProperty "DisjointDataProperties")
 }
-
 ]]>
 </body>
 </rule>
@@ -637,7 +611,6 @@ where {
   }
 }
 #pragma { st:template st:priority 2 }
-
 ]]>
 </body>
 </rule>
@@ -670,7 +643,6 @@ where {
   
   optional { ?y a ?t filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -697,7 +669,6 @@ where {
 
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -720,7 +691,6 @@ where {
       rdf:rest*/rdf:first [ ?p ?v ]
     ]
 }
-
 ]]>
 </body>
 </rule>
@@ -748,7 +718,6 @@ where {
 values (?p ?lo ?ld) {
   (owl:unionOf         "ObjectUnionOf" "DataUnionOf")
 }
-
 ]]>
 </body>
 </rule>
@@ -783,7 +752,6 @@ where {
 
 
 
-
 ]]>
 </body>
 </rule>
@@ -814,7 +782,6 @@ where {
    } 
   as ?iu)
 }
-
 ]]>
 </body>
 </rule>
@@ -835,7 +802,6 @@ values (?tt ?l){
   (owl:ObjectProperty   "SubObjectPropertyOf")
   (owl:DatatypeProperty "SubDataPropertyOf" )
 }
-
 ]]>
 </body>
 </rule>
@@ -851,7 +817,6 @@ where {
   ?in owl:oneOf ?y 
   optional { ?in a ?t . filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -867,7 +832,6 @@ where {
   ?in rdfs:domain ?d 
   optional { ?in a ?t . filter(?t = owl:DatatypeProperty) }
 }
-
 ]]>
 </body>
 </rule>
@@ -881,7 +845,6 @@ template {
 where {
   ?in a owl:NamedIndividual
 }
-
 
 ]]>
 </body>
@@ -900,7 +863,6 @@ where {
   ?in rdfs:comment ?l 
   filter(not exists { ?in a owl:Axiom })
 }
-
 ]]>
 </body>
 </rule>
@@ -925,7 +887,6 @@ values (?q ?lo ?ld) {
   (owl:minQualifiedCardinality "ObjectMinCardinality"   "DataMinCardinality")
   (owl:qualifiedCardinality    "ObjectExactCardinality" "DataExactCardinality")
 }
-
 ]]>
 </body>
 </rule>
@@ -940,7 +901,6 @@ where {
   ?in a owl:AllDisjointClasses ;
     owl:members ?l
 }
-
 ]]>
 </body>
 </rule>
@@ -966,7 +926,6 @@ where {
   )
   filter not exists { ?in a owl:Axiom }
 }
-
 ]]>
 </body>
 </rule>
@@ -983,7 +942,6 @@ where {
   optional { ?in a ?t  filter(?t  = owl:DatatypeProperty) }
   optional { ?d a ?dt  filter(?dt = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -1002,7 +960,6 @@ where {
   { ?in owl:members ?l } union 
   { ?in owl:distinctMembers ?l }
 }
-
 ]]>
 </body>
 </rule>
@@ -1036,7 +993,6 @@ select distinct ?in where {
 }
 pragma { st:template st:priority 1 }
 
-
 ]]>
 </body>
 </rule>
@@ -1058,7 +1014,6 @@ values (?q ?lo ?ld) {
   (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
   (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
 }
-
 ]]>
 </body>
 </rule>
@@ -1080,7 +1035,6 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-
 ]]>
 </body>
 </rule>
@@ -1095,7 +1049,6 @@ where {
   ?in owl:inverseOf ?y
   filter(isBlank(?in))
 }
-
 ]]>
 </body>
 </rule>
@@ -1114,7 +1067,6 @@ values (?t ?l) {
   (owl:SymmetricProperty 	"Symmetric")
   (owl:TransitiveProperty 	"Transitive")
 }
-
 ]]>
 </body>
 </rule>
@@ -1133,7 +1085,6 @@ where {
      || strstarts(?t, rdfs:))
 }
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -1154,7 +1105,6 @@ where {
      || strstarts(?t, rdfs:)) )
 }
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -1175,7 +1125,6 @@ values (?p ?l){
 (owl:complementOf 	  "ObjectComplementOf")
 (owl:datatypeComplementOf "DataComplementOf")
 }
-
 ]]>
 </body>
 </rule>
@@ -1192,7 +1141,6 @@ where {
   { ?in a owl:DeprecatedProperty }  
 
 }
-
 ]]>
 </body>
 </rule>

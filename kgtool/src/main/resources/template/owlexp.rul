@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -30,7 +30,6 @@ function st:process(?in) {
 	st:apply-templates(?in))
     } 
 
-
 ]]>
 </body>
 </rule>
@@ -52,7 +51,6 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-
 ]]>
 </body>
 </rule>
@@ -67,7 +65,6 @@ where {
   ?in owl:hasSelf true ;
     owl:onProperty ?y 
 }
-
 ]]>
 </body>
 </rule>
@@ -83,7 +80,6 @@ template {
 where {
   ?in rdf:rest*/rdf:first ?e
 }
-
 ]]>
 </body>
 </rule>
@@ -102,7 +98,6 @@ where {
   filter(isLiteral(?in))
 }
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -119,7 +114,6 @@ where {
     owl:onProperty ?y .
     optional { ?y a ?t  filter (?t = owl:DatatypeProperty) }
 }
-
 ]]>
 </body>
 </rule>
@@ -133,7 +127,6 @@ template {
 where {
   ?in owl:inverseOf ?y 
 }
-
 ]]>
 </body>
 </rule>
@@ -157,7 +150,6 @@ values (?q ?l) {
   (owl:minQualifiedCardinality  "DataMinCardinality")
   (owl:qualifiedCardinality     "DataExactCardinality")
 }
-
 ]]>
 </body>
 </rule>
@@ -178,7 +170,6 @@ where {
   filter (?y != rdf:nil)
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -201,7 +192,6 @@ where {
       rdf:rest*/rdf:first [ ?p ?v ]
     ]
 }
-
 ]]>
 </body>
 </rule>
@@ -222,7 +212,6 @@ where {
   filter (?y != rdf:nil)
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -238,7 +227,6 @@ where {
   ?in owl:oneOf ?y 
   optional { ?in a ?t . filter(?t = rdfs:Datatype) }
 }
-
 ]]>
 </body>
 </rule>
@@ -262,7 +250,6 @@ values (?q ?l) {
   (owl:minQualifiedCardinality "ObjectMinCardinality")
   (owl:qualifiedCardinality    "ObjectExactCardinality")
 }
-
 ]]>
 </body>
 </rule>
@@ -284,7 +271,6 @@ values (?q ?lo ?ld) {
   (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
   (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
 }
-
 ]]>
 </body>
 </rule>
@@ -298,7 +284,6 @@ template {
 where {
   ?in owl:unionOf ()
 }
-
 ]]>
 </body>
 </rule>
@@ -312,7 +297,6 @@ template {
 where {
   ?in owl:intersectionOf ()
 }
-
 ]]>
 </body>
 </rule>
@@ -334,7 +318,6 @@ where {
     optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
 }
 
-
 ]]>
 </body>
 </rule>
@@ -354,7 +337,6 @@ where {
 }
 limit 1
 pragma { st:template st:priority 1000 }
-
 ]]>
 </body>
 </rule>
@@ -372,7 +354,6 @@ values (?p ?l){
 (owl:complementOf 	  "ObjectComplementOf")
 (owl:datatypeComplementOf "DataComplementOf")
 }
-
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -25,7 +25,6 @@ where {
     bind (st:visitedGraph() as ?g)
     filter bound(?par)
 }
-
 ]]>
 </body>
 </rule>
@@ -49,7 +48,6 @@ where {
    bind (st:get(st:format) as ?format)
    bind (bound(?format) as ?text)
 }
-
 ]]>
 </body>
 </rule>
@@ -68,7 +66,6 @@ template st:start {
 where {
     
 }
-
 ]]>
 </body>
 </rule>
@@ -92,7 +89,6 @@ where {
     group by ?s
     order by ?s
 }
-
 ]]>
 </body>
 </rule>
@@ -121,7 +117,6 @@ where {
 }
 group by ?s
 order by ?s
-
 ]]>
 </body>
 </rule>
@@ -139,7 +134,6 @@ where {}
 function us:format(?name) {
     st:getFormat("ds", ?name)
 }
-
 ]]>
 </body>
 </rule>
@@ -163,7 +157,6 @@ where {
     }}
     filter (?c > 0)
 }
-
 ]]>
 </body>
 </rule>
@@ -187,7 +180,6 @@ format {
 where {
 
 }
-
 ]]>
 </body>
 </rule>

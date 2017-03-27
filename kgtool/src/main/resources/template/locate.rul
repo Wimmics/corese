@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 23 09:12:10 CET 2017
+Mon Mar 27 11:33:44 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -25,7 +25,6 @@ template st:link(?x) {
 where {
  
 }
-
 ]]>
 </body>
 </rule>
@@ -44,7 +43,6 @@ template st:start {
 where {
 
 }
-
 ]]>
 </body>
 </rule>
@@ -88,7 +86,6 @@ where {
  
 }
 pragma { kg:service kg:slice 10 }
-
 ]]>
 </body>
 </rule>
@@ -113,7 +110,6 @@ template st:closelocate {
 where {
   
 }
-
 ]]>
 </body>
 </rule>
@@ -133,7 +129,6 @@ template st:transform {
 where {
  
 }
-
 ]]>
 </body>
 </rule>
@@ -169,7 +164,6 @@ where {
   }
 }
 pragma { kg:service kg:slice 50 }
-
 ]]>
 </body>
 </rule>

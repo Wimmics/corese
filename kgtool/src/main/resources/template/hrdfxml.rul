@@ -10,18 +10,30 @@ Mon Mar 27 11:33:44 CEST 2017
 <body>
 <![CDATA[
 #
+# st:apply-templates-with(st:hrdfxml)
 #
-# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
-#
-prefix tc: </user/corby/home/AData/template/spintc/>
-
 template st:start {
-  st:boolean(st:apply-templates-with-all(st:spintcbody))
+    st:call-template-with(st:rdfxml, st:result)
 }
 where {
+   bind (st:export(st:uri,   st:focus())   as ?e)
 }
+]]>
+</body>
+</rule>
 
+<rule>
+<body>
+<![CDATA[
+#
+# st:apply-templates-with(st:hrdfxml, ?in)
+#
+template (?in) {
+    st:call-template-with(st:rdfxml, st:focus, ?in)
+}
+where {
 
+}
 ]]>
 </body>
 </rule>

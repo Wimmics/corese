@@ -103,19 +103,13 @@ public class SPARQLRestAPI {
 
 	void init() {
 		mprofile = new Profile();
-		// mprofile.init(Profile.WEBAPP_DATA, PROFILE_DEFAULT);
-		// mprofile.initServer(PROFILE_DEFAULT);
 		if (localProfile != null) {
-			// mprofile.init("", localProfile);
-			if (!localProfile.startsWith("http://") && !localProfile.startsWith("file://")) {
-				localProfile = "file://" + localProfile;
-			}
+                    localProfile = NSManager.toURI(localProfile);
 			System.out.println("Load: " + localProfile);
-			// mprofile.init(localProfile);
 		}
 		mprofile.initServer(PROFILE_DEFAULT, localProfile);
 	}
-
+               
 	static Profile getProfile() {
 		return mprofile;
 	}

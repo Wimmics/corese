@@ -313,17 +313,17 @@ public class QueryProcess extends QuerySolver {
      */
     @Override
     public Mappings query(Query q) {
-        return qquery(q, null);
+        return qquery(q, null, null);
     }
 
     @Override
     public Mappings eval(Query query) {
-        return qquery(query, null);
+        return qquery(query, null, null);
     }
 
     @Override
     public Mappings eval(Query query, Mapping m) {
-        return qquery(query, m);
+        return qquery(query, m, null);
     }
 
     @Override
@@ -341,9 +341,9 @@ public class QueryProcess extends QuerySolver {
         return null;
     }
 
-    public Mappings qquery(Query q, Mapping map) {
+    public Mappings qquery(Query q, Mapping map, Dataset ds) {
         try {
-            return query(q, map, null);
+            return query(q, map, ds);
         } catch (EngineException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -436,8 +436,8 @@ public class QueryProcess extends QuerySolver {
         return query(q);
     }
     
-    public Mappings sparqlQuery(String squery, Mapping map) throws EngineException {
-        Query q = compile(squery, null);
+    public Mappings sparqlQuery(String squery, Mapping map, Dataset ds) throws EngineException {
+        Query q = compile(squery, ds);
         if (q.isUpdate()) {
             throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
         }

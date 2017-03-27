@@ -1,21 +1,14 @@
-template st:resource(?in, ?t) {
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resource(?in) {
 format {
-    "<%s %s='%s'>%s</%s>"
+    us:format(if (?bnode, ft:descriptionbn.html, ft:description.html))
     
-    st:turtle(?tag, true)
-    st:turtle(?att) 
-    str(?name)
-    box { 
-        if (bound(?t), 
-            st:call-template(st:property, ?in, ?t),
-            st:call-template(st:property, ?in))
-    }
-    st:turtle(?tag)
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in) }
 }
 }
 where {
-   bind (if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind (if (isBlank(?in), ?in, ?in) as ?name)
-   bind (if (bound(?t), ?t, rdf:Description) as ?tag)
+   bind (isBlank(?in) as ?bnode)
 }
 

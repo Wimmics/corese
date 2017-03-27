@@ -1,11 +1,11 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s rdf:datatype='%s'>%s</%s>"
+   us:format(ft:propertydt.html) 
    
    st:turtle(?p, true)
-   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, "&xsd;"), datatype(?y)) 
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, st:html("&xsd;")), datatype(?y)) 
    st:literal(str(?y)) 
-   st:turtle(?p, true)
 }
 }
 where {

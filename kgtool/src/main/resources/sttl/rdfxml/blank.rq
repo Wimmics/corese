@@ -1,6 +1,7 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-"""<%s>%s</%s>  """
+  us:format(ft:property.html)
   
   st:turtle(?p, true)
   box {  
@@ -8,7 +9,6 @@ format {
         st:call-template(st:resourceref, ?y),
         st:call-template(st:blank, ?x, ?p, ?y))
     }
-  st:turtle(?p, true)  
  } 
 }
 where {

@@ -3,14 +3,14 @@
 #
 # Olivier Corby - Wimmics INRIA I3S - 2015
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 
 template st:start(?in) {
-
-  st:call-template(st:head)
-  
-  str(?body)
-  
-  st:call-template(st:tail)
+format {
+  us:format(ft:head.html)  
+  ibox { st:call-template(st:prefix) }
+  str(?body)  
+}
 }
 where {
    bind(

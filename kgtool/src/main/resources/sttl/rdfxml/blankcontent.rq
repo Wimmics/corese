@@ -1,7 +1,7 @@
 template st:blank (?x, ?p, ?y) {
 
    if (bound(?t), 
-     st:call-template(st:resource, ?y, ?t),
+     st:call-template(st:resourcetype, ?y, ?t),
      st:call-template(st:resource, ?y))
 
 }

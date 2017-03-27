@@ -1,13 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template st:resourceref(?in) {
 format {
-  "<rdf:Description %s='%s' />" 
+  us:format(if (?bnode, ft:resourcerefbn.html, ft:resourceref.html)) 
   
-  st:turtle(?att)
-  str(?name)
+  st:linkuri(?in)
 }
 }
 where {
-   bind ( if (isBlank(?in), rdf:nodeID, rdf:about) as ?att)
-   bind ( if (isBlank(?in), ?in, ?in) as ?name)
+   bind (isBlank(?in) as ?bnode)
 }
 

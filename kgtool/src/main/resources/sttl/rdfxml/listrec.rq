@@ -1,6 +1,8 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
 template st:listrec(?y) {
 format {
-"<rdf:Description>%s</rdf:Description>" 
+    us:format(ft:desc.html)  
    
    box {
     

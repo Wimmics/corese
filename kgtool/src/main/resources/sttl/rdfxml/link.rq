@@ -1,0 +1,8 @@
+template st:link(?uri, ?title) {
+   format {
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
+   }
+}
+where {
+}

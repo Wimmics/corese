@@ -1,10 +1,10 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   "<%s>%s</%s>"
+   us:format(ft:property.html) 
    
    st:turtle(?p, true)
    st:literal(str(?y)) 
-   st:turtle(?p, true)
    }
 }
 where {

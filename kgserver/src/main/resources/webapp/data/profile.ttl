@@ -60,6 +60,8 @@ st:hal2 a st:Server ;
 st:service "hal2" ;
 st:param [ 
     st:focus false ;
+    st:export true ;
+    st:hyperlink true ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal2)
         (<http://www.w3c.org/ns/org> st:hal2)    
@@ -70,7 +72,7 @@ st:workflow [
     a sw:Workflow ;
     sw:body (
         <query/halrdf.rq>
-        [ a sw:Transformation ; sw:uri st:sparql ]
+        [ a sw:Transformation ; sw:uri st:hrdfxml ]
     )
 ]
 .

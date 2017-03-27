@@ -1,15 +1,10 @@
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:descresource(?r) {
 format {
-  """
-  <tr>
-  <th class='left'>%s</th>
-  <td>%s</td>
-  </tr>
-  """ 
-  
+  ft:resource.html
   str(?p)
   st:call-template(st:triple, ?r, ?p, ?v)
   }

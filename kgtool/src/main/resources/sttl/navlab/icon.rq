@@ -1,6 +1,7 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:icon(?label, ?ic) {
   format {
-    us:format("img.html")    
+    ft:img.html   
     str(?label) str(?ic)
   }
 }

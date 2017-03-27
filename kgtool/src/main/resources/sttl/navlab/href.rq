@@ -1,11 +1,12 @@
 #
 # Link to external web site (eg Wikipedia)
 #
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template  st:href(?r, ?p) {
   format {
   
-  "<a href=\"%s\">%s</a>"
+  ft:link.html
 
    str(?v) str(?v) 
   }

@@ -6,12 +6,12 @@ prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
 prefix p:    <http://fr.dbpedia.org/property/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 
 template  st:display(?r, ?l) {
   format {
-    "<a href='%s'>%s</a>"
-
+    ft:link.html
     st:pplink(?r)
     str(coalesce(?l, ?pr))
   }

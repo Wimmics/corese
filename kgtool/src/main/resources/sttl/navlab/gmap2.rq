@@ -2,25 +2,15 @@
 # Geolocate  resources on a map 
 # ?list = list(list(uri, lat, lon))
 #
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:gmap2(?list) {
   format {
-    """
-    var pos%s = new google.maps.LatLng(%s, %s);
-		    
-    var marker%s 
-    = new google.maps.Marker({ position: pos%s, map: map, icon: '%s' });
-    
-    google.maps.event.addListener(marker%s, 'click', 
-    function () {window.location.href = '%s';});
-    """
+    ft:map2.html
     
     st:number()
     str(?lat)
     str(?lon)
-    st:number()
-    st:number()
     coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    st:number()
     st:plink(?r)
   }
 }

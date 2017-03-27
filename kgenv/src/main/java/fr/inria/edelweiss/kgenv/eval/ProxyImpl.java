@@ -76,10 +76,12 @@ public class ProxyImpl implements Proxy, ExprType {
         custom = new Custom();
     }
 
+    @Override
     public void setEvaluator(Evaluator ev) {
         eval = ev;
     }
 
+    @Override
     public Evaluator getEvaluator() {
         return eval;
     }

@@ -22,6 +22,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
 	 * not just parsing the string label<br />
 	 * Cast a number to a boolean is always allowed and should always give a result
 	 */
+        @Override
 	public IDatatype cast(IDatatype target, IDatatype javaType) {
 		if (target.getLabel().equals(RDF.xsdinteger)){
 			return DatatypeMap.newInstance(intValue());

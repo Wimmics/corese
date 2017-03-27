@@ -710,6 +710,19 @@ public class DatatypeMap implements Cst, RDF {
     
     // DRAFT
     public static IDatatype result(IDatatype dt){
+        switch (dt.getCode()){
+            // return a copy to prevent side effects with cached IDatatype
+            // use case: parallel threads
+            case IDatatype.INTEGER : 
+                if (dt.intValue() < INTMAX){
+                    dt = newInstance(dt.intValue());
+                }
+                break;
+                
+            case IDatatype.BOOLEAN:
+                dt = newInstance(dt.booleanValue());
+                break;
+        }
         dt.setIndex(IDatatype.RESULT);
         return dt;
     }

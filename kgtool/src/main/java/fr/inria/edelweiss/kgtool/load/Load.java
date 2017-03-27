@@ -186,23 +186,28 @@ public class Load
     public void setDebug(boolean b) {
         debug = b;
     }
-
+    
     String uri(String name) {
-        if (!isURL(name)) {
-            // use case: relative file name
-            // otherwise URI is not correct (for ARP)
-            name = new File(name).getAbsolutePath();
-            // for windows
-            if (System.getProperty("os.name").contains("indows")) {
-                name = name.replace('\\', '/');
-                if (name.matches("[A-Z]:.*")) {
-                    name = "/" + name;
-                }
-            }
-            name = FILE + name;
-        }
-        return name;
+        return NSManager.toURI(name);
     }
+
+//    String uri2(String name) {
+//        String str = uri(name);
+//        if (!isURL(name)) {
+//            // use case: relative file name
+//            // otherwise URI is not correct (for ARP)
+//            name = new File(name).getAbsolutePath();
+//            // for windows
+//            if (System.getProperty("os.name").contains("indows")) {
+//                name = name.replace('\\', '/');
+//                if (name.matches("[A-Z]:.*")) {
+//                    name = "/" + name;
+//                }
+//            }
+//            name = FILE + name;
+//        }
+//        return name;
+//    }
 
     boolean isURL(String path) {
         try {
@@ -224,7 +229,20 @@ public class Load
     }
     
     boolean hasFormat(String path){
-        return getFormat(path) != UNDEF_FORMAT;
+        return hasFormat(path, UNDEF_FORMAT);
+    }
+    
+    /**
+     * format = undef : accept any correct format
+     * format = some format : accept this format
+     */
+    boolean hasFormat(String path, int format){
+        if (format == UNDEF_FORMAT){
+            return getFormat(path) != UNDEF_FORMAT;
+        }
+        else {
+            return getFormat(path) == format;
+        }
     }
 
     public int getFormat(String path, int proposedFormat) {
@@ -253,6 +271,11 @@ public class Load
     public void parseDir(String path) throws LoadException {
         parseDir(path, null, false);
     }
+    
+    public void parseDir(String path, int format) throws LoadException {
+        parseDir(path, null, false, format);
+    }
+ 
            
     /**
      * Parse directory (not subdirectory)
@@ -270,9 +293,13 @@ public class Load
     public void parseDirRec(String path, String name) throws LoadException {
         parseDir(path, name,  true);
     } 
-       
+     
     public void parseDir(String path, String name, boolean rec) throws LoadException {
-        parseDir(new File(path), path, name, rec);
+        parseDir(path, name, rec, UNDEF_FORMAT);
+    }
+  
+    public void parseDir(String path, String name, boolean rec, int format) throws LoadException {
+        parseDir(new File(path), path, name, rec, format);
     }
     
      /**
@@ -282,19 +309,22 @@ public class Load
      * recursion on subdirectory when rec = true
      * no recursion on directory with SW extension (even if rec = true)
      * base is now the path of each file (not the name)
+     * format: required format unless UNDEF_FORMAT
      */
-    void parseDir(File file, String path, String name,  boolean rec) throws LoadException {
+    void parseDir(File file, String path, String name,  boolean rec, int format) throws LoadException {
         if (file.isDirectory()) {
-            path += File.separator;           
+            if (! path.endsWith(File.separator)){
+                path += File.separator;
+            }           
             for (String f : file.list()) {
                 String pname = path + f;
-                if (hasFormat(f)) {                                      
+                if (hasFormat(f, format)) {                                      
                     parseDoc(pname, name);
                 }
                 else if (rec) {
                     File dir = new File(pname);
                     if (dir.isDirectory()){
-                        parseDir(dir, pname, name,  rec);
+                        parseDir(dir, pname, name,  rec, format);
                     }
                 }
             }
@@ -884,7 +914,7 @@ public class Load
             path += File.separator;
             int i = 0;
             for (String f : file.list()) {
-                if (! hasFormat(f)){ //(!suffix(f)) {
+                if (! hasFormat(f)){ 
                     continue;
                 }
                 if (i++ >= maxFile) {

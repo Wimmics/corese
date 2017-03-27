@@ -181,14 +181,21 @@ public class QueryLoad {
         BufferedReader fq = new BufferedReader(fr);
         StringBuilder sb = new StringBuilder();
         String str;
+        boolean isnl = false;
         while (true) {
             str = fq.readLine();
             if (str == null) {
                 fq.close();
                 break;
             }
+            if (isnl){
+                sb.append(NL);
+            }
+            else {
+                isnl = true;
+            }
             sb.append(str);
-            sb.append(NL);
+            //sb.append(NL);
         }
         return sb.toString();
     }

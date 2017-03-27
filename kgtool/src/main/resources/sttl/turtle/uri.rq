@@ -6,7 +6,6 @@ template {
   ?in " "
   
   ibox {   
-	st:call-template(st:type, ?in)	
 	st:call-template(st:value, ?in)      
   } 
       

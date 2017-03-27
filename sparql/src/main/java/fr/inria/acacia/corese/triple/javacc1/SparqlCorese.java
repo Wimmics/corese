@@ -2,7 +2,7 @@
         package fr.inria.acacia.corese.triple.javacc1;
 
         import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+        import org.apache.logging.log4j.LogManager;
 
         import java.util.List;
         import java.util.ArrayList;
@@ -1305,6 +1305,25 @@ import org.apache.logging.log4j.LogManager;
     case ANON:
       exp = PrimaryExpression(stack);
       break;
+    case GROUP:
+    case FORMAT:
+    case BOX:
+    case IBOX:
+    case SBOX:
+      exp = TemplateExpression(stack);
+      break;
+    default:
+      jj_la1[52] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  {if (true) return exp;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression TemplateExpression(Exp stack) throws ParseException {
+                                              Expression exp;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BOX:
     case IBOX:
     case SBOX:
@@ -1317,7 +1336,7 @@ import org.apache.logging.log4j.LogManager;
       exp = format(stack);
       break;
     default:
-      jj_la1[52] = jj_gen;
+      jj_la1[53] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1335,7 +1354,7 @@ import org.apache.logging.log4j.LogManager;
                            list.setDistinct(true);
       break;
     default:
-      jj_la1[53] = jj_gen;
+      jj_la1[54] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -1390,7 +1409,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[54] = jj_gen;
+        jj_la1[55] = jj_gen;
         break label_9;
       }
       exp = texp(stack);
@@ -1405,7 +1424,7 @@ import org.apache.logging.log4j.LogManager;
                                                     list.setExpSeparator(sep);
       break;
     default:
-      jj_la1[55] = jj_gen;
+      jj_la1[56] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -1470,7 +1489,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[56] = jj_gen;
+        jj_la1[57] = jj_gen;
         break label_10;
       }
       exp = texp(stack);
@@ -1495,7 +1514,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(SBOX);
       break;
     default:
-      jj_la1[57] = jj_gen;
+      jj_la1[58] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1552,7 +1571,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[58] = jj_gen;
+        jj_la1[59] = jj_gen;
         break label_11;
       }
       exp = texp(stack);
@@ -1589,7 +1608,7 @@ import org.apache.logging.log4j.LogManager;
             ;
             break;
           default:
-            jj_la1[59] = jj_gen;
+            jj_la1[60] = jj_gen;
             break label_12;
           }
         }
@@ -1604,14 +1623,14 @@ import org.apache.logging.log4j.LogManager;
                       lattr.add(attr);
         break;
       default:
-        jj_la1[60] = jj_gen;
+        jj_la1[61] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[61] = jj_gen;
+      jj_la1[62] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -1666,7 +1685,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[62] = jj_gen;
+        jj_la1[63] = jj_gen;
         break label_13;
       }
       exp = texp(stack);
@@ -1692,7 +1711,7 @@ import org.apache.logging.log4j.LogManager;
                astq.setSorted(false);
       break;
     default:
-      jj_la1[63] = jj_gen;
+      jj_la1[64] = jj_gen;
       ;
     }
     OneMoreListMerge();
@@ -1705,7 +1724,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[64] = jj_gen;
+        jj_la1[65] = jj_gen;
         break label_14;
       }
       DatasetClause();
@@ -1725,7 +1744,7 @@ import org.apache.logging.log4j.LogManager;
             astq.setDebug(true);
       break;
     default:
-      jj_la1[65] = jj_gen;
+      jj_la1[66] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1734,7 +1753,7 @@ import org.apache.logging.log4j.LogManager;
             astq.setCheck(true);
       break;
     default:
-      jj_la1[66] = jj_gen;
+      jj_la1[67] = jj_gen;
       ;
     }
   }
@@ -1747,7 +1766,7 @@ import org.apache.logging.log4j.LogManager;
            isRule = true;
       break;
     default:
-      jj_la1[67] = jj_gen;
+      jj_la1[68] = jj_gen;
       ;
     }
     jj_consume_token(CONSTRUCT);
@@ -1767,12 +1786,12 @@ import org.apache.logging.log4j.LogManager;
           SelectVar();
           break;
         default:
-          jj_la1[68] = jj_gen;
+          jj_la1[69] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[69] = jj_gen;
+        jj_la1[70] = jj_gen;
         ;
       }
       label_15:
@@ -1782,7 +1801,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[70] = jj_gen;
+          jj_la1[71] = jj_gen;
           break label_15;
         }
         DatasetClause();
@@ -1803,7 +1822,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[71] = jj_gen;
+          jj_la1[72] = jj_gen;
           break label_16;
         }
         DatasetClause();
@@ -1816,7 +1835,7 @@ import org.apache.logging.log4j.LogManager;
         {if (true) return stack2;}
       break;
     default:
-      jj_la1[72] = jj_gen;
+      jj_la1[73] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1849,7 +1868,7 @@ import org.apache.logging.log4j.LogManager;
                                                astq.setDescribe(at);
           break;
         default:
-          jj_la1[73] = jj_gen;
+          jj_la1[74] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1865,7 +1884,7 @@ import org.apache.logging.log4j.LogManager;
                    astq.setDescribeAll(true);
       break;
     default:
-      jj_la1[74] = jj_gen;
+      jj_la1[75] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1900,7 +1919,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[75] = jj_gen;
+        jj_la1[76] = jj_gen;
         break label_19;
       }
       DatasetClause();
@@ -1912,7 +1931,7 @@ import org.apache.logging.log4j.LogManager;
                        astq.setValues(values);
       break;
     default:
-      jj_la1[76] = jj_gen;
+      jj_la1[77] = jj_gen;
       ;
     }
         astq.setResultForm(ASTQuery.QT_ASK);
@@ -1956,13 +1975,13 @@ import org.apache.logging.log4j.LogManager;
               Merge();
               break;
             default:
-              jj_la1[77] = jj_gen;
+              jj_la1[78] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
             break;
           default:
-            jj_la1[78] = jj_gen;
+            jj_la1[79] = jj_gen;
             ;
           }
           break;
@@ -1973,7 +1992,7 @@ import org.apache.logging.log4j.LogManager;
             More();
             break;
           default:
-            jj_la1[79] = jj_gen;
+            jj_la1[80] = jj_gen;
             ;
           }
           break;
@@ -1984,18 +2003,18 @@ import org.apache.logging.log4j.LogManager;
             More();
             break;
           default:
-            jj_la1[80] = jj_gen;
+            jj_la1[81] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[81] = jj_gen;
+          jj_la1[82] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[82] = jj_gen;
+        jj_la1[83] = jj_gen;
         ;
       }
       break;
@@ -2019,13 +2038,13 @@ import org.apache.logging.log4j.LogManager;
               Merge();
               break;
             default:
-              jj_la1[83] = jj_gen;
+              jj_la1[84] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
             break;
           default:
-            jj_la1[84] = jj_gen;
+            jj_la1[85] = jj_gen;
             ;
           }
           break;
@@ -2036,7 +2055,7 @@ import org.apache.logging.log4j.LogManager;
             One();
             break;
           default:
-            jj_la1[85] = jj_gen;
+            jj_la1[86] = jj_gen;
             ;
           }
           break;
@@ -2047,23 +2066,23 @@ import org.apache.logging.log4j.LogManager;
             One();
             break;
           default:
-            jj_la1[86] = jj_gen;
+            jj_la1[87] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[87] = jj_gen;
+          jj_la1[88] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[88] = jj_gen;
+        jj_la1[89] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[95] = jj_gen;
+      jj_la1[96] = jj_gen;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LIST:
       case MERGE:
@@ -2075,7 +2094,7 @@ import org.apache.logging.log4j.LogManager;
           Merge();
           break;
         default:
-          jj_la1[89] = jj_gen;
+          jj_la1[90] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2090,7 +2109,7 @@ import org.apache.logging.log4j.LogManager;
               More();
               break;
             default:
-              jj_la1[90] = jj_gen;
+              jj_la1[91] = jj_gen;
               ;
             }
             break;
@@ -2101,23 +2120,23 @@ import org.apache.logging.log4j.LogManager;
               One();
               break;
             default:
-              jj_la1[91] = jj_gen;
+              jj_la1[92] = jj_gen;
               ;
             }
             break;
           default:
-            jj_la1[92] = jj_gen;
+            jj_la1[93] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           break;
         default:
-          jj_la1[93] = jj_gen;
+          jj_la1[94] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[94] = jj_gen;
+        jj_la1[95] = jj_gen;
         ;
       }
     }
@@ -2158,7 +2177,7 @@ import org.apache.logging.log4j.LogManager;
                                                                astq.setReduced(true);
         break;
       default:
-        jj_la1[96] = jj_gen;
+        jj_la1[97] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2168,12 +2187,12 @@ import org.apache.logging.log4j.LogManager;
                      astq.setStrictDistinct(false);
         break;
       default:
-        jj_la1[97] = jj_gen;
+        jj_la1[98] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[98] = jj_gen;
+      jj_la1[99] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2185,7 +2204,7 @@ import org.apache.logging.log4j.LogManager;
       GroupCountSortDisplay();
       break;
     default:
-      jj_la1[99] = jj_gen;
+      jj_la1[100] = jj_gen;
       ;
     }
   }
@@ -2209,7 +2228,7 @@ import org.apache.logging.log4j.LogManager;
             SelectExp(stack);
             break;
           default:
-            jj_la1[100] = jj_gen;
+            jj_la1[101] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -2221,7 +2240,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[101] = jj_gen;
+          jj_la1[102] = jj_gen;
           break label_20;
         }
       }
@@ -2236,14 +2255,14 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[102] = jj_gen;
+          jj_la1[103] = jj_gen;
           break label_21;
         }
         SelectExp(stack);
       }
       break;
     default:
-      jj_la1[103] = jj_gen;
+      jj_la1[104] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2277,7 +2296,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[104] = jj_gen;
+          jj_la1[105] = jj_gen;
           break label_22;
         }
         jj_consume_token(COMMA);
@@ -2288,7 +2307,7 @@ import org.apache.logging.log4j.LogManager;
                           astq.defSelect(var, e2);
       break;
     default:
-      jj_la1[105] = jj_gen;
+      jj_la1[106] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2314,7 +2333,7 @@ import org.apache.logging.log4j.LogManager;
         Display();
         break;
       default:
-        jj_la1[106] = jj_gen;
+        jj_la1[107] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2329,7 +2348,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(BY);
       break;
     default:
-      jj_la1[107] = jj_gen;
+      jj_la1[108] = jj_gen;
       ;
     }
     var = Var();
@@ -2353,7 +2372,7 @@ import org.apache.logging.log4j.LogManager;
                      reverse = true;
       break;
     default:
-      jj_la1[108] = jj_gen;
+      jj_la1[109] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2388,7 +2407,7 @@ import org.apache.logging.log4j.LogManager;
                                        astq.setSort(tm, reverse);
       break;
     default:
-      jj_la1[109] = jj_gen;
+      jj_la1[110] = jj_gen;
       if (jj_2_7(2)) {
         tm = FunctionCorese(stack);
                                                       astq.setSort(tm, reverse);
@@ -2403,7 +2422,7 @@ import org.apache.logging.log4j.LogManager;
                              sortby = t.image.toLowerCase(); astq.setSort(sortby, reverse);
           break;
         default:
-          jj_la1[110] = jj_gen;
+          jj_la1[111] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2436,7 +2455,7 @@ import org.apache.logging.log4j.LogManager;
                                       astq.setDisplayBNID(true);
       break;
     default:
-      jj_la1[111] = jj_gen;
+      jj_la1[112] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2457,7 +2476,7 @@ import org.apache.logging.log4j.LogManager;
             Threshold();
             break;
           default:
-            jj_la1[112] = jj_gen;
+            jj_la1[113] = jj_gen;
             ;
           }
           break;
@@ -2468,18 +2487,18 @@ import org.apache.logging.log4j.LogManager;
             Result();
             break;
           default:
-            jj_la1[113] = jj_gen;
+            jj_la1[114] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[114] = jj_gen;
+          jj_la1[115] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[115] = jj_gen;
+        jj_la1[116] = jj_gen;
         ;
       }
       break;
@@ -2496,7 +2515,7 @@ import org.apache.logging.log4j.LogManager;
             Threshold();
             break;
           default:
-            jj_la1[116] = jj_gen;
+            jj_la1[117] = jj_gen;
             ;
           }
           break;
@@ -2507,23 +2526,23 @@ import org.apache.logging.log4j.LogManager;
             Projection();
             break;
           default:
-            jj_la1[117] = jj_gen;
+            jj_la1[118] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[118] = jj_gen;
+          jj_la1[119] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[119] = jj_gen;
+        jj_la1[120] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[125] = jj_gen;
+      jj_la1[126] = jj_gen;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case THRESHOLD:
         Threshold();
@@ -2538,7 +2557,7 @@ import org.apache.logging.log4j.LogManager;
               Result();
               break;
             default:
-              jj_la1[120] = jj_gen;
+              jj_la1[121] = jj_gen;
               ;
             }
             break;
@@ -2549,23 +2568,23 @@ import org.apache.logging.log4j.LogManager;
               Projection();
               break;
             default:
-              jj_la1[121] = jj_gen;
+              jj_la1[122] = jj_gen;
               ;
             }
             break;
           default:
-            jj_la1[122] = jj_gen;
+            jj_la1[123] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           break;
         default:
-          jj_la1[123] = jj_gen;
+          jj_la1[124] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[124] = jj_gen;
+        jj_la1[125] = jj_gen;
         ;
       }
     }
@@ -2609,7 +2628,7 @@ import org.apache.logging.log4j.LogManager;
                                  astq.setNamed(s);
       break;
     default:
-      jj_la1[126] = jj_gen;
+      jj_la1[127] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2623,7 +2642,7 @@ import org.apache.logging.log4j.LogManager;
               astq.setWhere(true);
       break;
     default:
-      jj_la1[127] = jj_gen;
+      jj_la1[128] = jj_gen;
       ;
     }
     //{ stack = BasicGraphPattern.create(); }
@@ -2639,7 +2658,7 @@ import org.apache.logging.log4j.LogManager;
       Relax();
       break;
     default:
-      jj_la1[128] = jj_gen;
+      jj_la1[129] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2649,7 +2668,7 @@ import org.apache.logging.log4j.LogManager;
       OrderGroup();
       break;
     default:
-      jj_la1[129] = jj_gen;
+      jj_la1[130] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2659,7 +2678,7 @@ import org.apache.logging.log4j.LogManager;
       LimitOffset();
       break;
     default:
-      jj_la1[130] = jj_gen;
+      jj_la1[131] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2668,7 +2687,7 @@ import org.apache.logging.log4j.LogManager;
                        astq.setValues(values);
       break;
     default:
-      jj_la1[131] = jj_gen;
+      jj_la1[132] = jj_gen;
       ;
     }
     label_24:
@@ -2678,7 +2697,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[132] = jj_gen;
+        jj_la1[133] = jj_gen;
         break label_24;
       }
       Display();
@@ -2690,7 +2709,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[133] = jj_gen;
+        jj_la1[134] = jj_gen;
         break label_25;
       }
       Pragma();
@@ -2715,7 +2734,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[134] = jj_gen;
+          jj_la1[135] = jj_gen;
           break label_26;
         }
         var = Var();
@@ -2739,7 +2758,7 @@ import org.apache.logging.log4j.LogManager;
                                                   values.addExp(exp);
         break;
       default:
-        jj_la1[137] = jj_gen;
+        jj_la1[138] = jj_gen;
         label_27:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2747,7 +2766,7 @@ import org.apache.logging.log4j.LogManager;
             ;
             break;
           default:
-            jj_la1[135] = jj_gen;
+            jj_la1[136] = jj_gen;
             break label_27;
           }
           jj_consume_token(LPAREN);
@@ -2771,7 +2790,7 @@ import org.apache.logging.log4j.LogManager;
               ;
               break;
             default:
-              jj_la1[136] = jj_gen;
+              jj_la1[137] = jj_gen;
               break label_28;
             }
             val = Value();
@@ -2803,7 +2822,7 @@ import org.apache.logging.log4j.LogManager;
                                                    values.addExp(exp);
         break;
       default:
-        jj_la1[139] = jj_gen;
+        jj_la1[140] = jj_gen;
         label_29:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2823,7 +2842,7 @@ import org.apache.logging.log4j.LogManager;
             ;
             break;
           default:
-            jj_la1[138] = jj_gen;
+            jj_la1[139] = jj_gen;
             break label_29;
           }
                           value   = new ArrayList<Constant>();
@@ -2835,7 +2854,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(RBRACE);
       break;
     default:
-      jj_la1[140] = jj_gen;
+      jj_la1[141] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2878,7 +2897,7 @@ import org.apache.logging.log4j.LogManager;
       cst = BooleanLiteral();
       break;
     default:
-      jj_la1[141] = jj_gen;
+      jj_la1[142] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2897,7 +2916,7 @@ import org.apache.logging.log4j.LogManager;
       uri = IRIref();
       break;
     default:
-      jj_la1[142] = jj_gen;
+      jj_la1[143] = jj_gen;
       ;
     }
     exp = GroupGraphPattern();
@@ -2922,7 +2941,7 @@ import org.apache.logging.log4j.LogManager;
         OffsetClause();
         break;
       default:
-        jj_la1[143] = jj_gen;
+        jj_la1[144] = jj_gen;
         ;
       }
       break;
@@ -2934,12 +2953,12 @@ import org.apache.logging.log4j.LogManager;
         ProjLimitClause();
         break;
       default:
-        jj_la1[144] = jj_gen;
+        jj_la1[145] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[145] = jj_gen;
+      jj_la1[146] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2954,7 +2973,7 @@ import org.apache.logging.log4j.LogManager;
         OrderClause();
         break;
       default:
-        jj_la1[146] = jj_gen;
+        jj_la1[147] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2962,7 +2981,7 @@ import org.apache.logging.log4j.LogManager;
         Having();
         break;
       default:
-        jj_la1[147] = jj_gen;
+        jj_la1[148] = jj_gen;
         ;
       }
       break;
@@ -2973,7 +2992,7 @@ import org.apache.logging.log4j.LogManager;
         GroupClause();
         break;
       default:
-        jj_la1[148] = jj_gen;
+        jj_la1[149] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2981,7 +3000,7 @@ import org.apache.logging.log4j.LogManager;
         Having();
         break;
       default:
-        jj_la1[149] = jj_gen;
+        jj_la1[150] = jj_gen;
         ;
       }
       break;
@@ -2989,7 +3008,7 @@ import org.apache.logging.log4j.LogManager;
       Having();
       break;
     default:
-      jj_la1[150] = jj_gen;
+      jj_la1[151] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3013,7 +3032,7 @@ import org.apache.logging.log4j.LogManager;
           var = Var();
           break;
         default:
-          jj_la1[151] = jj_gen;
+          jj_la1[152] = jj_gen;
           ;
         }
         jj_consume_token(RPAREN);
@@ -3054,7 +3073,7 @@ import org.apache.logging.log4j.LogManager;
         exp = FunctionCorese(stack);
         break;
       default:
-        jj_la1[152] = jj_gen;
+        jj_la1[153] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3121,7 +3140,7 @@ import org.apache.logging.log4j.LogManager;
                                          astq.setSort(tm, reverse);
       break;
     default:
-      jj_la1[156] = jj_gen;
+      jj_la1[157] = jj_gen;
       if (jj_2_10(2)) {
         tm = FunctionCorese(stack);
                                                         astq.setSort(tm, reverse);
@@ -3144,13 +3163,13 @@ import org.apache.logging.log4j.LogManager;
                                    reverse = true;
               break;
             default:
-              jj_la1[153] = jj_gen;
+              jj_la1[154] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
             break;
           default:
-            jj_la1[154] = jj_gen;
+            jj_la1[155] = jj_gen;
             ;
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3167,13 +3186,13 @@ import org.apache.logging.log4j.LogManager;
                                         sortby = t.image; astq.setSort(sortby, reverse);
             break;
           default:
-            jj_la1[155] = jj_gen;
+            jj_la1[156] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           break;
         default:
-          jj_la1[157] = jj_gen;
+          jj_la1[158] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3191,7 +3210,7 @@ import org.apache.logging.log4j.LogManager;
         LimitClause();
         break;
       default:
-        jj_la1[158] = jj_gen;
+        jj_la1[159] = jj_gen;
         ;
       }
       break;
@@ -3199,7 +3218,7 @@ import org.apache.logging.log4j.LogManager;
       LimitClause();
       break;
     default:
-      jj_la1[159] = jj_gen;
+      jj_la1[160] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3229,7 +3248,7 @@ import org.apache.logging.log4j.LogManager;
       SubQuery(stack);
       break;
     default:
-      jj_la1[160] = jj_gen;
+      jj_la1[161] = jj_gen;
       GraphPattern(stack);
     }
     jj_consume_token(RBRACE);
@@ -3278,7 +3297,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[161] = jj_gen;
+        jj_la1[162] = jj_gen;
         break label_32;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3323,7 +3342,7 @@ import org.apache.logging.log4j.LogManager;
         GraphPatternNotTriples(stack);
         break;
       default:
-        jj_la1[162] = jj_gen;
+        jj_la1[163] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3332,7 +3351,7 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[163] = jj_gen;
+        jj_la1[164] = jj_gen;
         ;
       }
     }
@@ -3359,13 +3378,13 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[164] = jj_gen;
+        jj_la1[165] = jj_gen;
         ;
       }
       GraphPattern(stack);
       break;
     default:
-      jj_la1[165] = jj_gen;
+      jj_la1[166] = jj_gen;
       ;
     }
   }
@@ -3397,7 +3416,7 @@ import org.apache.logging.log4j.LogManager;
       BlockOfTriples(stack);
       break;
     default:
-      jj_la1[166] = jj_gen;
+      jj_la1[167] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3408,13 +3427,13 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[167] = jj_gen;
+        jj_la1[168] = jj_gen;
         ;
       }
       FilteredBasicGraphPattern(stack);
       break;
     default:
-      jj_la1[168] = jj_gen;
+      jj_la1[169] = jj_gen;
       ;
     }
   }
@@ -3429,7 +3448,7 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[169] = jj_gen;
+        jj_la1[170] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3458,7 +3477,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[170] = jj_gen;
+        jj_la1[171] = jj_gen;
         break label_33;
       }
     }
@@ -3475,7 +3494,7 @@ import org.apache.logging.log4j.LogManager;
       MinusGraphPattern(stack);
       break;
     default:
-      jj_la1[171] = jj_gen;
+      jj_la1[172] = jj_gen;
       if (jj_2_11(2)) {
         GroupOrUnionGraphPattern(stack);
       } else {
@@ -3503,7 +3522,7 @@ import org.apache.logging.log4j.LogManager;
                               stack.add(values);
           break;
         default:
-          jj_la1[172] = jj_gen;
+          jj_la1[173] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3571,7 +3590,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[173] = jj_gen;
+          jj_la1[174] = jj_gen;
           break label_34;
         }
         jj_consume_token(COMMA);
@@ -3581,7 +3600,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[174] = jj_gen;
+      jj_la1[175] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3601,7 +3620,7 @@ import org.apache.logging.log4j.LogManager;
                                   deprecated("option","optional");
       break;
     default:
-      jj_la1[175] = jj_gen;
+      jj_la1[176] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3663,7 +3682,7 @@ import org.apache.logging.log4j.LogManager;
                                 silent = true;
       break;
     default:
-      jj_la1[176] = jj_gen;
+      jj_la1[177] = jj_gen;
       ;
     }
     src = VarOrIRIref(stack);
@@ -3695,7 +3714,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[177] = jj_gen;
+        jj_la1[178] = jj_gen;
         break label_35;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -3707,7 +3726,7 @@ import org.apache.logging.log4j.LogManager;
                                    deprecated("or","union");
         break;
       default:
-        jj_la1[178] = jj_gen;
+        jj_la1[179] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3772,7 +3791,7 @@ import org.apache.logging.log4j.LogManager;
       exp = FunctionCall(stack);
       break;
     default:
-      jj_la1[179] = jj_gen;
+      jj_la1[180] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3845,7 +3864,7 @@ import org.apache.logging.log4j.LogManager;
         GraphGraphPattern(stack);
         break;
       default:
-        jj_la1[180] = jj_gen;
+        jj_la1[181] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3854,13 +3873,13 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[181] = jj_gen;
+        jj_la1[182] = jj_gen;
         ;
       }
       ConstructTriples(stack);
       break;
     default:
-      jj_la1[182] = jj_gen;
+      jj_la1[183] = jj_gen;
       ;
     }
   }
@@ -3905,13 +3924,13 @@ import org.apache.logging.log4j.LogManager;
         jj_consume_token(DOT);
         break;
       default:
-        jj_la1[183] = jj_gen;
+        jj_la1[184] = jj_gen;
         ;
       }
       ConstructTriples2(stack);
       break;
     default:
-      jj_la1[184] = jj_gen;
+      jj_la1[185] = jj_gen;
       ;
     }
   }
@@ -3936,7 +3955,7 @@ import org.apache.logging.log4j.LogManager;
         stack = tuple(stack);
         break;
       default:
-        jj_la1[185] = jj_gen;
+        jj_la1[186] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3980,7 +3999,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[186] = jj_gen;
+        jj_la1[187] = jj_gen;
         break label_36;
       }
       expressioni = GraphNode(stack);
@@ -4024,7 +4043,7 @@ import org.apache.logging.log4j.LogManager;
           stack = PropertyList(expression1, stack);
       break;
     default:
-      jj_la1[187] = jj_gen;
+      jj_la1[188] = jj_gen;
       ;
     }
     {if (true) return stack;}
@@ -4060,7 +4079,7 @@ import org.apache.logging.log4j.LogManager;
             s3 = Direct2();
             break;
           default:
-            jj_la1[188] = jj_gen;
+            jj_la1[189] = jj_gen;
             ;
           }
           break;
@@ -4071,18 +4090,18 @@ import org.apache.logging.log4j.LogManager;
             s2 = All2();
             break;
           default:
-            jj_la1[189] = jj_gen;
+            jj_la1[190] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[190] = jj_gen;
+          jj_la1[191] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[191] = jj_gen;
+        jj_la1[192] = jj_gen;
         ;
       }
       break;
@@ -4101,7 +4120,7 @@ import org.apache.logging.log4j.LogManager;
             s3 = Direct2();
             break;
           default:
-            jj_la1[192] = jj_gen;
+            jj_la1[193] = jj_gen;
             ;
           }
           break;
@@ -4113,23 +4132,23 @@ import org.apache.logging.log4j.LogManager;
             s1 = One2();
             break;
           default:
-            jj_la1[193] = jj_gen;
+            jj_la1[194] = jj_gen;
             ;
           }
           break;
         default:
-          jj_la1[194] = jj_gen;
+          jj_la1[195] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[195] = jj_gen;
+        jj_la1[196] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[201] = jj_gen;
+      jj_la1[202] = jj_gen;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DIRECT2:
         s3 = Direct2();
@@ -4146,7 +4165,7 @@ import org.apache.logging.log4j.LogManager;
               s2 = All2();
               break;
             default:
-              jj_la1[196] = jj_gen;
+              jj_la1[197] = jj_gen;
               ;
             }
             break;
@@ -4158,23 +4177,23 @@ import org.apache.logging.log4j.LogManager;
               s1 = One2();
               break;
             default:
-              jj_la1[197] = jj_gen;
+              jj_la1[198] = jj_gen;
               ;
             }
             break;
           default:
-            jj_la1[198] = jj_gen;
+            jj_la1[199] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           break;
         default:
-          jj_la1[199] = jj_gen;
+          jj_la1[200] = jj_gen;
           ;
         }
         break;
       default:
-        jj_la1[200] = jj_gen;
+        jj_la1[201] = jj_gen;
         ;
       }
     }
@@ -4197,7 +4216,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(CURRENT);
       break;
     default:
-      jj_la1[202] = jj_gen;
+      jj_la1[203] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4231,7 +4250,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[203] = jj_gen;
+        jj_la1[204] = jj_gen;
         break label_37;
       }
       jj_consume_token(COMMA);
@@ -4267,7 +4286,7 @@ import org.apache.logging.log4j.LogManager;
                atom = astq.createQName(RDFS.qrdftype);
       break;
     default:
-      jj_la1[204] = jj_gen;
+      jj_la1[205] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4298,7 +4317,7 @@ import org.apache.logging.log4j.LogManager;
       atom = Var();
       break;
     default:
-      jj_la1[205] = jj_gen;
+      jj_la1[206] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4317,7 +4336,7 @@ import org.apache.logging.log4j.LogManager;
                 cst.setVar(var);
       break;
     default:
-      jj_la1[206] = jj_gen;
+      jj_la1[207] = jj_gen;
       ;
     }
         {if (true) return cst;}
@@ -4368,7 +4387,7 @@ import org.apache.logging.log4j.LogManager;
         t = jj_consume_token(DISTINCT);
         break;
       default:
-        jj_la1[207] = jj_gen;
+        jj_la1[208] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4376,7 +4395,7 @@ import org.apache.logging.log4j.LogManager;
                                   exp = astq.createOperator(t.image, exp);
       break;
     default:
-      jj_la1[208] = jj_gen;
+      jj_la1[209] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4395,7 +4414,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[209] = jj_gen;
+        jj_la1[210] = jj_gen;
         break label_38;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4410,7 +4429,7 @@ import org.apache.logging.log4j.LogManager;
                      exp1 = astq.createParaExpression(exp1, exp2);
         break;
       default:
-        jj_la1[210] = jj_gen;
+        jj_la1[211] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4429,7 +4448,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[211] = jj_gen;
+        jj_la1[212] = jj_gen;
         break label_39;
       }
       t = jj_consume_token(SLASH);
@@ -4487,12 +4506,12 @@ import org.apache.logging.log4j.LogManager;
                                                                                                         s2 = t2.image;
                 break;
               default:
-                jj_la1[212] = jj_gen;
+                jj_la1[213] = jj_gen;
                 ;
               }
               break;
             default:
-              jj_la1[213] = jj_gen;
+              jj_la1[214] = jj_gen;
               ;
             }
             break;
@@ -4502,7 +4521,7 @@ import org.apache.logging.log4j.LogManager;
                                               s2 = t2.image;
             break;
           default:
-            jj_la1[214] = jj_gen;
+            jj_la1[215] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -4510,18 +4529,18 @@ import org.apache.logging.log4j.LogManager;
                   exp = astq.createOperator(s1, s2, exp);
           break;
         default:
-          jj_la1[215] = jj_gen;
+          jj_la1[216] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[216] = jj_gen;
+        jj_la1[217] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[217] = jj_gen;
+      jj_la1[218] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4542,7 +4561,7 @@ import org.apache.logging.log4j.LogManager;
       ope = jj_consume_token(QM);
       break;
     default:
-      jj_la1[218] = jj_gen;
+      jj_la1[219] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4564,7 +4583,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[219] = jj_gen;
+      jj_la1[220] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4588,7 +4607,7 @@ import org.apache.logging.log4j.LogManager;
                   exp = astq.createRegexTest(exp, stack);
         break;
       default:
-        jj_la1[220] = jj_gen;
+        jj_la1[221] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4633,7 +4652,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(BEGIN_WITH);
       break;
     default:
-      jj_la1[221] = jj_gen;
+      jj_la1[222] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4660,7 +4679,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(STRICT_GENERALISATION);
       break;
     default:
-      jj_la1[222] = jj_gen;
+      jj_la1[223] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4685,7 +4704,7 @@ import org.apache.logging.log4j.LogManager;
       expression1 = BlankNodePropertyList(stack);
       break;
     default:
-      jj_la1[223] = jj_gen;
+      jj_la1[224] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4746,20 +4765,20 @@ import org.apache.logging.log4j.LogManager;
           jj_consume_token(ATPATH);
           break;
         default:
-          jj_la1[224] = jj_gen;
+          jj_la1[225] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
                                       arobase = ASTQuery.L_PATH; astq.setListType(arobase);
         break;
       default:
-        jj_la1[225] = jj_gen;
+        jj_la1[226] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[226] = jj_gen;
+      jj_la1[227] = jj_gen;
       ;
     }
     jj_consume_token(LPAREN);
@@ -4792,7 +4811,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[227] = jj_gen;
+        jj_la1[228] = jj_gen;
         break label_40;
       }
     }
@@ -4818,7 +4837,7 @@ import org.apache.logging.log4j.LogManager;
         expression1 = TriplesNode(stack);
         break;
       default:
-        jj_la1[228] = jj_gen;
+        jj_la1[229] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4852,7 +4871,7 @@ import org.apache.logging.log4j.LogManager;
       expression1 = GraphTerm(stack);
       break;
     default:
-      jj_la1[229] = jj_gen;
+      jj_la1[230] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4879,7 +4898,7 @@ import org.apache.logging.log4j.LogManager;
       a = IRIrefConst();
       break;
     default:
-      jj_la1[230] = jj_gen;
+      jj_la1[231] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4900,7 +4919,7 @@ import org.apache.logging.log4j.LogManager;
       a = IRIrefConst();
       break;
     default:
-      jj_la1[231] = jj_gen;
+      jj_la1[232] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4920,7 +4939,7 @@ import org.apache.logging.log4j.LogManager;
                   s = "?"+(t1.image).substring(1,(t1.image).length()); isPath = true;
       break;
     default:
-      jj_la1[232] = jj_gen;
+      jj_la1[233] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -4960,7 +4979,7 @@ import org.apache.logging.log4j.LogManager;
                   cst.setVar(var);
           break;
         default:
-          jj_la1[233] = jj_gen;
+          jj_la1[234] = jj_gen;
           ;
         }
         break;
@@ -4991,7 +5010,7 @@ import org.apache.logging.log4j.LogManager;
           cst = astq.createQName(RDFS.qrdfNil);
         break;
       default:
-        jj_la1[234] = jj_gen;
+        jj_la1[235] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5002,7 +5021,7 @@ import org.apache.logging.log4j.LogManager;
       a = BlankNode(stack);
       break;
     default:
-      jj_la1[235] = jj_gen;
+      jj_la1[236] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5028,7 +5047,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[236] = jj_gen;
+        jj_la1[237] = jj_gen;
         break label_41;
       }
       t1 = jj_consume_token(SC_OR);
@@ -5049,7 +5068,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[237] = jj_gen;
+        jj_la1[238] = jj_gen;
         break label_42;
       }
       t1 = jj_consume_token(SC_AND);
@@ -5105,7 +5124,7 @@ import org.apache.logging.log4j.LogManager;
                  not = true;
           break;
         default:
-          jj_la1[238] = jj_gen;
+          jj_la1[239] = jj_gen;
           ;
         }
         t1 = jj_consume_token(IN);
@@ -5113,7 +5132,7 @@ import org.apache.logging.log4j.LogManager;
                                           expression2 = astq.createList(el);
         break;
       default:
-        jj_la1[239] = jj_gen;
+        jj_la1[240] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5123,7 +5142,7 @@ import org.apache.logging.log4j.LogManager;
         }
       break;
     default:
-      jj_la1[240] = jj_gen;
+      jj_la1[241] = jj_gen;
       ;
     }
     {if (true) return expression1;}
@@ -5148,7 +5167,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[241] = jj_gen;
+        jj_la1[242] = jj_gen;
         break label_43;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5163,7 +5182,7 @@ import org.apache.logging.log4j.LogManager;
         expression1 = astq.createAdditiveExpression(t1.image, expression1, expression2);
         break;
       default:
-        jj_la1[242] = jj_gen;
+        jj_la1[243] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5183,7 +5202,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[243] = jj_gen;
+        jj_la1[244] = jj_gen;
         break label_44;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5196,7 +5215,7 @@ import org.apache.logging.log4j.LogManager;
         expression2 = UnaryExpression(stack);
         break;
       default:
-        jj_la1[244] = jj_gen;
+        jj_la1[245] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5266,7 +5285,7 @@ import org.apache.logging.log4j.LogManager;
       expression1 = PrimaryExpression(stack);
       break;
     default:
-      jj_la1[245] = jj_gen;
+      jj_la1[246] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5307,7 +5326,7 @@ import org.apache.logging.log4j.LogManager;
         t1 = jj_consume_token(IS_LITERAL);
         break;
       default:
-        jj_la1[246] = jj_gen;
+        jj_la1[247] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5341,7 +5360,7 @@ import org.apache.logging.log4j.LogManager;
       term = exists();
       break;
     default:
-      jj_la1[247] = jj_gen;
+      jj_la1[248] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5358,7 +5377,7 @@ import org.apache.logging.log4j.LogManager;
                  neg = true;
       break;
     default:
-      jj_la1[248] = jj_gen;
+      jj_la1[249] = jj_gen;
       ;
     }
     jj_consume_token(EXIST);
@@ -5384,7 +5403,7 @@ import org.apache.logging.log4j.LogManager;
                                                   term.add(expression2);
       break;
     default:
-      jj_la1[249] = jj_gen;
+      jj_la1[250] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -5417,7 +5436,7 @@ import org.apache.logging.log4j.LogManager;
         t = jj_consume_token(XPATH);
         break;
       default:
-        jj_la1[250] = jj_gen;
+        jj_la1[251] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5438,7 +5457,7 @@ import org.apache.logging.log4j.LogManager;
       term = For(stack);
       break;
     default:
-      jj_la1[251] = jj_gen;
+      jj_la1[252] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5475,18 +5494,18 @@ import org.apache.logging.log4j.LogManager;
           e2 = IfThenElse(stack);
           break;
         default:
-          jj_la1[252] = jj_gen;
+          jj_la1[253] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[253] = jj_gen;
+        jj_la1[254] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[254] = jj_gen;
+      jj_la1[255] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5505,7 +5524,7 @@ import org.apache.logging.log4j.LogManager;
                      isLoop = true;
       break;
     default:
-      jj_la1[255] = jj_gen;
+      jj_la1[256] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5527,7 +5546,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[256] = jj_gen;
+          jj_la1[257] = jj_gen;
           break label_45;
         }
         jj_consume_token(COMMA);
@@ -5537,7 +5556,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[257] = jj_gen;
+      jj_la1[258] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5595,7 +5614,7 @@ import org.apache.logging.log4j.LogManager;
       exp = LetForExp();
       break;
     default:
-      jj_la1[258] = jj_gen;
+      jj_la1[259] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5626,7 +5645,7 @@ import org.apache.logging.log4j.LogManager;
       exp = CstList();
       break;
     default:
-      jj_la1[259] = jj_gen;
+      jj_la1[260] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5664,7 +5683,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[260] = jj_gen;
+        jj_la1[261] = jj_gen;
         break label_46;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5686,7 +5705,7 @@ import org.apache.logging.log4j.LogManager;
         dt = ExpList();
         break;
       default:
-        jj_la1[261] = jj_gen;
+        jj_la1[262] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5728,7 +5747,7 @@ import org.apache.logging.log4j.LogManager;
       a = BooleanLiteral();
       break;
     default:
-      jj_la1[262] = jj_gen;
+      jj_la1[263] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5750,7 +5769,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[263] = jj_gen;
+        jj_la1[264] = jj_gen;
         break label_47;
       }
       jj_consume_token(COMMA);
@@ -5794,7 +5813,7 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[264] = jj_gen;
+          jj_la1[265] = jj_gen;
           break label_48;
         }
         jj_consume_token(COMMA);
@@ -5804,7 +5823,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(RPAREN);
       break;
     default:
-      jj_la1[265] = jj_gen;
+      jj_la1[266] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5862,7 +5881,7 @@ import org.apache.logging.log4j.LogManager;
       exp = LetForExp();
       break;
     default:
-      jj_la1[266] = jj_gen;
+      jj_la1[267] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -5935,7 +5954,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[267] = jj_gen;
+        jj_la1[268] = jj_gen;
         break label_49;
       }
         s = null;
@@ -5966,7 +5985,7 @@ import org.apache.logging.log4j.LogManager;
           t = jj_consume_token(ATIMPORT);
           break;
         default:
-          jj_la1[268] = jj_gen;
+          jj_la1[269] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -5983,7 +6002,7 @@ import org.apache.logging.log4j.LogManager;
           t = jj_consume_token(ATTEST);
           break;
         default:
-          jj_la1[269] = jj_gen;
+          jj_la1[270] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -5994,7 +6013,7 @@ import org.apache.logging.log4j.LogManager;
                           list.add(t.image, "*");
           break;
         default:
-          jj_la1[271] = jj_gen;
+          jj_la1[272] = jj_gen;
           label_50:
           while (true) {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -6004,7 +6023,7 @@ import org.apache.logging.log4j.LogManager;
               ;
               break;
             default:
-              jj_la1[270] = jj_gen;
+              jj_la1[271] = jj_gen;
               break label_50;
             }
             s = IRIrefConst();
@@ -6030,7 +6049,7 @@ import org.apache.logging.log4j.LogManager;
           t = jj_consume_token(ATTYPE);
           break;
         default:
-          jj_la1[272] = jj_gen;
+          jj_la1[273] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -6039,7 +6058,7 @@ import org.apache.logging.log4j.LogManager;
                list.add(t.image, s);
         break;
       default:
-        jj_la1[273] = jj_gen;
+        jj_la1[274] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -6080,6 +6099,11 @@ import org.apache.logging.log4j.LogManager;
     case REGEX:
     case TRUE:
     case FALSE:
+    case GROUP:
+    case FORMAT:
+    case BOX:
+    case IBOX:
+    case SBOX:
     case COUNT:
     case SCORE:
     case DISTANCE:
@@ -6097,8 +6121,64 @@ import org.apache.logging.log4j.LogManager;
     case BANG:
     case PLUS:
     case MINUS:
-      exp = Expression(stack);
-                                  body.add(exp);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case Q_IRIref:
+      case QNAME_NS:
+      case QNAME:
+      case BLANK_NODE_LABEL:
+      case VAR1:
+      case VAR2:
+      case NOT:
+      case LET:
+      case SET:
+      case FOR:
+      case LOOP:
+      case IF:
+      case EXIST:
+      case BOUND:
+      case STR:
+      case DTYPE:
+      case LANG:
+      case LANGMATCHES:
+      case IS_URI:
+      case IS_IRI:
+      case IS_BLANK:
+      case IS_LITERAL:
+      case REGEX:
+      case TRUE:
+      case FALSE:
+      case COUNT:
+      case SCORE:
+      case DISTANCE:
+      case XPATH:
+      case SIMPLE_STRING:
+      case INTEGER:
+      case DECIMAL:
+      case DOUBLE:
+      case STRING_LITERAL1:
+      case STRING_LITERAL2:
+      case STRING_LITERAL_LONG1:
+      case STRING_LITERAL_LONG2:
+      case LPAREN:
+      case ANON:
+      case BANG:
+      case PLUS:
+      case MINUS:
+        exp = Expression(stack);
+        break;
+      case GROUP:
+      case FORMAT:
+      case BOX:
+      case IBOX:
+      case SBOX:
+        exp = TemplateExpression(stack);
+        break;
+      default:
+        jj_la1[275] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+                                                                      body.add(exp);
       label_51:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -6106,17 +6186,73 @@ import org.apache.logging.log4j.LogManager;
           ;
           break;
         default:
-          jj_la1[274] = jj_gen;
+          jj_la1[276] = jj_gen;
           break label_51;
         }
         jj_consume_token(SEMICOLON);
-        exp = Expression(stack);
-                                                body.add(exp);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case Q_IRIref:
+        case QNAME_NS:
+        case QNAME:
+        case BLANK_NODE_LABEL:
+        case VAR1:
+        case VAR2:
+        case NOT:
+        case LET:
+        case SET:
+        case FOR:
+        case LOOP:
+        case IF:
+        case EXIST:
+        case BOUND:
+        case STR:
+        case DTYPE:
+        case LANG:
+        case LANGMATCHES:
+        case IS_URI:
+        case IS_IRI:
+        case IS_BLANK:
+        case IS_LITERAL:
+        case REGEX:
+        case TRUE:
+        case FALSE:
+        case COUNT:
+        case SCORE:
+        case DISTANCE:
+        case XPATH:
+        case SIMPLE_STRING:
+        case INTEGER:
+        case DECIMAL:
+        case DOUBLE:
+        case STRING_LITERAL1:
+        case STRING_LITERAL2:
+        case STRING_LITERAL_LONG1:
+        case STRING_LITERAL_LONG2:
+        case LPAREN:
+        case ANON:
+        case BANG:
+        case PLUS:
+        case MINUS:
+          exp = Expression(stack);
+          break;
+        case GROUP:
+        case FORMAT:
+        case BOX:
+        case IBOX:
+        case SBOX:
+          exp = TemplateExpression(stack);
+          break;
+        default:
+          jj_la1[277] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+                                                                     body.add(exp);
       }
       jj_consume_token(RBRACE);
       break;
     default:
-      jj_la1[275] = jj_gen;
+      jj_la1[278] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6131,7 +6267,7 @@ import org.apache.logging.log4j.LogManager;
       jj_consume_token(PACKAGE);
       break;
     default:
-      jj_la1[276] = jj_gen;
+      jj_la1[279] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -6157,7 +6293,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[277] = jj_gen;
+        jj_la1[280] = jj_gen;
         break label_52;
       }
     }
@@ -6178,7 +6314,7 @@ import org.apache.logging.log4j.LogManager;
         ;
         break;
       default:
-        jj_la1[278] = jj_gen;
+        jj_la1[281] = jj_gen;
         break label_53;
       }
     }
@@ -6196,7 +6332,7 @@ import org.apache.logging.log4j.LogManager;
                              v.setDistinct(true);
       break;
     default:
-      jj_la1[279] = jj_gen;
+      jj_la1[282] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -6298,7 +6434,7 @@ import org.apache.logging.log4j.LogManager;
             ;
             break;
           default:
-            jj_la1[280] = jj_gen;
+            jj_la1[283] = jj_gen;
             break label_54;
           }
           jj_consume_token(COMMA);
@@ -6307,13 +6443,13 @@ import org.apache.logging.log4j.LogManager;
         }
         break;
       default:
-        jj_la1[281] = jj_gen;
+        jj_la1[284] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[282] = jj_gen;
+      jj_la1[285] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -6325,7 +6461,7 @@ import org.apache.logging.log4j.LogManager;
                                                        v.setSeparator(str);
       break;
     default:
-      jj_la1[283] = jj_gen;
+      jj_la1[286] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -6410,7 +6546,7 @@ import org.apache.logging.log4j.LogManager;
       expression1 = IRIrefOrFunction(stack);
       break;
     default:
-      jj_la1[284] = jj_gen;
+      jj_la1[287] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6434,7 +6570,7 @@ import org.apache.logging.log4j.LogManager;
                      datatype = RDFS.qxsdDouble;
       break;
     default:
-      jj_la1[285] = jj_gen;
+      jj_la1[288] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6459,13 +6595,13 @@ import org.apache.logging.log4j.LogManager;
         iriref = IRIref();
         break;
       default:
-        jj_la1[286] = jj_gen;
+        jj_la1[289] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[287] = jj_gen;
+      jj_la1[290] = jj_gen;
       ;
     }
     res = astq.createConstant(s, iriref, lang);
@@ -6483,7 +6619,7 @@ import org.apache.logging.log4j.LogManager;
       t1 = jj_consume_token(FALSE);
       break;
     default:
-      jj_la1[288] = jj_gen;
+      jj_la1[291] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6509,7 +6645,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(STRING_LITERAL_LONG2);
       break;
     default:
-      jj_la1[289] = jj_gen;
+      jj_la1[292] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6528,7 +6664,7 @@ import org.apache.logging.log4j.LogManager;
       res = QName();
       break;
     default:
-      jj_la1[290] = jj_gen;
+      jj_la1[293] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6549,7 +6685,7 @@ import org.apache.logging.log4j.LogManager;
                         cst = astq.createQName(res);
       break;
     default:
-      jj_la1[291] = jj_gen;
+      jj_la1[294] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6567,7 +6703,7 @@ import org.apache.logging.log4j.LogManager;
       t = jj_consume_token(QNAME_NS);
       break;
     default:
-      jj_la1[292] = jj_gen;
+      jj_la1[295] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6589,7 +6725,7 @@ import org.apache.logging.log4j.LogManager;
                 v = astq.newBlankNode();
       break;
     default:
-      jj_la1[293] = jj_gen;
+      jj_la1[296] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6719,26 +6855,6 @@ import org.apache.logging.log4j.LogManager;
     finally { jj_save(15, xla); }
   }
 
-  final private boolean jj_3R_236() {
-    if (jj_3R_243()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_232() {
-    if (jj_scan_token(SCOPE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_235() {
-    if (jj_scan_token(VALUES)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_107() {
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_105() {
     if (jj_scan_token(DISTINCT)) return true;
     return false;
@@ -6802,11 +6918,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_82() {
-    if (jj_scan_token(NAMED)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_77() {
     if (jj_scan_token(LPAREN)) return true;
     Token xsp;
@@ -6817,6 +6928,11 @@ import org.apache.logging.log4j.LogManager;
     xsp = jj_scanpos;
     if (jj_3R_107()) jj_scanpos = xsp;
     if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_82() {
+    if (jj_scan_token(NAMED)) return true;
     return false;
   }
 
@@ -7742,11 +7858,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_109() {
-    if (jj_scan_token(WHERE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_149() {
     if (jj_scan_token(LOOP)) return true;
     return false;
@@ -7777,11 +7888,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_108() {
-    if (jj_scan_token(DATA)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_66() {
     if (jj_3R_60()) return true;
     return false;
@@ -7795,6 +7901,11 @@ import org.apache.logging.log4j.LogManager;
 
   final private boolean jj_3R_189() {
     if (jj_scan_token(ANON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_109() {
+    if (jj_scan_token(WHERE)) return true;
     return false;
   }
 
@@ -7814,14 +7925,8 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_79() {
-    if (jj_scan_token(DELETE)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_108()) {
-    jj_scanpos = xsp;
-    if (jj_3R_109()) return true;
-    }
+  final private boolean jj_3R_108() {
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -7864,6 +7969,17 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
+  final private boolean jj_3R_79() {
+    if (jj_scan_token(DELETE)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_108()) {
+    jj_scanpos = xsp;
+    if (jj_3R_109()) return true;
+    }
+    return false;
+  }
+
   final private boolean jj_3_2() {
     Token xsp;
     xsp = jj_scanpos;
@@ -7884,9 +8000,13 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_78() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
+  final private boolean jj_3R_145() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(10)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(9)) return true;
+    }
     return false;
   }
 
@@ -7895,13 +8015,9 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_145() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(10)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(9)) return true;
-    }
+  final private boolean jj_3R_78() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -7925,16 +8041,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_55() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_78()) {
-    jj_scanpos = xsp;
-    if (jj_3R_79()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_111() {
     if (jj_3R_145()) return true;
     return false;
@@ -7942,11 +8048,6 @@ import org.apache.logging.log4j.LogManager;
 
   final private boolean jj_3R_110() {
     if (jj_3R_144()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_273() {
-    if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
@@ -7960,18 +8061,28 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
+  final private boolean jj_3R_273() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_272() {
     if (jj_3R_80()) return true;
     return false;
   }
 
-  final private boolean jj_3R_94() {
-    if (jj_3R_129()) return true;
+  final private boolean jj_3R_55() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_78()) {
+    jj_scanpos = xsp;
+    if (jj_3R_79()) return true;
+    }
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_55()) return true;
+  final private boolean jj_3R_94() {
+    if (jj_3R_129()) return true;
     return false;
   }
 
@@ -7997,6 +8108,11 @@ import org.apache.logging.log4j.LogManager;
     jj_scanpos = xsp;
     if (jj_3R_273()) return true;
     }
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_55()) return true;
     return false;
   }
 
@@ -8138,11 +8254,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_135() {
-    if (jj_3R_152()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_186() {
     Token xsp;
     xsp = jj_scanpos;
@@ -8153,6 +8264,11 @@ import org.apache.logging.log4j.LogManager;
     if (jj_3R_206()) return true;
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_135() {
+    if (jj_3R_152()) return true;
     return false;
   }
 
@@ -8188,23 +8304,23 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_230() {
-    if (jj_scan_token(SERVICE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_263() {
     if (jj_3R_187()) return true;
     return false;
   }
 
-  final private boolean jj_3R_268() {
-    if (jj_3R_270()) return true;
+  final private boolean jj_3R_230() {
+    if (jj_scan_token(SERVICE)) return true;
     return false;
   }
 
   final private boolean jj_3R_262() {
     if (jj_3R_186()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_268() {
+    if (jj_3R_270()) return true;
     return false;
   }
 
@@ -8278,11 +8394,6 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_162() {
-    if (jj_scan_token(SELECT)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_253() {
     Token xsp;
     xsp = jj_scanpos;
@@ -8314,19 +8425,24 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
-  final private boolean jj_3R_250() {
-    if (jj_3R_253()) return true;
+  final private boolean jj_3R_162() {
+    if (jj_scan_token(SELECT)) return true;
     return false;
   }
 
-  final private boolean jj_3R_267() {
-    if (jj_scan_token(BEGIN_WITH)) return true;
+  final private boolean jj_3R_250() {
+    if (jj_3R_253()) return true;
     return false;
   }
 
   final private boolean jj_3R_148() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_95()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_267() {
+    if (jj_scan_token(BEGIN_WITH)) return true;
     return false;
   }
 
@@ -8409,6 +8525,26 @@ import org.apache.logging.log4j.LogManager;
     return false;
   }
 
+  final private boolean jj_3R_236() {
+    if (jj_3R_243()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_232() {
+    if (jj_scan_token(SCOPE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_235() {
+    if (jj_scan_token(VALUES)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_107() {
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
   public SparqlCoreseTokenManager token_source;
   JavaCharStream jj_input_stream;
   public Token token, jj_nt;
@@ -8418,7 +8554,7 @@ import org.apache.logging.log4j.LogManager;
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[294];
+  final private int[] jj_la1 = new int[297];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -8436,25 +8572,25 @@ import org.apache.logging.log4j.LogManager;
       jj_la1_6();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x0,0x0,0x0,0x3ffc0000,0x3ffc0000,0x0,0x3ffc0000,0x3ff00,0x0,0x3ff00,0xc000,0xc000,0x4000,0x0,0x8000,0x0,0x0,0xc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x33f00,0x0,0x33f00,0x0,0x0,0x700,0x0,0x0,0x0,0x3f00,0x0,0x3f00,0x0,0x3f00,0x0,0x3f00,0x0,0x3f00,0x0,0x0,0x0,0x3f00,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x3700,0x3700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x700,0x0,0x700,0x0,0x3000,0x700,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x0,0x33f00,0x33f00,0x0,0x0,0x0,0x33f00,0x0,0x0,0x0,0x33f00,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x700,0x33f00,0x0,0x33f00,0x0,0x33f00,0x30000,0x33f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3700,0x3700,0x0,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x700,0x0,0x0,0x0,0x30000,0x20000,0x30000,0x30000,0x33f00,0x30000,0x3f00,0x3f00,0x3700,0x3000,0x0,0x700,0xf00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x3f00,0x0,0x700,0x700,0x700,0x0,0x0,0x3000,0x3f00,0x3ffc0000,0x207c0000,0x1800000,0x700,0x0,0x1e000000,0x3ffc0000,0x0,0x3f00,0x0,0x3ffc0000,0x0,0x0,0x0,0x3f00,0x3f00,0x0,0x3f00,0x0,0x40000000,0x40000000,0x0,0x0,0x700,0x700,0x600,0x800,};
+      jj_la1_0 = new int[] {0x0,0x0,0x0,0x3ffc0000,0x3ffc0000,0x0,0x3ffc0000,0x3ff00,0x0,0x3ff00,0xc000,0xc000,0x4000,0x0,0x8000,0x0,0x0,0xc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x33f00,0x0,0x33f00,0x0,0x0,0x700,0x0,0x0,0x0,0x3f00,0x0,0x3f00,0x0,0x0,0x3f00,0x0,0x3f00,0x0,0x3f00,0x0,0x0,0x0,0x3f00,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x3700,0x3700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x700,0x0,0x700,0x0,0x3000,0x700,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x3700,0x0,0x0,0x0,0x0,0x33f00,0x33f00,0x0,0x0,0x0,0x33f00,0x0,0x0,0x0,0x33f00,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x700,0x33f00,0x0,0x33f00,0x0,0x33f00,0x30000,0x33f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3700,0x3700,0x0,0x0,0x700,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x0,0x700,0x0,0x0,0x0,0x30000,0x20000,0x30000,0x30000,0x33f00,0x30000,0x3f00,0x3f00,0x3700,0x3000,0x0,0x700,0xf00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x3f00,0x0,0x700,0x700,0x700,0x0,0x0,0x3000,0x3f00,0x3ffc0000,0x207c0000,0x1800000,0x700,0x0,0x1e000000,0x3ffc0000,0x3f00,0x0,0x3f00,0x3f00,0x0,0x3ffc0000,0x0,0x0,0x0,0x3f00,0x3f00,0x0,0x3f00,0x0,0x40000000,0x40000000,0x0,0x0,0x700,0x700,0x600,0x800,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0xfc00,0x0,0xfc00,0xfc00,0x0,0x0,0x0,0x40000300,0x0,0x40000300,0x300,0x300,0x100,0x0,0x200,0x0,0x0,0x300,0x0,0x0,0x0,0x0,0x0,0x44000000,0x0,0x0,0x0,0x40000000,0x40000000,0x40000000,0x40000000,0x0,0x0,0x10000000,0x0,0x0,0x0,0x0,0x0,0x4000000,0x0,0x0,0x40000000,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8000000,0x0,0x0,0x2000,0x0,0x400,0x8000000,0x8000000,0x18000000,0x0,0x0,0x8000000,0x0,0x80,0x80,0x0,0x0,0x80,0x80,0x80,0x80,0x0,0x0,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0x80,0x0,0x50000,0x0,0x50000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x400000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x10000000,0x800000,0x200000,0x180000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x80000,0x180000,0x200000,0x0,0x0,0x0,0x200000,0x0,0x0,0x3000000,0x3000000,0x0,0x0,0x3000000,0x80000,0x80000,0x400,0xc0000000,0xc0000000,0x0,0x0,0xc0000000,0x0,0x0,0x0,0x0,0x0,0x0,0xc0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40000000,0x0,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1007e,0x1007c,0x0,0x1007c,0x1007c,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80003400,0x80003400,0x0,0x0,0x0,0x0,0x0,0x0,0x80003400,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0xfc00,0x0,0xfc00,0xfc00,0x0,0x0,0x0,0x40000300,0x0,0x40000300,0x300,0x300,0x100,0x0,0x200,0x0,0x0,0x300,0x0,0x0,0x0,0x0,0x0,0x44000000,0x0,0x0,0x0,0x40000000,0x40000000,0x40000000,0x40000000,0x0,0x0,0x10000000,0x0,0x0,0x0,0x0,0x0,0x4000000,0x0,0x0,0x40000000,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8000000,0x0,0x0,0x2000,0x0,0x400,0x8000000,0x8000000,0x18000000,0x0,0x0,0x8000000,0x0,0x80,0x80,0x0,0x0,0x80,0x80,0x80,0x80,0x0,0x0,0x80,0x80,0x80,0x0,0x0,0x0,0x0,0x80,0x0,0x50000,0x0,0x50000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x400000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x10000000,0x800000,0x200000,0x180000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x80000,0x180000,0x200000,0x0,0x0,0x0,0x200000,0x0,0x0,0x3000000,0x3000000,0x0,0x0,0x3000000,0x80000,0x80000,0x400,0xc0000000,0xc0000000,0x0,0x0,0xc0000000,0x0,0x0,0x0,0x0,0x0,0x0,0xc0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40000000,0x0,0x40000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1007e,0x1007c,0x0,0x1007c,0x1007c,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80003400,0x80003400,0x0,0x0,0x0,0x0,0x0,0x0,0x80003400,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0xfbe0000,0x0,0xfbe0000,0xfbe0000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfbe0000,0x0,0x0,0x80000000,0xc0000,0x0,0x60000000,0x0,0x1a00000,0x0,0x0,0x20000000,0x0,0x20000000,0x1be0000,0xe000000,0x0,0x6000000,0x8000000,0x2000000,0x6000000,0x10000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x9f40,0x0,0x9f40,0x0,0x9f40,0x0,0x9f40,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8040,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f00,0x0,0x1f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x8040,0x0,0x0,0x0,0x0,0x180a8,0x180a8,0x0,0x0,0x80a8,0x0,0x0,0x10000,0x0,0x0,0x28,0x8080,0x0,0x0,0x8,0x0,0x10,0x10,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x40,0x40,0x0,0x0,0x0,0x0,0x9f40,0x0,0x8040,0x40,0x0,0x0,0x1f00,0x1000,0x4000,0x0,0xc00,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x9f40,0x9f40,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_2 = new int[] {0xfbe0000,0x0,0xfbe0000,0xfbe0000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfbe0000,0x0,0x0,0x80000000,0xc0000,0x0,0x60000000,0x0,0x1a00000,0x0,0x0,0x20000000,0x0,0x20000000,0x1be0000,0xe000000,0x0,0x6000000,0x8000000,0x2000000,0x6000000,0x10000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x9f40,0x0,0x0,0x9f40,0x0,0x9f40,0x0,0x9f40,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8040,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f00,0x0,0x1f00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x8040,0x0,0x0,0x0,0x0,0x180a8,0x180a8,0x0,0x0,0x80a8,0x0,0x0,0x10000,0x0,0x0,0x28,0x8080,0x0,0x0,0x8,0x0,0x10,0x10,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x40,0x40,0x0,0x0,0x0,0x0,0x9f40,0x0,0x8040,0x40,0x0,0x0,0x1f00,0x1000,0x4000,0x0,0xc00,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x9f40,0x0,0x9f40,0x9f40,0x0,0x0,0x0,0x0,0x0,0x9f40,0x9f40,0x0,0x9f40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x0,0x1,0x0,0x0,0x1,0x0,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0xf0003ffc,0x0,0xf0003ffc,0x0,0xf0003ffc,0x0,0xf0003ffc,0xc0000000,0xf0003ffc,0x0,0x0,0x0,0xf0003ffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x10000,0x8000,0x8000,0x18000,0x18000,0x10000,0x10000,0x4000,0x4000,0x14000,0x14000,0x10000,0x8000,0x4000,0xc000,0xc000,0x10000,0xc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10020000,0x0,0x0,0xffc,0x0,0x1980000,0x2000000,0x4000000,0x6000000,0x6000000,0x2000000,0x8000000,0xa000000,0xa000000,0x4000000,0x8000000,0xc000000,0xc000000,0x2000000,0xc000000,0x0,0x0,0x0,0x10000000,0x8000000,0x0,0x20000,0x40000,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x3000,0x0,0x0,0x8000000,0x8000000,0x0,0x0,0x10000000,0x0,0x10000000,0x0,0xffc,0x0,0x0,0x0,0xffc,0x0,0x0,0x8000000,0x0,0x3000,0x3000,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0xffc,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x3000,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x7b8,0xffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x0,0x3000,0x3000,0x3000,0x0,0x0,0x0,0x3ffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x3ffc,0x0,0x3ffc,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x0,0x1,0x0,0x0,0x1,0x0,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0xf0003ffc,0x0,0xf0003ffc,0xf0000000,0x0,0xf0003ffc,0x0,0xf0003ffc,0xc0000000,0xf0003ffc,0x0,0x0,0x0,0xf0003ffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x10000,0x8000,0x8000,0x18000,0x18000,0x10000,0x10000,0x4000,0x4000,0x14000,0x14000,0x10000,0x8000,0x4000,0xc000,0xc000,0x10000,0xc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10020000,0x0,0x0,0xffc,0x0,0x1980000,0x2000000,0x4000000,0x6000000,0x6000000,0x2000000,0x8000000,0xa000000,0xa000000,0x4000000,0x8000000,0xc000000,0xc000000,0x2000000,0xc000000,0x0,0x0,0x0,0x10000000,0x8000000,0x0,0x20000,0x40000,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x3000,0x0,0x0,0x8000000,0x8000000,0x0,0x0,0x10000000,0x0,0x10000000,0x0,0xffc,0x0,0x0,0x0,0xffc,0x0,0x0,0x8000000,0x0,0x3000,0x3000,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0xffc,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000,0x0,0x3000,0x0,0x0,0x0,0x0,0x3000,0x3000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x7b8,0xffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x0,0x3000,0x3000,0x3000,0x0,0x0,0x0,0x3ffc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf0003ffc,0x0,0xf0003ffc,0xf0003ffc,0x0,0x0,0x0,0x0,0x0,0x3ffc,0x3ffc,0x0,0x3ffc,0x0,0x0,0x0,0x3000,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_4() {
-      jj_la1_4 = new int[] {0x0,0xe000000,0xe000000,0xe000000,0xe000000,0xa000000,0xe000000,0x800000,0x0,0x800000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x800000,0x0,0x800000,0x0,0x100000,0x0,0x0,0x0,0x0,0x10800a1,0x0,0x10800a1,0x0,0x10800a1,0x0,0x10800a1,0x1,0x10800a1,0x0,0x0,0x0,0x10800a1,0x400000,0x0,0x100000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x0,0x400,0x0,0x80020,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x4,0x0,0x0,0x0,0x0,0x10,0x10800a0,0x10,0x10800a0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,0x2,0x100,0x10800a0,0x0,0x0,0x80020,0x0,0x80020,0x0,0x0,0x0,0x80108c,0x80108c,0x0,0x0,0x108c,0x800000,0x0,0x0,0x0,0x800000,0x1000,0x8c,0x0,0x0,0x1000,0x0,0x800,0x800,0x10800a0,0x800000,0x0,0x800000,0x0,0x800000,0x800000,0x0,0x0,0x20000,0x4000,0x24000,0x24000,0x20000,0x18000,0x38000,0x38000,0x4000,0x18000,0x1c000,0x1c000,0x20000,0x1c000,0x18000,0x0,0x81000000,0x81000000,0x40000,0x0,0x81000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x0,0x0,0x0,0x0,0xf0000000,0xf0000000,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x10800a0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a0,0x8000000,0x2000000,0x2000000,0x0,0x0,0x10800a0,0x10800a0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_4 = new int[] {0x0,0xe000000,0xe000000,0xe000000,0xe000000,0xa000000,0xe000000,0x800000,0x0,0x800000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x800000,0x0,0x800000,0x0,0x100000,0x0,0x0,0x0,0x0,0x10800a1,0x0,0x10800a1,0x1,0x0,0x10800a1,0x0,0x10800a1,0x1,0x10800a1,0x0,0x0,0x0,0x10800a1,0x400000,0x0,0x100000,0x200000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x0,0x400,0x0,0x80020,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x4,0x0,0x0,0x0,0x0,0x10,0x10800a0,0x10,0x10800a0,0x0,0x10,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,0x2,0x100,0x10800a0,0x0,0x0,0x80020,0x0,0x80020,0x0,0x0,0x0,0x80108c,0x80108c,0x0,0x0,0x108c,0x800000,0x0,0x0,0x0,0x800000,0x1000,0x8c,0x0,0x0,0x1000,0x0,0x800,0x800,0x10800a0,0x800000,0x0,0x800000,0x0,0x800000,0x800000,0x0,0x0,0x20000,0x4000,0x24000,0x24000,0x20000,0x18000,0x38000,0x38000,0x4000,0x18000,0x1c000,0x1c000,0x20000,0x1c000,0x18000,0x0,0x81000000,0x81000000,0x40000,0x0,0x81000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0xe0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40000,0x0,0x0,0x0,0x0,0x0,0xf0000000,0xf0000000,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x10800a0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10800a1,0x0,0x10800a1,0x10800a1,0x8000000,0x2000000,0x2000000,0x0,0x0,0x10800a0,0x10800a0,0x0,0x10800a0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_5() {
-      jj_la1_5 = new int[] {0x0,0x400000,0x400000,0x400000,0x400000,0x400000,0x400000,0x513c380,0x20000000,0x513c380,0x0,0x0,0x0,0x20000000,0x0,0x20000000,0x0,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x513c380,0x0,0x513c380,0x0,0x0,0x0,0x10000000,0x100000,0x1000000,0x413c3c0,0x8000000,0x413c3c0,0x0,0x413c3c0,0x8000000,0x413c3c0,0x0,0x413c3c0,0x100000,0x13c000,0x100000,0x413c3c0,0x0,0x0,0x0,0x0,0x0,0x100000,0x0,0x0,0x0,0x400000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x100000,0x100000,0x100000,0x100000,0x10000000,0x100000,0x0,0x0,0x0,0x100000,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x3c380,0x40,0x3c380,0x40,0x100000,0x3c380,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100040,0x0,0x0,0x100000,0x0,0x100000,0x0,0x0,0x0,0x553c380,0x553c380,0x20000000,0x20000000,0x400000,0x513c380,0x20000000,0x0,0x20000000,0x513c380,0x0,0x0,0x10000000,0x100000,0x0,0x0,0x0,0x0,0x100040,0x513c380,0x20000000,0x513c380,0x20000000,0x513c380,0x1100000,0x513c380,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000000,0x100000,0x100000,0x0,0x0,0x100000,0x0,0x0,0x0,0x80,0x10000000,0x10000080,0x400000,0x400000,0x100000,0x0,0x100000,0x1400080,0xc0000000,0x1f,0x1100000,0x0,0x0,0x0,0x513c380,0x1100000,0x413c380,0x4000000,0x0,0x0,0x0,0x13c380,0x413c380,0x0,0x0,0x0,0xc0000000,0xc0000000,0x0,0x0,0x0,0x0,0x413c3c0,0x0,0x0,0x0,0x10000000,0x40,0x40,0x400000,0x0,0x10200000,0x0,0x10000000,0x100000,0x413c3c0,0x0,0x13c380,0x13c380,0x3c380,0x10000000,0x10000000,0x100000,0x413c3c0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8000000,0x493c3c0,0x0,0x0,0x0,0x0,0x10000000,0x413c3c0,0x413c3c0,0x8000000,0x413c3c0,0x380,0x0,0x0,0x0,0x3c000,0x0,0x0,0x0,0x4000000,};
+      jj_la1_5 = new int[] {0x0,0x400000,0x400000,0x400000,0x400000,0x400000,0x400000,0x513c380,0x20000000,0x513c380,0x0,0x0,0x0,0x20000000,0x0,0x20000000,0x0,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x513c380,0x0,0x513c380,0x0,0x0,0x0,0x10000000,0x100000,0x1000000,0x413c3c0,0x8000000,0x413c3c0,0x0,0x0,0x413c3c0,0x8000000,0x413c3c0,0x0,0x413c3c0,0x100000,0x13c000,0x100000,0x413c3c0,0x0,0x0,0x0,0x0,0x0,0x100000,0x0,0x0,0x0,0x400000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x100000,0x100000,0x100000,0x100000,0x10000000,0x100000,0x0,0x0,0x0,0x100000,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100000,0x3c380,0x40,0x3c380,0x40,0x100000,0x3c380,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100040,0x0,0x0,0x100000,0x0,0x100000,0x0,0x0,0x0,0x553c380,0x553c380,0x20000000,0x20000000,0x400000,0x513c380,0x20000000,0x0,0x20000000,0x513c380,0x0,0x0,0x10000000,0x100000,0x0,0x0,0x0,0x0,0x100040,0x513c380,0x20000000,0x513c380,0x20000000,0x513c380,0x1100000,0x513c380,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000000,0x100000,0x100000,0x0,0x0,0x100000,0x0,0x0,0x0,0x80,0x10000000,0x10000080,0x400000,0x400000,0x100000,0x0,0x100000,0x1400080,0xc0000000,0x1f,0x1100000,0x0,0x0,0x0,0x513c380,0x1100000,0x413c380,0x4000000,0x0,0x0,0x0,0x13c380,0x413c380,0x0,0x0,0x0,0xc0000000,0xc0000000,0x0,0x0,0x0,0x0,0x413c3c0,0x0,0x0,0x0,0x10000000,0x40,0x40,0x400000,0x0,0x10200000,0x0,0x10000000,0x100000,0x413c3c0,0x0,0x13c380,0x13c380,0x3c380,0x10000000,0x10000000,0x100000,0x413c3c0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x413c3c0,0x8000000,0x413c3c0,0x493c3c0,0x0,0x0,0x0,0x0,0x10000000,0x413c3c0,0x413c3c0,0x8000000,0x413c3c0,0x380,0x0,0x0,0x0,0x3c000,0x0,0x0,0x0,0x4000000,};
    }
    private static void jj_la1_6() {
-      jj_la1_6 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x10000,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x0,0x0,0x10,0x4080,0x4080,0x1000,0x0,0x0,0x0,0x2a00,0x2a00,0x10,0x2a00,0x0,0x0,0x2f,0x0,0x10000,0x10000,0x10000,0x10000,0x10000,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x100,0x0,0x2f,0x2f,0x600,0x600,0x1800,0x1800,0x610,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10610,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x10610,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x610,0x0,0x0,0x0,0x0,0x0,0xe10,0xe10,0x0,0x0,0x0,0x8000,0x8000,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_6 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000,0x0,0x10000,0x0,0x10000,0x10000,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x0,0x0,0x10,0x4080,0x4080,0x1000,0x0,0x0,0x0,0x2a00,0x2a00,0x10,0x2a00,0x0,0x0,0x2f,0x0,0x10000,0x10000,0x10000,0x10000,0x10000,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x100,0x0,0x2f,0x2f,0x600,0x600,0x1800,0x1800,0x610,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10610,0x10000,0x0,0x0,0x0,0x0,0x0,0x0,0x10610,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x610,0x0,0x610,0x610,0x0,0x0,0x0,0x0,0x0,0xe10,0xe10,0x0,0x0,0x0,0x8000,0x8000,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[16];
   private boolean jj_rescan = false;
@@ -8469,7 +8605,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8482,7 +8618,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8492,7 +8628,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8502,7 +8638,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8511,7 +8647,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8520,7 +8656,7 @@ import org.apache.logging.log4j.LogManager;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 294; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 297; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8639,7 +8775,7 @@ import org.apache.logging.log4j.LogManager;
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 294; i++) {
+    for (int i = 0; i < 297; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

@@ -21,7 +21,8 @@ PARSER_BEGIN(SparqlCorese)
   
   	package fr.inria.acacia.corese.triple.javacc1;
 
-	import org.apache.log4j.Logger;
+	import org.apache.logging.log4j.Logger;
+        import org.apache.logging.log4j.LogManager;
 	
 	import java.util.List;
 	import java.util.ArrayList;
@@ -61,7 +62,7 @@ PARSER_BEGIN(SparqlCorese)
     boolean printDeprecated = true;
 	
 	/** logger from log4j */
-	private static Logger logger = Logger.getLogger(SparqlCorese.class);
+	private static Logger logger = LogManager.getLogger(SparqlCorese.class);
 	
     /** To show some printings */
     boolean show = false;
@@ -658,12 +659,19 @@ Expression texp (Exp stack) : { Expression exp; }
                   |
                 	exp = PrimaryExpression(stack)
                   |                       
-                        exp = box(stack)
-	          | 
-                        exp = group(stack)
-                  |
-                        exp = format(stack)
-                 )
+                        exp = TemplateExpression(stack)
+)
+{ return exp; }
+}
+
+Expression TemplateExpression (Exp stack) : { Expression exp; }
+{
+    (   exp = box(stack)
+    | 
+        exp = group(stack)
+    |
+        exp = format(stack)
+    )
 { return exp; }
 }
 
@@ -2612,8 +2620,9 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expression exp = null;}
 {
  <LBRACE> ( <RBRACE> |        
-        exp = Expression(stack) { body.add(exp); } 
-        ( <SEMICOLON> exp = Expression(stack) { body.add(exp); } ) *
+        (exp = Expression(stack) | exp = TemplateExpression(stack)) { body.add(exp); } 
+        ( <SEMICOLON> 
+        (exp = Expression(stack) | exp = TemplateExpression(stack)) { body.add(exp); } ) *
             <RBRACE>
         ) 
     { return astq.defineBody(body) ; }

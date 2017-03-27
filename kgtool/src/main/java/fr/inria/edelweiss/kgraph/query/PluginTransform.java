@@ -341,7 +341,7 @@ public class PluginTransform implements ExprType {
         try {
             return ql.readWE(uri);
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(PluginTransform.class.getName()).log(Level.SEVERE, null, ex);
+            logger.warn(ex.getMessage());
         }
         return "";
     }
@@ -526,18 +526,19 @@ public class PluginTransform implements ExprType {
     }
 
     IDatatype prolog(IDatatype dt, Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod);
+        Transformer t = getTransformer(env, prod);
         String title = null;
         if (dt != null) {
             title = dt.getLabel();
         }
-        String pref = p.getNSM().toString(title);
+        // user defined prefix only, no base
+        String pref = t.getNSM().toString(title, false, false);
         return plugin.getValue(pref);
     }
 
     IDatatype prefix(Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod);
-        return DatatypeMap.createObject(p.getNSM());
+        Transformer t = getTransformer(env, prod);
+        return DatatypeMap.createObject(t.getNSM());
     }
     
     IDatatype context(Environment env, Producer prod) {
@@ -545,8 +546,8 @@ public class PluginTransform implements ExprType {
     }
     
     IDatatype isStart(Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod);
-        boolean b = p.isStart();
+        Transformer t = getTransformer(env, prod);
+        boolean b = t.isStart();
         return plugin.getValue(b);
     }
     

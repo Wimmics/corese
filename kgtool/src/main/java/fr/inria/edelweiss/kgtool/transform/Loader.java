@@ -91,7 +91,7 @@ public class Loader {
             ld.setEngine(re);           
             try {
                 //ld.loadWE(pp);
-                load(ld, pp);
+                load(ld, qe, pp);
             } catch (LoadException e) {
                 // TODO Auto-generated catch block
                 logger.error(e);
@@ -102,20 +102,41 @@ public class Loader {
         return qe;
 
     }
+     
+     /**
+      * If path is file:///somewhere/sttl/
+      * return the path /somewhere/sttl/
+      * Hence load has access to transformation directory if any
+      * Use case:
+      * st:transform <demo/sttl/>
+      */
+     String toFile(String path) {
+        try {
+            URL url = new URL(path);
+            if (url.getProtocol().startsWith("file")){
+                return url.getFile();
+            }
+        } catch (MalformedURLException ex) {            
+        }
+        return path;
+     }
        
        /**
      * Predefined transformations loaded from Corese resource or ns.inria.fr server
      */
-    void load(Load ld, String pp) throws LoadException {
+    void load(Load ld, QueryEngine qe, String pp) throws LoadException {
         //System.out.println("Load: " + pp);    
         String name = null;
         pp = clean(pp);
+        // base for templates
+        // use case: format { <format/main.html> ?x }
+        qe.setBase(NSManager.toURI(pp));
         if (nsm.inNamespace(pp, STL)) {
             // predefined pprinter: st:owl st:spin
             // loaded from Corese resource
             name = nsm.strip(pp, STL);
         }  else {
-            ld.parseDirRec(pp);
+            ld.parseDir(toFile(pp), Load.QUERY_FORMAT);
             return;
         }           
         String src = PPLIB + name;

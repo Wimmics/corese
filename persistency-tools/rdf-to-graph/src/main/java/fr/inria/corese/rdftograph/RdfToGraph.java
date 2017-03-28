@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -301,6 +302,7 @@ public class RdfToGraph {
 				return name.matches(finalFilename);
 			}
 		});
+		Arrays.sort(files);
 		boolean first = true;
 		for (File file : files) {
 			InputStream newStream;

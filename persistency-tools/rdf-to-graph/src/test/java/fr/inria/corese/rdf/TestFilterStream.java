@@ -7,9 +7,13 @@ package fr.inria.corese.rdf;
  */
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.corese.rdftograph.RdfToGraph.AddressesFilterInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -53,6 +57,47 @@ public class TestFilterStream {
 			actualResultBuilder.append((char) c);
 		}
 		String actualResult = actualResultBuilder.toString();
+		assertEquals("Strings should be equal", expectedResult, actualResult);
+	}
+
+	@Test
+	public void testMakeStream_readSimpleFile() throws IOException {
+		String expectedResult = "file0:line0\nfile0:line1\nfile1:line0\nfile1:line1\n";
+		BufferedReader reader = new BufferedReader(new InputStreamReader(RdfToGraph.makeStream("test.txt")));
+		StringBuilder actualResultBuilder = new StringBuilder();
+		String currentLine;
+		while ((currentLine = reader.readLine()) != null) {
+			actualResultBuilder.append(currentLine);
+			actualResultBuilder.append(String.format("%n"));
+		}
+		String actualResult = actualResultBuilder.toString();	
+		assertEquals("Strings should be equal", expectedResult, actualResult);
+	}
+
+	@Test
+	public void testMakeStream_concatSimpleText() throws IOException {
+		String expectedResult = "file0:line0\nfile0:line1\nfile1:line0\nfile1:line1\nfile2:line0\nfile2:line1\n";
+		BufferedReader reader = new BufferedReader(new InputStreamReader(RdfToGraph.makeStream("./src/test/resources/file[0-2].txt")));
+		StringBuilder actualResultBuilder = new StringBuilder();
+		String currentLine;
+		while ((currentLine = reader.readLine()) != null) {
+			actualResultBuilder.append(currentLine);
+			actualResultBuilder.append(String.format("%n"));
+		}
+		String actualResult = actualResultBuilder.toString();	
+		assertEquals("Strings should be equal", expectedResult, actualResult);
+	}
+	@Test
+	public void testMakeStream_concatGzipText() throws IOException {
+		String expectedResult = "file0:line0\nfile0:line1\nfile1:line0\nfile1:line1\nfile2:line0\nfile2:line1\n";
+		BufferedReader reader = new BufferedReader(new InputStreamReader(RdfToGraph.makeStream("./src/test/resources/file[0-2].txt.gz")));
+		StringBuilder actualResultBuilder = new StringBuilder();
+		String currentLine;
+		while ((currentLine = reader.readLine()) != null) {
+			actualResultBuilder.append(currentLine);
+			actualResultBuilder.append(String.format("%n"));
+		}
+		String actualResult = actualResultBuilder.toString();	
 		assertEquals("Strings should be equal", expectedResult, actualResult);
 	}
 }

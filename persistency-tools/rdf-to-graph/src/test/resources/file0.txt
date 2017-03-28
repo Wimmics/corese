@@ -1,0 +1,2 @@
+file0:line0
+file0:line1

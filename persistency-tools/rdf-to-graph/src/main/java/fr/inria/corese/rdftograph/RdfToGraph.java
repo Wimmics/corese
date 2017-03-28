@@ -6,11 +6,15 @@ package fr.inria.corese.rdftograph;
 import fr.inria.corese.rdftograph.driver.GdbDriver;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -257,7 +261,8 @@ public class RdfToGraph {
 	 * @throws IOException
 	 */
 	public static InputStream makeStream(String completeFilename) throws IOException {
-		InputStream result;
+		InputStream result = null;
+
 		String filename;
 		int start;
 		int end;
@@ -277,10 +282,39 @@ public class RdfToGraph {
 			end = -1;
 			filename = completeFilename;
 		}
-		if (filename.endsWith(".gz")) {
-			result = new AddressesFilterInputStream(new GZIPInputStream(new FileInputStream(filename)), start, end);
+		File root;
+
+		if (filename.startsWith("/")) { // absolute path
+			String dirPath = filename.substring(0, filename.lastIndexOf("/") + 1);
+			filename = filename.substring(filename.lastIndexOf("/")+1, filename.length());
+			root = new File(dirPath);
+		} else if (filename.contains("/")) { // relative path
+			root = new File(filename.substring(0, filename.lastIndexOf("/")));
+			filename = filename.substring(filename.lastIndexOf("/")+1, filename.length());
 		} else {
-			result = new AddressesFilterInputStream(new BufferedInputStream(new FileInputStream(filename)), start, end);
+			root = new File("."); // filename without path
+		}
+		final String finalFilename = filename;
+		File[] files = root.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.matches(finalFilename);
+			}
+		});
+		boolean first = true;
+		for (File file : files) {
+			InputStream newStream;
+			if (file.getName().endsWith(".gz")) {
+				newStream = new AddressesFilterInputStream(new GZIPInputStream(new FileInputStream(file)), start, end);
+			} else {
+				newStream = new AddressesFilterInputStream(new BufferedInputStream(new FileInputStream(file)), start, end);
+			}
+			if (first) {
+				result = newStream;
+				first = false;
+			} else {
+				result = new SequenceInputStream(result, newStream);
+			}
 		}
 		return result;
 	}

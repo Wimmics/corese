@@ -1,0 +1,4 @@
+file0:line0
+file0:line1
+file1:line0
+file1:line1

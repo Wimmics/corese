@@ -38,6 +38,11 @@ public class QualitativeTest {
 			config.setProperty("storage.batch-loading", "false");
 			config.setProperty("cache.db-cache", "true");
 			config.setProperty("cache.db-cache-size", "250000000");
+			config.setProperty("cache.db-cache-time", "0");
+			config.setProperty("query.batch", "true");
+			config.setProperty("query.fast-property", "true");
+			config.setProperty("storage.transactions", "false");
+			config.setProperty("storage.read-only", "false");
 			config.save();
 		} catch (ConfigurationException ex) {
 			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -194,14 +199,15 @@ public class QualitativeTest {
 		String[] inputFiles = {
 			//			"test-1.nq",
 			//			"human_2007_04_17.rdf",	
-			"btc-2010-chunk-000.nq:1",
-			"btc-2010-chunk-000.nq:10",
-			"btc-2010-chunk-000.nq:100",
-			"btc-2010-chunk-000.nq:1000",
-			"btc-2010-chunk-000.nq:10000",
-			"btc-2010-chunk-000.nq:100000",
-			"btc-2010-chunk-000.nq:1000000", 
-			"btc-2010-chunk-000.nq"
+//			"btc-2010-chunk-000.nq.gz:1",
+//			"btc-2010-chunk-000.nq.gz:10",
+//			"btc-2010-chunk-000.nq.gz:100",
+//			"btc-2010-chunk-000.nq.gz:1000",
+//			"btc-2010-chunk-000.nq.gz:10000",
+//			"btc-2010-chunk-000.nq:100000",
+//			"btc-2010-chunk-000.nq.gz:1000000", 
+//			"btc-2010-chunk-000.nq.gz",
+			"btc-2010-chunk-000_(10|100).nq"	
 		};
 		String[] requests = {
 			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",

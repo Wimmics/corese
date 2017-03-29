@@ -12,13 +12,13 @@
 		<profile>
 			<id>continuous-integration-build</id>
 			<properties>
-				<memory.jvm>-Xmx10g -Xms10g</memory.jvm>
+				<memory.jvm>g</memory.jvm>
 			</properties>
 		</profile>
 		<profile>
 			<id>desktop</id>
 			<properties>
-				<memory.jvm>-Xmx2g -Xms2g</memory.jvm>
+				<memory.jvm>-Xmx4g -Xms4g</memory.jvm>
 			</properties>
 		</profile>
 	</profiles>	

@@ -8,7 +8,20 @@
 	</parent>
 
 	<artifactId>coresedb-benchmark</artifactId>
-	
+	<profiles>
+		<profile>
+			<id>continuous-integration-build</id>
+			<properties>
+				<memory.jvm>-Xmx10g -Xms10g</memory.jvm>
+			</properties>
+		</profile>
+		<profile>
+			<id>desktop</id>
+			<properties>
+				<memory.jvm>-Xmx2g -Xms2g</memory.jvm>
+			</properties>
+		</profile>
+	</profiles>	
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -105,7 +118,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-					<argLine>-Xmx10g -Xms10g</argLine>
+					<argLine>${memory.jvm}</argLine>
 				</configuration>
 			</plugin>
             

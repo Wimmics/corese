@@ -5,6 +5,9 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.Weigher;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.BNODE;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.IRI;
@@ -25,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -43,6 +47,27 @@ public abstract class GdbDriver {
 	private static Logger LOGGER = Logger.getLogger(GdbDriver.class.getName());
 	private boolean wipeOnOpen;
 	protected Graph g;
+	// Fields related with cache management.
+	private Cache<Value, Vertex> cache;
+	private long maximumByteSize = 1_000_000_000;
+	private int concurrencyLevel = 1;
+	private int cacheTimeMS = 0;
+
+	public GdbDriver() {
+		CacheBuilder<Value, Vertex> cachebuilder = CacheBuilder.newBuilder()
+			.maximumWeight(maximumByteSize)
+			.concurrencyLevel(concurrencyLevel)
+			.initialCapacity(1000)
+			.expireAfterWrite(cacheTimeMS, TimeUnit.MILLISECONDS)
+			.weigher(new Weigher<Value, Vertex>() {
+				@Override
+				public int weigh(Value value, Vertex vertex) {
+					return 1;
+				}
+			});;
+
+		cache = cachebuilder.build();
+	}
 
 	public abstract void openDb(String dbPath);
 
@@ -64,14 +89,12 @@ public abstract class GdbDriver {
 
 	public abstract void closeDb();
 
-	HashMap<Value, Vertex> cache = new HashMap<>();
-
 	public Vertex getNode(Value v) {
 		GraphTraversal<Vertex, Vertex> it = null;
-		if (cache.containsKey(v)) {
-			return cache.get(v);
+		Vertex result = cache.getIfPresent(v);
+		if (result != null) {
+			return result;
 		}
-		Vertex result = null;
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
@@ -96,10 +119,6 @@ public abstract class GdbDriver {
 			}
 		}
 
-		if (cache.size() > 10_000) {
-			LOGGER.info("Cleaning cache");
-			cache.clear();
-		}
 		if (it.hasNext()) {
 			result = it.next();
 			cache.put(v, result);
@@ -156,7 +175,7 @@ public abstract class GdbDriver {
 		}
 		return null;
 	}
-	
+
 	public abstract Object createRelationship(Value sourceId, Value objectId, String predicate, Map<String, Object> properties);
 
 	public abstract void commit();

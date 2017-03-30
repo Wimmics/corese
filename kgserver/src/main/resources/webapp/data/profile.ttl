@@ -44,12 +44,13 @@ st:param [
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
         (<http://www.w3c.org/ns/org> st:hal)    
         ("*" st:lod)
-    )
+    ) 
 ] ;
 st:workflow [
     a sw:Workflow ;
     sw:body (
         <query/halrdf.rq>
+        <query/halcomplete1.rq>
         [ a sw:Transformation ; sw:uri st:hturtle ]
     )
 ]
@@ -66,7 +67,7 @@ st:param [
         (<https://aurehal.archives-ouvertes.fr/> st:hal2)
         (<http://www.w3c.org/ns/org> st:hal2)    
         ("*" st:lod)
-    )
+    ) 
 ] ;
 st:workflow [
     a sw:Workflow ;

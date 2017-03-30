@@ -14,15 +14,15 @@ template st:value {
 }
 where {
   ?in ?p ?y 
-    
+  
   bind (
     isBlank(?y) 
     && not exists { ?y rdf:first ?e }
-    && ( (st:isStart() && exists { ?x ?q ?y . filter(?in != ?x) })
-         || exists { ?y ?q ?y } 
-         || ?in = ?y
+    && ( 
+        (st:get(st:allgraph, true) && exists { ?x ?q ?y . filter(?in != ?x) } )
+        || exists { ?y ?q ?y } 
+        || ?in = ?y
        )
-  as ?refer)
-    
+  as ?refer)      
 }
 order by if (?p = rdf:type, 0, 1) ?p ?y

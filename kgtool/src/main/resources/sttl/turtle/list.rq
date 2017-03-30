@@ -16,7 +16,7 @@ where {
   filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
   
   bind (isBlank(?e) && 
-    ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
+    ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
     || exists { ?e ?q ?e })
     as ?refer)
 }

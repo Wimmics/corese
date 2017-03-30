@@ -2,7 +2,7 @@
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template {
+template  {
   ?in " "
   
   ibox {   
@@ -11,8 +11,8 @@ template {
       
   " ."      
 }
-where {
-  ?in ?p ?y   
-  filter isUri(?in) 
+where { 
+  ?in ?pp ?y   
+  filter isURI(?in)
 }
 limit 1

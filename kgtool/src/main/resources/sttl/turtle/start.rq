@@ -8,6 +8,8 @@ template st:start {
   str(?main)
 }
 where {
-  bind (st:call-template(st:main) as ?main)
+  bind (st:set(st:allgraph, true)  as ?s1)
+  bind (st:call-template(st:main)  as ?main)
+  bind (st:set(st:allgraph, false) as ?s2)
 }
 

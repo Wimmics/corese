@@ -3,14 +3,12 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:value {
-
-format {
-    if (?p = rdf:type, "<span class='type'>a %2$s</span>", "%s %s")
-    
-	st:process(?p)  	       
-	if (?refer, st:turtle(?y), 
-        if (isURI(?y) && ?y = rdf:nil, "()", st:process(?y)))
-}
+             
+   format {
+    "%s %s"
+	if (?p = rdf:type, "a", st:process(?p))  	       
+	if (?refer, st:turtle(?y), if (isURI(?y) && ?y = rdf:nil, "()", st:process(?y)))
+   }   
              
    ; separator = concat(" ;", st:nl()) 
 }

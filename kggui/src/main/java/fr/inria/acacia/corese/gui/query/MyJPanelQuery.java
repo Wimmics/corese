@@ -57,6 +57,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -82,7 +83,8 @@ public final class MyJPanelQuery extends JPanel {
     static final int XML_PANEL      = 1;
     static final int TABLE_PANEL    = 2;
 
-
+    int maxres = 1000000;
+    
     //Boutton du panneau Query
     private JButton buttonRun, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
@@ -112,6 +114,7 @@ public final class MyJPanelQuery extends JPanel {
     private MainFrame mainFrame;
     private static final String KGSTYLE = ExpType.KGRAM + "style";
     private static final String KGGRAPH = Pragma.GRAPH;
+    private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
 
     public MyJPanelQuery() {
         super();
@@ -473,7 +476,9 @@ public final class MyJPanelQuery extends JPanel {
         ASTQuery ast = (ASTQuery) map.getQuery().getAST();
         if (ast.isSPARQLQuery()) {
             // RDF or XML
-            String str = ResultFormat.create(map).toString();
+            ResultFormat rf = ResultFormat.create(map);
+            rf.setNbResult(maxres);
+            String str = rf.toString();
             if (str == "" && ast.getErrors() != null){
                 return ast.getErrorString();
             }
@@ -495,9 +500,13 @@ public final class MyJPanelQuery extends JPanel {
         for (fr.inria.edelweiss.kgram.api.core.Node var : vars) {
             String columnName = var.getLabel();
             //System.out.println(sv);
-            String[] colmunData = new String[map.size()];
+            String[] colmunData = new String[Math.min(maxres, map.size())];
 
             for (int j = 0; j < map.size(); j++) {
+                if (j >= maxres){
+                    logger.warn("Stop display after " + maxres + " results out of " + map.size());
+                    break;
+                }
                 Mapping m = map.get(j);
                 fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
                 if (value != null) {
@@ -540,7 +549,7 @@ public final class MyJPanelQuery extends JPanel {
         treeResult = new JTree(treeModel);
         treeResult.setShowsRootHandles(true);
 
-        display(root, map);
+        //display(root, map);
 
         TreePath myPath = treeResult.getPathForRow(0);
         treeResult.expandPath(myPath);
@@ -576,7 +585,7 @@ public final class MyJPanelQuery extends JPanel {
                 ld.loadString(str, Load.TURTLE_FORMAT);
                 displayGraph(g, nsm);
             } catch (LoadException ex) {
-                LogManager.getLogger(MyJPanelQuery.class.getName()).log(Level.ERROR, "", ex);
+                logger.log(Level.ERROR, "", ex);
             }
         }
     }

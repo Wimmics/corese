@@ -247,7 +247,7 @@ public class RDFFormat {
 			if (! p.equals("")){
 				bb.append(":");
 			}
-			bb.append(p + "='" + toXML(ns) + "'");
+			bb.append(p).append("='").append(toXML(ns)).append("'");
 		}
 	}
 	

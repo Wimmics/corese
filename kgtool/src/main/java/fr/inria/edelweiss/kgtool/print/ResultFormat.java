@@ -36,6 +36,7 @@ public class ResultFormat {
     int type = UNDEF_FORMAT;
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
     private int select_format = DEFAULT_SELECT_FORMAT;
+    private long nbResult = Long.MAX_VALUE;
     
     static HashMap<String, Integer> table;
     
@@ -181,7 +182,11 @@ public class ResultFormat {
             case TURTLE_FORMAT:  return TripleFormat.create(map).toString();
             case JSON_LD_FORMAT: return JSONLDFormat.create(map).toString();
 
-            case XML_FORMAT: return XMLFormat.create(map).toString();
+            case XML_FORMAT: 
+                XMLFormat ft =  XMLFormat.create(map); 
+                ft.setNbResult(nbResult);
+                return ft.toString();
+                
             case RDF_FORMAT: 
                 Graph g = MappingsGraph.create(map).getGraph();
                 return TripleFormat.create(g).toString();
@@ -224,5 +229,19 @@ public class ResultFormat {
      */
     public void setSelectFormat(int select_format) {
         this.select_format = select_format;
+    }
+
+    /**
+     * @return the nbResult
+     */
+    public long getNbResult() {
+        return nbResult;
+    }
+
+    /**
+     * @param nbResult the nbResult to set
+     */
+    public void setNbResult(long nbResult) {
+        this.nbResult = nbResult;
     }
 }

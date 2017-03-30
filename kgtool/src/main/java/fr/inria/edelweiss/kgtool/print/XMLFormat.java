@@ -55,7 +55,7 @@ public class XMLFormat  {
 	private static final String CDATA = "]]>";
 	private static final String OCOM = "<!--";
 	private static final String CCOM = "-->";
-
+        private long nbResult = Long.MAX_VALUE;
 
 	
 	boolean displaySort = false;
@@ -130,6 +130,20 @@ public class XMLFormat  {
 	public void print() {
 		print(false, "");
 	}
+
+    /**
+     * @return the nbResult
+     */
+    public long getNbResult() {
+        return nbResult;
+    }
+
+    /**
+     * @param nbResult the nbResult to set
+     */
+    public void setNbResult(long nbResult) {
+        this.nbResult = nbResult;
+    }
 	
 	enum Title  {XMLDEC, OHEADER, CHEADER, OHEAD, CHEAD, OVAR, CVAR, 
 		ORESULT, CRESULT, ORESULTS, CRESULTS};
@@ -184,9 +198,12 @@ public class XMLFormat  {
 		else {         
 			println(getTitle(Title.ORESULTS));
 			if (lMap != null) {
-				int n=1;
+				long n=1;
 				for (Mapping map : lMap){
-					print(map, n++);
+                                    if (n > nbResult ){
+                                        break;
+                                    }
+                                    print(map, n++);
 				}
 			}
 			println(getTitle(Title.CRESULTS));
@@ -255,7 +272,7 @@ public class XMLFormat  {
 	 * Print a cg result as a line of the table each column is one of the select
 	 * variables of the query
 	 */
-	void print(Mapping map, int n){
+	void print(Mapping map, long n){
 		newResult();
 		if (isDebug()){
 			println("<!-- number = '" + n + "' -->");

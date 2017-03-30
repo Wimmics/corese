@@ -57,6 +57,7 @@ import fr.inria.edelweiss.kgtool.util.QueryManager;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
 import java.util.ArrayList;
+import static junit.TestUnit.data;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -164,6 +165,74 @@ public class TestQuery1 {
 
         assertEquals(g.size(), gg.size());
 
+    }
+    
+    public void testGenAgg() throws EngineException{
+    String q = 
+            "select (st:aggregate(?x) as ?y) "
+            + "where { values ?x {unnest(xt:iota(10))}}"
+            
+            + "function st:aggregate(?x){aggregate(us:fun(?x), us:merge)}"
+            
+            + "function us:fun(?x){ 1 / (?x * ?x)}"
+            
+            + "function us:merge(?list){ apply(rq:plus, ?list) }"
+            ;
+    Graph g = Graph.create();
+    QueryProcess exec = QueryProcess.create(g);
+    Mappings map = exec.query(q);
+    IDatatype dt = (IDatatype) map.getValue("?y");
+    assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
+}
+    
+    
+     @Test
+    public void testinsertdata() throws EngineException{
+        String i = "insert data { graph us:Jim { us:Jim us:Jim us:Jim }}";
+        String d = "delete data { graph us:Jim { us:Jim us:Jim us:Jim }}";
+
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+               
+        for (Entity e : g.getEdges()){
+            int n = e.getGraph().getIndex();
+            assertEquals(n, e.getNode(0).getIndex());
+            assertEquals(n, e.getNode(1).getIndex());
+            assertEquals(n, e.getEdge().getEdgeNode().getIndex());          
+        }
+        
+        exec.query(d);
+        assertEquals(0, g.size());
+    }
+    
+    
+    @Test   
+   
+   public void testFormatBase(){
+       Graph g = Graph.create();
+       Transformer t = Transformer.create(g, data + "junit/sttl/format1/");
+       String res = t.transform();
+       assertEquals(true, res != null && res.equals("test"));
+   }
+    
+    
+    @Test
+    public void testReturn() throws EngineException{
+         Graph g = Graph.create();
+         QueryProcess exec = QueryProcess.create(g);
+         
+         String q = "select (us:fun(5) as ?n) where {}"
+                 + "function us:fun(?n) {"
+                 + "for (?x in xt:iota(?n)){"
+                 + "if (?x = ?n){"
+                 + "return (?x)}"
+                 + "}"
+                 + "}";
+         
+         Mappings map = exec.query(q);
+         IDatatype dt = (IDatatype) map.getValue("?n");
+         assertEquals(dt.intValue(), 5);
     }
     
     

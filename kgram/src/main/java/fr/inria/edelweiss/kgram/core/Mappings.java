@@ -102,8 +102,12 @@ public class Mappings extends PointerObject
     }
 
     void init(Query q, boolean subEval) {
+        initiate(q, !subEval && q.isDistinct());
+    }
+    
+    public void initiate(Query q,  boolean b){
         this.query = q;
-        isDistinct = !subEval && q.isDistinct();
+        isDistinct = b;
         isListGroup = q.isListGroup();
         setSelect(q.getSelect());
 
@@ -112,6 +116,15 @@ public class Mappings extends PointerObject
             distinct.setDistinct(true);
             distinct.setDuplicate(q.isDistribute());
         }
+    }
+    
+    public Mappings distinct() {
+        Mappings res = new Mappings();
+        res.initiate(getQuery(), true);
+        for (Mapping m : this) {
+            res.submit(m);
+        }
+        return res;
     }
     
     public boolean isDistinct(){
@@ -351,7 +364,7 @@ public class Mappings extends PointerObject
      * select distinct in case of aggregates, accept Mapping now, distinct will
      * be computed below
      */
-    void submit(Mapping a) {
+    public void submit(Mapping a) {
         if (a == null) {
             return;
         }
@@ -378,7 +391,7 @@ public class Mappings extends PointerObject
     }
 
     // TODO: check select == null
-    boolean accept(Mapping r) {
+    public boolean accept(Mapping r) {
         if (select == null || select.isEmpty()) {
             return true;
         }

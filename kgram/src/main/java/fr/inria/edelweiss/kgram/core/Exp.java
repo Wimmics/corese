@@ -49,6 +49,8 @@ public class Exp extends PointerObject
     Node node;
     private Node arg;
     List<Node> lNodes;
+    //  service with several URI:
+    private List<Node> nodeSet;
     Filter filter;
     List<Filter> lFilter;
     // min(?l, expGroupBy(?x, ?y))
@@ -206,6 +208,20 @@ public class Exp extends PointerObject
      */
     public void setPostpone(Exp postpone) {
         this.postpone = postpone;
+    }
+
+    /**
+     * @return the nodeSet
+     */
+    public List<Node> getNodeSet() {
+        return nodeSet;
+    }
+
+    /**
+     * @param nodeSet the nodeSet to set
+     */
+    public void setNodeSet(List<Node> nodeSet) {
+        this.nodeSet = nodeSet;
     }
 
     class VExp extends ArrayList<Exp> {

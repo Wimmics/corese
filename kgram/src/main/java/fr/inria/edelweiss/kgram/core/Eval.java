@@ -1817,7 +1817,8 @@ public class Eval implements ExpType, Plugin {
 //            StopWatch sw = new StopWatch();
 //            sw.start();
             // service delegated to provider
-            Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
+            //Mappings lMap = provider.service(node, exp.rest(), exp.getMappings(), env);
+            Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
 
             if (hasService) {
                 callService(node, exp, lMap);

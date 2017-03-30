@@ -1,20 +1,22 @@
+#
+# Dereference URI and return its graph
+#
 construct {
-    ?ss ?p ?oo
+    ?s ?p ?o
 }
 where {
     bind (st:get(st:uri) as ?uri)
-    bind (kg:load(?uri) as ?g)
+    bind (kg:load(us:completehal(?uri)) as ?g)
     graph ?g { 
         ?s ?p ?o 
-       # filter xt:display(?s, concat(?p, " ", ?o))
-        bind (us:complete(?s) as ?ss)
-        bind (us:complete(?o) as ?oo)
     }
 }
 
-function us:complete(?t) {
-    if (isURI(?t), 
-        if (strends(?t, "rdf") || ! coalesce(strstarts(st:getprofile(?t), st:hal), false), ?t, 
-            uri(concat(?t, if (strends(?t, "/"), "rdf", "/rdf")))),
-        ?t) 
+#
+# add /rdf for hal RDF resource URI
+#
+function us:completehal(?t) {
+    if (strends(?t, "rdf") || contains(?t, "#"), 
+        ?t, 
+        uri(concat(?t, if (strends(?t, "/"), "rdf", "/rdf"))))
 }

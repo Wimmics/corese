@@ -1,0 +1,14 @@
+insert {
+    ?uri foaf:firstName ?f ; foaf:familyName ?n
+}
+where {
+    filter st:get(st:mode, st:complete)
+    ?uri a rdf:Person 
+    filter xt:display("load: ", ?uri)
+    bind (kg:load(us:completehal(?uri)) as ?g)
+    graph ?g { 
+        ?uri foaf:firstName ?f ; foaf:familyName ?n
+        filter xt:display(?f, ?n)
+    }
+}
+

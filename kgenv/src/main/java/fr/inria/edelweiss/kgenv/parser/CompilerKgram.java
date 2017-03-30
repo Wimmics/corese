@@ -51,11 +51,13 @@ public class CompilerKgram implements ExpType, Compiler {
 	}
 	
 	
+        @Override
 	public void setAST(ASTQuery ast){
 		this.ast = ast;
 	}
 	
 	
+        @Override
 	public List<Filter> compileFilter(Triple t)  {
 		Expression exp = t.getExp();
 		ArrayList<Filter> list = new ArrayList<Filter>();
@@ -79,6 +81,7 @@ public class CompilerKgram implements ExpType, Compiler {
 	/**
 	 * Generate one filter
 	 */
+        @Override
 	public Filter compile(Expression exp) {
 		Expression ee = process(exp);		
 		Expression cpl = ee.process(ast);
@@ -110,7 +113,7 @@ public class CompilerKgram implements ExpType, Compiler {
 	}
 	
 	Node getNode(Atom at){
-		return getNode(at, true);
+		return getNode(at, false);
 	}
 	
 	
@@ -129,29 +132,31 @@ public class CompilerKgram implements ExpType, Compiler {
 			}
 			return node;
 		}
-//		else if (at.isResource() && isReuse){
-//			Node node = resTable.get(at.getName());
-//			if (node == null){
-//				node = new NodeImpl(at);
-//				resTable.put(at.getName(), node);
-//			}
-//			return node;
-//		}
+		else if (at.isResource() && isReuse){
+			Node node = resTable.get(at.getName());
+			if (node == null){
+				node = new NodeImpl(at);
+				resTable.put(at.getName(), node);
+			}
+			return node;
+		}
 		return new NodeImpl(at);
 	}
         
+        @Override
         public Collection<Node> getVariables(){
             return varTable.values();
         }
 	
-	public Edge compile(Triple tt) {
+        @Override
+	public Edge compile(Triple tt, boolean reuse) {
 		EdgeImpl edge = new EdgeImpl(tt);
-		Node subject = getNode(tt.getSubject());
+		Node subject = getNode(tt.getSubject(), reuse);
 		if (tt.getVariable()!=null){
 			Node variable = getNode(tt.getVariable());
 			edge.setEdgeVariable(variable);
 		}
-		Node predicate = getNode(tt.getProperty());
+		Node predicate = getNode(tt.getProperty(), reuse);
 		// PRAGMA: 
 		// ?x rdf:type c:Image
 		// in this case we want each triple rdf:type c:Image to have its own c:Image Node
@@ -159,7 +164,7 @@ public class CompilerKgram implements ExpType, Compiler {
 		// if it would be same Node, it would need to be bound to same value
 		// cf Neurolog pb
 		// TODO: fix it for relax
-		Node object = getNode(tt.getObject(), ! tt.isType());
+		Node object = getNode(tt.getObject(), reuse);
 		edge.add(subject);
 		edge.add(object);
 		edge.setEdgeNode(predicate);
@@ -177,26 +182,32 @@ public class CompilerKgram implements ExpType, Compiler {
 	
 
 	
+        @Override
 	public Node createNode(String name){
 		return getNode(new Variable(name));
 	}
 	
+        @Override
 	public Node createNode(Atom at){
 		return getNode(at);
 	}
 	
+        @Override
 	public List<Filter> getFilters(){ 
 		return new ArrayList<Filter>();
 	}
 	
+        @Override
 	public Edge getEdge(){
 		return edge;
 	}
 	
+        @Override
 	public Node getNode(){
 		return null;
 	}	
 	
+        @Override
 	public boolean isFail(){
 		return false;
 	}
@@ -208,6 +219,7 @@ public class CompilerKgram implements ExpType, Compiler {
 	 * 
 	 * **/
 	
+        @Override
 	public Regex getRegex(Filter f){
 		Expression exp = (Expression) f;
 		if (exp.isFunction(Processor.MATCH)){
@@ -218,6 +230,7 @@ public class CompilerKgram implements ExpType, Compiler {
 		return null;
 	}
 		
+        @Override
 	public String getMode(Filter f){		
 		Expression exp = (Expression) f;
 		if (exp.isFunction(Processor.MATCH) && exp.getArity()==3){
@@ -226,6 +239,7 @@ public class CompilerKgram implements ExpType, Compiler {
 		return null;
 	}	
 
+        @Override
 	public int getMin(Filter f){		
 		Expression exp = (Expression) f;
 		
@@ -239,6 +253,7 @@ public class CompilerKgram implements ExpType, Compiler {
 		return -1;
 	}
 	
+        @Override
 	public int getMax(Filter f){
 	
 		Expression exp = (Expression) f;

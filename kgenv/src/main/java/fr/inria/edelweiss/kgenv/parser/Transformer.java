@@ -1248,7 +1248,7 @@ public class Transformer implements ExpType {
     }
 
     Exp compileEdge(Triple t, boolean opt) {
-        Edge r = compiler.compile(t);
+        Edge r = compiler.compile(t, ast.isInsertData());
         Exp exp = Exp.create(EDGE, r);
 
         if (t.isType()) {
@@ -1292,7 +1292,7 @@ public class Transformer implements ExpType {
                 ast.createQName(RDFS.rdftype),
                 Term.function(Term.STAR, ast.createQName(RDFS.rdfssubclassof)));
         Triple p = ast.createPath(t.getSubject(), re, t.getObject());
-        Edge e = compiler.compile(p);
+        Edge e = compiler.compile(p, false);
         Exp exp = Exp.create(PATH, e);
         re.compile(ast);
         exp.setRegex(re);

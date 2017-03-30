@@ -42,7 +42,7 @@ public interface Compiler {
 
 	List<Filter> compileFilter(Triple t);
 	
-	Edge compile(Triple t);
+	Edge compile(Triple t, boolean insertData);
 	
 	Regex getRegex(Filter f);
 		

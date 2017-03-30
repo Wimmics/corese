@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.triple.parser.ASTExtension.ASTFunMap;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.*;
+import static fr.inria.edelweiss.kgram.api.core.ExpType.NODE;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
@@ -614,7 +615,7 @@ public class Transformer implements ExpType {
     Exp compileService(Service service) {
         Node src = compile(service.getService());
         Exp node = Exp.create(NODE, src);
-
+              
         fr.inria.acacia.corese.triple.parser.Exp body = service.get(0);
         ASTQuery aa;
 
@@ -634,6 +635,19 @@ public class Transformer implements ExpType {
 
         Exp exp = Exp.create(SERVICE, node, q);
         exp.setSilent(service.isSilent());
+        
+        if (service.getServiceList().size() > 1) {
+            // special case for federated query
+            // one service clause with several URI
+            // perform merge of resut Mappings
+            ArrayList<Node> list = new ArrayList<Node>();
+            for (Atom at : service.getServiceList()) {
+                Node serv = compile(at);
+                list.add(serv);
+            }
+            exp.setNodeSet(list);
+        }
+        
         return exp;
     }
 

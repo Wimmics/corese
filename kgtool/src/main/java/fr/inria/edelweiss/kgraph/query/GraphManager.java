@@ -112,6 +112,16 @@ public class GraphManager {
     Node getNode(Node gNode, IDatatype dt) {
         return graph.getNode(gNode, dt, true, false);
     }
+    
+    /**
+     * Return existing Node (any type of Node)
+     * If not exist, create a Node, add it into the graph
+     * gNode is the name of a named graph
+     */
+    Node getCreateNode(Node gNode, IDatatype dt) {
+        return graph.getNode(gNode, dt, true, true);
+    }
+    
 
     /**
      * Before construct/insert/delete starts
@@ -172,8 +182,13 @@ public class GraphManager {
         graph.addPropertyNode(property);
     }
 
-    void addGraphNode(Node source) {
-        graph.addGraphNode(source);
+    Node addGraphNode(Node source) {
+        Node node = graph.getNode(source);
+        if (node == null){
+            node = source;
+        }
+        graph.addGraphNode(node);
+        return node;       
     }
 
     /**

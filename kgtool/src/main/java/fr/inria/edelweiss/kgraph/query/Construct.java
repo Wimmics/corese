@@ -344,7 +344,8 @@ public class Construct
             graph.add(subject);
             graph.add(object);
             graph.addPropertyNode(property);
-            graph.addGraphNode(source);
+            source = graph.addGraphNode(source);
+            
         }
 
         Entity ee;
@@ -423,12 +424,18 @@ public class Construct
             } else {
                 dt = (IDatatype) value;
             }
-
             node = graph.getNode(gNode, dt);
             table.put(qNode, node);
         }
 
         return node;
+    }
+    
+    Node getCreateNode(Node gNode, IDatatype dt){
+        if (isDelete){
+            return graph.getNode(gNode, dt);
+        }
+        return graph.getCreateNode(gNode, dt);
     }
 
     IDatatype blank(Node qNode, Environment map) {

@@ -284,9 +284,12 @@ st:rdfs a st:Profile ;
 #
 # ******************************************************
  
-
-
-st:default a st:Server ;
+#
+# Default server for the SPARQL endpoint, content loaded using -lp option
+# change name to st:default
+# User profile loaded using -pp option
+#
+st:default2 a st:Server ;
 st:content st:humancontent
 .
 

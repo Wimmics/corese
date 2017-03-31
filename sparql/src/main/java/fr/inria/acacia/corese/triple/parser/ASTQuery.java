@@ -248,6 +248,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     private boolean isFunctional;
     private final Map<String, List<String>> approximateSearchOptions = new HashMap<String, List<String>>();
     private String service;
+    private List<Atom> serviceList;
 
     /**
      * @return the defaultDataset
@@ -367,6 +368,20 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      */
     public void setRelax(boolean isRelax) {
         this.isRelax = isRelax;
+    }
+
+    /**
+     * @return the serviceList
+     */
+    public List<Atom> getServiceList() {
+        return serviceList;
+    }
+
+    /**
+     * @param serviceList the serviceList to set
+     */
+    public void setServiceList(List<Atom> serviceList) {
+        this.serviceList = serviceList;
     }
 
     class ExprTable extends HashMap<Expression, Expression> {
@@ -1112,10 +1127,9 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
                     setDebug(true);
                     break;
                 case Metadata.SERVICE:
-                    defService(meta.getValue(m));
+                    defService(meta.getValues(m));
                     break;
             }
-
         }
     }
 
@@ -2212,6 +2226,16 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public void defNamespace(String prefix, String ns) {
         defNSNamespace(prefix, ns);
         defPPNamespace(prefix, ns);
+    }
+    
+    void defService(List<String> list){
+        if (list != null && ! list.isEmpty()){
+            defService(list.get(0));
+            setServiceList(new ArrayList<Atom>());
+            for (String serv : list){
+                getServiceList().add(Constant.createResource(serv));
+            }
+        }
     }
 
     public void defService(String ns) {

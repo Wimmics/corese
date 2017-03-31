@@ -189,10 +189,12 @@ public class Triple extends Exp {
 	 */
 
 	
+        @Override
 	public void setAST(ASTQuery a){
 		ast = a;
 	}
 	
+        @Override
 	public ASTQuery getAST(){
 		if (ast == null) ast = defaultAST();
 		return ast;
@@ -258,6 +260,7 @@ public class Triple extends Exp {
 	}
 	
 	
+        @Override
 	public void setRec(boolean b){
 		  isRec = b;
 	  }
@@ -346,6 +349,7 @@ public class Triple extends Exp {
 		return exp;
 	}
 	
+        @Override
 	public Expression getFilter() {
 		return exp;
 	}
@@ -476,6 +480,7 @@ public class Triple extends Exp {
 	 * This triple will generate a relation in the graph
 	 * not an exp, not an rdf:type with a constant value
 	 */
+        @Override
 	public boolean isRelation() {
 		if (istype) {
 			return (object.isVariable());
@@ -483,15 +488,18 @@ public class Triple extends Exp {
 			return !isexp;
 	}
 	
+        @Override
 	public boolean isExp() {
 		return isexp;
 	}
 	
+        @Override
 	public boolean isFilter(){
 		return isexp;
 	}
 	
 	
+        @Override
 	Bind validate(Bind global, int n){
 		Bind env = new Bind();
 		if (isExp()){
@@ -511,7 +519,10 @@ public class Triple extends Exp {
 	 */
 	public boolean bind(Variable var){
 		if (isExp()) return false;
-		String name = var.getName();
+                return bind(var.getName());
+        }
+        
+        public boolean bind(String name){                
 		for (int i=0; i<getArity(); i++){
 			Expression arg = getExp(i);
 			if (arg != null && arg.isVariable() && arg.getName().equals(name)){
@@ -520,7 +531,18 @@ public class Triple extends Exp {
 		}
 		return false;
 	}
+        
+        
+      public boolean bind(Expression e) {
+        for (String str : e.getVariables()) {
+            if (! bind(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
 			
+        @Override
 	public boolean isOption() {
 		return isoption;
 	}
@@ -557,6 +579,7 @@ public class Triple extends Exp {
 //		lastOptionID = id;
 	}
 	
+        @Override
 	public void setOption(boolean b) {
 		isoption = b;
 	}
@@ -693,6 +716,7 @@ public class Triple extends Exp {
 	}
 	
 	
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist) {
 		if (isFilter()){
 			// validate exists {}
@@ -737,6 +761,7 @@ public class Triple extends Exp {
 	/**
 	 * No variable in insert data {}
 	 */
+        @Override
 	public boolean validateData(ASTQuery ast){
 		if (subject.isSimpleVariable() || object.isSimpleVariable() || variable!=null){
 			return false;
@@ -746,6 +771,7 @@ public class Triple extends Exp {
 		return true;
 	}
 	
+        @Override
 	public boolean validateDelete(){
 		if (subject.isBlankNode()){
 			return false;

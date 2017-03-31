@@ -13,10 +13,12 @@ public class Minus extends And {
 	}
 	
 	
+        @Override
 	public boolean isMinus(){
 		return true;
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb){
 		sb.append(get(0));
 		sb.append(" " + KeywordPP.MINUS + " ");
@@ -25,6 +27,7 @@ public class Minus extends And {
 	}
 	
 	
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist) {
 		boolean b1 = getBody().get(0).validate(ast, exist);
 		

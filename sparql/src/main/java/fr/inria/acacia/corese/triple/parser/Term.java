@@ -415,6 +415,23 @@ public class Term extends Expression {
 		return getExist() != null;
 	}
         
+        // when it is not compiled !
+        public boolean isTermExist(){
+            return getName().equals(EXIST);
+        }
+        
+         public boolean isTermExistRec(){
+            if (isTermExist()){
+                return true; 
+            }
+            for (Expression exp : getArgs()){
+                if (exp.isTerm() && exp.getTerm().isTermExistRec()){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         @Override
         public boolean isRecExist(){
 		if (isExist()){

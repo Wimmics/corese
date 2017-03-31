@@ -3,7 +3,6 @@ package fr.inria.edelweiss.kgenv.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -51,6 +50,7 @@ public class Transformer implements ExpType {
     private static final String EXT_NAMESPACE = NSManager.KGEXT;
     private static final String EXT_NAMESPACE_QUERY = NSManager.KGEXTCONS;
     static HashMap<String, String> loaded;
+    public static final String FEDERATE = NSManager.KGRAM + "federate";
     int count = 0;
     CompilerFactory fac;
     Compiler compiler;
@@ -196,11 +196,9 @@ public class Transformer implements ExpType {
         // check scope for bind()
         ast.validate();
 
-        if (visit != null) {
-            for (QueryVisitor v : visit) {
-                v.visit(ast);
-            }
-        }
+        federate(ast);
+        visit(ast);
+        
         // from extended named graph
         preprocess(ast);
         template(ast);
@@ -219,6 +217,28 @@ public class Transformer implements ExpType {
 
         error(q, ast);
         return q;
+    }
+    
+    void visit(ASTQuery ast){
+         if (visit != null) {
+            for (QueryVisitor v : visit) {
+                v.visit(ast);
+            }
+        }
+    }
+    
+    /**
+     * use case: 
+     * @service <s1> 
+     * @service <s2> 
+     * select * where { }
+     * Rewrite every triple t as: service <s1> <s2> { t }
+     */
+    void federate(ASTQuery ast){
+        if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
+            ast.defService(null);
+            add(new ServiceVisitor());
+        }
     }
 
     void annotate(ASTQuery ast) {
@@ -1260,7 +1280,7 @@ public class Transformer implements ExpType {
     int bgpType(){
        return (ISBGP) ? BGP : AND;
     }
-
+    
     Exp compileEdge(Triple t, boolean opt) {
         Edge r = compiler.compile(t, ast.isInsertData());
         Exp exp = Exp.create(EDGE, r);

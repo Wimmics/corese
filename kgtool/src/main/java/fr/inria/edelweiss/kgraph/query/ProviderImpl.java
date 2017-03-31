@@ -69,11 +69,13 @@ public class ProviderImpl implements Provider {
         return p;
     }
 
+    @Override
     public void set(String uri, double version) {
         this.version.put(uri, version);
     }
 
     // everybody is 1.0 except localhost
+    @Override
     public boolean isSparql0(Node serv) {
         if (serv.getLabel().startsWith(LOCALHOST)) {
             return false;
@@ -172,7 +174,12 @@ public class ProviderImpl implements Provider {
         return res;
     }
     
-    Mappings sliceSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings lmap, Environment env, int slice) {
+    /**
+     * Execute service with Mappings map
+     * Split Mappings into buckets with size = slice
+     * Iterate service on each bucket
+     */
+    Mappings sliceSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings map, Environment env, int slice) {
 
         List<Node> list = new ArrayList<Node>();
         if (exp.getNodeSet() == null) {
@@ -188,41 +195,43 @@ public class ProviderImpl implements Provider {
                 logger.debug("Service: " + s);
             }
             int size = 0;
-            while (size < lmap.size()) {
-                Mappings map = send(compiler, s, q, lmap, env, size, size + slice);
+            while (size < map.size()) {
+                Mappings mm = send(compiler, s, q, map, env, size, size + slice);
                 if (res == null) {
-                    res = map;
-                } else if (map != null) {
-                    res.add(map);
+                    res = mm;
+                } else if (mm != null) {
+                    res.add(mm);
                 }
                 size += slice;
             }
         }
         
-        if (res != null && list.size() > 1){            
+        if (res != null && list.size() > 1){  
+            // Eliminate duplicates when several service URI (federated query) 
             res = res.distinct();
         }
 
         return res;
     }
 
-    Mappings basicSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings lmap, Environment env, int min, int max) {
+    Mappings basicSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
         if (exp.getNodeSet() == null) {
-            return send(compiler, serv, q, lmap, env, min, max);
+            return send(compiler, serv, q, map, env, min, max);
         } else {
             Mappings res = null;
             for (Node s : exp.getNodeSet()) {
                 if (env.getQuery().isDebug()){
                     logger.debug("Service: " + s);
                 }
-                Mappings map = send(compiler, s, q, lmap, env, min, max);
+                Mappings mm = send(compiler, s, q, map, env, min, max);
                 if (res == null) {
-                    res = map;
-                } else if (map != null) {
-                    res.add(map);
+                    res = mm;
+                } else if (mm != null) {
+                    res.add(mm);
                 }
             }
             if (res != null){            
+                // Eliminate duplicates when several service URI (federated query) 
                 res = res.distinct();
             }
             return res;

@@ -263,6 +263,14 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	public boolean isGraph(){
 		return false;
 	}
+        
+        public boolean isNamedGraph(){
+		return isGraph();
+	}
+        
+        public Source getNamedGraph(){
+            return null;
+        }
 	
 	public boolean isService(){
 		return false;

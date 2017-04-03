@@ -48,6 +48,11 @@ public class Source extends And {
 	  return s;
   }
   
+  @Override
+  public Source getNamedGraph(){
+      return this;
+  }
+  
   public Atom getSource(){
 	  return asource;
   }

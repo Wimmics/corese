@@ -26,6 +26,7 @@ public class Binding extends Exp {
     }
     
     
+    @Override
     public StringBuffer toString(StringBuffer sb) {
         sb.append("bind(");
         exp.toString(sb);
@@ -35,10 +36,12 @@ public class Binding extends Exp {
         return sb;
     }
 
+    @Override
     public boolean isBind() {
         return true;
     }
     
+    @Override
     public Expression getFilter(){
 	return exp;
     }

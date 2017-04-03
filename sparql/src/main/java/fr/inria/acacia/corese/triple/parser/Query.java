@@ -13,6 +13,7 @@ public class Query extends Exp {
 		add(ast.getBody());
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb){
 		sb.append(ast.toString());
 		return sb;
@@ -22,10 +23,12 @@ public class Query extends Exp {
 		return new Query(a);
 	}
 	
+        @Override
 	public ASTQuery getQuery(){
 		return ast;
 	}
         
+        @Override
 	public boolean isQuery(){
 		return true;
 	}
@@ -34,6 +37,7 @@ public class Query extends Exp {
 	/**
 	 * If Subquery is a bind, check scope.
 	 */
+        @Override
 	public boolean validate(ASTQuery a, boolean exist){
 		
 		for (Variable var : ast.getSelectVar()){
@@ -67,6 +71,7 @@ public class Query extends Exp {
 		return b;
 	}
         
+        @Override
        void visit(ExpressionVisitor v) {
           // the Visitor determines whether it visists the subquery or not
            // because some may and other may not

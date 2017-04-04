@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgraph.query;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -145,7 +144,7 @@ public class ProviderImpl implements Provider {
     /**
      * Cut into pieces when to many Mappings
      */
-    Mappings globalSend(Node serv, Query q, Exp exp, Mappings lmap, Environment env) {
+    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Environment env) {
         CompileService compiler = new CompileService(this);
 
         // share prefix
@@ -157,14 +156,14 @@ public class ProviderImpl implements Provider {
         boolean hasValues = ast.getValues() != null;
         Mappings res = null;
 
-        if (lmap == null || slice == 0 || hasValues) {
+        if (map == null || slice == 0 || hasValues) {
             // if query has its own values {}, do not slice
-            return basicSend(compiler, serv, q, exp, lmap, env, 0, 0);
+            return basicSend(compiler, serv, q, exp, map, env, 0, 0);
         }         
-        else if (lmap.size() > slice) {           
-            res = sliceSend(compiler, serv, q, exp, lmap, env, slice);            
+        else if (map.size() > slice) {           
+            res = sliceSend(compiler, serv, q, exp, map, env, slice);            
         } else {
-            res = basicSend(compiler, serv, q, exp, lmap, env, 0, lmap.size());
+            res = basicSend(compiler, serv, q, exp, map, env, 0, map.size());
         }
 
         if (!hasValues) {
@@ -241,7 +240,7 @@ public class ProviderImpl implements Provider {
     /**
      * Send query to sparql endpoint using a POST HTTP query
      */
-    Mappings send(CompileService compiler, Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
+    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit) {
         Query g = q.getOuterQuery();
         int timeout = 0;
         Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
@@ -251,7 +250,7 @@ public class ProviderImpl implements Provider {
         try {
 
             // generate bindings from env if any
-            compiler.compile(serv, q, lmap, env, start, limit);
+            compiler.compile(serv, q, map, env, start, limit);
 
             ASTQuery ast = (ASTQuery) q.getAST();
 
@@ -269,15 +268,15 @@ public class ProviderImpl implements Provider {
                 //logger.info("** Provider result: \n" + sb);
             }
 
-            Mappings map = parse(stream);
+            Mappings res = parse(stream);
 
             if (g.isDebug()) {
-                logger.info("** Provider result: \n" + map.size());
+                logger.info("** Provider result: \n" + res.size());
                 if (g.isDetail()) {
-                    logger.info("** Provider result: \n" + map);
+                    logger.info("** Provider result: \n" + res);
                 }
             }
-            return map;
+            return res;
         } catch (IOException e) {
             logger.error(e);
             logger.error(q.getAST());

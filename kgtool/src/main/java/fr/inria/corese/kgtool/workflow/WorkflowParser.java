@@ -551,7 +551,7 @@ public class WorkflowParser {
                 uri= url.toString();
             }
         } catch (URISyntaxException ex) {
-            logger.info(ex);
+            //logger.info(ex);
         }
         return uri;
     }

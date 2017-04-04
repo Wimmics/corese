@@ -19,8 +19,10 @@ public class Dataset extends ASTObject {
 	protected static final String KG = ExpType.KGRAM;
 	static final String EMPTY = KG + "empty";
 	static final Constant CEMPTY = Constant.create(EMPTY);
+        private List<Constant> from;
 
-	List<Constant> from, named, with;
+	private List<Constant> named;
+        List<Constant> with;
         private Context context;
         private Object templateVisitor;
 
@@ -82,18 +84,19 @@ public class Dataset extends ASTObject {
         return new Dataset(from, named);
         }
 	
+        @Override
 	public String toString(){
 		String str = "";
-		str += "from:  " + from + "\n";
-		str += "named: " + named ;
+		str += "from:  " + getFrom() + "\n";
+		str += "named: " + getNamed() ;
 		return str;
 	}
 	
 	public void defFrom(){
-		from = new ArrayList<Constant>();
+		setFrom(new ArrayList<Constant>());
 	}
 	public void defNamed(){
-		named = new ArrayList<Constant>();
+		setNamed(new ArrayList<Constant>());
 	}
 	public boolean isUpdate(){
 		return isUpdate;
@@ -104,11 +107,11 @@ public class Dataset extends ASTObject {
 	}
 	
 	public boolean hasFrom(){
-		return from != null && from.size() >0;
+		return getFrom() != null && getFrom().size() >0;
 	}
 	
 	public boolean hasNamed(){
-		return named != null && named.size() >0;
+		return getNamed() != null && getNamed().size() >0;
 	}
 	
 	public boolean hasWith(){
@@ -137,7 +140,7 @@ public class Dataset extends ASTObject {
         }
 	
 	public void clean(){
-		from.remove(CEMPTY);
+		getFrom().remove(CEMPTY);
 	}
 
 	
@@ -153,30 +156,30 @@ public class Dataset extends ASTObject {
 	}
         
         public Dataset remFrom(String s){
-		if (from != null){
-                    from.remove(Constant.create(s));
+		if (getFrom() != null){
+                    getFrom().remove(Constant.create(s));
                 }
                 return this;
 	}
         
           public Dataset remNamed(String s){
-		if (named != null){
-                    named.remove(Constant.create(s));
+		if (getNamed() != null){
+                    getNamed().remove(Constant.create(s));
                 }
                 return this;
 	}
         
         public void addFrom(Constant s){
-            if (from == null) defFrom();
+            if (getFrom() == null) defFrom();
 		if (! from.contains(s)){
-			from.add(s);
+			getFrom().add(s);
 		}
         }
         
         public void addNamed(Constant s){
-            if (named == null) defNamed();
+            if (getNamed() == null) defNamed();
 		if (! named.contains(s)){
-			named.add(s);
+			getNamed().add(s);
 		} 
         }
 
@@ -231,8 +234,8 @@ public class Dataset extends ASTObject {
     
     public IDatatype getNamedList(){
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
-        if (named != null){
-            for (Constant g : named){
+        if (getNamed() != null){
+            for (Constant g : getNamed()){
                 list.add(g.getDatatypeValue());
             }
         }
@@ -241,8 +244,8 @@ public class Dataset extends ASTObject {
 		
     public IDatatype getFromList(){
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
-        if (from != null){
-            for (Constant g : from){
+        if (getFrom() != null){
+            for (Constant g : getFrom()){
                 list.add(g.getDatatypeValue());
             }
         }
@@ -255,6 +258,20 @@ public class Dataset extends ASTObject {
     
     public Object getTemplateVisitor(){
         return templateVisitor;
+    }
+
+    /**
+     * @param from the from to set
+     */
+    public void setFrom(List<Constant> from) {
+        this.from = from;
+    }
+
+    /**
+     * @param named the named to set
+     */
+    public void setNamed(List<Constant> named) {
+        this.named = named;
     }
    
 }

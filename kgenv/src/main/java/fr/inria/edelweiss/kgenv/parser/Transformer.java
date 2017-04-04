@@ -56,6 +56,7 @@ public class Transformer implements ExpType {
     Compiler compiler;
     private SPARQLEngine sparql;
     List<QueryVisitor> visit;
+    private List<Atom> serviceList;
     Sorter sort;
     //Table table;
     ASTQuery ast;
@@ -235,6 +236,12 @@ public class Transformer implements ExpType {
      * Rewrite every triple t as: service <s1> <s2> { t }
      */
     void federate(ASTQuery ast){
+        if (ast.getServiceList() == null && getServiceList() != null){
+            ast.setServiceList(getServiceList());
+            if (ast.getServiceList().size() == 1){
+                ast.defService(ast.getServiceList().get(0).getLabel());
+            }
+        }
         if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
             ast.defService(null);
             add(new ServiceVisitor());
@@ -1792,5 +1799,19 @@ public class Transformer implements ExpType {
      */
     public void setLoadFunction(boolean LoadFunction) {
         this.isLoadFunction = LoadFunction;
+    }
+
+    /**
+     * @return the serviceList
+     */
+    public List<Atom> getServiceList() {
+        return serviceList;
+    }
+
+    /**
+     * @param serviceList the serviceList to set
+     */
+    public void setServiceList(List<Atom> serviceList) {
+        this.serviceList = serviceList;
     }
 }

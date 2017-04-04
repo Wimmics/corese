@@ -69,6 +69,7 @@ public class QuerySolver  implements SPARQLEngine {
 	protected Matcher matcher;
 	protected Sorter sort;
 	protected List<QueryVisitor> visit;
+        private List<Atom> serviceList;
 
 	
 	boolean isListGroup = false,
@@ -412,6 +413,7 @@ public class QuerySolver  implements SPARQLEngine {
             transformer.setMetadata(metadata);
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
+            transformer.setServiceList(getServiceList());
         }
         
         public Query compileRule(String squery, Dataset ds) throws EngineException {
@@ -776,5 +778,26 @@ public class QuerySolver  implements SPARQLEngine {
     public void setRule(boolean rule) {
         this.isRule = rule;
     }
+
+    /**
+     * @return the serviceList
+     */
+    public List<Atom> getServiceList() {
+        return serviceList;
+    }
+
+    /**
+     * @param serviceList the serviceList to set
+     */
+    public void setServiceList(List<Atom> serviceList) {
+        this.serviceList = serviceList;
+    }
+    
+   public void service(String uri){
+       if (getServiceList() == null){
+           setServiceList(new ArrayList<Atom>());
+       }
+       getServiceList().add(Constant.createResource(uri));
+   }
 	
 }

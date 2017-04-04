@@ -158,7 +158,9 @@ public class Constant extends Atom {
 				}
 				else if (datatype.startsWith("http://")){
 					toString(name, sb);
-					sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
+                                        if (! datatype.equals(RDF.xsdstring)){
+                                            sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
+                                        }
 				}
 				else {
 					toString(name, sb);

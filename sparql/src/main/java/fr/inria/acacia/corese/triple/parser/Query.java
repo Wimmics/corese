@@ -29,6 +29,11 @@ public class Query extends Exp {
 	}
         
         @Override
+        public ASTQuery getAST(){
+            return ast;
+        }
+        
+        @Override
 	public boolean isQuery(){
 		return true;
 	}

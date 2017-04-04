@@ -6,11 +6,12 @@ import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.Query;
 import fr.inria.acacia.corese.triple.parser.Service;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgram.core.Query;
+import java.util.ArrayList;
 
 /**
  * Draft prototype for federated query
@@ -83,7 +84,8 @@ public class ServiceVisitor implements QueryVisitor {
      * local)
      */
     Exp rewrite(Atom name, Exp body) {
-
+        ArrayList<Exp> expandList = new ArrayList<Exp> ();
+        
         for (int i = 0; i < body.size(); i++) {
             Exp exp = body.get(i);
 
@@ -97,19 +99,47 @@ public class ServiceVisitor implements QueryVisitor {
                 // TODO: name
                 rewrite(name, exp.getFilter());
             } else if (exp.isTriple()) {
+                // triple t -> service <Si> { t }
                 Exp res = rewrite(name, exp.getTriple(), body);
                 body.set(i, res);
             } else if (exp.isGraph()) {
+                // graph ?g { t1 t2 .. } -> { service <Si> { graph ?g { ti }} .. }
                 Exp res = rewrite(exp.getNamedGraph().getSource(), exp.get(0));
                 body.set(i, res);
+                expandList.add(res);
             } else {
+                // rewrite BGP, union, optional, mminus
                 rewrite(name, exp);
             }
+        }
+        
+        if (!expandList.isEmpty()) {
+            expand(body, expandList);
         }
 
         return body;
     }
-
+    
+    /**
+     * expandList contains rewrite of graph ?g { } if any
+     * each element of expandList is the rewrite of the BGP of a graph ?g BGP
+     * This function includes the elements of the BGP directly in the body
+     * in other words, it removes the { } from the BGP and add the elements 
+     */
+    void expand(Exp body, ArrayList<Exp> expandList) {
+        // CARE: in this loop, the i++ is done explicitely in the body 
+        for (int i = 0; i < body.size();  ) {
+            Exp exp = body.get(i);
+            if (expandList.contains(exp)) {
+                for (Exp e : exp) {
+                    body.set(i++, e);
+                }
+            } else {
+                i++;
+            }
+        }
+    }
+    
     /**
      * Rewrite Triple t as: service <Si> { t } or: service <Si> { graph name { t
      * } } Add filters of body bound by t in the BGP, except exists filters.
@@ -121,12 +151,40 @@ public class ServiceVisitor implements QueryVisitor {
             bgp.add(t);
         } else {
             // service uri { graph name { triple } } 
-            bgp.add(Source.create(name, t));
+            bgp.add(Source.create(name, t));           
         }
-        Service s = Service.create(ast.getServiceList(), bgp, false);
-        filter(body, t, bgp);
+        filter(body, t, bgp);        
+        Exp exp = from(name, bgp);
+        Service s = Service.create(ast.getServiceList(), exp, false);
         return s;
     }
+    
+    /** exp = BGP | graph name { BGP }
+     * if from or from named, generate 
+     * select * from  from named where { exp }
+     */
+    Exp from(Atom name, Exp exp){
+        if (name == null){ 
+            if (ast.getDataset().hasFrom()){
+                  Query q = query(exp);
+                  q.getAST().getDataset().setFrom(ast.getFrom());
+                  return BasicGraphPattern.create(q);
+            }   
+        }
+        else if (ast.getDataset().hasNamed()) {
+            Query q = query(exp);
+            q.getAST().getDataset().setNamed(ast.getNamed());
+            return BasicGraphPattern.create(q);
+        }
+        return exp;
+    }
+    
+    Query query(Exp exp){
+         ASTQuery as = ASTQuery.create(exp);
+         as.setSelectAll(true);
+         return Query.create(as);
+    }
+    
 
     boolean rewrite(Expression exp) {
         return rewrite(null, exp);
@@ -160,7 +218,7 @@ public class ServiceVisitor implements QueryVisitor {
     /**
      * Find filters bound by t in body, except exists {} Add them to bgp
      */
-    void filter(Exp body, Triple t, BasicGraphPattern bgp) {
+    void filter(Exp body, Triple t, Exp bgp) {
         for (Exp exp : body) {
             if (exp.isFilter()) {
                 Expression f = exp.getFilter();
@@ -174,6 +232,6 @@ public class ServiceVisitor implements QueryVisitor {
     }
 
     @Override
-    public void visit(Query query) {
+    public void visit(fr.inria.edelweiss.kgram.core.Query query) {
     }
 }

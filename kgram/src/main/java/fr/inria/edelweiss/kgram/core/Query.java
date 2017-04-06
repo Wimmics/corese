@@ -508,6 +508,7 @@ public class Query extends Exp implements Graphable {
     /**
      * Fake local graph node
      */
+    @Override
     public Node getGraphNode() {
         return gNode;
     }

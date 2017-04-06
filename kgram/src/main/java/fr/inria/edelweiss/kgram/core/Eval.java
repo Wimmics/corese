@@ -343,13 +343,17 @@ public class Eval implements ExpType, Plugin {
      * values var { val }
      */
     boolean binding(Mapping map) {
+        return binding(map, -1);
+    }
+    
+    boolean binding(Mapping map, int n) {
         int i = 0;
         for (Node qNode : map.getQueryNodes()) {
 
             Node node = map.getNode(qNode);
             if (node != null) {
                 Node value = producer.getNode(node.getValue());
-                boolean suc = memory.push(qNode, value, -1);
+                boolean suc = memory.push(qNode, value, n);
 
                 if (!suc) {
                     int j = 0;
@@ -2168,7 +2172,27 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    private int values(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+     private int values(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n - 1;
+
+        for (Mapping map : exp.getMappings()) {
+
+            //System.out.println("** E: " + map);
+            if (binding(map, n)) {
+                backtrack = eval(p, gNode, stack, n + 1);
+                free(map);
+
+                if (backtrack < n) {
+                    return backtrack;
+                }
+            }
+        }
+
+        return backtrack;
+
+    }
+    
+    private int values2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
 
         for (Mapping map : exp.getMappings()) {

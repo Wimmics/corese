@@ -29,10 +29,12 @@ public class Atom extends Expression implements ElementClause{
 		super(name);
 	}
 	
+        @Override
 	public boolean equals(Object at){
 		return  false;
 	}
 
+        @Override
 	public Variable getVariable() {
 		return null;
 	}
@@ -41,6 +43,7 @@ public class Atom extends Expression implements ElementClause{
         return null;
     }
 
+        @Override
 	boolean isAtom() {
 		return true;
 	}
@@ -97,14 +100,17 @@ public class Atom extends Expression implements ElementClause{
 //		this.isset = isset;
 //	}
 
+        @Override
 	public Atom getAtom() {
 		return this;
 	}
 
+        @Override
 	public Constant getConstant() {
 		return null;
 	}
 
+        @Override
 	public IDatatype getDatatypeValue() {
 		return null;
 	}

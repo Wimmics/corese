@@ -45,6 +45,7 @@ public class Metadata extends ASTObject
     public static final String RELAX_LITERAL    = PREF + "literal";
     
     public static final String PROBE            = PREF + "probe";
+    public static final String DISTRIBUTE_NAMED_GRAPH = PREF + "distributeGraph";
     
     
     private static HashMap<String, Integer> annotation;    
@@ -85,6 +86,7 @@ public class Metadata extends ASTObject
         value = new HashMap();               
     }
     
+    @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Metadata:");
@@ -173,6 +175,19 @@ public class Metadata extends ASTObject
         String str = getValue(meta);
         return str != null && str.equals(value);
     }
+    
+     public boolean hasValues(int meta, String value) {
+        List<String> list = getValues(meta);
+        if (list == null) {
+            return false;
+        }
+        for (String str : list){
+            if (str.equals(value)){
+                return true;
+            }
+        }
+        return false;
+     }
     
      public String getValue(String name){
          if (name == null){

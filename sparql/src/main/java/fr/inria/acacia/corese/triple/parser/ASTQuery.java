@@ -889,6 +889,15 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public List<Variable> getSelectVar() {
         return selectVar;
     }
+    
+    public Variable getSelectVar(String name) {
+        for (Variable var : selectVar){
+            if (var.getLabel().equals(name)){
+                return var;
+            }
+        }
+        return null;
+    }
 
     public List<Variable> getSelectAllVar() {
         return selectAllVar;
@@ -899,12 +908,16 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
 
     public boolean isSelectAllVar(String name) {
+        return getSelectAllVar(name) != null;
+    }
+    
+    public Variable getSelectAllVar(String name) {
         for (Variable var : selectAllVar) {
             if (var.getLabel().equals(name)) {
-                return true;
+                return var;
             }
         }
-        return false;
+        return null;
     }
 
     public boolean isSelectAll() {
@@ -1105,6 +1118,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     
     public boolean hasMetadata(int type, String value) {
         return metadata != null && metadata.hasValue(type, value);
+    }
+    
+     public boolean hasMetadataValue(int type, String value) {
+        return metadata != null && metadata.hasValues(type, value);
     }
 
     /**

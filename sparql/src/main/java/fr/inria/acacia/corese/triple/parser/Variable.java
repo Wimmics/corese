@@ -26,6 +26,7 @@ public class Variable extends Atom {
         private int type  = ExprType.GLOBAL;
         
 	List<Variable> lVar;
+        private Variable proxy;
 	// var as IDatatype for comparing variables in KGRAM
 	IDatatype dt;
 	
@@ -143,29 +144,12 @@ public class Variable extends Atom {
 		env.bind(getName());
 		return env;
 	}
-	
-	
-//	public boolean validate(ASTQuery ast) {
-//		boolean b = ast.isBound(this);
-//		if (! b){
-//			ast.setError("Unbound Variable: " + this);
-//			ast.setCorrect(false);
-//		}
-//		return true;
-//	}
-	
+		
         @Override
 	public Variable getVariable() {
 		return this;
 	}
-	
-//	public Variable getOptionVar(Vector<String> stdVar) {
-//		if (! stdVar.contains(name)){
-//			return this;
-//		}
-//		else return null;
-//	}
-	
+		
         @Override
 	public boolean isBlankNode() {
 		return isBlankNode;
@@ -291,6 +275,24 @@ public class Variable extends Atom {
         @Override
      public void setSubtype(int type) {
         setType(type);
+    }
+
+    /**
+     * @return the var
+     */
+    public Variable getVariableProxy() {
+        return proxy;
+    }
+    
+     public Variable getProxyOrSelf() {
+        return (proxy == null) ? this : proxy;
+    }
+
+    /**
+     * @param var the var to set
+     */
+    public void setVariableProxy(Variable var) {
+        this.proxy = var;
     }
  
 	

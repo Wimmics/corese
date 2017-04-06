@@ -655,7 +655,8 @@ public class Transformer implements ExpType {
             aa.setSelectAll(true);
             aa.setBody(body);
         }
-
+        //collect select * nodes
+        aa.validate();
         Query q = compileQuery(aa);
         q.setService(true);
         q.setSilent(service.isSilent());

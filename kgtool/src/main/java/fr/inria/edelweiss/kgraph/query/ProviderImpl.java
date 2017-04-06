@@ -50,6 +50,7 @@ public class ProviderImpl implements Provider {
     private static final String SERVICE_ERROR = "Service error: ";
     private static Logger logger = LogManager.getLogger(ProviderImpl.class);
     static final String LOCALHOST = "http://localhost:8080/sparql";
+    static final String LOCALHOST2 = "http://localhost:8090/sparql";
     static final String DBPEDIA = "http://fr.dbpedia.org/sparql";
     HashMap<String, QueryProcess> table;
     Hashtable<String, Double> version;
@@ -64,6 +65,7 @@ public class ProviderImpl implements Provider {
     public static ProviderImpl create() {
         ProviderImpl p = new ProviderImpl();
         p.set(LOCALHOST, 1.1);
+        p.set(LOCALHOST2, 1.1);
         //p.set(DBPEDIA, 1.1);
         return p;
     }

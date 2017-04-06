@@ -119,11 +119,15 @@ public class CompileService {
         ArrayList<Constant> lval = new ArrayList<Constant>();
 
         for (Node qv : q.getSelect()) {
-            String var = qv.getLabel();
-            Node val = env.getNode(var);
+            String name = qv.getLabel();
+            Variable var = ast.getSelectAllVar(name);
+            if (var == null){
+                Variable.create(name);
+            }
+            Node val = env.getNode(var.getProxyOrSelf());
 
             if (val != null) {
-                lvar.add(Variable.create(var));
+                lvar.add(var);
                 IDatatype dt = (IDatatype) val.getValue();
                 Constant cst = Constant.create(dt);
                 lval.add(cst);
@@ -146,8 +150,12 @@ public class CompileService {
         Values values = Values.create();
 
         for (Node qv : q.getSelect()) {
-            String var = qv.getLabel();
-            lvar.add(Variable.create(var));
+            String name = qv.getLabel();
+            Variable var = ast.getSelectAllVar(name);
+            if (var == null){
+                var = Variable.create(name);
+            }
+            lvar.add(var);
         }
 
         values.setVariables(lvar);
@@ -158,9 +166,11 @@ public class CompileService {
             boolean ok = false;
             lval = new ArrayList<Constant>();
 
-            for (Node var : q.getSelect()) {
-                Node val = map.getNode(var);
-
+           // for (Node var : q.getSelect()) {
+           //     Node val = map.getNode(var);
+                
+            for (Variable var : lvar) {
+                Node val = map.getNode(var.getProxyOrSelf());
                 if (val != null) {
                     IDatatype dt = (IDatatype) val.getValue();
                     Constant cst = Constant.create(dt);
@@ -179,7 +189,7 @@ public class CompileService {
        setValues(ast, values);
 
     }
-    
+        
     void setValues(ASTQuery ast, Values values) {
         if (ast.getSaveBody() == null) {
             ast.setSaveBody(ast.getBody());

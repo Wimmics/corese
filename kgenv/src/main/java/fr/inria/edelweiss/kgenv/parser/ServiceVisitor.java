@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.parser.Query;
 import fr.inria.acacia.corese.triple.parser.Service;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import java.util.ArrayList;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
  *
  */
 public class ServiceVisitor implements QueryVisitor {
+    boolean distributeNamedGraph = false;
 
     ASTQuery ast;
 
@@ -39,6 +41,10 @@ public class ServiceVisitor implements QueryVisitor {
     @Override
     public void visit(ASTQuery ast) {
         this.ast = ast;
+        
+        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.DISTRIBUTE_NAMED_GRAPH)){
+           distributeNamedGraph = true; 
+        }
 
         if (ast.hasMetadata(Metadata.TYPE)) {
             System.out.println("before:");
@@ -57,27 +63,29 @@ public class ServiceVisitor implements QueryVisitor {
      * Rewrite select (exists {BGP} as ?b) order by group by having body
      */
     void rewrite(ASTQuery ast) {
+        rewrite(null, ast);
+    }
+    
+    /**
+     * ast is global or subquery
+     */
+    void rewrite(Atom name, ASTQuery ast) {
         for (Expression exp : ast.getSelectFunctions().values()) {
-            rewrite(exp);
+            rewrite(name, exp);
         }
         for (Expression exp : ast.getGroupBy()) {
-            rewrite(exp);
+            rewrite(name, exp);
         }
         for (Expression exp : ast.getOrderBy()) {
-            rewrite(exp);
+            rewrite(name, exp);
         }
         if (ast.getHaving() != null) {
-            rewrite(ast.getHaving());
+            rewrite(name, ast.getHaving());
         }
 
-        rewrite(ast.getBody());
+        rewrite(name, ast.getBody());
     }
-
-
-    Exp rewrite(Exp body) {
-        return rewrite(null, body);
-    }
-
+    
     /**
      * Recursively rewrite every triple t as: service <s1> <s2> { t } Add
      * filters that are bound by the triple (except exists {} which must stay
@@ -91,22 +99,33 @@ public class ServiceVisitor implements QueryVisitor {
 
             if (exp.isQuery()) {
                 // TODO: graph name ??
-                rewrite(exp.getQuery());
+                rewrite(name, exp.getQuery());
             } else if (exp.isService() || exp.isValues()) {
                 // keep it
             } else if (exp.isFilter() || exp.isBind()) {
                 // rewrite exists { }
-                // TODO: name
                 rewrite(name, exp.getFilter());
             } else if (exp.isTriple()) {
                 // triple t -> service <Si> { t }
                 Exp res = rewrite(name, exp.getTriple(), body);
                 body.set(i, res);
             } else if (exp.isGraph()) {
-                // graph ?g { t1 t2 .. } -> { service <Si> { graph ?g { ti }} .. }
-                Exp res = rewrite(exp.getNamedGraph().getSource(), exp.get(0));
-                body.set(i, res);
-                expandList.add(res);
+                if (distributeNamedGraph) {
+                    // graph ?g { t1 t2 .. } -> { service <Si> { graph ?g { ti }} .. }
+                    // TODO: does not work properly if exp contains ?g in optional/minus/subquery
+                    Exp res = rewrite(exp.getNamedGraph().getSource(), exp.get(0));
+                    body.set(i, res);
+                    expandList.add(res);
+                } else {
+                    // send named graph as is to remote servers
+                    if (ast.getDataset().hasNamed()) {
+                        Query q = query(exp);
+                        q.getAST().getDataset().setNamed(ast.getNamed());
+                        exp = q;
+                    }
+                    Service s = Service.create(ast.getServiceList(), exp, false);
+                    body.set(i, s);                
+                }
             } else {
                 // rewrite BGP, union, optional, mminus
                 rewrite(name, exp);
@@ -131,8 +150,9 @@ public class ServiceVisitor implements QueryVisitor {
         for (int i = 0; i < body.size();  ) {
             Exp exp = body.get(i);
             if (expandList.contains(exp)) {
+                body.remove(i);
                 for (Exp e : exp) {
-                    body.set(i++, e);
+                    body.add(i++, e);
                 }
             } else {
                 i++;
@@ -149,9 +169,14 @@ public class ServiceVisitor implements QueryVisitor {
         if (name == null) {
             // service uri { triple } 
             bgp.add(t);
-        } else {
+        } else if (name.isVariable() && t.bind(name.getVariable())){
             // service uri { graph name { triple } } 
-            bgp.add(Source.create(name, t));           
+            Variable var = Variable.create("?_graph_proxy_");
+            var.setVariableProxy(name.getVariable());
+            bgp.add(Source.create(var, t));           
+        }
+        else {
+            bgp.add(Source.create(name, t)); 
         }
         filter(body, t, bgp);        
         Exp exp = from(name, bgp);

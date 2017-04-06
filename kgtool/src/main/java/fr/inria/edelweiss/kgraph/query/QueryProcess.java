@@ -78,8 +78,8 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * True means SPARQL semantics (default value) False means Corese semantics
-     * (deprecated)
+	 * True means SPARQL semantics (default value) False means Corese
+	 * semantics (deprecated)
      */
     public static void setOptional(boolean b) {
         if (b) {
@@ -91,7 +91,7 @@ public class QueryProcess extends QuerySolver {
         }
     }
     
-    public static void testAlgebra(boolean b){
+	public static void testAlgebra(boolean b) {
          fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = b;
          Eval.testAlgebra = b;
     }
@@ -283,10 +283,10 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * defaut and named specify a Dataset if the query has no from/using (resp.
-     * named), kgram use defaut (resp. named) if it exist for update, defaut is
-     * also used in the delete clause (when there is no with in the query) W3C
-     * sparql test cases use this function
+	 * defaut and named specify a Dataset if the query has no from/using
+	 * (resp. named), kgram use defaut (resp. named) if it exist for update,
+	 * defaut is also used in the delete clause (when there is no with in
+	 * the query) W3C sparql test cases use this function
      */
     @Override
     public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException {
@@ -326,10 +326,10 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * defaut and named specify a Dataset if the query has no from/using (resp.
-     * using named), kgram use this defaut (resp. named) if it exist for update,
-     * this using is *not* used in the delete clause W3C sparql protocol use
-     * this function
+	 * defaut and named specify a Dataset if the query has no from/using
+	 * (resp. using named), kgram use this defaut (resp. named) if it exist
+	 * for update, this using is *not* used in the delete clause W3C sparql
+	 * protocol use this function
      */
     @Override
     public Mappings query(Query q) {
@@ -386,8 +386,8 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * q is construct {} where {} eval the construct consider the result as a
-     * query graph execute the query graph
+	 * q is construct {} where {} eval the construct consider the result as
+	 * a query graph execute the query graph
      */
     public Mappings queryGraph(String q) throws EngineException {
         Mappings m = query(q);
@@ -396,9 +396,9 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * KGRAM + full SPARQL compliance : - type of arguments of functions (e.g.
-     * sparql regex require string) - variable in select with group by - specify
-     * the dataset
+	 * KGRAM + full SPARQL compliance : - type of arguments of functions
+	 * (e.g. sparql regex require string) - variable in select with group by
+	 * - specify the dataset
      */
     public Mappings sparql(String squery, Dataset ds) throws EngineException {
         return sparqlQueryUpdate(squery, ds, RDFS_ENTAILMENT);
@@ -615,15 +615,15 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * from and named (if any) specify the Dataset over which update take place
-     * where {} clause is computed on this Dataset delete {} clause is computed
-     * on this Dataset insert {} take place in Entailment.DEFAULT, unless there
-     * is a graph pattern or a with
+	 * from and named (if any) specify the Dataset over which update take
+	 * place where {} clause is computed on this Dataset delete {} clause is
+	 * computed on this Dataset insert {} take place in Entailment.DEFAULT,
+	 * unless there is a graph pattern or a with
      *
-     * This explicit Dataset is introduced because Corese manages the default
-     * graph as the union of named graphs whereas in some case (W3C test case,
-     * protocol) there is a specific default graph hence, ds.getFrom()
-     * represents the explicit default graph
+	 * This explicit Dataset is introduced because Corese manages the
+	 * default graph as the union of named graphs whereas in some case (W3C
+	 * test case, protocol) there is a specific default graph hence,
+	 * ds.getFrom() represents the explicit default graph
      *
      */
     Mappings update(Query query, Dataset ds) throws EngineException {

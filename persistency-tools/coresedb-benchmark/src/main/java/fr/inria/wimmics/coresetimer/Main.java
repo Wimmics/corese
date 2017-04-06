@@ -47,7 +47,7 @@ public class Main {
 	public static class TestSuite {
 
 		private final String OUTPUT_FILE_FORMAT = "%s/result_%s.xml";
-		
+
 		private String inputMem;
 		private DbDriver driver = RdfToGraph.DbDriver.TITANDB;
 		private int defaultWarmupCycles = 5;
@@ -119,27 +119,11 @@ public class Main {
 			return outputRoot;
 		}
 
-		public TestSuite createDb() {
-			try {
-				wipeDirectory(getInputDb());
-				new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
-			} catch (IOException ex) {
-				java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-			}
+		public TestSuite createDb() throws Exception {
+			new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			return this;
 		}
 
-		private void wipeDirectory(String path) throws IOException {
-			File varTmpDir = new File(path);
-				if (varTmpDir.exists()) {
-					Path rootPath = Paths.get(path);
-					Files.walk(rootPath, FileVisitOption.FOLLOW_LINKS)
-						.sorted(Comparator.reverseOrder())
-						.map(Path::toFile)
-						.forEach(File::delete);
-				}	
-		}
-		
 		public String getInputDb() {
 			return inputDb;
 		}
@@ -158,8 +142,6 @@ public class Main {
 			return format;
 		}
 
-
-
 		public TestDescription buildTest(String request) {
 			String testId = this.testId + "_" + nbTests;
 			TestDescription newTest = TestDescription.build(testId, this)
@@ -177,8 +159,9 @@ public class Main {
 	}
 
 	public static class TestDescription implements Cloneable {
+
 		private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
-		
+
 		private String testId;
 		private String request;
 		private boolean resultsEqual;

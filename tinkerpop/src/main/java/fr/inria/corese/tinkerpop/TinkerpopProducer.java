@@ -3,19 +3,20 @@
  */
 package fr.inria.corese.tinkerpop;
 
-import static com.thinkaurelius.titan.core.attribute.Text.textRegex;
+import fr.inria.corese.rdftograph.driver.GdbDriver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 
 /**
  *
@@ -23,20 +24,18 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
  */
 public class TinkerpopProducer extends ProducerImpl {
 
-	private final Logger LOGGER = Logger.getLogger(TinkerpopProducer.class.getName());
-	private TinkerpopGraph tpGraph;
+	private final Logger LOGGER = LogManager.getLogger(TinkerpopProducer.class.getName());
+	private GdbDriver databaseDriver;
+	private TinkerpopGraph graph;
 
-	public TinkerpopProducer(Graph graph) {
+	public TinkerpopProducer(TinkerpopGraph graph, GdbDriver databaseDriver) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		super(graph);
-	}
-
-	public void setTinkerpopGraph(TinkerpopGraph tpGraph) {
-		this.tpGraph = tpGraph;
+		this.databaseDriver = databaseDriver;
+		this.graph = graph;
 	}
 
 	/**
-	 * @todo use env to obtain values given by Corese
-	 *
+	 * @return An iterable
 	 * @param gNode @TODO Not used for the moment
 	 * @param from @TODO Not used for the moment
 	 * @param qEdge Requested edge.
@@ -59,56 +58,15 @@ public class TinkerpopProducer extends ProducerImpl {
 //		(IDatatype) dtObject = object.getValue(); pour obtenir le type des données demandées.
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
 		LOGGER.trace("in case " + key.toString());
-		switch (key.toString()) {
-			case "?g?sPO":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).has(EDGE_O, o);
-				};
-				break;
-			case "?g?sP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p);
-				};
-				break;
-			case "?g?s?pO":
-				filter = t -> {
-					return t.E().has(EDGE_O, o);
-				};
-				break;
-			case "?gSPO":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).has(EDGE_S, s).has(EDGE_O, o);
-				};
-				break;
-			case "?gSP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).has(EDGE_S, s);
-				};
-				break;
-			case "?gS?pO":
-				filter = t -> {
-					return t.E().has(EDGE_S, s).has(EDGE_O, o);
-				};
-				break;
-			case "?gS?p?o":
-				filter = t -> {
-					return t.E().has(EDGE_S, s);
-				};
-				break;
-			case "G?sP?o":
-				filter = t -> {
-					return t.E().has(EDGE_P, p).has(EDGE_G, g);
-				};
-				break;
-			case "?g?s?p?o":
-			default:
-				filter = t -> {
-					return t.E().has(EDGE_P, textRegex(".*"));
-				};
-		}
-		return tpGraph.getEdges(filter);
+		filter = databaseDriver.getFilter(key.toString(), s, p, o, g);
+		return graph.getEdges(filter);
 	}
 
+	/**
+	 *
+	 * @param edge
+	 * @return
+	 */
 	private boolean isPredicateFree(Edge edge) {
 		Node predicate = edge.getEdgeNode();
 		String name = predicate.getLabel();
@@ -118,7 +76,7 @@ public class TinkerpopProducer extends ProducerImpl {
 	@Override
 	public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
 		Node node = env.getNode(gNode);
-		if (!tpGraph.isGraphNode(node)) {
+		if (!graph.containsCoreseNode(node)) {
 			return false;
 		}
 		if (from.isEmpty()) {
@@ -128,20 +86,10 @@ public class TinkerpopProducer extends ProducerImpl {
 		LOGGER.error("behaviour not defined in that case");
 		return false;
 		//return ei.getCreateDataFrom().isFrom(from, node);
-
-//		Node node = env.getNode(gNode);
-//		if (!graph.isGraphNode(node)) {
-//			return false;
-//		}
-//		if (from.isEmpty()) {
-//			return true;
-//		}
-//
-//		return ei.getCreateDataFrom().isFrom(from, node);
 	}
 
 	public void close() {
-		tpGraph.close();
+		graph.close();
 	}
 
 	private String updateVariable(boolean isVariableFree, Node node, Environment env, StringBuilder key, String freeVar, String boundVar) {
@@ -160,5 +108,4 @@ public class TinkerpopProducer extends ProducerImpl {
 		}
 		return result;
 	}
-
 }

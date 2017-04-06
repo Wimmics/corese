@@ -8,11 +8,9 @@ package fr.inria.corese.rdftograph.driver;
 import com.thinkaurelius.titan.core.Cardinality;
 import com.thinkaurelius.titan.core.Multiplicity;
 import com.thinkaurelius.titan.core.PropertyKey;
-import com.thinkaurelius.titan.core.SchemaViolationException;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanVertex;
-import com.thinkaurelius.titan.core.schema.Mapping;
+import static com.thinkaurelius.titan.core.attribute.Text.textRegex;
 import com.thinkaurelius.titan.core.schema.SchemaAction;
 import com.thinkaurelius.titan.core.schema.SchemaStatus;
 import com.thinkaurelius.titan.core.schema.TitanGraphIndex;
@@ -20,21 +18,22 @@ import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.graphdb.database.StandardTitanGraph;
 import com.thinkaurelius.titan.graphdb.database.management.GraphIndexStatusReport;
 import com.thinkaurelius.titan.graphdb.database.management.ManagementSystem;
-import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 
 /**
@@ -50,11 +49,18 @@ public class TitanDriver extends GdbDriver {
 	public TitanGraph getTitanGraph() {
 		return (TitanGraph) g;
 	}
+
+	@Override
+	public Graph openDatabase(String dbPathTemp) {
+		g = TitanFactory.open(dbPathTemp + "/conf.properties");
+		return g;
+	}
 	
 	@Override
-	public void openDb(String dbPathTemp) {
+	public Graph createDatabase(String dbPathTemp) throws IOException {
 		File f = new File(dbPathTemp);
 		dbPath = f.getAbsolutePath();
+		super.createDatabase(dbPath);
 		PropertiesConfiguration configuration = null;
 		File confFile = new File(dbPath + "/conf.properties");
 		try {
@@ -79,15 +85,15 @@ public class TitanDriver extends GdbDriver {
 		configuration.setProperty("index.search.refresh_interval", 600);
 		configuration.setProperty("ids.block-size", 50_000);
 
-		configuration.setProperty("cache.db-cache", false);
-//		configuration.setProperty("cache.db-cache-size", 100_000);
-//		configuration.setProperty("cache.db-cache-time", 0);
+		configuration.setProperty("cache.db-cache", true);
+		configuration.setProperty("cache.db-cache-size", 250_000_000);
+		configuration.setProperty("cache.db-cache-time", 0);
 //		configuration.setProperty("cache.tx-dirty-size", 100_000);
 		// to make queries faster
-//		configuration.setProperty("query.batch", true);
-//		configuration.setProperty("query.fast-property", true);
-//		configuration.setProperty("query.force-index", false);
-//		configuration.setProperty("query.ignore-unknown-index-key", true);
+		configuration.setProperty("query.batch", true);
+		configuration.setProperty("query.fast-property", true);
+		configuration.setProperty("query.force-index", false);
+		configuration.setProperty("query.ignore-unknown-index-key", true);
 		try {
 			configuration.save();
 
@@ -117,12 +123,25 @@ public class TitanDriver extends GdbDriver {
 		makeIfNotExistProperty(LANG);
 
 		createIndexes();
+		return g;
 	}
 
+	@Override
+	public void closeDb() {
+		getTitanGraph().close();
+	}
+
+	/** Define a new entry of type String in the data model of the db.  
+	 *  @param propertyName Name of the entry to add.
+	 */
 	void makeIfNotExistProperty(String propertyName) {
 		makeIfNotExistProperty(propertyName, String.class);
 	}
 
+	/** Create in the db model a new property and the class it uses.
+	 *  @param propertyName Entry name in the model.
+	 *  @param c Class for the entry.
+	 */
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
 		ManagementSystem manager = (ManagementSystem) getTitanGraph().openManagement();
 		if (!manager.containsPropertyKey(propertyName)) {
@@ -152,33 +171,39 @@ public class TitanDriver extends GdbDriver {
 				addKey(kindValue).
 				buildCompositeIndex();
 			manager.
-				buildIndex("vertexIndex", Vertex.class).
-				addKey(vertexValue, Mapping.STRING.asParameter()).
-				addKey(kindValue, Mapping.STRING.asParameter()).
-				addKey(typeValue, Mapping.STRING.asParameter()).
-				addKey(langValue, Mapping.STRING.asParameter()).
-				buildMixedIndex("search");
-			manager.
-				buildIndex("allIndex", Edge.class).
-				addKey(predicateKey, Mapping.STRING.asParameter()).
-				addKey(subjectKey, Mapping.STRING.asParameter()).
-				addKey(objectKey, Mapping.STRING.asParameter()).
-				addKey(graphKey, Mapping.STRING.asParameter()).
-				buildMixedIndex("search");
-//g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
-			manager.
-				buildIndex("spoIndex", Edge.class).
-				addKey(subjectKey).
-				addKey(predicateKey).
-				addKey(objectKey).
+				buildIndex("vertices2", Vertex.class).
+				addKey(vertexValue).
+				addKey(kindValue).
+				addKey(typeValue).
 				buildCompositeIndex();
+//			manager.
+//				buildIndex("vertexIndex", Vertex.class).
+//				addKey(vertexValue, Mapping.STRING.asParameter()).
+//				addKey(kindValue, Mapping.STRING.asParameter()).
+//				addKey(typeValue, Mapping.STRING.asParameter()).
+//				addKey(langValue, Mapping.STRING.asParameter()).
+//				buildMixedIndex("search");
+//			manager.
+//				buildIndex("allIndex", Edge.class).
+//				addKey(predicateKey, Mapping.STRING.asParameter()).
+//				addKey(subjectKey, Mapping.STRING.asParameter()).
+//				addKey(objectKey, Mapping.STRING.asParameter()).
+//				addKey(graphKey, Mapping.STRING.asParameter()).
+//				buildMixedIndex("search");
+//g.traversal().E().has(EDGE_S, vSource.property(VERTEX_VALUE).value()).has(EDGE_P, predicate).has(EDGE_O, vObject.property(VERTEX_VALUE).value());
+//			manager.
+//				buildIndex("spoIndex", Edge.class).
+//				addKey(subjectKey).
+//				addKey(predicateKey).
+//				addKey(objectKey).
+//				buildCompositeIndex();
 
 			manager.commit();
 			String[] indexNames = {
 				"vertices",
-				"allIndex",
-				"spoIndex", 
-				"vertexIndex"
+				"vertices2", //				"allIndex",
+			//				"spoIndex", 
+			//				"vertexIndex"
 			};
 			for (String indexName : indexNames) {
 				try {
@@ -197,50 +222,40 @@ public class TitanDriver extends GdbDriver {
 
 	}
 
-	@Override
-	public void closeDb() {
-		getTitanGraph().close();
-	}
-
-	public void reopen() {
-		getTitanGraph().close();
-		g = TitanFactory.open(dbPath + "/conf.properties");
-	}
-
-	String nodeId(Value v) {
-		StringBuilder result = new StringBuilder();
-		String kind = RdfToGraph.getKind(v);
-		switch (kind) {
-			case IRI:
-			case BNODE:
-				result.append("label=").append(v.stringValue()).append(";");
-				result.append("value=").append(v.stringValue()).append(";");
-				result.append("kind=").append(kind);
-				break;
-			case LARGE_LITERAL:
-				Literal l = (Literal) v;
-				result.append("label=").append(l.getLabel()).append(";");
-				result.append("value=").append(Integer.toString(l.getLabel().hashCode()));
-				result.append("large_value=").append(l.getLabel()).append(";");
-				result.append("type=").append(l.getDatatype().toString()).append(";");
-				result.append("kind=").append(kind);
-				if (l.getLanguage().isPresent()) {
-					result.append("lang=").append(l.getLanguage().get()).append(";");
-				}
-				break;
-			case LITERAL:
-				l = (Literal) v;
-				result.append("label=").append(l.getLabel()).append(";");
-				result.append("value=").append(l.getLabel()).append(";");
-				result.append("type=").append(l.getDatatype().toString()).append(";");
-				result.append("kind=").append(kind);
-				if (l.getLanguage().isPresent()) {
-					result.append("lang=").append(l.getLanguage().get()).append(";");
-				}
-				break;
-		}
-		return result.toString();
-	}
+//	String nodeId(Value v) {
+//		StringBuilder result = new StringBuilder();
+//		String kind = RdfToGraph.getKind(v);
+//		switch (kind) {
+//			case IRI:
+//			case BNODE:
+//				result.append("label=").append(v.stringValue()).append(";");
+//				result.append("value=").append(v.stringValue()).append(";");
+//				result.append("kind=").append(kind);
+//				break;
+//			case LARGE_LITERAL:
+//				Literal l = (Literal) v;
+//				result.append("label=").append(l.getLabel()).append(";");
+//				result.append("value=").append(Integer.toString(l.getLabel().hashCode()));
+//				result.append("large_value=").append(l.getLabel()).append(";");
+//				result.append("type=").append(l.getDatatype().toString()).append(";");
+//				result.append("kind=").append(kind);
+//				if (l.getLanguage().isPresent()) {
+//					result.append("lang=").append(l.getLanguage().get()).append(";");
+//				}
+//				break;
+//			case LITERAL:
+//				l = (Literal) v;
+//				result.append("label=").append(l.getLabel()).append(";");
+//				result.append("value=").append(l.getLabel()).append(";");
+//				result.append("type=").append(l.getDatatype().toString()).append(";");
+//				result.append("kind=").append(kind);
+//				if (l.getLanguage().isPresent()) {
+//					result.append("lang=").append(l.getLanguage().get()).append(";");
+//				}
+//				break;
+//		}
+//		return result.toString();
+//	}
 
 	int removedNodes = 0;
 
@@ -264,7 +279,6 @@ public class TitanDriver extends GdbDriver {
 		String o_value = vObject.property(VERTEX_VALUE).value().toString();
 		p.add(o_value);
 
-// 		@TODO: investigate wether the while loop can be replaced by a search with an index.
 		GraphTraversal<Vertex, Edge> alreadyExist = g.traversal().V(vSource.id()).outE().has(EDGE_P, predicate).as("e").inV().hasId(vObject.id()).select("e");
 		try {
 			result = alreadyExist.next();
@@ -291,19 +305,56 @@ public class TitanDriver extends GdbDriver {
 		g.tx().commit();
 	}
 
-	private void cleanDuplicates(GraphTraversal<Vertex, Vertex> it) {
-		if (true) {
-			return;
+	@Override
+	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g) {
+		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+		switch (key.toString()) {
+			case "?g?sPO":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_O, o);
+				};
+				break;
+			case "?g?sP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p);
+				};
+				break;
+			case "?g?s?pO":
+				filter = t -> {
+					return t.E().has(EDGE_O, o);
+				};
+				break;
+			case "?gSPO":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_S, s).has(EDGE_O, o);
+				};
+				break;
+			case "?gSP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_S, s);
+				};
+				break;
+			case "?gS?pO":
+				filter = t -> {
+					return t.E().has(EDGE_S, s).has(EDGE_O, o);
+				};
+				break;
+			case "?gS?p?o":
+				filter = t -> {
+					return t.E().has(EDGE_S, s);
+				};
+				break;
+			case "G?sP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_G, g);
+				};
+				break;
+			case "?g?s?p?o":
+			default:
+				filter = t -> {
+					return t.E().has(EDGE_P, textRegex(".*"));
+				};
 		}
-		while (it.hasNext() && removedNodes < 100_000) {
-			removedNodes++;
-
-			it.next().remove();
-		}
-		if (removedNodes > 0) {
-			logger.info("Nodes removed: " + removedNodes);
-			g.tx().commit();
-			removedNodes = 0;
-		}
+		return filter;
 	}
 }

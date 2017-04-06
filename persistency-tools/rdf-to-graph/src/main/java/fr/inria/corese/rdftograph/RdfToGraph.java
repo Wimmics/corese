@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.lang.reflect.Constructor;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -329,11 +328,11 @@ public class RdfToGraph {
 	 * stream
 	 * @param dbPath Where to store the rdf data.
 	 */
-	public void convertFileToDb(String fileName, RDFFormat format, String dbPath) {
+	public void convertFileToDb(String fileName, RDFFormat format, String dbPath) throws Exception {
 		try {
 			LOGGER.info("** begin of convert **");
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
-			driver.openDb(dbPath);
+			driver.createDatabase(dbPath);
 			LOGGER.info("Loading file");
 //			createVertices(makeStream(fileName), format);
 			createEdges(makeStream(fileName), format);
@@ -386,11 +385,6 @@ public class RdfToGraph {
 		}
 		in.close();
 		driver.commit();
-	}
-
-	public RdfToGraph setWipeOnOpen(boolean b) {
-		driver.setWipeOnOpen(b);
-		return this;
 	}
 
 	final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;

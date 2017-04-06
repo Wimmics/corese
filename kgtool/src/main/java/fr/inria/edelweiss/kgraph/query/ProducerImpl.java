@@ -412,7 +412,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     boolean isFromOK(List<Node> from) {
         for (Node node : from) {
             Node tfrom = graph.getNode(node);
-            if (tfrom != null && graph.isGraphNode(tfrom)) {
+            if (tfrom != null && graph.containsCoreseNode(tfrom)) {
                 return true;
             }
         }
@@ -770,7 +770,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
         // TODO Auto-generated method stub
         Node node = env.getNode(gNode);
-        if (!graph.isGraphNode(node)) {
+        if (!graph.containsCoreseNode(node)) {
             return false;
         }
         if (from.isEmpty()) {

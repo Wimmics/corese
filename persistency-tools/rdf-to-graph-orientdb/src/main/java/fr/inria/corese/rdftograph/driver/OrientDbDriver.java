@@ -9,17 +9,18 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.tinkerpop.gremlin.orientdb.OrientGraph;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
@@ -31,29 +32,34 @@ import org.openrdf.model.Value;
 public class OrientDbDriver extends GdbDriver {
 
 	OrientGraphFactory graph;
-	private OrientGraph g;
 
 	@Override
-	public void openDb(String dbPath) {
-		try {
-			if (getWipeOnOpen()) {
-				String path = dbPath.replaceFirst("plocal:", "");
-				if (Files.exists(Paths.get(path))) {
-					delete(path);
-				}
-			}
-		} catch (IOException ex) {
-			Logger.getLogger(OrientDbDriver.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		graph = new OrientGraphFactory(dbPath);
+	public Graph openDatabase(String databasePath) {
+		graph = new OrientGraphFactory(databasePath);
+		g = graph.getTx();
+		return g;
+	}
+
+	@Override
+	public Graph createDatabase(String databasePath) throws IOException {
+		String path = databasePath.replaceFirst("plocal:", "");
+		super.createDatabase(path);
+		graph = new OrientGraphFactory(databasePath);
 		BaseConfiguration nodeConfig = new BaseConfiguration();
 		nodeConfig.setProperty("type", "NOTUNIQUE");
 		nodeConfig.setProperty("keytype", OType.STRING);
 		graph.getTx().createVertexIndex(VERTEX_VALUE, RDF_VERTEX_LABEL, nodeConfig);
+		nodeConfig = new BaseConfiguration();
+		nodeConfig.setProperty("type", "NOTUNIQUE");
+		nodeConfig.setProperty("keytype", OType.STRING);
+		graph.getTx().createVertexIndex(KIND, RDF_VERTEX_LABEL, nodeConfig);
+		nodeConfig = new BaseConfiguration();
+		nodeConfig.setProperty("type", "NOTUNIQUE");
+		nodeConfig.setProperty("keytype", OType.STRING);
 		graph.getTx().createEdgeIndex(EDGE_P, RDF_EDGE_LABEL, nodeConfig);
 		g = graph.getTx();
+		return g;
 	}
-
 
 	@Override
 	public void closeDb() {
@@ -110,5 +116,58 @@ public class OrientDbDriver extends GdbDriver {
 	@Override
 	public void commit() {
 		graph.getTx().commit();
+	}
+
+	@Override
+	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g) {
+		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+		switch (key.toString()) {
+			case "?g?sPO":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_O, o);
+				};
+				break;
+			case "?g?sP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p);
+				};
+				break;
+			case "?g?s?pO":
+				filter = t -> {
+					return t.E().has(EDGE_O, o);
+				};
+				break;
+			case "?gSPO":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_S, s).has(EDGE_O, o);
+				};
+				break;
+			case "?gSP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_S, s);
+				};
+				break;
+			case "?gS?pO":
+				filter = t -> {
+					return t.E().has(EDGE_S, s).has(EDGE_O, o);
+				};
+				break;
+			case "?gS?p?o":
+				filter = t -> {
+					return t.E().has(EDGE_S, s);
+				};
+				break;
+			case "G?sP?o":
+				filter = t -> {
+					return t.E().has(EDGE_P, p).has(EDGE_G, g);
+				};
+				break;
+			case "?g?s?p?o":
+			default:
+				filter = t -> {
+					return t.E();
+				};
+		}
+		return filter;
 	}
 }

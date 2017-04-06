@@ -17,7 +17,7 @@ import org.openrdf.rio.Rio;
  * @author edemairy
  */
 public class App {
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
 		if (args.length < 2) {
 			System.err.println("Usage: rdfToGraph fileName db_path [backend]");
 			System.err.println("if the parser cannot guess the format of the input file, NQUADS is used.");
@@ -30,8 +30,7 @@ public class App {
 		DbDriver driver = DbDriver.NEO4J;
 		if (args.length >= 3) {
 			try {
-				DbDriver driverParam = DbDriver.valueOf(args[2].toUpperCase());
-				driver = driverParam;
+				driver = DbDriver.valueOf(args[2].toUpperCase());
 			} catch (IllegalArgumentException ex) {
 				ex.printStackTrace();
 			}

@@ -1,7 +1,7 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
- * and openDb the template in the editor.
+ * and openDatabase the template in the editor.
  */
 package fr.inria.corese.rdftograph.driver;
 
@@ -26,12 +26,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -45,7 +46,6 @@ import org.openrdf.model.Value;
 public abstract class GdbDriver {
 
 	private static Logger LOGGER = Logger.getLogger(GdbDriver.class.getName());
-	private boolean wipeOnOpen;
 	protected Graph g;
 	// Fields related with cache management.
 	private Cache<Value, Vertex> cache;
@@ -53,6 +53,24 @@ public abstract class GdbDriver {
 	private int concurrencyLevel = 1;
 	private int cacheTimeMS = 0;
 
+	/**
+	 * Returns an object of GdbDriver type.
+	 *
+	 * @param driverName Class name of the driver.
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public static GdbDriver createDriver(String driverName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Class driverClass = Class.forName(driverName);
+		GdbDriver result = (GdbDriver) driverClass.newInstance();
+		return result;
+	}
+
+	/**
+	 * Default constructor. Set up a cache for Value -> Vertex.
+	 */
 	public GdbDriver() {
 		CacheBuilder<Value, Vertex> cachebuilder = CacheBuilder.newBuilder()
 			.maximumWeight(maximumByteSize)
@@ -69,17 +87,34 @@ public abstract class GdbDriver {
 		cache = cachebuilder.build();
 	}
 
-	public abstract void openDb(String dbPath);
+	/** 
+	 * Open an existing database.
+	 * @param dbPath
+	 * @return
+	 * @throws IOException 
+	 */
+	public abstract Graph openDatabase(String dbPath);
+	
+	public Graph createDatabase(String dbPath) throws IOException {
+		wipeDirectory(dbPath);
+		return null;
+	} 
 
-	public void setWipeOnOpen(boolean newValue) {
-		wipeOnOpen = newValue;
+	public abstract void closeDb() throws Exception;
+
+	public abstract void commit();
+
+	public Graph getTinkerpopGraph() {
+		return g;
 	}
 
-	public boolean getWipeOnOpen() {
-		return wipeOnOpen;
-	}
-
-	public static void delete(String path) throws IOException {
+	/**
+	 * Remove a directory (rm -fr path).
+	 *
+	 * @param path
+	 * @throws IOException
+	 */
+	public static void wipeDirectory(String path) throws IOException {
 		Files.walk(Paths.get(path), FileVisitOption.FOLLOW_LINKS)
 			.sorted(Comparator.reverseOrder())
 			.map(Path::toFile)
@@ -87,8 +122,14 @@ public abstract class GdbDriver {
 			.forEach(File::delete);
 	}
 
-	public abstract void closeDb();
-
+	/**
+	 * Finds a tinkerpop vertex in the graph corresponding to the Jena
+	 * value.
+	 *
+	 * @param v Jena value searched in the DB.
+	 * @return the first tinkerpop node if any, null otherwise.
+	 * @todo Does not handle duplicate nodes.
+	 */
 	public Vertex getNode(Value v) {
 		GraphTraversal<Vertex, Vertex> it = null;
 		Vertex result = cache.getIfPresent(v);
@@ -98,12 +139,12 @@ public abstract class GdbDriver {
 		switch (RdfToGraph.getKind(v)) {
 			case IRI:
 			case BNODE: {
-				it = g.traversal().V().has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+				it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
 				break;
 			}
 			case LARGE_LITERAL: {
 				Literal l = (Literal) v;
-				it = g.traversal().V().has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+				it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString()).has(VERTEX_LARGE_VALUE, l.getLabel());
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
@@ -111,7 +152,7 @@ public abstract class GdbDriver {
 			}
 			case LITERAL: {
 				Literal l = (Literal) v;
-				it = g.traversal().V().has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
+				it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString());
 				if (l.getLanguage().isPresent()) {
 					it = it.has(LANG, l.getLanguage().get());
 				}
@@ -176,7 +217,25 @@ public abstract class GdbDriver {
 		return null;
 	}
 
+	/**
+	 * Add an edge in the DB from the Jena artefacts.
+	 *
+	 * @param sourceId Source (ie start) of the edge.
+	 * @param objectId Object (ie end) of the edge.
+	 * @param predicate Predicate (ie name) of the edge.
+	 * @param properties Properties to add to the edge.
+	 * @return
+	 */
 	public abstract Object createRelationship(Value sourceId, Value objectId, String predicate, Map<String, Object> properties);
 
-	public abstract void commit();
+	/**
+	 *
+	 * @param key
+	 * @param s Sub
+	 * @param p
+	 * @param o
+	 * @param g
+	 * @return
+	 */
+	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g);
 }

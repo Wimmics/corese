@@ -7,7 +7,13 @@ package fr.inria.wimmics.rdf.to.graph.nulldriver;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.openrdf.model.Value;
 
 /**
@@ -17,8 +23,9 @@ import org.openrdf.model.Value;
 public class NullDriver extends GdbDriver {
 	static final Logger logger = Logger.getLogger(NullDriver.class.getName());
 	@Override
-	public void openDb(String string) {
+	public Graph openDatabase(String string) {
 		logger.fine("Opening db "+string);
+		return null;
 	}
 
 	@Override
@@ -35,5 +42,11 @@ public class NullDriver extends GdbDriver {
 	@Override
 	public void commit() {
 		logger.fine("Commiting");
+	}
+
+	@Override
+	public Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>> getFilter(String key, String s, String p, String o, String g) {
+		logger.fine("getFilter");
+		return null;
 	}
 }

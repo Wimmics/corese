@@ -7,6 +7,7 @@ package test.db_memory;
 
 import static fr.inria.corese.coresetimer.utils.VariousUtils.ensureEndWith;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.getEnvWithDefault;
+import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
@@ -15,7 +16,9 @@ import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.Handler;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
@@ -99,7 +102,7 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "getResultsPerfAnalysis")
-	public Object[][] getResultsPerfAnalysis() {
+	public Object[][] getResultsPerfAnalysis() throws Exception {
 		TestSuite testRoot = TestSuite.build("perf_analysis").
 			setWarmupCycles(2).
 			setMeasuredCycles(5).
@@ -136,7 +139,7 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "getResults_10m", indices = {1})
-	public Object[][] getResults10m() {
+	public Object[][] getResults10m() throws Exception {
 		TestSuite rootTest = TestSuite.build("10m").
 			setWarmupCycles(2).
 			setMeasuredCycles(5).
@@ -153,7 +156,7 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "getResults_100m", indices = {0})
-	public Object[][] getResults100m() {
+	public Object[][] getResults100m() throws Exception {
 		TestSuite rootTest = TestSuite.build("100m").
 			setWarmupCycles(2).
 			setMeasuredCycles(5).
@@ -171,7 +174,7 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "getResults_bug_name", indices = {1})
-	public Object[][] getResults_bugName() {
+	public Object[][] getResults_bugName() throws Exception {
 		TestSuite rootTest = TestSuite.build("bug_name").
 			setWarmupCycles(2).
 			setMeasuredCycles(5).
@@ -195,24 +198,25 @@ public class QualitativeTest {
 	}
 
 	@DataProvider(name = "input")
-	public Iterator<Object[]> buildTests() {
+	public Iterator<Object[]> buildTests() throws Exception {
 		String[] inputFiles = {
 			//			"test-1.nq",
 			//			"human_2007_04_17.rdf",	
-//			"btc-2010-chunk-000.nq.gz:1",
-//			"btc-2010-chunk-000.nq.gz:10",
-//			"btc-2010-chunk-000.nq.gz:100",
-//			"btc-2010-chunk-000.nq.gz:1000",
-//			"btc-2010-chunk-000.nq.gz:10000",
-//			"btc-2010-chunk-000.nq:100000",
-//			"btc-2010-chunk-000.nq.gz:1000000", 
-//			"btc-2010-chunk-000.nq.gz",
-			"btc-2010-chunk-000_(10|100).nq"	
+//			"btc-2010-chunk-000.nq:1",
+//			"btc-2010-chunk-000.nq:10",
+//			"btc-2010-chunk-000.nq:100",
+			"btc-2010-chunk-000.nq:1000",
+//			"btc-2010-chunk-000.nq:10000",
+//			"btc-2010-chunk-000.nq:100000", 
+//			"btc-2010-chunk-000.nq:1000000", 
+		//			"btc-2010-chunk-000.nq",
+		//			"btc-2010-chunk-000_(10|100).nq"	
 		};
 		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",
-		//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
-		//			"select ?x ?p ?y where { ?x ?p ?y}"
+			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", 
+//			"select ?x ?y where { ?x rdf:type ?y}",
+//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
+//			"select ?x ?p ?y where { ?x ?p ?y}"
 		};
 
 		return new Iterator<Object[]>() {
@@ -253,13 +257,18 @@ public class QualitativeTest {
 
 				if (cptRequests == 0) {
 					currentSuite = TestSuite.build("test_" + inputFile).
+						setDriver(RdfToGraph.DbDriver.NEO4J).
 						setWarmupCycles(2).
 						setMeasuredCycles(5).
 						setInput(inputFile).
-						setInputDb("/tmp/" + inputFile + "_db").
+						setInputDb("/tmp/" + inputFile.replace(":", "_") + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
-					currentSuite.createDb();
+					try {
+						currentSuite.createDb();
+					} catch (Exception ex) {
+						throw new RuntimeException(ex);
+					}
 				}
 				TestDescription[] result = {currentSuite.buildTest(request)};
 				return result;
@@ -269,6 +278,13 @@ public class QualitativeTest {
 
 	@Test(dataProvider = "input", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+		Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
+		java.util.logging.Logger.getGlobal().setLevel(Level.FINER);
+		java.util.logging.Logger.getGlobal().setUseParentHandlers(false);
+		Handler newHandler = new ConsoleHandler();
+		newHandler.setLevel(Level.FINER);
+		java.util.logging.Logger.getGlobal().addHandler(newHandler);
+		
 		CoreseTimer timerMemory = null;
 		CoreseTimer timerDb = null;
 		try {

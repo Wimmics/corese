@@ -167,6 +167,7 @@ public class TestQuery1 {
 
     }
     
+    @Test
     public void testGenAgg() throws EngineException{
     String q = 
             "select (st:aggregate(?x) as ?y) "
@@ -185,7 +186,47 @@ public class TestQuery1 {
     assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
 }
     
+     @Test
+     public void testmserv() throws LoadException, IOException, EngineException{
+         Graph g =  Graph.create();
+         QueryProcess exec = QueryProcess.create(g);
+         
+         String q = 
+                   "@service <http://fr.dbpedia.org/sparql> "
+                 + "@service <http://dbpedia.org/sparql> "
+                 + "select distinct ?l where { "                        
+                 + "?x rdfs:label 'Paris'@fr, ?l "
+                 + "filter langMatches(lang(?l), 'en') "
+                 + "}"
+                 + "order by ?l";
+         
+        Mappings map = exec.query(q); 
+        assertEquals(14, map.size());       
+    }
     
+    
+      @Test
+     public void testmserv2() throws LoadException, IOException, EngineException{
+         Graph g =  Graph.create();
+         QueryProcess exec = QueryProcess.create(g);
+         
+         String q = 
+                   "@service <http://fr.dbpedia.org/sparql> "
+                 + "@service <http://dbpedia.org/sparql> "
+                 + "@type kg:verbose "
+                 + "select distinct ?g ?l "
+                 + "from <http://dbpedia.org> "
+                 + "from <http://fr.dbpedia.org> "
+                 + "where { "                        
+                 + "?x rdfs:label 'Paris'@fr, ?l "
+                 + "filter langMatches(lang(?l), 'en') "
+                 + "}"
+                 + "order by ?l";
+         
+        Mappings map = exec.query(q); 
+        assertEquals(1, map.size());       
+    }
+     
      @Test
     public void testinsertdata() throws EngineException{
         String i = "insert data { graph us:Jim { us:Jim us:Jim us:Jim }}";
@@ -406,10 +447,10 @@ public class TestQuery1 {
          
          System.out.println(g.compare(g2));
          
-         assertEquals(353, g.size());        
+         assertEquals(352, g.size());        
          assertEquals(g.size(), g1.size());
          // missing: _:b a rdf:List
-         assertEquals(307, g2.size());
+         assertEquals(306, g2.size());
          
          //System.out.println(g.compare(g1, false, true, true));
         
@@ -3076,7 +3117,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(t1);
 
-        assertEquals(7574, map.getTemplateResult().getLabel().length());
+        assertEquals(7573, map.getTemplateResult().getLabel().length());
 
         map = exec.query(t2);
 
@@ -3098,7 +3139,8 @@ public class TestQuery1 {
 
 
         Mappings map = exec.query(t1);
-        assertEquals(4353, map.getTemplateResult().getLabel().length());
+        int size = map.getTemplateResult().getLabel().length();
+        assertEquals(4354, size);
 
     }
 

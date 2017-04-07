@@ -11,15 +11,18 @@ public class Exist extends BasicGraphPattern {
 		return new Exist(e1);
 	}
 
+        @Override
 	public boolean isExist(){
 		return true;
 	}
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb){
 		sb.append(Term.EXIST + " " + get(0));
 		return sb;
 	}
 	
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist) {
 		if (getBody().size() > 0){
 			return getBody().get(0).validate(ast, true);

@@ -544,7 +544,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
             }
 
             boolean ok = true;
-
+            
             for (Exp exp : getBody().getBody()) {
                 boolean b = exp.validate(this);
                 if (!b) {

@@ -45,7 +45,11 @@ public class Metadata extends ASTObject
     public static final String RELAX_LITERAL    = PREF + "literal";
     
     public static final String PROBE            = PREF + "probe";
-    public static final String DISTRIBUTE_NAMED_GRAPH = PREF + "distributeGraph";
+    public static final String VERBOSE          = PREF + "verbose";
+    
+    public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
+    public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
+    public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
     
     
     private static HashMap<String, Integer> annotation;    

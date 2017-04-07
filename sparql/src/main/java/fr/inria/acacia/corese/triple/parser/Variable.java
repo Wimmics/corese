@@ -66,6 +66,10 @@ public class Variable extends Atom {
 		}
 		return false;
 	}
+        
+        public String getSimpleName(){
+            return getName().substring(1);
+        }
 	
 	public void setPath(boolean b){
 		isPath = b;

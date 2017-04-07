@@ -532,6 +532,19 @@ public class Triple extends Exp {
 		return false;
 	}
         
+        public Triple rewrite(Variable v1, Variable v2){
+            if (getSubject().equals(v1)){
+                setSubject(v2);
+            }
+            if (getObject().equals(v1)){
+                setObject(v2);
+            }
+            if (getVariable() != null && getVariable().equals(v1)){
+                setVariable(v2);
+            }
+            return this;
+        }
+        
         
       public boolean bind(Expression e) {
         for (String str : e.getVariables()) {

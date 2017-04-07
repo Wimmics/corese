@@ -17,6 +17,12 @@ public class Minus extends And {
 	public boolean isMinus(){
 		return true;
 	}
+        
+        
+        @Override
+        public Minus getMinus(){
+            return this;
+        }
 	
         @Override
 	public StringBuffer toString(StringBuffer sb){

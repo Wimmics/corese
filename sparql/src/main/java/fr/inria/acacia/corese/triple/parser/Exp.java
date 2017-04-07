@@ -231,6 +231,14 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         public boolean isOptional(){
 		return false;
 	}
+        
+        public Option getOptional(){
+            return null;
+        }
+        
+        public Minus getMinus(){
+            return null;
+        }
 				
 	public boolean isAnd(){
 		return false;

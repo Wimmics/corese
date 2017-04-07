@@ -51,6 +51,7 @@ public class Option extends Exp {
 	 */
 		
 	
+        @Override
 	Bind validate(Bind env, int n) throws QuerySemanticException {
 		return get(0).validate(env, n+1);
 	}
@@ -60,15 +61,23 @@ public class Option extends Exp {
 	}
 	
         // corese option {}
+        @Override
 	public boolean isOption(){
 		return ! isOptional;
 	}
         
         // sparql option {}
+        @Override
         public boolean isOptional(){
 		return isOptional;
 	}
+        
+        @Override
+        public Option getOptional(){
+            return this;
+        }
 	
+        @Override
 	public StringBuffer toString(StringBuffer sb) {
             if (isOptional()){
                 //sb.append(eget(0).toString());

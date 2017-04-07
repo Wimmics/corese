@@ -153,7 +153,7 @@ public class Constant extends Atom {
 				sb.append(KeywordPP.LANG).append(getLang());
 			} 
 			else if (hasRealDatatype()) {
-				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger)){
+				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger) || datatype.equals(RDF.xsdboolean)){
 					sb.append(name);
 				}
 				else if (datatype.startsWith("http://")){

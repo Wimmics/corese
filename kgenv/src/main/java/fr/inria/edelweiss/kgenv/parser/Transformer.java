@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgenv.parser;
 
+import fr.inria.corese.kgenv.federate.ServiceVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -653,7 +654,7 @@ public class Transformer implements ExpType {
             // service body is a pattern
             aa = ast.subCreate();
             aa.setSelectAll(true);
-            aa.setBody(body);
+            aa.setBody(BasicGraphPattern.create(body));
         }
         //collect select * nodes
         aa.validate();

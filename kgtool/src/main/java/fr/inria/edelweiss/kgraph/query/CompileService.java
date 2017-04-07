@@ -122,9 +122,9 @@ public class CompileService {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
-                Variable.create(name);
+               var = Variable.create(name);
             }
-            Node val = env.getNode(var.getProxyOrSelf());
+            Node val = env.getNode(qv); //var.getProxyOrSelf());
 
             if (val != null) {
                 lvar.add(var);
@@ -166,11 +166,11 @@ public class CompileService {
             boolean ok = false;
             lval = new ArrayList<Constant>();
 
-           // for (Node var : q.getSelect()) {
-           //     Node val = map.getNode(var);
+            for (Node qnode : q.getSelect()) {
+                Node val = map.getNode(qnode);
                 
-            for (Variable var : lvar) {
-                Node val = map.getNode(var.getProxyOrSelf());
+//            for (Variable var : lvar) {
+//                Node val = map.getNode(var); //var.getProxyOrSelf());
                 if (val != null) {
                     IDatatype dt = (IDatatype) val.getValue();
                     Constant cst = Constant.create(dt);

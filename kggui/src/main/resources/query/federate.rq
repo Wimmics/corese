@@ -1,3 +1,6 @@
+#
+# Federated query on several SPARQL endpoints
+#
 @service <http://fr.dbpedia.org/sparql>
 @service <http://dbpedia.org/sparql>
 

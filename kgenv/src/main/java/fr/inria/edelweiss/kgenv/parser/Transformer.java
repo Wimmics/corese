@@ -15,6 +15,7 @@ import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.acacia.corese.triple.parser.ASTExtension.ASTFunMap;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.*;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.NODE;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
@@ -28,7 +29,9 @@ import fr.inria.edelweiss.kgram.tool.Message;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.filter.Extension.FunMap;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query Use Corese SPARQL parser Use an
@@ -218,7 +221,23 @@ public class Transformer implements ExpType {
         q = transform(q, ast);
 
         error(q, ast);
+        
+        toJava(ast);
+        
         return q;
+    }
+    
+    void toJava(ASTQuery ast){
+        if (ast.hasMetadata(Metadata.COMPILE)){
+            String name = ast.getMetadata().getValue(Metadata.COMPILE);
+            JavaCompiler jc = new JavaCompiler(name);
+            try {
+                jc.toJava(ast);
+                jc.write();
+            } catch (IOException ex) {
+                logger.error(ex);
+            }
+        }
     }
     
     void visit(ASTQuery ast){

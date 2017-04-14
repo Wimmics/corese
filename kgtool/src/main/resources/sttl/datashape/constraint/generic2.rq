@@ -5,10 +5,8 @@ template (?shape, ?sh, ?vis, ?ls) {
 }
 where {
   graph ?shape {  
-    values ?q { sh:class  sh:pattern sh:sparql }
+    values ?q { sh:class sh:pattern sh:disjoint sh:equals sh:sparql }
     ?sh ?q ?m            
-    #filter not exists { ?sh sh:path ?p }
-
   }
   
   values ?s { unnest(?ls) }

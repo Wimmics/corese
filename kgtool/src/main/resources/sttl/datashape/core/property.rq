@@ -12,6 +12,8 @@ where {
         ?sh sh:property ?cst  
         ?cst sh:path ?p 
         filter not exists { ?cst sh:deactivated true }
+        # use case: sh:property [ sh:path p ; sh:property pp ]
+        # filter not exists { ?sh sh:path ?pp }
     }
     
     bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)

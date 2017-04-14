@@ -7,5 +7,5 @@ where {
   
   bind (sh:datatype(?s, ?d)  as ?suc)
   
-  bind (st:report(sh:datatype, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }

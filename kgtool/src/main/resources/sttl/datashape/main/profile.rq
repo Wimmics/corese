@@ -140,16 +140,20 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
             sh:value ?oo ;
             sh:valueDetail ?valueDetail ;
             sh:resultMessage ?mes ;
-            sh:sourceConstraintComponent ?def
+            sh:sourceConstraintComponent ?def ;
+            sh:sourceShape ?sh
             #?sr ?pr ?or
         } 
         where { 
             bind (uuid() as ?r)
             graph ?shape { 
                 # ?sh can be a constraint or a shape
-                bind (exists { ?sh sh:severity sh:Warning } as ?warn)
-                bind (if (?warn, false, exists { ?sh sh:severity sh:Info }) as ?info)
-                bind (if (?warn, sh:Warning, if (?info, sh:Info, sh:Violation)) as ?sev)
+                #bind (exists { ?sh sh:severity sh:Warning } as ?warn)
+                #bind (if (?warn, false, exists { ?sh sh:severity sh:Info }) as ?info)
+                #bind (if (?warn, sh:Warning, if (?info, sh:Info, sh:Violation)) as ?sev)
+                
+                bind (sh:severity(?sh) as ?sev)
+                
                 bind (concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh)) as ?mes)
                 bind (coalesce(sh:isdefby(?name), ?name) as ?def)
                 bind (sh:value(?p) as ?pp)
@@ -165,6 +169,14 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
     {
         st:visit(st:trace, st:graph, ?g)
     }
+}
+
+# within graph ?shape {}
+function sh:severity(?sh){
+    for ((?s, ?p, ?o) in xt:edge(?sh, sh:severity)){
+        return (?o)
+    } ;
+    return (sh:Violation)
 }
 
 function sh:success(?b){
@@ -352,9 +364,13 @@ function sh:languageIn(?shape, ?o, ?lv){
   } 
 }
 
-# with target ???
 function sh:node(?shape, ?o, ?cst){
     sh:testShapeCore(?shape, ?cst, ?o)
+}
+
+function sh:property(?shape, ?o, ?cst){
+#    sh:testShapeCore(?shape, ?cst, ?o)
+    sh:hasShape(?shape, ?cst, true, ?o)
 }
 
 function sh:qualifiedShape(?subject, ?shape, ?qsh){
@@ -564,7 +580,7 @@ function sh:getPath(?shape, ?p){
 #
 function sh:path(?shape, ?s, ?p, ?inv){
   if (isURI(?p)){
-     sh:property(?s, ?p, ?inv)
+     sh:pathProperty(?s, ?p, ?inv)
   }
   else {
     let ((?oper, ?path) = ?p) {      
@@ -658,7 +674,7 @@ function sh:alternativePath(?shape, ?s, ?p, ?inv){
     }
 }
 
-function sh:property(?s, ?p, ?inv){
+function sh:pathProperty(?s, ?p, ?inv){
     if (?inv) {
         sh:inverse(?s, ?p)
     }

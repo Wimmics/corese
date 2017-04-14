@@ -21,15 +21,18 @@ where {
         values ?q { 
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
-            sh:in sh:languageIn sh:node
+            sh:in sh:languageIn sh:node sh:property
         }
         ?sh ?q ?m    
     }
-            
+
   values ?s { unnest(?ls) }
+
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
 
   bind (coalesce(funcall(?q, ?shape, ?o, ?m), false) as ?suc )
   
-  bind (st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  bind (
+    if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
+    as ?b)
 }

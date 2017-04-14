@@ -17,6 +17,6 @@ where {
     
   bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   
-  bind (st:report(?q, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 

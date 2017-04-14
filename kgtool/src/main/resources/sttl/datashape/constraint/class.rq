@@ -6,6 +6,6 @@ template sh:class (?shape, ?sh, ?vis, ?s, ?c){
 where {
 
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
-  bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?c, ?suc, ?vis) as ?b)
+  bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?s, ?suc, ?vis) as ?b)
 }
 

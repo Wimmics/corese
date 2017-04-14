@@ -30,10 +30,12 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgenv.eval.Walker;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -581,6 +583,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      */
     public static void setDistinctDatatype(boolean b) {
         distinctDatatype = b;
+        if (b){
+            Group.setCompareIndex(true);
+            Distinct.setCompareIndex(true);
+            Walker.setCompareIndex(true);                                      
+        }
     }
 
     public static void setNodeAsDatatype(boolean b) {
@@ -2061,6 +2068,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         else {
             np = getPropertyNode(p);
+            if (np == null){
+                return EMPTY;
+            }
         }
         if (s != null){
             ns = getNode(s);

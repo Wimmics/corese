@@ -115,6 +115,10 @@ public class DatatypeMap implements Cst, RDF {
         String jDatatype = map.getJavaType();
         return jDatatype;
     }
+    
+    public static String getJavaType(String datatype){
+        return dm.getJType(datatype);
+    }
 
     Mapping getMapping(String dt) {
         Mapping map = ht.get(dt);
@@ -292,6 +296,14 @@ public class DatatypeMap implements Cst, RDF {
         }
         return null;
     }
+    
+    public static IDatatype newInstance(String label, String datatype) {
+        return createLiteral(label, datatype, null);
+    }
+    
+    public static IDatatype newInstance(String label, String datatype, String lang) {
+        return createLiteral(label, datatype, lang);
+    }
 
     public static IDatatype newInstance(double result) {
         return new CoreseDouble(result);
@@ -399,7 +411,7 @@ public class DatatypeMap implements Cst, RDF {
         return createLiteral(label, datatype, null);
     }
 
-    public static IDatatype createLiteral(String label, String datatype, String lang) {
+  public static IDatatype createLiteral(String label, String datatype, String lang) {
         IDatatype dt = null;
         try {
             dt = createLiteralWE(label, datatype, lang);
@@ -478,9 +490,12 @@ public class DatatypeMap implements Cst, RDF {
         return dt;
     }
 
-    public static IDatatype createList(IDatatype[] ldt) {
-        IDatatype dt = new CoreseList(ldt);
-        return dt;
+    public static IDatatype createList(IDatatype... ldt) {
+        return new CoreseList(ldt);
+    }
+    
+     public static IDatatype newList(IDatatype... ldt) {
+        return new CoreseList(ldt);
     }
     
      public static IDatatype createList() {
@@ -495,13 +510,6 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype createList(IDatatype dt) {
         ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
         ldt.add(dt);
-        return  CoreseList.create(ldt);
-    }
-    
-    public static IDatatype createList(IDatatype dt1, IDatatype dt2) {
-        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
-        ldt.add(dt1);
-        ldt.add(dt2);
         return  CoreseList.create(ldt);
     }
 

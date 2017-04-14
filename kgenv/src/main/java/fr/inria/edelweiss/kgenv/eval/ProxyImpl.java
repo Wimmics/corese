@@ -1,7 +1,6 @@
 package fr.inria.edelweiss.kgenv.eval;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +37,7 @@ import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.logging.log4j.Level;
+import java.util.regex.Pattern;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -292,13 +291,13 @@ public class ProxyImpl implements Proxy, ExprType {
                 return getValue(env.count());
                            
             case RANDOM:
-                return getValue(Math.random());
+                return rand(); 
 
             case NOW:
-                return DatatypeMap.newDate();
-
+                return now();
+                
             case BNODE:
-                return createBlank();
+                return bnode();
 
             case PATHNODE:
                 return pathNode(env);
@@ -354,6 +353,15 @@ public class ProxyImpl implements Proxy, ExprType {
         String str = uuid.toString();
         return DatatypeMap.createLiteral(str);
     }
+    
+    public IDatatype now(){
+        return DatatypeMap.newDate();
+    }
+
+    
+    public IDatatype rand(){
+        return getValue(Math.random());
+    }
 
     public IDatatype uuid() {
         UUID uuid = UUID.randomUUID();
@@ -369,19 +377,19 @@ public class ProxyImpl implements Proxy, ExprType {
         switch (exp.oper()) {
 
             case ISURI:
-                return (dt.isURI()) ? TRUE : FALSE;
+                return isURI(dt); 
 
             case ISLITERAL:
-                return (dt.isLiteral()) ? TRUE : FALSE;
+                return isLiteral(dt);
 
             case ISBLANK:
-                return (dt.isBlank()) ? TRUE : FALSE;
+                return isBlank(dt);
 
             case ISSKOLEM:
                 return (dt.isSkolem()) ? TRUE : FALSE;
 
             case ISNUMERIC:
-                return (dt.isNumber()) ? TRUE : FALSE;
+                return isNumeric(dt);
                 
             case ISWELLFORMED:
                 return isWellFormed(dt);
@@ -393,13 +401,13 @@ public class ProxyImpl implements Proxy, ExprType {
                 return uri(exp, dt);
 
             case STR:
-                return str(exp, dt);
+                return str(dt);
                 
             case XSDSTRING:
-                return xsdstring(exp, dt);    
+                return string(dt);    
 
             case STRLEN:
-                return getValue(dt.getLabel().length());
+                return strlen(dt);
 
             case UCASE:
                 return ucase(dt);
@@ -408,45 +416,44 @@ public class ProxyImpl implements Proxy, ExprType {
                 return lcase(dt);
 
             case ENCODE:
-                return encode(dt);
+                return encode_for_uri(dt);
 
             case ABS:
                 return abs(dt);
 
             case FLOOR:
-                return getValue(Math.floor(dt.doubleValue()), dt.getDatatypeURI());
+                return floor(dt);
 
             case ROUND:
-                return getValue(Math.round(dt.doubleValue()), dt.getDatatypeURI());
+                return round(dt);
 
             case CEILING:
-                return getValue(Math.ceil(dt.doubleValue()), dt.getDatatypeURI());
+                return ceil(dt);
 
             case TIMEZONE:
-                return DatatypeMap.getTimezone(dt);
+                return timezone(dt);
 
             case TZ:
-                return DatatypeMap.getTZ(dt);
+                return tz(dt);
 
-            case YEAR:
-            case MONTH:
-            case DAY:
-            case HOURS:
-            case MINUTES:
-            case SECONDS:
-                return time(exp, dt);
+            case YEAR: return year(dt);
+            case MONTH: return month(dt);
+            case DAY:   return day(dt);
+            case HOURS: return hours(dt);
+            case MINUTES: return minutes(dt);
+            case SECONDS: return seconds(dt);
 
             case HASH:
                 return hash(exp, dt);
 
             case LANG:
-                return dt.getDataLang();
+                return lang(dt);
 
             case BNODE:
                 return bnode(dt, env);
 
             case DATATYPE:
-                return dt.getDatatype();
+                return datatype(dt);
 
             case DISPLAY:
                return display(exp, dt, null);
@@ -493,13 +500,20 @@ public class ProxyImpl implements Proxy, ExprType {
         return null;
     }
     
-    void display(IDatatype dt){        
+    public IDatatype display(IDatatype dt1, IDatatype dt2) {
+        System.out.println(dt1 + " " + dt2);
+        return TRUE;
+    }
+
+    
+    public IDatatype display(IDatatype dt){        
         if (dt.getObject() != null){
             System.out.print(dt.getObject());
         }
         else {
             System.out.print(dt);
         }
+        return dt;
     }
        
     IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
@@ -554,31 +568,19 @@ public class ProxyImpl implements Proxy, ExprType {
                 return getValue(dt1.contains(dt2));
                 
             case SAMETERM:
-                return sameterm(dt1, dt2);
+                return sameTerm(dt1, dt2);
 
             case CONTAINS:
-                if (!compatible(dt1, dt2)) {
-                    return null;
-                }
-                b = dt1.getLabel().contains(dt2.getLabel());
-                return (b) ? TRUE : FALSE;
+               return contains(dt1, dt2);
 
             case STARTS:
-                if (!compatible(dt1, dt2)) {
-                    return null;
-                }
-                b = dt1.startsWith(dt2);
-                return (b) ? TRUE : FALSE;
+              return strstarts(dt1, dt2);
 
             case ENDS:
-                if (!compatible(dt1, dt2)) {
-                    return null;
-                }
-                b = dt1.getLabel().endsWith(dt2.getLabel());
-                return (b) ? TRUE : FALSE;
-
+                return strends(dt1, dt2);
+                
             case SUBSTR:
-                return substr(dt1, dt2, null);
+                return substr(dt1, dt2);
 
             case STRBEFORE:
                 return strbefore(dt1, dt2);
@@ -590,27 +592,14 @@ public class ProxyImpl implements Proxy, ExprType {
                 return langMatches(dt1, dt2);
 
             case STRDT:
-                if (SPARQLCompliant && !DatatypeMap.isSimpleLiteral(dt1)) {
-                    return null;
-                }
-                return DatatypeMap.createLiteral(dt1.getLabel(), dt2.getLabel());
+                return strdt(dt1, dt2);
 
             case STRLANG:
-                if (SPARQLCompliant && !DatatypeMap.isSimpleLiteral(dt1)) {
-                    return null;
-                }
-                return DatatypeMap.createLiteral(dt1.getLabel(), null, dt2.getLabel());
-
-            case REGEX: {
-                if (!isStringLiteral(dt1)) {
-                    return null;
-                }
-                Processor proc = getProcessor(exp);
-                b = proc.regex(dt1.getLabel(), dt2.getLabel(), null);
-                return (b) ? TRUE : FALSE;
-            }
-
-
+                return strlang(dt1, dt2);
+                
+            case REGEX: 
+               return regex(exp, dt1, dt2, null);
+            
             case XPATH: {
                 // xpath(?g, '/book/title')
                 Processor proc = getProcessor(exp);
@@ -751,22 +740,13 @@ public class ProxyImpl implements Proxy, ExprType {
         switch (exp.oper()) {
 
             case REGEX:
-                if (!isStringLiteral(dt)) {
-                    return null;
-                }
-                Processor proc = getProcessor(exp);
-                b = proc.regex(dt.getLabel(), dt1.getLabel(), param[2].getLabel());
-                return (b) ? TRUE : FALSE;
+                return regex(exp, dt, dt1, param[2]);               
 
-            case SUBSTR:
-                IDatatype dt2 = null;
-                if (param.length > 2) {
-                    dt2 = param[2];
-                }
-                return substr(dt, dt1, dt2);
+            case SUBSTR:               
+                return substr(dt, dt1, (param.length > 2) ? param[2] : null);
 
             case CAST: // cast(?x, xsd:string, CoreseString)
-                return dt.cast(dt1, param[2]);
+                return cast(dt, dt1, param[2]);
 
 
             case STRREPLACE:
@@ -799,7 +779,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return !SPARQLCompliant || DatatypeMap.isStringLiteral(dt);
     }
     
-    IDatatype encode(IDatatype dt) {
+    public IDatatype encode_for_uri(IDatatype dt) {
         String str = encodeForUri(dt.getLabel());
         return DatatypeMap.createLiteral(str);
     }
@@ -845,7 +825,31 @@ public class ProxyImpl implements Proxy, ExprType {
                 || c == '-' || c == '.' || c == '_' || c == '~';
     }
     
-    IDatatype sameterm(IDatatype dt1, IDatatype dt2){
+    public IDatatype strstarts(IDatatype dt1, IDatatype dt2) {
+        if (!compatible(dt1, dt2)) {
+            return null;
+        }
+        boolean b = dt1.startsWith(dt2);
+        return (b) ? TRUE : FALSE;
+    }
+    
+    public IDatatype strends(IDatatype dt1, IDatatype dt2) {
+        if (!compatible(dt1, dt2)) {
+            return null;
+        }
+        boolean b = dt1.getLabel().endsWith(dt2.getLabel());
+        return (b) ? TRUE : FALSE;
+    }
+    
+    public IDatatype contains(IDatatype dt1, IDatatype dt2) {
+        if (!compatible(dt1, dt2)) {
+            return null;
+        }
+        boolean b = dt1.getLabel().contains(dt2.getLabel());
+        return (b) ? TRUE : FALSE;
+    }
+    
+    public IDatatype sameTerm(IDatatype dt1, IDatatype dt2){
        boolean b = dt1.equals(dt2);
        if (! b){
            return FALSE;
@@ -855,9 +859,17 @@ public class ProxyImpl implements Proxy, ExprType {
        }
        return TRUE;
     }
-
+    
+    IDatatype cast(IDatatype dt, IDatatype dt1, IDatatype dt2){
+        return dt.cast(dt1, dt2);
+    }
+    
+    public IDatatype substr(IDatatype dt, IDatatype ind) {
+        return substr(dt, ind, null);
+    }
+    
     // first index is 1
-    IDatatype substr(IDatatype dt, IDatatype ind, IDatatype len) {
+    public IDatatype substr(IDatatype dt, IDatatype ind, IDatatype len) {
         String str = dt.getLabel();
         int start = ind.intValue();
         start = Math.max(start - 1, 0);
@@ -874,30 +886,58 @@ public class ProxyImpl implements Proxy, ExprType {
     }
 
     // return a Literal (not a xsd:string)
-    IDatatype str(Expr exp, IDatatype dt) {
+    public IDatatype str(IDatatype dt) {
         return DatatypeMap.createLiteral(dt.getLabel());
     }
     
-     IDatatype xsdstring(Expr exp, IDatatype dt) {
+    public IDatatype string(IDatatype dt) {
         return DatatypeMap.newInstance(dt.getLabel());
     }
+          
+    public IDatatype strlen(IDatatype dt) {
+        return getValue(dt.getLabel().length());
+    }
 
-    IDatatype ucase(IDatatype dt) {
+    public IDatatype ucase(IDatatype dt) {
         String str = dt.getLabel().toUpperCase();
         return getValue(dt, str);
     }
 
-    IDatatype lcase(IDatatype dt) {
+    public IDatatype lcase(IDatatype dt) {
         String str = dt.getLabel().toLowerCase();
         return getValue(dt, str);
     }
-
-    IDatatype uri(Expr exp, IDatatype dt) {
+    
+    public IDatatype isBlank(IDatatype dt){
+        return getValue(dt.isBlank());
+    }
+    
+    public IDatatype isURI(IDatatype dt){
+        return getValue(dt.isURI());
+    }
+    
+    public IDatatype isLiteral(IDatatype dt){
+        return getValue(dt.isLiteral());
+    }
+    
+    public IDatatype isNumeric(IDatatype dt){
+        return getValue(dt.isNumber());
+    }
+    
+   public IDatatype iri(IDatatype dt) {
+       return uri(null, dt);
+   }
+   
+   public IDatatype uri(IDatatype dt) {
+       return uri(null, dt);
+   }
+    
+     IDatatype uri(Expr exp, IDatatype dt) {
         if (dt.isURI()) {
             return dt;
         }
         String label = dt.getLabel();
-        if (exp.getModality() != null && !isURI(label)) {
+        if (exp != null && exp.getModality() != null && !isURI(label)) {
             // with base
             return DatatypeMap.newResource(exp.getModality() + label);
         } else {
@@ -922,7 +962,7 @@ public class ProxyImpl implements Proxy, ExprType {
         }
     }
 
-    IDatatype strbefore(IDatatype dt1, IDatatype dt2) {
+    public IDatatype strbefore(IDatatype dt1, IDatatype dt2) {
 
         if (!isStringLiteral(dt1) || !compatible(dt1, dt2)) {
             return null;
@@ -936,7 +976,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return result(str, dt1, dt2);
     }
 
-    IDatatype strafter(IDatatype dt1, IDatatype dt2) {
+    public IDatatype strafter(IDatatype dt1, IDatatype dt2) {
         if (!isStringLiteral(dt1) || !compatible(dt1, dt2)) {
             return null;
         }
@@ -948,10 +988,20 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return result(str, dt1, dt2);
     }
-
+    
     IDatatype strreplace(Expr exp, IDatatype dt1, IDatatype dt2, IDatatype dt3, IDatatype dt4) {
         Processor p = getProcessor(exp);
-        String str = p.replace(dt1.getLabel(), dt2.getLabel(), dt3.getLabel(), (dt4 == null) ? null : dt4.getLabel());
+        String str = p.replace(dt1.stringValue(), dt2.stringValue(), dt3.stringValue(), (dt4 == null) ? null : dt4.stringValue());
+        return result(str, dt1, dt3);
+    }
+    
+    public IDatatype replace(IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        return replace(dt1, dt2, dt3, null);
+    }
+    
+   public IDatatype replace(IDatatype dt1, IDatatype dt2, IDatatype dt3, IDatatype dt4) {
+        Processor p = Processor.create();
+        String str = p.replace(dt1.stringValue(), dt2.stringValue(), dt3.stringValue(), (dt4 == null) ? null : dt4.stringValue());
         return result(str, dt1, dt3);
     }
 
@@ -967,6 +1017,45 @@ public class ProxyImpl implements Proxy, ExprType {
     IDatatype slice (Environment env, IDatatype dt){
         env.getQuery().setSlice(dt.intValue());
         return TRUE;
+    }
+    
+    /**
+     * TODO: lang 
+     */
+    public IDatatype concat(IDatatype... dts){
+        if (dts.length == 0){
+            return getValue("");
+        }
+        StringBuilder sb = new StringBuilder();
+        boolean hasLang = false;
+        String lang = null;
+        if (dts[0].hasLang()){
+            lang = dts[0].getLang();
+            hasLang = true;
+        }
+        
+        for (IDatatype dt : dts){   
+            if (hasLang){
+                if (!(dt.hasLang() && dt.getLang().equals(lang))){
+                    hasLang = false;
+                }
+            }          
+            sb.append(dt.stringValue());
+        }
+        return (hasLang) ? DatatypeMap.newInstance(sb.toString(), null, lang) : getValue(sb.toString()) ;
+    }
+    
+    public IDatatype bound(IDatatype dt){
+        return getValue(dt != null);
+    }
+    
+    public IDatatype coalesce(IDatatype... dts){
+        for (IDatatype dt : dts){
+            if (dt != null){
+                return dt;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1158,6 +1247,11 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return DatatypeMap.TRUE;
     }
+    
+    public IDatatype datatype(IDatatype dt){
+        return dt.getDatatype();
+    }
+
 
     /**
      * same bnode for same label in same solution, different otherwise
@@ -1166,18 +1260,46 @@ public class ProxyImpl implements Proxy, ExprType {
         Map map = env.getMap();
         IDatatype bn = (IDatatype) map.get(dt.getLabel());
         if (bn == null) {
-            bn = createBlank();
+            bn = bnode();
             map.put(dt.getLabel(), bn);
         } else {
         }
 
         return bn;
     }
-
-    IDatatype createBlank() {
-        return DatatypeMap.createBlank();
+    
+    public IDatatype lang(IDatatype dt) {
+        return dt.getDataLang();
     }
 
+    public IDatatype bnode() {
+        return DatatypeMap.createBlank();
+    }
+    
+    public IDatatype bnode(IDatatype dt) {
+        return DatatypeMap.createBlank();
+    }
+       
+    public IDatatype floor(IDatatype dt) {
+        return getValue(Math.floor(dt.doubleValue()), dt.getDatatypeURI());
+    }
+
+    public IDatatype round(IDatatype dt) {
+        return getValue(Math.round(dt.doubleValue()), dt.getDatatypeURI());
+    }
+
+    public IDatatype ceil(IDatatype dt) {
+        return getValue(Math.ceil(dt.doubleValue()), dt.getDatatypeURI());
+    }
+
+    public IDatatype timezone(IDatatype dt) {
+        return DatatypeMap.getTimezone(dt);
+    }        
+
+    public IDatatype tz(IDatatype dt) {
+        return DatatypeMap.getTZ(dt);
+    }         
+           
     IDatatype time(Expr exp, IDatatype dt) {
         if (dt.getDatatypeURI().equals(RDF.xsddate)
                 || dt.getDatatypeURI().equals(RDF.xsddateTime)) {
@@ -1202,6 +1324,52 @@ public class ProxyImpl implements Proxy, ExprType {
 
         return null;
     }
+    
+    boolean isDate(IDatatype dt){
+        return dt.getCode() == IDatatype.DATE || dt.getCode() == IDatatype.DATETIME;
+    }
+    
+    public IDatatype year(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getYear(dt);
+    } 
+    
+    public IDatatype month(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getMonth(dt);
+    }
+    
+    public IDatatype day(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getDay(dt);
+    }
+    
+    public IDatatype hours(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getHour(dt);
+    } 
+    
+    public IDatatype minutes(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getMinute(dt);
+    } 
+    
+    public IDatatype seconds(IDatatype dt){
+        if (! isDate(dt)){
+            return null;
+        }
+        return DatatypeMap.getSecond(dt);
+    }
 
     IDatatype hash(Expr exp, IDatatype dt) {
         String name = exp.getModality();
@@ -1210,10 +1378,19 @@ public class ProxyImpl implements Proxy, ExprType {
         if (res == null) {
             return null;
         }
-        return DatatypeMap.createLiteral(res);
+        return DatatypeMap.newInstance(res);
+    }
+    
+    public IDatatype hash(IDatatype name, IDatatype dt) {
+        String res = new Hash(name.stringValue()).hash(dt.stringValue());
+        if (res == null) {
+            return null;
+        }
+        return DatatypeMap.newInstance(res);
     }
 
-    IDatatype abs(IDatatype dt) {
+
+    public IDatatype abs(IDatatype dt) {
         if (DatatypeMap.isInteger(dt)) {
             return getValue(Math.abs(dt.intValue()));
         } else if (DatatypeMap.isLong(dt)) {
@@ -1287,7 +1464,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return dt.isTrueAble();
     }
 
-    protected IDatatype datatype(Object o) {
+    protected IDatatype datatypeValue(Object o) {
         return (IDatatype) o;
     }
 
@@ -1353,8 +1530,46 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return DatatypeMap.newInstance(value);
     }
+    
+    
+   public IDatatype regex(IDatatype dt1, IDatatype dt2) {
+       return regex(dt1, dt2, null);
+    }
+   
+    public IDatatype regex(IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        if (!isStringLiteral(dt1)) {
+            return null;
+        }
+        Processor proc = Processor.create();
+        boolean b = proc.regex(dt1.stringValue(), dt2.stringValue(), (dt3 == null) ? null : dt3.stringValue());
+        return (b) ? TRUE : FALSE;
+    }
+    
+    IDatatype regex(Expr exp, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        if (!isStringLiteral(dt1)) {
+            return null;
+        }
+        Processor proc = getProcessor(exp);
+        boolean b = proc.regex(dt1.stringValue(), dt2.stringValue(), (dt3 == null) ? null : dt3.stringValue());
+        return (b) ? TRUE : FALSE;
+    }
+    
+    public IDatatype strlang(IDatatype dt1, IDatatype dt2) {
+        if (SPARQLCompliant && !DatatypeMap.isSimpleLiteral(dt1)) {
+            return null;
+        }
+        return DatatypeMap.createLiteral(dt1.getLabel(), null, dt2.getLabel());
+    }
 
-    Object langMatches(IDatatype ln1, IDatatype ln2) {
+    
+    public IDatatype strdt(IDatatype dt1, IDatatype dt2) {
+        if (SPARQLCompliant && !DatatypeMap.isSimpleLiteral(dt1)) {
+            return null;
+        }
+        return DatatypeMap.createLiteral(dt1.getLabel(), dt2.getLabel());
+    }
+
+    public IDatatype langMatches(IDatatype ln1, IDatatype ln2) {
         String l1 = ln1.getLabel();
         String l2 = ln2.getLabel();
 
@@ -1368,8 +1583,8 @@ public class ProxyImpl implements Proxy, ExprType {
         return getValue(l1.regionMatches(true, 0, l2, 0, 2));
     }
 
-    public Object self(Object obj) {
-        return obj;
+    public IDatatype self(IDatatype dt) {
+        return dt;
     }
 
     public Object similarity(Environment env) {
@@ -1433,7 +1648,7 @@ public class ProxyImpl implements Proxy, ExprType {
     /**
      * ?x in (a b) ?x in (xpath())
      */
-     Object in(IDatatype dt1, IDatatype dt2) {
+     public IDatatype in(IDatatype dt1, IDatatype dt2) {
 
         boolean error = false;
 
@@ -1540,6 +1755,11 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return TRUE;
     }
+    
+    
+    public IDatatype list(IDatatype... ldt){
+        return DatatypeMap.newList(ldt);
+    } 
     
     
      /**
@@ -1850,7 +2070,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return (IDatatype) res;
     }
       
-     private IDatatype or(IDatatype dt1, IDatatype dt2) {
+     public IDatatype or(IDatatype dt1, IDatatype dt2) {
         boolean e1 = error(dt1);
         boolean e2 = error(dt2);
         if (e1 && e2) {
@@ -1886,7 +2106,7 @@ public class ProxyImpl implements Proxy, ExprType {
          return FALSE;
      }
      
-    private IDatatype and(IDatatype dt1, IDatatype dt2) {
+    public IDatatype and(IDatatype dt1, IDatatype dt2) {
         boolean e1 = error(dt1);
         boolean e2 = error(dt2);
         if (e1 && e2) {
@@ -1900,21 +2120,26 @@ public class ProxyImpl implements Proxy, ExprType {
         }
     }
     
+    public IDatatype not(IDatatype dt){
+        if (error(dt)){
+            return error();
+        }
+        return getValue(! dt.booleanValue());
+    }
+    
     IDatatype isWellFormed(IDatatype dt){
         if (dt.isLiteral() && dt.isUndefined()){
-            if (dt.getDatatypeURI().startsWith(RDF.XSD) || dt.getDatatypeURI().startsWith(RDF.RDF)){
+            if (dt.getDatatypeURI().startsWith(RDF.XSD)){ 
+                return FALSE;
+            }
+            else if (dt.getDatatypeURI().startsWith(RDF.RDF) && ! dt.getDatatypeURI().equals(RDF.RDF_HTML)){
                 return FALSE;
             }
         }
         return TRUE;
     }
     
-    private IDatatype not(IDatatype dt){
-        if (error(dt)){
-            return error();
-        }
-        return getValue(! dt.booleanValue());
-    }
+    
 
     @Override
     public Object getBufferedValue(StringBuilder sb, Environment env) {

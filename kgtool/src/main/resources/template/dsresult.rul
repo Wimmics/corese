@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:44 CEST 2017
+Fri Apr 14 15:04:40 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>

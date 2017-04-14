@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:43 CEST 2017
+Fri Apr 14 15:04:40 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -19,7 +19,7 @@ where {
     values ?s { unnest(?ls) }
     bind (! sh:testShapeCore(?shape, ?cst, ?s) as ?suc)
     
-    bind (st:report(sh:not, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -41,7 +41,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:or, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -65,7 +65,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (st:report(sh:xone, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -89,7 +89,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:and, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -146,6 +146,8 @@ where {
         ?sh sh:property ?cst  
         ?cst sh:path ?p 
         filter not exists { ?cst sh:deactivated true }
+        # use case: sh:property [ sh:path p ; sh:property pp ]
+        # filter not exists { ?sh sh:path ?pp }
     }
     
     bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)

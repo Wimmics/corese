@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:43 CEST 2017
+Fri Apr 14 15:04:40 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -42,7 +42,7 @@ where {
 
   bind (! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o) as ?suc)
   
-  bind (st:report(sh:not, ?sh, ?shape, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:not, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
 ]]>
 </body>
@@ -110,7 +110,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind ( IF (?failure, false, ?count)  as ?suc)
 
-    bind (st:report(sh:xone, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:xone, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
 
@@ -367,7 +367,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind ( IF (?failure, false, ?count)  as ?suc)
 
-    bind (st:report(sh:or, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:or, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
 
@@ -518,7 +518,7 @@ where {
 	bind (! bound(?count) AS ?failure) .
 	bind ( IF (?failure, false, ?count)  as ?suc)
 
-    bind (st:report(sh:and, ?sh, ?shape, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:and, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
 
@@ -649,17 +649,20 @@ where {
         values ?q { 
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
-            sh:in sh:languageIn sh:node
+            sh:in sh:languageIn sh:node sh:property
         }
         ?sh ?q ?m    
     }
-            
+
   values ?s { unnest(?ls) }
+
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
 
   bind (coalesce(funcall(?q, ?shape, ?o, ?m), false) as ?suc )
   
-  bind (st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  bind (
+    if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
+    as ?b)
 }
 ]]>
 </body>

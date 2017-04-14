@@ -2606,7 +2606,7 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
             )
          )
         |
-        ((t = <ATSERVICE> | t = <ATDISPLAY> | t = <ATBIND> | t = <ATTYPE>)
+        ((t = <ATSERVICE> | t = <ATDISPLAY> | t = <ATBIND> | t = <ATTYPE> | t = <ATCOMPILE> )
          s = IRIrefConst() 
             { if (list == null) { list = new Metadata();}
                list.add(t.image, s);
@@ -2878,6 +2878,7 @@ TOKEN:
 | <ATTYPE:   "@type">
 | <ATDISPLAY:"@display">
 | <ATIMPORT: "@import">
+| <ATCOMPILE: "@compile">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>

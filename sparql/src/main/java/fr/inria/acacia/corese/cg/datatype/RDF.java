@@ -7,6 +7,7 @@ public interface RDF {
 	 static final String RDFS  =  "http://www.w3.org/2000/01/rdf-schema#";
 	 static final String XSD   =  "http://www.w3.org/2001/XMLSchema#";
 	 static final String OWL   =  "http://www.w3.org/2002/07/owl#";
+	 static final String RDF_HTML   =  RDF + "HTML";
 	 
 	 static final String XSDPrefix  = "xsd";
 	 static final String RDFPrefix =  "rdf";
@@ -21,6 +22,7 @@ public interface RDF {
 	
 	static final String qxsdString 	 = "xsd:string";
 	static final String qxsdInteger  = "xsd:integer";
+	static final String qxsdBoolean  = "xsd:boolean";
 	static final String qxsdlangString 	 = "rdf:langString";
 	static final String qrdfsLiteral = "rdfs:Literal";
 

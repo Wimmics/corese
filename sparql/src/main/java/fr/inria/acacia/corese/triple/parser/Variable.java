@@ -6,6 +6,7 @@ import java.util.List;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 
 /**
@@ -55,6 +56,12 @@ public class Variable extends Atom {
 		}
 		return sb;
 	}
+        
+       
+    @Override
+    public void toJava(JavaCompiler jc) {
+        jc.toJava(this);
+    }
 	
         @Override
 	public boolean equals(Object o){

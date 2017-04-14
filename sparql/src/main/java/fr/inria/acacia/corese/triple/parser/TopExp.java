@@ -26,6 +26,10 @@ public class TopExp implements ASTVisitable  {
 		return toString();
 	}
         
+        public StringBuffer toJava(StringBuffer sb){
+		return toString(sb);
+	}
+        
         @Override
         public void accept(ASTVisitor visitor) {
 		

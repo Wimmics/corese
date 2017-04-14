@@ -77,7 +77,7 @@ public class Processor {
         
 	private static final String FUNCALL  = "funcall";
 	private static final String EVAL  = "eval";
-	private static final String RETURN  = "return";
+	public static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
 	public static final String SET     = "set";
 	public static final String LET     = "let";
@@ -1289,9 +1289,9 @@ public class Processor {
 			ClassLoader cl = getClass().getClassLoader(); 
 			c = cl.loadClass(path);
 			
-			Class<Object>[] aclasses = new Class[term.getArity()];
+			Class<IDatatype>[] aclasses = new Class[term.getArity()];
 			for (int i = 0; i < aclasses.length; i++) {
-				aclasses[i] = Object.class;
+				aclasses[i] = IDatatype.class;
 			}
 			
 			setProcessor(c.newInstance());  
@@ -1319,7 +1319,7 @@ public class Processor {
 	/**
 	 * Eval external method
 	 */
-	public Object eval(Object[] args){
+	public Object eval(IDatatype[] args){
 		if (! isCorrect) return null;
 		try {
 			return fun.invoke(processor, args);
@@ -1334,6 +1334,9 @@ public class Processor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+                catch (NullPointerException ex){
+                    
+                }
 		return null;
 	}
         

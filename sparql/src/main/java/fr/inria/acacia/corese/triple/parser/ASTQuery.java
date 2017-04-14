@@ -17,7 +17,9 @@ import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -2078,6 +2080,14 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      *
      ***********************************************************
      */
+    
+    public String toJava() throws IOException{
+          JavaCompiler jc = new JavaCompiler();
+          jc.toJava(this);
+          return jc.toString();
+    }
+    
+    @Override
     public String toString() {
        ASTPrinter pr = new ASTPrinter(this);
        return pr.toString();

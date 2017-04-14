@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -195,6 +196,10 @@ implements Regex, Filter, Expr {
 	}
 	
 	public boolean isTerm(){
+		return false;
+	}
+        
+        public boolean isStatement(){
 		return false;
 	}
 	
@@ -432,6 +437,10 @@ implements Regex, Filter, Expr {
 		}
 		return str;
 	}
+        
+       public void toJava(JavaCompiler jc) {
+            jc.toJava(this);
+        }
 	
 	/**
 	 * Translate some terms like :

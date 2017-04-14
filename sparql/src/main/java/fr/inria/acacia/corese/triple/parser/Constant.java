@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import java.util.List;
 
@@ -142,9 +143,13 @@ public class Constant extends Atom {
             String lg = dt.getLang();
             return lg != null && lg != "";
 	}
-
-
-        @Override
+           
+     @Override
+    public void toJava(JavaCompiler jc) {
+        jc.toJava(this);
+    }
+       
+       @Override
        public StringBuffer toString(StringBuffer sb) { 
 		if (isLiteral()){						
 			if (hasLang()) {
@@ -153,7 +158,11 @@ public class Constant extends Atom {
 				sb.append(KeywordPP.LANG).append(getLang());
 			} 
 			else if (hasRealDatatype()) {
-				if (datatype.equals(RDF.qxsdInteger) || datatype.equals(RDF.xsdinteger) || datatype.equals(RDF.xsdboolean)){
+				if (datatype.equals(RDF.qxsdInteger) 
+                                        || datatype.equals(RDF.xsdinteger) 
+                                        || datatype.equals(RDF.qxsdBoolean)
+                                        || datatype.equals(RDF.xsdboolean)                                        
+                                        ){
 					sb.append(name);
 				}
 				else if (datatype.startsWith("http://")){

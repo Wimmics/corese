@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.corese.compiler.java.JavaCompiler;
+
 /**
  * Function definition function xt:fun(x) { exp }
  *
@@ -41,6 +43,12 @@ public class Function extends Statement {
         sb.append(" }");
         return sb;
     }
+    
+    @Override
+    public void toJava(JavaCompiler jc){
+        jc.toJava(this);
+    }
+    
     
     Metadata getMetadata(){
         return annot;

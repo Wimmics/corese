@@ -8,6 +8,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -142,6 +143,7 @@ public class Term extends Expression {
 		return t;
 	}
        	
+        @Override
 	public String getLabel() {
 		if (getLongName()!=null) return getLongName();
 		return name;
@@ -380,10 +382,18 @@ public class Term extends Expression {
         return sb;
     }
     
-       	
-	static boolean isNegation(String name) {
-		return (name.equals(STNOT) || name.equals(SENOT));
-	}
+    public String javaName(){
+        return NSManager.nstrip(getName());
+    }
+    
+        @Override
+    public void toJava(JavaCompiler jc) {
+        jc.toJava(this);
+    }     
+
+    static boolean isNegation(String name) {
+        return (name.equals(STNOT) || name.equals(SENOT));
+    }
 			
 	
         @Override

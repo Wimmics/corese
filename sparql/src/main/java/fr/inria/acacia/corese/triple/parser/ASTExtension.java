@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 
+import fr.inria.corese.compiler.java.JavaCompiler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +24,9 @@ public class ASTExtension {
     ASTFunMap[] maps;
     private String name;
     private Constant pack;
-    ArrayList<Expression> funList;
+    ArrayList<Function> funList;
     
-    public class ASTFunMap extends HashMap<String, Expression> {}
+    public class ASTFunMap extends HashMap<String, Function> {}
 
     public ASTExtension() {
         //map = new FunMap();
@@ -69,12 +70,12 @@ public class ASTExtension {
      * exp = function (ex:name(?x) = exp )
      * @param exp 
      */
-    void defineFunction(Expression exp){
+    void defineFunction(Function exp){
         funList.add(exp);
         define(exp);
     }
     
-    public List<Expression> getFunList(){
+    public List<Function> getFunList(){
         return funList;
     }
     
@@ -82,7 +83,7 @@ public class ASTExtension {
      *
      * exp: function(st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1)))
      */
-    public void define(Expression exp) {
+    public void define(Function exp) {
         Expression fun = exp.getFunction(); //exp.getArg(0);
         ASTFunMap fm = getMap(fun);
         if (fm == null){
@@ -94,7 +95,7 @@ public class ASTExtension {
     
     public void add(ASTExtension ext){
         for (ASTFunMap m : ext.getMaps()){
-            for (Expression e : m.values()){
+            for (Function e : m.values()){
                 if (! isDefined(e.getFunction())){
                     define(e);
                 }
@@ -137,6 +138,7 @@ public class ASTExtension {
         return m.get(label);
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("extension: ");
@@ -150,8 +152,8 @@ public class ASTExtension {
         }
         return sb.toString();
     }
-
-    /**
+    
+   /**
      * @return the name
      */
     public String getName() {

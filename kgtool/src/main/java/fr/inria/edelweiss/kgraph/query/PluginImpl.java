@@ -87,21 +87,27 @@ public class PluginImpl extends ProxyImpl {
     private static IStorage storageMgr;
     private AppxSearchPlugin pas;
 
+    public PluginImpl() {
+        init();
+    }
 
     PluginImpl(Matcher m) {
-        if (table == null) {
-            table = new Table();
-        }
+        this();
         if (m instanceof MatcherImpl) {
             match = (MatcherImpl) m;
         }
+    }
+     
+    void init(){
+        if (table == null) {
+            table = new Table();
+        }       
         dtnumber = getValue(Processor.FUN_NUMBER);
         cache = new TreeNode();
         ext = new ExtendGraph(this);
         pt  = new PluginTransform(this);
-        pas = new AppxSearchPlugin(this);
+        pas = new AppxSearchPlugin(this); 
     }
-    
 
     public static PluginImpl create(Matcher m) {
         return new PluginImpl(m);
@@ -169,7 +175,7 @@ public class PluginImpl extends ProxyImpl {
 
     @Override
     public Object function(Expr exp, Environment env, Producer p, Object o) {
-        IDatatype dt = datatype(o);
+        IDatatype dt = datatypeValue(o);
 
         switch (exp.oper()) {
 
@@ -350,7 +356,7 @@ public class PluginImpl extends ProxyImpl {
                 return setProperty(dt1, dt2.intValue(), dt3);
                                         
             case IOTA:
-                return iotag(param);
+                return iota(param);
                 
             case APPROXIMATE:
                 return pas.eval(exp, env, p, args);
@@ -373,15 +379,15 @@ public class PluginImpl extends ProxyImpl {
 
     }
     
-    IDatatype iotag(IDatatype[] args){
+    public IDatatype iota(IDatatype... args){
         IDatatype dt = args[0];
         if (dt.isNumber()){
-            return iota(args);
+            return iotaNumber(args);
         }
-        return iotas(args);
+        return iotaString(args);
     }
     
-    IDatatype iota(IDatatype[] args){
+    IDatatype iotaNumber(IDatatype[] args){
         int start = 1;
         int end = 1;
         
@@ -411,7 +417,7 @@ public class PluginImpl extends ProxyImpl {
         return dt;
     }
     
-    IDatatype iotas(IDatatype[] args){
+    IDatatype iotaString(IDatatype[] args){
         String fst =  args[0].stringValue();
         String snd = args[1].stringValue();
         int step = 1;

@@ -73,6 +73,7 @@ public interface IDatatype
     boolean isLoop();
 
     List<IDatatype> getValues();
+    List<IDatatype> getValueList();
     
     Iterable getLoop();
 
@@ -110,6 +111,7 @@ public interface IDatatype
      * @return the datatype casted
      */
     IDatatype cast(IDatatype target, IDatatype javaType);
+    IDatatype cast(IDatatype target);
 
     /**
      * @return the lang as a datatype
@@ -206,7 +208,14 @@ public interface IDatatype
      */
     boolean greaterOrEqual(IDatatype iod)
             throws CoreseDatatypeException;
-
+    
+    IDatatype eq(IDatatype dt);
+    IDatatype neq(IDatatype dt);
+    IDatatype ge(IDatatype dt);
+    IDatatype gt(IDatatype dt);
+    IDatatype lt(IDatatype dt);
+    IDatatype le(IDatatype dt);
+    
     /**
      *
      * @param iod

@@ -50,6 +50,7 @@ public class CoreseDate extends CoreseDatatype {
 	}
 	
 	
+        @Override
 	public  int getCode(){
 		return code;
         }
@@ -251,10 +252,12 @@ public class CoreseDate extends CoreseDatatype {
 		return cal;
 	}
 	
+        @Override
 	public boolean isNumber(){
 		return false;
 	}
 	
+        @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case DATE: 
@@ -267,6 +270,7 @@ public class CoreseDate extends CoreseDatatype {
 	}
 	
 
+        @Override
 	public boolean less(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case DATE:
@@ -277,6 +281,7 @@ public class CoreseDate extends CoreseDatatype {
 		throw failure();
 	}
 	
+        @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case DATE:
@@ -287,6 +292,7 @@ public class CoreseDate extends CoreseDatatype {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case DATE:
@@ -297,6 +303,7 @@ public class CoreseDate extends CoreseDatatype {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case DATE:
@@ -309,6 +316,7 @@ public class CoreseDate extends CoreseDatatype {
 	
 	
 	
+        @Override
 	public String getNormalizedLabel() {
 		return normalizedLabel;
 	}
@@ -382,10 +390,12 @@ public class CoreseDate extends CoreseDatatype {
 		return toString(cal);
 	}
 	
+        @Override
 	public String getLowerCaseLabel() {
 		return this.getNormalizedLabel();
 	}
 	
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case DATE:

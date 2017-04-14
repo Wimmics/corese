@@ -29,11 +29,25 @@ import java.util.ArrayList;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-class Walker extends Interpreter {
+public class Walker extends Interpreter {
 
     static IDatatype ZERO = DatatypeMap.ZERO;
     static IDatatype TRUE = DatatypeMap.TRUE;
     static final StringBuilder EMPTY = new StringBuilder(0);
+
+    /**
+     * @return the compareIndex
+     */
+    public static boolean isCompareIndex() {
+        return compareIndex;
+    }
+
+    /**
+     * @param aCompareIndex the compareIndex to set
+     */
+    public static void setCompareIndex(boolean aCompareIndex) {
+        compareIndex = aCompareIndex;
+    }
     private Expr exp, function;
     Node qNode, tNode;
     IDatatype dtres;
@@ -46,6 +60,7 @@ class Walker extends Interpreter {
     TreeData tree;
     Evaluator eval;
     private static final String NL = System.getProperty("line.separator");
+    private static boolean compareIndex = false;
     private boolean hasLang = false;
     private String lang;
     private boolean ok = true;
@@ -497,8 +512,14 @@ class Walker extends Interpreter {
     class Compare implements Comparator<IDatatype> {
 
         @Override
-        public int compare(IDatatype o1, IDatatype o2) {
-            return o1.compareTo(o2);
+        public int compare(IDatatype dt1, IDatatype dt2) {
+            if (compareIndex && dt1.getCode() != dt2.getCode()){
+                // same value with different datatype considered different
+                return Integer.compare(dt1.getCode(), dt2.getCode());
+            }
+            else {
+               return dt1.compareTo(dt2);
+            } 
         }
     }
 

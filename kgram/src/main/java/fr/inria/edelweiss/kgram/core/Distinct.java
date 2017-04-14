@@ -68,25 +68,13 @@ public class Distinct {
 			else if (n2 == null){
                             return +1;
 			}
-			else if (byIndex){
-                            return compare(n1.getIndex(), n2.getIndex());
+			else if (byIndex && n1.getIndex() != -1 && n2.getIndex() != -1){
+                           return Integer.compare(n1.getIndex(), n2.getIndex());
 			}
                         else {
-                            return n1.compare(n2);
+                           return n1.compare(n2);
                         }
-		}
-                
-                int compare(int n1, int n2){
-                    if (n1 < n2){
-                        return -1;
-                    }
-                    else if (n1 == n2){
-                        return 0;
-                    }
-                    else {
-                        return 1;
-                    }
-                }
+		}               
 	}
 
         Distinct(){

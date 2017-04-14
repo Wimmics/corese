@@ -32,6 +32,7 @@ public class Group implements Comparator<Mappings>{
 		// min(?l, groupBy(?x, ?y))
 		isExtend = false;
     private boolean isFake = false;
+    private static boolean compareIndex = false;
 
     /**
      * @return the afake
@@ -45,6 +46,20 @@ public class Group implements Comparator<Mappings>{
      */
     public void setFake(boolean afake) {
         this.isFake = afake;
+    }
+
+    /**
+     * @return the compareValue
+     */
+    public static boolean isCompareIndex() {
+        return compareIndex;
+    }
+
+    /**
+     * @param compareValue the compareValue to set
+     */
+    public static void setCompareIndex(boolean b) {
+        compareIndex = b;
     }
 
 	
@@ -114,10 +129,13 @@ public class Group implements Comparator<Mappings>{
 			else if (n2 == null){
 				return +1;
 			}
-			else {
-				return n1.compare(n2);
+			else if (isCompareIndex() && n1.getIndex() != -1 && n2.getIndex() != -1){
+                            return Integer.compare(n1.getIndex(), n2.getIndex());
 			}
-		}
+                        else {
+                            return n1.compare(n2);
+                        }
+		}                            
 	}
 
 

@@ -60,6 +60,7 @@ public class LoadFormat {
         define(SWF,     Loader.WORKFLOW_FORMAT);
         
         utable = new HashMap<String, Integer>();
+        udefine("text/html", Loader.RDFA_FORMAT);
         udefine("text/turtle", Loader.TURTLE_FORMAT);
         udefine("text/n3", Loader.NT_FORMAT);
         udefine("text/trig", Loader.TRIG_FORMAT);

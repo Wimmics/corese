@@ -1115,7 +1115,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     public void compact(){
         cleanIndex();
-        if (isGraphNode(getNode(Graph.RULE_INDEX))){
+        if (containsCoreseNode(getNode(Graph.RULE_INDEX))){
             table.compact();
         }
     }
@@ -1778,14 +1778,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public void addGraphNode(Node gNode) {
-        if (!isGraphNode(gNode)) {
+        if (!containsCoreseNode(gNode)) {
             //graph.put(gNode.getLabel(), gNode);
             graph.put(getID(gNode), gNode);
             indexNode((IDatatype) gNode.getValue(), gNode);
         }
     }
 
-    public boolean isGraphNode(Node node) {
+    public boolean containsCoreseNode(Node node) {
         //return graph.containsKey(node.getLabel());
         return graph.containsKey(getID(node));
     }

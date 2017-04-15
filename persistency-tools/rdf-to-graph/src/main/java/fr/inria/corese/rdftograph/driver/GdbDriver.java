@@ -87,18 +87,21 @@ public abstract class GdbDriver {
 		cache = cachebuilder.build();
 	}
 
-	/** 
+	/**
 	 * Open an existing database.
+	 *
 	 * @param dbPath
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public abstract Graph openDatabase(String dbPath);
-	
+
 	public Graph createDatabase(String dbPath) throws IOException {
-		wipeDirectory(dbPath);
+		if (Files.exists(Paths.get(dbPath))) {
+			wipeDirectory(dbPath);
+		}
 		return null;
-	} 
+	}
 
 	public abstract void closeDb() throws Exception;
 

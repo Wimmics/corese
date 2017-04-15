@@ -43,7 +43,7 @@ public class CoreseAdapter {
 	public void execQuery(String query) {
 		try {
 			map = exec.query(query);
-		} catch (EngineException ex) {
+		} catch (Exception ex) {
 			logger.log(Level.SEVERE, "Exception when attempting to execute a query: ", ex);
 		}
 	}

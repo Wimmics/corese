@@ -9,7 +9,6 @@ import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.corese.rdftograph.RdfToGraph.DbDriver;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.wimmics.coresetimer.CoreseTimer.Profile;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,19 +20,17 @@ import org.w3c.dom.Text;
 import fr.inria.corese.w3c.validator.W3CMappingsValidator;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import java.io.File;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
+import java.util.logging.Level;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openrdf.rio.Rio;
 
 /**
@@ -42,9 +39,14 @@ import org.openrdf.rio.Rio;
  */
 public class Main {
 
-	private static Logger logger = Logger.getLogger(Main.class.getName());
+	private static Logger logger = LogManager.getLogger(Main.class.getName());
 
 	public static class TestSuite {
+
+		public enum DatabaseCreation {
+			IF_NOT_EXIST,
+			ALWAYS
+		}
 
 		private final String OUTPUT_FILE_FORMAT = "%s/result_%s.xml";
 
@@ -119,8 +121,14 @@ public class Main {
 			return outputRoot;
 		}
 
-		public TestSuite createDb() throws Exception {
-			new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+		public TestSuite createDb(DatabaseCreation mode) throws Exception {
+			String databasePath = getInputDb();
+			if (Files.exists(Paths.get(databasePath)) && (mode == DatabaseCreation.IF_NOT_EXIST)) {
+				logger.info("Not creating database since it already exists at {}", databasePath);
+			} else {
+				logger.info("Creating database at {}", databasePath);
+				new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+			}
 			return this;
 		}
 
@@ -363,21 +371,16 @@ public class Main {
 
 			doc.appendChild(rootElement);
 
-		} catch (ParserConfigurationException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
-		}
-
-		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(test.getOutputPath()));
-			transformer.transform(source, result);
-		} catch (TransformerConfigurationException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
-		} catch (TransformerException ex) {
-			Logger.getLogger(Main.class.getName()).log(Level.ERROR, null, ex);
+			StreamResult streamResult = new StreamResult(new File(test.getOutputPath()));
+			transformer.transform(source, streamResult);
+		} catch (ParserConfigurationException | TransformerException ex) {
+			logger.error("Error when writing results:", ex.getMessage());
+			ex.printStackTrace();
 		}
+
 	}
 
 }

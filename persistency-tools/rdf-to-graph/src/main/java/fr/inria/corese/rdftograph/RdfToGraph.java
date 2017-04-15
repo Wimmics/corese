@@ -336,6 +336,7 @@ public class RdfToGraph {
 			LOGGER.info("Loading file");
 //			createVertices(makeStream(fileName), format);
 			createEdges(makeStream(fileName), format);
+			driver.commit();
 			LOGGER.info("Writing graph in db");
 			LOGGER.info("closing DB");
 			driver.closeDb();
@@ -345,30 +346,6 @@ public class RdfToGraph {
 		}
 	}
 
-	/**
-	 * Fill model with the content of an input stream.
-	 *
-	 * @param in Stream on an RDF file.
-	 * @param format Format used to represent the RDF in the file.
-	 * @throws IOException
-	 */
-//	public void createVertices(InputStream in, RDFFormat format) throws IOException {
-////		VerticesBuilder verticesBuilder = new VerticesBuilder();
-//		RDFParser rdfParser = Rio.createParser(format);
-//		ParserConfig config = new ParserConfig();
-//		config.set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-//		config.addNonFatalError(NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
-//		rdfParser.setParserConfig(config);
-//		rdfParser.setRDFHandler(verticesBuilder);
-//		try {
-//			rdfParser.parse(in, "");
-//		} catch (Exception e) {
-//			LOGGER.severe(e.getMessage());
-//			e.printStackTrace();
-//		}
-//		in.close();
-//		driver.commit();
-//	}
 	public void createEdges(InputStream in, RDFFormat format) throws IOException {
 		EdgesBuilder edgesBuilder = new EdgesBuilder();
 		RDFParser rdfParser = Rio.createParser(format);
@@ -389,30 +366,6 @@ public class RdfToGraph {
 
 	final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;
 
-//	public void writeModelToNeo4j() {
-//		int triples = 0;
-//		for (Statement statement : model) {
-//			Resource context = statement.getContext();
-//			Resource source = statement.getSubject();
-//			IRI predicat = statement.getPredicate();
-//			Value object = statement.getObject();
-//
-//			String contextString = (context == null) ? "" : context.stringValue();
-//
-//			driver.createNode(source);
-//			driver.createNode(object);
-//
-//			Map<String, Object> properties = new HashMap();
-//			properties.put(EDGE_G, contextString);
-//			driver.createRelationship(source, object, predicat.stringValue(), properties);
-//			triples++;
-//			if (triples % CHUNK_SIZE == 0) {
-//				LOGGER.info("" + triples);
-//				driver.commit();
-//			}
-//		}
-//		System.out.println(triples + " processed");
-//	}
 	public static String getKind(Value resource) {
 		if (isLargeLiteral(resource)) {
 			return LARGE_LITERAL;

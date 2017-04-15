@@ -11,14 +11,16 @@ import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
+import static fr.inria.wimmics.coresetimer.Main.TestSuite.DatabaseCreation.ALWAYS;
+import static fr.inria.wimmics.coresetimer.Main.TestSuite.DatabaseCreation.IF_NOT_EXIST;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
@@ -110,7 +112,7 @@ public class QualitativeTest {
 			setInputDb("/human_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot).
-			createDb();
+			createDb(ALWAYS);
 		TestDescription[][] tests = {
 			{testRoot.buildTest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
 			{testRoot.buildTest("select (count(*) as ?c) where {?x a ?y}")},
@@ -147,7 +149,7 @@ public class QualitativeTest {
 			setInputDb("/10m_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-		rootTest.createDb();
+		rootTest.createDb(ALWAYS);
 		TestDescription[][] tests = {
 			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
 			{rootTest.buildTest("select ?x ?y where { ?x rdf:type ?y}")}
@@ -164,7 +166,7 @@ public class QualitativeTest {
 			setInputDb("/100m_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-		rootTest.createDb();
+		rootTest.createDb(ALWAYS);
 		TestDescription[][] tests = {
 			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
@@ -182,7 +184,7 @@ public class QualitativeTest {
 			setInputDb("/bug_name_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-		rootTest.createDb();
+		rootTest.createDb(ALWAYS);
 		TestDescription[][] tests = {
 			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{rootTest.buildTest("select ?x ?p ?y where {?x ?p ?y}")},};
@@ -200,23 +202,27 @@ public class QualitativeTest {
 	@DataProvider(name = "input")
 	public Iterator<Object[]> buildTests() throws Exception {
 		String[] inputFiles = {
-			//			"test-1.nq",
-			//			"human_2007_04_17.rdf",	
 //			"btc-2010-chunk-000.nq:1",
+//			"btc-2010-chunk-000.nq:3",
 //			"btc-2010-chunk-000.nq:10",
+//			"btc-2010-chunk-000.nq:31",
 //			"btc-2010-chunk-000.nq:100",
-			"btc-2010-chunk-000.nq:1000",
+//			"btc-2010-chunk-000.nq:316",
+//			"btc-2010-chunk-000.nq:1000",
+//			"btc-2010-chunk-000.nq:3162",
 //			"btc-2010-chunk-000.nq:10000",
-//			"btc-2010-chunk-000.nq:100000", 
-//			"btc-2010-chunk-000.nq:1000000", 
-		//			"btc-2010-chunk-000.nq",
-		//			"btc-2010-chunk-000_(10|100).nq"	
+//			"btc-2010-chunk-000.nq:31622",
+//			"btc-2010-chunk-000.nq:100000",
+//			"btc-2010-chunk-000.nq:316227",
+//			"btc-2010-chunk-000.nq:1000000",
+//			"btc-2010-chunk-000.nq:3162277",
+//			"btc-2010-chunk-000.nq"
+//			"btc-2010-chunk-000_(10|100).nq"	
 		};
 		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", 
-//			"select ?x ?y where { ?x rdf:type ?y}",
-//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
-//			"select ?x ?p ?y where { ?x ?p ?y}"
+			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",
+		//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
+		//			"select ?x ?p ?y where { ?x ?p ?y} order by ?x ?p ?y"
 		};
 
 		return new Iterator<Object[]>() {
@@ -261,12 +267,13 @@ public class QualitativeTest {
 						setWarmupCycles(2).
 						setMeasuredCycles(5).
 						setInput(inputFile).
-						setInputDb("/tmp/" + inputFile.replace(":", "_") + "_db").
+						setInputDb("/tmp/" + inputFile.replace(":", "_").replace(",", "_") + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					try {
-						currentSuite.createDb();
+						currentSuite.createDb(IF_NOT_EXIST);
 					} catch (Exception ex) {
+						ex.printStackTrace();
 						throw new RuntimeException(ex);
 					}
 				}
@@ -279,12 +286,12 @@ public class QualitativeTest {
 	@Test(dataProvider = "input", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
-		java.util.logging.Logger.getGlobal().setLevel(Level.FINER);
+		java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
 		java.util.logging.Logger.getGlobal().setUseParentHandlers(false);
 		Handler newHandler = new ConsoleHandler();
-		newHandler.setLevel(Level.FINER);
+		newHandler.setLevel(Level.FINEST);
 		java.util.logging.Logger.getGlobal().addHandler(newHandler);
-		
+
 		CoreseTimer timerMemory = null;
 		CoreseTimer timerDb = null;
 		try {
@@ -308,21 +315,4 @@ public class QualitativeTest {
 		writeResult(test, timerDb, timerMemory);
 		assertTrue(result, test.getId());
 	}
-
-//	@Test(dataProvider = "input", groups = "")
-//	public static void testProcess(TestDescription test) {
-//		try {
-//			logger.info("begin test: " + test.getId());
-//			Process buildBd = new ProcessBuilder("rdf-to-graph-build-bd", test.getInput(), test.getInputDb()).start();
-//			Process testMem = new ProcessBuilder("rdf-to-graph-test-mem", test.getInput(), test.getOutputPath(), test.getResultFileName(DB)).start();
-//			buildBd.waitFor();
-//			Process testBd = new ProcessBuilder("rdf-to-graph-test-bd", test.getInputDb(), test.getResultFileName(MEMORY)).start();
-//			testBd.waitFor();
-//			testMem.waitFor();
-//			// compare results	
-//			logger.info("end test: " + test.getId());
-//		} catch (IOException | InterruptedException ex) {
-//			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//	}
 }

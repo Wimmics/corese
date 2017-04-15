@@ -59,7 +59,8 @@ public class TinkerpopProducer extends ProducerImpl {
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
 		LOGGER.trace("in case " + key.toString());
 		filter = databaseDriver.getFilter(key.toString(), s, p, o, g);
-		return graph.getEdges(filter);
+		Iterable<Entity> result = graph.getEdges(filter);
+		return result;
 	}
 
 	/**

@@ -80,10 +80,11 @@ public class CoreseTimer {
 	}
 
 	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
+		LOGGER.entering(CoreseTimer.class.getName(), "run");
 		assert (initialized);
 
 		// Loading the nq data in corese, then applying several times the query.
-		LOGGER.log(Level.FINE, "beginning with input #{0}", test.getInput());
+		LOGGER.log(Level.INFO, "beginning with input #{0}", test.getInput());
 		// require to have a brand new adapter for each new input set.
 		adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
 
@@ -103,14 +104,16 @@ public class CoreseTimer {
 		}
 
 		String query = test.getRequest();
-		LOGGER.log(Level.FINE, "processing nbQuery #{0}", query);
+		LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
 		stats = new DescriptiveStatistics();
 		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
 		for (int i = 0; i < nbCycles; i++) {
-			LOGGER.log(Level.FINE, "iteration #{0}", i);
+			LOGGER.log(Level.INFO, "iteration #{0}", i);
 			System.gc();
 			final long startTime = System.currentTimeMillis();
+			LOGGER.log(Level.INFO, "before query");
 			adapter.execQuery(query);
+			LOGGER.log(Level.INFO, "after query");
 			final long endTime = System.currentTimeMillis();
 			long delta = endTime - startTime;
 			LOGGER.info(String.format("elapsed time = %d ms", delta));
@@ -121,6 +124,7 @@ public class CoreseTimer {
 		adapter.saveResults(test.getResultFileName(mode));
 		mappings = adapter.getMappings();
 		adapter.postProcessing();
+		LOGGER.exiting(CoreseTimer.class.getName(), "run");
 		return this;
 	}
 

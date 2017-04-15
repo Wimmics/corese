@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
@@ -197,7 +198,7 @@ public class Neo4jDriver extends GdbDriver {
 
 	@Override
 	public Object createRelationship(Value sourceId, Value objectId, String predicate, Map<String, Object> properties) {
-		Object result = null;
+		Object result;
 		Vertex vSource = createOrGetNode(sourceId);
 		Vertex vObject = createOrGetNode(objectId);
 
@@ -208,11 +209,17 @@ public class Neo4jDriver extends GdbDriver {
 		});
 		p.add(EDGE_P);
 		p.add(predicate);
-		Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
-		result = e.id();
+		GraphTraversal<Vertex, Edge> alreadyExist = graph.traversal().V(vSource.id()).outE().has(EDGE_P, predicate).as("e").inV().hasId(vObject.id()).select("e");
+		try {
+			result = alreadyExist.next();
+		} catch (NoSuchElementException ex) {
+			result = null;
+		}
+		if (result == null) {
+			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
+			result = e.id();
+		}
 		return result;
-		//properties.put(EDGE_P, predicate);
-		//return g.createRelationship((Long) source, (Long) object, rdfEdge, properties);
 	}
 
 	@Override
@@ -223,7 +230,7 @@ public class Neo4jDriver extends GdbDriver {
 	@Override
 	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g) {
 		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
-		switch (key.toString()) {
+		switch (key) {
 			case "?g?sPO":
 				filter = t -> {
 					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_O, o);

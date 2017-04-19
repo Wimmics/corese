@@ -44,21 +44,6 @@ public class GnuplotDrawer {
 		TITLE_SET2
 	}
 
-	private class Coords {
-
-		private long x;
-		private long y;
-
-		private Coords(long x, long y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		public Coords build(long x, long y) {
-			return new Coords(x, y);
-		}
-	}
-
 	/**
 	 *
 	 * @param args Names of the files to parse to extract coordinates of the
@@ -121,8 +106,6 @@ public class GnuplotDrawer {
 			logger.log(Level.INFO, "guessed size = {0}", size);
 
 			NodeList memoryStats = document.getElementsByTagName("StatsMemory");
-			String textStat = memoryStats.item(0).getTextContent();
-
 			long memoryMedian = extractMedian(memoryStats);
 			logger.log(Level.INFO, "memory median = {0}", memoryMedian);
 			memoryCoords.put(size, memoryMedian);

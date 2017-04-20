@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.wimmics.draw.gnuplot;
+package fr.inria.corese.draw.gnuplot;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,9 +35,9 @@ import org.xml.sax.SAXException;
  * @author edemairy
  */
 public class GnuplotDrawer {
-
+	
 	private static Logger logger = Logger.getLogger(GnuplotDrawer.class.getName());
-
+	
 	public enum ScriptVariables {
 		DATA_FILENAME,
 		TITLE,
@@ -53,11 +55,15 @@ public class GnuplotDrawer {
 		// read main arguments
 		String outputPdf = "/tmp/out.pdf";
 		String gnuplotPath = "gnuplot";
+		String repoPath = ".";
 		ArrayList<String> filenames = new ArrayList<>();
 		for (int cptArg = 0; cptArg < args.length; cptArg++) {
-			if (args[cptArg].equals("-o")) {
+			String currentArg = args[cptArg];
+			if (currentArg.equals("-o")) {
 				outputPdf = args[cptArg + 1];
 				cptArg++;
+			} else if (currentArg.equals("-g")) {
+				repoPath = args[cptArg + 1];
 			} else if (args[cptArg].equals("-gnuplot")) {
 				gnuplotPath = args[cptArg + 1];
 				cptArg++;
@@ -104,12 +110,12 @@ public class GnuplotDrawer {
 			Document document = builder.parse(currentFile);
 			long size = guessSize(document);
 			logger.log(Level.INFO, "guessed size = {0}", size);
-
+			
 			NodeList memoryStats = document.getElementsByTagName("StatsMemory");
 			long memoryMedian = extractMedian(memoryStats);
 			logger.log(Level.INFO, "memory median = {0}", memoryMedian);
 			memoryCoords.put(size, memoryMedian);
-
+			
 			NodeList dbStats = document.getElementsByTagName("StatsDb");
 			long dbMedian = extractMedian(dbStats);
 			logger.log(Level.INFO, "db median = {0}", dbMedian);
@@ -138,7 +144,8 @@ public class GnuplotDrawer {
 		// Execute gnuplot to generate the .pdf
 		Map<String, String> scriptVariables = new HashMap<>();
 		scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), result.getAbsolutePath());
-		scriptVariables.put(ScriptVariables.TITLE.name(), "Logarithmic graph of time duration by sample size");
+		String title = String.format("Logarithmic graph of time duration by sample size\\\\n%s", getGitVersion(repoPath));
+		scriptVariables.put(ScriptVariables.TITLE.name(), title);
 		scriptVariables.put(ScriptVariables.OUTPUT_FILE.name(), outputPdf);
 		scriptVariables.put(ScriptVariables.TITLE_SET1.name(), "memory");
 		scriptVariables.put(ScriptVariables.TITLE_SET2.name(), "neo4j");
@@ -158,13 +165,14 @@ public class GnuplotDrawer {
 			}
 		});
 		gnuplotBw.close();
+		logger.info("PDF written in " + outputPdf);
 		Process gnuplot = Runtime.getRuntime().exec(gnuplotPath + " " + gnuplotScript.getAbsolutePath());
 		BufferedReader oreader = new BufferedReader(new InputStreamReader(gnuplot.getInputStream()));
 		BufferedReader ereader = new BufferedReader(new InputStreamReader(gnuplot.getErrorStream()));
 		oreader.lines().forEachOrdered(System.out::println);
 		ereader.lines().forEachOrdered(System.err::println);
 	}
-
+	
 	private static int extractMedian(NodeList node) {
 		Pattern medianExtract = Pattern.compile(".*median: (\\d+)\\.\\d+.*", Pattern.DOTALL);
 		String textStat = node.item(0).getTextContent();
@@ -176,7 +184,7 @@ public class GnuplotDrawer {
 			throw new IllegalArgumentException("the node provided does not contain any median");
 		}
 	}
-
+	
 	private static long guessSize(Document document) {
 		long size;
 		String dbName = document.getElementsByTagName("DbPath").item(0).getTextContent();
@@ -202,5 +210,12 @@ public class GnuplotDrawer {
 			}
 		}
 		return size;
+	}
+	
+	private static String getGitVersion(String path) throws IOException {
+		Process p = new ProcessBuilder("git", "log", "-1").start();
+		BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String result = output.lines().filter(s -> s.contains("Date") || s.contains("commit")).collect(Collectors.joining("\\\\n"));
+		return result;
 	}
 }

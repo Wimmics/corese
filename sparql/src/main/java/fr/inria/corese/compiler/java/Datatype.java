@@ -43,6 +43,14 @@ public class Datatype {
         switch (val){
             case 0: return "DatatypeMap.ZERO";
             case 1: return "DatatypeMap.ONE";
+            case 2: return "DatatypeMap.TWO";
+            case 3: return "DatatypeMap.THREE";        
+            case 4: return "DatatypeMap.FOUR";
+            case 5: return "DatatypeMap.FIVE";
+            case 6: return "DatatypeMap.SIX";
+            case 7: return "DatatypeMap.SEVEN";          
+            case 8: return "DatatypeMap.EIGHT";          
+            case 9: return "DatatypeMap.NINE";          
         }
         return String.format("DatatypeMap.newInstance(%s)", val);
     }

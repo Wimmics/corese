@@ -4,8 +4,10 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTExtension;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Function;
+import fr.inria.acacia.corese.triple.parser.Let;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Statement;
 import fr.inria.acacia.corese.triple.parser.Term;
@@ -36,16 +38,23 @@ public class JavaCompiler {
               "import fr.inria.acacia.corese.api.IDatatype;\n"
             + "import fr.inria.edelweiss.kgraph.query.PluginImpl;\n"
             + "import fr.inria.acacia.corese.cg.datatype.DatatypeMap;\n";
+    public static final String VAR_EXIST = "?_b";
     
+    
+    int margin = 0;
+    int count = 0;
+    String name = "Extension";
     
     StringBuilder sb;
-    int margin = 0;
-    Datatype dtcompiler;
-    String name = "Extension";
+    Datatype dtc;
+    ASTQuery ast;
+    Stack stack;
+    
 
     public JavaCompiler() {
         sb = new StringBuilder();
-        dtcompiler = new Datatype();
+        dtc = new Datatype();
+        stack = new Stack();
     }
     
      public JavaCompiler(String name) {
@@ -59,6 +68,7 @@ public class JavaCompiler {
     }
 
     public JavaCompiler toJava(ASTQuery ast) throws IOException {
+        this.ast = ast;
         toJava(ast.getDefine());
         return this;
     }
@@ -108,11 +118,15 @@ public class JavaCompiler {
     
     
     void toJava(Function exp) {
+        stack.push(exp);
         functionDeclaration(exp.getFunction());
         append(" {");
         incrnl();
-        toJava(exp.getBody());
-        pv(exp.getBody());
+        Rewrite rw = new Rewrite(ast);
+        Expression body = rw.process(exp.getBody());
+        toJava(body);
+        stack.pop(exp);
+        pv(body);
         decrnl();
         append("}");
         nl();
@@ -123,15 +137,22 @@ public class JavaCompiler {
     }
 
     public void toJava(Variable var) {
-        append(var.getSimpleName());
+        append(name(var));
     }
 
+    String name(Variable var){
+        return var.getSimpleName();
+    }
+    
     public void toJava(Constant cst) {
-        append(dtcompiler.toJava(cst.getDatatypeValue()));
+        append(dtc.toJava(cst.getDatatypeValue()));
     }
 
     public void toJava(Term term) {
-        if (term.getName().equals(Processor.SEQUENCE)) {
+        if (term.isExist()){
+            new Pattern(this).exist(term);
+        }
+        else if (term.getName().equals(Processor.SEQUENCE)) {
             sequence(term);
         } else if (term.isFunction()) {
             functionCall(term);
@@ -143,7 +164,7 @@ public class JavaCompiler {
     public void toJava(Statement term) {
         switch (term.oper()) {
             case ExprType.LET:
-                let(term);
+                let(term.getLet());
                 return;
                 
             case ExprType.FOR:
@@ -151,6 +172,10 @@ public class JavaCompiler {
                 return;
         }
     }
+    
+    
+    
+    
 
     
     void functionDeclaration(Term term) {
@@ -195,8 +220,12 @@ public class JavaCompiler {
     
     void pv(Expression exp) {
         if (isPV(exp)) {
-            append(";");
+            pv();
         }
+    }
+    
+    void pv(){
+        append(";");
     }
 
     boolean isPV(Expression exp) {
@@ -206,6 +235,7 @@ public class JavaCompiler {
         switch (exp.oper()) {
             case ExprType.IF:
             case ExprType.FOR:
+            case ExprType.LET:
             case ExprType.SEQUENCE:
 
                 return false;
@@ -231,15 +261,17 @@ public class JavaCompiler {
         append("}");
     }
 
-    void let(Term term) {
-        Expression decl = term.getArg(0);
+    void let(Let term) {
         append(IDATATYPE).append(SPACE);
-        toJava(decl.getArg(0));
+        toJava(term.getVariable());
         append(" = ");
-        toJava(decl.getArg(1));
-        append(";");
+        toJava(term.getDefinition());
+        pv();
         nl();
-        toJava(term.getArg(1));
+        stack.push(term);
+        toJava(term.getBody());
+        stack.pop(term);
+        pv(term.getBody());
     }
 
     void term(Term term) {
@@ -357,10 +389,26 @@ public class JavaCompiler {
             case ExprType.CAST:
                 cast(term);
                 return;
+                
+            case ExprType.SET:
+                set(term);
+                return;
         }
 
         call(term);
     }
+    
+    String getExistVar() {
+        return VAR_EXIST + count++;
+    }
+    
+
+    void set(Term term) {
+        toJava(term.getArg(0));
+        append(" = ");
+        toJava(term.getArg(1));
+    }
+
         
     void cast(Term term){
         toJava(term.getArg(0));
@@ -372,7 +420,7 @@ public class JavaCompiler {
 
     void hash(Term term) {
         append("hash(");
-        append(dtcompiler.newInstance(term.getModality()));
+        append(dtc.newInstance(term.getModality()));
         append(", ");
         toJava(term.getArg(0));
         append(")");

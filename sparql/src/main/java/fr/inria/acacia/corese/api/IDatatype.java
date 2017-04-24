@@ -23,7 +23,8 @@ public interface IDatatype
         extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
     static final int VALUE  = -1;
     static final int RESULT = -2;
-
+    // use case: cast
+    static final int UNDEFINED = -1;
     static final int LITERAL = 0;
     static final int STRING = 1;
     static final int XMLLITERAL = 2;

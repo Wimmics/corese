@@ -34,6 +34,7 @@ import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,6 +62,7 @@ public class ProxyImpl implements Proxy, ExprType {
     Custom custom;
     SQLFun sql;
     Evaluator eval;
+    private Producer producer;
     EvalListener el;
     int number = 0;
     // KGRAM is relax wrt to string vs literal vs uri input arg of functions
@@ -676,10 +678,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return apply(exp, env, p, val);
 
             case EXTERNAL:
-                // user defined function with prefix/namespace
-                // function://package.className
-                Processor proc = getProcessor(exp);
-                return proc.eval(param);
+                return external(exp, p, param);                
                 
             case CUSTOM:
                 return custom.eval(exp, env, p, args);
@@ -774,6 +773,66 @@ public class ProxyImpl implements Proxy, ExprType {
 
         return null;
     }
+    
+    Object external(Expr exp, Producer p, IDatatype[] param) {
+        // user defined function with prefix/namespace
+        // function://package.className
+        Processor proc = getProcessor(exp);
+        if (! proc.isCorrect()){
+            return null;
+        }
+        return eval(proc, param, p);
+        //return proc.eval(param);
+    }
+    
+    Processor getProcessor(Expr exp) {
+        return ((Term) exp).getProcessor();
+    }
+     
+     /**
+	 * Eval external method
+	 */
+    public Object eval(Processor proc, IDatatype[] args, Producer p) {
+        try {
+            Object obj = proc.getProcessor();
+            if (obj instanceof ProxyImpl){
+                ProxyImpl pi = (ProxyImpl) obj;
+                pi.setEvaluator(eval);
+                pi.setPlugin(plugin);
+                pi.setProducer(p);
+                plugin.setProducer(p);
+            }
+            return proc.getMethod().invoke(obj, args);
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+        }
+        return null;
+    }
+    
+     /**
+     * @return the producer
+     */
+    public Producer getProducer() {
+        return producer;
+    }
+
+    /**
+     * @param producer the producer to set
+     */
+    @Override
+    public void setProducer(Producer producer) {
+        this.producer = producer;
+    }
+
+
 
     boolean isStringLiteral(IDatatype dt) {
         return !SPARQLCompliant || DatatypeMap.isStringLiteral(dt);
@@ -1422,10 +1481,6 @@ public class ProxyImpl implements Proxy, ExprType {
                 return plugin.decode(exp, env, p);
         }
         return exp;       
-    }
-
-    Processor getProcessor(Expr exp) {
-        return ((Term) exp).getProcessor();
     }
 
     /**
@@ -2146,14 +2201,18 @@ public class ProxyImpl implements Proxy, ExprType {
         return plugin.getBufferedValue(sb, env);
     }
     
-    IDatatype get(IDatatype dt1, IDatatype dt2){
+    public IDatatype get(IDatatype dt1, IDatatype dt2){
+        return gget(dt1, dt2, dt2);
+    }
+    
+    public IDatatype gget(IDatatype dt1, IDatatype dt2){
         return gget(dt1, dt2, dt2);
     }
     
     /**
      * Generic get with variable name and index
      */
-    IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){
+    public IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){
         if (dt.isList()){
             return DatatypeMap.get(dt, ind);
         }
@@ -2201,5 +2260,5 @@ public class ProxyImpl implements Proxy, ExprType {
         return null;
     }
 
-    
+   
 }

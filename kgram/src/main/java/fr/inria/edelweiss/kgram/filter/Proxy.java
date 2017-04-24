@@ -20,6 +20,8 @@ public interface Proxy {
         void setMode(int mode);
 	
 	void setEvaluator(Evaluator eval);
+        
+        void setProducer(Producer p);
 	
 	Evaluator getEvaluator();
 

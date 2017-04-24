@@ -904,6 +904,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public List<Variable> getSelectAllVar() {
         return selectAllVar;
     }
+    
+    public boolean isSelectVariable(Variable var){
+        return getSelectVar(var.getName()) != null || isSelectAllVar(var.getName());
+    }
 
     public boolean isSelectAllVar(Variable var) {
         return selectAllVar.contains(var);

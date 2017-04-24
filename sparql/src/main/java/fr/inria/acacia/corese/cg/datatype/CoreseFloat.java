@@ -30,10 +30,12 @@ public  class CoreseFloat extends CoreseDouble{
 		super(value);
 	}
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
+        @Override
 	 public int getCode(){
 			return code;
 		}
@@ -54,6 +56,7 @@ public  class CoreseFloat extends CoreseDouble{
 		}
 	}
 	
+        @Override
 	public boolean isFloat(){
 		return true;
 	}

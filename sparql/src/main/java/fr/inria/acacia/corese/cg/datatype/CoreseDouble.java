@@ -27,30 +27,37 @@ public  class CoreseDouble extends CoreseNumber{
 		dvalue = val;
 	}
 	
+        @Override
 	public int getCode(){
 		return code;
 	}
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
+        @Override
 	public boolean isTrue() {
 		return dvalue != 0.0;
 	}
 	
+        @Override
 	public double doubleValue(){
 		return  dvalue;
 	}
 	
+        @Override
 	public float floatValue(){
 		return  (float) dvalue;
 	}
 	
+        @Override
 	public long longValue(){
 		return (long) dvalue;
 	}
 	
+        @Override
 	public int intValue(){
 		return (int) dvalue;
 	}
@@ -58,10 +65,12 @@ public  class CoreseDouble extends CoreseNumber{
 	
 	
 	
+        @Override
 	public double getdValue(){
 		return dvalue;
 	}
 	
+        @Override
 	public long getlValue(){
 		return (long) dvalue;
 	}
@@ -69,6 +78,7 @@ public  class CoreseDouble extends CoreseNumber{
 
 
 	
+        @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -83,6 +93,7 @@ public  class CoreseDouble extends CoreseNumber{
 	}
 	
 
+        @Override
 	public boolean less(IDatatype iod)  throws  CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -94,6 +105,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}	
 	}
 	
+        @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -105,6 +117,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}	
 	}
 	
+        @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -116,6 +129,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}	
 	}
 	
+        @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -127,6 +141,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}	
 	}
 	
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case LONG:   
@@ -143,6 +158,7 @@ public  class CoreseDouble extends CoreseNumber{
 	}
 	
 	
+        @Override
 	public String getNormalizedLabel(){
 		String label = Double.toString(dvalue);
 		String str = infinity(label);
@@ -172,6 +188,7 @@ public  class CoreseDouble extends CoreseNumber{
 		}
 	}
 	
+        @Override
 	public String getLowerCaseLabel(){
 		return Double.toString(dvalue);
 	}

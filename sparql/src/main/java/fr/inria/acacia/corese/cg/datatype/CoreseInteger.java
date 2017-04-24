@@ -171,6 +171,7 @@ public  class CoreseInteger extends CoreseNumber {
 
 
 
+        @Override
 	public String getNormalizedLabel(){
 		return Integer.toString(ivalue);
 	}
@@ -182,6 +183,7 @@ public  class CoreseInteger extends CoreseNumber {
 		return new Integer(label).toString();
 	}
 
+        @Override
 	public String getLowerCaseLabel(){
 		return Integer.toString(ivalue);
 	}

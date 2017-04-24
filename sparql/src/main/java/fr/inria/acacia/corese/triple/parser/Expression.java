@@ -727,6 +727,10 @@ implements Regex, Filter, Expr {
     public Expression getDefinition(){
         return null;
     } 
+        
+     public Let getLet(){
+         return null;
+     }   
 	
 
     @Override

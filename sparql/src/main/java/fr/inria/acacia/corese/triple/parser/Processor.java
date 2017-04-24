@@ -373,8 +373,8 @@ public class Processor {
 	Object processor;
 	Method fun;
 	ExpPattern pattern;
-	boolean isCorrect = true,
-                isCompiled = false;
+	private boolean isCorrect = true;
+        boolean isCompiled = false;
 	public static int count = 0;
 	private static final int IFLAG[] = {
 		Pattern.DOTALL, Pattern.MULTILINE, Pattern.CASE_INSENSITIVE,
@@ -1248,6 +1248,10 @@ public class Processor {
 	public void setProcessor(Object obj){
 		processor = obj;
 	}
+        
+        public Object getProcessor(){
+            return processor;
+        }
 	
 	public void setMethod(Method m){
 		fun = m;
@@ -1263,66 +1267,64 @@ public class Processor {
 	 * prefix ext: <function://package.className>
 	 * ext:fun() 
 	 */
-	void compileExternal(Term term, ASTQuery ast)  {
-		String oper = term.getLabel();
-		String p ;
-		String path ;
-		Class c = null;  
-		isCorrect = false;
-		try {
-			if (! oper.startsWith(functionPrefix)) {
-				String message = "Undefined function: "+oper;
-				if (oper.contains("://")) 
-					message += "\nThe prefix should start with \""+functionPrefix+"\"";
-				logger.warn(message);
-				return ;
-			}
-			int lio = oper.lastIndexOf(".");
-			if (lio == -1){
-				logger.error("Undefined function: "+oper);
-				return;
-			}
-			p = oper.substring(0, lio);
-			path = p.substring(functionPrefix.length(),p.length());
-			oper = oper.substring(p.length() + 1, oper.length());
-			
-			ClassLoader cl = getClass().getClassLoader(); 
-			c = cl.loadClass(path);
-			
-			Class<IDatatype>[] aclasses = new Class[term.getArity()];
-			for (int i = 0; i < aclasses.length; i++) {
-				aclasses[i] = IDatatype.class;
-			}
-			
-			setProcessor(c.newInstance());  
-			setMethod(c.getMethod(oper, aclasses));
-			isCorrect = true;
-		} 
-		
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-	}
+	void compileExternal(Term term, ASTQuery ast) {
+            setCorrect(false);
+            try {
+                String methodName = term.getLabel();
+                if (!methodName.startsWith(functionPrefix)) {
+                    String message = "Undefined function: " + methodName;
+                    if (methodName.contains("://")) {
+                        message += "\nThe prefix should start with \"" + functionPrefix + "\"";
+                    }
+                    logger.warn(message);
+                    return;
+                }
+                int lio = methodName.lastIndexOf(".");
+                if (lio == -1) {
+                    logger.error("Undefined function: " + methodName);
+                    return;
+                }
+                String packageName = methodName.substring(0, lio);
+                String classPackage = packageName.substring(functionPrefix.length(), packageName.length());
+                methodName = methodName.substring(packageName.length() + 1, methodName.length());
+
+                ClassLoader cl = getClass().getClassLoader();
+                Class className = cl.loadClass(classPackage);
+
+                Class<IDatatype>[] aclasses = new Class[term.getArity()];
+                for (int i = 0; i < aclasses.length; i++) {
+                    aclasses[i] = IDatatype.class;
+                }
+
+                setProcessor(className.newInstance());
+                setMethod(className.getMethod(methodName, aclasses));
+                setCorrect(true);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+    }
 	
 	
 	/**
 	 * Eval external method
 	 */
 	public Object eval(IDatatype[] args){
-		if (! isCorrect) return null;
+		if (! isCorrect()) {
+                    return null;
+                }
 		try {
-			return fun.invoke(processor, args);
+			return getMethod().invoke(getProcessor(), args);
 		} 
 		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1348,6 +1350,20 @@ public class Processor {
         String getShortName(){
             return name;
         }
+
+    /**
+     * @return the isCorrect
+     */
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    /**
+     * @param isCorrect the isCorrect to set
+     */
+    public void setCorrect(boolean isCorrect) {
+        this.isCorrect = isCorrect;
+    }
 
 
 }

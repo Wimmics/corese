@@ -112,6 +112,7 @@ public class Function extends Statement {
     /**
      * @return the isDebug
      */
+    @Override
     public boolean isDebug() {
         return isDebug;
     }
@@ -126,6 +127,7 @@ public class Function extends Statement {
     /**
      * @return the isTest
      */
+    @Override
     public boolean isTester() {
         return isTest;
     }
@@ -140,6 +142,7 @@ public class Function extends Statement {
     /**
      * @return the isTrace
      */
+    @Override
     public boolean isTrace() {
         return isTrace;
     }

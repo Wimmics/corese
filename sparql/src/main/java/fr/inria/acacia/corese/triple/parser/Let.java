@@ -11,6 +11,11 @@ public class Let extends Statement {
         super(Processor.LET, def, body);
     }
      
+     @Override
+     public Let getLet(){
+         return this;
+     }
+     
       /**
        * let (var = exp){ exp }
        * @return 

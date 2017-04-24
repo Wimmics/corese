@@ -809,6 +809,7 @@ public class PluginImpl extends ProxyImpl {
         return TRUE;
      }
 
+   
  
     class Table extends Hashtable<Integer, PTable> {
     }
@@ -890,18 +891,17 @@ public class PluginImpl extends ProxyImpl {
     }
     
     Node kgram(Environment env, Producer p, Graph g, IDatatype[] param) {
-        return kgram(env, g, param[0].getLabel(), createMapping(p, env, param));
+        return kgram(env, g, param[0].getLabel(), createMapping(p, param, 1));
     }
     
     /**
      * First param is query
      * other param are variable bindings (variable, value)
      */
-    Mapping createMapping(Producer p, Environment env, IDatatype[] param){
-        Query q = env.getQuery();
+    Mapping createMapping(Producer p, IDatatype[] param, int start){
         ArrayList<Node> var = new ArrayList<Node>();
         ArrayList<Node> val = new ArrayList<Node>();
-        for (int i = 1; i < param.length; i += 2){
+        for (int i = start; i < param.length; i += 2){
             var.add(NodeImpl.createVariable(clean(param[i].getLabel())));
             val.add(p.getNode(param[i+1]));
         }
@@ -914,8 +914,10 @@ public class PluginImpl extends ProxyImpl {
         }
         return name;
     }
+    
+    
       
-     Node kgram(Environment env, Graph g, String  query, Mapping m) {    
+     Node kgram(Environment env, Graph g, String  query, Mapping m) {  
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {
@@ -934,22 +936,30 @@ public class PluginImpl extends ProxyImpl {
             return DatatypeMap.createObject(new Mappings());
         }
     }
+     
+     /**
+      * use case: JavaCompiler external function
+      */
+    public IDatatype kgram(IDatatype query, IDatatype... ldt) {  
+        Graph g = getGraph(getProducer());
+        Mapping m = null;
+        if (ldt.length > 0){
+            m = createMapping(getProducer(), ldt, 0);
+        }
+        QueryProcess exec = QueryProcess.create(g, true);
+        try {            
+            Mappings map = exec.sparqlQuery(query.stringValue(), m, null);
+            if (map.getGraph() == null){
+                return DatatypeMap.createObject(map);
+            }
+            else {
+                return DatatypeMap.createObject(map.getGraph());
+            }
+        } catch (EngineException e) {
+            return DatatypeMap.createObject(new Mappings());
+        }
+    }
     
-//    Node kgram2(Environment env, Graph g, String  query, Mapping m) {    
-//        QueryProcess exec = QueryProcess.create(g, true);
-//        exec.setRule(env.getQuery().isRule());
-//        try {
-//            Mappings map = exec.sparqlQuery(query, m);
-//            if (map.getGraph() == null){
-//                return DatatypeMap.createObject("Mappings", map, IDatatype.MAPPINGS);
-//            }
-//            else {
-//                return DatatypeMap.createObject("Graph", map.getGraph(), IDatatype.GRAPH);
-//            }
-//        } catch (EngineException e) {
-//            return DatatypeMap.createObject("Mappings", new Mappings(), IDatatype.MAPPINGS);
-//        }
-//    }
 
     IDatatype qname(IDatatype dt, Environment env) {
         if (!dt.isURI()) {

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,14 +36,24 @@ public class DatatypeMap implements Cst, RDF {
      * logger from log4j
      */
     private static Logger logger = LogManager.getLogger(DatatypeMap.class);
-    public static final IDatatype ZERO = newInstance(0);
-    public static final IDatatype ONE = newInstance(1);
+    public static final IDatatype ZERO  = newInstance(0);
+    public static final IDatatype ONE   = newInstance(1);
+    public static final IDatatype TWO   = newInstance(2);
+    public static final IDatatype THREE = newInstance(3);
+    public static final IDatatype FOUR  = newInstance(4);
+    public static final IDatatype FIVE  = newInstance(5);
+    public static final IDatatype SIX   = newInstance(6);
+    public static final IDatatype SEVEN = newInstance(7);
+    public static final IDatatype EIGHT = newInstance(8);
+    public static final IDatatype NINE  = newInstance(9);
+    
     public static final IDatatype MINUSONE = newInstance(-1);
     public static final IDatatype ERROR   = CoreseUndefLiteral.ERROR;
     public static final IDatatype UNBOUND = CoreseUndefLiteral.UNBOUND;
     
     private static Hashtable<String, Mapping> ht;
-    static DatatypeMap dm = DatatypeMap.create();
+    private static HashMap<String, Integer> dtCode;
+    static DatatypeMap dm; 
     // if true, number values are equal by = but not match same sparql variable 
     // otherwise same value space, match same sparql variable
     // 
@@ -63,6 +74,9 @@ public class DatatypeMap implements Cst, RDF {
     
     static {
         intCache = new IDatatype[INTMAX];
+//        ht = new Hashtable<String, Mapping>();
+//        dtCode = new HashMap<String, Integer>();
+        dm = DatatypeMap.create();
     }
 
     private class Mapping {
@@ -80,11 +94,14 @@ public class DatatypeMap implements Cst, RDF {
         }
     }
 
-    public DatatypeMap() {
-        if (ht == null) { //as ht is static, DatatypeMap class is a singleton
+    public DatatypeMap() {   
+        if (ht == null){
             ht = new Hashtable<String, Mapping>();
+            dtCode = new HashMap<String, Integer>();
         }
+
         init();
+        init2();
     }
 
     public static DatatypeMap create() {
@@ -192,16 +209,27 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     void define(String datatype, int code) {
+        dtCode.put(datatype, code);
     }
 
     void defineString(String datatype) {
+         dtCode.put(datatype, IDatatype.STRING);
     }
 
     void defineInteger(String datatype) {
+         dtCode.put(datatype, IDatatype.INTEGER);
     }
 
     int getType(String datatype) {
         return IDatatype.UNDEF;
+    }
+    
+    static Integer getCode(String datatype){
+        Integer i = dtCode.get(datatype);
+        if (i == null){
+            return IDatatype.UNDEFINED;
+        }
+        return i;
     }
 
     public void init2() {

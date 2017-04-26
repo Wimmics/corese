@@ -17,6 +17,8 @@ import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -47,8 +49,8 @@ public class Neo4jDriver extends GdbDriver {
 		super.createDatabase(databasePath);
 		try {
 			graph = Neo4jGraph.open(databasePath);
-			graph.cypher("CREATE INDEX ON :rdf_edge(e_value)");
-			graph.cypher("CREATE INDEX ON :rdf_vertex(v_value)");
+			graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_P));
+			graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
 			graph.tx().commit();
 			return graph;
 		} catch (Exception e) {
@@ -233,7 +235,7 @@ public class Neo4jDriver extends GdbDriver {
 		switch (key) {
 			case "?g?sPO":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_O, o);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
 				};
 				break;
 			case "?g?sP?o":
@@ -243,32 +245,32 @@ public class Neo4jDriver extends GdbDriver {
 				break;
 			case "?g?s?pO":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_O, o);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE();
 				};
 				break;
 			case "?gSPO":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_S, s).has(EDGE_O, o);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
 				};
 				break;
 			case "?gSP?o":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_S, s);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
 				};
 				break;
 			case "?gS?pO":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_S, s).has(EDGE_O, o);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
 				};
 				break;
 			case "?gS?p?o":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_S, s);
+					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE();
 				};
 				break;
 			case "G?sP?o":
 				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_G, g);
+					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL));
 				};
 				break;
 			case "?g?s?p?o":

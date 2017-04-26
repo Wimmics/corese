@@ -11,7 +11,6 @@ import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
-import static fr.inria.wimmics.coresetimer.Main.TestSuite.DatabaseCreation.ALWAYS;
 import static fr.inria.wimmics.coresetimer.Main.TestSuite.DatabaseCreation.IF_NOT_EXIST;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
@@ -36,24 +35,6 @@ import org.testng.annotations.Test;
  */
 public class QualitativeTest {
 
-	private static void setCacheForDb(TestDescription test) {
-		String confFileName = String.format("%s/conf.properties", test.getInputDb());
-		try {
-			PropertiesConfiguration config = new PropertiesConfiguration(new File(confFileName));
-			config.setProperty("storage.batch-loading", "false");
-			config.setProperty("cache.db-cache", "true");
-			config.setProperty("cache.db-cache-size", "250000000");
-			config.setProperty("cache.db-cache-time", "0");
-			config.setProperty("query.batch", "true");
-			config.setProperty("query.fast-property", "true");
-			config.setProperty("storage.transactions", "false");
-			config.setProperty("storage.read-only", "false");
-			config.save();
-		} catch (ConfigurationException ex) {
-			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
 	String inputRoot;
 	String outputRoot;
 
@@ -62,17 +43,29 @@ public class QualitativeTest {
 	public QualitativeTest() {
 	}
 
-	@DataProvider(name = "getResults", parallel = false)
-//	@DataProvider(name = "getResults", indices={0,1,2}, parallel = false)
-	public Object[][] getResults() {
+	@BeforeClass
+	public void setup() {
+		inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
+		inputRoot = ensureEndWith(inputRoot, "/");
+		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
+		outputRoot = ensureEndWith(inputRoot, "/");
+	}
+
+	/**
+	 * Purpose of these tests: know what parts of SPARQL are handled with
+	 * corese-db
+	 */
+	@DataProvider(name = "qualitative", parallel = false)
+	public Object[][] getResults() throws Exception {
 		TestSuite suite = TestSuite.build("base_tests").
+			setDriver(RdfToGraph.DbDriver.NEO4J).
 			setWarmupCycles(2).
 			setMeasuredCycles(5).
 			setInput("human_2007_04_17.rdf", RDFFormat.RDFXML).
-			setInputDb("/human_db").
+			setInputDb("/tmp/human_db").
 			setInputRoot(inputRoot).
 			setOutputRoot(outputRoot);
-//		suite.createDb();
+		suite.createDb(IF_NOT_EXIST);
 		TestDescription[][] tests = {
 			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
@@ -103,126 +96,37 @@ public class QualitativeTest {
 		return tests;
 	}
 
-	@DataProvider(name = "getResultsPerfAnalysis")
-	public Object[][] getResultsPerfAnalysis() throws Exception {
-		TestSuite testRoot = TestSuite.build("perf_analysis").
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
-			setInput("human_2007_04_17.rdf").
-			setInputDb("/human_db").
-			setInputRoot(inputRoot).
-			setOutputRoot(outputRoot).
-			createDb(ALWAYS);
-		TestDescription[][] tests = {
-			{testRoot.buildTest("select (count(*) as ?count) where { graph ?g {?x ?p ?y}}")},
-			{testRoot.buildTest("select (count(*) as ?c) where {?x a ?y}")},
-			{testRoot.buildTest("select * where { ?x ?p ?y . ?y ?q ?x }")}
-		};
-		return tests;
-	}
-
-	@DataProvider(name = "getResults_1M")
-	public Object[][] getResultsLong() {
-		TestSuite rootTest = TestSuite.build("1M_tests").
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
-			setInput("btc-2010-chunk-000_0001.nq").
-			setInputDb("/1M_db").
-			setInputRoot(inputRoot).
-			setOutputRoot(outputRoot);
-//		rootTest.createDb();
-		TestDescription[][] tests = {
-			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
-			{rootTest.buildTest("select * where { ?x ?p ?y . ?y ?q ?x }")},
-			{rootTest.buildTest("select * where {<http://prefix.cc/popular/all.file.vann>  ?p ?y .}")}, //			{TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")},
-		//			{TestDescription.build("1m_cycle").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000_0001.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where { ?x ?p ?y . ?y ?q ?x }")}
-		};
-		return tests;
-	}
-
-	@DataProvider(name = "getResults_10m", indices = {1})
-	public Object[][] getResults10m() throws Exception {
-		TestSuite rootTest = TestSuite.build("10m").
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
-			setInput("btc-2010-chunk-000_10000.nq").
-			setInputDb("/10m_db").
-			setInputRoot(inputRoot).
-			setOutputRoot(outputRoot);
-		rootTest.createDb(ALWAYS);
-		TestDescription[][] tests = {
-			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
-			{rootTest.buildTest("select ?x ?y where { ?x rdf:type ?y}")}
-		};
-		return tests;
-	}
-
-	@DataProvider(name = "getResults_100m", indices = {0})
-	public Object[][] getResults100m() throws Exception {
-		TestSuite rootTest = TestSuite.build("100m").
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
-			setInput("btc-2010-chunk-000_100000.nq").
-			setInputDb("/100m_db").
-			setInputRoot(inputRoot).
-			setOutputRoot(outputRoot);
-		rootTest.createDb(ALWAYS);
-		TestDescription[][] tests = {
-			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
-			{rootTest.buildTest("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}")},
-			{rootTest.buildTest("select ?x ?y where { ?x rdf:type ?y}")}
-		};
-		return tests;
-	}
-
-	@DataProvider(name = "getResults_bug_name", indices = {1})
-	public Object[][] getResults_bugName() throws Exception {
-		TestSuite rootTest = TestSuite.build("bug_name").
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
-			setInput("btc-2010-chunk-000_bug_name.nq").
-			setInputDb("/bug_name_db").
-			setInputRoot(inputRoot).
-			setOutputRoot(outputRoot);
-		rootTest.createDb(ALWAYS);
-		TestDescription[][] tests = {
-			{rootTest.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
-			{rootTest.buildTest("select ?x ?p ?y where {?x ?p ?y}")},};
-		return tests;
-	}
-
-	@BeforeClass
-	public void setup() {
-		inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
-		inputRoot = ensureEndWith(inputRoot, "/");
-		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
-		outputRoot = ensureEndWith(inputRoot, "/");
-	}
-
-	@DataProvider(name = "input")
+	/**
+	 * The purpose of these tests is to push the limits of the amount of
+	 * data that can be handled by coresedb.
+	 */
+	@DataProvider(name = "quantitative")
 	public Iterator<Object[]> buildTests() throws Exception {
 		String[] inputFiles = {
-//			"btc-2010-chunk-000.nq:1",
-//			"btc-2010-chunk-000.nq:3",
-//			"btc-2010-chunk-000.nq:10",
-//			"btc-2010-chunk-000.nq:31",
-//			"btc-2010-chunk-000.nq:100",
-//			"btc-2010-chunk-000.nq:316",
-//			"btc-2010-chunk-000.nq:1000",
-//			"btc-2010-chunk-000.nq:3162",
-//			"btc-2010-chunk-000.nq:10000",
-//			"btc-2010-chunk-000.nq:31622",
-//			"btc-2010-chunk-000.nq:100000",
-//			"btc-2010-chunk-000.nq:316227",
-//			"btc-2010-chunk-000.nq:1000000",
-//			"btc-2010-chunk-000.nq:3162277",
-//			"btc-2010-chunk-000.nq"
-//			"btc-2010-chunk-000_(10|100).nq"	
+			//			"btc-2010-chunk-000.nq:1",
+			//			"btc-2010-chunk-000.nq:3",
+			//			"btc-2010-chunk-000.nq:10",
+			//			"btc-2010-chunk-000.nq:31",
+			//			"btc-2010-chunk-000.nq:100",
+			//			"btc-2010-chunk-000.nq:316",
+			//			"btc-2010-chunk-000.nq:1000",
+			//			"btc-2010-chunk-000.nq:3162",
+			//			"btc-2010-chunk-000.nq:10000",
+			"btc-2010-chunk-000.nq:31622",
+			"btc-2010-chunk-000.nq:100000",
+			"btc-2010-chunk-000.nq:316227",
+			"btc-2010-chunk-000.nq:1000000",
+			"btc-2010-chunk-000.nq:3162277",
+			"btc-2010-chunk-000.nq", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+		//                      "btc-2010-chunk-00(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
+		//                      "btc-2010-chunk-0(0|1|2|3)(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
+		//                      "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"   
 		};
 		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", //			"select ?x ?y where { ?x rdf:type ?y}",
-		//			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
-		//			"select ?x ?p ?y where { ?x ?p ?y} order by ?x ?p ?y"
+			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", 
+			"select ?x ?y where { ?x rdf:type ?y}",
+			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}", 
+			"select ?x ?p ?y where { ?x ?p ?y} order by ?x ?p ?y"
 		};
 
 		return new Iterator<Object[]>() {
@@ -271,7 +175,7 @@ public class QualitativeTest {
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					try {
-						currentSuite.createDb(IF_NOT_EXIST);
+						currentSuite.createDb(TestSuite.DatabaseCreation.ALWAYS);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						throw new RuntimeException(ex);
@@ -283,7 +187,7 @@ public class QualitativeTest {
 		};
 	}
 
-	@Test(dataProvider = "input", groups = "")
+	@Test(dataProvider = "quantitative", groups = "")
 	public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 		Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
 		java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
@@ -315,4 +219,24 @@ public class QualitativeTest {
 		writeResult(test, timerDb, timerMemory);
 		assertTrue(result, test.getId());
 	}
+
+	// Useful only for titandb.
+	private static void setCacheForDb(TestDescription test) {
+		String confFileName = String.format("%s/conf.properties", test.getInputDb());
+		try {
+			PropertiesConfiguration config = new PropertiesConfiguration(new File(confFileName));
+			config.setProperty("storage.batch-loading", "false");
+			config.setProperty("cache.db-cache", "true");
+			config.setProperty("cache.db-cache-size", "250000000");
+			config.setProperty("cache.db-cache-time", "0");
+			config.setProperty("query.batch", "true");
+			config.setProperty("query.fast-property", "true");
+			config.setProperty("storage.transactions", "false");
+			config.setProperty("storage.read-only", "false");
+			config.save();
+		} catch (ConfigurationException ex) {
+			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 }

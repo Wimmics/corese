@@ -10,7 +10,6 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;

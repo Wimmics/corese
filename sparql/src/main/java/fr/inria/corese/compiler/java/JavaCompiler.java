@@ -16,6 +16,7 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,12 +52,27 @@ public class JavaCompiler {
     // stack of bound variables (function parameter, let)
     Stack stack;
     
+    HashMap<String, Boolean> skip;
+    
 
     public JavaCompiler() {
         sb = new StringBuilder();
         dtc = new Datatype();
         stack = new Stack();
         head = new Header(this);
+        skip = new HashMap<String, Boolean>();
+        init();
+    }
+    
+    void init(){
+        skip.put(NSManager.SHAPE + "class", true);
+        skip.put(NSManager.STL + "default", true);
+        skip.put(NSManager.STL + "aggregate", true);
+    }
+    
+    boolean skip(String name){
+        Boolean b = skip.get(name);
+        return b != null && b;
     }
     
      public JavaCompiler(String name) {
@@ -80,8 +96,10 @@ public class JavaCompiler {
 
         for (ASTExtension.ASTFunMap m : ext.getMaps()) {
             for (Function exp : m.values()) {
-                toJava(exp);
-                append(NL);
+                if (! skip(exp.getFunction().getLongName())){
+                    toJava(exp);
+                    append(NL);
+                }
             }
         }
 

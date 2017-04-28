@@ -522,7 +522,11 @@ public class DatatypeMap implements Cst, RDF {
         return new CoreseList(ldt);
     }
     
-     public static IDatatype newList(IDatatype... ldt) {
+    public static IDatatype newList(IDatatype... ldt) {
+        return new CoreseList(ldt);
+    }
+     
+    public static IDatatype newInstance(IDatatype... ldt) {
         return new CoreseList(ldt);
     }
     
@@ -531,6 +535,11 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     public static IDatatype createList(List<IDatatype> ldt) {
+        IDatatype dt = CoreseList.create(ldt);
+        return dt;
+    }
+    
+    public static IDatatype newInstance(List<IDatatype> ldt) {
         IDatatype dt = CoreseList.create(ldt);
         return dt;
     }
@@ -806,7 +815,7 @@ public class DatatypeMap implements Cst, RDF {
      public static IDatatype add(IDatatype elem, IDatatype list){
           if (! list.isList()){
               return null;
-          }          
+          }  
           list.getValues().add(elem);
           return list;
       }
@@ -851,8 +860,33 @@ public class DatatypeMap implements Cst, RDF {
                   res.add(dt);
               }
           }
-          return createList(res);
+          return newInstance(res);
       }
+       
+       // dt is a list of list
+       // merge lists and remove duplicates
+       public static IDatatype merge(IDatatype list){
+          if (! list.isList()){
+              return null;
+          }
+          ArrayList<IDatatype> res = new ArrayList();
+          
+          for (IDatatype dt : list.getValues()){
+              if (dt.isList()){
+                  for (IDatatype elem : dt.getValues()){
+                      if (! res.contains(elem)){
+                         res.add(elem);
+                      }
+                  }
+              }
+              else if (! res.contains(dt)){
+                  res.add(dt);
+              }
+          }
+          
+          return newInstance(res);
+      }
+        
 
       
       public static IDatatype get(IDatatype list, IDatatype n){

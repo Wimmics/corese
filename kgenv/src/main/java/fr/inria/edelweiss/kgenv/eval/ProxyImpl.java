@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -35,10 +36,10 @@ import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -58,12 +59,15 @@ public class ProxyImpl implements Proxy, ExprType {
     static final String UTF8 = "UTF-8";
     public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
+    public static int count = 0;
     Proxy plugin;
     Custom custom;
     SQLFun sql;
     Evaluator eval;
     private Producer producer;
     EvalListener el;
+    // for LDScript java compiling only
+    private Environment environment;
     int number = 0;
     // KGRAM is relax wrt to string vs literal vs uri input arg of functions
     // eg regex() concat() strdt()
@@ -467,22 +471,22 @@ public class ProxyImpl implements Proxy, ExprType {
                 return result(dt);
                 
             case XT_COUNT:
-                return count(dt);
+                return size(dt);
                 
             case ISLIST:
-                return getValue(dt.isList());
+                return isList(dt);
                 
             case XT_FIRST:
-                return DatatypeMap.first(dt);
+                return first(dt);
                 
             case XT_REST:
-                return DatatypeMap.rest(dt);
+                return rest(dt);
                                
             case XT_REVERSE:
-                 return DatatypeMap.reverse(dt);
+                 return reverse(dt);
                 
             case XT_SORT:
-                return DatatypeMap.sort(dt);
+                return sort(dt);
                 
             case XT_REJECT:
                 return reject(env, dt); 
@@ -621,19 +625,19 @@ public class ProxyImpl implements Proxy, ExprType {
             }
                 
             case XT_MEMBER: 
-                return DatatypeMap.member(dt1, dt2);
+                return member(dt1, dt2);
                 
             case XT_CONS:
-                return DatatypeMap.cons(dt1, dt2);
+                return cons(dt1, dt2);
                 
             case XT_ADD:
-                return DatatypeMap.add(dt1, dt2);    
+                return add(dt1, dt2);    
                 
             case XT_APPEND:
-                return DatatypeMap.append(dt1, dt2);
+                return append(dt1, dt2);
                 
             case XT_MERGE:
-                return DatatypeMap.merge(dt1, dt2);    
+                return merge(dt1, dt2);    
                 
             case XT_GET:
                 return get(dt1, dt2);
@@ -678,7 +682,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return apply(exp, env, p, val);
 
             case EXTERNAL:
-                return external(exp, p, param);                
+                return external(exp, env, p, param);                
                 
             case CUSTOM:
                 return custom.eval(exp, env, p, args);
@@ -774,14 +778,15 @@ public class ProxyImpl implements Proxy, ExprType {
         return null;
     }
     
-    Object external(Expr exp, Producer p, IDatatype[] param) {
+    Object external(Expr exp, Environment env, Producer p, IDatatype[] param) {
         // user defined function with prefix/namespace
         // function://package.className
         Processor proc = getProcessor(exp);
         if (! proc.isCorrect()){
             return null;
-        }
-        return eval(proc, param, p);
+        }       
+        proc.compile();
+        return eval(proc, env, param, p);
         //return proc.eval(param);
     }
     
@@ -792,7 +797,8 @@ public class ProxyImpl implements Proxy, ExprType {
      /**
 	 * Eval external method
 	 */
-    public Object eval(Processor proc, IDatatype[] args, Producer p) {
+    public Object eval(Processor proc, Environment env, IDatatype[] args, Producer p) {
+        String name = proc.getMethod().getName();
         try {
             Object obj = proc.getProcessor();
             if (obj instanceof ProxyImpl){
@@ -800,19 +806,121 @@ public class ProxyImpl implements Proxy, ExprType {
                 pi.setEvaluator(eval);
                 pi.setPlugin(plugin);
                 pi.setProducer(p);
+                pi.setEnvironment(env);
                 plugin.setProducer(p);
             }
             return proc.getMethod().invoke(obj, args);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           trace(e, "eval", name, args);
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            trace(e, "eval", name, args);
         } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
+           trace(e, "eval", name, args);
+        } catch (NullPointerException e) {
+           trace(e, "eval", name, args); 
+        }
+        return null;
+    }
+    
+    String javaName(IDatatype dt){
+        return NSManager.nstrip(dt.getLabel());
+    }
+    
+    /**
+     * LDScript Java compiler
+     */
+    public IDatatype funcall(IDatatype fun, IDatatype... ldt) {
+        String name = javaName(fun);
+        try {          
+            Class<IDatatype>[] aclasses = new Class[ldt.length];
+            for (int i = 0; i < aclasses.length; i++) {
+                aclasses[i] = IDatatype.class;
+            }
+            Method m = this.getClass().getMethod(name, aclasses);
+            return (IDatatype) m.invoke(this, ldt);
+        } catch (SecurityException e) {
+           
+        } catch (NoSuchMethodException e) {
+            trace(e, "funcall", name, ldt);
+        } catch (IllegalArgumentException e) {
+            trace(e, "funcall", name, ldt);       
+        } catch (IllegalAccessException e) {
+            trace(e, "funcall", name, ldt);     
+        } catch (InvocationTargetException e) {
+            trace(e, "funcall", name, ldt);  
+        }
+        return null;
+    }
+    
+    void trace(Exception e, String title, String name, IDatatype[] ldt){
+        String str = "";
+        for (IDatatype dt : ldt) {
+            str += dt + " ";
+        }
+        logger.warn(e);
+        logger.warn(title + " "+ name + " " + str);  
+    }
+    
+    /**
+     * LDScript Java compiler
+     * ldt[0] is a list
+     */
+    public IDatatype map(IDatatype fun, IDatatype... ldt) {
+        String name = javaName(fun);
+        try {          
+            Class<IDatatype>[] aclasses = new Class[ldt.length];
+            for (int i = 0; i < aclasses.length; i++) {
+                aclasses[i] = IDatatype.class;
+            }
+            Method m = this.getClass().getMethod(name, aclasses);
+            IDatatype list = ldt[0];
+            for (IDatatype dt : list.getValueList()){
+                ldt[0] = dt;
+                m.invoke(this, ldt);
+            }
+        } catch (SecurityException e) {
+            trace(e, "map", name, ldt);
+         } 
+        catch (NoSuchMethodException e) {
+            trace(e, "map", name, ldt);
+        } catch (IllegalArgumentException e) {
+            trace(e, "map", name, ldt);
+        } catch (IllegalAccessException e) {
+            trace(e, "map", name, ldt);
+        } catch (InvocationTargetException e) {
+            trace(e, "map", name, ldt);
+        }
+        return null;
+    }
+    
+     public IDatatype maplist(IDatatype fun, IDatatype... ldt) {
+        String name = javaName(fun);
+        try {          
+            Class<IDatatype>[] aclasses = new Class[ldt.length];
+            for (int i = 0; i < aclasses.length; i++) {
+                aclasses[i] = IDatatype.class;
+            }
+            Method m = this.getClass().getMethod(name, aclasses);
+            IDatatype list = ldt[0];
+            ArrayList<IDatatype> res = new ArrayList<IDatatype>();
+            for (IDatatype dt : list.getValues()){
+                ldt[0] = dt;
+                IDatatype obj = (IDatatype) m.invoke(this, ldt);
+                if (obj != null){
+                  res.add(obj);
+                }
+            }
+            return DatatypeMap.newInstance(res);
+        } catch (SecurityException e) {
+            trace(e, "maplist", name, ldt);
+        } catch (NoSuchMethodException e) {
+           trace(e, "maplist", name, ldt);
+        } catch (IllegalArgumentException e) {
+           trace(e, "maplist", name, ldt);
+        } catch (IllegalAccessException e) {
+            trace(e, "maplist", name, ldt);
+        } catch (InvocationTargetException e) {
+            trace(e, "maplist", name, ldt);
         }
         return null;
     }
@@ -975,6 +1083,10 @@ public class ProxyImpl implements Proxy, ExprType {
         return getValue(dt.isURI());
     }
     
+    public IDatatype isIRI(IDatatype dt){
+        return isURI(dt);
+    }
+    
     public IDatatype isLiteral(IDatatype dt){
         return getValue(dt.isLiteral());
     }
@@ -1105,7 +1217,7 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     public IDatatype bound(IDatatype dt){
-        return getValue(dt != null);
+        return getValue(dt != null && DatatypeMap.isBound(dt));
     }
     
     public IDatatype coalesce(IDatatype... dts){
@@ -1851,7 +1963,7 @@ public class ProxyImpl implements Proxy, ExprType {
         IDatatype list = null;
         IDatatype ldt = null;
         Iterator loop = null ;
-        boolean isList = false;
+        boolean isList = false, isLoop = false;
         
         for (IDatatype dt : param){  
             if (dt.isList()){
@@ -1860,6 +1972,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 break;
             }
             else if (dt.isLoop()) {
+               isLoop = true;
                ldt = dt; 
                loop = ldt.getLoop().iterator();
                break;
@@ -1885,7 +1998,7 @@ public class ProxyImpl implements Proxy, ExprType {
                         elem = value[j];
                     }
                 }
-                else if (dt.isLoop()){
+                else if (isLoop && dt.isLoop()){
                     // TODO: track several dt Loop
                     if (loop.hasNext()){
                        value[j] = (IDatatype) p.getValue(loop.next());
@@ -2143,7 +2256,7 @@ public class ProxyImpl implements Proxy, ExprType {
          return dt == null || ! dt.isTrueAble();
      }
     
-     IDatatype error() {
+     public IDatatype error() {
          return null;
      }
      
@@ -2182,7 +2295,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return getValue(! dt.booleanValue());
     }
     
-    IDatatype isWellFormed(IDatatype dt){
+    public IDatatype isWellFormed(IDatatype dt){
         if (dt.isLiteral() && dt.isUndefined()){
             if (dt.getDatatypeURI().startsWith(RDF.XSD)){ 
                 return FALSE;
@@ -2193,8 +2306,50 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         return TRUE;
     }
+              
+    public IDatatype isList(IDatatype dt){
+        return getValue(dt.isList());
+    }
     
+    public IDatatype first(IDatatype dt){
+        return DatatypeMap.first(dt);
+    }
     
+    public IDatatype rest(IDatatype dt){
+        return DatatypeMap.rest(dt);
+    }
+    
+    public IDatatype reverse(IDatatype dt){
+        return DatatypeMap.reverse(dt);
+    }
+    
+    public IDatatype sort(IDatatype dt){
+        return DatatypeMap.sort(dt);
+    }
+    
+    public IDatatype member(IDatatype dt1, IDatatype dt2){
+        return DatatypeMap.member(dt1, dt2);
+    }
+    
+    public IDatatype cons(IDatatype dt1, IDatatype dt2){
+        return DatatypeMap.cons(dt1, dt2);
+    }
+    
+    public IDatatype add(IDatatype dt1, IDatatype dt2){
+        return DatatypeMap.add(dt1, dt2);
+    }
+    
+    public IDatatype append(IDatatype dt1, IDatatype dt2){
+        return DatatypeMap.append(dt1, dt2);
+    }
+    
+    public IDatatype merge(IDatatype dt1, IDatatype dt2){
+        return DatatypeMap.merge(dt1, dt2);
+    }
+    
+     public IDatatype merge(IDatatype dt){
+        return DatatypeMap.merge(dt);
+    }
 
     @Override
     public Object getBufferedValue(StringBuilder sb, Environment env) {
@@ -2237,7 +2392,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return TRUE;
     }
     
-    IDatatype count(IDatatype dt){
+    public IDatatype size(IDatatype dt){
         if (dt.isList()){
             return DatatypeMap.size(dt);
         }
@@ -2258,6 +2413,20 @@ public class ProxyImpl implements Proxy, ExprType {
                 return ds.getNamedList();
         }
         return null;
+    }
+
+    /**
+     * @return the environment
+     */
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * @param environment the environment to set
+     */
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
    

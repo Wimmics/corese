@@ -730,9 +730,12 @@ implements Regex, Filter, Expr {
         
      public Let getLet(){
          return null;
-     }   
+     } 
+     
+     public ForLoop getFor(){
+         return null;
+     }
 	
-
     @Override
     public int subtype() {
         return ExprType.UNDEF;

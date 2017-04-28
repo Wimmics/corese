@@ -1057,6 +1057,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         term.setCName(name);
         return term;
     }
+    
+    public Term createReturn(Expression exp) {
+        Term term = createFunction(Processor.RETURN);
+        term.setCName(Constant.createResource(Processor.RETURN));
+        term.add(exp);
+        return term;
+    }
 
     public Term createFunction(Constant name, ExpressionList el) {
         Term term = createFunction(name.getName(), el);

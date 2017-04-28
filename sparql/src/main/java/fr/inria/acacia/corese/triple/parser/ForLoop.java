@@ -30,6 +30,12 @@ public class ForLoop extends Statement {
         sb.append("}");
         return sb;
     }  
+    
+     @Override
+     public ForLoop getFor(){
+         return this;
+     }
+     
 
     @Override
     public Variable getVariable() {

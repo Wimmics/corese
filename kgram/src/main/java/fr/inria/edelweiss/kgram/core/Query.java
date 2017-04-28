@@ -2273,7 +2273,11 @@ public class Query extends Exp implements Graphable {
     public void setTransformer(String p, Object transformer) {
         getGlobalQuery().setPPrinter(p, transformer);
     }
-
+    
+    public void setTransformer(Object transformer) {
+        setTransformer(null, transformer);
+    }
+ 
     Object getPPrinter(String p) {
         if (p == null) {
             return transformer;
@@ -2684,10 +2688,22 @@ public class Query extends Exp implements Graphable {
     public void setEnvironment(HashMap map){
         tprinter = map;
     }
+    
+    /**
+     * Use case: PluginImpl kgram()
+     * Query inherits q transformer information
+     * @param q 
+     */
+    public void complete(Query q, Object context){
+        setEnvironment(q.getEnvironment());
+        setTransformer(q.getTransformer());
+        setContext(context);
+    }
 
     /**
      * @return the mapping
      */
+    @Override
     public Mapping getMapping() {
         return mapping;
     }

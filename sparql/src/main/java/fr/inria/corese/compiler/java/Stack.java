@@ -1,6 +1,7 @@
 package fr.inria.corese.compiler.java;
 
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.ForLoop;
 import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Let;
 import fr.inria.acacia.corese.triple.parser.Variable;
@@ -9,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author Olivier Corby, Wimmics INRIA I3S, 2017
+ * Stack record bound variables for parameter passing to exists and subquery 
+ * Bound variables are function parameters and let local variables
  * TODO: for (?x in exp)
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
 public class Stack {
@@ -36,6 +39,11 @@ public class Stack {
         varList.add(exp.getVariable());
     }
     
+     void push(ForLoop exp){
+        expList.add(exp);
+        varList.add(exp.getVariable());
+    }
+    
     void popFunction(Expression exp){
         for (Expression arg : exp.getFunction().getArgs()){
             popVar();
@@ -43,6 +51,10 @@ public class Stack {
     }
     
     void popLet(Expression exp){
+        popVar();
+    }
+    
+    void popFor(Expression exp){
         popVar();
     }
     
@@ -55,6 +67,7 @@ public class Stack {
         switch(exp.oper()){
             case ExprType.FUNCTION: popFunction(exp); break;
             case ExprType.LET: popLet(exp); break;
+            case ExprType.FOR: popFor(exp); break;
         }
     }
 

@@ -4,10 +4,11 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.ASTExtension;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.ForLoop;
 import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Let;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Statement;
 import fr.inria.acacia.corese.triple.parser.Term;
@@ -34,10 +35,8 @@ public class JavaCompiler {
     static final String IDATATYPE = "IDatatype";
     static final String PROXY_PACKAGE = "fr.inria.edelweiss.kgenv.eval.ProxyImpl";
     
-    static final String importList = 
-              "import fr.inria.acacia.corese.api.IDatatype;\n"
-            + "import fr.inria.edelweiss.kgraph.query.PluginImpl;\n"
-            + "import fr.inria.acacia.corese.cg.datatype.DatatypeMap;\n";
+    
+    
     public static final String VAR_EXIST = "?_b";
     
     
@@ -46,8 +45,10 @@ public class JavaCompiler {
     String name = "Extension";
     
     StringBuilder sb;
+    Header head;
     Datatype dtc;
     ASTQuery ast;
+    // stack of bound variables (function parameter, let)
     Stack stack;
     
 
@@ -55,6 +56,7 @@ public class JavaCompiler {
         sb = new StringBuilder();
         dtc = new Datatype();
         stack = new Stack();
+        head = new Header(this);
     }
     
      public JavaCompiler(String name) {
@@ -74,7 +76,7 @@ public class JavaCompiler {
     }
 
     public void toJava(ASTExtension ext) throws IOException {
-        header(name);
+        head.process(name);
 
         for (ASTExtension.ASTFunMap m : ext.getMaps()) {
             for (Function exp : m.values()) {
@@ -92,22 +94,15 @@ public class JavaCompiler {
 
     public void write(String path) throws IOException {
         FileWriter fw = new FileWriter(String.format("%s%s.java", path, name));
+        fw.write(head.getStringBuilder().toString());
+        fw.write(dtc.getStringBuilder().toString());
+        fw.write(NL);
         fw.write(sb.toString());
         fw.flush();
         fw.close();
     }
 
-    void header(String name) {
-        append("package fr.inria.corese.extension;");
-        nl();
-        nl();
-        append(importList);      
-        nl();
-        nl();
-        append(String.format("public class %s extends PluginImpl { ", name));
-        nl();
-        nl();
-    }
+    
 
     void trailer() {
         append("}");
@@ -168,7 +163,7 @@ public class JavaCompiler {
                 return;
                 
             case ExprType.FOR:
-                loop(term);
+                loop(term.getFor());
                 return;
         }
     }
@@ -248,14 +243,16 @@ public class JavaCompiler {
         return sb;
     }
     
-    void loop(Term term){
+    void loop(ForLoop term){
         append("for (IDatatype ");
         toJava(term.getVariable());
         append(" : ");
         toJava(term.getDefinition());
         append(".getValueList()) {");
         incrnl();
+        stack.push(term);
         toJava(term.getBody());
+        stack.pop(term);
         pv(term.getBody());
         decrnl();
         append("}");
@@ -393,6 +390,19 @@ public class JavaCompiler {
             case ExprType.SET:
                 set(term);
                 return;
+                
+            case ExprType.MAP:
+            case ExprType.MAPLIST:
+            case ExprType.MAPMERGE:
+                map(term);
+                return;
+                
+                
+            case ExprType.APPLY_TEMPLATES_WITH:
+            case ExprType.APPLY_TEMPLATES_WITH_ALL:
+                template(term);
+                return;
+                
         }
 
         call(term);
@@ -402,7 +412,49 @@ public class JavaCompiler {
         return VAR_EXIST + count++;
     }
     
+    
+    /**
+     * 
+     * map(ex:fun(?x), ?list)
+     */
+    void map(Term term){
+        if (term.oper() == ExprType.MAPMERGE){
+            append("merge").append("(");
+        }
+        
+        append(mapName(term)).append("(");
+        int i = 0;
+        for (Expression exp : term.getArgs()) {
+            if (i == 0){
+                append(dtc.string(exp.getTerm().javaName()));
+            }
+            else {
+                toJava(exp);                
+            }
+            if (i++ < term.arity() - 1) {
+                append(", ");
+            }
+        }
+        append(")");
+        
+        if (term.oper() == ExprType.MAPMERGE){
+            append(")");
+        }
+    }
+    
+    String javaName(String name){
+        return NSManager.nstrip(name);
+    }
 
+    String mapName(Term term){
+        switch(term.oper()){
+            case ExprType.MAP: return "map";
+            case ExprType.MAPLIST: 
+            case ExprType.MAPMERGE: return "maplist";
+        }
+        return "map";
+    }
+    
     void set(Term term) {
         toJava(term.getArg(0));
         append(" = ");
@@ -420,7 +472,7 @@ public class JavaCompiler {
 
     void hash(Term term) {
         append("hash(");
-        append(dtc.newInstance(term.getModality()));
+        append(dtc.string(term.getModality()));
         append(", ");
         toJava(term.getArg(0));
         append(")");
@@ -450,7 +502,36 @@ public class JavaCompiler {
     }
 
     void call(Term term) {
-        append(term.javaName());
+        if (term.getLongName().startsWith(NSManager.STL)){
+            // st:get() -> pt.get()
+            append("getPluginTransform().");
+        }
+        funcall(term);
+    }
+    
+    /*
+     * st:apply-templates-with(trans, var)
+     */
+    void template(Term term){       
+       append("getPluginTransform().transform(");
+       append(dtc.newInstance(isAll(term)));
+       for (Expression exp : term.getArgs()) {
+           append(", ");
+           toJava(exp);            
+       }
+       append(")");
+    }
+    
+    boolean isAll(Term term){
+        switch (term.oper()){
+            case ExprType.APPLY_TEMPLATES_ALL:
+            case ExprType.APPLY_TEMPLATES_WITH_ALL: return true;               
+       } 
+        return false;
+    }
+    
+    void funcall(Term term){
+        append(term.javaName()); 
         append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {

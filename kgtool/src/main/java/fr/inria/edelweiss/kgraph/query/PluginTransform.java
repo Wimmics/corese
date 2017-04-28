@@ -428,14 +428,18 @@ public class PluginTransform implements ExprType {
      * Return current transformer (do not create in case of different graph)
      */
     Transformer getTransformerCurrent(Environment env, Producer p) {
-        return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null, true);
+        return getTransformer(env, p, (IDatatype) null, (IDatatype) null, null, true, false);
     }
     
     Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
-        return getTransformer(exp, env, prod, uri, temp, dtgname, false);
+        return getTransformer(env, prod, uri, temp, dtgname, false, isWith(exp));
     }
     
-    /**
+    Transformer getTransformer(IDatatype uri, IDatatype temp) {
+        return getTransformer(getEnvironment(), getProducer(), uri, temp, null, false, false);
+    }
+    
+   /**
      * uri: transformation URI 
      * gname: named graph 
      * If uri == null, get current transformer
@@ -443,7 +447,7 @@ public class PluginTransform implements ExprType {
      * use case: graph ?shape {  st:cget(sh:def, ?name)  }
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname, boolean current) {
+    Transformer getTransformer(Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname, boolean current, boolean isGraph) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         String transform = getTrans(uri, temp);
@@ -465,7 +469,7 @@ public class PluginTransform implements ExprType {
             else {
                 String gname = dtgname.getLabel();
                 try {              
-                    t = Transformer.create((Graph) prod.getGraph(), transform, gname, isWith(exp));
+                    t = Transformer.create((Graph) prod.getGraph(), transform, gname, isGraph); //isWith(exp));
                     complete(q, t, uri);
                 } catch (LoadException ex) {
                     logger.error(ex);
@@ -616,6 +620,26 @@ public class PluginTransform implements ExprType {
                 exp.getModality(), exp, env.getQuery(), env);
         return dt;
     }
+    
+    /*****************************************************************************************
+     * 
+     * LDScript Java compiler    
+     * 
+     *****************************************************************************************/
+    
+    public IDatatype transform(IDatatype isAll, IDatatype trans, IDatatype... ldt) {
+        IDatatype temp = null;
+        Transformer p = getTransformer(trans, temp);
+        IDatatype dt = p.process(ldt, ldt[0], getTemp(trans, temp),
+                isAll.booleanValue(), " ", null, getEnvironment().getQuery(), getEnvironment());
+        return dt;
+    }
+    
+    
+    
+    
+    /*****************************************************************************************/
+    
 
     /**
      * st:process(var) : default variable processing by SPARQL Template Ask
@@ -719,7 +743,25 @@ public class PluginTransform implements ExprType {
     public IDatatype get(Expr exp, Environment env, Producer p, String name) {
         return getContext(env, p).get(name);
     }
-
+    
+    // LDScript Java compiling
+    public IDatatype get(IDatatype dt) {
+        return getContext().get(dt.getLabel());
+    }
+    
+    public IDatatype get(IDatatype dt1, IDatatype dt2) {
+        IDatatype dt = get(dt1);
+        if (dt == null) {
+            return FALSE;
+        }
+        boolean b = dt.equals(dt2);
+        return plugin.getValue(b);
+    }
+    
+    Context getContext(){
+        return getContext(getEnvironment(), getProducer());
+    }
+    
     public IDatatype get(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         IDatatype dt = get(exp, env, p, dt1);
         if (dt == null) {
@@ -741,6 +783,20 @@ public class PluginTransform implements ExprType {
         getContext(env, p).cset(name, slot, value);
         return value;
     }
+    
+     public IDatatype cget(IDatatype name) {
+        return getContext().getContext(name).getDatatypeValue();
+    }
+    
+    public IDatatype cget(IDatatype name, IDatatype slot) {
+        IDatatype res = getContext().cget(name, slot);
+        return res;
+    }
+
+    public IDatatype cset(IDatatype name, IDatatype slot, IDatatype value) {
+        getContext().cset(name, slot, value);
+        return value;
+    }
 
     public IDatatype index(Expr exp, Environment env, Producer p) {
         return plugin.getValue(index++);
@@ -757,8 +813,8 @@ public class PluginTransform implements ExprType {
      * hence in server mode, when query st:set(), the property is transmitted to next Transformer
      * use case: profile with query + transformation, q and t share *same* Context
      * 
-     */
-     public Object set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+     */   
+     public IDatatype set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {                  
         Context c = getContext(env, p);
         if (exp.oper() == STL_SET){
           c.set(dt1.getLabel(), dt2);
@@ -768,6 +824,11 @@ public class PluginTransform implements ExprType {
         }
         return dt2;
     }  
+     
+    public IDatatype set(IDatatype dt1, IDatatype dt2) {  
+        getContext().set(dt1.getLabel(), dt2);
+        return dt2;
+    } 
     
      
     TemplateVisitor getVisitor(Environment env, Producer p){
@@ -777,6 +838,18 @@ public class PluginTransform implements ExprType {
             env.getQuery().setTemplateVisitor(tv);
         }
         return tv;
+    }
+    
+    TemplateVisitor getVisitor(){
+        return getVisitor(getEnvironment(), getProducer());
+    }
+
+    Environment getEnvironment(){
+        return plugin.getEnvironment();
+    }
+    
+    Producer getProducer(){
+        return plugin.getProducer();
     }
 
     public IDatatype vset(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
@@ -812,6 +885,14 @@ public class PluginTransform implements ExprType {
             dt1 = VISIT_DEFAULT;
         }
         getVisitor(env, p).visit(dt1, dt2, dt3);
+        return TRUE;
+    }
+    
+     public IDatatype visit(IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
+        if (dt1 == null) {
+            dt1 = VISIT_DEFAULT;
+        }
+        getVisitor().visit(dt1, dt2, dt3);
         return TRUE;
     }
 

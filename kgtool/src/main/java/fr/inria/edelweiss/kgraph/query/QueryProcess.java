@@ -435,11 +435,15 @@ public class QueryProcess extends QuerySolver {
         }
         return query(q);
     }
-    
+      
     public Mappings sparqlQuery(String squery, Mapping map, Dataset ds) throws EngineException {
-        Query q = compile(squery, ds);
+        Query q = compile(squery, ds);       
+        return sparqlQuery(q, map);
+    }
+    
+    public Mappings sparqlQuery(Query q, Mapping map) throws EngineException {
         if (q.isUpdate()) {
-            throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
+            throw new EngineException("Unauthorized Update in SPARQL Query:\n" + q.getAST().toString());
         }
         return eval(q, map);
     }

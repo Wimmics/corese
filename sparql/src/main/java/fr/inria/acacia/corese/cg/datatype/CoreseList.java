@@ -25,7 +25,9 @@ public class CoreseList extends CoreseUndefLiteral {
 
     public CoreseList(IDatatype[] dt) {
         super(SEED + count++);
-        list = Arrays.asList(dt);
+        List<IDatatype> ll = Arrays.asList(dt);
+        list = new ArrayList<IDatatype>(ll.size());
+        list.addAll(ll);    
     }
     
      public CoreseList(List<IDatatype> vec) {

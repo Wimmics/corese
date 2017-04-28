@@ -46,6 +46,7 @@ import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.GraphListen;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import org.apache.logging.log4j.Level;
@@ -59,7 +60,7 @@ import org.apache.logging.log4j.Level;
  */
 public class PluginImpl extends ProxyImpl {
 
-    static Logger logger = LogManager.getLogger(PluginImpl.class);
+    static public Logger logger = LogManager.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
@@ -86,6 +87,7 @@ public class PluginImpl extends ProxyImpl {
     private PluginTransform pt;
     private static IStorage storageMgr;
     private AppxSearchPlugin pas;
+    HashMap<String, Query> queryCache;
 
     public PluginImpl() {
         init();
@@ -107,6 +109,7 @@ public class PluginImpl extends ProxyImpl {
         ext = new ExtendGraph(this);
         pt  = new PluginTransform(this);
         pas = new AppxSearchPlugin(this); 
+        queryCache = new HashMap<String, Query>();
     }
 
     public static PluginImpl create(Matcher m) {
@@ -654,8 +657,16 @@ public class PluginImpl extends ProxyImpl {
     /*
      * Return Loopable with edges
      */
-    private Object edge(Expr exp, Environment env, final Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
+    private IDatatype edge(Expr exp, Environment env, final Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
        return DatatypeMap.createObject("tmp", getLoop(p, subj, pred, obj));        
+    }
+    
+    public IDatatype edge(IDatatype subj, IDatatype pred) {   
+       return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, null));        
+    }
+    
+    public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) {   
+       return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, obj));        
     }
     
     Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
@@ -921,11 +932,7 @@ public class PluginImpl extends ProxyImpl {
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {
-            Context c = null;
-            if (env.getQuery().getContext() != null){
-                c = (Context) env.getQuery().getContext();
-            }
-            Mappings map = exec.sparqlQuery(query, m, (c == null)?null:new Dataset(c));
+            Mappings map = exec.sparqlQuery(query, m, getDataset(env));
             if (map.getGraph() == null){
                 return DatatypeMap.createObject(map);
             }
@@ -937,7 +944,27 @@ public class PluginImpl extends ProxyImpl {
         }
     }
      
+    Dataset getDataset(Environment env) {
+        Context c = (Context) env.getQuery().getContext();
+        if (c != null) {
+            return new Dataset(c);
+        }
+        return null;
+    }
+    
+    
+    Dataset getDataset() {        
+        Context c = getPluginTransform().getContext();
+        if (c != null) {
+            return new Dataset(c);
+        }
+        return null;
+    }
+    
      /**
+      * This PluginImpl was created for executing a Method such as java:report()
+      * where java: = <function:// ...>
+      * This PluginImpl contains Environment and Producer
       * use case: JavaCompiler external function
       */
     public IDatatype kgram(IDatatype query, IDatatype... ldt) {  
@@ -947,8 +974,14 @@ public class PluginImpl extends ProxyImpl {
             m = createMapping(getProducer(), ldt, 0);
         }
         QueryProcess exec = QueryProcess.create(g, true);
-        try {            
-            Mappings map = exec.sparqlQuery(query.stringValue(), m, null);
+        try {   
+            Query q = queryCache.get(query.getLabel());
+            if (q == null){
+                q = exec.compile(query.getLabel());
+                queryCache.put(query.getLabel(), q);
+            }
+            q.complete(getEnvironment().getQuery(), getPluginTransform().getContext());
+            Mappings map = exec.sparqlQuery(q, m);
             if (map.getGraph() == null){
                 return DatatypeMap.createObject(map);
             }

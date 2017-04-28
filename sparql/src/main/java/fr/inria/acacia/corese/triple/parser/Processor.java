@@ -361,7 +361,7 @@ public class Processor {
         
         // do not generate xt:set for set
         static final HashMap<String, Boolean> fixed; 
-	
+        	
 	Term term;
         // function definition for UNDEF function call
 	private Expr define;
@@ -515,7 +515,8 @@ public class Processor {
                     compileSQL(term, ast);
                     break;
                 case ExprType.EXTERNAL:
-                    compileExternal(term, ast);
+                    // done at runtime 
+                    //compileExternal();
                     break;
                 case ExprType.CUSTOM:
                     compileCustom(term, ast);
@@ -1267,7 +1268,15 @@ public class Processor {
 	 * prefix ext: <function://package.className>
 	 * ext:fun() 
 	 */
-	void compileExternal(Term term, ASTQuery ast) {
+        
+        public void compile(){
+            if (! isCompiled){
+                isCompiled = true;
+                compileExternal();
+            }
+        }
+        
+         void compileExternal() {
             setCorrect(false);
             try {
                 String methodName = term.getLabel();
@@ -1295,7 +1304,7 @@ public class Processor {
                 for (int i = 0; i < aclasses.length; i++) {
                     aclasses[i] = IDatatype.class;
                 }
-
+               
                 setProcessor(className.newInstance());
                 setMethod(className.getMethod(methodName, aclasses));
                 setCorrect(true);

@@ -331,7 +331,7 @@
           UpdateQuery();
           break;
         case TEMPLATE:
-          stack = TemplateQuery();
+          stack = TemplateQuery(la);
           break;
         default:
           jj_la1[0] = jj_gen;
@@ -1104,8 +1104,8 @@
   }
 
 // *********************** End Update ********************************************************
-  final public Exp TemplateQuery() throws ParseException {
-                        Exp stack;
+  final public Exp TemplateQuery(Metadata la) throws ParseException {
+                                   Exp stack;
    stack = BasicGraphPattern.create();
     Template(stack);
     label_6:
@@ -1123,6 +1123,7 @@
     stack = WhereClause();
     SolutionModifier();
     astq.setTemplate(true);
+    astq.setAnnotation(la);
     {if (true) return stack;}
     throw new Error("Missing return statement in function");
   }
@@ -7924,13 +7925,13 @@
     return false;
   }
 
-  final private boolean jj_3R_110() {
-    if (jj_scan_token(WHERE)) return true;
+  final private boolean jj_3R_77() {
+    if (jj_3R_85()) return true;
     return false;
   }
 
-  final private boolean jj_3R_77() {
-    if (jj_3R_85()) return true;
+  final private boolean jj_3R_110() {
+    if (jj_scan_token(WHERE)) return true;
     return false;
   }
 
@@ -7999,6 +8000,16 @@
     return false;
   }
 
+  final private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) return true;
+    }
+    return false;
+  }
+
   final private boolean jj_3R_80() {
     if (jj_scan_token(DELETE)) return true;
     Token xsp;
@@ -8006,16 +8017,6 @@
     if (jj_3R_109()) {
     jj_scanpos = xsp;
     if (jj_3R_110()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_57()) {
-    jj_scanpos = xsp;
-    if (jj_3R_58()) return true;
     }
     return false;
   }
@@ -8032,12 +8033,6 @@
 
   final private boolean jj_3R_75() {
     if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_79() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -8066,6 +8061,12 @@
     return false;
   }
 
+  final private boolean jj_3R_79() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_111() {
     if (jj_3R_145()) return true;
     return false;
@@ -8091,6 +8092,11 @@
     return false;
   }
 
+  final private boolean jj_3R_95() {
+    if (jj_3R_130()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_56() {
     Token xsp;
     xsp = jj_scanpos;
@@ -8098,11 +8104,6 @@
     jj_scanpos = xsp;
     if (jj_3R_80()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_95() {
-    if (jj_3R_130()) return true;
     return false;
   }
 

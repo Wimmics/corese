@@ -291,7 +291,7 @@ Exp Query() : { Exp stack; Metadata la = null;}
             | stack = DescribeQuery()  
             | stack = AskQuery()        
             | UpdateQuery()            	
-            | stack = TemplateQuery()
+            | stack = TemplateQuery(la)
             )  (Defun()) 
         //?       
         |  
@@ -590,7 +590,7 @@ Exp BodyQuadPattern() : {Exp stack;}
 
 
 
-Exp TemplateQuery() : { Exp stack; }
+Exp TemplateQuery(Metadata la) : { Exp stack; }
 {
   {stack = BasicGraphPattern.create();}
   Template(stack)
@@ -599,6 +599,7 @@ Exp TemplateQuery() : { Exp stack; }
   SolutionModifier()  
   {
     astq.setTemplate(true);
+    astq.setAnnotation(la);
     return stack; 
   }
 }

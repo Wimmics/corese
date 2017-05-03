@@ -27,6 +27,7 @@ public class CoreseTimer {
 	public String adapterName;
 	private Mappings mappings;
 
+
 	public enum Profile {
 		DB, MEMORY
 	};
@@ -35,6 +36,7 @@ public class CoreseTimer {
 	private Profile mode = Profile.MEMORY;
 	private boolean initialized;
 	private DescriptiveStatistics stats;
+	private DescriptiveStatistics statsMemory;
 
 	/**
 	 *
@@ -106,19 +108,25 @@ public class CoreseTimer {
 		String query = test.getRequest();
 		LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
 		stats = new DescriptiveStatistics();
+		statsMemory = new DescriptiveStatistics();
 		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
 		for (int i = 0; i < nbCycles; i++) {
 			LOGGER.log(Level.INFO, "iteration #{0}", i);
 			System.gc();
+			final long startMemory = getMemoryUsage();
 			final long startTime = System.currentTimeMillis();
 			LOGGER.log(Level.INFO, "before query");
 			adapter.execQuery(query);
 			LOGGER.log(Level.INFO, "after query");
 			final long endTime = System.currentTimeMillis();
+			final long endMemory = getMemoryUsage();
 			long delta = endTime - startTime;
+			long deltaMemory = endMemory - startMemory;
 			LOGGER.info(String.format("elapsed time = %d ms", delta));
+			LOGGER.info(String.format("used memory = %d ms", deltaMemory));
 			if (i >= test.getWarmupCycles()) {
 				stats.addValue(delta);
+				statsMemory.addValue(deltaMemory);
 			}
 		}
 		adapter.saveResults(test.getResultFileName(mode));
@@ -134,5 +142,10 @@ public class CoreseTimer {
 
 	public DescriptiveStatistics getStats() {
 		return stats;
+	}
+
+	private long getMemoryUsage() {
+		Runtime runtime = Runtime.getRuntime();
+		return runtime.totalMemory() - runtime.freeMemory();
 	}
 }

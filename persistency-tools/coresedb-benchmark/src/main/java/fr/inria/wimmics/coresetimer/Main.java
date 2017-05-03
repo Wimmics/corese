@@ -22,9 +22,7 @@ import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.logging.Level;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -136,6 +134,12 @@ public class Main {
 			return inputDb;
 		}
 
+		/**
+		 * Set the relative path to the db. 
+		 * @see 
+		 * @param path
+		 * @return 
+		 */
 		public TestSuite setInputDb(String path) {
 			this.inputDb = path;
 			return this;

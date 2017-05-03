@@ -45,9 +45,9 @@ public class QualitativeTest {
 
 	@BeforeClass
 	public void setup() {
-		inputRoot = getEnvWithDefault("INPUT_ROOT", "./data/");
+		inputRoot = getEnvWithDefault("INPUT_ROOT", getEnvWithDefault("HOME", "/tmp/") + "/data/");
 		inputRoot = ensureEndWith(inputRoot, "/");
-		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./outputs/");
+		outputRoot = getEnvWithDefault("OUTPUT_ROOT", getEnvWithDefault("HOME", "/tmp/") + "/outputs/");
 		outputRoot = ensureEndWith(inputRoot, "/");
 	}
 
@@ -103,29 +103,29 @@ public class QualitativeTest {
 	@DataProvider(name = "quantitative")
 	public Iterator<Object[]> buildTests() throws Exception {
 		String[] inputFiles = {
-			//			"btc-2010-chunk-000.nq:1",
-			//			"btc-2010-chunk-000.nq:3",
-			//			"btc-2010-chunk-000.nq:10",
-			//			"btc-2010-chunk-000.nq:31",
-			//			"btc-2010-chunk-000.nq:100",
-			//			"btc-2010-chunk-000.nq:316",
-			//			"btc-2010-chunk-000.nq:1000",
-			//			"btc-2010-chunk-000.nq:3162",
-			//			"btc-2010-chunk-000.nq:10000",
-			"btc-2010-chunk-000.nq:31622",
-			"btc-2010-chunk-000.nq:100000",
-			"btc-2010-chunk-000.nq:316227",
-			"btc-2010-chunk-000.nq:1000000",
-			"btc-2010-chunk-000.nq:3162277",
-			"btc-2010-chunk-000.nq", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+			"btc-2010-chunk-000.nq.gz:1",
+			"btc-2010-chunk-000.nq.gz:3",
+			"btc-2010-chunk-000.nq.gz:10",
+			"btc-2010-chunk-000.nq.gz:31",
+			"btc-2010-chunk-000.nq.gz:100",
+			"btc-2010-chunk-000.nq.gz:316",
+			"btc-2010-chunk-000.nq.gz:1000",
+			"btc-2010-chunk-000.nq.gz:3162",
+			"btc-2010-chunk-000.nq.gz:10000",
+			"btc-2010-chunk-000.nq.gz:31622",
+			"btc-2010-chunk-000.nq.gz:100000",
+			"btc-2010-chunk-000.nq.gz:316227",
+			"btc-2010-chunk-000.nq.gz:1000000",
+			"btc-2010-chunk-000.nq.gz:3162277",
+			"btc-2010-chunk-000.nq.gz:10000000", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
 		//                      "btc-2010-chunk-00(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3)(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"   
 		};
 		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c", 
+			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
 			"select ?x ?y where { ?x rdf:type ?y}",
-			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}", 
+			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
 			"select ?x ?p ?y where { ?x ?p ?y} order by ?x ?p ?y"
 		};
 
@@ -171,7 +171,7 @@ public class QualitativeTest {
 						setWarmupCycles(2).
 						setMeasuredCycles(5).
 						setInput(inputFile).
-						setInputDb("/tmp/" + inputFile.replace(":", "_").replace(",", "_") + "_db").
+						setInputDb(inputFile.replace(":", "_").replace(",", "_") + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					try {

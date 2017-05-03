@@ -125,7 +125,7 @@ public class Main {
 				logger.info("Not creating database since it already exists at {}", databasePath);
 			} else {
 				logger.info("Creating database at {}", databasePath);
-				new RdfToGraph().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+				RdfToGraph.build().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
 			}
 			return this;
 		}

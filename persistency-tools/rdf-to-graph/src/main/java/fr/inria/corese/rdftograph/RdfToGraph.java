@@ -63,34 +63,6 @@ public class RdfToGraph {
 		DRIVER_TO_CLASS.put(DbDriver.NULLDRIVER, "fr.inria.wimmics.rdf.to.graph.nulldriver.NullDriver");
 	}
 
-//	private class VerticesBuilder extends AbstractRDFHandler {
-//
-//		private int triples = 0;
-//
-//		@Override
-//		public void handleStatement(Statement statement) {
-//			Resource source = statement.getSubject();
-//			Value object = statement.getObject();
-//
-//			triples++;
-//			if (triples % CHUNK_SIZE == 0) {
-//				LOGGER.log(Level.INFO, "{0}", triples);
-//				try {
-//					driver.commit();
-//				} catch (Exception ex) {
-//					LOGGER.log(Level.SEVERE, "Trying to pursue after: {0}", ex.getMessage());
-//					ex.printStackTrace();
-//				}
-//			}
-//			try {
-//				driver.createNode(source);
-//				driver.createNode(object);
-////				driver.commit();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 	private class EdgesBuilder extends AbstractRDFHandler {
 
 		private int triples = 0;
@@ -120,7 +92,11 @@ public class RdfToGraph {
 		}
 	}
 
-	public RdfToGraph() {
+	private RdfToGraph() {
+	}
+
+	public static RdfToGraph build() {
+		return new RdfToGraph();
 	}
 
 	/**

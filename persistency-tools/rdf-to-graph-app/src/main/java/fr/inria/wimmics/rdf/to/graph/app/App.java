@@ -39,6 +39,6 @@ public class App {
 		String dbPath = args[1];	
 		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
 
-		new RdfToGraph().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
+		RdfToGraph.build().setDriver(driver).convertFileToDb(rdfFileName, format.orElse(RDFFormat.NQUADS), dbPath);
 	}	
 }

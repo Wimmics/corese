@@ -24,7 +24,6 @@ public class RdfToNeo4jTest {
 		ROOT_RESOURCES + "testConvert/input1.nq"
 	};
 
-
 	/**
 	 * Test of convertStreamToDb method, of class RdfToNeo4jBatch.
 	 *
@@ -36,10 +35,9 @@ public class RdfToNeo4jTest {
 		String dbPath = ROOT_RESOURCES + "testConvertResult.neo4jdb";
 		String expectedDb = ROOT_RESOURCES + "testConvertExpected.neo4jdb";
 
-		RdfToGraph converter = new RdfToGraph();
-		converter.setDriver(RdfToGraph.DbDriver.NEO4J);
-		converter.convertFileToDb(INPUTS[0], RDFFormat.NQUADS, dbPath);
-
+		RdfToGraph.build().
+			setDriver(RdfToGraph.DbDriver.NEO4J).
+			convertFileToDb(INPUTS[0], RDFFormat.NQUADS, dbPath);
 		checkDbEqual(expectedDb, dbPath);
 	}
 

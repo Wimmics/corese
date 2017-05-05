@@ -1,0 +1,3 @@
+sed -ri 's/prefix sh: <http:\/\/www\.w3\.org\/ns\/shacl\#>/prefix sh:  <http:\/\/www\.w3\.org\/ns\/shacl\#> \nprefix fun:  <http:\/\/www\.w3\.org\/ns\/shacl\#> \nprefix java: <function:\/\/fr\.inria\.corese\.extension\.DataShape> /' */*.rq
+
+

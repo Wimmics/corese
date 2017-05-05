@@ -2,7 +2,9 @@
 #  ?ls is the list of target nodes of shape ?sh
 #  evaluate sh:constraint
 #
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -10,7 +12,7 @@ template (?shape, ?sh, ?vis, ?ls) {
 where {
     graph ?shape { filter not exists { ?sh sh:path ?ppp } }
     
-    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
+    bind (java:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
 

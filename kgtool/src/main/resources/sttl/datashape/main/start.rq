@@ -10,7 +10,9 @@
 #
 # Olivier Corby - Inria I3S - 2016
 #
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template st:start {
     ?suc
@@ -18,7 +20,7 @@ template st:start {
 where {
   bind (st:visit(st:start, st:trace) as ?vis) 
   bind (coalesce(st:get(st:shape), st:shape) as ?shape)
-  bind (sh:start() as ?st)
+  bind (sh:starter() as ?st)
   bind (st:call-template(sh:sibling, ?shape) as ?sib)
   bind (st:apply-templates(?shape) as ?suc)
   bind (sh:success(?suc) as ?b)

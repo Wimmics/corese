@@ -3,7 +3,9 @@
 # Evaluate SPARQL query with pre-bind of variable $this with focus nodes
 # SPARQL query returns solutions that fail the Constraint
 #
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 template  sh:sparql (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
    sh:safe(?shape, ?sh, ?suc)
 }
@@ -27,7 +29,7 @@ where {
         }
     }
     
-    bind (sh:path(?shape, ?s, ?p) as ?list)
+    bind (java:path(?shape, ?s, ?p) as ?list)
     
     values ?o { unnest(?list) }  
     
@@ -36,7 +38,7 @@ where {
     # SPARQL query returns solutions that fail
     bind (false as ?suc)
     
-    bind (st:report(sh:sparql, ?cst, ?shape, ?o, ?path, ?value, ?suc, ?vis) as ?b)
+    bind (java:report(sh:sparql, ?cst, ?shape, ?o, ?path, ?value, ?suc, ?vis) as ?b)
     
 }
 

@@ -1,0 +1,4 @@
+sed -ri 's/sh:report/java:report/' *.rq
+sed -ri 's/sh:path\(/java:path\(/' *.rq
+
+

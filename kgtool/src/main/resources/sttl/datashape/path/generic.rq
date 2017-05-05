@@ -11,7 +11,9 @@
 # the or evaluates its elements by coming back here with ?value bound
 # this is done to use the same templates whether ?value is bound or not
 #
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
   sh:safe(?shape, ?sh, ?suc)
@@ -28,11 +30,11 @@ where {
 
   values ?s { unnest(?ls) }
 
-  values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
+  values ?o { unnest(if (bound(?value), ?value, java:path(?shape, ?s, ?p))) }
 
-  bind (coalesce(funcall(?q, ?shape, ?o, ?m), false) as ?suc )
+  bind (coalesce(java:functioncall(?q, ?shape, ?o, ?m), false) as ?suc )
   
   bind (
-    if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
+    if (?q in (sh:property), true, java:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
     as ?b)
 }

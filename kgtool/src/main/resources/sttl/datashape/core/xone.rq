@@ -1,4 +1,6 @@
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -6,11 +8,11 @@ template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
 where {
     values ?s { unnest(?ls) }
 
-    bind (sh:xone(?or, ?s, ?shape) as ?count)  
+    bind (java:xone(?or, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (st:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+    bind (java:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 

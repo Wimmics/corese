@@ -1,7 +1,9 @@
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?l, ?o){
-    let (?suc = false, ?b = st:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
+    let (?suc = false, ?b = java:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
         sh:safe(?shape, ?sh, ?suc)
     } 
 }
@@ -9,7 +11,7 @@ where {
 
     select ?shape ?s ?p ?lang (count(?val) as ?c)  
     where {
-        values ?val { unnest(sh:path(?shape, ?s, ?p)) }
+        values ?val { unnest(java:path(?shape, ?s, ?p)) }
         bind (lang(?val) as ?lang)
         filter (bound(?lang) && ?lang != "")
     } 

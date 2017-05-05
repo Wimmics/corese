@@ -1,4 +1,6 @@
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template sh:lessThanOrEquals(?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
   sh:safe(?shape, ?sh, ?suc)
@@ -9,7 +11,7 @@ where {
   
   bind (coalesce(?o <= ?v, false) as ?suc)
     
-  bind (st:report(sh:lessThanOrEquals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  bind (java:report(sh:lessThanOrEquals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
   
 }
  

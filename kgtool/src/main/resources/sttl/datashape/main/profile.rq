@@ -1,18 +1,24 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
-template st:profile {}
-where {}
+#@compile <fr.inria.corese.extension.DataShape>  @path </user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
+
+template st:profile {} where {}
 
 
+@skip
 function st:aggregate(?out) {
   st:agg_and(?out)
 }
 
+@skip
 function st:default(?term){
     true
 }
 
+@skip
 function st:defaultNamed(?term){
     true
 }
@@ -32,24 +38,25 @@ function sh:test(){
     st:get(st:test, true)
 }
 
-function sh:package(?test, ?name){
-    if (sh:test(), concat("/user/corby/home/AAData/sttl/datashape/", ?test), ?name)
+function sh:pack(?test, ?name){
+    if (sh:test(), 
+        return(concat("/user/corby/home/AAData/sttl/datashape/", ?test)), ?name)
 }
 
 function sh:main(){
-    sh:package("main", st:dsmain)
+    sh:pack("main", st:dsmain)
 }
 
 function sh:core(){
-    sh:package("core", st:dscore)
+    sh:pack("core", st:dscore)
 }
 
 function sh:constraint(){
-    sh:package("constraint", st:dsconstraint)
+    sh:pack("constraint", st:dsconstraint)
 }
 
 function sh:path(){
-    sh:package("path", st:dspath)
+    sh:pack("path", st:dspath)
 }
 
 
@@ -85,32 +92,35 @@ function sh:safe(?shape, ?sh, ?suc) {
     ?suc
 }
 
-function st:report(?name, ?s, ?suc, ?vis) {
+function sh:report(?name, ?s, ?suc, ?vis) {
     if (?vis) {
         st:visit(?name, ?s, ?suc)
-    }
+    } ;
+    return (true)
 }
 
 #
 # ?suc is success/failure of the shape
 # ?vis true means generate a ValidationResult
 #
-function st:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
+function sh:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
     if (?vis && ! ?suc) { 
         sh:result(?name, ?sh, ?shape, ?foc,  ?p, ?o) ;
         st:visit(?name, ?foc, ?suc)
-    }
+    } ;
+    return(true)
 }
 
-function st:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
+function sh:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
     if (?vis && ! ?suc) { 
         sh:result(?name, ?sh, ?shape, ?foc,  st:null, st:null) ;
         st:visit(?name, ?foc, ?suc)
-    }
+    } ;
+    return(true)
 }
 
 function sh:value(?v){
-    if (?v = st:null, error(), ?v)
+    if (?v = st:null, return(error()), ?v)
 }
 
 function sh:result2(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
@@ -147,27 +157,28 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
         where { 
             bind (uuid() as ?r)
             graph ?shape { 
-                # ?sh can be a constraint or a shape
-                #bind (exists { ?sh sh:severity sh:Warning } as ?warn)
-                #bind (if (?warn, false, exists { ?sh sh:severity sh:Info }) as ?info)
-                #bind (if (?warn, sh:Warning, if (?info, sh:Info, sh:Violation)) as ?sev)
+                # ?sh can be a constraint or a shape                               
+                bind (java:severity(?sh) as ?sev)
                 
-                bind (sh:severity(?sh) as ?sev)
+                bind (java:message(?sh)  as ?m)                
+                bind (
+                    if (bound(?m), ?m, concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh))) 
+                as ?mes)
                 
-                bind (concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh)) as ?mes)
-                bind (coalesce(sh:isdefby(?name), ?name) as ?def)
-                bind (sh:value(?p) as ?pp)
-                bind (sh:value(?o) as ?oo)
-                bind (if (bound(?pp), sh:graph(?pp), error())  as ?pathDetail)                
+                bind (coalesce(java:isdefby(?name), ?name) as ?def)
+                bind (java:value(?p) as ?pp)
+                bind (java:value(?o) as ?oo)
+                bind (if (bound(?pp), java:graph(?pp), error())  as ?pathDetail)                
             }
-            bind (sh:graphbnode(?foc) as ?focDetail)
-            bind (if (bound(?oo), sh:graphbnode(?oo), error())  as ?valueDetail)
-            bind (sh:bnode() as ?bnode)
+            bind (java:graphbnode(?foc) as ?focDetail)
+            bind (if (bound(?oo), java:graphbnode(?oo), error())  as ?valueDetail)
+            bind (java:bnodeid() as ?bnode)
         } 
         values (?name ?sh ?shape ?foc  ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
     {
-        st:visit(st:trace, st:graph, ?g)
+        st:visit(st:trace, st:graph, ?g) ;
+        return(true)
     }
 }
 
@@ -179,6 +190,13 @@ function sh:severity(?sh){
     return (sh:Violation)
 }
 
+function sh:message(?sh){
+    for ((?s, ?p, ?o) in xt:edge(?sh, sh:message)){
+        return (?o)
+    } ;
+    return (error())
+}
+
 function sh:success(?b){
     if (?b){
         let (?g = 
@@ -187,26 +205,27 @@ function sh:success(?b){
             ) {
             st:visit(st:trace, st:graph, ?g)
         }
-    }
+    } ;
+    return (true)
 }
 
-function sh:bnode(){
-    coalesce(st:get(sh:bnode), st:set(sh:bnode, bnode()))
+function sh:bnodeid(){
+    coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
 }
 
 function sh:graph(?var){
 if (isBlank(?var), 
-    strdt(st:apply-templates-with(st:turtle, ?var), xt:graph), 
+    return(strdt(st:apply-templates-with(st:turtle, ?var), xt:graph)), 
     ?var)
 }
 
 function sh:graphbnode(?var){
     if (isBlank(?var),  
-        sh:graph(?var),
-        error())
+        return(sh:graph(?var)),
+        return(error()))
 }
 
-function sh:start(){
+function sh:starter(){
     sh:init()
 }
 
@@ -217,7 +236,8 @@ function sh:init(){
 function sh:define(?def){
     let ((?name, ?value) = ?def){
         st:cset(sh:def, ?name, ?value)
-    }
+    } ;
+    return(true)
 }
 
 function sh:def(){
@@ -256,23 +276,30 @@ function sh:def(){
         
         (sh:sparql      sh:SPARQLConstraintComponent)
     ) ) {
-        ?list
-    }
+        return(?list)
+    } 
 } 
 
 function sh:isdefby(?name){
     st:cget(sh:def, ?name)
 }
 
+function sh:functioncall(?q, ?shape, ?s, ?m){
+    funcall(sh:clean(?q), ?shape, ?s, ?m)
+}
+
+function sh:clean(?q){
+    if (?q = sh:class, sh:classsh, ?q)
+}
 
 function sh:count(?s, ?p){
   let ((?c) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o } )
-  { ?c }
+  { return(?c) }
 }
 
 function sh:invCount(?o, ?p){
   let ((?c) = select ?o ?p (count(*) as ?c) where { ?s ?p ?o } )
-  { ?c }
+  { return(?c) }
 }
 
 
@@ -285,7 +312,7 @@ function sh:maxCount(?s, ?p, ?m){
 }
 
 function sh:nodeKind(?shape, ?value, ?kind){
-    (isIRI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isURI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
     (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
     (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
 }
@@ -315,11 +342,11 @@ function sh:maxExclusive(?shape, ?o, ?m){
 }
 
 function sh:datatype(?shape, ?o, ?d){
-    isLiteral(?o) && datatype(?o) = ?d && isWellFormed(?o)
+    sh:datatype(?o, ?d)
 }
 
 function sh:datatype(?o, ?d){
-    isLiteral(?o) && datatype(?o) = ?d && isWellFormed(?o)
+    if (isLiteral(?o), return(datatype(?o) = ?d && isWellFormed(?o)), false)
 }
 
 function sh:minCount(?s, ?m){
@@ -334,7 +361,12 @@ function sh:hasValue(?shape, ?s, ?v) {
     ?s = ?v
 }
 
+@skip
 function sh:class(?shape, ?o, ?c){
+  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+}
+
+function sh:classsh(?shape, ?o, ?c){
   exists { ?o rdf:type/rdfs:subClassOf* ?c }
 }
 
@@ -346,12 +378,6 @@ function sh:in(?shape, ?o, ?lv){
   } 
 }
 
-# every lists of values should be disjoint
-function sh:disjoint(?sh){
-    let (?list = st:cget(?sh)){
-    
-    }
-}
 
 function sh:languageIn(?shape, ?o, ?lv){
   exists { 
@@ -407,12 +433,14 @@ function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
 			}
 			BIND (
                 if (bound(?prop), 
-                    sh:testShapeCore(?shape, ?cst, ?o),
-                    sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o))
+                    java:testShapeCore(?shape, ?cst, ?o),
+                    java:hasPath(?shape, ?cst, false, ?s, ?p, ?o))
 			AS ?hasShape)
-			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
-		})
-		{ ?count }
+			BIND (IF (bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		}
+		values (?s ?suc ?fail ?p ?o ) { (UNDEF UNDEF UNDEF UNDEF UNDEF) }
+		)
+		{ return(?count) }
 }
 
 
@@ -442,59 +470,35 @@ function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
             graph ?shape { 
                 ?sh rdf:rest*/rdf:first ?cst
             }			
-			BIND (sh:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
+			BIND (java:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
-		})
-		{ ?count }
+		}
+		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) }
+		)
+		{ return(?count) }
 }
 
 
-# used by constraint
-# count fail
-function sh:andcst(?and, ?s, ?shape){
-    (sh:boolcst(?and, ?s, ?shape, 0, 1) = 0)
-}
 
-# used by constraint
-# count success
-function sh:orcst(?or, ?s, ?shape){
-    (sh:boolcst(?or, ?s, ?shape, 1, 0) > 0)
-}
-
-# used by constraint
-function sh:boolcst(?sh, ?s, ?shape, ?suc, ?fail){
-    let ((?count) = 
-        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
-		WHERE {
-            graph ?shape { 
-                ?sh rdf:rest*/rdf:first ?cst
-            }			
-			BIND (sh:hasConstraint(?shape, ?cst, false, ?s) AS ?hasShape)
-			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
-		})
-		{ ?count }
-}
 
 
 function sh:disjoint(?l1, ?l2){
-    coalesce(
-        for (?x in ?l1){
+    for (?x in ?l1){
             if (xt:member(?x, ?l2)){
-                error() 
+                return(false) 
             }     
-        }, 
-        false)
+    } ;
+    return(true)
 }
 
 function sh:equal(?l1, ?l2){
-    if (xt:size(?l1) != xt:size(?l2), false,
-    coalesce(
-        for (?x in ?l1){
+    if (xt:size(?l1) != xt:size(?l2), return(false),
+    for (?x in ?l1){
             if (! xt:member(?x, ?l2)){
-                error() 
+                return(false) 
             }     
-        }, 
-        false) )
+        }) ;
+        return (true)
 }
 
 
@@ -525,16 +529,16 @@ function sh:path(?shape, ?pp) {
             graph ?shape { 
                 # rdf:rest is for a sequence
                 values ?q { 
-                    sh:inversePath sh:alternativePath 
-                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath rdf:rest }
+                    rdf:rest sh:inversePath sh:alternativePath 
+                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  }
                 ?pp ?q ?path   
             }
         } ) {
         
         if (! bound(?q))
-            { error() }      
-        else if (?q = rdf:rest) { xt:list(sh:sequence, sh:list(?shape, ?pp)) }
-        else { xt:list(?q, sh:path(?shape, ?path)) }
+            { return(error()) }      
+        else if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
+        else { return(xt:list(?q, sh:path(?shape, ?path))) }
     }
   }
 }
@@ -543,11 +547,11 @@ function sh:path(?shape, ?pp) {
 #
 # Rewrite recursively RDF list ?pp as a list
 #
-function sh:list(?shape, ?pp){
+function sh:listsh(?shape, ?pp){
    let ( (?l) = 
-        select ?shape ?pp (aggregate(sh:path(?shape, ?e)) as ?l)  
+        select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
         where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
-        ?l
+        return(?l)
     }
 }
 
@@ -568,6 +572,17 @@ function sh:path(?shape, ?s, ?p){
 # rewrite PP once as a list and record it
 #
 function sh:getPath(?shape, ?p){
+    let (?res = coalesce(st:cget(sh:path, ?p), st:null)) {
+        if (?res = st:null) {
+            return (st:cset(sh:path, ?p, sh:path(?shape, ?p)))
+        }
+        else {
+            return(?res)
+        }
+    }
+}
+
+function sh:getPath2(?shape, ?p){
     coalesce(
         st:cget(sh:path, ?p), 
         st:cset(sh:path, ?p, sh:path(?shape, ?p)))
@@ -580,11 +595,11 @@ function sh:getPath(?shape, ?p){
 #
 function sh:path(?shape, ?s, ?p, ?inv){
   if (isURI(?p)){
-     sh:pathProperty(?s, ?p, ?inv)
+     return(sh:pathProperty(?s, ?p, ?inv))
   }
   else {
     let ((?oper, ?path) = ?p) {      
-      funcall(?oper, ?shape, ?s, ?path, ?inv)
+      return(funcall(?oper, ?shape, ?s, ?path, ?inv))
    }
   } 
 }
@@ -593,7 +608,9 @@ function sh:path(?shape, ?s, ?p, ?inv){
 
 function sh:zeroOrOnePath(?shape, ?s, ?p, ?inv){
     let (?l = sh:path(?shape, ?s, ?p, ?inv)){
-        if (xt:member(?s, ?l), ?l, xt:cons(?s, ?l))
+        if (xt:member(?s, ?l), 
+            return(?l), 
+            return(xt:cons(?s, ?l)))
     }
 }
 
@@ -613,7 +630,7 @@ function sh:oneOrMorePath(?shape, ?s, ?p, ?inv){
 #
 function sh:rec(?shape, ?s, ?p, ?res, ?inv){
     let (?l = sh:path(?shape, ?s, ?p, ?inv)){
-        if (xt:size(?l) = 0){ ?res }
+        if (xt:size(?l) = 0){ return(?res) }
         else {
             for (?e in ?l){
                 if (! xt:member(?e, ?res)){
@@ -621,7 +638,7 @@ function sh:rec(?shape, ?s, ?p, ?res, ?inv){
                     sh:rec(?shape, ?e, ?p, ?res, ?inv)
                 }             
             } ;
-            ?res             
+            return(?res)             
         }
     }
 }
@@ -640,8 +657,11 @@ function sh:inversePath(?shape, ?s, ?p, ?inv){
 # ?p is  a sequence list
 #
 function sh:sequence(?shape, ?s, ?p, ?inv){
-    let (?l = if (?inv, xt:reverse(?p), ?p)) {
-        sh:seqlist(?shape, ?s, ?l, ?inv)
+    if (?inv) {
+        return(sh:seqlist(?shape, ?s, xt:reverse(?p), ?inv))
+    }
+    else{
+        return(sh:seqlist(?shape, ?s, ?p, ?inv))
     }
 }
 
@@ -653,7 +673,7 @@ function sh:sequence(?shape, ?s, ?p, ?inv){
 function sh:seqlist(?shape, ?s, ?lp, ?inv){
     if (xt:size(?lp) = 0){
         # reach end of sequence: add target node ?s
-        xt:list(?s)
+        return(xt:list(?s))
     }
     else {
         let (?l = sh:path(?shape, ?s, xt:first(?lp), ?inv), 
@@ -662,7 +682,7 @@ function sh:seqlist(?shape, ?s, ?lp, ?inv){
                 # merge removes duplicate nodes
                 set(?res = xt:merge(?res, sh:seqlist(?shape, ?e, xt:rest(?lp), ?inv)))
             } ;
-            ?res
+            return(?res)
         }
     }
 }
@@ -670,28 +690,33 @@ function sh:seqlist(?shape, ?s, ?lp, ?inv){
 # ?p = (sh:sequence (exp .. exp))
 function sh:alternativePath(?shape, ?s, ?p, ?inv){
     let (?l = xt:get(?p, 1)) {
-        mapmerge(sh:path, ?shape, ?s, ?l, ?inv)
+        #mapmerge(sh:path, ?shape, ?s, ?l, ?inv)
+        return(mapmerge(sh:pathmap, ?l, ?shape, ?s, ?inv))
     }
+}
+
+function sh:pathmap(?l, ?shape, ?s, ?inv){
+    sh:path(?shape, ?s, ?l, ?inv)
 }
 
 function sh:pathProperty(?s, ?p, ?inv){
     if (?inv) {
-        sh:inverse(?s, ?p)
+        return(sh:inverse(?s, ?p))
     }
     else {
-        sh:predicate(?s, ?p)    
+        return(sh:predicate(?s, ?p))    
     }
 }
 
 function sh:predicate(?s, ?p){
     let ((?l) = select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
-        ?l
+        return(?l)
     }
 }
 
 function sh:inverse(?o, ?p){
     let ((?l) = select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
-        ?l
+        return(?l)
     }
 }
 

@@ -1,16 +1,18 @@
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape>  
 
 template sh:equals2 (?shape, ?sh, ?vis, ?s, ?p){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
-  bind (sh:path(?shape, ?s, ?p) as ?l)
+  bind (java:path(?shape, ?s, ?p) as ?l)
   
   values ?m { unnest(?l) }
   
   bind (?s = ?m as ?suc)
   
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis) as ?b)
+  bind (java:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis) as ?b)
   
 }

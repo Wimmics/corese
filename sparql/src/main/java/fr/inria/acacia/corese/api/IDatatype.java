@@ -281,6 +281,8 @@ public interface IDatatype
      * @return true if this instance class is a number
      */
     boolean isNumber();
+    
+    boolean isDate();
 
 //    double doubleValue();
 //

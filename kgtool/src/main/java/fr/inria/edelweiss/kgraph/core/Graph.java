@@ -851,7 +851,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                 string++;
             } else if (dt.getCode() == IDatatype.LITERAL) {
                 lit++;
-            } else if (dt.getCode() == IDatatype.DATE) {
+            } else if (dt.isDate()) {
                 date++;
             }
 

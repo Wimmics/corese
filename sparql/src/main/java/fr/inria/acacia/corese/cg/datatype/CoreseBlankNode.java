@@ -88,6 +88,24 @@ public class CoreseBlankNode extends CoreseResource {
 		return false;
 	}
 	
+	@Override 
+	public int hashCode() {
+		return getLabel().hashCode();
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final CoreseBlankNode other = (CoreseBlankNode) obj;
+		return getLabel().equals(other.getLabel());
+	}
 	
 }

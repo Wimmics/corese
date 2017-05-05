@@ -2586,34 +2586,19 @@ Function Function(Metadata la) :
   { return term; }
 }
 
+
 Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 {
     ( { s = null; }
 
-      (
-        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> 
-        | t = <ATMORE>   | t = <ATIMPORT> )
-
-        { if (list == null) { list = new Metadata();}
-           list.add(t.image);
-        })
-        |
-         ((t = <ATRELAX> | t = <ATTEST>) 
+      (( t = <LANGTAG> | t = <ATPATH> )
             {if (list == null) { list = new Metadata(); } ; list.add(t.image); }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
                 | 
                 ((s = IRIrefConst() { list.add(t.image, s); } ) *)   
             )
-         )
-        |
-        ((t = <ATSERVICE> | t = <ATDISPLAY> | t = <ATBIND> | t = <ATTYPE> | t = <ATCOMPILE> )
-         s = IRIrefConst() 
-            { if (list == null) { list = new Metadata();}
-               list.add(t.image, s);
-            }
-        )
-      )
+       )
     )*
  
     { return list; }
@@ -2867,19 +2852,6 @@ TOKEN:
 | <APREFIX:  "@prefix">
 | <ATLIST:   "@list" >
 | <ATPATH:   "@path" >
-| <ATEXPORT: "@export">
-| <ATPUBLIC: "@public">
-| <ATTRACE:  "@trace">
-| <ATDEBUG:  "@debug">
-| <ATMORE:   "@more">
-| <ATRELAX:  "@relax">
-| <ATTEST:   "@test">
-| <ATSERVICE:"@service">
-| <ATBIND:   "@bind">
-| <ATTYPE:   "@type">
-| <ATDISPLAY:"@display">
-| <ATIMPORT: "@import">
-| <ATCOMPILE: "@compile">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>

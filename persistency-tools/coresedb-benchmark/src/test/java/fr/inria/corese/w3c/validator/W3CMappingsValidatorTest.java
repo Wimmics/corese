@@ -8,10 +8,12 @@ package fr.inria.corese.w3c.validator;
 import fr.inria.acacia.corese.cg.datatype.CoreseString;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.NodeImpl;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -93,13 +95,17 @@ public class W3CMappingsValidatorTest {
 
 	public static Mappings createMappings(String[][] mapArray) {
 		Mappings newMappings = Mappings.create(Query.create(0));
+		ArrayList<Node> selectNodes = new ArrayList<>();
+		Mapping mapping = Mapping.create();
 		for (String[] oneMap : mapArray) {
-			Mapping mapping = Mapping.create();
 			String varName = oneMap[0];
 			String varValue = oneMap[1];
-			mapping.addNode(NodeImpl.create(Variable.create(varName).getDatatypeValue()), NodeImpl.create(CoreseString.create(varValue)));
-			newMappings.add(mapping);
+			Node keyNode = NodeImpl.create(Variable.create(varName).getDatatypeValue());
+			mapping.addNode(keyNode, NodeImpl.create(CoreseString.create(varValue)));
+			selectNodes.add(keyNode);
 		}
+		mapping.setSelect(selectNodes.toArray(new Node[0]));
+		newMappings.add(mapping);
 		return newMappings;
 	}
 }

@@ -7,6 +7,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * KGRAM benchmark on W3C SPARQL 1.1 Query & Update Test cases
@@ -51,14 +53,14 @@ public class W3CMappingsValidator {
 	 */
 	public boolean validate(Mappings kgram, Mappings w3c) {
 		boolean result;
-		boolean printed = false;
+		boolean printed = true;
 		result = isIncludedIn(kgram, w3c, printed) && isIncludedIn(w3c, kgram, printed) && w3c.size() == kgram.size();
 		return result;
 	}
 
 	boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed) {
 		boolean result = true;
-		if (1L*kgram.size()*w3c.size() > 1000000 ){
+		if (1L * kgram.size() * w3c.size() > 1000000) {
 			throw new IllegalArgumentException("Too much results > 10^6");
 		}
 		Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
@@ -72,7 +74,7 @@ public class W3CMappingsValidator {
 					continue;
 				}
 
-				ok = compare(kres, w3cres, w3c.getSelect().toArray(new Node[1]));
+				ok = mappingWellFormed(kres) && mappingWellFormed(w3cres) && compare(kres, w3cres, w3cres.getQueryNodes());
 
 				if (ok) {
 					//if (kgram.getSelect().size() != w3cres.size()) ok = false;
@@ -111,6 +113,19 @@ public class W3CMappingsValidator {
 
 		}
 		return result;
+	}
+
+	/**
+	 * Check wether a mapping does not contains two times the same query
+	 * node, which is not legal.
+	 *
+	 * @param mapping
+	 * @return
+	 */
+	boolean mappingWellFormed(Mapping mapping) {
+		List<Node> listNodes = mapping.getQueryNodeList();
+		HashSet<Node> queryNodes = new HashSet<>(listNodes);
+		return queryNodes.size() == listNodes.size();
 	}
 
 	// compare two results

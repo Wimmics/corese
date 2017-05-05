@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.ForLoop;
 import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Let;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Statement;
@@ -21,7 +22,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Java Compiler for LDScript
+ * Take an AST as input and compile the LDScript function definitions in Java
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
@@ -29,7 +32,7 @@ public class JavaCompiler {
 
     private static Logger logger = LogManager.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
-    static final String PATH =
+    String path =
             "/user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/";
     static final String SPACE = " ";
     static final int STEP = 2;
@@ -39,6 +42,7 @@ public class JavaCompiler {
     
     
     public static final String VAR_EXIST = "?_b";
+    public String pack = "fr.inria.corese.extension";
     
     
     int margin = 0;
@@ -64,7 +68,31 @@ public class JavaCompiler {
         init();
     }
     
-    void init(){
+    /**
+     * 
+     * target Java class name 
+     */
+     public JavaCompiler(String name) {
+         this();
+         record(name);
+     }
+     
+     /**
+      * name = DataShape or fr.inria.corese.extension.DataShape
+      * extract package name if any
+      */
+     void record(String name){
+         this.name = name;
+         int index = name.lastIndexOf(".");
+         if (index != -1){
+             pack = name.substring(0, index);
+             this.name = name.substring(index+1);
+         }
+         System.out.println("package: " + this.pack);
+         System.out.println("class: " + this.name);
+     }
+
+     void init(){
         skip.put(NSManager.SHAPE + "class", true);
         skip.put(NSManager.STL + "default", true);
         skip.put(NSManager.STL + "aggregate", true);
@@ -75,28 +103,27 @@ public class JavaCompiler {
         return b != null && b;
     }
     
-     public JavaCompiler(String name) {
-         this();
-         this.name = name;
-     }
-
     @Override
     public String toString() {
         return sb.toString();
     }
 
+    /**
+     * Main function to compile  AST functions
+     */
     public JavaCompiler toJava(ASTQuery ast) throws IOException {
         this.ast = ast;
+        path(ast);
         toJava(ast.getDefine());
         return this;
     }
 
     public void toJava(ASTExtension ext) throws IOException {
-        head.process(name);
+        head.process(pack, name);
 
         for (ASTExtension.ASTFunMap m : ext.getMaps()) {
             for (Function exp : m.values()) {
-                if (! skip(exp.getFunction().getLongName())){
+                if (! exp.hasMetadata(Metadata.SKIP)){ 
                     toJava(exp);
                     append(NL);
                 }
@@ -106,8 +133,15 @@ public class JavaCompiler {
         trailer();
     }
     
+    void path(ASTQuery ast){
+        if (ast.hasMetadata(Metadata.PATH)){
+            path = ast.getMetadata().getValue(Metadata.PATH);
+        }
+        System.out.println("path: " + path);
+    }
+    
     public void write() throws IOException {
-         write(PATH);
+         write(path);
     }
 
     public void write(String path) throws IOException {
@@ -129,7 +163,9 @@ public class JavaCompiler {
 
     
     
-    
+    /**
+     * Compile one function
+     */
     void toJava(Function exp) {
         stack.push(exp);
         functionDeclaration(exp.getFunction());
@@ -152,11 +188,7 @@ public class JavaCompiler {
     public void toJava(Variable var) {
         append(name(var));
     }
-
-    String name(Variable var){
-        return var.getSimpleName();
-    }
-    
+  
     public void toJava(Constant cst) {
         append(dtc.toJava(cst.getDatatypeValue()));
     }
@@ -189,7 +221,10 @@ public class JavaCompiler {
     
     
     
-
+    String name(Variable var){
+        return var.getSimpleName();
+    }
+  
     
     void functionDeclaration(Term term) {
         append("public").append(SPACE).append(IDATATYPE).append(SPACE);

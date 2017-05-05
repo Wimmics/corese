@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.wimmics.rdf.to.graph.app;
+package fr.inria.wimmics.rdf_to_graph.app;
 
 import fr.inria.corese.rdftograph.RdfToGraph;
 import java.io.FileNotFoundException;

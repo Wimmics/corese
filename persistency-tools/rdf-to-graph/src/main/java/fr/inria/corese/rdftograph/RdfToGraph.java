@@ -310,7 +310,6 @@ public class RdfToGraph {
 			LOGGER.log(Level.INFO, "opening the db at {0}", dbPath);
 			driver.createDatabase(dbPath);
 			LOGGER.info("Loading file");
-//			createVertices(makeStream(fileName), format);
 			createEdges(makeStream(fileName), format);
 			driver.commit();
 			LOGGER.info("Writing graph in db");

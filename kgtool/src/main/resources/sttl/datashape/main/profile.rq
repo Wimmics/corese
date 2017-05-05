@@ -210,6 +210,12 @@ function sh:success(?b){
 }
 
 function sh:bnodeid(){
+    let (?bnode = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
+        if (?bnode = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (?bnode)) 
+    }
+}
+
+function sh:bnodeid2(){
     coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
 }
 

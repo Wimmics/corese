@@ -58,6 +58,10 @@ public class Function extends Statement {
         return annot != null;
     }
     
+    public boolean hasMetadata(int type) {
+        return annot != null && annot.hasMetadata(type);
+    }
+    
     void annotate(Metadata m){
         if (m == null){
             return;
@@ -78,16 +82,7 @@ public class Function extends Statement {
             annot.add(m);
         }
     }
-    
- 
-    
-//    String getMetadata(String name){
-//        if (annot == null){
-//            return null;
-//        }
-//        return annot.get(name);
-//    }
-//    
+     
     void annotate(String a) {
         switch (annot.type(a)) {
 

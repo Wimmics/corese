@@ -31,6 +31,8 @@ public class Metadata extends ASTObject
     public static final int BIND    = 15;
     public static final int TYPE    = 16;
     public static final int COMPILE = 17;
+    public static final int SKIP    = 18;
+    public static final int PATH    = 19;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -80,6 +82,8 @@ public class Metadata extends ASTObject
         define("@display",  DISPLAY);      
         define("@type",     TYPE);      
         define("@compile",  COMPILE);      
+        define("@path",     PATH);      
+        define("@skip",     SKIP);      
     }
     
     static void define(String str, int type){

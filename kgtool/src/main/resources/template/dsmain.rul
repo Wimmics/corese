@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 05 09:04:23 CEST 2017
+Fri May 05 10:07:20 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -285,6 +285,12 @@ function sh:success(?b){
 }
 
 function sh:bnodeid(){
+    let (?bnode = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
+        if (?bnode = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (?bnode)) 
+    }
+}
+
+function sh:bnodeid2(){
     coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
 }
 

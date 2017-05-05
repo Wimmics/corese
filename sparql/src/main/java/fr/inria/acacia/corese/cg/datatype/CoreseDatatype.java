@@ -651,7 +651,7 @@ public class CoreseDatatype
 
                 }
 
-            case BOOLEAN:
+            case BOOLEAN:              
                  if (code == other) {
                    if (this.booleanValue() == d2.booleanValue()){
                        return 0;
@@ -668,7 +668,7 @@ public class CoreseDatatype
             case DATE:
             case DATETIME:
 
-                if (d2.isDate()) {
+                if (code == other) {
                     try {
                         b = this.less(d2);
                     } catch (CoreseDatatypeException e) {

@@ -2,14 +2,16 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 14 15:04:40 CEST 2017
+Fri May 05 09:04:23 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
  
 template st:main {
     st:call-template(st:title)
@@ -32,7 +34,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
 template st:title {
     format {
         us:format("title.html")
@@ -58,7 +62,9 @@ where {
 #
 # Display SHACL validation result on server 
 #
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
  
 template st:start {
     st:call-template(st:main)
@@ -73,7 +79,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
  
 template st:index {
     format {
@@ -96,7 +104,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
  
 template st:detail {
     format {
@@ -141,7 +151,9 @@ function us:format(?name) {
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
  
 template st:shape {
     format {
@@ -164,7 +176,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <function://fr.inria.corese.extension.DataShape> 
 prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 
 template st:show {

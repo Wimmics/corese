@@ -430,6 +430,15 @@ public class DatatypeMap implements Cst, RDF {
         }
         return null;
     }
+    
+     public static IDatatype newDateTime(String date) {
+        try {
+            return new CoreseDateTime(date);
+        } catch (CoreseDatatypeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * Create a datatype. If it is a not well formed number, create a
@@ -667,67 +676,63 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     public static IDatatype getTZ(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getTZ();
+        return getDate(dt).getTZ();
+    }
+    
+    static CoreseDate getDate(IDatatype dt){
+        return (CoreseDate) dt;
     }
 
     public static IDatatype getTimezone(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getTimezone();
+        return getDate(dt).getTimezone();
     }
 
     public static IDatatype getYear(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getYear();
+        return getDate(dt).getYear();
     }
 
     public static IDatatype getMonth(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getMonth();
+        return getDate(dt).getMonth();
     }
 
     public static IDatatype getDay(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getDay();
+        return getDate(dt).getDay();
     }
 
     public static IDatatype getHour(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getHour();
+        return getDate(dt).getHour();
     }
 
     public static IDatatype getMinute(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getMinute();
+        return getDate(dt).getMinute();
     }
 
     public static IDatatype getSecond(IDatatype dt) {
-        if (!(dt instanceof CoreseDate)) {
+        if (!dt.isDate()) {
             return null;
         }
-        CoreseDate date = (CoreseDate) dt;
-        return date.getSecond();
+        return getDate(dt).getSecond();
     }
 
     // for literal only

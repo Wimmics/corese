@@ -541,6 +541,11 @@ public class CoreseDatatype
     public boolean isNumber() {
         return false;
     }
+    
+    @Override 
+    public boolean isDate(){
+        return false;
+    }
 
     @Override
     public boolean booleanValue() {
@@ -647,9 +652,23 @@ public class CoreseDatatype
                 }
 
             case BOOLEAN:
+                 if (code == other) {
+                   if (this.booleanValue() == d2.booleanValue()){
+                       return 0;
+                   }
+                   else if (this.booleanValue()){
+                       return GREATER;
+                   }
+                   else {
+                       return LESSER;
+                   }
+                }
+                break;
+                
             case DATE:
+            case DATETIME:
 
-                if (code == other) {
+                if (d2.isDate()) {
                     try {
                         b = this.less(d2);
                     } catch (CoreseDatatypeException e) {
@@ -758,12 +777,7 @@ public class CoreseDatatype
                         return res;
 
                 }
-
-
-
         }
-
-
 
 
         if (code < other) {
@@ -775,124 +789,7 @@ public class CoreseDatatype
 
     }
 
-//	public int compareTo2(IDatatype d2){
-//		int other = d2.getCode();
-//		boolean b = false;
-//		
-//		switch (other){
-//		case URI:
-//		case BLANK:
-//		case STRING:
-//			
-//			if (getCode() == other){
-//				return this.getLabel().compareTo(d2.getLabel());
-//			}
-//			break;
-//					
-//		case NUMBER:
-//		case BOOLEAN:
-//			
-//			if (getCode() == other){
-//				try {
-//					b = this.less(d2);
-//				}
-//				catch (CoreseDatatypeException e) {}
-//				if (b) return LESSER;
-//				else if (this.sameTerm(d2)) return 0;
-//				else return GREATER;
-//			}
-//		}
-//		
-//		boolean trace = false;
-//		IDatatype d1 = this;
-//
-//		if (SPARQLCompliant){
-//			// BN uri literal
-//			// literal last
-//			if (d2.isLiteral()) {
-//				if (! d1.isLiteral()) return LESSER;
-//			}
-//			else if (d1.isLiteral()) return GREATER;
-//			// BN first
-//			if (d1.isBlank()) {
-//				if (! d2.isBlank()) return LESSER;
-//			}
-//			else if (d2.isBlank()) return GREATER;
-//			
-//		}
-//		else {
-//			// generic last
-//			if (d2.isBlank()) {
-//				if (! d1.isBlank()) return LESSER;
-//			}
-//			else if (d1.isBlank()) return GREATER;
-//			// literal first
-//			if (d1.isLiteral()) {
-//				if (! d2.isLiteral()) return LESSER;
-//			}
-//			else if (d2.isLiteral()) return GREATER;
-//			
-//		}
-//		
-//		//boolean sameDatatype = (d1.getDatatype() == d2.getDatatype());
-//		boolean sameDatatype = equivalentDatatype(d2);
-//
-//		if (! sameDatatype){
-//			//  sort number date string/literal/..
-//			if   (d1 instanceof CoreseNumber){
-//				if (d2 instanceof CoreseNumber){
-//					try {
-//						b = d1.less(d2);
-//					}
-//					catch (CoreseDatatypeException e) {}
-//					if (b) return LESSER;
-//					else if (d1.sameTerm(d2)) return 0;
-//					else return GREATER;
-//				}
-//				else 
-//					return LESSER;
-//			}
-//			else if (d2 instanceof CoreseNumber) return GREATER;
-//			else if (d1 instanceof CoreseDate) return LESSER;
-//			else if (d2 instanceof CoreseDate) return GREATER;
-//		}
-//		
-//		// compare same datatypes
-//		// also compare string/literal/XMLLiteral/boolean/undef
-//		try {b = d1.less(d2);}
-//		catch (CoreseDatatypeException e){}
-//		
-//		if (b)
-//			return LESSER;
-//		else if  (d1.semiEquals(d2)){
-//			// equal (modulo language if any)
-//			if (d1.getDataLang() == d2.getDataLang()){
-//				// same lang or no lang
-//				if (sameDatatype)
-//					return 0; // same/no lang : are equal
-//				else {
-//					// sort them arbitrarily
-//					// TODO BUG  undef datatypes have same code
-//					// this discriminates string  XMLLiteral undef :
-//					if (d1.getCode() < d2.getCode()) return LESSER;
-//					else if (d1.getCode() > d2.getCode()) return GREATER;
-//					else return d1.getDatatype().compareTo(d2.getDatatype());
-//				}
-//			}
-//			// equal but different languages :
-//			else {
-//				// sort by lang :
-//				try{
-//					if (d1.getDataLang().less(d2.getDataLang())) return LESSER;
-//					else return GREATER;
-//				}
-//				catch (CoreseDatatypeException e){
-//					logger.debug("CoreseDatatype.java ");
-//					e.printStackTrace(); return LESSER;} // never happens on languages
-//			}
-//		}
-//		else return GREATER;
-//	}
+
     /**
      * Same datatype or String & Literal
      */

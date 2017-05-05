@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 
 public class CoreseDateTime extends CoreseDate {
+        static int code = DATETIME;
 	
 	static final CoreseURI datatype=new CoreseURI(RDF.xsddateTime);
 	
@@ -12,11 +13,17 @@ public class CoreseDateTime extends CoreseDate {
 	}
 	
 	public CoreseDateTime()throws CoreseDatatypeException{
-		this(TODAY);
+		super();
 	}
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
+        
+    @Override
+    public int getCode() {
+        return code;
+    }
 
 }

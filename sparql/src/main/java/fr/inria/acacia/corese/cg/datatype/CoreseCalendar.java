@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.cg.datatype;
 
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * <p>Title: Corese</p>
@@ -21,12 +22,38 @@ public class CoreseCalendar extends GregorianCalendar {
 	
       float rest = 0; // if float number of seconds, numbers after 0.
       boolean Z = false;
+      private boolean bzone = false;
       String num = null, zone = "";
       
       CoreseCalendar(){}
 
       CoreseCalendar(int yy, int mm, int dd){
         super(yy, mm, dd);
+      }
+      
+      CoreseCalendar(int yy, int mm, int dd, int hh, int min, int ss){
+        super(yy, mm, dd, hh, min, ss);
+      }
+      
+      public CoreseCalendar duplicate(){
+          return new CoreseCalendar(get(YEAR), get(MONTH), get(DAY_OF_MONTH), get(HOUR_OF_DAY), get(MINUTE), get(SECOND));
+          //return (CoreseCalendar) clone();
+      }
+      
+      public CoreseCalendar duplicate(String tz){
+          CoreseCalendar cal = duplicate();
+          cal.setTimeZone(TimeZone.getTimeZone("GMT"+tz));
+          cal.setDZone(tz);
+          cal.setZ(cal.getRawOffset() == 0);
+          return cal;
+      }
+      
+      public int getRawOffset(){
+          return getTimeZone().getRawOffset();
+      }
+      
+      boolean sameDate(CoreseCalendar cal){
+          return get(YEAR) == cal.get(YEAR) && get(MONTH) == cal.get(MONTH) && get(DAY_OF_MONTH) == cal.get(DAY_OF_MONTH);
       }
       
       void setZ(boolean z){
@@ -72,6 +99,20 @@ public class CoreseCalendar extends GregorianCalendar {
             }
             return year;
         }
+
+    /**
+     * @return the bzone
+     */
+    public boolean isZone() {
+        return bzone;
+    }
+
+    /**
+     * @param bzone the bzone to set
+     */
+    public void setZone(boolean bzone) {
+        this.bzone = bzone;
+    }
 
   }
 

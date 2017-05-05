@@ -1497,7 +1497,7 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     boolean isDate(IDatatype dt){
-        return dt.getCode() == IDatatype.DATE || dt.getCode() == IDatatype.DATETIME;
+        return dt.isDate();
     }
     
     public IDatatype year(IDatatype dt){

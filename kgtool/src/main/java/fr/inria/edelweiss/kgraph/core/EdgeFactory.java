@@ -25,7 +25,7 @@ public class EdgeFactory {
     String key;
     private boolean optimize = true;
 
-    EdgeFactory(Graph g) {
+    public EdgeFactory(Graph g) {
         graph = g;
         key = hashCode() + ".";
     }

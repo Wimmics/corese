@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
+import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
@@ -33,10 +34,12 @@ public class QueryGraph implements QueryGraphVisitor {
 
 	Graph graph;
 	QueryGraphVisitor visitor;
+        EdgeFactory fac;
 		
 		
 	QueryGraph(Graph g){
 		graph = g;
+                fac = new EdgeFactory(g);
 		visitor = this;
 	}
 	
@@ -56,6 +59,7 @@ public class QueryGraph implements QueryGraphVisitor {
 	public Query getQuery(){
 		Transformer t = Transformer.create();
 		ASTQuery ast = ASTQuery.create();
+                ast.setSelectAll(true);
 		ast = visitor.visit(ast);
 		graph = visitor.visit(graph);
 		
@@ -97,7 +101,7 @@ public class QueryGraph implements QueryGraphVisitor {
 			Entity e = visitor.visit(ent);
 			if (e != null){
 				init(e);
-				exp.add(e.getEdge());
+				exp.add(fac.copy(e).getEdge());
 			}
 		}
 		return exp;

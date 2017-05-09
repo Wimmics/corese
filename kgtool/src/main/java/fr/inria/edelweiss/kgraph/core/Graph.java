@@ -397,24 +397,33 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * This Comparator enables to retrieve an occurrence of a given Literal
      * already existing in graph in such a way that two occurrences of same
      * Literal be represented by same Node 
-     * It represent (1 integer) and (1.0 float) as two different Nodes
+     * It enables also to represent (1 integer) and (1.0 float) as two different Nodes with same index
+     * distinctDatatypes = true:  different number datatypes have different nodes:  1 != "1"^^xsd:float
+     * distinctDatatypes = false: different number datatypes may have equal values: 1 = "1"^^xsd:float
+     * The first one  (literal)  is used to manage graph nodes
+     * The second one (sliteral) is used to manage node index  
+     * and to assign same index to different nodes with same value (eg 1 and "1"^^xsd:float)
      */
     class Compare implements Comparator<IDatatype> {
 
-        boolean diff = true;
+        boolean distinctDatatypes = true;
 
         Compare(boolean b) {
-            diff = b;
+            distinctDatatypes = b;
         }
 
         @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
 
-            // xsd:integer differ from xsd:decimal 
-            // same node for same datatype 
-            if (diff && dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
+            if (distinctDatatypes && dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
+                // xsd:integer distinct from xsd:decimal 
+                // use case: node management (not index management)
                 int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
-                if (cmp != 0) {
+                if (cmp == 0){
+                    // same datatype ok
+                }
+                else {
+                    // distinct datatypes
                     return cmp;
                 }
             }
@@ -577,9 +586,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * if true: Keep number datatypes separate but Join fails on different
-     * datatypes default is false (hence join works) PRAGMA: true works only
-     * with setCompareIndex(true)
+     * if true: Keep number datatypes separate and Join fails on different
+     * datatypes 
+     * default is false (hence join works) 
      */
     public static void setDistinctDatatype(boolean b) {
         distinctDatatype = b;
@@ -1403,7 +1412,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     // May return Node with different datatype for number
     public Node getExtNode(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
-         if (dt.isNumber()) {
+         if (!distinctDatatype && isSameIndexAble(dt)) {
             return getExtLiteralNode(dt);
         }
          else {
@@ -1646,6 +1655,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             }
         }
     }
+    
+    boolean isSameIndexAble(IDatatype dt){
+        return false; //dt.isNumber(); 
+    }
 
     /**
      * Assign an index to Literal Node Assign same index to same number values:
@@ -1653,7 +1666,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * dichotomy enables join on semantically equivalent values
      */
     void indexLiteralNode(IDatatype dt, Node node) {
-        if (dt.isNumber()) {
+        if (isSameIndexAble(dt)) {
             Entity n = sliteral.get(dt);
             if (n == null) {
                 sliteral.put(dt, (Entity) node);

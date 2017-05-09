@@ -34,6 +34,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
+import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -116,7 +117,7 @@ public class TestW3C11KGraphNew {
             + "prefix sd:  <http://www.w3.org/ns/sparql-service-description#> "
             + "prefix ent: <http://www.w3.org/ns/entailment/> "
             + "prefix dawgt: <http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#> "
-            + "select  * where {"
+            + "select * where {"
             + "?x mf:action ?a "
             + "minus {?x dawgt:approval dawgt:Withdrawn}"
             + "optional {?a qt:query ?q} "
@@ -140,7 +141,7 @@ public class TestW3C11KGraphNew {
             + "prefix sd:  <http://www.w3.org/ns/sparql-service-description#> "
             + "prefix ent: <http://www.w3.org/ns/entailment/> "
             + "prefix dawgt: <http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#> "
-            + "select  * where {"
+            + "select * where {"
             + "?x mf:action ?a "
             + "minus {?x dawgt:approval dawgt:Withdrawn}"
             + "optional {?a ut:request ?q} "
@@ -194,9 +195,12 @@ public class TestW3C11KGraphNew {
 
     public TestW3C11KGraphNew() {
         DatatypeMap.setSPARQLCompliant(true);
+        // distinguish 1 & 1.0
+        Graph.setDistinctDatatype(true);
         tko = new Testing();
         tok = new Testing();
         earl = new Earl(); 
+        //QueryProcess.testAlgebra(true);
     }
 
     public static void main(String[] args) {
@@ -208,36 +212,40 @@ public class TestW3C11KGraphNew {
      */
     void test0() {
         sparql1 = false;
+        if (true) {
+            test(root0 + "distinct");
+            test(root0 + "algebra");
+            test(root0 + "ask");
+            test(root0 + "basic");
+            test(root0 + "bnode-coreference");
+            test(root0 + "optional");
+            test(root0 + "boolean-effective-value");
+            test(root0 + "bound");
+            test(root0 + "optional-filter");
+            test(root0 + "cast");
+            test(root0 + "expr-equals");
+            test(root0 + "expr-ops");
+            test(root0 + "graph");
+            test(root0 + "i18n");
+            test(root0 + "regex");
+            test(root0 + "solution-seq");
+            test(root0 + "triple-match");
+            test(root0 + "type-promotion");
+            test(root0 + "syntax-sparql1");
+            test(root0 + "syntax-sparql2");
+            test(root0 + "syntax-sparql3");
+            test(root0 + "syntax-sparql4");
+            test(root0 + "syntax-sparql5");
+            test(root0 + "open-world");
+            test(root0 + "sort");
+            test(root0 + "dataset");
+            test(root0 + "reduced");
+            test(root0 + "expr-builtin");
+            test(root0 + "construct");
+        } else {
+            test(root0 + "algebra");
+        }
 
-        test(root0 + "distinct");
-        test(root0 + "algebra");
-        test(root0 + "ask");
-        test(root0 + "basic");
-        test(root0 + "bnode-coreference");
-        test(root0 + "optional");
-        test(root0 + "boolean-effective-value");
-        test(root0 + "bound");
-        test(root0 + "optional-filter");
-        test(root0 + "cast");
-        test(root0 + "expr-equals");
-        test(root0 + "expr-ops");
-        test(root0 + "graph");
-        test(root0 + "i18n");
-        test(root0 + "regex");
-        test(root0 + "solution-seq");
-        test(root0 + "triple-match");
-        test(root0 + "type-promotion");
-        test(root0 + "syntax-sparql1");
-        test(root0 + "syntax-sparql2");
-        test(root0 + "syntax-sparql3");
-        test(root0 + "syntax-sparql4");
-        test(root0 + "syntax-sparql5");
-        test(root0 + "open-world");
-        test(root0 + "sort");
-        test(root0 + "dataset");
-        test(root0 + "reduced");
-        test(root0 + "expr-builtin");
-        test(root0 + "construct");
     }
     
     void test00() {
@@ -277,7 +285,7 @@ public class TestW3C11KGraphNew {
         test(root + "bindings");
         test(root + "exists");
 
-        //test(root + "entailment");
+      //  test(root + "negation");
 
     }
 
@@ -334,7 +342,7 @@ public class TestW3C11KGraphNew {
             //Graph.setCompareIndex(true);
             if (version == 1){
                 test1();
-                testUpdate();
+                //testUpdate();
             }
             else {
                 test0(); //25 errorstest
@@ -509,7 +517,6 @@ public class TestW3C11KGraphNew {
 
             for (Mapping map : res) {
                 // each map is a test case
-
                 if (!process) {
                     String test = getValue(map, "?x");
 					earl.skip(test);
@@ -615,9 +622,9 @@ public class TestW3C11KGraphNew {
 
         // here
 
-       // if (! fquery.contains("bind08.rq") ) return true;
+      //  if (! fquery.contains("combo-2") ) return true;
 
-        if (trace) {
+        if (trace && fquery != null) {
             System.out.println(pp(fquery));
         }
 
@@ -1016,11 +1023,16 @@ public class TestW3C11KGraphNew {
                 }
                gres.setDebug(true);
                // compare SPARQL result kg and Test case result gres
-                if (kg != null && !gres.compare(kg)) {
+               QueryProcess verif = QueryProcess.create(kg);
+               Mappings mm = verif.query(gres);
+                if (mm.size() == 0){ //(kg != null && !gres.compare(kg)) {
                     System.out.println("kgram:");
                     System.out.println(kg.display());
+//                    System.out.println("w3c");
+//                    System.out.println(gres.display());
                     if (!sparql1 && path.contains("construct")) {
                         // ok verified by hand 2011-03-15 because of blanks in graph
+                        System.out.println("*** SKIP");
                     } else {
                         result = false;
 
@@ -1155,13 +1167,28 @@ public class TestW3C11KGraphNew {
 
     // target value of a Node
     IDatatype datatype(Node n) {
+        if (n == null){
+            return null;
+        }
         return (IDatatype) n.getValue();
     }
 
     /**
      * KGRAM vs W3C result
      */
+    
     boolean validate(Mappings kgram, Mappings w3c) {
+        if (kgram.size() != w3c.size()){
+            return false;
+        }
+        return check(kgram, w3c); // && check(w3c, kgram);
+    }
+    
+    boolean validate2(Mappings kgram, Mappings w3c) {
+        return check(kgram, w3c);
+    }
+    
+    boolean check(Mappings kgram, Mappings w3c) {
         boolean result = true, printed = false;
         Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
 
@@ -1175,19 +1202,19 @@ public class TestW3C11KGraphNew {
                     continue;
                 }
 
-                ok = compare(kres, w3cres);
+                ok = compare(w3c, kres, w3cres);
 
                 if (ok) {
-                    //if (kgram.getSelect().size() != w3cres.size()) ok = false;
+//                    if (kgram.getSelect().size() != w3cres.size()) ok = false;
 
-                    for (Node qNode : kgram.getSelect()) {
-                        // check that kgram has no additional binding 
-                        if (kres.getNode(qNode) != null) {
-                            if (w3cres.getNode(qNode) == null) {
-                                ok = false;
-                            }
-                        }
-                    }
+//                    for (Node qNode : kgram.getSelect()) {
+//                        // check that kgram has no additional binding 
+//                        if (kres.getNode(qNode) != null) {
+//                            if (w3cres.getNode(qNode) == null) {
+//                                ok = false;
+//                            }
+//                        }
+//                    }
                 }
 
                 if (ok) {
@@ -1218,11 +1245,11 @@ public class TestW3C11KGraphNew {
     }
 
     // compare two results
-    boolean compare(Mapping kres, Mapping w3cres) {
+    boolean compare(Mappings map, Mapping kres, Mapping w3cres) {
         TBN tbn = new TBN();
         boolean ok = true;
 
-        for (Node var : w3cres.getQueryNodes()) {
+        for (Node var : w3cres.getQueryNodes()){ //map.getSelect()){ //w3cres.getQueryNodes()) {
             if (!ok) {
                 break;
             }
@@ -1270,13 +1297,18 @@ public class TestW3C11KGraphNew {
                     ok =
                             Math.abs((kdt.doubleValue() - wdt.doubleValue())) < 10e-10;
                     if (ok) {
-                        System.out.println("** Consider as equal: " + kdt.toSparql() + " = " + wdt.toSparql());
+                        //System.out.println("** Consider as equal: " + kdt.toSparql() + " = " + wdt.toSparql());
                     }
                 }
             }
 
         } else {
-            ok = kdt.sameTerm(wdt);
+            ok = kdt.sameTerm(wdt);  
+            if (! ok){
+                if (matchDatatype(kdt, wdt)){
+                    ok = kdt.equals(wdt);
+                }
+            }
         }
 
         if (ok && strict && wdt.isLiteral()) {
@@ -1287,12 +1319,17 @@ public class TestW3C11KGraphNew {
                 ok = kdt.getIDatatype().sameTerm(wdt.getIDatatype());
             }
             if (!ok) {
-                System.out.println("** Datatype differ: " + kdt.toSparql() + " " + wdt.toSparql());
+                //System.out.println("** Datatype differ: " + kdt.toSparql() + " " + wdt.toSparql());
             }
         }
 
         return ok;
 
+    }
+    
+    boolean matchDatatype(IDatatype dt1, IDatatype dt2){
+        return (dt1.getCode() == IDatatype.LITERAL) && (dt2.getCode() == IDatatype.STRING) 
+            || (dt1.getCode() == IDatatype.STRING)  && (dt2.getCode() == IDatatype.LITERAL);
     }
 
     boolean compare(List<Node> lVar, List<Node> lVal, Mapping kres) {

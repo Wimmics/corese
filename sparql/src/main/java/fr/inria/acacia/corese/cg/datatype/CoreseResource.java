@@ -26,20 +26,24 @@ public class CoreseResource extends CoreseStringableImpl {
   }
 
 // URI and Blank have no lang, hence return null
+    @Override
   public IDatatype getDataLang() {
        return null;
      }
 
+    @Override
      public boolean isTrue() throws CoreseDatatypeException {
          throw failure();
        }
 
+    @Override
        public boolean isTrueAble() {
          return false;
        }
        
   
 
+    @Override
        public boolean isLiteral() {
     	   return false;
        }
@@ -47,14 +51,17 @@ public class CoreseResource extends CoreseStringableImpl {
        /**
         * SPARQL fails because URI have no datatype
         */
+    @Override
        public IDatatype getDatatype(){
     	   return null;
        }
        
+    @Override
        public IDatatype getIDatatype(){
    		 return datatype;
        }
        
+    @Override
        public  int getCode(){
     	   return code;
        }

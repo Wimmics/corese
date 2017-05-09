@@ -19,12 +19,14 @@ public  class CoreseDouble extends CoreseNumber{
 	static final int code = DOUBLE;
 	protected double dvalue = 0;
 
-	public CoreseDouble(String normalizedLabel){
-		dvalue = Double.parseDouble(normalizedLabel);
+	public CoreseDouble(String label){
+            setLabel(label);
+            dvalue = Double.parseDouble(label);
 	}
 	
 	public CoreseDouble(double val){
 		dvalue = val;
+                setLabel(getNormalizedLabel());
 	}
 	
         @Override
@@ -84,8 +86,8 @@ public  class CoreseDouble extends CoreseNumber{
 		case LONG:   
 		case INTEGER:   
 		case DECIMAL: 
-		case DOUBLE: 
 		case FLOAT: 
+		case DOUBLE: 
 			double d1 = iod.doubleValue();
 			return (dvalue < d1) ? -1 : (d1 == dvalue ? 0 : 1);
 		default: throw failure();
@@ -159,8 +161,17 @@ public  class CoreseDouble extends CoreseNumber{
 	
 	
         @Override
-	public String getNormalizedLabel(){
+        public String getNormalizedLabel(){
+		return getNormalizedLabel(Double.toString(dvalue));		
+	}
+        
+	public String getNormalizedLabel2(){
 		String label = Double.toString(dvalue);
+		String str = infinity(label);
+		return (str==null) ? label : str;
+	}
+        
+        public String getNormalizedLabel(String label){
 		String str = infinity(label);
 		return (str==null) ? label : str;
 	}
@@ -174,19 +185,19 @@ public  class CoreseDouble extends CoreseNumber{
 		return null;
 	}
 	
-	public static String getNormalizedLabel(String label){
-		String str = infinity(label);
-		if (str!=null) return str;
-		double v = Double.parseDouble(label);
-		double floor = Math.floor(v);
-		if(! DatatypeMap.SEVERAL_NUMBER_SPACE &&
-			 floor == v && v <= Long.MAX_VALUE && v >= Long.MIN_VALUE){
-			return Long.toString((long)floor);
-		}
-		else{
-			return Double.toString(v);
-		}
-	}
+//	public static String getNormalizedLabel(String label){
+//		String str = infinity(label);
+//		if (str!=null) return str;
+//		double v = Double.parseDouble(label);
+//		double floor = Math.floor(v);
+//		if(! DatatypeMap.SEVERAL_NUMBER_SPACE &&
+//			 floor == v && v <= Long.MAX_VALUE && v >= Long.MIN_VALUE){
+//			return Long.toString((long)floor);
+//		}
+//		else{
+//			return Double.toString(v);
+//		}
+//	}
 	
         @Override
 	public String getLowerCaseLabel(){

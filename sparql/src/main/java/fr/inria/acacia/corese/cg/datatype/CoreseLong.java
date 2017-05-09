@@ -30,58 +30,71 @@ public  class CoreseLong extends CoreseNumber {
 
 	// TODO: fix it
 	public CoreseLong(String value) {
-		lvalue = Long.parseLong(value.startsWith("+")?value.substring(1):value);
+            setLabel(value);
+            lvalue = Long.parseLong(value.startsWith("+")?value.substring(1):value);
 	}
 
 
 	public CoreseLong(long value) {
 		lvalue = value;
+                setLabel(Long.toString(value));
 	}
 
+        @Override
 	public int getCode(){
 		return code;
 	}
 	
+        @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 
 
+        @Override
 	public boolean isTrue() {
 		return lvalue != 0;
 	}
 
+        @Override
 	public long longValue(){
 		return lvalue;
 	}
 
+        @Override
 	public int intValue(){
 		return (int) lvalue;
 	}
 	
+        @Override
 	public double doubleValue(){
 		return  (double) lvalue;
 	}
 	
+        @Override
 	public float floatValue(){
 		return  (float) lvalue;
 	}
 
 	
+        @Override
 	public double getdValue(){
 		return (double) lvalue;
 	}
 	
+        @Override
 	public int getiValue(){
 		return (int)lvalue;
 	}
 
+        @Override
 	public long getlValue(){
 		return lvalue;
 	}
 	
 
 
+        @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case LONG:   
@@ -99,6 +112,7 @@ public  class CoreseLong extends CoreseNumber {
 	}
 
 
+        @Override
 	public boolean less(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case INTEGER:   return longValue() < iod.intValue();
@@ -110,6 +124,7 @@ public  class CoreseLong extends CoreseNumber {
 		}	
 	}
 
+        @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case INTEGER:  return longValue() <= iod.intValue(); 
@@ -121,6 +136,7 @@ public  class CoreseLong extends CoreseNumber {
 		}	
 	}
 
+        @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case INTEGER: return longValue() > iod.intValue();   
@@ -132,6 +148,7 @@ public  class CoreseLong extends CoreseNumber {
 		}	
 	}
 
+        @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case INTEGER:   return longValue() >= iod.intValue();  
@@ -143,6 +160,7 @@ public  class CoreseLong extends CoreseNumber {
 		}	
 	}
 
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case INTEGER:  return longValue() == iod.intValue(); 
@@ -159,19 +177,21 @@ public  class CoreseLong extends CoreseNumber {
 	}
 
 
-	public String getNormalizedLabel(){
-		return Long.toString(lvalue);
-	}
+//        @Override
+//	public String getNormalizedLabel(){
+//		return Long.toString(lvalue);
+//	}
 
-	public static String getNormalizedLabel(String label){
-		if (label.startsWith("+")){
-			label = label.substring(1);
-		}
-		return new Long(label).toString();
-	}
+//	public static String getNormalizedLabel(String label){
+//		if (label.startsWith("+")){
+//			label = label.substring(1);
+//		}
+//		return new Long(label).toString();
+//	}
 
+        @Override
 	public String getLowerCaseLabel(){
-		return Long.toString(lvalue);
+		return getLabel();
 	}
 
 }

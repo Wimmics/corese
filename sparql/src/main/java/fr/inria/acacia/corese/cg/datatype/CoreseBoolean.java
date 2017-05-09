@@ -32,8 +32,9 @@ public class CoreseBoolean extends CoreseStringLiteral {
    */
   public CoreseBoolean(String value) throws CoreseDatatypeException {
       super(getNormalizedLabel(value));
-      if (!parse(value))
-      throw new CoreseDatatypeException("Boolean", value);
+      if (!parse(value)){
+        throw new CoreseDatatypeException("Boolean", value);
+      }
   }
   
   public CoreseBoolean(boolean b)  {
@@ -53,14 +54,17 @@ public class CoreseBoolean extends CoreseStringLiteral {
 	  return false;
   }
 
+  @Override
   public boolean isTrue() {
      return bvalue;
    }
   
+  @Override
   public boolean booleanValue(){
       return bvalue;
   }
 
+  @Override
    public boolean isTrueAble() {
      return true;
    }
@@ -72,6 +76,7 @@ public class CoreseBoolean extends CoreseStringLiteral {
    /**
     * Cast a boolean to integer return 0/1
     */
+  @Override
    public IDatatype cast(IDatatype target, IDatatype javaType) {
 	   String lab = target.getLabel();
 	   if (lab.equals(RDF.xsdinteger)) {
@@ -87,13 +92,20 @@ public class CoreseBoolean extends CoreseStringLiteral {
    }
 
 
+  @Override
   public  int getCode(){
      return code;
    }
 
+  @Override
    public IDatatype getDatatype(){
         return datatype;
       }
+  
+    @Override
+    public boolean isBoolean() {
+        return true;
+    }
 
 
   /**
@@ -101,23 +113,65 @@ public class CoreseBoolean extends CoreseStringLiteral {
    * @param label may be <code>true</code>, <code>false</code> or <code>1</code> or <code>0</code>
    * @return <code>true</code> or <code>false</code>
    */
-  public static String getNormalizedLabel(String label){
+     public static String getNormalizedLabel(String label){
+        if (label.equals(STRUE) || label.equals("1") || label.equals(SFALSE) || label.equals("0")){
+          return label;
+        }
+        else {
+            return null;
+        }
+    }
+     
+  public static String getNormalizedLabel2(String label){
         if (label.equals(STRUE) || label.equals("1"))
           return STRUE;
         else if (label.equals(SFALSE) || label.equals("0"))
           return SFALSE;
-        //else return UNKNOWN;
         else return null;
     }
 
+  @Override
   public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
-	  case BOOLEAN: return   getLabel().equals(iod.getLabel());
+	  case BOOLEAN: return  booleanValue() == iod.booleanValue();// getLabel().equals(iod.getLabel());
 	  case URI:
 	  case BLANK: return false;
 	  }
 	  throw failure();
   }
+  
+  @Override
+  public boolean less(IDatatype dt) throws CoreseDatatypeException {
+      switch (dt.getCode()){
+          case BOOLEAN: return ! booleanValue() && dt.booleanValue();	  
+      }
+      throw failure();              
+  }
+  
+  @Override
+  public boolean lessOrEqual(IDatatype dt) throws CoreseDatatypeException {
+      switch (dt.getCode()){
+          case BOOLEAN: return (booleanValue() == dt.booleanValue()) || (! booleanValue() && dt.booleanValue());	  
+      }
+      throw failure();              
+  }
+   
+  @Override
+  public boolean greaterOrEqual(IDatatype dt) throws CoreseDatatypeException {
+      switch (dt.getCode()){
+          case BOOLEAN: return (booleanValue() == dt.booleanValue()) || (booleanValue() && ! dt.booleanValue());	  
+      }
+      throw failure();              
+  }
+     
+  @Override
+  public boolean greater(IDatatype dt) throws CoreseDatatypeException {
+      switch (dt.getCode()){
+          case BOOLEAN: return booleanValue() && ! dt.booleanValue();	  
+      }
+      throw failure();              
+  }  
+     
 
     /**
      * @return the object
@@ -135,10 +189,12 @@ public class CoreseBoolean extends CoreseStringLiteral {
         this.object = object;
     }
   
+  @Override
    public boolean isLoop(){
         return object != null && object instanceof Loopable;
     }
     
+  @Override
     public Iterable getLoop(){
         return ((Loopable) object).getLoop();
     }

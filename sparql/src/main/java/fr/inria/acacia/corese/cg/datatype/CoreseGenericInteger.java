@@ -28,10 +28,12 @@ public class CoreseGenericInteger extends CoreseInteger {
 		setDatatype(uri);
 	}
 	
+    @Override
 	public void setDatatype(String uri){
 	    datatype = getGenericDatatype(uri);
 	}
 
+    @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}

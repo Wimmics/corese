@@ -13,6 +13,7 @@ public class CoreseStringBuilder extends CoreseString {
 		return new CoreseStringBuilder(s);
 	}
 	
+        @Override
 	public String getLabel(){
 		if (value == null){
 			value = sb.toString();
@@ -20,10 +21,12 @@ public class CoreseStringBuilder extends CoreseString {
 		return value;
 	}
 	
+        @Override
 	public StringBuilder getStringBuilder(){
 		return sb;
 	}
         
+        @Override
         public void setStringBuilder(StringBuilder s){
             sb = s;
 	}

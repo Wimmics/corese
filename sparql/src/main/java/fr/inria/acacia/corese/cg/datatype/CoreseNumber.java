@@ -18,6 +18,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 public abstract class CoreseNumber extends CoreseDatatype {
 
     static final int code = NUMBER;
+    private String label;
 
     /**
      * Cast a number to integer means take the integer part, not just parsing
@@ -41,15 +42,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
             case BOOLEAN: return castBoolean();
                
             default: return super.cast(target.getLabel(), javaType);
-        }
-        
-//        if (target.getLabel().equals(RDF.xsdinteger)) {
-//            return DatatypeMap.newInstance(intValue());
-//        } else if (target.getLabel().equals(RDF.xsdboolean)) {
-//            return castBoolean();
-//        } else {
-//            return super.cast(target.getLabel(), javaType);
-//        }
+        }        
     }
     
     IDatatype castBoolean() {
@@ -382,5 +375,20 @@ public abstract class CoreseNumber extends CoreseDatatype {
         } catch (java.lang.ArithmeticException a) {
         }
         return null;
+    }
+
+    /**
+     * @return the label
+     */
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

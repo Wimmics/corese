@@ -10,6 +10,7 @@ public  class CoreseDay extends CoreseInteger {
 	}
 	
 	
+        @Override
 	 public IDatatype getDatatype(){
 	       return datatype;
 	     }

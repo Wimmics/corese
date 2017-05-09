@@ -20,14 +20,17 @@ public class CoreseGeneric extends CoreseString {
 		super(label);
 	}
 	
+    @Override
 	public void setDatatype(String uri){
 	    datatype = getGenericDatatype(uri);
 	}
 
+    @Override
 	public IDatatype getDatatype(){
 		return datatype;
 	}
 	
+    @Override
 	public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
 		switch (dt.getCode()){
 		case STRING: 

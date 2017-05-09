@@ -40,21 +40,21 @@ public  class CoreseFloat extends CoreseDouble{
 			return code;
 		}
 	
-	public static String getNormalizedLabel(String label){
-		String str = infinity(label);
-		if (str!=null) return str;
-		
-		float v = Float.parseFloat(label);
-		double floor = Math.floor(v);
-		
-		if(! DatatypeMap.SEVERAL_NUMBER_SPACE &&
-			floor == v && v <= Long.MAX_VALUE && v >= Long.MIN_VALUE){
-			return Long.toString((long)floor);
-		}
-		else{
-			return Float.toString(v);
-		}
-	}
+//	public static String getNormalizedLabel(String label){
+//		String str = infinity(label);
+//		if (str!=null) return str;
+//		
+//		float v = Float.parseFloat(label);
+//		double floor = Math.floor(v);
+//		
+//		if(! DatatypeMap.SEVERAL_NUMBER_SPACE &&
+//			floor == v && v <= Long.MAX_VALUE && v >= Long.MIN_VALUE){
+//			return Long.toString((long)floor);
+//		}
+//		else{
+//			return Float.toString(v);
+//		}
+//	}
 	
         @Override
 	public boolean isFloat(){

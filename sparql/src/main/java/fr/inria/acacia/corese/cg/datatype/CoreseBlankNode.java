@@ -24,18 +24,22 @@ public class CoreseBlankNode extends CoreseResource {
 		super(value);
 	}
 	
+        @Override
 	public int getCode() {
 		return code;
 	}
 	
+        @Override
 	public boolean isBlank() {
 		return true;
 	}
 	
+        @Override
 	public boolean isConstant() {
 		return false;
 	}
 	
+        @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel());
@@ -44,6 +48,7 @@ public class CoreseBlankNode extends CoreseResource {
 		//return iod.polyCompare(this);
 	}
 		
+        @Override
 	public boolean less(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel()) < 0;
@@ -51,6 +56,7 @@ public class CoreseBlankNode extends CoreseResource {
 		throw failure();
 	}
 	
+        @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel()) <= 0;
@@ -58,6 +64,7 @@ public class CoreseBlankNode extends CoreseResource {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel()) > 0;
@@ -65,6 +72,7 @@ public class CoreseBlankNode extends CoreseResource {
 		throw failure();
 	}
 	
+        @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
 		case BLANK: return getLabel().compareTo(iod.getLabel()) >= 0;
@@ -72,6 +80,7 @@ public class CoreseBlankNode extends CoreseResource {
 		throw failure();
 	}
 	
+        @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
 		case BLANK: return getLabel().equals(iod.getLabel()) ;

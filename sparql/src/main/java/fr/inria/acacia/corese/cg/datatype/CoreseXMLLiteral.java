@@ -27,35 +27,43 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     	super(value);
     }
     
+    @Override
     public void setObject(Object obj){
     	object = obj;
     }
     
+    @Override
     public boolean isXMLLiteral(){
 		return true;
 	}
     
+    @Override
     public Object getObject(){
     	return object;
     }
     
+    @Override
     public boolean isLoop(){
         return object != null && object instanceof Loopable;
     }
     
+    @Override
     public Iterable getLoop(){
         return ((Loopable) object).getLoop();
     }
     
+    @Override
     public  int getCode(){
     	return code;
     }
     
+    @Override
     public IDatatype getDatatype(){
     	return datatype;
     }
     
     // TBD: it should parse the XML content
+    @Override
     public IDatatype typeCheck(){
         if (getLabel().startsWith("<") 
                 && ! getLabel().endsWith(">")){
@@ -65,6 +73,7 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     }
     
     
+    @Override
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
     	switch (iod.getCode()){
     	case XMLLITERAL: return getLabel().equals(iod.getLabel());

@@ -49,6 +49,8 @@ public class CoreseDatatype
     static final int LESSER = -1, GREATER = 1;
     static boolean SPARQLCompliant = false;
     static int cindex = 0;
+    static int code = -1;
+    
     private int index = IDatatype.VALUE;
 
     /**
@@ -78,8 +80,11 @@ public class CoreseDatatype
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
         String value = getLabel();
-        if ((getCode() == INTEGER || getCode() == BOOLEAN) && !xsd) {
-        } else if (getCode() == STRING || (getCode() == LITERAL && !hasLang())) {
+        if (getCode() == INTEGER && !xsd) {
+        } 
+        else if (getCode() == BOOLEAN && !xsd && (getLabel().equals(CoreseBoolean.STRUE) || getLabel().equals(CoreseBoolean.SFALSE))) {
+        } 
+        else if (getCode() == STRING || (getCode() == LITERAL && !hasLang())) {
             value = protect(value);
         } else if (getDatatype() != null && !getDatatype().getLabel().equals(RDFS.rdflangString)) {
 
@@ -139,7 +144,6 @@ public class CoreseDatatype
         }
         return dt;
     }
-    static int code = -1;
 
     public CoreseDatatype() {
     }
@@ -542,6 +546,11 @@ public class CoreseDatatype
         return false;
     }
     
+     @Override
+    public boolean isBoolean() {
+        return false;
+    }
+    
     @Override 
     public boolean isDate(){
         return false;
@@ -601,6 +610,7 @@ public class CoreseDatatype
      * string/literal/XMLLiteral/undef/boolean are sorted alphabetically then by
      * datatypes (by their code) literals are sorted with their lang if any TODO
      * : the primary order (Lit URI BN) is inverse of SPARQL !!!
+     * also used for select distinct, group by
      */
     @Override
     public int compareTo(Object d2) {
@@ -645,16 +655,16 @@ public class CoreseDatatype
                     case LONG:
                     case INTEGER:
                         try {
-                            return compare(d2);
+                            return compareNumber(d2);
                         } catch (CoreseDatatypeException e) {
                         }
-
                 }
 
             case BOOLEAN:              
                  if (code == other) {
                    if (this.booleanValue() == d2.booleanValue()){
-                       return 0;
+                       // to be deterministic, compare 0 false and 1 true
+                       return this.getLabel().compareTo(d2.getLabel());
                    }
                    else if (this.booleanValue()){
                        return GREATER;
@@ -788,6 +798,17 @@ public class CoreseDatatype
 
 
     }
+    
+    int compareNumber(IDatatype dt) throws CoreseDatatypeException{
+        int res = compare(dt);
+        if (res == 0){
+            res = getDatatypeURI().compareTo(dt.getDatatypeURI());
+            if (res == 0){
+               res = getLabel().compareTo(dt.getLabel());
+            }
+        }
+        return res;
+    }
 
 
     /**
@@ -831,7 +852,8 @@ public class CoreseDatatype
     }
 
     /**
-     * Every datatype has its own type safe equals
+     * SPARQL RDF Term equal =
+     * Every datatype has its own type safe equals with specific type error
      */
     @Override
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
@@ -842,9 +864,26 @@ public class CoreseDatatype
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof IDatatype) {
-            return sameTerm((IDatatype) obj);
+            return equals((IDatatype) obj);
         } else if (obj instanceof Node) {
-            return sameTerm((IDatatype) ((Node) obj).getValue());
+            return equals((IDatatype) ((Node) obj).getValue());
+        }
+        return false;
+    }
+    
+    public boolean equals(IDatatype iod) {
+        try {
+            return equalsWE(iod);
+        } catch (CoreseDatatypeException e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean sameTerm(IDatatype dt) {
+        if (getCode() == dt.getCode() ) {
+            return equals(dt) && 
+                   getLabel().equals(dt.getLabel());
         }
         return false;
     }
@@ -913,15 +952,7 @@ public class CoreseDatatype
     }
 
     @Override
-    public boolean sameTerm(IDatatype iod) {
-        try {
-            return equalsWE(iod);
-        } catch (CoreseDatatypeException e) {
-            return false;
-        }
-    }
-
-    @Override
+    @Deprecated
     public boolean semiEquals(IDatatype iod) {
         return sameTerm(iod);
     }
@@ -956,7 +987,7 @@ public class CoreseDatatype
     @Override
     public String getDatatypeURI() {
         if (getDatatype() != null) {
-            return getDatatype().getNormalizedLabel();
+            return getDatatype().getLabel();
         } else {
             return null;
         }
@@ -1005,7 +1036,8 @@ public class CoreseDatatype
 
     @Override
     public boolean same(Node n) {
-        return sameTerm((IDatatype) n.getValue());
+        //return sameTerm((IDatatype) n.getValue());
+        return equals((IDatatype) n.getValue());
     }
 
     @Override

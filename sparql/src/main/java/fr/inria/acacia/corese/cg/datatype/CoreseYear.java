@@ -9,6 +9,7 @@ public  class CoreseYear extends CoreseInteger {
 		super(value);
 	}
 	
+        @Override
 	 public IDatatype getDatatype(){
 	       return datatype;
 	     }

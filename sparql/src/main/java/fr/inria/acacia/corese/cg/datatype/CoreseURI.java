@@ -24,18 +24,22 @@ public class CoreseURI extends CoreseResource {
       super(value);
   }
 
+    @Override
   public boolean isURI() {
 	return true;
   }
   
+    @Override
   public boolean isSkolem() {
 	return getLabel().startsWith(ExpType.SKOLEM);
   }
 
+    @Override
   public int getCode() {
     return code;
   }
   
+    @Override
   public int compare(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case URI: return getLabel().compareTo(iod.getLabel());
@@ -43,6 +47,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
   }
 
+    @Override
   public boolean less(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case URI: return getLabel().compareTo(iod.getLabel()) < 0;
@@ -50,6 +55,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
     }
 
+    @Override
   public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException{
 	  switch (iod.getCode()){
 	  case URI: return getLabel().compareTo(iod.getLabel()) <= 0;
@@ -57,6 +63,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
   }
 
+    @Override
   public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case URI: return getLabel().compareTo(iod.getLabel()) > 0;
@@ -64,6 +71,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
   }
 
+    @Override
   public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
 	  case URI: return getLabel().compareTo(iod.getLabel()) >= 0;
@@ -71,6 +79,7 @@ public class CoreseURI extends CoreseResource {
 	  throw failure();
   }
 
+    @Override
   public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 	  switch (iod.getCode()){
 	  case URI: return getLabel().equals(iod.getLabel());

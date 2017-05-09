@@ -86,7 +86,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
         }
         check(iod);
         if (getDatatype() != iod.getDatatype()) {
-            return false;
+            throw failure();//return false;
         }
         boolean b = getLabel().equals(iod.getLabel());
         if (!b) {

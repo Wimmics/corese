@@ -283,6 +283,8 @@ public interface IDatatype
     boolean isNumber();
     
     boolean isDate();
+    
+    boolean isBoolean();
 
 //    double doubleValue();
 //

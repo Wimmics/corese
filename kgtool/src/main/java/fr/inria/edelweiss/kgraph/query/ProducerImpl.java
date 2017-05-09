@@ -167,12 +167,16 @@ public class ProducerImpl implements Producer, IProducerQP {
     Node getValue(Node qNode, Node node, Environment env) {        
         if (node == null) {
             if (qNode.isConstant()) {
-                node = graph.getExtNode(qNode);                
+                node = getExtNode(qNode);   
             }
         } else if (isExtern(node, env)) {
-            node = graph.getExtNode(node);
+            node = getExtNode(node);
         }
         return node;
+    }
+    
+    Node getExtNode(Node node){
+        return graph.getNode(node); //graph.getExtNode(node);   
     }
     
     // eg BIND(node as ?x)
@@ -205,7 +209,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
             Environment env) {
-        
+
         Node predicate = getPredicate(edge, env);
         if (predicate == null) {
             return empty;

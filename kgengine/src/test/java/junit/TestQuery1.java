@@ -3894,11 +3894,11 @@ public class TestQuery1 {
 
             map = exec.query(query2);
             //System.out.println(map);
-            assertEquals("Result", 2, map.size());
+            assertEquals("Result", 1, map.size());
 
             map = exec.query(query3);
             //System.out.println(map);
-            assertEquals("Result", 4, map.size());
+            assertEquals("Result", 1, map.size());
 
         } catch (EngineException e) {
             assertEquals("Result", 2, e);
@@ -4581,9 +4581,7 @@ public class TestQuery1 {
 
     }
 
-    public IDatatype fun(Object o1, Object o2) {
-        IDatatype dt1 = datatype(o1);
-        IDatatype dt2 = datatype(o2);
+    public IDatatype fun(IDatatype dt1, IDatatype dt2) {
         String str = concat(dt1, dt2);
         return DatatypeMap.createLiteral(str);
     }

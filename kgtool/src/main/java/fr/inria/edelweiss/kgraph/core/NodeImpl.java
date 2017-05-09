@@ -1,4 +1,4 @@
-    package fr.inria.edelweiss.kgraph.core;
+package fr.inria.edelweiss.kgraph.core;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -66,11 +66,6 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     @Override
     public IDatatype getValue() {
         return dt;
-//        if (graph == null) {
-//            return dt;
-//        } else {
-//            return graph.getValue(this);
-//        }
     }
     
     @Override
@@ -96,6 +91,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
         return false;
     }
     
+    @Override
     public boolean isFuture(){
         return dt.isFuture();
     }
@@ -109,7 +105,8 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Node) {
-            return same((Node) obj);
+            //return same((Node) obj);
+            return getValue().equals(((Node) obj).getValue());
         }
         return false;
     }

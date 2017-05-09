@@ -118,7 +118,6 @@ public class GraphCompare {
     boolean compare(Graph g2, Node pred2, TBN t, Entity ent1, boolean isGraph) {
         Iterable<Entity> l2 = g2.getEdges(pred2);
         Iterator<Entity> it = l2.iterator();
-
         for (Entity ent2 : l2) {
             if (compare(ent1, ent2, t, isGraph)) {
                 return true;
@@ -135,6 +134,9 @@ public class GraphCompare {
             Node n2 = ent2.getEdge().getNode(j);
 
             if (!compare(n1, n2, t)) {
+                for (int k = 0; k < j; k++) {
+                    t.pop(ent1.getEdge().getNode(k));
+                }
                 return false;
             }
         }
@@ -165,14 +167,37 @@ public class GraphCompare {
     }
 
     class TBN extends HashMap<Node, Node> {
+        
+        HashMap<Node, Integer> count ;
+        
+        TBN(){
+            count = new HashMap<Node, Integer>();
+        }
 
-        boolean same(Node dt1, Node dt2) {
-            if (containsKey(dt1)) {
-                return get(dt1).equals(dt2);
+        boolean same(Node n1, Node n2) {
+            if (containsKey(n1)) {
+                boolean b = get(n1).equals(n2);
+                if (b){
+                    count.put(n1, count.get(n1) + 1);
+                }
+                return b;
             } else {
-                put(dt1, dt2);
-                return true;
+                put(n1, n2);
+                count.put(n1, 1);
+               return true;
             }
+        }
+        
+        void pop(Node n){
+            if (n.isBlank()){
+                if (count.containsKey(n)) {
+                    count.put(n, count.get(n) - 1); 
+                    if (count.get(n) == 0){
+                        remove(n);
+                    }
+                }
+            }
+            
         }
     }
 

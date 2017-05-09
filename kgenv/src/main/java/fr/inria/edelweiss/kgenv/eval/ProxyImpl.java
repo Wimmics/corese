@@ -1017,14 +1017,15 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     public IDatatype sameTerm(IDatatype dt1, IDatatype dt2){
-       boolean b = dt1.equals(dt2);
-       if (! b){
-           return FALSE;
-       }
-       if (dt1.isLiteral() && dt2.isLiteral()){
-           return getValue(dt1.getCode() == dt2.getCode());
-       }
-       return TRUE;
+        return getValue(dt1.sameTerm(dt2));
+//       boolean b = dt1.equals(dt2);
+//       if (! b){
+//           return FALSE;
+//       }
+//       if (dt1.isLiteral() && dt2.isLiteral()){
+//           return getValue(dt1.getCode() == dt2.getCode());
+//       }
+//       return TRUE;
     }
     
     IDatatype cast(IDatatype dt, IDatatype dt1, IDatatype dt2){
@@ -1549,7 +1550,7 @@ public class ProxyImpl implements Proxy, ExprType {
         if (res == null) {
             return null;
         }
-        return DatatypeMap.newInstance(res);
+        return DatatypeMap.createLiteral(res);
     }
     
     public IDatatype hash(IDatatype name, IDatatype dt) {
@@ -1557,7 +1558,7 @@ public class ProxyImpl implements Proxy, ExprType {
         if (res == null) {
             return null;
         }
-        return DatatypeMap.newInstance(res);
+        return DatatypeMap.createLiteral(res);
     }
 
 

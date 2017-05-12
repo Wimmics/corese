@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public class ShapeWorkflow extends SemanticWorkflow {
     public static final String SHAPE_NAME  = NSManager.STL + "shape";
     public static final String SHAPE_TRANS_TEST = "/user/corby/home/AAData/sttl/datashape/main";
+    public static final String SHAPE_TRANS_TEST_LDS = "/user/corby/home/AAData/sttl/datashapelds/main";
     public static final String SHAPE_SHAPE      = "/data/shape4shape.ttl";
     public static final String SHAPE_TRANS = Transformer.DATASHAPE;
     public static final String FORMAT = Transformer.TURTLE;
@@ -46,6 +47,10 @@ public class ShapeWorkflow extends SemanticWorkflow {
         create(shape, data, resultFormat, false, -1, test);
     }
     
+     public ShapeWorkflow(String shape, String data, boolean test, boolean lds){
+        create(shape, data, resultFormat, false, -1, test, lds);
+    }
+    
     public ShapeWorkflow(String shape, String data, String trans, boolean text, int format, boolean test){
         create(shape, data, trans, text, format, test);
     }
@@ -70,6 +75,10 @@ public class ShapeWorkflow extends SemanticWorkflow {
         }
     }
     
+        private void create(String shape, String data, String trans, boolean text, int format, boolean test){
+            create(shape, data, trans, text, format, test, false);
+        }
+        
     /**
      * 
      * @param shape input shape, may be text or URI (see text)
@@ -79,7 +88,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
      * @param format : possible RDF input format (may be UNDEF_FORMAT)
      * @param test : false: use compiled datashape sttl, otherwise use uncompiled sttl
      */
-    private void create(String shape, String data, String trans, boolean text, int format, boolean test){
+    private void create(String shape, String data, String trans, boolean text, int format, boolean test, boolean lds){
         this.setShape(shape);
         if (trans != null){
             resultFormat = trans;
@@ -91,7 +100,12 @@ public class ShapeWorkflow extends SemanticWorkflow {
         para.insert(new SemanticWorkflow().add(load));
         para.insert(new SemanticWorkflow(SHAPE_NAME).add(ls));
         // test = true: use DataShape transformation not compiled
-        transformer = new TransformationProcess((test)?SHAPE_TRANS_TEST:SHAPE_TRANS);
+        if (test){
+            transformer = new TransformationProcess((lds)?SHAPE_TRANS_TEST_LDS:SHAPE_TRANS_TEST);          
+        }
+        else {
+            transformer = new TransformationProcess(SHAPE_TRANS);            
+        }
         this.add(para)
             .add(new DatasetProcess())
             .add(transformer);

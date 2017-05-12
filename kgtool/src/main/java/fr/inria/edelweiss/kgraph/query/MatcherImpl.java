@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgraph.query;
 import java.util.HashMap;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -280,7 +281,7 @@ public class MatcherImpl implements Matcher {
         IDatatype qdt = (IDatatype) q.getValue();
         IDatatype tdt = (IDatatype) t.getValue();
 
-        return qdt.sameTerm(tdt);
+        return (DatatypeMap.SPARQLCompliant) ? qdt.sameTerm(tdt) : qdt.equals(tdt);
     }
 
   public MatchBNode getMatchBNode(){

@@ -172,7 +172,7 @@ public class Transformer  {
         transformerMap = new HashMap<String, Transformer>();
         init();
         stack = new Stack(this, true);
-        EMPTY = DatatypeMap.createLiteral(NULL);
+        EMPTY = DatatypeMap.newLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
         proc = Processor.create();
         loaded = new HashMap();

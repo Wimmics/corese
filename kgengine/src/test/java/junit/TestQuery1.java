@@ -168,6 +168,58 @@ public class TestQuery1 {
     }
     
     @Test
+    public void testDatatype1() throws EngineException {
+        String init =
+                "insert data {"
+                + "<John> foaf:age '21'^^xsd:double, 21 "
+                + "<Jack> foaf:age 21e0, 21.0 "
+                + "} ";
+
+        String query =
+                "select distinct ?a where {"
+                + "?x foaf:age ?a "
+                + "?y foaf:age ?a "
+                + "filter (?x != ?y)"
+               
+                + "}  ";
+
+
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+
+        exec.query(init);
+        Mappings map = exec.query(query);
+        assertEquals(4, map.size());
+
+    }
+ 
+    @Test
+    public void testDatatype2() throws EngineException {
+        String init =
+                "insert data {"
+                + "<John> rdf:value true "
+                + "<Jack> rdf:value '1'^^xsd:boolean "
+                + "} ";
+
+        String query =
+                "select distinct ?a where {"
+                + "?x ?p ?a "
+                + "?y ?p ?a "
+                + "filter (?x != ?y)"
+               
+                + "}  ";
+
+
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+
+        exec.query(init);
+        Mappings map = exec.query(query);
+        assertEquals(2, map.size());
+
+    }
+    
+    @Test
     public void testGenAgg() throws EngineException{
     String q = 
             "select (st:aggregate(?x) as ?y) "
@@ -3898,7 +3950,7 @@ public class TestQuery1 {
 
             map = exec.query(query3);
             //System.out.println(map);
-            assertEquals("Result", 1, map.size());
+            assertEquals("Result", 2, map.size());
 
         } catch (EngineException e) {
             assertEquals("Result", 2, e);
@@ -4583,7 +4635,7 @@ public class TestQuery1 {
 
     public IDatatype fun(IDatatype dt1, IDatatype dt2) {
         String str = concat(dt1, dt2);
-        return DatatypeMap.createLiteral(str);
+        return DatatypeMap.newLiteral(str);
     }
 
     String concat(IDatatype dt1, IDatatype dt2) {

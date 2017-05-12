@@ -261,7 +261,7 @@ public class Metadata extends ASTObject
     public IDatatype getList(){
          ArrayList<IDatatype> list = new ArrayList<IDatatype>();
          for (String key : map.keySet()){
-             IDatatype name = DatatypeMap.createLiteral(key);
+             IDatatype name = DatatypeMap.newLiteral(key);
              list.add(name);
          }
          return DatatypeMap.createList(list);

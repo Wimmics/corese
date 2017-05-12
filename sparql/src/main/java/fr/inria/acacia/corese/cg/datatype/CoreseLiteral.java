@@ -106,7 +106,8 @@ public class CoreseLiteral extends CoreseStringLiteral {
                         } //throw failure(); //return false;
 			return getLabel().equals(iod.getLabel());	
 			
-                case UNDEF:
+                case UNDEF: if (hasLang()){return false;} else {throw failure();}
+                    
 		case URI:
 		case BLANK: return false;
 		}

@@ -152,9 +152,10 @@ public  class CoreseDouble extends CoreseNumber{
 		case FLOAT:
 		case DOUBLE: return dvalue == iod.doubleValue();
 		
-		case URI:
+		//case UNDEF:
+                case URI:
 		case BLANK: return false;
-		
+                         		
 		default: throw failure();
 		}	
 	}

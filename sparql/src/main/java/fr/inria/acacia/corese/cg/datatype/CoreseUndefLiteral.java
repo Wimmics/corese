@@ -81,13 +81,23 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
   
     @Override
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
-        if (!iod.isLiteral()) {
-            return false;
+
+        switch (iod.getCode()) {
+            case URI:
+            case BLANK: return false;
+                // special case with literal !!!
+            case LITERAL: return iod.equalsWE(this);
+                
+            case UNDEF:
+                if (getDatatype() != iod.getDatatype()) {
+                    throw failure();
+                }
+                break;
+
+            default:
+                throw failure();
         }
-        check(iod);
-        if (getDatatype() != iod.getDatatype()) {
-            throw failure();//return false;
-        }
+
         boolean b = getLabel().equals(iod.getLabel());
         if (!b) {
             throw failure();

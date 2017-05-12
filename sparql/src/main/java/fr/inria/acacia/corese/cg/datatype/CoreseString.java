@@ -47,6 +47,8 @@ public class CoreseString extends CoreseStringLiteral { //CoreseStringableImpl{
 	  switch (iod.getCode()){
 	  case STRING:  return getLabel().equals(iod.getLabel());
 	  case LITERAL: return iod.equalsWE(this);
+              
+          //case UNDEF: 
 	  case URI:
 	  case BLANK: return false;
 	  }

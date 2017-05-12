@@ -1,0 +1,30 @@
+package fr.inria.acacia.corese.cg.datatype;
+
+import fr.inria.acacia.corese.triple.parser.NSManager;
+
+/**
+ *
+ * @author corby
+ */
+public interface XSD {
+
+    static final String XSD = NSManager.XSD;
+    
+    static final String xsdboolean = XSD + "boolean";
+    static final String xsdinteger = XSD + "integer";
+    static final String xsdlong = XSD + "long";
+    static final String xsdint = XSD + "int";
+    static final String xsdshort = XSD + "short";
+    static final String xsdbyte = XSD + "byte";
+    static final String xsddecimal = XSD + "decimal";
+    static final String xsdfloat = XSD + "float";
+    static final String xsddouble = XSD + "double";
+    static final String xsdnonNegativeInteger = XSD + "nonNegativeInteger";
+    static final String xsdnonPositiveInteger = XSD + "nonPositiveInteger";
+    static final String xsdpositiveInteger = XSD + "positiveInteger";
+    static final String xsdnegativeInteger = XSD + "negativeInteger";
+    static final String xsdunsignedLong = XSD + "unsignedLong";
+    static final String xsdunsignedInt = XSD + "unsignedInt";
+    static final String xsdunsignedShort = XSD + "unsignedShort";
+    static final String xsdunsignedByte = XSD + "unsignedByte";
+}

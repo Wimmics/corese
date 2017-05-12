@@ -260,7 +260,7 @@ public class CoreseDate extends CoreseDatatype {
     }
 
     public IDatatype getTZ() {
-        return DatatypeMap.createLiteral(cal.getDZone());
+        return DatatypeMap.newLiteral(cal.getDZone());
     }
 
     public IDatatype getTimezone() {
@@ -269,7 +269,7 @@ public class CoreseDate extends CoreseDatatype {
             return null;
         }
         if (str.equals("Z")) {
-            return DatatypeMap.createLiteral("PT0S", RDF.xsddaytimeduration);
+            return DatatypeMap.newInstance("PT0S", RDF.xsddaytimeduration);
         }
         String[] zone = str.split(":");
         String item = zone[0];
@@ -282,7 +282,7 @@ public class CoreseDate extends CoreseDatatype {
             item = item.substring(1);
         }
         String res = sign + "PT" + item + "H";
-        return DatatypeMap.createLiteral(res, RDF.xsddaytimeduration);
+        return DatatypeMap.newInstance(res, RDF.xsddaytimeduration);
     }
 
     public CoreseCalendar getCalendar() {
@@ -534,7 +534,7 @@ public class CoreseDate extends CoreseDatatype {
     }
   
     void check(IDatatype icod) throws CoreseDatatypeException {
-        if (SPARQLCompliant && getClass() != icod.getClass()) {
+        if (DatatypeMap.SPARQLCompliant && getClass() != icod.getClass()) {
             throw failure();
         }
     }

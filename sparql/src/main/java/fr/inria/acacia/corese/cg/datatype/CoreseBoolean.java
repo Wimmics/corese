@@ -170,7 +170,24 @@ public class CoreseBoolean extends CoreseStringLiteral {
           case BOOLEAN: return booleanValue() && ! dt.booleanValue();	  
       }
       throw failure();              
-  }  
+  } 
+  
+  @Override
+  public int compare(IDatatype dt) throws CoreseDatatypeException{
+      switch (dt.getCode()){
+          case BOOLEAN:
+              if (booleanValue() == dt.booleanValue()){
+                  return 0;
+              }
+              else if (booleanValue()){
+                  return 1;
+              }
+              else {
+                  return -1;
+              }
+      }
+      throw failure();
+  }
      
 
     /**

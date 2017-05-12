@@ -32,21 +32,19 @@ public class CoreseInteger extends CoreseNumber {
     public static final CoreseInteger FIVE = new CoreseInteger(5);
     static final CoreseURI datatype = new CoreseURI(RDF.xsdinteger);
     static final int code = INTEGER;
-    long lvalue;
+    int ivalue;
 
     public CoreseInteger(String value) {
         setLabel(value);
-        lvalue = new Integer(value).intValue();
+        if (value.startsWith("+")) {
+            value = value.substring(1);
+        }
+        ivalue = new Integer(value).intValue();
     }
 
     public CoreseInteger(int value) {
-        lvalue = value;
+        ivalue = value;
         setLabel(Integer.toString(value));
-    }
-    
-     public CoreseInteger(long value) {
-        lvalue = value;
-        setLabel(Long.toString(value));
     }
 
     @Override
@@ -61,51 +59,53 @@ public class CoreseInteger extends CoreseNumber {
 
     @Override
     public boolean isTrue() {
-        return lvalue != 0;
+        return ivalue != 0;
     }
 
     @Override
     public long longValue() {
-        return lvalue;
+        return ivalue;
     }
 
     @Override
     public int intValue() {
-        return (int) lvalue;
+        return ivalue;
     }
 
     @Override
     public double doubleValue() {
-        return (double) lvalue;
+        return (double) ivalue;
     }
 
     @Override
     public float floatValue() {
-        return (float) lvalue;
+        return (float) ivalue;
     }
 
     @Override
     public double getdValue() {
-        return doubleValue();
+        return (double) ivalue;
     }
 
     @Override
     public int getiValue() {
-        return intValue();
+        return ivalue;
     }
 
     @Override
     public long getlValue() {
-        return longValue();
+        return (long) ivalue;
     }
 
     @Override
     public int compare(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case LONG:
-            case INTEGER:
                 long l = iod.longValue();
-                return (lvalue < l) ? -1 : (l == lvalue ? 0 : 1);
+                return (ivalue < l) ? -1 : (l == ivalue ? 0 : 1);
+            case INTEGER:
+                long i = iod.intValue();
+                return (ivalue < i) ? -1 : (i == ivalue ? 0 : 1);
 
             case DECIMAL:
             case FLOAT:
@@ -121,8 +121,9 @@ public class CoreseInteger extends CoreseNumber {
     public boolean less(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
+                return ivalue < iod.intValue();
             case LONG:
-                return lvalue < iod.longValue();
+                return ivalue < iod.longValue();
             case DECIMAL:
             case FLOAT:
             case DOUBLE:
@@ -136,8 +137,9 @@ public class CoreseInteger extends CoreseNumber {
     public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
+                return ivalue <= iod.intValue();
             case LONG:
-                return lvalue <= iod.longValue();
+                return ivalue <= iod.longValue();
             case DECIMAL:
             case FLOAT:
             case DOUBLE:
@@ -151,8 +153,9 @@ public class CoreseInteger extends CoreseNumber {
     public boolean greater(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
+                return ivalue > iod.intValue();
             case LONG:
-                return lvalue > iod.longValue();
+                return ivalue > iod.longValue();
             case DECIMAL:
             case FLOAT:
             case DOUBLE:
@@ -166,8 +169,9 @@ public class CoreseInteger extends CoreseNumber {
     public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
+                return ivalue >= iod.intValue();
             case LONG:
-                return lvalue >= iod.longValue();
+                return ivalue >= iod.longValue();
             case DECIMAL:
             case FLOAT:
             case DOUBLE:
@@ -181,8 +185,9 @@ public class CoreseInteger extends CoreseNumber {
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
+                return ivalue == iod.intValue();
             case LONG:
-                return lvalue == iod.longValue();
+                return ivalue == iod.longValue();
 
             case FLOAT:
             case DECIMAL:

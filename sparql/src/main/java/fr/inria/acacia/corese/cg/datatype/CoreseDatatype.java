@@ -47,7 +47,6 @@ public class CoreseDatatype
     static final DatatypeMap dm = DatatypeMap.create();
     static final NSManager nsm = NSManager.create();
     static final int LESSER = -1, GREATER = 1;
-    static boolean SPARQLCompliant = false;
     static int cindex = 0;
     static int code = -1;
     
@@ -156,25 +155,25 @@ public class CoreseDatatype
      * Create a datatype. If it is a not well formed number, create a
      * CoreseUndef
      */
-    public static IDatatype createLiteral(String label, String datatype, String lang)
-            throws CoreseDatatypeException {
-        return DatatypeMap.createLiteralWE(label, datatype, lang);
-    }
+//    public static IDatatype createLiteral(String label, String datatype, String lang)
+//            throws CoreseDatatypeException {
+//        return DatatypeMap.createLiteralWE(label, datatype, lang);
+//    }
 
-    public static IDatatype createLiteral(String label)
-            throws CoreseDatatypeException {
-        return DatatypeMap.createLiteralWE(label);
-    }
+//    public static IDatatype createLiteral(String label)
+//            throws CoreseDatatypeException {
+//        return DatatypeMap.createLiteralWE(label);
+//    }
 
-    public static IDatatype createResource(String label)
-            throws CoreseDatatypeException {
-        return DatatypeMap.createResource(label);
-    }
+//    public static IDatatype createResource(String label)
+//            throws CoreseDatatypeException {
+//        return DatatypeMap.createResource(label);
+//    }
 
-    public static IDatatype createBlank(String label)
-            throws CoreseDatatypeException {
-        return DatatypeMap.createBlank(label);
-    }
+//    public static IDatatype createBlank(String label)
+//            throws CoreseDatatypeException {
+//        return DatatypeMap.createBlank(label);
+//    }
 
     /**
      * Create a datatype. If it is a not well formed number, create a
@@ -546,6 +545,16 @@ public class CoreseDatatype
         return false;
     }
     
+    @Override
+    public boolean isDecimalInteger(){
+        switch (getCode()){
+            case DECIMAL:
+            case LONG:
+            case INTEGER :return true;
+        }
+        return false;
+    }
+    
      @Override
     public boolean isBoolean() {
         return false;
@@ -746,8 +755,14 @@ public class CoreseDatatype
             case STRING:
                 if (other == LITERAL) {
                     int res = d1.getLabel().compareTo(d2.getLabel());
-                    if (res == 0 && d2.hasLang()) {
-                        return LESSER;
+                    if (res == 0) { 
+                        if (d2.hasLang()) {
+                            return LESSER;
+                        }
+                        else if (DatatypeMap.SPARQLCompliant){ 
+                            // string and simple literal are considered distinct
+                            return Integer.compare(getCode(), d2.getCode());
+                        }
                     }
                     return res;
                 }
@@ -760,8 +775,14 @@ public class CoreseDatatype
 
                     case STRING:
                         int res = d1.getLabel().compareTo(d2.getLabel());
-                        if (res == 0 && hasLang()) {
-                            return GREATER;
+                        if (res == 0) { 
+                            if (hasLang()) {
+                                return GREATER;
+                            }
+                            else if (DatatypeMap.SPARQLCompliant){
+                               // string and simple literal are considered distinct
+                                return Integer.compare(getCode(), d2.getCode()); 
+                            }
                         }
                         return res;
 
@@ -795,10 +816,15 @@ public class CoreseDatatype
         } else {
             return GREATER;
         }
-
-
     }
     
+    /**
+     * RDF sameTerm semantics:
+     * sameTerm = same datatype, same value and same label 
+     * 1 != 01 != 1.0 != '1'^^xsd:long
+     * use case: order by, group by, select distinct
+     * 
+     */
     int compareNumber(IDatatype dt) throws CoreseDatatypeException{
         int res = compare(dt);
         if (res == 0){
@@ -809,8 +835,7 @@ public class CoreseDatatype
         }
         return res;
     }
-
-
+    
     /**
      * Same datatype or String & Literal
      */
@@ -820,7 +845,8 @@ public class CoreseDatatype
                 || getCode() == LITERAL && dt.getCode() == STRING;
     }
 
-    // default generic functions :
+    // compare values (e.g. for numbers)
+    @Override
     public int compare(IDatatype iod) throws CoreseDatatypeException {
         throw failure();
     }
@@ -880,6 +906,7 @@ public class CoreseDatatype
     }
     
     @Override
+    // TODO: same number datatypes 
     public boolean sameTerm(IDatatype dt) {
         if (getCode() == dt.getCode() ) {
             return equals(dt) && 

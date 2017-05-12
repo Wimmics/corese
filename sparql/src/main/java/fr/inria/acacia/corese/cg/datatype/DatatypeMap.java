@@ -71,21 +71,19 @@ public class DatatypeMap implements Cst, RDF {
     static final String LIST = ExpType.EXT + "List";
     private static final int INTMAX = 100;
     static  IDatatype[] intCache;
+    // if true, restrict datatype match to conform to SPARQL test cases
+    public static boolean SPARQLCompliant = false;
     
     static {
         intCache = new IDatatype[INTMAX];
-//        ht = new Hashtable<String, Mapping>();
-//        dtCode = new HashMap<String, Integer>();
         dm = DatatypeMap.create();
     }
 
     private class Mapping {
 
         private String javatype = "";
-        private Method method = null;
-        private Class cl = null;
 
-        public Mapping(String jtype) {//, Hashtable<String, String> htms){
+        public Mapping(String jtype) {
             javatype = jtype;
         }
 
@@ -176,24 +174,25 @@ public class DatatypeMap implements Cst, RDF {
         String intSpace = xsdinteger;
         // Integer + store datatype URI ?
         String intJType = jTypeInteger;
+        String genericIntJType = jTypeGenericInteger;
 
-        put(xsddouble, jTypeDouble, xsddouble);
-        put(xsdfloat, jTypeFloat, xsdfloat);
+        put(xsddouble,  jTypeDouble, xsddouble);
+        put(xsdfloat,   jTypeFloat, xsdfloat);
         put(xsddecimal, jTypeDecimal, xsddecimal);
         put(xsdinteger, jTypeInteger, intSpace);
-        put(xsdlong, jTypeLong, intSpace);
+        put(xsdlong,    jTypeLong, intSpace);
 
-        put(xsdshort, intJType, intSpace);
-        put(xsdint, jTypeInt, intSpace);
-        put(xsdbyte, intJType, intSpace);
-        put(xsdnonNegativeInteger, intJType, intSpace);
-        put(xsdnonPositiveInteger, intJType, intSpace);
-        put(xsdpositiveInteger, intJType, intSpace);
-        put(xsdnegativeInteger, intJType, intSpace);
-        put(xsdunsignedLong, intJType, intSpace);
-        put(xsdunsignedInt, intJType, intSpace);
-        put(xsdunsignedShort, intJType, intSpace);
-        put(xsdunsignedByte, intJType, intSpace);
+        put(xsdshort,               genericIntJType, intSpace);
+        put(xsdint,                 genericIntJType, intSpace);
+        put(xsdbyte,                genericIntJType, intSpace);
+        put(xsdnonNegativeInteger,  genericIntJType, intSpace);
+        put(xsdnonPositiveInteger,  genericIntJType, intSpace);
+        put(xsdpositiveInteger,     genericIntJType, intSpace);
+        put(xsdnegativeInteger,     genericIntJType, intSpace);
+        put(xsdunsignedLong,        genericIntJType, intSpace);
+        put(xsdunsignedInt,         genericIntJType, intSpace);
+        put(xsdunsignedShort,       genericIntJType, intSpace);
+        put(xsdunsignedByte,        genericIntJType, intSpace);
 
         put(xsddate, jTypeDate, xsddate);
         put(xsddateTime, jTypeDateTime, xsddateTime);
@@ -217,7 +216,7 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     void defineInteger(String datatype) {
-         dtCode.put(datatype, IDatatype.INTEGER);
+         dtCode.put(datatype, IDatatype.GENERIC_INTEGER);
     }
 
     int getType(String datatype) {
@@ -249,11 +248,11 @@ public class DatatypeMap implements Cst, RDF {
         defineString(xsdncname);
         defineString(xsdlanguage);
 
-        define(xsddouble, IDatatype.DOUBLE);
-        define(xsdfloat, IDatatype.FLOAT);
-        define(xsddecimal, IDatatype.DECIMAL);
-        define(xsdinteger, IDatatype.INTEGER);
-        define(xsdlong, IDatatype.LONG);
+        define(xsddouble,   IDatatype.DOUBLE);
+        define(xsdfloat,    IDatatype.FLOAT);
+        define(xsddecimal,  IDatatype.DECIMAL);
+        define(xsdinteger,  IDatatype.INTEGER);
+        define(xsdlong,     IDatatype.LONG);
 
         defineInteger(xsdshort);
         defineInteger(xsdint);
@@ -267,21 +266,30 @@ public class DatatypeMap implements Cst, RDF {
         defineInteger(xsdunsignedShort);
         defineInteger(xsdunsignedByte);
 
-        define(xsddate, IDatatype.DATE); //jTypeDate,		xsddate);
-        define(xsddateTime, IDatatype.DATETIME); //jTypeDateTime,	xsddateTime);
+        define(xsddate, IDatatype.DATE); 
+        define(xsddateTime, IDatatype.DATETIME); 
 
-        define(xsdday, IDatatype.DAY); //jTypeDay,	xsdday);
-        define(xsdmonth, IDatatype.MONTH); //jTypeMonth,	xsdmonth);
-        define(xsdyear, IDatatype.YEAR); //jTypeYear,	xsdyear);
+        define(xsdday, IDatatype.DAY); 
+        define(xsdmonth, IDatatype.MONTH); 
+        define(xsdyear, IDatatype.YEAR); 
 
-        define(xsddaytimeduration, IDatatype.DURATION); // CoreseGeneric
+        define(xsddaytimeduration, IDatatype.DURATION); 
 
     }
 
     static boolean isNumber(String name) {
-        return name.equals(xsdlong) || name.equals(xsdinteger) || name.equals(xsdint)
-                || name.equals(xsddouble)
-                || name.equals(xsdfloat) || name.equals(xsddecimal);
+        switch (getCode(name)){
+            case IDatatype.LONG:
+            case IDatatype.INTEGER:
+            case IDatatype.DOUBLE:
+            case IDatatype.FLOAT:
+            case IDatatype.DECIMAL:
+            case IDatatype.GENERIC_INTEGER: return true;
+            default: return false;
+        }
+//        return name.equals(xsdlong) || name.equals(xsdinteger) || name.equals(xsdint)
+//                || name.equals(xsddouble)
+//                || name.equals(xsdfloat) || name.equals(xsddecimal);
     }
 
     /**
@@ -338,16 +346,14 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     public static IDatatype newInstance(double result, String datatype) {
-        if (datatype.equals(xsdinteger)) {
-            return newInstance((int) result);
-        } else if (datatype.equals(xsdlong)) {
-            return newInstance((long) result);
-        } else if (datatype.equals(xsddecimal)) {
-            return new CoreseDecimal(result);
-        } else if (datatype.equals(xsdfloat)) {
-            return new CoreseFloat(result);
+        switch (getCode(datatype)){
+            case IDatatype.LONG:    return newInstance((long) result);
+            case IDatatype.INTEGER: return newInstance((int) result);
+            case IDatatype.FLOAT:   return new CoreseFloat(result);
+            case IDatatype.DECIMAL: return new CoreseDecimal(result);
+            case IDatatype.GENERIC_INTEGER: return new CoreseGenericInteger((int)result, datatype);
+            default:return new CoreseDouble(result);
         }
-        return new CoreseDouble(result);
     }
 
     public static IDatatype newInstance(float result) {
@@ -356,6 +362,49 @@ public class DatatypeMap implements Cst, RDF {
 
     public static IDatatype newInstance(int result) {
         return getValue(result);
+    }
+    
+    public static IDatatype newInstance(long result) {
+        return new CoreseLong(result);
+    }
+    
+     /**
+     * Use case: LDScript Java compiler
+     */
+    
+    public static IDatatype newLong(long result) {
+        return new CoreseLong(result);
+    }
+   
+    public static IDatatype newInteger(int result) {
+        return getValue(result);
+    }
+    
+    public static IDatatype newInteger(long result) {
+        return getValue(result);
+    }
+        
+    public static IDatatype newDouble(double result) {
+        return newInstance(result);
+    }
+    
+    public static IDatatype newFloat(float result) {
+        return newInstance(result);
+    }
+    
+    public static IDatatype newFloat(double result) {
+        return new CoreseFloat((float)result);
+    }
+     
+    public static IDatatype newDecimal(double result) {
+        return new CoreseDecimal(result);
+    }
+    
+    static IDatatype getValue(long value) {
+        if (value >= 0 && value < INTMAX) {
+            return getValueCache((int)value);
+        }
+        return new CoreseInteger(value);
     }
 
     static IDatatype getValue(int value) {
@@ -373,10 +422,6 @@ public class DatatypeMap implements Cst, RDF {
             intCache[value] = new CoreseInteger(value);
         }
         return intCache[value];
-    }
-
-    public static IDatatype newInstance(long result) {
-        return new CoreseLong(result);
     }
 
     public static IDatatype newInstance(String result) {
@@ -398,13 +443,6 @@ public class DatatypeMap implements Cst, RDF {
         return CoreseBoolean.FALSE;
     }
     
-    public static IDatatype createInstance(boolean result) {
-        if (result) {
-            return new CoreseBoolean(true);
-        }
-        return new CoreseBoolean(false);
-    }
-
     public static IDatatype newResource(String result) {
         return new CoreseURI(result);
     }
@@ -469,28 +507,37 @@ public class DatatypeMap implements Cst, RDF {
         IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, lang);
         return dt;
     }
-
-    public static IDatatype createLiteral(String label) {
-        IDatatype dt = null;
-        try {
-            dt = createLiteralWE(label);
-        } catch (CoreseDatatypeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return dt;
-    }
-
-    public static IDatatype createLiteralWE(String label)
-            throws CoreseDatatypeException {
-        String datatype = RDFSLITERAL;
+    
+    public static IDatatype newLiteral(String label) {
         if (literalAsString) {
-            datatype = xsdstring;
+            return newInstance(label);
         }
-        String JavaType = dm.getJType(datatype);
-        IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, "");
-        return dt;
+        else {
+            return new CoreseLiteral(label);
+        }
     }
+    
+//    public static IDatatype createLiteral2(String label) {
+//        IDatatype dt = null;
+//        try {
+//            dt = createLiteralWE(label);
+//        } catch (CoreseDatatypeException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return dt;
+//    }
+//
+//    public static IDatatype createLiteralWE(String label)
+//            throws CoreseDatatypeException {
+//        String datatype = RDFSLITERAL;
+//        if (literalAsString) {
+//            datatype = xsdstring;
+//        }
+//        String JavaType = dm.getJType(datatype);
+//        IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, "");
+//        return dt;
+//    }
 
     public static IDatatype createObject(String name) {
         return createLiteral(name, XMLLITERAL, null);
@@ -539,7 +586,7 @@ public class DatatypeMap implements Cst, RDF {
         return new CoreseList(ldt);
     }
     
-     public static IDatatype createList() {
+    public static IDatatype createList() {
        return createList(new ArrayList<IDatatype>(0));
     }
 
@@ -580,7 +627,7 @@ public class DatatypeMap implements Cst, RDF {
      * Order of Datatypes & rdfs:Literal vs xsd:string
      */
     public static void setSPARQLCompliant(boolean b) {
-        CoreseDatatype.SPARQLCompliant = b;
+        SPARQLCompliant = b;
         literalAsString = !b;
     }
 

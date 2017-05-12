@@ -46,6 +46,7 @@ public interface IDatatype
     static final int YEAR = 23;
     static final int DURATION = 24;
     static final int DATETIME = 25;
+    static final int GENERIC_INTEGER = 26;
     
     static final String KGRAM           = ExpType.KGRAM;
     public static final String RULE     = KGRAM + "Rule";
@@ -103,6 +104,8 @@ public interface IDatatype
      * dt2, an int < 0 if the datatype is lesser
      */
     int compareTo(IDatatype dt2);
+    
+    int compare(IDatatype dt) throws CoreseDatatypeException;
 
     /**
      * Cast a value
@@ -281,6 +284,8 @@ public interface IDatatype
      * @return true if this instance class is a number
      */
     boolean isNumber();
+    
+    boolean isDecimalInteger();
     
     boolean isDate();
     

@@ -357,7 +357,7 @@ public class ProxyImpl implements Proxy, ExprType {
     public IDatatype struuid() {
         UUID uuid = UUID.randomUUID();
         String str = uuid.toString();
-        return DatatypeMap.createLiteral(str);
+        return DatatypeMap.newLiteral(str);
     }
     
     public IDatatype now(){
@@ -948,7 +948,7 @@ public class ProxyImpl implements Proxy, ExprType {
     
     public IDatatype encode_for_uri(IDatatype dt) {
         String str = encodeForUri(dt.getLabel());
-        return DatatypeMap.createLiteral(str);
+        return DatatypeMap.newLiteral(str);
     }
 
     public String encodeForUri(String str) {
@@ -1055,7 +1055,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
     // return a Literal (not a xsd:string)
     public IDatatype str(IDatatype dt) {
-        return DatatypeMap.createLiteral(dt.getLabel());
+        return DatatypeMap.newLiteral(dt.getLabel());
     }
     
     public IDatatype string(IDatatype dt) {
@@ -1183,7 +1183,7 @@ public class ProxyImpl implements Proxy, ExprType {
         } else if (DatatypeMap.isString(dt1)) {
             return getValue(str);
         }
-        return DatatypeMap.createLiteral(str);
+        return DatatypeMap.newLiteral(str);
     }
     
     IDatatype slice (Environment env, IDatatype dt){
@@ -1398,7 +1398,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return DatatypeMap.newStringBuilder(sb);
             }
         } else {
-            return DatatypeMap.createLiteral(sb.toString());
+            return DatatypeMap.newLiteral(sb.toString());
         }
     }
     
@@ -1472,30 +1472,30 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.getTZ(dt);
     }         
            
-    IDatatype time(Expr exp, IDatatype dt) {
-        if (dt.getDatatypeURI().equals(RDF.xsddate)
-                || dt.getDatatypeURI().equals(RDF.xsddateTime)) {
-
-            switch (exp.oper()) {
-
-                case YEAR:
-                    return DatatypeMap.getYear(dt);
-                case MONTH:
-                    return DatatypeMap.getMonth(dt);
-                case DAY:
-                    return DatatypeMap.getDay(dt);
-
-                case HOURS:
-                    return DatatypeMap.getHour(dt);
-                case MINUTES:
-                    return DatatypeMap.getMinute(dt);
-                case SECONDS:
-                    return DatatypeMap.getSecond(dt);
-            }
-        }
-
-        return null;
-    }
+//    IDatatype time(Expr exp, IDatatype dt) {
+//        if (dt.getDatatypeURI().equals(RDF.xsddate)
+//                || dt.getDatatypeURI().equals(RDF.xsddateTime)) {
+//
+//            switch (exp.oper()) {
+//
+//                case YEAR:
+//                    return DatatypeMap.getYear(dt);
+//                case MONTH:
+//                    return DatatypeMap.getMonth(dt);
+//                case DAY:
+//                    return DatatypeMap.getDay(dt);
+//
+//                case HOURS:
+//                    return DatatypeMap.getHour(dt);
+//                case MINUTES:
+//                    return DatatypeMap.getMinute(dt);
+//                case SECONDS:
+//                    return DatatypeMap.getSecond(dt);
+//            }
+//        }
+//
+//        return null;
+//    }
     
     boolean isDate(IDatatype dt){
         return dt.isDate();
@@ -1550,7 +1550,7 @@ public class ProxyImpl implements Proxy, ExprType {
         if (res == null) {
             return null;
         }
-        return DatatypeMap.createLiteral(res);
+        return DatatypeMap.newLiteral(res);
     }
     
     public IDatatype hash(IDatatype name, IDatatype dt) {
@@ -1558,17 +1558,15 @@ public class ProxyImpl implements Proxy, ExprType {
         if (res == null) {
             return null;
         }
-        return DatatypeMap.createLiteral(res);
+        return DatatypeMap.newLiteral(res);
     }
 
 
     public IDatatype abs(IDatatype dt) {
-        if (DatatypeMap.isInteger(dt)) {
-            return getValue(Math.abs(dt.intValue()));
-        } else if (DatatypeMap.isLong(dt)) {
-            return getValue(Math.abs(dt.longValue()));
-        } else {
-            return getValue(Math.abs(dt.doubleValue()));
+        switch (dt.getCode()){
+            case IDatatype.INTEGER: return DatatypeMap.newInteger(Math.abs(dt.longValue()));
+            case IDatatype.LONG:    return getValue(Math.abs(dt.longValue()));
+            default:                return getValue(Math.abs(dt.doubleValue()));
         }
     }
 
@@ -1650,8 +1648,8 @@ public class ProxyImpl implements Proxy, ExprType {
     public IDatatype getValue(Object val, Object obj){
        if (val instanceof Boolean){
            Boolean b = (Boolean) val;
-           IDatatype dt = DatatypeMap.createInstance(b);
-           dt.setObject(obj);
+           IDatatype dt = DatatypeMap.newInstance(b);
+          // dt.setObject(obj);
            return dt;
        }
        return null;
@@ -1694,7 +1692,7 @@ public class ProxyImpl implements Proxy, ExprType {
         if (dt.hasLang()) {
             return DatatypeMap.createLiteral(value, null, dt.getLang());
         } else if (dt.isLiteral() && dt.getDatatype() == null) {
-            return DatatypeMap.createLiteral(value);
+            return DatatypeMap.newLiteral(value);
         }
         return DatatypeMap.newInstance(value);
     }
@@ -1734,7 +1732,7 @@ public class ProxyImpl implements Proxy, ExprType {
         if (SPARQLCompliant && !DatatypeMap.isSimpleLiteral(dt1)) {
             return null;
         }
-        return DatatypeMap.createLiteral(dt1.getLabel(), dt2.getLabel());
+        return DatatypeMap.newInstance(dt1.getLabel(), dt2.getLabel());
     }
 
     public IDatatype langMatches(IDatatype ln1, IDatatype ln2) {

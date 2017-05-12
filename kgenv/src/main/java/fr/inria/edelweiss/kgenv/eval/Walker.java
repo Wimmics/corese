@@ -56,7 +56,6 @@ public class Walker extends Interpreter {
     StringBuilder sb;
     String sep = " ";
     Group group;
-    Distinct distinct;
     TreeData tree;
     Evaluator eval;
     private static final String NL = System.getProperty("line.separator");
@@ -115,8 +114,6 @@ public class Walker extends Interpreter {
                 nodes = env.getQuery().getSelectNodes();
             } else {
                 nodes = env.getQuery().getAggNodes(exp.getFilter());
-                // group_concat:
-                distinct = new Distinct();
             }
             group = Group.create(nodes);
             group.setDistinct(true);
@@ -244,14 +241,6 @@ public class Walker extends Interpreter {
     boolean accept(Filter f, IDatatype dt) {
         if (f.getExp().isDistinct()) {
             boolean b = tree.add(dt);
-            return b;
-        }
-        return true;
-    }
-
-    boolean accept(Filter f, Tuple t) {
-        if (f.getExp().isDistinct()) {
-            boolean b = distinct.add(t);
             return b;
         }
         return true;
@@ -446,7 +435,7 @@ public class Walker extends Interpreter {
         } else if (isString) {
             return DatatypeMap.newStringBuilder(sb);
         } else {
-            return DatatypeMap.createLiteral(sb.toString());
+            return DatatypeMap.newLiteral(sb.toString());
         }
     }
      
@@ -523,18 +512,4 @@ public class Walker extends Interpreter {
         }
     }
 
-    class Distinct extends TreeMap<Tuple, Boolean> {
-
-        Distinct() {
-        }
-
-        public boolean add(Tuple map) {
-
-            if (containsKey(map)) {
-                return false;
-            }
-            put(map, true);
-            return true;
-        }
-    }
 }

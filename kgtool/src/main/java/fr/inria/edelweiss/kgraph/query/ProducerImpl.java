@@ -176,7 +176,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
     
     Node getExtNode(Node node){
-        return graph.getNode(node); //graph.getExtNode(node);   
+        return graph.getExtNode(node);   
     }
     
     // eg BIND(node as ?x)

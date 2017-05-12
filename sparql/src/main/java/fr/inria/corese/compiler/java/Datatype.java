@@ -1,6 +1,7 @@
 package fr.inria.corese.compiler.java;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.RDF;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,13 @@ public class Datatype {
             case IDatatype.URI:
                 return resource(dt);
             case IDatatype.INTEGER:
-                return newInstance(dt.intValue());
+                return genericInteger(dt);
+            case IDatatype.LONG:
+                return newInstance(dt.longValue());
             case IDatatype.DOUBLE:
                 return newInstance(dt.doubleValue());
+            case IDatatype.DECIMAL:
+                return newDecimal(dt.doubleValue());
             case IDatatype.FLOAT:
                 return newInstance(dt.floatValue());
             case IDatatype.BOOLEAN:
@@ -55,6 +60,15 @@ public class Datatype {
         }
 
         return newInstance(dt.stringValue());
+    }
+    
+    String genericInteger(IDatatype dt){
+        if (dt.getDatatypeURI().equals(RDF.xsdinteger)){
+            return newInteger(dt.longValue());
+        }
+        else {
+            return newLiteral(dt);
+        }
     }
 
     String list(IDatatype dt) {
@@ -87,6 +101,9 @@ public class Datatype {
         append(NL);
     }
     
+    /**
+     * Generate a global variable for an URI, return the variable
+     */
     String resource(IDatatype dt){
         String var = cache.get(dt);
         if (var == null){
@@ -95,7 +112,10 @@ public class Datatype {
         return var;
     }
     
-     String string(IDatatype dt){
+    /**
+     * Generate a global variable for a xsd:string, return the variable
+     */
+    String string(IDatatype dt){
         String var = cache.get(dt);
         if (var == null){
             var = getVariable(dt, newInstance(dt.stringValue()));
@@ -103,6 +123,9 @@ public class Datatype {
         return var;
     }
      
+     /**
+     * Generate a global variable for a name (variable name, function name, etc.), return the variable
+     */
     String string(String value) {
         String var = strCache.get(value);
         if (var == null){
@@ -114,6 +137,9 @@ public class Datatype {
         return var;
     }
     
+    /**
+     * 
+     */
     String getVariable(IDatatype dt, String value){
         String var = getVariable();
         cache.put(dt, var);
@@ -133,9 +159,13 @@ public class Datatype {
             return String.format("DatatypeMap.newInstance(\"%s\", \"%s\")", dt.stringValue(), dt.getDatatypeURI());
         }
     }
-
+    
     String newInstance(int val) {
-        switch (val) {
+        return newInteger(val);
+    }
+
+    String newInteger(long val) {
+        switch ((int)val) {
             case 0:
                 return "DatatypeMap.ZERO";
             case 1:
@@ -157,7 +187,11 @@ public class Datatype {
             case 9:
                 return "DatatypeMap.NINE";
         }
-        return String.format("DatatypeMap.newInstance(%s)", val);
+        return String.format("DatatypeMap.newInteger(%s)", val);
+    }
+    
+    String newDecimal(double val) {
+        return String.format("DatatypeMap.newDecimal(%s)", val);
     }
 
     String newInstance(String val) {
@@ -165,11 +199,15 @@ public class Datatype {
     }
 
     String newInstance(double val) {
-        return String.format("DatatypeMap.newInstance(%s)", val);
+        return String.format("DatatypeMap.newDouble(%s)", val);
     }
 
     String newInstance(float val) {
-        return String.format("DatatypeMap.newInstance(%s)", val);
+        return String.format("DatatypeMap.newFloat(%s)", val);
+    }
+    
+    String newInstance(long val) {
+        return String.format("DatatypeMap.newLong(%s)", val);
     }
 
     String newInstance(boolean val) {

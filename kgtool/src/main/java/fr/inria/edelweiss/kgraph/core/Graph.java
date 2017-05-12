@@ -18,6 +18,8 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.XSD;
+import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.api.core.Edge;
@@ -30,12 +32,10 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgenv.eval.Walker;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.edelweiss.kgram.api.core.TripleStore;
-import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
@@ -81,10 +81,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     static final String BLANK = "_:b";
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
-    static final int TAGINDEX = 2;
-    // true means same number value with different datatypes do not join in SPARQL
-    // false: they join
-    private static boolean distinctDatatype = false;
+    static final int TAGINDEX = 2;    
     static boolean byIndexDefault = true;
     
     private static final String[] PREDEFINED = {
@@ -139,7 +136,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             // number with same value but different datatype have different Node
             // but (may) have same index
             literal,
-            // this table enables to share index in this case for same value with different datatypes
+            // this table enables to share index in this case for same value with different label
             sliteral;
     // @deprecated
     // key -> Node
@@ -385,54 +382,117 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public class TreeNode extends TreeMap<IDatatype, Entity> {
 
         TreeNode() {
-            this(true);
+            super(new CompareNode());
         }
 
-        TreeNode(boolean diff) {
-            super(new Compare(diff));
+        TreeNode(boolean strict) {
+            super((strict) ? 
+                    // manage two triples for: s p 1, 1.0
+                    new CompareIndexStrict(): 
+                    new CompareIndex());
         }
     }
+  
+     /**
+      * Assign same node index when compatible datatypes (same datatypes or datatypes both in (integer, long, decimal))
+      * and same value (and possibly different labels)
+      * 1 = 01 = 1.0 = '1'^^xsd:long != 1e0
+      * '1'^^xsd:boolean = true
+      */
+     class CompareIndex implements Comparator<IDatatype> {
 
-    /**
-     * This Comparator enables to retrieve an occurrence of a given Literal
-     * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node 
-     * It enables also to represent (1 integer) and (1.0 float) as two different Nodes with same index
-     * distinctDatatypes = true:  different number datatypes have different nodes:  1 != "1"^^xsd:float
-     * distinctDatatypes = false: different number datatypes may have equal values: 1 = "1"^^xsd:float
-     * The first one  (literal)  is used to manage graph nodes
-     * The second one (sliteral) is used to manage node index  
-     * and to assign same index to different nodes with same value (eg 1 and "1"^^xsd:float)
-     */
-    class Compare implements Comparator<IDatatype> {
-
-        boolean distinctDatatypes = true;
-
-        Compare(boolean b) {
-            distinctDatatypes = b;
+        CompareIndex() {
         }
 
         @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
-
-            if (distinctDatatypes && dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
-                // xsd:integer distinct from xsd:decimal 
-                // use case: node management (not index management)
-                int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
-                if (cmp == 0){
-                    // same datatype ok
+            int res;
+            try {
+                 // number value comparison with = on values only
+                 res = dt1.compare(dt2);
+            } catch (CoreseDatatypeException ex) {
+                // boolean vs number
+                return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
+            }
+                 
+            if (res == 0){
+                // equal by value
+                if ((dt1.isDecimalInteger() && dt2.isDecimalInteger())
+                        || dt1.getCode() == dt2.getCode()) {
+                    // compatible datatypes, same value: same index
+                    return 0;
                 }
                 else {
-                    // distinct datatypes
-                    return cmp;
+                    return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
+                }
+            }
+            else {
+                return res;
+            }                      
+        }
+
+        /*
+         * return same datatype URI for decimal/integer/long
+         * to secure the walk into the table
+         * 
+         */
+        String generalizedDatatype(IDatatype dt){
+            if (dt.isDecimalInteger()){
+                return XSD.xsddecimal; 
+            } 
+            return dt.getDatatypeURI();
+        }
+                
+    }
+     
+     
+     /**
+      * Assign same node index when same datatype and same value (and possibly different labels)
+      * 1 = 01 != 1e0
+      * '1'^^xsd:boolean = true
+      * 1 != 1.0
+      */
+    class CompareIndexStrict implements Comparator<IDatatype> {
+
+        CompareIndexStrict() {
+        }
+    
+        @Override
+        public int compare(IDatatype dt1, IDatatype dt2) {
+            
+            if (dt1.getCode() == dt2.getCode() && dt1.getDatatypeURI().equals(dt2.getDatatypeURI())) {
+                if (dt1.equals(dt2)){
+                    // same datatype, same value: same index (even if labels are different)
+                    // 1 = 01 ; 1 != 1.0
+                    return 0;
                 }
             }
 
-            int res = dt1.compareTo(dt2);
-            return res;
+            // compare with sameTerm instead of equal value
+            // 1 != 1.0 ; they have different index
+            return dt1.compareTo(dt2);
         }
     }
+    
+    
+    /**
+     * This Comparator enables to retrieve an occurrence of a given Literal
+     * already existing in graph in such a way that two occurrences of same
+     * Literal be represented by same Node 
+     * It represents (1 integer) and (01 integer) as two different nodes
+     */
+    class CompareNode implements Comparator<IDatatype> {
 
+        CompareNode() {
+        }
+
+        @Override
+        public int compare(IDatatype dt1, IDatatype dt2) {
+            return dt1.compareTo(dt2);
+        }
+    }
+    
+    
     Graph() {
         this(LENGTH);
     }
@@ -452,10 +512,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
         table = getIndex(0);
         
-        // Literals including numbers:
-        literal  = Collections.synchronizedSortedMap(new TreeNode(true));
-        // Literal number only (to manage Node index):
-        sliteral = Collections.synchronizedSortedMap(new TreeNode(false));
+        // Literals (all of them):
+        literal  = Collections.synchronizedSortedMap(new TreeNode());
+        // Literal numbers and booleans  (to manage Node index):
+        sliteral = Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.SPARQLCompliant));
         // deprecated:
         vliteral = Collections.synchronizedMap(new HashMap<String, Entity>());
         // URI Node
@@ -567,6 +627,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         byIndexDefault = b;
         //EdgeIndex.setCompareIndex(b);
         Distinct.setCompareIndex(b);
+        //Group.setCompareIndex(b);
         //MatcherImpl.setCompareIndex(b);
     }
 
@@ -586,17 +647,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * if true: Keep number datatypes separate and Join fails on different
-     * datatypes 
-     * default is false (hence join works) 
+     *  
      */
+    @Deprecated
     public static void setDistinctDatatype(boolean b) {
-        distinctDatatype = b;
-        if (b){
-            Group.setCompareIndex(true);
-            Distinct.setCompareIndex(true);
-            Walker.setCompareIndex(true);                                      
-        }
+
     }
 
     public static void setNodeAsDatatype(boolean b) {
@@ -891,7 +946,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                 EdgeList list = ie.get(p);
                 sb.append(p + " (" + list.size() + ") : ");
                 sb.append(sep);
-                for (Entity ent : list) {
+                int i = 0;
+                for (Entity ent : getEdges(p)) {
+                    sb.append((i<10)?"0":"").append(i++).append(" ");
                     sb.append(ent);
                     sb.append(sep);
                 }
@@ -1409,10 +1466,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
     
-    // May return Node with different datatype for number
+    // May return Node with same value but different label
     public Node getExtNode(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
-         if (!distinctDatatype && isSameIndexAble(dt)) {
+         if (isSameIndexAble(dt)) {
             return getExtLiteralNode(dt);
         }
          else {
@@ -1646,24 +1703,22 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             indexNode(dt, node);
         } else {
             literal.put(dt, (Entity) node);
-            if (distinctDatatype) {
-                // no join on number with different datatypes
-                indexNode(dt, node);
-            } else {
-                // join on number with different datatypes
-                indexLiteralNode(dt, node);
-            }
+            indexLiteralNode(dt, node);
         }
     }
     
+    /**
+     * 01 and 1 have same index
+     * true and '1'^^xsd:boolean have same index
+     */
     boolean isSameIndexAble(IDatatype dt){
-        return false; //dt.isNumber(); 
+        return dt.isNumber() || dt.isBoolean();
     }
 
     /**
      * Assign an index to Literal Node Assign same index to same number values:
-     * 1, '1'^^xsd:double, 1.0 have same index If EdgeIndex is sorted by index,
-     * dichotomy enables join on semantically equivalent values
+     * same datatype with same value and different label have same index
+     * 1 and 01 have same index: they join with SPARQL
      */
     void indexLiteralNode(IDatatype dt, Node node) {
         if (isSameIndexAble(dt)) {
@@ -1684,7 +1739,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return getLiteralNode(getKey(dt), dt);
     }
                  
-    // return number with possibly different datatype that match dt
+    // return same datatype value with possibly different label (e.g. 10 vs 1e1)
     public Node getExtLiteralNode(IDatatype dt) {
         return (Node) sliteral.get(dt);    
     }

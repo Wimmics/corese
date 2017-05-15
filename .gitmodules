@@ -1,0 +1,6 @@
+[submodule "persistency-tools/coresedb-benchmark/src/test/resources/rdf-tests"]
+	path = persistency-tools/coresedb-benchmark/src/test/resources/rdf-tests
+	url = git@github.com:w3c/rdf-tests.git
+[submodule "persistency-tools/coresedb-benchmark/src/main/resources/rdf-tests"]
+	path = persistency-tools/coresedb-benchmark/src/main/resources/rdf-tests
+	url = git@github.com:w3c/rdf-tests.git

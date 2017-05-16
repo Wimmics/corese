@@ -168,7 +168,7 @@ public class JavaCompiler {
      */
     void toJava(Function exp) {
         stack.push(exp);
-        functionDeclaration(exp.getFunction());
+        functionDeclaration(exp);
         append(" {");
         incrnl();
         Rewrite rw = new Rewrite(ast);
@@ -226,13 +226,15 @@ public class JavaCompiler {
     }
   
     
-    void functionDeclaration(Term term) {
+    void functionDeclaration(Function fun) {
+        Term term = fun.getFunction();
         append("public").append(SPACE).append(IDATATYPE).append(SPACE);
         append(term.javaName()).append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
             append(IDATATYPE).append(SPACE);
-            toJava(exp.getVariable());
+            Variable var = exp.getVariable();
+            toJava(var);
             if (i++ < term.arity() - 1) {
                 append(", ");
             }

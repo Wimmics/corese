@@ -758,9 +758,9 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     @Override
     public boolean isBindable(Node node) {
-        if (!Graph.valueOut) {
-            return true;
-        }
+//        if (!Graph.valueOut) {
+//            return true;
+//        }
         IDatatype dt = (IDatatype) node.getValue();
         // 1 && 1.0 are not same Node: cannot bind (see kgram Eval)
         return !dt.isNumber();

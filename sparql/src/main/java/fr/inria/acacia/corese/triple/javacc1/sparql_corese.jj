@@ -2572,12 +2572,13 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
+
 Function Function(Metadata la) : 
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
   <FUNCTION> cst = IRIrefConst() 
   { stack = BasicGraphPattern.create(); }
-  v = ArgList(stack)
+  v = FunArgList(stack)
   body = Body(stack)
 
   { 
@@ -2586,6 +2587,21 @@ Function Function(Metadata la) :
   { return term; }
 }
 
+
+ExpressionList FunArgList(Exp stack) : { ExpressionList list;  Variable var; Constant type; }
+{
+  { list = new ExpressionList(); }  
+  (        	 
+  <LPAREN>   		  	 	  	
+    (
+	          { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); }		              
+        ( <COMMA> { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); } )*
+		    
+    ) ?	       
+  <RPAREN>    
+  )
+  { return list; }
+}
 
 Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 {

@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import static fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer.IGRAPH;
@@ -18,20 +19,27 @@ import java.util.List;
  * 2- other nodes (object, graph)
  * index 0:
  * g1 s1 p o1 ; g2 s1 p o1 ; g1 s1 p o2 ; g2 s2 p o3 ; ... 
+ * 
+ * This version manages XSD datatypes this way:
+ * integer, long, decimal (and short, byte, int, etc.) 
+ * - have same node index when values are equal
+ * - different labels are possible for same value: 1 and 01 are kept as is
+ * with same node index
+ * integer/long/decimal and double and float have different node index
+ * Nodes with same node index which are not sameTerm are kept in the list:
+ * s p 01, 1, 1.0, '1'^^xsd:long, 1e1
  *
- *
- * @author Olivier Corby, Wimmics INRIA I3S, 2014
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-@Deprecated
-public class EdgeList implements Iterable<Entity> {
+public class EdgeManager implements Iterable<Entity> {
     Graph graph;
     private Node predicate;
     ArrayList<Entity> list;
     Comparator<Entity> comp;
     int index = 0, other = 0, next = IGRAPH;
 
-    EdgeList(Graph g, Node p, int i) {
+    EdgeManager(Graph g, Node p, int i) {
         graph = g;
         predicate = p;
         list = new ArrayList<Entity>();
@@ -104,7 +112,7 @@ public class EdgeList implements Iterable<Entity> {
     /**
      * Copy Index(0) into this index
      */
-    void copy(EdgeList el) {
+    void copy(EdgeManager el) {
         list.ensureCapacity(el.size());
         if (index < 2) {
             // we are sure that there are at least 2 nodes
@@ -187,7 +195,7 @@ public class EdgeList implements Iterable<Entity> {
      * Test if an edge (n1 p n2) exist in this Index (in any named graph)
      */
     boolean exist(Node n1, Node n2) {
-        int n = find(n1.getIndex(), n2.getIndex(), 0, list.size());
+        int n = findNodeTerm(n1, n2, 0, list.size());
         if (n >= 0 && n < list.size()) {
             Entity ent = list.get(n);
             if (n1.getIndex() == getNodeIndex(ent, 0)
@@ -221,7 +229,7 @@ public class EdgeList implements Iterable<Entity> {
      * Find index of node as node(index) -1 if not found
      */
     int findIndex(Node n) {
-        int i = find(n.getIndex(), 0, list.size());
+        int i = findNodeTerm(n, 0, list.size());
         if (i >= 0 && i < list.size()
                 && getNodeIndex(i, index) == n.getIndex()) {
             return i;
@@ -238,7 +246,7 @@ public class EdgeList implements Iterable<Entity> {
      * Iterate edges with index node node1 (and other node node2)
      */
     Iterable<Entity> getEdges(Node node1, Node node2) {
-        int n = find(node1.getIndex(), node2.getIndex(), 0, list.size());
+        int n = findNodeTerm(node1, node2, 0, list.size());
         if (n >= 0 && n < list.size()) {
             int n1 = getNodeIndex(n, index);
             if (n1 == node1.getIndex()) {
@@ -256,15 +264,15 @@ public class EdgeList implements Iterable<Entity> {
     /**
      * Iterate edges with index node node1
      */
-    Iterable<Entity> getEdges(Node node1) {
+    Iterable<Entity> getEdges(Node node) {
         // node is bound, enumerate edges where node = edge.getNode(index)
-        int n = find(node1.getIndex(), 0, list.size());
+        int n = findNodeIndex(node, 0, list.size());
         if (n >= 0 && n < list.size()) {
-            int n1 = getNodeIndex(n, index);
-            if (n1 == node1.getIndex()) {
+            int i = getNodeIndex(n, index);
+            if (i == node.getIndex()) {
                 if (EdgeManagerIndexer.test) {
                     // draft
-                    return new EdgeIterate(this, n);
+                    return new EdgeManagerIterate(this, n);
 
                 } else {
                     // format
@@ -276,50 +284,65 @@ public class EdgeList implements Iterable<Entity> {
     }
 
     /**
-     * n1 = node.getIndex() return index of edge where edge.getNode(index) ==
-     * node
+     * return index of edge where edge.getNode(index) sameTerm node
      */
-    int find(int n1, int first, int last) {
+    int findNodeTerm(Node n, int first, int last) {
         if (first >= last) {
             return first;
         } else {
             int mid = (first + last) / 2;
-            int res = intCompare(getNodeIndex(mid, index), n1);
+            int res = compareNodeTerm(getNode(mid, index), n);
             if (res >= 0) {
-                return find(n1, first, mid);
+                return findNodeTerm(n, first, mid);
             } else {
-                return find(n1, mid + 1, last);
+                return findNodeTerm(n, mid + 1, last);
             }
         }
     }
+    
+    /**
+     * return index of edge where edge.getNode(index).index() =  node.index()
+     */
+    int findNodeIndex(Node n, int first, int last) {
+        if (first >= last) {
+            return first;
+        } else {
+            int mid = (first + last) / 2;
+            int res = compareNodeIndex(getNode(mid, index), n);
+            if (res >= 0) {
+                return findNodeIndex(n, first, mid);
+            } else {
+                return findNodeIndex(n, mid + 1, last);
+            }
+        }
+    }
+    
+    
 
     /**
-     * n1 = node1.getIndex() n2 = node2.getIndex() return index of edge where
+     * return index of edge where
      * edge.getNode(index) == node1 and edge.getNode(other) == node2
      */
-    int find(int n1, int n2, int first, int last) {
+    
+    int findNodeTerm(Node n1, Node n2, int first, int last) {
         if (first >= last) {
             return first;
         } else {
             int mid = (first + last) / 2;
             if (compare(list.get(mid), n1, n2) >= 0) {
-                return find(n1, n2, first, mid);
+                return findNodeTerm(n1, n2, first, mid);
             } else {
-                return find(n1, n2, mid + 1, last);
+                return findNodeTerm(n1, n2, mid + 1, last);
             }
         }
-    }
-
-    /**
-     * n1 n2 are node.getIndex()
-     */
-    int compare(Entity ent, int n1, int n2) {
-        int res = intCompare(getNodeIndex(ent, index), n1);
+    }   
+    
+     int compare(Entity ent, Node n1, Node n2) {
+        int res = compareNodeTerm(ent.getNode(index), n1);
         if (res == 0) {
-            res = intCompare(getNodeIndex(ent, other), n2);
+            res = compareNodeTerm(ent.getNode(other), n2);
         }
         return res;
-
     }
 
     /**
@@ -333,6 +356,29 @@ public class EdgeList implements Iterable<Entity> {
         } else {
             return +1;
         }
+    }
+    
+    /**
+     * Compare nodes with sameTerm semantics
+     * if value, datatype, label are equal : return 0
+     * return +-1 otherwise
+     */
+    int compareNodeTerm(Node n1, Node n2){
+        int res = intCompare(n1.getIndex(), n2.getIndex());
+        if (res == 0){
+            // same node index (compatible datatypes)
+            // check datatype and label
+            res = getValue(n1).compareTo(getValue(n2));
+        }
+        return res;
+    }
+    
+    int compareNodeIndex(Node n1, Node n2){
+        return intCompare(n1.getIndex(), n2.getIndex());       
+    }
+    
+    IDatatype getValue(Node n){
+        return (IDatatype) n.getValue();
     }
 
     @Override
@@ -358,7 +404,7 @@ public class EdgeList implements Iterable<Entity> {
         int node;
         int ind, start;
 
-        Iterate(EdgeList l, int n) {
+        Iterate(EdgeManager l, int n) {
             list = l.getList();
             node = getNodeIndex(list.get(n), index);
             start = n;
@@ -400,6 +446,13 @@ public class EdgeList implements Iterable<Entity> {
         Entity ent = list.get(i);
         return ent.getNode(n).getIndex();
     }
+    
+    // getNode(IGRAPH) must return getGraph()
+    Node getNode(int i, int n) {
+        Entity ent = list.get(i);
+        return ent.getNode(n);
+    }
+    
 
     /**
      * **************************************************************
@@ -428,13 +481,13 @@ public class EdgeList implements Iterable<Entity> {
             public int compare(Entity o1, Entity o2) {
 
                 // check the Index Node
-                int res = intCompare(getNodeIndex(o1, index), getNodeIndex(o2, index));
+                int res = compareNodeTerm(o1.getNode(index), o2.getNode(index));
 
                 if (res != 0) {
                     return res;
                 }
                 
-                res = intCompare(getNodeIndex(o1, other), getNodeIndex(o2, other));
+                res = compareNodeTerm(o1.getNode(other), o2.getNode(other));
 
                 if (res != 0) {
                     return res;
@@ -442,7 +495,7 @@ public class EdgeList implements Iterable<Entity> {
                 
                 if (o1.nbNode() == 2 && o2.nbNode() == 2) {
                     // compare third Node
-                    res = intCompare(getNodeIndex(o1, next), getNodeIndex(o2, next));
+                    res = compareNodeTerm(o1.getNode(next), o2.getNode(next));
                     return res;
                 }
 
@@ -452,7 +505,7 @@ public class EdgeList implements Iterable<Entity> {
                 for (int i = 0; i < min; i++) {
                     // check other common arity nodes
                     if (i != index) {
-                        res = intCompare(getNodeIndex(o1, i), getNodeIndex(o2, i));
+                        res = compareNodeTerm(o1.getNode(i), o2.getNode(i));
                         if (res != 0) {
                             return res;
                         }
@@ -462,7 +515,7 @@ public class EdgeList implements Iterable<Entity> {
                 if (o1.nbNode() == o2.nbNode()) {
                     // same arity, nodes are equal
                     // check graph node
-                    return intCompare(getNodeIndex(o1, IGRAPH), getNodeIndex(o2, IGRAPH));
+                    return compareNodeTerm(o1.getNode(IGRAPH), o2.getNode(IGRAPH));
                 }
                 else if (o1.nbNode() < o2.nbNode()) {
                     // smaller arity edge is before

@@ -20,20 +20,21 @@ import java.util.HashMap;
  * At the beginning, only table of
  * index 0 is fed with edges 
  * Other index are built at runtime only if needed 
- * Nodes are sorted by Node index
+ * Nodes are sorted by Node index 
+ * Nodes with same node index which are not sameTerm are kept in the list:
+ * s p 01, 1, 1.0, '1'^^xsd:long, 1e1
  *
- * @author Olivier Corby, Wimmics INRIA I3S, 2014
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-@Deprecated
-public class EdgeIndexer 
+public class EdgeManagerIndexer 
         implements Index {
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
-    private static Logger logger = LogManager.getLogger(EdgeIndexer.class);
+    private static Logger logger = LogManager.getLogger(EdgeManagerIndexer.class);
     private boolean byIndex = true;
     int index = 0, other = 1;
     int count = 0;
@@ -47,9 +48,9 @@ public class EdgeIndexer
     Graph graph;
     List<Node> sortedProperties;
     // Property Node -> Edge List 
-    HashMap<Node, EdgeList> table;
+    HashMap<Node, EdgeManager> table;
 
-    EdgeIndexer(Graph g, boolean bi, int n) {
+    EdgeManagerIndexer(Graph g, boolean bi, int n) {
         init(g, bi, n);
         table = new HashMap();
     }
@@ -73,7 +74,7 @@ public class EdgeIndexer
         return table.size();
     }
 
-    void put(Node n, EdgeList l) {
+    void put(Node n, EdgeManager l) {
         table.put(n, l);
     }
 
@@ -81,7 +82,7 @@ public class EdgeIndexer
      * Return edges as they are stored, in internal format
      */
     @Override
-    public EdgeList get(Node n) {
+    public EdgeManager get(Node n) {
         return table.get(n);
     }
     
@@ -241,7 +242,7 @@ public class EdgeIndexer
 
     @Override
     public void clearIndex(Node pred) {
-        EdgeList l = get(pred);
+        EdgeManager l = get(pred);
         if (l != null && l.size() > 0) {
             l.clear();
         }
@@ -282,7 +283,7 @@ public class EdgeIndexer
         }
 
         Entity internal = internal(edge);       
-        EdgeList el = define(edge.getEdge().getEdgeNode());
+        EdgeManager el = define(edge.getEdge().getEdgeNode());
        
         if (isSort(edge)) {
             // edges are sorted, check presence by dichotomy
@@ -317,7 +318,7 @@ public class EdgeIndexer
      */
     @Override
     public void add(Node p, List<Entity> list) {
-        EdgeList l = define(p);
+        EdgeManager l = define(p);
         if (index == 0 || l.size() > 0) {
             l.add(list);
         }
@@ -332,7 +333,7 @@ public class EdgeIndexer
     }
 
 
-    EdgeList getListByLabel(Entity e) {
+    EdgeManager getListByLabel(Entity e) {
         Node pred = graph.getPropertyNode(e.getEdge().getEdgeNode().getLabel());
         if (pred == null) {
             return null;
@@ -347,7 +348,7 @@ public class EdgeIndexer
             // never happens for subject object and graph
             return false;
         }
-        EdgeList list = getListByLabel(edge);
+        EdgeManager list = getListByLabel(edge);
         if (list == null) {
             return false;
         }
@@ -370,7 +371,7 @@ public class EdgeIndexer
 
     @Override
     public void declare(Entity edge, boolean duplicate) {
-        EdgeList list = define(edge.getEdge().getEdgeNode());
+        EdgeManager list = define(edge.getEdge().getEdgeNode());
         if (list.size() > 0) {
             add(edge, duplicate);
         }
@@ -379,10 +380,10 @@ public class EdgeIndexer
     /**
      * Create and store an empty list if needed
      */
-    private EdgeList define(Node predicate) {
-        EdgeList list = get(predicate);
+    private EdgeManager define(Node predicate) {
+        EdgeManager list = get(predicate);
         if (list == null) {
-            list = new EdgeList(graph, predicate, index);
+            list = new EdgeManager(graph, predicate, index);
             setComparator(list);
             put(predicate, list);
         }
@@ -391,9 +392,9 @@ public class EdgeIndexer
     
     /**
      * 
-     * All EdgeList(index) share same Comparator
+     * All EdgeManager(index) share same Comparator
      */       
-    void setComparator(EdgeList el){
+    void setComparator(EdgeManager el){
         if (comp == null){
             // create Comparator that will be shared
             comp = el.getComparator(index);
@@ -422,7 +423,7 @@ public class EdgeIndexer
     public void compact(){
         if (test){
             for (Node pred : getProperties()) {
-                EdgeList el = get(pred);
+                EdgeManager el = get(pred);
                 el.compact();
             }
         }
@@ -437,7 +438,7 @@ public class EdgeIndexer
     }
 
     public void index(Node pred) {
-        EdgeList el = get(pred);
+        EdgeManager el = get(pred);
         el.sort();
     }
 
@@ -460,7 +461,7 @@ public class EdgeIndexer
     }
 
     private void reduce(Node pred) {
-        EdgeList el = get(pred);
+        EdgeManager el = get(pred);
         int rem = el.reduce();
         if (rem > 0) {
             graph.setSize(graph.size() - rem);
@@ -477,7 +478,7 @@ public class EdgeIndexer
      * predicate If not, copy edges from table of index 0 and then sort these
      * edges
      */
-      EdgeList checkGet(Node pred) {
+      EdgeManager checkGet(Node pred) {
         if (index == 0) {
             return get(pred);
         } else {
@@ -490,11 +491,11 @@ public class EdgeIndexer
      * Create the index of property pred on nth argument It is synchronized on
      * pred hence several synGetCheck can occur in parallel on different pred
      */
-    private EdgeList synCheckGet(Node pred) {
+    private EdgeManager synCheckGet(Node pred) {
         synchronized (pred) {
-            EdgeList list = get(pred);
+            EdgeManager list = get(pred);
             if (list != null && list.size() == 0) {
-                EdgeList std = (EdgeList) graph.getIndex().get(pred);
+                EdgeManager std = (EdgeManager) graph.getIndex().get(pred);
                 list.copy(std);
                 list.sort();
             }
@@ -512,13 +513,13 @@ public class EdgeIndexer
 
     @Override
     public Iterable<Entity> getEdges(Node pred, Node node, Node node2) {
-        EdgeList list = checkGet(pred);
+        EdgeManager list = checkGet(pred);
         if (list == null){ 
             return list;
         }
         else if (node == null){
             if (test){
-                return new EdgeIterate(list);
+                return new EdgeManagerIterate(list);
             }
             else {
                 return list;
@@ -532,7 +533,7 @@ public class EdgeIndexer
 
     @Override
     public int size(Node pred) {
-        EdgeList list = get(pred);
+        EdgeManager list = get(pred);
         if (list == null) {
             return 0;
         }
@@ -545,7 +546,7 @@ public class EdgeIndexer
      */
     @Override
     public boolean exist(Node pred, Node n1, Node n2) {
-        EdgeList list = checkGet(pred);
+        EdgeManager list = checkGet(pred);
         if (list == null) {
             return false;
         }
@@ -606,8 +607,8 @@ public class EdgeIndexer
             // never happens for subject object and graph
             return null;
         }
-        //EdgeList list = getListByLabel(edge);
-        EdgeList list = get(pred);
+        //EdgeManager list = getListByLabel(edge);
+        EdgeManager list = get(pred);
         
         if (list == null) {
             return null;
@@ -686,7 +687,7 @@ public class EdgeIndexer
     private void update(Node g1, Node g2, int mode) {
         for (Node pred : getProperties()) {
 
-            EdgeList list = checkGet(pred);
+            EdgeManager list = checkGet(pred);
             if (list == null) {
                 continue;
             }
@@ -711,7 +712,7 @@ public class EdgeIndexer
         }
     }
 
-    private void update(Node g1, Node g2, Node pred, EdgeList list, int n, int mode) {
+    private void update(Node g1, Node g2, Node pred, EdgeManager list, int n, int mode) {
         boolean isBefore = false;
         
         if (g2 != null && nodeCompare(g1, g2) < 0) {

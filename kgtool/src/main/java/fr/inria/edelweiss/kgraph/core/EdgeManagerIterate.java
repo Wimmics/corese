@@ -11,24 +11,23 @@ import java.util.Iterator;
  * buffer is the same object during iteration
  * hence if someone need to record edge, it MUST be copied
  * 
- * @author Olivier Corby, Wimmics INRIA I3S, 2016
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-@Deprecated
-class EdgeIterate implements Iterable<Entity>, Iterator<Entity> {
+class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
 
-    EdgeList list;
+    EdgeManager list;
     int focusNodeIndex;
     int ind, start = 0;
     boolean isList = true;
     EdgeGeneric buffer;
 
-    EdgeIterate(EdgeList l) {
+    EdgeManagerIterate(EdgeManager l) {
         list = l;
         buffer = new EdgeGeneric(list.getPredicate());
     }
 
-    EdgeIterate(EdgeList l, int n) {
+    EdgeManagerIterate(EdgeManager l, int n) {
        this(l);
        start = n;
        focusNodeIndex = getNodeIndex(n);

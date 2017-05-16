@@ -288,7 +288,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     Index createIndex(boolean b, int i) {
-        return new EdgeIndexer(this, b, i);
+        //return new EdgeIndexer(this, b, i);
+        return new EdgeManagerIndexer(this, b, i);
+        
     }
 
     /**
@@ -936,15 +938,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         String sep = System.getProperty("line.separator");
         StringBuffer sb = new StringBuffer();
 
-        if (getIndex() instanceof EdgeIndexer) {
-            EdgeIndexer ie = (EdgeIndexer) getIndex();
-
-            for (Node p : getSortedProperties()) {
+        for (Node p : getSortedProperties()) {
                 if (sb.length() > 0) {
                     sb.append(NL);
                 }
-                EdgeList list = ie.get(p);
-                sb.append(p + " (" + list.size() + ") : ");
+                sb.append(p + " (" + getIndex().size(p) + ") : ");
                 sb.append(sep);
                 int i = 0;
                 for (Entity ent : getEdges(p)) {
@@ -952,9 +950,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                     sb.append(ent);
                     sb.append(sep);
                 }
-            }
         }
-
+        
         return sb.toString();
     }
 

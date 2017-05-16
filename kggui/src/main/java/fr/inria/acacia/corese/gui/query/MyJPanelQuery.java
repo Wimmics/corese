@@ -516,7 +516,7 @@ public final class MyJPanelQuery extends JPanel {
                     } else if (dt.isPointer()) {
                         colmunData[j] = dt.getPointerObject().toString();
                     } 
-                    else if (dt.hasLang()){
+                    else if (dt.isLiteral()){ //dt.hasLang()){
                         colmunData[j] = dt.toString();
                     }
                     else {

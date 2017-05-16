@@ -41,10 +41,7 @@ public interface Node {
 	 * Test if two nodes are the same.
 	 * Used to check that bindings are preserved :
 	 * two occurrences of same query node bound to same target node.
-	 * It is possible to consider here a logical equivalence between nodes
-	 * e.g. 
-	 * a owl:sameAs b
-	 * 1^^xsd:integer same 1^^xsd:float
+         * sameTerm semantics
 	 * 
 	 * @param n
 	 * @return

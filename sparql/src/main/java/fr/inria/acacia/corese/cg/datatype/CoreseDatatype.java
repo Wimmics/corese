@@ -906,11 +906,21 @@ public class CoreseDatatype
     }
     
     @Override
-    // TODO: same number datatypes 
     public boolean sameTerm(IDatatype dt) {
-        if (getCode() == dt.getCode() ) {
-            return equals(dt) && 
+        if (getCode() == dt.getCode()) {
+            if (isNumber()){
+                try {
+                    return compareNumber(dt) == 0;
+                }
+                catch (CoreseDatatypeException e){
+                    // never happens
+                    return false;
+                }
+            }
+            else { 
+                return equals(dt) && 
                    getLabel().equals(dt.getLabel());
+            }
         }
         return false;
     }

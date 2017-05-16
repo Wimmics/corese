@@ -1,6 +1,8 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import java.util.HashMap;
 
 /**
  * Function definition function xt:fun(x) { exp }
@@ -15,11 +17,12 @@ public class Function extends Statement {
     private boolean isPublic = false;
     
     Metadata annot;
-    
-   
+    private HashMap<String, Constant> table;
+       
 
     Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
+        table = new HashMap<>();
     }
 
     @Override
@@ -30,6 +33,18 @@ public class Function extends Statement {
     @Override
     public Expression getBody() {
         return getArg(1);
+    }
+    
+    public Constant getType(Variable var){
+        return getTable().get(var.getLabel());
+    }
+    
+    public IDatatype getDatatype(Variable var){
+        Constant cst = getType(var);
+        if (cst != null){
+            return cst.getDatatypeValue();
+        }
+        return null;
     }
 
     @Override
@@ -163,6 +178,20 @@ public class Function extends Statement {
         @Override
     public void setPublic(boolean isExport) {
         this.isPublic = isExport;
+    }
+
+    /**
+     * @return the table
+     */
+    public HashMap<String, Constant> getTable() {
+        return table;
+    }
+
+    /**
+     * @param table the table to set
+     */
+    public void setTable(HashMap<String, Constant> table) {
+        this.table = table;
     }
 
 }

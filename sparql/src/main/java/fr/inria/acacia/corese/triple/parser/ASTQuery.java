@@ -1078,6 +1078,9 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         Term fun = createFunction(name, el);
         Function def = new Function(fun, exp);
         annotate(def, annot);
+        if (el.getTable() != null){
+            def.setTable(el.getTable());
+        }
         define.defineFunction(def);
         return def;
     }

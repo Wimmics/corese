@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * <p>Title: Corese</p>
@@ -19,6 +20,7 @@ public class ExpressionList extends ArrayList<Expression> {
 	boolean isDistinct = false;
 	String separator;
         Expression eseparator;
+        HashMap<String, Constant> table;
 
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
@@ -56,5 +58,22 @@ public class ExpressionList extends ArrayList<Expression> {
 	public Expression getExpSeparator(){
 		return eseparator;
 	}
+        
+        HashMap<String, Constant> table(){
+            if (table == null){
+                table = new HashMap<>();
+            }
+            return table;
+        }
+        
+        public void defType(Variable var, Constant type){
+            if (type != null){
+                table().put(var.getLabel(), type);
+            }
+        }
+        
+        public HashMap<String, Constant> getTable(){
+            return table;
+        }
 
 }

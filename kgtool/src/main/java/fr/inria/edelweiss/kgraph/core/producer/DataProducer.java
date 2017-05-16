@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
+import fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
 import java.util.ArrayList;
@@ -206,7 +206,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
 
     boolean same(Node n1, Node n2) {
-        return n1.getIndex() == n2.getIndex();
+        return n1.getIndex() == n2.getIndex() && n1.same(n2);
     }
 
     /**
@@ -242,7 +242,10 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return null;
     }
       
-    // eliminate successive duplicates
+    /**
+     * Eliminate successive duplicates
+     * 
+     **/
     boolean different(Edge last, Edge edge) {       
         if (edge.getEdgeNode() == null || ! same(last.getEdgeNode(), edge.getEdgeNode())) {
             // different properties: ok
@@ -261,7 +264,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
         
     void record(Entity ent) {
-        if (EdgeIndexer.test){
+        if (EdgeManagerIndexer.test){
             record2(ent);
         }
         else {

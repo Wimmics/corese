@@ -57,7 +57,7 @@ public class ProxyImpl implements Proxy, ExprType {
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
     
     static final String UTF8 = "UTF-8";
-    public static final String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String RDFNS = NSManager.RDF; //"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
     public static int count = 0;
     Proxy plugin;

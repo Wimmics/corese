@@ -30,7 +30,7 @@ import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
 import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.EdgeIndexer;
+import fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgraph.core.Index;
@@ -995,7 +995,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     @Override
     public Entity copy(Entity ent) {
-        if (EdgeIndexer.test){
+        if (EdgeManagerIndexer.test){
             return graph.getEdgeFactory().copy(ent);
         }
         return ent;

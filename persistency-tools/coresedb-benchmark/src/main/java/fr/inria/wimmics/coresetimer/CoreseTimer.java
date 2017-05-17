@@ -10,6 +10,8 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -113,20 +115,18 @@ public class CoreseTimer {
 		for (int i = 0; i < nbCycles; i++) {
 			LOGGER.log(Level.INFO, "iteration #{0}", i);
 			System.gc();
-			final long startMemory = getMemoryUsage();
 			final long startTime = System.currentTimeMillis();
 			LOGGER.log(Level.INFO, "before query");
 			adapter.execQuery(query);
 			LOGGER.log(Level.INFO, "after query");
 			final long endTime = System.currentTimeMillis();
-			final long endMemory = getMemoryUsage();
 			long delta = endTime - startTime;
-			long deltaMemory = endMemory - startMemory;
+			long memoryUsage = getMemoryUsage();
 			LOGGER.info(String.format("elapsed time = %d ms", delta));
-			LOGGER.info(String.format("used memory = %d ms", deltaMemory));
+			LOGGER.info(String.format("used memory = %d bytes", memoryUsage));
 			if (i >= test.getWarmupCycles()) {
 				stats.addValue(delta);
-				statsMemory.addValue(deltaMemory);
+				statsMemory.addValue(memoryUsage);
 			}
 		}
 		adapter.saveResults(test.getResultFileName(mode));
@@ -144,8 +144,30 @@ public class CoreseTimer {
 		return stats;
 	}
 
+	public DescriptiveStatistics getStatsMemory() {
+		return statsMemory;
+	}
+
 	private long getMemoryUsage() {
-		Runtime runtime = Runtime.getRuntime();
-		return runtime.totalMemory() - runtime.freeMemory();
+		long before = getGcCount();
+		System.gc();
+		while (getGcCount() == before);
+		return getCurrentlyUsedMemory();
+	}
+
+	private long getGcCount() {
+		long sum = 0;
+		for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
+			long count = b.getCollectionCount();
+			if (count != -1) {
+				sum += count;
+			}
+		}
+		return sum;
+	}
+
+	private long getCurrentlyUsedMemory() {
+		return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
+			+ ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
 	}
 }

@@ -365,7 +365,16 @@ public class Main {
 			Text statsDbText = doc.createTextNode(timerDb.getStats().toString());
 			statsDb.appendChild(statsDbText);
 
-			Element[] subElements2 = {result, statsMemory, statsDb};
+			// Writing the memory consumption statistics
+			Element statsMemoryCoreseMem = doc.createElement("StatsMemoryConsumption-corese-memory");
+			Text statsMemoryCoreseMemText = doc.createTextNode(timerMemory.getStatsMemory().toString());
+			statsMemoryCoreseMem.appendChild(statsMemoryCoreseMemText);
+
+			Element statsMermoryCoreseDb = doc.createElement("StatsMemoryConsumption-corese-memory");
+			Text statsMermoryCoreseDbText = doc.createTextNode(timerDb.getStatsMemory().toString());
+			statsMermoryCoreseDb.appendChild(statsMermoryCoreseDbText);
+
+			Element[] subElements2 = {result, statsMemory, statsDb, statsMemoryCoreseMem, statsMermoryCoreseDb};
 			for (Element e : subElements2) {
 				outputs.appendChild(e);
 			}

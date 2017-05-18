@@ -168,6 +168,258 @@ public class TestQuery1 {
     }
     
     @Test
+    public void testDatatypeValue9() throws EngineException {
+        String init =
+                "insert data {"
+                + "graph us:g1 { <Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean, 'test', 'value', _:b, <uri>, _:b, <uri> . }"
+                
+                + "graph us:g2 { <Jack> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte, _:b, <uri>}" 
+                + "} ";
+        
+        String q =
+                "select * (kg:index(?v1) as ?i) where {"
+                + "graph ?g1 {?x ?p ?v1} "
+                + "graph ?g2 {?y ?p ?v2} "
+                + "filter sameTerm(?v1, ?v2)"
+                + "filter (?g1 < ?g2)"
+                + "}"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(5, map.size());
+ }
+    
+    
+    @Test
+    public void testDatatypeValue8() throws EngineException {
+        String init =
+                "insert data {"
+                + "graph us:g1 { <Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean, 'test', 'value', _:b, <uri>, _:b, <uri> . }"
+                
+                + "graph us:g2 { <Jack> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte, _:b, <uri>}" 
+                + "} ";
+        
+        String q =
+                "select * (kg:index(?v) as ?i) where {"
+                + "graph ?g1 {?x ?p ?v} "
+                + "graph ?g2 {?y ?p ?v} "
+                + "filter (?g1 < ?g2)"
+                + "}"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(31, map.size());
+ }
+    
+    
+     @Test
+    public void testDatatypeValue7() throws EngineException {
+        String init =
+                "insert data {"
+                + "graph us:g1 { <Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean . }"
+                
+                + "graph us:g2 { <Jack> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte}" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "?x ?p ?v"
+                + "}"
+                + "order by ?x ?v "; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(17, map.size());
+ }
+    
+    @Test
+    public void testDatatypeValue6() throws EngineException {
+        String init =
+                "insert data {"
+                + "graph us:g1 { <Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean . }"
+                
+                + "graph us:g2 { <Jack> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte}" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "graph ?g {"
+                + "?x ?p ?v"
+                + "} "
+                + "}"
+                + "order by ?x ?v "; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(20, map.size());
+ }
+    
+    
+    @Test
+    public void testDatatypeValue5() throws EngineException {
+        String init =
+                "insert data {"
+                + "<Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean ."
+                
+                + " <Jim> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "?x ?p ?v filter (?v = 1)"
+                + "}"
+                + "order by ?x ?v "; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(15, map.size());
+ }
+    
+    @Test
+    public void testDatatypeValue4() throws EngineException {
+        String init =
+                "insert data {"
+                + "<Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean ."
+                
+                + " <Jim> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "?x ?p ?v "
+                + "}"
+                + "order by ?x ?v "
+                + "values ?v { 1 }"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(10, map.size());
+ }
+    
+    
+    @Test
+    public void testDatatypeValue3() throws EngineException {
+        String init =
+                "insert data {"
+                + "<Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean ."
+                
+                + " <Jim> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "?x ?p 1"
+                + "}"
+                + "order by ?x"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(10, map.size());
+ }
+    
+    
+    @Test
+    public void testDatatypeValue1() throws EngineException {
+        String init =
+                "insert data {"
+                + "<Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, '1.0'^^xsd:float,"
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean, false, '01'^^xsd:double, "
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + " ?x ?p ?v "
+                + "}"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(17, map.size());
+ }
+    
+    @Test
+    public void testDatatypeValue2() throws EngineException {
+        String init =
+                "insert data {"
+                + "<Jack> "
+                + "rdf:value  "
+               + " 1,  1.0,  '1'^^xsd:long, 1e0, '1'^^xsd:double, '1'^^xsd:float, "
+                + "true, '1'^^xsd:boolean, false,   01, "
+                + "'1'^^xsd:boolean, '0'^^xsd:boolean ."
+                
+                + " <Jim> rdf:value false, '01'^^xsd:double, '1.0'^^xsd:float,"
+                + "'01'^^xsd:integer, '1'^^xsd:integer"
+                + ", '1'^^xsd:short, '1'^^xsd:byte , '1'^^xsd:int, '01'^^xsd:byte, '1'^^xsd:byte" 
+                + "} ";
+        
+        String q =
+                "select *  where {"
+                + "?x ?p ?v "
+                + "?y ?p ?v "
+                + "filter (?x != ?y)"
+                + "}"; 
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        assertEquals(58, map.size());
+ }
+    
+    @Test
     public void testDatatype1() throws EngineException {
         String init =
                 "insert data {"
@@ -3169,11 +3421,11 @@ public class TestQuery1 {
 
         Mappings map = exec.query(t1);
 
-        assertEquals(7573, map.getTemplateResult().getLabel().length());
+        assertEquals(7703, map.getTemplateResult().getLabel().length());
 
         map = exec.query(t2);
 
-        assertEquals(9304, map.getTemplateResult().getLabel().length());
+        assertEquals(9434, map.getTemplateResult().getLabel().length());
 
     }
 

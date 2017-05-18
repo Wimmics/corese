@@ -8,6 +8,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.cg.datatype.XSD;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -1238,7 +1239,8 @@ public class Transformer  {
             String uri = nsm.toPrefixURI(dt.getLabel(), ! force);
             dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {
-            if (dt.getCode() == IDatatype.INTEGER || dt.getCode() == IDatatype.BOOLEAN) {
+            if ((dt.getCode() == IDatatype.INTEGER && dt.getDatatypeURI().equals(XSD.xsdinteger)) 
+             || (dt.getCode() == IDatatype.BOOLEAN && (dt.getLabel().equals("true") || dt.getLabel().equals("false")))) {
                 // print as is
             } else {
                 // add quotes around string, add lang tag if any

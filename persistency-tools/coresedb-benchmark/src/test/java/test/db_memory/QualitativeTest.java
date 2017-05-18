@@ -11,15 +11,18 @@ import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
-import static fr.inria.wimmics.coresetimer.Main.TestSuite.DatabaseCreation.IF_NOT_EXIST;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
 import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
@@ -59,13 +62,13 @@ public class QualitativeTest {
 	public Object[][] getResults() throws Exception {
 		TestSuite suite = TestSuite.build("base_tests").
 			setDriver(RdfToGraph.DbDriver.NEO4J).
-			setWarmupCycles(2).
-			setMeasuredCycles(5).
+			setWarmupCycles(0).
+			setMeasuredCycles(1).
 			setInput("human_2007_04_17.rdf", RDFFormat.RDFXML).
 			setInputDb("/tmp/human_db").
-			setInputRoot(inputRoot).
+			setInputRoot("./data").
 			setOutputRoot(outputRoot);
-		suite.createDb(IF_NOT_EXIST);
+		suite.createDb(TestSuite.DatabaseCreation.ALWAYS);
 		TestDescription[][] tests = {
 			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
 			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
@@ -113,21 +116,18 @@ public class QualitativeTest {
 			"btc-2010-chunk-000.nq.gz:3162",
 			"btc-2010-chunk-000.nq.gz:10000",
 			"btc-2010-chunk-000.nq.gz:31622",
-			"btc-2010-chunk-000.nq.gz:100000",
-			"btc-2010-chunk-000.nq.gz:316227",
-			"btc-2010-chunk-000.nq.gz:1000000",
-			"btc-2010-chunk-000.nq.gz:3162277",
-			"btc-2010-chunk-000.nq.gz:10000000", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+			"btc-2010-chunk-000.nq.gz:100000", //			"btc-2010-chunk-000.nq.gz:316227",
+		//			"btc-2010-chunk-000.nq.gz:1000000", //			"btc-2010-chunk-000.nq.gz:3162277",
+		//			"btc-2010-chunk-000.nq.gz:10000000", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
 		//                      "btc-2010-chunk-00(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3)(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"   
 		};
-		String[] requests = {
-			"select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c",
-			"select ?x ?y where { ?x rdf:type ?y}",
-			"select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}",
-			"select ?x ?p ?y where { ?x ?p ?y} order by ?x ?p ?y"
-		};
+		ArrayList<String> requests = new ArrayList<String>();
+		requests.add("select ?x ?y where { ?x rdf:type ?y}");
+		requests.add("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}");
+		requests.addAll(makeAllRequests("select ?x ?p ?y where { ?x ?p ?y }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document>"));
+		requests.addAll(makeAllRequests("select ?g ?x ?p ?y where { graph ?g { ?x ?p ?y } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
 
 		return new Iterator<Object[]>() {
 			boolean started = false;
@@ -137,11 +137,11 @@ public class QualitativeTest {
 
 			@Override
 			public boolean hasNext() {
-				if (inputFiles.length == 0 || requests.length == 0) {
+				if (inputFiles.length == 0 || requests.size() == 0) {
 					return false;
 				}
 				if (started) {
-					return !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.length - 1);
+					return !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.size() - 1);
 				} else {
 					return true;
 				}
@@ -151,7 +151,7 @@ public class QualitativeTest {
 			public Object[] next() {
 				if (started) {
 					cptRequests++;
-					if (cptRequests >= requests.length) {
+					if (cptRequests >= requests.size()) {
 						cptRequests = 0;
 						cptInputFiles++;
 					}
@@ -163,7 +163,7 @@ public class QualitativeTest {
 				}
 
 				String inputFile = inputFiles[cptInputFiles];
-				String request = requests[cptRequests];
+				String request = requests.get(cptRequests);
 
 				if (cptRequests == 0) {
 					currentSuite = TestSuite.build("test_" + inputFile).
@@ -175,7 +175,7 @@ public class QualitativeTest {
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					try {
-						currentSuite.createDb(TestSuite.DatabaseCreation.ALWAYS);
+						currentSuite.createDb(TestSuite.DatabaseCreation.IF_NOT_EXIST);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						throw new RuntimeException(ex);
@@ -237,6 +237,54 @@ public class QualitativeTest {
 		} catch (ConfigurationException ex) {
 			java.util.logging.Logger.getLogger(QualitativeTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	/**
+	 * Build all the possible requests by setting the values. By example:
+	 * sparqlRequest = "select ?x ?p ?y { where ?x ?p ?y}" and data = "A B
+	 * C" will return a list containing the requests "select ?p ?y where {A
+	 * ?p ?y}", "select ?x ?y where {?x B ?y}". The variables ?x ?p ?y are
+	 * given the values of A, B, C respectively, for all the combinations
+	 * except the trivial ones (ie ?x ?p ?y not set or all set to A, B and
+	 * C).
+	 *
+	 * @param sparqlRequest
+	 * @param data
+	 * @return
+	 */
+	private ArrayList<String> makeAllRequests(String sparqlRequest, String data) {
+		String[] dataValues = data.split(" ");
+		int nbValues = dataValues.length;
+		Pattern pattern = Pattern.compile("\\?\\w+");
+		ArrayList<String> sparqlVariables = new ArrayList<>();
+		HashMap<String, Integer> sparqlVariablesPosition = new HashMap<>();
+		Matcher matcher = pattern.matcher(sparqlRequest);
+		int pos = 0;
+		while (pos < sparqlRequest.length() && matcher.find(pos)) {
+			String newMatch = matcher.group();
+			if (!sparqlVariables.contains(newMatch)) {
+				sparqlVariablesPosition.put(newMatch, sparqlVariables.size());
+				sparqlVariables.add(newMatch);
+			}
+			pos = matcher.end() + 1;
+		}
+		assertTrue(dataValues.length == sparqlVariables.size(), "The number of values and variables in the SPARQL request should be equal.");
+		ArrayList<String> result = new ArrayList<>();
+		for (int i = 1; i < (1 << nbValues); i++) {
+			int current = i;
+			int posInCurrent = 0;
+			while (current != 0) {
+				if (current % 2 == 1) { // replace all occurences of "posInCurrent"-th variable in sparqlRequest by "posInCurrent"-th value in data, if the posInCurrent bit is set in "current" value.
+					String currentVariable = sparqlVariables.get(posInCurrent);
+					String newRequest = sparqlRequest.replaceFirst("\\"+currentVariable, "").replace(currentVariable, dataValues[posInCurrent]);
+					result.add(newRequest);
+					logger.info("Adding: "+ newRequest);
+				}
+				posInCurrent++;
+				current /= 2;
+			}
+		}
+		return result;
 	}
 
 }

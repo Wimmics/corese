@@ -389,6 +389,7 @@ public class Main {
 			DOMSource source = new DOMSource(doc);
 			StreamResult streamResult = new StreamResult(new File(test.getOutputPath()));
 			transformer.transform(source, streamResult);
+			logger.info("Results were written in:", test.getOutputPath());
 		} catch (ParserConfigurationException | TransformerException ex) {
 			logger.error("Error when writing results:", ex.getMessage());
 			ex.printStackTrace();

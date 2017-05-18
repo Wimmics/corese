@@ -1298,7 +1298,7 @@ query =          "select distinct ?x  result 10000  where { ?x ?p ?l " +
 	 
 	 suite.addTest(new CoreseTest2(true, "testQuery", corese,
 			 "select *  where { ?x ?p ?val   " + 
-			 " filter ( ?val = 2  ) } ", 5));
+			 " filter ( ?val = 2  ) } ", 7));
 	 
 	 suite.addTest(new CoreseTest2(true, "testQuery", corese,
 "select distinct ?t where { ?x c:FirstName ?fn  ?x c:FamilyName ?ln  ?y c:FirstName ?fn filter (?x != ?y) " +
@@ -1500,7 +1500,7 @@ if (true){ // short queries
 									
 			suite.addTest(new CoreseTest2(true, "testQuery", corese,
 					"select * where { ?x c:Designation ?val  " +
-					"filter (?x = <http://www.inria.fr/> && ?val != <http://www.inria.fr> )}", 6));
+					"filter (?x = <http://www.inria.fr/> && ?val != <http://www.inria.fr> )}", 7));
 			
 			
 			
@@ -2417,20 +2417,20 @@ query = "select   distinct ?t1 ?t2     where {"+
       "select ?x where {?x c:IsInterestedBy ?topic " +
       "optional{?x c:isMemberOf ?org  optional{?org c:Designation ?name} " +
       "filter bound(?name) }} limit 1000",
-      	156));
+      	158));
 
           suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select ?x  where {?x c:IsInterestedBy ?topic " +
         "optional{?x c:isMemberOf ?org  optional{?org c:Designation ?name} " +
         "filter (! (! bound(?name)) )} " +
         "} limit 1000",
-        156));
+        158));
 
 
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
       "select ?x   where {?x c:IsInterestedBy ?topic " +
       "optional{?x c:isMemberOf ?org ?org c:Designation ?name}} limit 1000",
-      156));
+      158));
 
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select ?x  where {?x c:IsInterestedBy ?topic " +
@@ -3021,7 +3021,7 @@ query = "select   distinct ?t1 ?t2     where {"+
         "filter (?i = ?i - ?i + ?i) }", 4));
         
         suite.addTest(new CoreseTest2(true, "testQuery", corese, 
-        "select  where { ?y ?p ?x  filter (?x = '2'^^xsd:integer) } group by ?x ",3));
+        "select  where { ?y ?p ?x  filter (?x = '2'^^xsd:integer) } group by ?x ",4));
  
         suite.addTest(new CoreseTest2(true, "testQuery", corese,
        "select distinct sorted where { " +
@@ -3125,11 +3125,11 @@ query = "select   distinct ?t1 ?t2     where {"+
 
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
       "select where {?doc c:Designation '2'^^xsd:long " + 
-      " ?doc c:Designation '2'^^xsd:integer } ", 1));
+      " ?doc c:Designation '2'^^xsd:integer } ", 4));
       
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
       "select where {?doc c:Designation ?v1   ?doc c:Designation ?v2  " +
-      "filter(?v1 = '2'^^xsd:integer && ?v1 >= ?v2)}", 1));
+      "filter(?v1 = '2'^^xsd:integer && ?v1 >= ?v2)}", 4));
 
       suite.addTest(new CoreseTest2(true, "testQuery", corese,
         "select debug distinct ?doc where {?doc rdf:type c:Document ?doc c:Title ?title  " +

@@ -935,6 +935,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public String display() {
+        return display(0);
+    }
+        
+        
+    public String display(int n) {
         String sep = System.getProperty("line.separator");
         StringBuffer sb = new StringBuffer();
 
@@ -945,15 +950,16 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                 sb.append(p + " (" + getIndex().size(p) + ") : ");
                 sb.append(sep);
                 int i = 0;
-                for (Entity ent : getEdges(p)) {
+                for (Entity ent : (n == 0) ? getEdges(p) : getIndex(n).getEdges()) {
                     sb.append((i<10)?"0":"").append(i++).append(" ");
                     sb.append(ent);
                     sb.append(sep);
                 }
         }
-        
         return sb.toString();
     }
+    
+    
 
     public Entailment getProxy() {
         if (proxy == null) {

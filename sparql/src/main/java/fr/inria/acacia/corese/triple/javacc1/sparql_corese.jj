@@ -2517,16 +2517,12 @@ Term Set (Exp stack) : { Expression exp ; Variable var;}
 
 
 Expression LetDef(Exp stack) : 
-{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub;}
+{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub; Constant type = null; }
 {
   
-  ( var = Var() 
-    | 
-    	       
-    <LPAREN> { el = new ExpressionList();  }
-	var = Var()  { el.add(var); } 
-	( <COMMA> var = Var()  { el.add(var); } ) *					
-    <RPAREN>	    					     
+  ( (type = IRIrefConst())? var = Var() 
+    |    	       
+    el = FunArgList()
   )
   <EQ>
   (  
@@ -2535,7 +2531,7 @@ Expression LetDef(Exp stack) :
     exp = LetForExp()
   )
 			
-   { return (el == null) ? astq.defLet(var, exp) : astq.defLet(el, exp);  }
+   { return (el == null) ? astq.defLet(var, type, exp) : astq.defLet(el, exp);  }
  
 }
 
@@ -2578,7 +2574,7 @@ Function Function(Metadata la) :
 {
   <FUNCTION> cst = IRIrefConst() 
   { stack = BasicGraphPattern.create(); }
-  v = FunArgList(stack)
+  v = FunArgList()
   body = Body(stack)
 
   { 
@@ -2588,7 +2584,7 @@ Function Function(Metadata la) :
 }
 
 
-ExpressionList FunArgList(Exp stack) : { ExpressionList list;  Variable var; Constant type; }
+ExpressionList FunArgList() : { ExpressionList list;  Variable var; Constant type; }
 {
   { list = new ExpressionList(); }  
   (        	 

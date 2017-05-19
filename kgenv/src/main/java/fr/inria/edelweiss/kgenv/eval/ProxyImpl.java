@@ -1565,7 +1565,6 @@ public class ProxyImpl implements Proxy, ExprType {
     public IDatatype abs(IDatatype dt) {
         switch (dt.getCode()){
             case IDatatype.INTEGER: return DatatypeMap.newInteger(Math.abs(dt.longValue()));
-            case IDatatype.LONG:    return getValue(Math.abs(dt.longValue()));
             default:                return getValue(Math.abs(dt.doubleValue()));
         }
     }

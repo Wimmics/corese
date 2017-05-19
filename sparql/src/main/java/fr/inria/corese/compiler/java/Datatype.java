@@ -37,8 +37,6 @@ public class Datatype {
                 return resource(dt);
             case IDatatype.INTEGER:
                 return genericInteger(dt);
-            case IDatatype.LONG:
-                return newInstance(dt.longValue());
             case IDatatype.DOUBLE:
                 return newInstance(dt.doubleValue());
             case IDatatype.DECIMAL:

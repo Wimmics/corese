@@ -3,7 +3,7 @@ reset
 set terminal pdf
 set output "<OUTPUT_FILE>"
 
-set title "<TITLE>"
+set title "<TITLE>" font "sans, 8"
 set key left top
 set xlabel 'Sample size [#edges]'
 set logscale y 10

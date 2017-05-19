@@ -33,9 +33,9 @@ import org.xml.sax.SAXException;
  * @author edemairy
  */
 public class GnuplotDrawer {
-	
+
 	private static Logger logger = Logger.getLogger(GnuplotDrawer.class.getName());
-	
+
 	public enum ScriptVariables {
 		DATA_FILENAME,
 		TITLE,
@@ -89,7 +89,11 @@ public class GnuplotDrawer {
 				@Override
 				public boolean accept(File dir, String name) {
 					boolean result = name.matches(finalFilename);
-					logger.log(Level.INFO, "{0} file {1}", new Object[]{result ? "accepting" : "refusing", name});
+					if (result) {
+						logger.log(Level.INFO, "accepting file {0}", name);
+					} else {
+						logger.log(Level.FINEST, "refusing file {0}", name);
+					}
 					return result;
 				}
 			});
@@ -103,19 +107,30 @@ public class GnuplotDrawer {
 		final DocumentBuilder builder = factory.newDocumentBuilder();
 		Map<Long, Long> dbCoords = new TreeMap<Long, Long>();
 		Map<Long, Long> memoryCoords = new TreeMap<Long, Long>();
+		String request = "";
 		for (File currentFile : files) {
 			logger.log(Level.INFO, "processing file {0}", currentFile.getCanonicalFile());
 			Document document = builder.parse(currentFile);
+			NodeList dbStatsList = document.getElementsByTagName("Request");
+			assert (dbStatsList.getLength() == 1);
+			String currentRequest = dbStatsList.item(0).getTextContent();
+			if (request.equals("")) {
+				request = currentRequest;
+			} else {
+				if (!request.equals(currentRequest)) {
+					logger.log(Level.SEVERE, "All the files do not contain the same requests.");
+					System.exit(-1);
+				}
+			}
+
 			long size = guessSize(document);
 			logger.log(Level.INFO, "guessed size = {0}", size);
-			
-			NodeList memoryStats = document.getElementsByTagName("StatsMemory");
-			long memoryMedian = extractMedian(memoryStats);
+
+			long memoryMedian = readMedian(document, "StatsMemory");
 			logger.log(Level.INFO, "memory median = {0}", memoryMedian);
 			memoryCoords.put(size, memoryMedian);
-			
-			NodeList dbStats = document.getElementsByTagName("StatsDb");
-			long dbMedian = extractMedian(dbStats);
+
+			long dbMedian = readMedian(document, "StatsDb");
 			logger.log(Level.INFO, "db median = {0}", dbMedian);
 			dbCoords.put(size, dbMedian);
 		}
@@ -142,7 +157,7 @@ public class GnuplotDrawer {
 		// Execute gnuplot to generate the .pdf
 		Map<String, String> scriptVariables = new HashMap<>();
 		scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), result.getAbsolutePath());
-		String title = String.format("Logarithmic graph of time duration by sample size\\\\n%s", getGitVersion(repoPath));
+		String title = String.format("Logarithmic graph of time duration by sample size / %s\\\\n%s", request, getGitVersion(repoPath));
 		scriptVariables.put(ScriptVariables.TITLE.name(), title);
 		scriptVariables.put(ScriptVariables.OUTPUT_FILE.name(), outputPdf);
 		scriptVariables.put(ScriptVariables.TITLE_SET1.name(), "memory");
@@ -170,7 +185,7 @@ public class GnuplotDrawer {
 		oreader.lines().forEachOrdered(System.out::println);
 		ereader.lines().forEachOrdered(System.err::println);
 	}
-	
+
 	private static int extractMedian(NodeList node) {
 		Pattern medianExtract = Pattern.compile(".*median: (\\d+)\\.\\d+.*", Pattern.DOTALL);
 		String textStat = node.item(0).getTextContent();
@@ -182,7 +197,7 @@ public class GnuplotDrawer {
 			throw new IllegalArgumentException("the node provided does not contain any median");
 		}
 	}
-	
+
 	private static long guessSize(Document document) {
 		long size;
 		String dbName = document.getElementsByTagName("DbPath").item(0).getTextContent();
@@ -209,11 +224,22 @@ public class GnuplotDrawer {
 		}
 		return size;
 	}
-	
+
 	private static String getGitVersion(String path) throws IOException {
 		Process p = new ProcessBuilder("git", "log", "-1").start();
 		BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String result = output.lines().filter(s -> s.contains("Date") || s.contains("commit")).collect(Collectors.joining("\\\\n"));
+		String result = output.lines().filter(s -> s.contains("Date") || s.contains("commit")).collect(Collectors.joining(" / "));
 		return result;
+	}
+
+	private static long readMedian(Document document, String xmlNodeName) {
+		NodeList dbStats = document.getElementsByTagName(xmlNodeName);
+		long median;
+		if (dbStats.getLength() == 0) {
+			median = -1;
+		} else {
+			median = extractMedian(dbStats);
+		}
+		return median;
 	}
 }

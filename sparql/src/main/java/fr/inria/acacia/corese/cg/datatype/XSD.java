@@ -9,7 +9,6 @@ import fr.inria.acacia.corese.triple.parser.NSManager;
 public interface XSD {
 
     static final String XSD = NSManager.XSD;
-    
     static final String xsdboolean = XSD + "boolean";
     static final String xsdinteger = XSD + "integer";
     static final String xsdlong = XSD + "long";
@@ -27,4 +26,11 @@ public interface XSD {
     static final String xsdunsignedInt = XSD + "unsignedInt";
     static final String xsdunsignedShort = XSD + "unsignedShort";
     static final String xsdunsignedByte = XSD + "unsignedByte";
+    static final String xsdduration = XSD + "duration";
+    static final String xsddaytimeduration = XSD + "dayTimeDuration";
+    static final String xsddate = XSD + "date";
+    static final String xsddateTime = XSD + "dateTime";
+    static final String xsdday = XSD + "gDay";
+    static final String xsdmonth = XSD + "gMonth";
+    static final String xsdyear = XSD + "gYear";
 }

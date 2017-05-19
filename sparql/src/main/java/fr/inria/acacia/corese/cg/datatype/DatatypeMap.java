@@ -180,8 +180,10 @@ public class DatatypeMap implements Cst, RDF {
         put(xsdfloat,   jTypeFloat, xsdfloat);
         put(xsddecimal, jTypeDecimal, xsddecimal);
         put(xsdinteger, jTypeInteger, intSpace);
-        put(xsdlong,    jTypeLong, intSpace);
+        
+        //put(xsdlong,    jTypeLong, intSpace);
 
+        put(xsdlong,                genericIntJType, intSpace);
         put(xsdshort,               genericIntJType, intSpace);
         put(xsdint,                 genericIntJType, intSpace);
         put(xsdbyte,                genericIntJType, intSpace);
@@ -233,13 +235,13 @@ public class DatatypeMap implements Cst, RDF {
 
     public void init2() {
 
-        define(RDFSLITERAL, IDatatype.LITERAL);
-        define(rdflangString, IDatatype.LITERAL);
-        define(XMLLITERAL, IDatatype.XMLLITERAL);
-        define(xsdboolean, IDatatype.BOOLEAN);
-        define(xsdanyURI, IDatatype.URI);
-        define(xsdstring, IDatatype.STRING);
-        define(RDFSRESOURCE, IDatatype.URI);
+        define(RDFSLITERAL,     IDatatype.LITERAL);
+        define(rdflangString,   IDatatype.LITERAL);
+        define(XMLLITERAL,      IDatatype.XMLLITERAL);
+        define(xsdboolean,      IDatatype.BOOLEAN);
+        define(xsdanyURI,       IDatatype.URI);
+        define(xsdstring,       IDatatype.STRING);
+        define(RDFSRESOURCE,    IDatatype.URI);
 
         defineString(xsdnormalizedString);
         defineString(xsdtoken);
@@ -252,8 +254,8 @@ public class DatatypeMap implements Cst, RDF {
         define(xsdfloat,    IDatatype.FLOAT);
         define(xsddecimal,  IDatatype.DECIMAL);
         define(xsdinteger,  IDatatype.INTEGER);
-        define(xsdlong,     IDatatype.LONG);
 
+        defineInteger(xsdlong);
         defineInteger(xsdshort);
         defineInteger(xsdint);
         defineInteger(xsdbyte);
@@ -266,12 +268,12 @@ public class DatatypeMap implements Cst, RDF {
         defineInteger(xsdunsignedShort);
         defineInteger(xsdunsignedByte);
 
-        define(xsddate, IDatatype.DATE); 
+        define(xsddate,     IDatatype.DATE); 
         define(xsddateTime, IDatatype.DATETIME); 
 
-        define(xsdday, IDatatype.DAY); 
+        define(xsdday,   IDatatype.DAY); 
         define(xsdmonth, IDatatype.MONTH); 
-        define(xsdyear, IDatatype.YEAR); 
+        define(xsdyear,  IDatatype.YEAR); 
 
         define(xsddaytimeduration, IDatatype.DURATION); 
 
@@ -279,7 +281,6 @@ public class DatatypeMap implements Cst, RDF {
 
     static boolean isNumber(String name) {
         switch (getCode(name)){
-            case IDatatype.LONG:
             case IDatatype.INTEGER:
             case IDatatype.DOUBLE:
             case IDatatype.FLOAT:
@@ -287,9 +288,6 @@ public class DatatypeMap implements Cst, RDF {
             case IDatatype.GENERIC_INTEGER: return true;
             default: return false;
         }
-//        return name.equals(xsdlong) || name.equals(xsdinteger) || name.equals(xsdint)
-//                || name.equals(xsddouble)
-//                || name.equals(xsdfloat) || name.equals(xsddecimal);
     }
 
     /**
@@ -347,7 +345,6 @@ public class DatatypeMap implements Cst, RDF {
 
     public static IDatatype newInstance(double result, String datatype) {
         switch (getCode(datatype)){
-            case IDatatype.LONG:    return newInstance((long) result);
             case IDatatype.INTEGER: return newInstance((int) result);
             case IDatatype.FLOAT:   return new CoreseFloat(result);
             case IDatatype.DECIMAL: return new CoreseDecimal(result);
@@ -365,7 +362,7 @@ public class DatatypeMap implements Cst, RDF {
     }
     
     public static IDatatype newInstance(long result) {
-        return new CoreseLong(result);
+        return getValue(result);
     }
     
      /**
@@ -373,7 +370,7 @@ public class DatatypeMap implements Cst, RDF {
      */
     
     public static IDatatype newLong(long result) {
-        return new CoreseLong(result);
+        return new CoreseGenericInteger(result);
     }
    
     public static IDatatype newInteger(int result) {
@@ -517,28 +514,6 @@ public class DatatypeMap implements Cst, RDF {
         }
     }
     
-//    public static IDatatype createLiteral2(String label) {
-//        IDatatype dt = null;
-//        try {
-//            dt = createLiteralWE(label);
-//        } catch (CoreseDatatypeException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return dt;
-//    }
-//
-//    public static IDatatype createLiteralWE(String label)
-//            throws CoreseDatatypeException {
-//        String datatype = RDFSLITERAL;
-//        if (literalAsString) {
-//            datatype = xsdstring;
-//        }
-//        String JavaType = dm.getJType(datatype);
-//        IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, "");
-//        return dt;
-//    }
-
     public static IDatatype createObject(String name) {
         return createLiteral(name, XMLLITERAL, null);
     }
@@ -671,9 +646,6 @@ public class DatatypeMap implements Cst, RDF {
         return new CoreseBlankNode(BLANK + COUNT++);
     }
 
-//	public  String undefType(){
-//		return jTypeUndef;
-//	}
     /**
      * *****************************
      *
@@ -703,7 +675,7 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     public static boolean isLong(IDatatype dt) {
-        return dt.getCode() == IDatatype.LONG;
+        return dt.getCode() == IDatatype.INTEGER && dt.getDatatypeURI().equals(fr.inria.acacia.corese.cg.datatype.XSD.xsdlong);
     }
 
     public static boolean isFloat(IDatatype dt) {

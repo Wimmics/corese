@@ -20,7 +20,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     static final int code = UNDEF;
     static final String FUTURE = "Future";
     
-    CoreseURI datatype=null ;
+    IDatatype datatype=null ;
     private Object object;
     private boolean isFuture = false;
     static final CoreseUndefLiteral ERROR, UNBOUND;

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeInteger;
+import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeGenericInteger;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -42,8 +43,8 @@ public class CoreseDatatype
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
     static final CoreseDatatypeException failure = new CoreseDatatypeException("Datatype Exception, statically created");
-    static final Hashtable<String, CoreseString> lang2dataLang = new Hashtable<String, CoreseString>(); // 'en' -> CoreseString('en')
-    static final Hashtable<String, CoreseURI> hdt = new Hashtable<String, CoreseURI>(); // datatype name -> CoreseURI datatype
+    static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>(); // 'en' -> CoreseString('en')
+    static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); // datatype name -> CoreseURI datatype
     static final DatatypeMap dm = DatatypeMap.create();
     static final NSManager nsm = NSManager.create();
     static final int LESSER = -1, GREATER = 1;
@@ -79,7 +80,7 @@ public class CoreseDatatype
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
         String value = getLabel();
-        if (getCode() == INTEGER && !xsd) {
+        if (getCode() == INTEGER && !xsd && getDatatypeURI().equals(XSD.xsdinteger)) {
         } 
         else if (getCode() == BOOLEAN && !xsd && (getLabel().equals(CoreseBoolean.STRUE) || getLabel().equals(CoreseBoolean.SFALSE))) {
         } 
@@ -122,8 +123,8 @@ public class CoreseDatatype
     /**
      * Store the lang as an instance of CoreseString shared by all literals
      */
-    public CoreseString intGetDataLang(String lang) {
-        CoreseString dtl = lang2dataLang.get(lang);
+    public IDatatype intGetDataLang(String lang) {
+        IDatatype dtl = lang2dataLang.get(lang);
         if (dtl == null) {
             if (lang.equals("")) {
                 dtl = empty;
@@ -135,8 +136,8 @@ public class CoreseDatatype
         return dtl;
     }
 
-    static CoreseURI getGenericDatatype(String uri) {
-        CoreseURI dt = hdt.get(uri);
+    static IDatatype getGenericDatatype(String uri) {
+        IDatatype dt = hdt.get(uri);
         if (dt == null) {
             dt = new CoreseURI(uri);
             hdt.put(uri, dt);
@@ -147,33 +148,10 @@ public class CoreseDatatype
     public CoreseDatatype() {
     }
 
+    @Deprecated
     public static IDatatype create(String valueJType, String label) throws CoreseDatatypeException {
         return create(valueJType, null, label, null);
     }
-
-    /**
-     * Create a datatype. If it is a not well formed number, create a
-     * CoreseUndef
-     */
-//    public static IDatatype createLiteral(String label, String datatype, String lang)
-//            throws CoreseDatatypeException {
-//        return DatatypeMap.createLiteralWE(label, datatype, lang);
-//    }
-
-//    public static IDatatype createLiteral(String label)
-//            throws CoreseDatatypeException {
-//        return DatatypeMap.createLiteralWE(label);
-//    }
-
-//    public static IDatatype createResource(String label)
-//            throws CoreseDatatypeException {
-//        return DatatypeMap.createResource(label);
-//    }
-
-//    public static IDatatype createBlank(String label)
-//            throws CoreseDatatypeException {
-//        return DatatypeMap.createBlank(label);
-//    }
 
     /**
      * Create a datatype. If it is a not well formed number, create a
@@ -185,7 +163,7 @@ public class CoreseDatatype
         try {
             return create(valueJType, datatype, label, lang, false);
         } catch (CoreseDatatypeException e) {
-            if (CoreseDatatype.isNumber(datatype, valueJType)
+            if ((CoreseDatatype.isNumber(datatype, valueJType) || datatype.equals(XSD.xsddate))
                     && !valueJType.equals(Cst.jTypeUndef)) {
                 // toto^^xsd:integer
                 // try UndefLiteral with integer datatype
@@ -199,18 +177,17 @@ public class CoreseDatatype
     public static IDatatype create(String valueJType,
             String datatype, String label, String lang, boolean cast)
             throws CoreseDatatypeException {
+        
         if (lang != null) {
             lang = lang.toLowerCase();
         }
-        if (valueJType.equals(Cst.jTypeString)) {
-            return new CoreseString(label);
-        } else if (valueJType.equals(Cst.jTypeURI)) {
-            return new CoreseURI(label);
-        } else if (valueJType.equals(Cst.jTypeLiteral)) {
-            IDatatype dt = new CoreseLiteral(label);
-            dt.setLang(lang);
-            return dt;
+        
+        switch (valueJType){
+            case Cst.jTypeString:   return new CoreseString(label);
+            case Cst.jTypeURI:      return new CoreseURI(label);
+            case Cst.jTypeLiteral:  return new CoreseLiteral(label, lang);      
         }
+       
         String display = (datatype == null) ? valueJType : datatype;
 
         CoreseDatatype o = null;
@@ -225,13 +202,7 @@ public class CoreseDatatype
             Class[] argClass = {label.getClass()};
             String[] arg = {label};
             o = (CoreseDatatype) valueClass.getConstructor(argClass).newInstance((Object[]) arg);
-        } catch (ClassCastException e) {
-            throw new CoreseDatatypeException(e, valueJType, label);
-        } catch (IllegalAccessException e) {
-            throw new CoreseDatatypeException(e, valueJType, label);
-        } catch (InstantiationException e) {
-            throw new CoreseDatatypeException(e, valueJType, label);
-        } catch (NoSuchMethodException e) {
+        } catch (ClassCastException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
             throw new CoreseDatatypeException(e, valueJType, label);
         } catch (java.lang.reflect.InvocationTargetException e) {
             // CoreseDatatypeException arrives here
@@ -549,7 +520,6 @@ public class CoreseDatatype
     public boolean isDecimalInteger(){
         switch (getCode()){
             case DECIMAL:
-            case LONG:
             case INTEGER :return true;
         }
         return false;
@@ -619,7 +589,10 @@ public class CoreseDatatype
      * string/literal/XMLLiteral/undef/boolean are sorted alphabetically then by
      * datatypes (by their code) literals are sorted with their lang if any TODO
      * : the primary order (Lit URI BN) is inverse of SPARQL !!!
-     * also used for select distinct, group by
+     * used for select distinct, group by (sameTerm semantics)
+     * used by Graph Node table to retrieve an existing Node
+     * Distinguish 1 01 1.0 '1'^^xsd:long (does not return 0 but -1 or +1)
+     * Distinguish true '1'^^xsd:boolean
      */
     @Override
     public int compareTo(Object d2) {
@@ -649,21 +622,18 @@ public class CoreseDatatype
                 }
                 break;
 
-            //case NUMBER:
             case DOUBLE:
             case FLOAT:
             case DECIMAL:
-            case LONG:
             case INTEGER:
 
                 switch (code) {
-                    //case NUMBER:
                     case DOUBLE:
                     case FLOAT:
                     case DECIMAL:
-                    case LONG:
                     case INTEGER:
                         try {
+                            // 0 if sameTerm
                             return compareNumber(d2);
                         } catch (CoreseDatatypeException e) {
                         }
@@ -672,7 +642,7 @@ public class CoreseDatatype
             case BOOLEAN:              
                  if (code == other) {
                    if (this.booleanValue() == d2.booleanValue()){
-                       // to be deterministic, compare 0 false and 1 true
+                       // sameTerm: compare 0 false and 1 true
                        return this.getLabel().compareTo(d2.getLabel());
                    }
                    else if (this.booleanValue()){
@@ -718,9 +688,6 @@ public class CoreseDatatype
 
         boolean trace = false;
         IDatatype d1 = this;
-
-
-
 
         switch (code) {
             // case where CODE are not equal 
@@ -872,9 +839,8 @@ public class CoreseDatatype
     }
 
     static boolean isNumber(String name, String cname) {
-        return name.equals(RDF.xsdlong) || name.equals(RDF.xsdinteger) || name.equals(RDF.xsdint) || name.equals(RDF.xsddouble)
-                || name.equals(RDF.xsdfloat) || name.equals(RDF.xsddecimal) || name.equals(RDF.xsddate)
-                || cname.equals(jTypeInteger);
+        return dm.isNumber(name)
+                || cname.equals(jTypeInteger) || cname.equals(jTypeGenericInteger);
     }
 
     /**

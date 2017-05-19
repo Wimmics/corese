@@ -23,7 +23,7 @@ public class CoreseInteger extends CoreseNumber {
     /**
      * logger from log4j
      */
-    private static Logger logger = LogManager.getLogger(CoreseLong.class);
+    private static Logger logger = LogManager.getLogger(CoreseInteger.class);
     public static final CoreseInteger ZERO = new CoreseInteger(0);
     public static final CoreseInteger ONE = new CoreseInteger(1);
     public static final CoreseInteger TWO = new CoreseInteger(2);
@@ -102,7 +102,6 @@ public class CoreseInteger extends CoreseNumber {
     @Override
     public int compare(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case LONG:
             case INTEGER:
                 long l = iod.longValue();
                 return (lvalue < l) ? -1 : (l == lvalue ? 0 : 1);
@@ -121,7 +120,6 @@ public class CoreseInteger extends CoreseNumber {
     public boolean less(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
-            case LONG:
                 return lvalue < iod.longValue();
             case DECIMAL:
             case FLOAT:
@@ -136,7 +134,6 @@ public class CoreseInteger extends CoreseNumber {
     public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
-            case LONG:
                 return lvalue <= iod.longValue();
             case DECIMAL:
             case FLOAT:
@@ -151,7 +148,6 @@ public class CoreseInteger extends CoreseNumber {
     public boolean greater(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
-            case LONG:
                 return lvalue > iod.longValue();
             case DECIMAL:
             case FLOAT:
@@ -166,7 +162,6 @@ public class CoreseInteger extends CoreseNumber {
     public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
-            case LONG:
                 return lvalue >= iod.longValue();
             case DECIMAL:
             case FLOAT:
@@ -181,7 +176,6 @@ public class CoreseInteger extends CoreseNumber {
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case INTEGER:
-            case LONG:
                 return lvalue == iod.longValue();
 
             case FLOAT:

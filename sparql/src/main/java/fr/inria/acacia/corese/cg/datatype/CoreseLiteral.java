@@ -19,12 +19,17 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	static final String DATATYPE = RDF.rdflangString; 
 	static final CoreseURI datatype=new CoreseURI(DATATYPE);
 	static final int code=LITERAL;
-	private CoreseString dataLang=null;
+	private IDatatype dataLang=null;
 
 	public CoreseLiteral(String value) {
 		super(value);
 
 		dataLang = empty; // default is ""
+	}
+        
+        public CoreseLiteral(String value, String lang) {
+		this(value);
+                setLang(lang);
 	}
 
 	/**
@@ -46,9 +51,9 @@ public class CoreseLiteral extends CoreseStringLiteral {
 
         @Override
 	public void setLang(String lang) {
-		//lang=str;
-		if (lang != null)
+		if (lang != null){
 			dataLang=intGetDataLang(lang);
+                }
 	}
 
 
@@ -95,7 +100,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
 		
 		case STRING:  
 			if (getDataLang() != empty){
-				return false; //throw failure();
+				return false; 
 			}
 			return getLabel().equals(iod.getLabel());
 			
@@ -103,7 +108,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
 			boolean b1 = testLang(iod);
 			if (! b1) {
                             return false;
-                        } //throw failure(); //return false;
+                        } 
 			return getLabel().equals(iod.getLabel());	
 			
                 case UNDEF: if (hasLang()){return false;} else {throw failure();}

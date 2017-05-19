@@ -83,7 +83,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER:   
 		case DECIMAL: 
 		case FLOAT: 
@@ -98,7 +97,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public boolean less(IDatatype iod)  throws  CoreseDatatypeException {
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER: 
 		case DECIMAL: 
 		case FLOAT: 
@@ -110,7 +108,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER: 
 		case DECIMAL: 
 		case FLOAT: 
@@ -122,7 +119,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public boolean greater(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER: 
 		case DECIMAL: 
 		case FLOAT: 
@@ -134,7 +130,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER: 
 		case DECIMAL: 
 		case FLOAT: 
@@ -146,7 +141,6 @@ public  class CoreseDouble extends CoreseNumber{
         @Override
 	public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException{
 		switch (iod.getCode()){
-		case LONG:   
 		case INTEGER:   
 		case DECIMAL:
 		case FLOAT:

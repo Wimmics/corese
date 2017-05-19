@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.api.IDatatype;
  * @author Olivier Corby, Wimmics Inria I3S, 2013
  *
  */
+@Deprecated
 public class CoreseInt extends CoreseInteger {
     
     	static final CoreseURI datatype=new CoreseURI(RDF.xsdint);

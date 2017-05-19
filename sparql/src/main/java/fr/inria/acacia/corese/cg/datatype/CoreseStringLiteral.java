@@ -30,30 +30,7 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
       super(value);
 
   }
-  
-  public String toString2(){
-      String str = getNormalizedLabel();
-      if (getDatatype() != null) str += "^^" + getDatatype();
-      if (getLang() != null)     str += "@"  + getLang();
-      
-      return str;
-    }
-
-  /**
-   * semiEquals do not look at @ lang for 2 String Literal  only
-   * otherwise compute equals
-   */
-  @Override
-  public boolean semiEquals(IDatatype iod) {
-    if (iod instanceof CoreseStringLiteral){
-      CoreseStringLiteral lit=(CoreseStringLiteral)iod;
-      boolean b2 = getLabel().compareTo(lit.getLabel()) == 0;
-      return b2;
-    }
-    else return sameTerm(iod);
-  }
-  
-  
+   
   @Override
   public int compare(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){
@@ -61,7 +38,6 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  case STRING:
 	  case BOOLEAN:
 	  case XMLLITERAL:
-	  //case UNDEF:
 		  return getLabel().compareTo(iod.getLabel());
 	  }
 	  throw failure();

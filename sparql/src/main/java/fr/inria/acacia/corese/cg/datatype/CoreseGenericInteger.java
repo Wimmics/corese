@@ -27,6 +27,11 @@ public class CoreseGenericInteger extends CoreseInteger {
         super(n);
         setDatatype(uri);
     }
+    
+    public CoreseGenericInteger(long n) {
+        super(n);
+        setDatatype(XSD.xsdlong);
+    }
 
     @Override
     public void setDatatype(String uri) {

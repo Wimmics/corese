@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  */
 public class CoreseGeneric extends CoreseString {
 	
-    CoreseURI datatype;
+    IDatatype datatype;
 	
 	public CoreseGeneric(String label, String uri){
 		super(label);

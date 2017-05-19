@@ -17,7 +17,7 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
  * <br>
  * @author Olivier Savoie
  */
-
+@Deprecated
 public  class CoreseLong extends CoreseNumber {
 
 	/** logger from log4j */

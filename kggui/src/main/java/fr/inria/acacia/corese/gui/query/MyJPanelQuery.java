@@ -497,10 +497,18 @@ public final class MyJPanelQuery extends JPanel {
         }
         DefaultTableModel model = new DefaultTableModel();
         
+        int size = Math.min(maxres, map.size());
+        
+        String[] col = new String[size];
+        for (int i = 0; i<size; i++){
+            col[i] = Integer.toString(i+1);
+        }
+        model.addColumn("num", col);
+        
         for (fr.inria.edelweiss.kgram.api.core.Node var : vars) {
             String columnName = var.getLabel();
             //System.out.println(sv);
-            String[] colmunData = new String[Math.min(maxres, map.size())];
+            String[] colmunData = new String[size];
 
             for (int j = 0; j < map.size(); j++) {
                 if (j >= maxres){
@@ -509,25 +517,32 @@ public final class MyJPanelQuery extends JPanel {
                 }
                 Mapping m = map.get(j);
                 fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
+                
                 if (value != null) {
                     IDatatype dt = (IDatatype) value.getValue();
-                    if (dt.isList()) {
-                        colmunData[j] = dt.getValues().toString();
-                    } else if (dt.isPointer()) {
-                        colmunData[j] = dt.getPointerObject().toString();
-                    } 
-                    else if (dt.isLiteral()){ //dt.hasLang()){
-                        colmunData[j] = dt.toString();
-                    }
-                    else {
-                        colmunData[j] = dt.getLabel();
-                    }
+                    colmunData[j] = pretty(dt);
                 }
             }
             model.addColumn(columnName, colmunData);
         }
 
         this.tableResults.setModel(model);
+    }
+    
+    String pretty(IDatatype dt) {
+        if (dt.isList()) {
+            return dt.getValues().toString();
+        } else if (dt.isPointer()) {
+            return dt.getPointerObject().toString();
+        } else if (dt.isLiteral()) { 
+            return dt.toString();
+        } 
+        else if (dt.isURI()){
+            return dt.toString();
+        }
+        else {
+            return dt.getLabel();
+        }
     }
 
     void display(Mappings map, MainFrame coreseFrame) {

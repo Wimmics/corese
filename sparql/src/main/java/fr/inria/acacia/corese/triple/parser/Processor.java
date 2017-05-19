@@ -1011,7 +1011,7 @@ public class Processor {
          * @param ast 
          */
         void processLet(Term term, ASTQuery ast){
-            processMatch(term, ast);
+            processMatch(term.getLet(), ast);
         }
         
         
@@ -1021,7 +1021,7 @@ public class Processor {
          * let (?x = xt:get(?l, 0), ?p = xt:get(?l, 1), ?y = xt:get(?l, 2)) {} 
          * @param ast 
          */
-       void processMatch(Term term, ASTQuery ast) {
+       void processMatch(Let term, ASTQuery ast) {
             Expression match = term.getArg(0).getArg(0);
             Expression list  = term.getDefinition();
 

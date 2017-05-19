@@ -18,7 +18,6 @@ public class Atom extends Expression implements ElementClause{
 	boolean isone = false;
 	boolean isall = false;
 	boolean isdirect = false;
-	//boolean isset = false;
 	int star;
 	
 	public Atom() {
@@ -91,14 +90,6 @@ public class Atom extends Expression implements ElementClause{
 	public void setPath(int star) {
 		this.star = star;
 	}
-
-//	public boolean isIsset() {
-//		return isset;
-//	}
-//
-//	public void setIsset(boolean isset) {
-//		this.isset = isset;
-//	}
 
         @Override
 	public Atom getAtom() {

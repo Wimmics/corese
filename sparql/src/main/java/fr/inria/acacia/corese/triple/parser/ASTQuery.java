@@ -1203,21 +1203,29 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return defineLet(el, body, 0);
     }
 
-    Term let(Expression exp, Expression body) {
-        return new Let(exp, body);
-    }
-
     public Term defineLet(ExpressionList el, Expression body, int n) {
         if (n == el.size() - 1) {
             return let(el.get(n), body);
         }
         return let(el.get(n), defineLet(el, body, n + 1));
     }
+    
+    /**
+     * exp: var = exp | match(var_1, .., var_n) = exp
+     * match(?x, ?y) is AST for let ((?x, ?y) = exp)
+     * this match() AST is compiled by Processor
+     */
+    Term let(Expression exp, Expression body) {
+        return new Let(exp, body);
+    }
 
+    public Term defLet(Variable var, Constant type, Expression exp) {
+        return Term.create("=", var, exp);
+    }
+    
     public Term defLet(Variable var, Expression exp) {
         return Term.create("=", var, exp);
     }
-
     public Term defLet(ExpressionList lvar, Expression exp) {
         Term t = createFunction(Processor.MATCH, lvar);
         return Term.create("=", t, exp);

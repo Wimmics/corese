@@ -22,17 +22,21 @@ public class Let extends Statement {
        */
         @Override
       public Variable getVariable(){
-          return getArg(0).getArg(0).getVariable();
+          return getVariableDefinition().getArg(0).getVariable();
       }
         
         @Override
         public Expression getDefinition(){
-            return getArg(0).getArg(1);
+            return getVariableDefinition().getArg(1);
         }
         
         @Override
         public Expression getBody(){
             return getArg(1);
+        }
+        
+        public Expression getVariableDefinition(){
+            return getArg(0);
         }
     
      @Override

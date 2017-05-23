@@ -96,6 +96,12 @@
 			<artifactId>rdf-to-graph-neo4j</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+	 <dependency>
+	  <groupId>org.apache.jena</groupId>
+	  <artifactId>jena-arq</artifactId>
+	  <version>3.3.0</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>

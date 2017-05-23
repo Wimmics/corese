@@ -12,10 +12,16 @@ import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -28,7 +34,6 @@ public class CoreseTimer {
 	public CoreseAdapter adapter;
 	public String adapterName;
 	private Mappings mappings;
-
 
 	public enum Profile {
 		DB, MEMORY
@@ -112,12 +117,32 @@ public class CoreseTimer {
 		stats = new DescriptiveStatistics();
 		statsMemory = new DescriptiveStatistics();
 		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
+		boolean measured = true;
 		for (int i = 0; i < nbCycles; i++) {
 			LOGGER.log(Level.INFO, "iteration #{0}", i);
 			System.gc();
 			final long startTime = System.currentTimeMillis();
 			LOGGER.log(Level.INFO, "before query");
-			adapter.execQuery(query);
+
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Future<?> future = executor.submit(new Runnable() {
+				@Override
+				public void run() {
+					adapter.execQuery(query);
+				}
+			});
+
+			try {
+				future.get(10, TimeUnit.SECONDS);
+			} catch (InterruptedException | TimeoutException e) {
+				future.cancel(true);
+				measured = false;
+				LOGGER.log(Level.WARNING, "Terminated!");
+			} catch (ExecutionException ex) {
+				Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			executor.shutdownNow();
+
 			LOGGER.log(Level.INFO, "after query");
 			final long endTime = System.currentTimeMillis();
 			long delta = endTime - startTime;
@@ -125,8 +150,16 @@ public class CoreseTimer {
 			LOGGER.info(String.format("elapsed time = %d ms", delta));
 			LOGGER.info(String.format("used memory = %d bytes", memoryUsage));
 			if (i >= test.getWarmupCycles()) {
-				stats.addValue(delta);
-				statsMemory.addValue(memoryUsage);
+				if (!measured) {
+					while (i < nbCycles) {
+						stats.addValue(-100);
+						statsMemory.addValue(memoryUsage);
+						i++;
+					}
+				} else {
+					stats.addValue(delta);
+					statsMemory.addValue(memoryUsage);
+				}
 			}
 		}
 		adapter.saveResults(test.getResultFileName(mode));

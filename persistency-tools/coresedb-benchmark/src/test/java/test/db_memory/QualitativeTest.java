@@ -270,19 +270,20 @@ public class QualitativeTest {
 		}
 		assertTrue(dataValues.length == sparqlVariables.size(), "The number of values and variables in the SPARQL request should be equal.");
 		ArrayList<String> result = new ArrayList<>();
-		for (int i = 1; i < (1 << nbValues); i++) {
+		for (int i = 1; i < (1 << nbValues) - 1; i++) {
 			int current = i;
 			int posInCurrent = 0;
+			String currentRequest = sparqlRequest;
 			while (current != 0) {
 				if (current % 2 == 1) { // replace all occurences of "posInCurrent"-th variable in sparqlRequest by "posInCurrent"-th value in data, if the posInCurrent bit is set in "current" value.
 					String currentVariable = sparqlVariables.get(posInCurrent);
-					String newRequest = sparqlRequest.replaceFirst("\\"+currentVariable, "").replace(currentVariable, dataValues[posInCurrent]);
-					result.add(newRequest);
-					logger.info("Adding: "+ newRequest);
+					currentRequest = currentRequest.replaceFirst("\\" + currentVariable, "").replace(currentVariable, dataValues[posInCurrent]);
 				}
 				posInCurrent++;
 				current /= 2;
 			}
+			result.add(currentRequest);
+			logger.info("Adding: " + currentRequest);
 		}
 		return result;
 	}

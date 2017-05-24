@@ -72,8 +72,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-nquads</artifactId>
-			<version>4.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

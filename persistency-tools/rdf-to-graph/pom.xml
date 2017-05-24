@@ -63,36 +63,26 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-nativerdf</artifactId>
-			<version>4.1.1</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail</artifactId>
-			<version>4.1.1</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-nquads</artifactId>
-			<version>4.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-rdfxml</artifactId>
-			<version>4.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>test</scope>
 			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-configuration2</artifactId>
-			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -105,12 +95,12 @@
 			<version>3.2.1p-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
-	  <groupId>org.apache.tinkerpop</groupId>
-	  <artifactId>gremlin-core</artifactId>
-	  <version>3.2.4</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>org.apache.tinkerpop</groupId>
+			<artifactId>gremlin-core</artifactId>
+			<version>3.2.4</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

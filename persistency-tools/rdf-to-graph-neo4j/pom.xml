@@ -37,12 +37,12 @@
 			<artifactId>neo4j-tinkerpop-api-impl</artifactId>
 			<version>0.3-2.3.2</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-api</artifactId>
 			<scope>compile</scope>
 			<type>jar</type>
-		</dependency>
+		</dependency>-->
 <!--		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>

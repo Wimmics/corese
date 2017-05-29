@@ -409,6 +409,7 @@ public class Mappings extends PointerObject
         return isValid;
     }
 
+    @Deprecated
     boolean same(Node n1, Node n2) {
         if (n1 == null) {
             return n2 == null;
@@ -1094,7 +1095,7 @@ public class Mappings extends PointerObject
                         Mapping m2 = map2.get(i);
                         Node n2 = m2.getNodeValue(cmn);
 
-                        if (n2 == null || !val.equals(n2)) {
+                        if (n2 == null || !val.match(n2)) { // was equal
                             break;
                         }
                         Mapping m = m1.joiner(m2);

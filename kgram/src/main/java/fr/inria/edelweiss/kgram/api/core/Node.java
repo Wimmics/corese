@@ -38,15 +38,13 @@ public interface Node {
 
 	
 	/**
-	 * Test if two nodes are the same.
-	 * Used to check that bindings are preserved :
-	 * two occurrences of same query node bound to same target node.
-         * sameTerm semantics
-	 * 
-	 * @param n
-	 * @return
+	 * sameTerm
+	 *
 	 */
 	boolean same(Node n);
+        
+        // Node match for Graph match
+        boolean match(Node n);
 	
 	int compare(Node node);
 

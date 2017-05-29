@@ -12,6 +12,7 @@ import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.kgtool.workflow.ResultProcess;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.edelweiss.kgtool.load.LoadException;
@@ -257,12 +258,24 @@ public class Transformer {
         wp.setLog(true);
         IDatatype swdt = context.get(Context.STL_WORKFLOW); 
         if (swdt != null) {
+            // there is a workflow
+            if (query != null){
+                logger.warn("Workflow skip query: " + query);
+            }
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.parse(profile.getNode(swdt));
         } 
         else if (query != null) {
-            // select where return Graph Mappings
-            wp.addQueryGraph(query);
+            if (transform == null){
+                // emulate sparql endpoint
+                wp.addQueryMapping(query);
+                wp.add(new ResultProcess());
+                return wp;
+            }
+            else {
+                // select where return Graph Mappings
+                wp.addQueryGraph(query);
+            }
         }
         defaultTransform(wp, transform);
         return wp;

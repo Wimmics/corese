@@ -1,11 +1,16 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.print.JSONFormat;
 import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import java.io.IOException;
+import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -36,12 +41,16 @@ import org.apache.logging.log4j.LogManager;
  */
 @Path("ldp")
 public class LdpRequestAPI {
+    public static final String LDP_QUERY = 
+            "construct { <%1$s> ?p ?o  ?x ?q <%1$s> } "
+              + "where {{<%1$s> ?p ?o} union {?x ?q <%1$s>}}";
 
     private final Logger logger = LogManager.getLogger("==LDP== " + LdpRequestAPI.class);
     private static final TripleStore store = new TripleStore();
     private static final QueryProcess exec = QueryProcess.create(store.graph);
     private final String headerAccept = "Access-Control-Allow-Origin";
     private final static String SERVER = "http://localhost:8080/ldp/";
+    private final static String  LDP_NAME = NSManager.STL+"ldp";
 
     //^(?!upload|create)(.*)$
     @GET
@@ -121,14 +130,33 @@ public class LdpRequestAPI {
     public Response uploadTriplesOPTIONS() {
         return Response.ok().header(headerAccept, "*").header("Allow", "POST, OPTIONS").build();
     }
+    
+    Context getContext(){
+        try {
+            Param par = new Param(Manager.DEFAULT);
+            par.setServer(Manager.DEFAULT);
+            Transformer.getProfile().complete(par);
+            Context ctx = par.createContext();
+            return ctx;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(LdpRequestAPI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Context();
+    }
 
     private Response getResourceResponse(String res, boolean head) throws EngineException {
         String content = "";
         if (!head) {
-            //String tmp = "http://fr.dbpedia.org/resource/";
-            String subject = "<" + SERVER + res + ">";
-            String sparql = "construct where {" + subject + " ?p ?o}";
-            Mappings m = exec.query(sparql);
+            Context ctx = getContext();
+            System.out.println(ctx);
+            System.out.println("URI: " + res);
+            IDatatype dt = ctx.get(LDP_NAME) ; 
+            String root = (dt==null) ? SERVER : dt.getLabel();
+            String subject = root + res;
+            System.out.println("URI: " + subject);
+            String sparql = String.format(LDP_QUERY, subject);
+            QueryProcess ex = SPARQLRestAPI.getTripleStore().getQueryProcess();
+            Mappings m = ex.query(sparql);
             logger.info(sparql);
 
             if (m.size() > 0) {

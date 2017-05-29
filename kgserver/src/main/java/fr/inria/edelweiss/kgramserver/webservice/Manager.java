@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 public class Manager {
 
     static final String STCONTEXT = Context.STL_CONTEXT;
-    private static String DEFAULT = NSManager.STL + "default";
+    static String DEFAULT = NSManager.STL + "default";
     private static String CONTENT = NSManager.STL + "content";
     private static String CONTENT_SHARE = NSManager.STL + "shareContent";
     private static String SCHEMA = NSManager.STL + "schema";

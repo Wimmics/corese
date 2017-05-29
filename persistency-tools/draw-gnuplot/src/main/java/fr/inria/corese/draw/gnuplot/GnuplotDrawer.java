@@ -216,7 +216,7 @@ public class GnuplotDrawer {
 			} else {
 				m = patternSimple.matcher(dbName);
 				if (m.matches()) {
-					size = 10_000_000;
+					size = 10_000_000; 
 				} else {
 					size = -1;
 				}
@@ -236,7 +236,7 @@ public class GnuplotDrawer {
 		NodeList dbStats = document.getElementsByTagName(xmlNodeName);
 		long median;
 		if (dbStats.getLength() == 0) {
-			median = -1;
+			median = -100;
 		} else {
 			median = extractMedian(dbStats);
 		}

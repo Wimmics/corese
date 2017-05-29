@@ -75,6 +75,11 @@ public class SemanticWorkflow extends  CompositeProcess {
        return add(sp);
     }
     
+    public SemanticWorkflow addQueryMapping(String q){
+       SPARQLProcess sp = new SPARQLProcess(q);
+       return add(sp);
+    }
+    
     public SemanticWorkflow addTemplate(String q){
        return add(new TransformationProcess(q));
     }

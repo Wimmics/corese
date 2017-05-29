@@ -448,7 +448,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             Node qNode = edge.getNode(index);
             if (qNode.isConstant()) {
                 //	start = qNode;
-                start = graph.getNode(qNode);
+                start = graph.getExtNode(qNode);
                 if (start == null) {
                     return empty;
                 }

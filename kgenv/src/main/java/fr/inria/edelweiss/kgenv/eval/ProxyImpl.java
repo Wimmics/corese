@@ -282,7 +282,7 @@ public class ProxyImpl implements Proxy, ExprType {
 
         return (b) ? TRUE : FALSE;
     }
-
+    
     @Override
     public Object function(Expr exp, Environment env, Producer p) {
 
@@ -353,6 +353,11 @@ public class ProxyImpl implements Proxy, ExprType {
 
         return null;
     }
+    
+    public IDatatype power(IDatatype dt1, IDatatype dt2){
+        return getValue(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
+    }
+
 
     public IDatatype struuid() {
         UUID uuid = UUID.randomUUID();
@@ -548,7 +553,7 @@ public class ProxyImpl implements Proxy, ExprType {
         switch (exp.oper()) {
             
             case POWER:
-               return getValue(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
+               return power(dt1, dt2); 
                 
             case PLUS:
             case MINUS:
@@ -1018,14 +1023,6 @@ public class ProxyImpl implements Proxy, ExprType {
     
     public IDatatype sameTerm(IDatatype dt1, IDatatype dt2){
         return getValue(dt1.sameTerm(dt2));
-//       boolean b = dt1.equals(dt2);
-//       if (! b){
-//           return FALSE;
-//       }
-//       if (dt1.isLiteral() && dt2.isLiteral()){
-//           return getValue(dt1.getCode() == dt2.getCode());
-//       }
-//       return TRUE;
     }
     
     IDatatype cast(IDatatype dt, IDatatype dt1, IDatatype dt2){

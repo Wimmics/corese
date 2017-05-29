@@ -1039,10 +1039,39 @@ public class CoreseDatatype
 
     @Override
     public boolean same(Node n) {
-        //return sameTerm((IDatatype) n.getValue());
-        return equals((IDatatype) n.getValue());
+        return sameTerm((IDatatype) n.getValue());
+        //return equals((IDatatype) n.getValue());
     }
-
+    
+    @Override
+    public boolean match(Node n) {
+        return match((IDatatype) n.getValue());
+    }
+    
+    // for graph match
+    public boolean match(IDatatype dt) {
+        if (equals(dt)){
+            return compatible(dt);
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // they are equal, are the datatypes compatible ?
+    public boolean compatible(IDatatype dt) {
+        switch (getCode()) {
+            case INTEGER:
+            case DECIMAL:
+                return dt.isDecimalInteger();
+            case DOUBLE:
+                return dt.getCode() == DOUBLE;
+            case FLOAT:
+                return dt.getCode() == FLOAT;
+        }
+        return true;
+    }
+    
     @Override
     public int compare(Node n) {
         return compareTo((IDatatype) n.getValue());

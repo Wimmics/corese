@@ -1388,7 +1388,15 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public Node copy(Node node) {
-        return getNode((IDatatype) node.getValue(), true, false);
+        Node res = getExtNode(node);
+        if (res == null){
+            res = getNode(getDatatypeValue(node), true, false);
+        }
+        return res;
+    }
+    
+    IDatatype getDatatypeValue(Node node){
+        return (IDatatype) node.getValue();
     }
 
     public Node getTopClass() {
@@ -1444,7 +1452,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      *
      */
     public Node getNode(Node node) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt = getDatatypeValue(node);
         return getNode(dt, false, false);
     }
 
@@ -1471,7 +1479,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     // May return Node with same value but different label
     public Node getExtNode(Node node) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt = getDatatypeValue(node);
          if (isSameIndexAble(dt)) {
             return getExtLiteralNode(dt);
         }
@@ -1634,7 +1642,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             node = getSystemNode(label);
         }
         if (node != null) {
-            add((IDatatype) node.getValue(), node);
+            add(getDatatypeValue(node), node);
             return node;
         }
         IDatatype dt = DatatypeMap.createResource(label);
@@ -1684,7 +1692,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public void add(Node node) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt = getDatatypeValue(node);
         add(dt, node);
     }
 

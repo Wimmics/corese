@@ -259,7 +259,7 @@ public class MatcherImpl implements Matcher {
         return  (n1.getIndex() == n2.getIndex() 
                 && n1.getTripleStore() == n2.getTripleStore()
                 && n1.getIndex() != -1) 
-                || n1.same(n2);
+                || n1.match(n2); // was same
     }
 
     @Override
@@ -280,8 +280,7 @@ public class MatcherImpl implements Matcher {
 
         IDatatype qdt = (IDatatype) q.getValue();
         IDatatype tdt = (IDatatype) t.getValue();
-
-        return (DatatypeMap.SPARQLCompliant) ? qdt.sameTerm(tdt) : qdt.equals(tdt);
+        return (DatatypeMap.SPARQLCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
     }
 
   public MatchBNode getMatchBNode(){

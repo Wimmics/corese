@@ -1526,7 +1526,7 @@ public class Eval implements ExpType, Plugin {
                                 // enumerate occurrences of ?y in map2
                                 Mapping m2 = map2.get(i);
                                 Node n2 = m2.getNode(qn2);
-                                if (n2 == null || !n1.equals(n2)) {
+                                if (n2 == null || !n1.match(n2)) { // was equals
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;
                                 } else if (env.push(m2, n)) {
@@ -1629,7 +1629,7 @@ public class Eval implements ExpType, Plugin {
                                 Mapping m2 = map2.get(i);
                                 Node n2 = m2.getNode(q);
 
-                                if (n2 == null || !n1.equals(n2)) {
+                                if (n2 == null || !n1.match(n2)) { // was equals
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;
                                 } else if (env.push(m2, n)) {
@@ -2714,18 +2714,18 @@ public class Eval implements ExpType, Plugin {
      * In case of backjump Some node must differ between previous and current A
      * node that is common to qEdge and qPast
      */
-    private boolean differ(Exp qEdge, Exp qPast, Edge previous, Edge current) {
-        for (int i = 0; i < qEdge.nbNode(); i++) {
-            Node qNode = qEdge.getNode(i);
-            if (qNode != null && qPast.contains(qNode)) {
-                // They share a node, do they differ ?
-                if (!previous.getNode(i).same(current.getNode(i))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    private boolean differ(Exp qEdge, Exp qPast, Edge previous, Edge current) {
+//        for (int i = 0; i < qEdge.nbNode(); i++) {
+//            Node qNode = qEdge.getNode(i);
+//            if (qNode != null && qPast.contains(qNode)) {
+//                // They share a node, do they differ ?
+//                if (!previous.getNode(i).same(current.getNode(i))) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * res is a result of sub query bind the select nodes of sub query into

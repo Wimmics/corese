@@ -98,8 +98,12 @@ public class NodeImpl extends GraphObject implements Node, Entity {
 
     @Override
     public boolean same(Node node) {
-        // TODO Auto-generated method stub
         return getValue().sameTerm((IDatatype) node.getValue());
+    }
+    
+     @Override
+    public boolean match(Node node) {
+        return getValue().match((IDatatype) node.getValue());
     }
 
     @Override

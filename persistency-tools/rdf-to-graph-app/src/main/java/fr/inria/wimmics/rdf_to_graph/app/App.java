@@ -36,6 +36,7 @@ public class App {
 			}
 		}
 		String rdfFileName = args[0];
+		System.err.println("path to rdf files = "+rdfFileName);
 		String dbPath = args[1];	
 		Optional<RDFFormat> format = Rio.getParserFormatForFileName(rdfFileName);
 

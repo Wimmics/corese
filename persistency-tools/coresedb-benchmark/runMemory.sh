@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-echo "args = "$@
 EXPECTED_ARGS=3
 E_BADARGS=101
 

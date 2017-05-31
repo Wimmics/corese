@@ -9,19 +9,31 @@ import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 /**
  *
@@ -44,6 +56,7 @@ public class CoreseTimer {
 	private boolean initialized;
 	private DescriptiveStatistics stats;
 	private DescriptiveStatistics statsMemory;
+	private TestDescription test;
 
 	/**
 	 *
@@ -52,9 +65,14 @@ public class CoreseTimer {
 	 * @param runProfile kind of usage of corese (currently "db" or
 	 * "memory"). Used to classify the results and stats done.
 	 */
-	public CoreseTimer() {
+	private CoreseTimer(TestDescription test) {
 		this.adapterName = CoreseAdapter.class.getCanonicalName();
 		initialized = false;
+		this.test = test;
+	}
+
+	static public CoreseTimer build(TestDescription test) {
+		return new CoreseTimer(test);
 	}
 
 	public CoreseTimer setMode(Profile mode) {
@@ -84,11 +102,11 @@ public class CoreseTimer {
 		return this;
 	}
 
-	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
-		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
-	}
+//	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
+//		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
+//	}
 
-	public CoreseTimer run(TestDescription test) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
+	public CoreseTimer run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
 		LOGGER.entering(CoreseTimer.class.getName(), "run");
 		assert (initialized);
 
@@ -133,7 +151,8 @@ public class CoreseTimer {
 			});
 
 			try {
-				future.get(10, TimeUnit.SECONDS);
+				future.get(1, TimeUnit.HOURS);
+				measured = true;
 			} catch (InterruptedException | TimeoutException e) {
 				future.cancel(true);
 				measured = false;
@@ -162,11 +181,15 @@ public class CoreseTimer {
 				}
 			}
 		}
-		adapter.saveResults(test.getResultFileName(mode));
+		adapter.saveResults(test.getOutputPath());
 		mappings = adapter.getMappings();
 		adapter.postProcessing();
 		LOGGER.exiting(CoreseTimer.class.getName(), "run");
 		return this;
+	}
+
+	public void writeResults() {
+		adapter.saveResults(test.getOutputPath());
 	}
 
 	public Mappings getMapping() {
@@ -203,4 +226,65 @@ public class CoreseTimer {
 		return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
 			+ ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
 	}
+
+	public void writeStatistics() {
+		Document doc = null;
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			doc = dBuilder.newDocument();
+			Element rootElement = doc.createElement("TestResult");
+
+			Element inputs = doc.createElement("Inputs");
+
+			Element inputFile = doc.createElement("Input");
+			Text inputFileText = doc.createTextNode(test.getInput());
+			inputFile.appendChild(inputFileText);
+
+			Element request = doc.createElement("Request");
+			Text requestText = doc.createTextNode(test.getRequest());
+			request.appendChild(requestText);
+
+			Element timestamp = doc.createElement("Timestamp");
+			Text timestampText = doc.createTextNode(LocalDateTime.now().toString());
+			timestamp.appendChild(timestampText);
+
+			Element[] subElements = {inputFile, request, timestamp};
+			for (Element e : subElements) {
+				inputs.appendChild(e);
+			}
+
+			Element outputs = doc.createElement("Statistics");
+
+			Element statsMemory = doc.createElement("CPU");
+			Text statsMemoryText = doc.createTextNode(getStats().toString());
+			statsMemory.appendChild(statsMemoryText);
+
+			Element statsMemoryCoreseMem = doc.createElement("Memory");
+			Text statsMemoryCoreseMemText = doc.createTextNode(getStatsMemory().toString());
+			statsMemoryCoreseMem.appendChild(statsMemoryCoreseMemText);
+
+			Element[] subElements2 = {statsMemory, statsMemoryCoreseMem};
+			for (Element e : subElements2) {
+				outputs.appendChild(e);
+			}
+
+			rootElement.appendChild(inputs);
+			rootElement.appendChild(outputs);
+
+			doc.appendChild(rootElement);
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult streamResult = new StreamResult(new File(test.getOutputPath()));
+			transformer.transform(source, streamResult);
+			LOGGER.log(Level.INFO, "Results were written in:", test.getOutputPath());
+		} catch (ParserConfigurationException | TransformerException ex) {
+			LOGGER.log(Level.INFO, "Error when writing results:", ex.getMessage());
+			ex.printStackTrace();
+		}
+
+	}
+
 }

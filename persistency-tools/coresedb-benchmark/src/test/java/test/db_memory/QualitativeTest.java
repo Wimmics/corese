@@ -12,7 +12,6 @@ import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
-import static fr.inria.wimmics.coresetimer.Main.writeResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,9 +70,9 @@ public class QualitativeTest {
 		suite.createDb(TestSuite.DatabaseCreation.ALWAYS);
 		TestDescription[][] tests = {
 			{suite.buildTest("select ?p( count(?p) as ?c) where {?e ?p ?y} group by ?p order by ?c")},
-			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type ?t }")},
-			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdf:type rdfs:Class }")},
-			{suite.buildTest("SELECT ?x ?t WHERE { ?x rdfs:subClassOf ?y }")},
+			{suite.buildTest("SELECT ?s ?t WHERE { ?s rdf:type ?t }")},
+			{suite.buildTest("SELECT ?s ?t WHERE { ?s rdf:type rdfs:Class }")},
+			{suite.buildTest("SELECT ?s ?t WHERE { ?s rdfs:subClassOf ?t }")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#> \nSELECT * WHERE { ?x humans:hasSpouse ?y}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?x rdf:type humans:Male}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n SELECT * WHERE { ?x humans:hasSpouse ?y . ?y rdf:type humans:Male}")},
@@ -106,28 +105,33 @@ public class QualitativeTest {
 	@DataProvider(name = "quantitative")
 	public Iterator<Object[]> buildTests() throws Exception {
 		String[] inputFiles = {
-			"btc-2010-chunk-000.nq.gz:1",
-			"btc-2010-chunk-000.nq.gz:3",
-			"btc-2010-chunk-000.nq.gz:10",
-			"btc-2010-chunk-000.nq.gz:31",
-			"btc-2010-chunk-000.nq.gz:100",
-			"btc-2010-chunk-000.nq.gz:316",
-			"btc-2010-chunk-000.nq.gz:1000",
-			"btc-2010-chunk-000.nq.gz:3162",
-			"btc-2010-chunk-000.nq.gz:10000",
-			"btc-2010-chunk-000.nq.gz:31622",
-			"btc-2010-chunk-000.nq.gz:100000", //			"btc-2010-chunk-000.nq.gz:316227",
-		//			"btc-2010-chunk-000.nq.gz:1000000", //			"btc-2010-chunk-000.nq.gz:3162277",
-		//			"btc-2010-chunk-000.nq.gz:10000000", //                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
-		//                      "btc-2010-chunk-00(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
-		//                      "btc-2010-chunk-0(0|1|2|3)(0|1|2|3|4|5|6|7|8|9).nq.gz"  ,
+			//			"btc-2010-chunk-000.nq.gz:1",
+			//			"btc-2010-chunk-000.nq.gz:3",
+			//			"btc-2010-chunk-000.nq.gz:10",
+			//			"btc-2010-chunk-000.nq.gz:31",
+						"btc-2010-chunk-000.nq.gz:100",
+			//			"btc-2010-chunk-000.nq.gz:316",
+			//			"btc-2010-chunk-000.nq.gz:1000",
+			//			"btc-2010-chunk-000.nq.gz:3162",
+			//			"btc-2010-chunk-000.nq.gz:10000",
+			//			"btc-2010-chunk-000.nq.gz:31622",
+			//			"btc-2010-chunk-000.nq.gz:100000", 
+			//			"btc-2010-chunk-000.nq.gz:316227",
+//			"btc-2010-chunk-000.nq.gz:1000000", 
+//			"btc-2010-chunk-000.nq.gz:3162277",
+		//			"btc-2010-chunk-000.nq.gz:10000000", 
+		//                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+		//                      "btc-2010-chunk-00\d.nq.gz"  ,
+		//                      "btc-2010-chunk-0\d.nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"   
 		};
 		ArrayList<String> requests = new ArrayList<String>();
-		requests.add("select ?x ?y where { ?x rdf:type ?y}");
-		requests.add("select ?x ?p ?y ?q where { ?x ?p ?y . ?y ?q ?x}");
-		requests.addAll(makeAllRequests("select ?x ?p ?y where { ?x ?p ?y }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document>"));
-		requests.addAll(makeAllRequests("select ?g ?x ?p ?y where { graph ?g { ?x ?p ?y } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
+//		requests.add("select ?s ?t where { ?s rdf:type ?t}");
+//		requests.add("select ?s ?p ?o ?q where { ?s ?p ?o . ?o ?q ?s}");
+//		requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document>"));
+//		requests.addAll(makeAllRequests("select ?s ?p ?o ?g where { graph ?g { ?s ?p ?o } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
+		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
+		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
 
 		return new Iterator<Object[]>() {
 			boolean started = false;
@@ -201,9 +205,9 @@ public class QualitativeTest {
 		try {
 			setCacheForDb(test);
 			System.gc();
-			timerDb = new CoreseTimer().setMode(CoreseTimer.Profile.DB).init().run(test);
+			timerDb = CoreseTimer.build(test).setMode(CoreseTimer.Profile.DB).init().run();
 			System.gc();
-			timerMemory = new CoreseTimer().setMode(CoreseTimer.Profile.MEMORY).init().run(test);
+			timerMemory = CoreseTimer.build(test).setMode(CoreseTimer.Profile.MEMORY).init().run();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -216,7 +220,11 @@ public class QualitativeTest {
 			result = false;
 		}
 		test.setResultsEqual(result);
-		writeResult(test, timerDb, timerMemory);
+		timerDb.writeResults();
+		timerDb.writeStatistics();
+		timerMemory.writeResults();
+		timerMemory.writeStatistics();
+//		writeResult(test, timerDb, timerMemory);
 		assertTrue(result, test.getId());
 	}
 

@@ -58,6 +58,7 @@ public class Main {
 		private int nbTests = 0;
 		private String inputDb;
 		private RDFFormat format;
+		private String outputFilename;
 
 		private TestSuite(String id) {
 			this.testId = id;
@@ -110,9 +111,19 @@ public class Main {
 			return inputRoot;
 		}
 
+		@Deprecated
 		public TestSuite setOutputRoot(String path) {
 			outputRoot = ensureEndWith(path, "/");
 			return this;
+		}
+
+		public TestSuite setOutputFile(String filename) {
+			this.outputFilename = filename;
+			return this;
+		}
+
+		public String getOutputFile() {
+			return this.outputFilename;
 		}
 
 		public String getOutputRoot() {
@@ -183,7 +194,7 @@ public class Main {
 		private int warmupCycles;
 		private int measuredCycles;
 		private String resultFileName;
-		private String outputPath;
+		private String outputPrefixFilename;
 		private final TestSuite suite;
 
 		private TestDescription(String id, TestSuite suite) {
@@ -265,12 +276,12 @@ public class Main {
 		}
 
 		public TestDescription setOutputPath(String oPath) {
-			outputPath = oPath;
+			outputPrefixFilename = oPath;
 			return this;
 		}
 
 		public String getOutputPath() {
-			return outputPath;
+			return outputPrefixFilename;
 		}
 	}
 
@@ -320,81 +331,5 @@ public class Main {
 		return result;
 	}
 
-	public static void writeResult(TestDescription test, CoreseTimer timerDb, CoreseTimer timerMemory) {
-		Document doc = null;
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.newDocument();
-			Element rootElement = doc.createElement("TestResult");
-
-			Element inputs = doc.createElement("Inputs");
-
-			Element inputFile = doc.createElement("InputFile");
-			Text inputFileText = doc.createTextNode(test.getInput());
-			inputFile.appendChild(inputFileText);
-
-			Element dbPath = doc.createElement("DbPath");
-			Text dbPathText = doc.createTextNode(test.getInputDb());
-			dbPath.appendChild(dbPathText);
-
-			Element request = doc.createElement("Request");
-			Text requestText = doc.createTextNode(test.getRequest());
-			request.appendChild(requestText);
-
-			Element timestamp = doc.createElement("Timestamp");
-			Text timestampText = doc.createTextNode(LocalDateTime.now().toString());
-			timestamp.appendChild(timestampText);
-
-			Element[] subElements = {inputFile, dbPath, request, timestamp};
-			for (Element e : subElements) {
-				inputs.appendChild(e);
-			}
-
-			Element outputs = doc.createElement("Outputs");
-
-			Element result = doc.createElement("ResultsEqual");
-			Text resultText = doc.createTextNode(test.getResultsEqual().toString());
-			result.appendChild(resultText);
-
-			Element statsMemory = doc.createElement("StatsMemory");
-			Text statsMemoryText = doc.createTextNode(timerMemory.getStats().toString());
-			statsMemory.appendChild(statsMemoryText);
-
-			Element statsDb = doc.createElement("StatsDb");
-			Text statsDbText = doc.createTextNode(timerDb.getStats().toString());
-			statsDb.appendChild(statsDbText);
-
-			// Writing the memory consumption statistics
-			Element statsMemoryCoreseMem = doc.createElement("StatsMemoryConsumption-corese-memory");
-			Text statsMemoryCoreseMemText = doc.createTextNode(timerMemory.getStatsMemory().toString());
-			statsMemoryCoreseMem.appendChild(statsMemoryCoreseMemText);
-
-			Element statsMermoryCoreseDb = doc.createElement("StatsMemoryConsumption-corese-memory");
-			Text statsMermoryCoreseDbText = doc.createTextNode(timerDb.getStatsMemory().toString());
-			statsMermoryCoreseDb.appendChild(statsMermoryCoreseDbText);
-
-			Element[] subElements2 = {result, statsMemory, statsDb, statsMemoryCoreseMem, statsMermoryCoreseDb};
-			for (Element e : subElements2) {
-				outputs.appendChild(e);
-			}
-
-			rootElement.appendChild(inputs);
-			rootElement.appendChild(outputs);
-
-			doc.appendChild(rootElement);
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult streamResult = new StreamResult(new File(test.getOutputPath()));
-			transformer.transform(source, streamResult);
-			logger.info("Results were written in:", test.getOutputPath());
-		} catch (ParserConfigurationException | TransformerException ex) {
-			logger.error("Error when writing results:", ex.getMessage());
-			ex.printStackTrace();
-		}
-
-	}
 
 }

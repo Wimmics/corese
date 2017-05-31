@@ -92,7 +92,7 @@ public class GnuplotDrawer {
 					if (result) {
 						logger.log(Level.INFO, "accepting file {0}", name);
 					} else {
-						logger.log(Level.FINEST, "refusing file {0}", name);
+						logger.log(Level.INFO, "refusing file {0}", name);
 					}
 					return result;
 				}
@@ -105,8 +105,10 @@ public class GnuplotDrawer {
 		// Processing the files.
 		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		final DocumentBuilder builder = factory.newDocumentBuilder();
-		Map<Long, Long> dbCoords = new TreeMap<Long, Long>();
-		Map<Long, Long> memoryCoords = new TreeMap<Long, Long>();
+		Map<Long, Double> databaseCpuCoords = new TreeMap<>();
+		Map<Long, Double> inMemoryCpuCoords = new TreeMap<>();
+		Map<Long, Double> databaseMemoryCoords = new TreeMap<>();
+		Map<Long, Double> inMemoryMemoryCoords = new TreeMap<>();
 		String request = "";
 		for (File currentFile : files) {
 			logger.log(Level.INFO, "processing file {0}", currentFile.getCanonicalFile());
@@ -126,58 +128,83 @@ public class GnuplotDrawer {
 			long size = guessSize(document);
 			logger.log(Level.INFO, "guessed size = {0}", size);
 
-			long memoryMedian = readMedian(document, "StatsMemory");
-			logger.log(Level.INFO, "memory median = {0}", memoryMedian);
-			memoryCoords.put(size, memoryMedian);
+			double inMemoryCpuMedian = readMedian(document, "StatsMemory");
+			logger.log(Level.INFO, "memory median = {0}", inMemoryCpuMedian);
+			inMemoryCpuCoords.put(size, inMemoryCpuMedian);
 
-			long dbMedian = readMedian(document, "StatsDb");
-			logger.log(Level.INFO, "db median = {0}", dbMedian);
-			dbCoords.put(size, dbMedian);
+			double databaseCpuMedian = readMedian(document, "StatsDb");
+			logger.log(Level.INFO, "db median = {0}", databaseCpuMedian);
+			databaseCpuCoords.put(size, databaseCpuMedian);
+
+			double inMemoryMemoryMedian = readMedian(document, "StatsMemoryConsumption-corese-memory");
+			logger.log(Level.INFO, "inMemoryMemoryMedian = {0}", inMemoryMemoryMedian);
+			inMemoryMemoryCoords.put(size, inMemoryMemoryMedian);
+
+			double databaseMemoryMedian = readMedian(document, "StatsMemoryConsumption-corese-db");
+			logger.log(Level.INFO, "databaseMemoryMedian = {0}", databaseMemoryMedian);
+			databaseMemoryCoords.put(size, databaseMemoryMedian);
 		}
 
-		// Building the gnuplot file .dat
-		File result = new File("graph.dat");
-		BufferedWriter bw = new BufferedWriter(new FileWriter(result));
+		// Building the gnuplot file .dat for cpu consumption
+		File resultCpu = new File("graphCpu.dat");
+		BufferedWriter bw = new BufferedWriter(new FileWriter(resultCpu));
 		bw.append("# number of samples   |  median time in milliseconds");
 		bw.newLine();
 		bw.append("# Memory results\\n");
 		bw.newLine();
-		for (long nbSamples : memoryCoords.keySet()) {
-			bw.append(nbSamples + " " + memoryCoords.get(nbSamples));
+		for (long nbSamples : inMemoryCpuCoords.keySet()) {
+			bw.append(nbSamples + " " + inMemoryCpuCoords.get(nbSamples));
 			bw.newLine();
 		}
 		bw.newLine();
 		bw.newLine();
-		for (long nbSamples : dbCoords.keySet()) {
-			bw.append(nbSamples + " " + dbCoords.get(nbSamples));
+		for (long nbSamples : databaseCpuCoords.keySet()) {
+			bw.append(nbSamples + " " + databaseCpuCoords.get(nbSamples));
+			bw.newLine();
+		}
+		bw.close();
+
+		// Building the gnuplot file .dat for cpu consumption
+		File resultMemory = new File("graphMemory.dat");
+		bw = new BufferedWriter(new FileWriter(resultMemory));
+		bw.append("# number of samples   |  median memory consumption in bytes");
+		bw.newLine();
+		bw.append("# Memory results\\n");
+		bw.newLine();
+		for (long nbSamples : inMemoryMemoryCoords.keySet()) {
+			bw.append(nbSamples + " " + inMemoryMemoryCoords.get(nbSamples));
+			bw.newLine();
+		}
+		bw.newLine();
+		bw.newLine();
+		for (long nbSamples : databaseMemoryCoords.keySet()) {
+			bw.append(nbSamples + " " + databaseMemoryCoords.get(nbSamples));
 			bw.newLine();
 		}
 		bw.close();
 
 		// Execute gnuplot to generate the .pdf
 		Map<String, String> scriptVariables = new HashMap<>();
-		scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), result.getAbsolutePath());
-		String title = String.format("Logarithmic graph of time duration by sample size / %s\\\\n%s", request, getGitVersion(repoPath));
+		scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), resultCpu.getAbsolutePath());
+		String title = String.format("Logarithmic graph of time duration by sample size\\\\n%s\\\\n%s", request, getGitVersion(repoPath));
 		scriptVariables.put(ScriptVariables.TITLE.name(), title);
 		scriptVariables.put(ScriptVariables.OUTPUT_FILE.name(), outputPdf);
 		scriptVariables.put(ScriptVariables.TITLE_SET1.name(), "memory");
 		scriptVariables.put(ScriptVariables.TITLE_SET2.name(), "neo4j");
-		File gnuplotScript = File.createTempFile("gnuplotScript", ".plot");
-		final BufferedWriter gnuplotBw = new BufferedWriter(new FileWriter(gnuplotScript));
-		InputStreamReader gnuplotScriptResource = new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("recession.plot"));
-		BufferedReader reader = new BufferedReader(gnuplotScriptResource);
-		reader.lines().forEachOrdered((s) -> {
-			try {
-				for (String variableName : scriptVariables.keySet()) {
-					s = s.replaceAll("<" + variableName + ">", scriptVariables.get(variableName));
-				}
-				gnuplotBw.append(s);
-				gnuplotBw.newLine();
-			} catch (IOException ex) {
-				Logger.getLogger(GnuplotDrawer.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		});
-		gnuplotBw.close();
+
+		File gnuplotScript = writeFileWithValues(scriptVariables);
+		generatePdf(gnuplotScript, outputPdf, gnuplotPath);
+
+		title = String.format("Logarithmic gdurationraph of memory consumption by sample size\\\\n%s\\\\n%s", request, getGitVersion(repoPath));
+		scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), resultMemory.getAbsolutePath());
+		scriptVariables.put(ScriptVariables.TITLE.name(), title);
+		outputPdf = outputPdf.replace(".pdf", "_memory.pdf");
+		scriptVariables.put(ScriptVariables.OUTPUT_FILE.name(), outputPdf);
+		gnuplotScript = writeFileWithValues(scriptVariables);
+		generatePdf(gnuplotScript, outputPdf, gnuplotPath);
+	}
+
+	private static void generatePdf(File gnuplotScript, String outputPdf, String gnuplotPath) throws IOException {
 		logger.info("PDF written in " + outputPdf);
 		Process gnuplot = Runtime.getRuntime().exec(gnuplotPath + " " + gnuplotScript.getAbsolutePath());
 		BufferedReader oreader = new BufferedReader(new InputStreamReader(gnuplot.getInputStream()));
@@ -186,12 +213,38 @@ public class GnuplotDrawer {
 		ereader.lines().forEachOrdered(System.err::println);
 	}
 
-	private static int extractMedian(NodeList node) {
-		Pattern medianExtract = Pattern.compile(".*median: (\\d+)\\.\\d+.*", Pattern.DOTALL);
+	private static File writeFileWithValues(Map<String, String> scriptVariables) throws IOException {
+		File gnuplotScript = File.createTempFile("gnuplotScript", ".plot");
+		logger.info("writing gnuplot script in " + gnuplotScript.getAbsolutePath());
+		final BufferedWriter gnuplotBw = new BufferedWriter(new FileWriter(gnuplotScript));
+		InputStreamReader gnuplotScriptResource = new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("recession.plot"));
+		BufferedReader reader = new BufferedReader(gnuplotScriptResource);
+
+		reader.lines()
+			.forEachOrdered((s) -> {
+				try {
+					for (String variableName : scriptVariables.keySet()) {
+						String value = scriptVariables.get(variableName);
+						value = value.replace("\"", "\\\\\"");
+						s = s.replaceAll("<" + variableName + ">", value);
+					}
+					gnuplotBw.append(s);
+					gnuplotBw.newLine();
+				} catch (IOException ex) {
+					Logger.getLogger(GnuplotDrawer.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			);
+		gnuplotBw.close();
+		return gnuplotScript;
+	}
+
+	private static double extractMedian(NodeList node) {
+		Pattern medianExtract = Pattern.compile(".*median:\\s+(\\S+).*", Pattern.DOTALL);
 		String textStat = node.item(0).getTextContent();
 		Matcher matcher = medianExtract.matcher(textStat);
 		if (matcher.matches()) {
-			int result = Integer.parseInt(matcher.group(1));
+			double result = Double.parseDouble(matcher.group(1));
 			return result;
 		} else {
 			throw new IllegalArgumentException("the node provided does not contain any median");
@@ -204,6 +257,11 @@ public class GnuplotDrawer {
 		Pattern patternWithAddress = Pattern.compile(".*(?:nq|gz)[_:](\\d+)_(\\d+)_db");
 		Pattern patternSize = Pattern.compile(".*(?:nq|gz)[_:](\\d+)_db");
 		Pattern patternSimple = Pattern.compile(".*(?:nq|gz)_db");
+		Pattern for40m = Pattern.compile(".*-00\\(0\\|1\\|2\\|3\\).nq.gz_db");
+		Pattern for100m = Pattern.compile(".*-00\\d+.nq.gz_db");
+		Pattern for1g = Pattern.compile(".*-0\\d+.nq.gz_db");
+		Pattern for4g = Pattern.compile(".*-\\d+.nq.gz_db");
+
 		Matcher m = patternWithAddress.matcher(dbName);
 		if (m.matches()) {
 			long start = Long.parseLong(m.group(1));
@@ -213,10 +271,17 @@ public class GnuplotDrawer {
 			m = patternSize.matcher(dbName);
 			if (m.matches()) {
 				size = Long.parseLong(m.group(1));
+			} else if (for4g.matcher(dbName).matches()) {
+				size = 4_000_000_000L;
+			} else if (for1g.matcher(dbName).matches()) {
+				size = 1_000_000_000L;
+			} else if (for100m.matcher(dbName).matches()) {
+				size = 100_000_000L;
+			} else if (for40m.matcher(dbName).matches()) {
+				size = 40_000_000;
 			} else {
-				m = patternSimple.matcher(dbName);
-				if (m.matches()) {
-					size = 10_000_000; 
+				if (patternSimple.matcher(dbName).matches()) {
+					size = 10_000_000;
 				} else {
 					size = -1;
 				}
@@ -232,9 +297,9 @@ public class GnuplotDrawer {
 		return result;
 	}
 
-	private static long readMedian(Document document, String xmlNodeName) {
+	private static double readMedian(Document document, String xmlNodeName) {
 		NodeList dbStats = document.getElementsByTagName(xmlNodeName);
-		long median;
+		double median;
 		if (dbStats.getLength() == 0) {
 			median = -100;
 		} else {

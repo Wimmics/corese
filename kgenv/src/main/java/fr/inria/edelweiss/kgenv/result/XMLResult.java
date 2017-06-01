@@ -140,8 +140,13 @@ public class XMLResult {
 	}
 	
 	public Mappings parseString(String str) throws ParserConfigurationException, SAXException, IOException{
-		return parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
+		return parseString(str, "UTF-8");
 	}
+        
+        public Mappings parseString(String str, String encoding) throws ParserConfigurationException, SAXException, IOException{
+		return parse(new ByteArrayInputStream(str.getBytes(encoding))); 
+	}
+        
 	
 	public Mappings parse(String path) throws ParserConfigurationException, SAXException, IOException{
 		InputStream stream = getStream(path);

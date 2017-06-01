@@ -3,6 +3,7 @@ package fr.inria.edelweiss.kgtool.load;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -22,6 +23,7 @@ public class Service {
 
     public static final String QUERY = "query";
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
+    static final String ENCODING = "UTF-8";
     
     boolean isDebug = !true;
     String service;
@@ -46,11 +48,11 @@ public class Service {
         if (m != null){
             mapping(query, m);
         }
-        if (ast.isSelect() || ast.isAsk()){         
-           map = parseMapping(process(ast.toString())); 
+        if (ast.isSelect() || ast.isAsk()){  
+           map = parseMapping(process(ast.toString()), encoding(ast)); 
         }
         else {
-            Graph g = parseGraph(process(ast.toString()));
+            Graph g = parseGraph(process(ast.toString()), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
@@ -70,8 +72,7 @@ public class Service {
          return process(query, MIME_TYPE);
      }
      
-    
-    public String process(String query, String mime) {
+  public String process(String query, String mime) {
         if (isDebug){
             System.out.println(query);
         }
@@ -85,11 +86,22 @@ public class Service {
         }
         return res;
     }
-    
+  
+    String encoding(ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.ENCODING)) {
+            return ast.getMetadata().getStringValue(Metadata.ENCODING);
+        }
+        return ENCODING;
+    }
+     
     public Mappings parseMapping(String str) throws LoadException {
+        return parseMapping(str, ENCODING);
+    }
+    
+    public Mappings parseMapping(String str, String encoding) throws LoadException {
         SPARQLResult xml = SPARQLResult.create(Graph.create());
         try {
-            Mappings map = xml.parseString(str);
+            Mappings map = xml.parseString(str, encoding);
             if (isDebug) {
                 System.out.println(map);
             }
@@ -103,7 +115,11 @@ public class Service {
         }
     }
     
-   public Graph parseGraph(String str) throws LoadException{
+    public Graph parseGraph(String str) throws LoadException {
+        return parseGraph(str, ENCODING);
+    }
+
+    public Graph parseGraph(String str, String encoding) throws LoadException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.loadString(str, Load.RDFXML_FORMAT);

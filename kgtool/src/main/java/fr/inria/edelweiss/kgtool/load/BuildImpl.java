@@ -8,7 +8,6 @@ import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * Graph creation
@@ -43,6 +42,7 @@ public class BuildImpl implements Build {
 		return new BuildImpl(g);
 	}
 	
+        @Override
 	public void statement(AResource subj, AResource pred, ALiteral lit) {
 		if (accept(pred.getURI())){
 			Node subject 	= getSubject(subj);
@@ -54,9 +54,9 @@ public class BuildImpl implements Build {
 		}
 	}
 	
+        @Override
 	public void statement(AResource subj, AResource pred, AResource obj) {
-		if (accept(pred.getURI())){			
-			
+		if (accept(pred.getURI())){						
 			Node subject 	= getSubject(subj);
 			Node predicate 	= getProperty(pred);
 			Node value 	= getNode(obj);
@@ -65,6 +65,7 @@ public class BuildImpl implements Build {
 		}
 	}
 	
+        @Override
 	public void setSource(String src){
             if (source == null || ! src.equals(source)){
                 source = src;
@@ -76,6 +77,7 @@ public class BuildImpl implements Build {
 		skip = b;
 	}
 	
+        @Override
 	public void exclude(String ns){
 		if (ns == null){
 			exclude.clear();
@@ -88,11 +90,13 @@ public class BuildImpl implements Build {
 		}
 	}
 	
+        @Override
 	public void start(){
 		graph.setUpdate(true);
 		blank.clear();
 	}
         
+        @Override
         public void finish(){
             
         }
@@ -127,10 +131,12 @@ public class BuildImpl implements Build {
 	public Node getLiteral(AResource pred, ALiteral lit){
 		String lang = lit.getLang();
 		String datatype = lit.getDatatypeURI();
-		if (lang == "") lang = null;
+		if (lang == ""){
+                    lang = null;
+                }
 		return graph.addLiteral(pred.getURI(), lit.toString(), datatype, lang);
 	}
-	
+               	
 	public Node getProperty(AResource res){
 		return graph.addProperty(res.getURI());		
 	}
@@ -172,6 +178,7 @@ public class BuildImpl implements Build {
     /**
      * @return the limit
      */
+        @Override
     public int getLimit() {
         return limit;
     }
@@ -179,6 +186,7 @@ public class BuildImpl implements Build {
     /**
      * @param limit the limit to set
      */
+        @Override
     public void setLimit(int limit) {
         this.limit = limit;
     }

@@ -2,7 +2,7 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <function://fr.inria.corese.extension.DataShape>  
 
-template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?l, ?o){
+template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?v, ?o){
     let (?suc = false, ?b = java:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
         sh:safe(?shape, ?sh, ?suc)
     } 

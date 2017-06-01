@@ -14,7 +14,9 @@ where {
       sh:and sh:or sh:xone sh:not 
       sh:qualifiedValueShape sh:sparql
     }
-    ?sh ?oper ?b    
+    ?sh ?oper ?b  
+    # uniqueLang test case requires boolean true and skip boolean "1"^^xsd:boolean !!!
+    filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
   }
   
   values ?s { unnest(?ls) }

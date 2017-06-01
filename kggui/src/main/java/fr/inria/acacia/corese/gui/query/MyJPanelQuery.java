@@ -535,7 +535,10 @@ public final class MyJPanelQuery extends JPanel {
         } else if (dt.isPointer()) {
             return dt.getPointerObject().toString();
         } else if (dt.isLiteral()) { 
-            return dt.toString();
+            if (dt.getCode() == IDatatype.STRING || (dt.getCode() == IDatatype.LITERAL && ! dt.hasLang())){
+                return dt.stringValue();
+            }
+            return dt.toString(); 
         } 
         else if (dt.isURI()){
             return dt.toString();

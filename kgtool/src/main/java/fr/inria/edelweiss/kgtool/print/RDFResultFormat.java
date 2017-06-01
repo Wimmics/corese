@@ -26,6 +26,7 @@ public class RDFResultFormat implements Graphable {
         return new RDFResultFormat(m);
     }
     
+    @Override
     public  String toString(){
         Serializer sb = process();
         return sb.toString();

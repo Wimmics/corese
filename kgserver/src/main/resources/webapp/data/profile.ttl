@@ -11,6 +11,26 @@ prefix o:    <http://dbpedia.org/ontology/>
 #[] owl:imports <profile-test.ttl>
 
 
+st:azkar a st:Server ;
+st:service "azkar" ;
+
+st:content st:democontent ;
+st:param [
+    st:include (("mode" st:mode)("param" st:param)) ;
+    st:hyperlink true ;
+    st:export true
+]
+.
+
+
+
+st:democontent a sw:Workflow ; sw:body (
+    [ a sw:Load ; sw:path <azkar/dataSet.ttl>  ; sw:name st:data1 ] 
+    [ a sw:Load ; sw:path <azkar/Ontologie.ttl>  ; sw:name st:data2 ] 
+  )
+.
+
+
 st:dbpedia a st:Profile ;   
   st:param [ 
     st:lang "fr" ;
@@ -27,6 +47,28 @@ st:dbpediawf a sw:Workflow ;
   )
 .
 
+
+st:dbpediatest a st:Profile ;   
+  st:param [ 
+  st:export true;
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam  ;  
+    st:hyperlink true
+  ] ;
+  st:workflow st:dbpediatestwf
+  .
+  
+  
+st:dbpediatestwf a sw:Workflow ;
+  sw:body ( 
+    <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+    [ a sw:Transformation ; sw:uri st:hturtle ]
+  )
+.
+
+
+
+
 #http://localhost:8080/srv/template?profile=st:hal&uri=https://aurehal.archives-ouvertes.fr/structure/178918/rdf
 
 
@@ -42,6 +84,7 @@ st:param [
     st:hyperlink true ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
         (<http://www.w3c.org/ns/org> st:hal)    
         ("*" st:lod)
     ) 
@@ -55,6 +98,41 @@ st:workflow [
     )
 ]
 .
+
+#
+# Display SPARQL Results Format using W3C RDF graph format 
+# and hturtle with hyperlinks
+# To be used with query=...
+#
+st:halendpoint a st:Profile ;
+st:transform st:hturtle ;
+st:param [
+    st:hyperlink true ;
+    st:export true ;
+    st:param "verbatim" ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    ) 
+] .
+
+
+#
+# Display SPARQL Results Format using W3C RDF graph format 
+# and hturtle with hyperlinks
+# To be used with query=...
+#
+st:endpoint a st:Profile ;
+st:transform st:hturtle ;
+st:param [
+    st:hyperlink true ;
+    st:export true ;
+    st:param "verbatim" 
+] .
+
+
 
 
 st:hal2 a st:Server ;
@@ -89,14 +167,17 @@ sw:body (
 .
   
 st:hturtle a st:Profile ;
-st:workflow st:hturtleWF .
+st:workflow st:hturtleWF ;
+st:param [
+    st:hyperlink true ;
+    st:export true
+] .
 
 st:hturtleWF a sw:Workflow ; 
 sw:body ( 
   [ a sw:Transformation ; sw:uri st:hturtle ] 
 )  . 
 
-  
 st:turtle a st:Profile ;
 st:workflow st:turtleWF .
 
@@ -289,7 +370,8 @@ st:rdfs a st:Profile ;
 # change name to st:default
 # User profile loaded using -pp option
 #
-st:default2 a st:Server ;
+st:default a st:Server ;
+st:param [ st:ldp <http://www.inria.fr/2015/humans-instances#> ] ;
 st:content st:humancontent
 .
 
@@ -371,13 +453,52 @@ st:tutocontent a sw:Workflow ; sw:body (
    sw:body 
    "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
 .
-  
+
    
 # execute the whole query list of the tutorial above
 st:tutocheck a st:Profile ;
    st:workflow  
       [ a sw:Workflow ; sw:uri <tutorial/workflow.ttl>  ]      
 . 
+
+
+st:tutorialhal a st:Server ;
+  st:param [ st:lang 'en' ; 
+    st:sttl st:hturtle ; 
+    st:param "verbatim" ; 
+    st:hyperlink true ; 
+    st:export true ;
+    st:focus false ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:service "tutohal" ;
+  st:transform st:web ;
+  st:content st:tutohal
+.
+
+st:tutohal a sw:Workflow ; sw:body ( 
+    [ a sw:Parallel ; sw:body ( 
+      # main is empty
+          #  st:humancontent  
+
+      [ a sw:Workflow ; sw:body ( [ a sw:Load ; sw:path <tutorial/workflowhal.ttl> ] ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/workflowhal.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+	  
+      ) ]    
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+
+
 
   
 st:rome a st:Server ;   

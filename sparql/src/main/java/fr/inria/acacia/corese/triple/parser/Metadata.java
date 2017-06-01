@@ -33,6 +33,7 @@ public class Metadata extends ASTObject
     public static final int COMPILE = 17;
     public static final int SKIP    = 18;
     public static final int PATH    = 19;
+    public static final int ENCODING    = 20;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -77,6 +78,7 @@ public class Metadata extends ASTObject
         define("@more",     MORE);      
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
+        define("@encoding",     ENCODING);      
         define("@bind",     BIND);      
         define("@import",   IMPORT);      
         define("@display",  DISPLAY);      
@@ -179,6 +181,14 @@ public class Metadata extends ASTObject
        
     public String getValue(int type){
         return getValue(name(type)); 
+    }
+    
+    public String getStringValue(int type){
+        String value = getValue(type);
+        if (value == null){
+            return null;
+        }
+        return NSManager.nstrip(value);
     }
     
     public boolean hasValue(int meta, String value){

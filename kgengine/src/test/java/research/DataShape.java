@@ -5,20 +5,15 @@
 package research;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
-import fr.inria.edelweiss.kgenv.eval.Hash;
-import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.transform.Loader;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,7 +167,7 @@ public class DataShape {
     public void test() throws LoadException, EngineException, IOException {
         // 4 distinct from 4.0
         report = new EarlReport("file://" + data);
-        DatatypeMap.setSPARQLCompliant(true);
+        //DatatypeMap.setSPARQLCompliant(true);
         for (String name : names) {
 
 //            if (!name.contains("property")){

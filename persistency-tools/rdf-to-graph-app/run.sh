@@ -7,6 +7,9 @@ if [ $# -ne $EXPECTED_ARGS ]; then
 	echo "Usage: `basename $0` {input_regexp} {database_path} {database_driver}"
 	echo "Note: input_regexp follows the regexp syntax of Java"
 	echo "Note: database_driver must be chosen among available drivers (neo4j, titandb, etc}"
+        echo "Example:"
+        echo "`basename $0` ./human.rdf /tmp/human_db neo4j"
+        echo "   creates the database /tmp/human_db, using neo4J and loading the data contained in ./human.rdf"
 	exit $E_BADARGS
 fi
 

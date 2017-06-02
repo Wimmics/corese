@@ -229,4 +229,9 @@ public class MetaProducer implements Producer, Iterable<Producer> {
         return producer.copy(ent);
     }
 
+	@Override
+	public void close() {
+
+	}
+
 }

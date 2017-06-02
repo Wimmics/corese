@@ -58,6 +58,9 @@ import java.util.Map;
  *
  */
 public class Graph extends GraphObject implements Graphable, TripleStore {
+    static {
+	    Corese.init();
+    }
 
     private static Logger logger = LogManager.getLogger(Graph.class);
     public static final String TOPREL
@@ -194,7 +197,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     static {
         setCompareIndex(true);
     }
-    
     // SortedMap m = Collections.synchronizedSortedMap(new TreeMap(...))
     /**
      * @return the isSkolem
@@ -495,20 +497,19 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
     
     
-    Graph() {
+    public Graph() {
         this(LENGTH);
     }
 
-    Graph(int length) {
+    public Graph(int length) {
         lock = new ReentrantReadWriteLock();
 
         tables = new ArrayList<Index>(length);
 
         for (int i = 0; i < length; i++) {
-            // edge Index by subject, object
             tables.add(createIndex(byIndex, i));
         }
-        // edge Index by named graph
+
         tgraph = createIndex(byIndex, IGRAPH);
         tables.add(tgraph);
 
@@ -1114,7 +1115,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     public void compact(){
         cleanIndex();
-        if (isGraphNode(getNode(Graph.RULE_INDEX))){
+        if (containsCoreseNode(getNode(Graph.RULE_INDEX))){
             table.compact();
         }
     }
@@ -1296,9 +1297,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * PRAGMA: there is no duplicate in list, all edges are inserted predicate
-     * is declared in graph TODO: if same predicate, perform ensureCapacity on
-     * Index list
+	 * PRAGMA: there is no duplicate in list, all edges are inserted
+	 * predicate is declared in graph TODO: if same predicate, perform
+	 * ensureCapacity on Index list
      */
     void add(Node p, List<Entity> list) {
         setIndex(true);
@@ -1728,8 +1729,13 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     /**
      * Assign an index to Literal Node Assign same index to same number values:
+<<<<<<< master
      * same datatype with same value and different label have same index
      * 1 and 01 have same index: they join with SPARQL
+=======
+     * 1, '1'^^xsd:double, 1.0 have same index If EdgeIndex is sorted by index,
+     * dichotomy enables join on semantically equivalent values
+>>>>>>> HEAD~207
      */
     void indexLiteralNode(IDatatype dt, Node node) {
         if (isSameIndexAble(dt)) {
@@ -1772,14 +1778,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public void addGraphNode(Node gNode) {
-        if (!isGraphNode(gNode)) {
+        if (!containsCoreseNode(gNode)) {
             //graph.put(gNode.getLabel(), gNode);
             graph.put(getID(gNode), gNode);
             indexNode((IDatatype) gNode.getValue(), gNode);
         }
     }
 
-    public boolean isGraphNode(Node node) {
+    public boolean containsCoreseNode(Node node) {
         //return graph.containsKey(node.getLabel());
         return graph.containsKey(getID(node));
     }
@@ -2427,8 +2433,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         
         return new GraphCompare(this, g2).compare(isGraph, detail, isDebug);
-    }
-    
+		}
+
 
     /**
      * Create a graph for each named graph
@@ -2934,9 +2940,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Entity ee = addEdgeWithNode(e);
         return ee;
     }
-    
-    
-
     /**
      * Add Edge, not add nodes
      */

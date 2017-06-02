@@ -5,3 +5,6 @@ log/
 .settings
 .idea
 *.iml
+/kgtool/nbproject/
+/kgenv/nbproject/
+/persistency-tools/coresedb-benchmark/nbproject/

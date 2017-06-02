@@ -108,7 +108,7 @@ public class DataFrom extends DataFilter {
     boolean isFromOK(List<Node> from) {
         for (Node node : from) {
             Node tfrom = graph.getNode(node);
-            if (tfrom != null && graph.isGraphNode(tfrom)) {
+            if (tfrom != null && graph.containsCoreseNode(tfrom)) {
                 return true;
             }
         }

@@ -53,7 +53,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
-    static final String TOPREL = Graph.TOPREL;
+    public static final String TOPREL = Graph.TOPREL;
     List<Entity> empty   = new ArrayList<Entity>(0);
     List<Node> emptyFrom = new ArrayList<Node>(0);
     DataProducer ei;
@@ -122,11 +122,11 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
     }
 
-    void setMatch(boolean b) {
+    public void setMatch(boolean b) {
         isMatch = b;
     }
 
-    boolean isMatch() {
+    public boolean isMatch() {
         return isMatch;
     }
 
@@ -412,7 +412,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     boolean isFromOK(List<Node> from) {
         for (Node node : from) {
             Node tfrom = graph.getNode(node);
-            if (tfrom != null && graph.isGraphNode(tfrom)) {
+            if (tfrom != null && graph.containsCoreseNode(tfrom)) {
                 return true;
             }
         }
@@ -770,7 +770,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
         // TODO Auto-generated method stub
         Node node = env.getNode(gNode);
-        if (!graph.isGraphNode(node)) {
+        if (!graph.containsCoreseNode(node)) {
             return false;
         }
         if (from.isEmpty()) {
@@ -1001,4 +1001,8 @@ public class ProducerImpl implements Producer, IProducerQP {
         return ent;
     }
 
+    @Override
+    public void close() {
+	    
+    }
 }

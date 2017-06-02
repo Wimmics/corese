@@ -174,4 +174,6 @@ public class ProducerDefault implements Producer {
         return ent;
     }
 
+    @Override
+	public void close(){};
 }

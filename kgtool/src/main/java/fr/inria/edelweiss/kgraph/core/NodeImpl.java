@@ -6,6 +6,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import java.util.Objects;
 
 /**
  * Node
@@ -13,7 +14,7 @@ import fr.inria.edelweiss.kgram.api.core.TripleStore;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class NodeImpl extends GraphObject implements Node, Entity {
+public class NodeImpl extends GraphObject implements Node, Entity, Comparable<NodeImpl> {
 
 //    String key = INITKEY;
     public static boolean byIDatatype = false;
@@ -26,7 +27,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     }
 
     public static Node create(IDatatype val) {
-        if (byIDatatype){
+		if (byIDatatype) {
             return val;
         }
         return new NodeImpl(val);
@@ -117,10 +118,11 @@ public class NodeImpl extends GraphObject implements Node, Entity {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-       // hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
-        hash = 67 * hash + (this.dt != null ? this.dt.hashCode() : 0);
-        return hash;
+		return Objects.hashCode(this.dt);
+//		int hash = 7;
+//		// hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
+//		hash = 67 * hash + (this.dt != null ? this.dt.hashCode() : 0);
+//		return hash;
     }
 
     @Override
@@ -189,7 +191,7 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     }
     
     @Override
-    public void setProvenance(Object obj){
+	public void setProvenance(Object obj) {
         
     }
 
@@ -202,4 +204,9 @@ public class NodeImpl extends GraphObject implements Node, Entity {
     public TripleStore getTripleStore() {
         return graph;
     }
+
+	@Override
+	public int compareTo(NodeImpl o) {
+		return o.dt.compareTo(dt);
+	}
 }

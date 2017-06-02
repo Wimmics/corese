@@ -575,4 +575,9 @@ public class RemoteSqlProducerImpl implements Producer {
     public Entity copy(Entity ent) {
         return ent;
     }
+
+    @Override
+    public void close() {
+
+    }
 }

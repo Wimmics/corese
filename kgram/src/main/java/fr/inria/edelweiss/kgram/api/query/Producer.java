@@ -222,4 +222,6 @@ public interface Producer {
          Node getGraphNode();
          
          Entity copy(Entity ent);
+
+	 void close();
 }

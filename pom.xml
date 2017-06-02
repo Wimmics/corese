@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-<!--
+	<!--
 	Corese/KGRAM 3.0, Wimmics Inria I3S, 2013
 	Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules
 	Open Source Free Software 
@@ -8,27 +8,27 @@
 	Web site: http://wimmics.inria.fr/corese
 	Contact: olivier.corby@inria.fr
 	-->
-<!-- metadata: human readable informations for central -->
-        <description>Corese is a Semantic Web Factory (triple store and SPARQL endpoint) implementing RDF, RDFS, SPARQL 1.1 Query and Update.</description>
-        <url>https://github.com/Wimmics/corese</url>
-        <licenses>
-                <license>
-                        <name>CeCILL-C License:</name>
-                        <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html</url>
-                </license>
-        </licenses>
+	<!-- metadata: human readable informations for central -->
+	<description>Corese is a Semantic Web Factory (triple store and SPARQL endpoint) implementing RDF, RDFS, SPARQL 1.1 Query and Update.</description>
+	<url>https://github.com/Wimmics/corese</url>
+	<licenses>
+		<license>
+			<name>CeCILL-C License:</name>
+			<url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html</url>
+		</license>
+	</licenses>
 
-        <scm>
-                <url>https://github.com/Wimmics/corese.git</url>
-        </scm>
+	<scm>
+		<url>https://github.com/Wimmics/corese.git</url>
+	</scm>
 
-        <!-- end of central metada -->
+	<!-- end of central metada -->
 	<modelVersion>4.0.0</modelVersion>
     
 	<groupId>fr.inria.wimmics</groupId>
 	<artifactId>corese-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.2.1-SNAPSHOT</version>
+	<version>3.2.1p-SNAPSHOT</version>
 	<name>corese-parent</name>
  
 	<developers>
@@ -87,6 +87,9 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.14.1</version>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -106,8 +109,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
@@ -141,9 +144,9 @@
     
 	<properties>
 		<!-- Unique entry point for version number management --> 
-		<global.version>3.2.1-SNAPSHOT</global.version>
+		<global.version>3.2.1p-SNAPSHOT</global.version>
 		<!-- To ignore errors in javadoc usage. -->
-    		<additionalparam>-Xdoclint:none</additionalparam>
+		<additionalparam>-Xdoclint:none</additionalparam>
 		<!-- Sonar -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -156,7 +159,6 @@
 		<module>engine</module>
 		<module>kgengine</module>
 		<module>kgenv</module>
-		<module>kggui</module>
 		<module>kgtool</module>
 		<module>kgserver</module>
 		<!--<module>kgserver-stubs</module>-->
@@ -166,10 +168,50 @@
 		<module>rif</module>
 		<module>rtc</module> <!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
+		<module>tinkerpop</module>
+		<module>kggui</module>
+		<module>persistency-tools</module>
 	</modules>
     
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-rio-api</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-rio-nquads</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-model</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-util</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-sail-nativerdf</artifactId>
+				<version>4.1.1</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-sail</artifactId>
+				<version>4.1.1</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-rio-rdfxml</artifactId>
+				<version>4.1.1</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
@@ -331,38 +373,38 @@
 	</dependencyManagement>
     
 	<profiles>
-			<!-- Jenkins by default defines a property BUILD_NUMBER which is used to enable the profile. -->
-			<profile>
-			    <id>jenkins</id>
-			    <activation>
+		<!-- Jenkins by default defines a property BUILD_NUMBER which is used to enable the profile. -->
+		<profile>
+			<id>jenkins</id>
+			<activation>
 				<property>
-				    <name>env.BUILD_NUMBER</name>
+					<name>env.BUILD_NUMBER</name>
 				</property>
-			    </activation>
-			    <build>
+			</activation>
+			<build>
 				<plugins>
-				    <plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>cobertura-maven-plugin</artifactId>
-					<version>2.2</version>
-					<configuration>
-						<aggregate>true</aggregate>
-					    <formats>
-						<format>xml</format>
-					    </formats>
-					</configuration>
-					<executions>
-					    <execution>
-						<phase>package</phase>
-						<goals>
-						    <goal>cobertura</goal>
-						</goals>
-					    </execution>
-					</executions>
-				    </plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>cobertura-maven-plugin</artifactId>
+						<version>2.7</version>
+						<configuration>
+							<aggregate>true</aggregate>
+							<formats>
+								<format>xml</format>
+							</formats>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>cobertura</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
-			    </build>
-			</profile>
+			</build>
+		</profile>
 		<profile> 
 			<id>release</id>
 			<build>

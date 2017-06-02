@@ -89,7 +89,7 @@ public class EdgeGeneric extends EdgeTop
 		sb.append(getEdgeNode());
 		sb.append(subject);
 		sb.append(" ");
-		sb.append(object);		
+		sb.append(object);
 		sb.append(")");
 		return sb.toString();
 	}
@@ -186,6 +186,4 @@ public class EdgeGeneric extends EdgeTop
     public void setProvenance(Object obj) {         
         prov = obj;
     }
-    
 }
-

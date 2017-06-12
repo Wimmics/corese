@@ -304,7 +304,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     /**
      * Enumerate candidate edges either from default graph or from named graphs
      */
-    Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from,
+    public Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int n) {
         return dataProducer(gNode, from, sNode).iterate(predicate, focusNode, n);
     }
@@ -443,20 +443,28 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
             Regex exp, Node src, Node start, int index) {
-
+        boolean isdb = isDB();
+        
         if (start == null) {
             Node qNode = edge.getNode(index);
             if (qNode.isConstant()) {
                 //	start = qNode;
                 start = graph.getExtNode(qNode);
                 if (start == null) {
-                    return empty;
+                    if (isdb){
+                        start = qNode;
+                    }
+                    else {
+                        return empty;
+                    }
                 }
             }
         }
 
         if (start != null && isExtern(start, env)){
-            start = graph.getNode(start);
+            if (! isdb){
+                start = graph.getNode(start);
+            }
         }
 
         if (exp.isReverse()) {
@@ -471,14 +479,23 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         Node predicate = graph.getPropertyNode(exp.getLongName());
         if (predicate == null) {
-            return empty;
+            if (isdb){
+                predicate = (IDatatype) exp.getDatatypeValue();
+            }
+            else {
+                return empty; 
+            }
         }
         
         Iterable<Entity> it = getEdges(gNode, src, from, predicate, start, null, index);
                
         return it;
     }
-
+    
+    boolean isDB(){
+        return getClass() != ProducerImpl.class;
+    }
+    
     /**
      * regex is a negation ?x ! rdf:type ?y ?x !(rdf:type|rdfs:subClassOf) ?y
      * enumerate properties but those in the negation
@@ -847,7 +864,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     public boolean isProducer(Node node) {
         IDatatype dt = (IDatatype) node.getValue();
         if (dt.getObject() != null) {
-            return toRDF.isGraphAble(dt.getObject());
+            return toRDF.isGraphAble(dt.getObject()) || dt.getObject() instanceof Producer;
         }
         // system named graph in a GraphStore
         return graph.getNamedGraph(node.getLabel()) != null;
@@ -864,7 +881,10 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         if (obj == null) {
             g = graph.getNamedGraph(node.getLabel());
-        } else {
+        } else if (obj instanceof Producer) {
+            return (Producer) obj;
+        }
+        else {
             g = toRDF.getGraph(obj);
         }
 

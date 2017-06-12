@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
@@ -152,8 +153,7 @@ public class PluginImpl extends ProxyImpl {
 
             case KG_GRAPH:
                 return getGraph(p);
-                           
-                          
+                
             case SIM:
                 Graph g = getGraph(p);
                 if (g == null){
@@ -187,6 +187,7 @@ public class PluginImpl extends ProxyImpl {
            // case LOAD:
             case DEPTH:
             case SKOLEM:
+            case DB:
                 
                 Graph g = getGraph(p);
                 if (g == null){
@@ -207,7 +208,10 @@ public class PluginImpl extends ProxyImpl {
                         return depth(g, o);
                         
                      case SKOLEM:               
-                        return g.skolem(dt);    
+                        return g.skolem(dt);  
+                        
+                     case DB:
+                        return db(dt.getLabel(), g);
                 }                
                                         
             case READ:
@@ -895,6 +899,17 @@ public class PluginImpl extends ProxyImpl {
             ld = GraphManager.getLoader();
             ld.init(g);
         }
+    }
+    
+    IDatatype db(Environment env, Graph g){
+        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        String name = ast.getMetadataValue(Metadata.DB);
+        return db(name, g);
+    }
+    
+    IDatatype db(String name, Graph g){
+        ProducerImpl p = QueryProcess.getCreateProducer(g, QueryProcess.DB_FACTORY, name);
+        return DatatypeMap.createObject(p);
     }
 
     Node kgram(Environment env, Graph g, IDatatype dt) {

@@ -28,12 +28,8 @@ import fr.inria.edelweiss.kgram.event.EventManager;
 public class Mappings extends PointerObject
         implements Comparator<Mapping>, Iterable<Mapping> {
 
-    private static final String NL = System.getProperty("line.separator");
-    ;
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    private static final String NL = System.getProperty("line.separator");    
+    private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
     private static int HAVING = -2;
     List<Node> select;
@@ -429,6 +425,27 @@ public class Mappings extends PointerObject
     void sort() {
         Collections.sort(list, this);
     }
+    
+    public void genericSort() {
+        Collections.sort(list, new MappingSorter());
+    }
+    
+    class MappingSorter implements Comparator<Mapping> {
+            
+        @Override
+        public int compare(Mapping m1, Mapping m2){
+            int res = 0;
+            for (int i = 0; i < getSelect().size() && res == 0; i++) {
+                Node n  = getSelect().get(i);
+                Node n1 = m1.getNodeValue(n);
+                Node n2 = m2.getNodeValue(n);
+                res = genCompare(n1, n2);
+            }
+            return res;
+        }
+    
+    }
+    
 
     /**
      *
@@ -481,7 +498,11 @@ public class Mappings extends PointerObject
         }
         return res;
     }
-
+    
+    int genCompare(Node n1, Node n2) {
+        return compare(n1, n2);
+    }
+    
     int comparator(Node n1, Node n2) {
         if (getEval() != null) {
             return getEval().compare(n1, n2);
@@ -489,9 +510,10 @@ public class Mappings extends PointerObject
         return n1.compare(n2);
     }
 
-    public int compare(Mapping r1, Mapping r2) {
-        Node[] order1 = r1.getOrderBy();
-        Node[] order2 = r2.getOrderBy();
+    @Override
+    public int compare(Mapping m1, Mapping m2) {
+        Node[] order1 = m1.getOrderBy();
+        Node[] order2 = m2.getOrderBy();
 
         List<Exp> orderBy = query.getOrderBy();
 
@@ -520,7 +542,7 @@ public class Mappings extends PointerObject
         }
         return res;
     }
-
+    
     int desc(int i) {
         if (i == 0) {
             return 0;

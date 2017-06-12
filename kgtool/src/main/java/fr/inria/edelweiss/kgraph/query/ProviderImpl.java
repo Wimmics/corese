@@ -47,6 +47,7 @@ import java.util.List;
  */
 public class ProviderImpl implements Provider {
 
+    private static final String DB = "db:";
     private static final String SERVICE_ERROR = "Service error: ";
     private static Logger logger = LogManager.getLogger(ProviderImpl.class);
     static final String LOCALHOST = "http://localhost:8080/sparql";
@@ -120,7 +121,7 @@ public class ProviderImpl implements Provider {
         QueryProcess exec = table.get(serv.getLabel());
 
         if (exec == null) {
-
+            
             Mappings map = globalSend(serv, q, exp, lmap, env);
             if (map != null) {
                 return map;
@@ -243,46 +244,45 @@ public class ProviderImpl implements Provider {
      * Send query to sparql endpoint using a POST HTTP query
      */
     Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit) {
-        Query g = q.getOuterQuery();
-        int timeout = 0;
-        Integer time = (Integer) g.getPragma(Pragma.TIMEOUT);
-        if (time != null) {
-            timeout = time;
-        }
+        Query gq = q.getGlobalQuery();
         try {
 
             // generate bindings from env if any
             compiler.compile(serv, q, map, env, start, limit);
-
-            ASTQuery ast = (ASTQuery) q.getAST();
-
-            String query = ast.toString();
-
-            if (g.isDebug()) {
-                logger.info("** Provider query: \n" + query);
+            if (gq.isDebug()) {
+                logger.info("** Provider query: \n" + q.getAST());
             }
+            Mappings res = eval(q, serv, env);
+            
+//            ASTQuery ast = (ASTQuery) q.getAST();
+//
+//            String query = ast.toString();
+//
+//            if (gq.isDebug()) {
+//                logger.info("** Provider query: \n" + query);
+//            }
+//
+//            //logger.info("** Provider: \n" + query);
+//
+//            InputStream stream = doPost(serv.getLabel(), query, getTimeout(q));
+//
+//            if (gq.isDebug()) {
+//                //logger.info("** Provider result: \n" + sb);
+//            }
+//
+//            Mappings res = parse(stream);
 
-            //logger.info("** Provider: \n" + query);
-
-            InputStream stream = doPost(serv.getLabel(), query, timeout);
-
-            if (g.isDebug()) {
-                //logger.info("** Provider result: \n" + sb);
-            }
-
-            Mappings res = parse(stream);
-
-            if (g.isDebug()) {
+            if (gq.isDebug()) {
                 logger.info("** Provider result: \n" + res.size());
-                if (g.isDetail()) {
-                    logger.info("** Provider result: \n" + res);
+                if (gq.isDetail()) {
+                    logger.info("** Provider result: \n" + res.toString(true));
                 }
             }
             return res;
         } catch (IOException e) {
             logger.error(e);
             logger.error(q.getAST());
-            g.addError(SERVICE_ERROR, e);
+            gq.addError(SERVICE_ERROR, e);
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -291,10 +291,45 @@ public class ProviderImpl implements Provider {
             e.printStackTrace();
         }
 
-        if (g.isDebug()) {
+        if (gq.isDebug()) {
             logger.info("** Provider error");
         }
         return null;
+    }
+    
+    int getTimeout(Query q) {
+        Integer time = (Integer) q.getGlobalQuery().getPragma(Pragma.TIMEOUT);
+        if (time == null) {
+            return 0;
+        }
+        return time;
+    }
+    
+    Mappings eval(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
+        if (isDB(serv)){
+            return db(q, serv);
+        }
+        return send(q, serv);
+    }
+    
+    /**
+     * service <db:/tmp/human_db> { GP }
+     * service overloaded to query a database
+     */
+    Mappings db(Query q, Node serv){
+        QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY, serv.getLabel().substring(DB.length()));
+        return exec.query((ASTQuery) q.getAST());
+    }
+    
+    boolean isDB(Node serv){
+        return serv.getLabel().startsWith(DB);
+    }
+    
+    Mappings send(Query q, Node serv) throws IOException, ParserConfigurationException, SAXException {
+        ASTQuery ast = (ASTQuery) q.getAST();
+        String query = ast.toString();
+        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q));
+        return parse(stream);
     }
 
     /**

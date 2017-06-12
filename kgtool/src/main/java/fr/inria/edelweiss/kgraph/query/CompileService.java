@@ -142,7 +142,7 @@ public class CompileService {
     /**
      * Generate bindings as bindings from Mappings
      */
-    public void bindings(Query q, Mappings lmap, int start, int limit) {
+    public void bindings(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
         ast.clearBindings();
         ArrayList<Variable> lvar = new ArrayList<Variable>();
@@ -160,17 +160,15 @@ public class CompileService {
 
         values.setVariables(lvar);
 
-        for (int j = start; j < lmap.size() && j < limit; j++) {
+        for (int j = start; j < map.size() && j < limit; j++) {
 
-            Mapping map = lmap.get(j);
+            Mapping m = map.get(j);
             boolean ok = false;
             lval = new ArrayList<Constant>();
 
             for (Node qnode : q.getSelect()) {
-                Node val = map.getNode(qnode);
+                Node val = m.getNode(qnode);
                 
-//            for (Variable var : lvar) {
-//                Node val = map.getNode(var); //var.getProxyOrSelf());
                 if (val != null) {
                     IDatatype dt = (IDatatype) val.getValue();
                     Constant cst = Constant.create(dt);
@@ -242,21 +240,21 @@ public class CompileService {
     /**
      * Generate bindings from Mappings as filter
      */
-    public void filter(Query q, Mappings lmap, int start, int limit) {
+    public void filter(Query q, Mappings map, int start, int limit) {
 
         ASTQuery ast = (ASTQuery) q.getAST();
         ArrayList<Term> lt;
         Term filter = null;
 
-        for (int j = start; j < lmap.size() && j < limit; j++) {
+        for (int j = start; j < map.size() && j < limit; j++) {
 
-            Mapping map = lmap.get(j);
+            Mapping m = map.get(j);
 
             lt = new ArrayList<Term>();
 
             for (Node qv : q.getSelect()) {
                 String var = qv.getLabel();
-                Node val = map.getNode(var);
+                Node val = m.getNode(var);
                 if (val != null) {
                     Variable v = Variable.create(var);
                     IDatatype dt = (IDatatype) val.getValue();
@@ -280,7 +278,6 @@ public class CompileService {
                     filter = Term.create(Term.SEOR, filter, f);
                 }
             }
-
         }
 
         setFilter(ast, filter);

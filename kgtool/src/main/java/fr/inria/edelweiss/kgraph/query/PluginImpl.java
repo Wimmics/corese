@@ -908,7 +908,7 @@ public class PluginImpl extends ProxyImpl {
     }
     
     IDatatype db(String name, Graph g){
-        ProducerImpl p = QueryProcess.getCreateProducer(g, QueryProcess.DB_FACTORY, name);
+        Producer p = QueryProcess.getCreateProducer(g, QueryProcess.DB_FACTORY, name);
         return DatatypeMap.createObject(p);
     }
 

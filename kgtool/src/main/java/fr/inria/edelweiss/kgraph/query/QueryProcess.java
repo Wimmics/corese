@@ -33,6 +33,7 @@ import fr.inria.edelweiss.kgtool.load.Service;
 import fr.inria.edelweiss.kgtool.util.Extension;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -56,6 +57,8 @@ public class QueryProcess extends QuerySolver {
 
     //sort query edges taking cardinality into account
     static boolean isSort = false;
+    
+    static  HashMap<String, Producer> dbmap;
     private Manager updateManager;
     private GraphManager graphManager;
     Loader load;
@@ -65,6 +68,7 @@ public class QueryProcess extends QuerySolver {
 
     static {
         setJoin(false);
+        dbmap = new HashMap<>();
         new Extension().process();
     }
 
@@ -185,7 +189,7 @@ public class QueryProcess extends QuerySolver {
     }
     
     public static QueryProcess dbCreate(Graph g, boolean isMatch, String factory, String db) {
-        ProducerImpl p = getCreateProducer(g, factory, db);
+        Producer p = getCreateProducer(g, factory, db);
         QueryProcess exec = QueryProcess.create(p);
         exec.setMatch(isMatch);
         return exec;
@@ -199,12 +203,21 @@ public class QueryProcess extends QuerySolver {
         return exec;
     }
      
-    public static ProducerImpl getCreateProducer(Graph g, String factory, String db){
-        if (p == null) {
-            logger.info("property fr.inria.corese.factory defined. Using factory: " + factory);
-            p = createProducer(g, factory, db);
+    public static synchronized Producer getCreateProducer(Graph g, String factory, String db) {
+        if (db == null) {
+            if (p == null) {
+                logger.info("property fr.inria.corese.factory defined. Using factory: " + factory);
+                p = createProducer(g, factory, db);
+            }
+            return p;
+        } else {
+            Producer prod = dbmap.get(db);
+            if (prod == null) {
+                prod = createProducer(g, factory, db);
+                dbmap.put(db, prod);
+            }
+            return prod;
         }
-        return p;
     }
     
     static ProducerImpl createProducer(Graph g, String factory, String db) {
@@ -555,10 +568,8 @@ public class QueryProcess extends QuerySolver {
             if (ast.hasMetadata(Metadata.DB_FACTORY)){
                 factory = ast.getMetadataValue(Metadata.DB_FACTORY);
             }
-            if (p == null) {
-                p = createProducer(getGraph(), factory, ast.getMetadataValue(Metadata.DB));
-            }
-            setProducer(p);
+            Producer prod = getCreateProducer(getGraph(), factory, ast.getMetadataValue(Metadata.DB));            
+            setProducer(prod);
         }
     }
 

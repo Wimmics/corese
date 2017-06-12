@@ -1127,6 +1127,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public Metadata getMetadata() {
         return metadata;
     }
+    
+    public String getMetadataValue(int type) {
+        return metadata.getValue(type);
+    }
 
     public boolean hasMetadata(int type) {
         return metadata != null && metadata.hasMetadata(type);
@@ -1136,7 +1140,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return metadata != null && metadata.hasValue(type, value);
     }
     
-     public boolean hasMetadataValue(int type, String value) {
+    public boolean hasMetadataValue(int type, String value) {
         return metadata != null && metadata.hasValues(type, value);
     }
 

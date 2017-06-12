@@ -588,6 +588,54 @@ implements Regex, Filter, Expr {
 	public int type() {
 		return ExprType.UNDEF;
 	}
+        
+        @Override
+    public boolean match(int t) {
+        switch (t) {
+            case ExprType.JOKER:
+                return true;
+            case ExprType.EQ_SAME:
+                return oper() == ExprType.EQ || oper() == ExprType.SAMETERM;
+            case ExprType.TINKERPOP:
+                return isTinkerpop();
+            default:
+                return oper() == t;
+        }
+    }
+    
+    /**
+     * SPARQL filters available in Tinkerpop
+     */
+    public boolean isTinkerpop(){
+        switch (type()){
+            case ExprType.BOOLEAN: return true;
+        }
+        
+        switch (oper()){
+            case ExprType.EQ:
+            case ExprType.NEQ:
+            case ExprType.SAMETERM:
+                
+            case ExprType.LE:
+            case ExprType.LT:
+            case ExprType.GE:
+            case ExprType.GT: 
+                
+            case ExprType.CONTAINS:
+            case ExprType.STARTS:
+            case ExprType.ENDS:
+                
+            case ExprType.IN:
+                
+            case ExprType.ISURI:
+            case ExprType.ISBLANK:
+            case ExprType.ISLITERAL:
+                                
+               return true; 
+        }
+        return false;
+    }
+        
 	
         @Override
 	public int retype() {

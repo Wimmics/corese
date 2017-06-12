@@ -33,7 +33,9 @@ public class Metadata extends ASTObject
     public static final int COMPILE = 17;
     public static final int SKIP    = 18;
     public static final int PATH    = 19;
-    public static final int ENCODING    = 20;
+    public static final int ENCODING= 20;
+    public static final int DB      = 21;
+    public static final int DB_FACTORY = 22;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -54,8 +56,7 @@ public class Metadata extends ASTObject
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
     public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
-    
-    
+        
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
     
@@ -86,6 +87,8 @@ public class Metadata extends ASTObject
         define("@compile",  COMPILE);      
         define("@path",     PATH);      
         define("@skip",     SKIP);      
+        define("@db",       DB);      
+        define("@dbfactory",DB_FACTORY);      
     }
     
     static void define(String str, int type){

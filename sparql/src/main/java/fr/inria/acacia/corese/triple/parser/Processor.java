@@ -288,6 +288,7 @@ public class Processor {
 	static final String ENV  	 = KGRAM + "env";
 	public static final String PATHNODE = KGRAM + "pathNode";
 	static final String SLICE       = KGRAM + "slice";
+	static final String DB          = KGRAM + "db";
 
 	static final String EXIST 	= Term.EXIST;
 	static final String STRLEN 	= "strlen";
@@ -821,6 +822,7 @@ public class Processor {
 		defoper(PROCESS, ExprType.PROCESS);
 		defoper(ENV, 	 ExprType.ENV);
 		defoper(SLICE, 	 ExprType.SLICE);
+		defoper(DB, 	 ExprType.DB);
 
 		defoper(SAMETERM, ExprType.SAMETERM);
 		defoper(STRLEN, ExprType.STRLEN);

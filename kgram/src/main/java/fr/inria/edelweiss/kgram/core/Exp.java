@@ -23,6 +23,12 @@ import java.util.HashMap;
  */
 public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
+    
+    public static final int ANY        = -1;
+    public static final int SUBJECT    = 0;
+    public static final int OBJECT     = 1;
+    public static final int PREDICATE  = 2;
+    
     static final String NL = System.getProperty("line.separator");
     static final String SP = " ";
     static Exp empty = new Exp(EMPTY);
@@ -59,6 +65,7 @@ public class Exp extends PointerObject
     Stack stack;
     // for EXTERN 
     Object object;
+    Producer producer;
     Regex regex;
     Exp next;
     private Exp postpone;
@@ -236,18 +243,22 @@ public class Exp extends PointerObject
         lFilter = new ArrayList<Filter>();
     }
 
-    Exp(int t, Exp e1, Exp e2) {
-        this(t);
-        args.add(e1);
-        args.add(e2);
-    }
-
-    Exp(int t, Exp e) {
-        this(t);
-        args.add(e);
-    }
+//    Exp(int t, Exp e1, Exp e2) {
+//        this(t);
+//        args.add(e1);
+//        args.add(e2);
+//    }
+//
+//    Exp(int t, Exp e) {
+//        this(t);
+//        args.add(e);
+//    }
 
     public static Exp create(int t) {
+        switch (t){
+            case PATH:
+            case EDGE: return new ExpEdge(t);
+        }
         return new Exp(t);
     }
 
@@ -782,6 +793,10 @@ public class Exp extends PointerObject
     public List<Filter> getFilters() {
         return lFilter;
     }
+    
+    public List<Filter> getFilters(int n, int t) {
+        return new ArrayList<Filter>(0);
+    }
 
     public boolean isHaving() {
         return getHavingFilter() != null;
@@ -874,8 +889,12 @@ public class Exp extends PointerObject
         return object;
     }
 
-    public void setProducer(Object o) {
-        object = o;
+    public void setProducer(Producer p) {
+        producer = p;
+    }
+    
+    public Producer getProducer() {
+        return producer;
     }
 
     public Exp getRestore() {
@@ -884,11 +903,7 @@ public class Exp extends PointerObject
 
     public void setRestore(Object o) {
         object = o;
-    }
-
-    public Producer getProducer() {
-        return (Producer) object;
-    }
+    }  
 
     public List<Object> getObjectValues() {
         if (object instanceof List) {

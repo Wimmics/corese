@@ -367,6 +367,10 @@ public class QuerySolver  implements SPARQLEngine {
 	public Producer getProducer(){
 		return producer;
 	}
+        
+        public void setProducer(Producer p){
+            producer = p;
+        }
 	
 	public Evaluator getEvaluator(){
 		return evaluator;

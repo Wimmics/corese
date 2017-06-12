@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -49,6 +50,10 @@ import org.apache.logging.log4j.LogManager;
 public class QueryProcess extends QuerySolver {
 
     private static Logger logger = LogManager.getLogger(QueryProcess.class);
+    private static ProducerImpl p;
+    static final String DB_FACTORY  = "fr.inria.corese.tinkerpop.Factory";
+    static final String DB_INPUT    = "fr.inria.corese.tinkerpop.dbinput";
+
     //sort query edges taking cardinality into account
     static boolean isSort = false;
     private Manager updateManager;
@@ -163,7 +168,6 @@ public class QueryProcess extends QuerySolver {
         return eval;
     }
 
-	private static ProducerImpl p;
 
     /**
 	 * isMatch = true: Each Producer perform local Matcher.match() on its
@@ -172,28 +176,52 @@ public class QueryProcess extends QuerySolver {
 	 * isMatch = false: (default) Global producer perform Matcher.match()
      */
     public static QueryProcess create(Graph g, boolean isMatch) {
-		String factory = System.getProperty("fr.inria.corese.factory");
-		if (factory == null || factory.compareTo("") == 0) {
-			logger.info("property fr.inria.corese.factory not defined, using the default ProducerImpl");
-				p = ProducerImpl.create(g);
-				p.setMatch(isMatch);
-		} else if (p == null) {
-			logger.info("property fr.inria.corese.factory defined. Using factory: " + factory);
-			try {
-					Class<?> classFactory = Class.forName(factory);
-				Method method = classFactory.getMethod("create", Graph.class);
-				p = (ProducerImpl) method.invoke(null, g);
-        p.setMatch(isMatch);
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				logger.fatal(ex);
-				logger.fatal("impossible to create a producer, aborting");
-				System.exit(-1);
-			}
-		}
+        String factory = System.getProperty("fr.inria.corese.factory");
+        if (factory == null || factory.compareTo("") == 0) {
+            return stdCreate(g, isMatch);
+        } else {
+            return dbCreate(g, isMatch, factory, null);
+        }
+    }
+    
+    public static QueryProcess dbCreate(Graph g, boolean isMatch, String factory, String db) {
+        ProducerImpl p = getCreateProducer(g, factory, db);
         QueryProcess exec = QueryProcess.create(p);
-
         exec.setMatch(isMatch);
         return exec;
+    }
+    
+    public static QueryProcess stdCreate(Graph g, boolean isMatch) {
+        ProducerImpl p = ProducerImpl.create(g);
+        p.setMatch(isMatch);
+        QueryProcess exec = QueryProcess.create(p);
+        exec.setMatch(isMatch);
+        return exec;
+    }
+     
+    public static ProducerImpl getCreateProducer(Graph g, String factory, String db){
+        if (p == null) {
+            logger.info("property fr.inria.corese.factory defined. Using factory: " + factory);
+            p = createProducer(g, factory, db);
+        }
+        return p;
+    }
+    
+    static ProducerImpl createProducer(Graph g, String factory, String db) {
+        if (db != null){
+            System.setProperty(DB_INPUT, db);
+        }
+        try {
+            Class<?> classFactory = Class.forName(factory);
+            Method method = classFactory.getMethod("create", Graph.class);
+            ProducerImpl p = (ProducerImpl) method.invoke(null, g);
+            logger.info("Connect db");
+            return p;
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            logger.error(ex);
+            logger.error("impossible to create a producer, aborting");
+        }
+        return ProducerImpl.create(g);
     }
 
     public static QueryProcess create(Graph g, Graph g2) {
@@ -494,6 +522,9 @@ public class QueryProcess extends QuerySolver {
             //select where {}
             return service(q, m);
         }
+        else {
+            dbProducer(q);
+        }
         Mappings map;
 
         if (q.isUpdate() || q.isRule()) {
@@ -515,6 +546,20 @@ public class QueryProcess extends QuerySolver {
 
         finish(q, map);
         return map;
+    }
+    
+    void dbProducer(Query q) {
+        ASTQuery ast = getAST(q);
+        if (ast.hasMetadata(Metadata.DB)) {
+            String factory = DB_FACTORY;
+            if (ast.hasMetadata(Metadata.DB_FACTORY)){
+                factory = ast.getMetadataValue(Metadata.DB_FACTORY);
+            }
+            if (p == null) {
+                p = createProducer(getGraph(), factory, ast.getMetadataValue(Metadata.DB));
+            }
+            setProducer(p);
+        }
     }
 
     void finish(Query q, Mappings map) {

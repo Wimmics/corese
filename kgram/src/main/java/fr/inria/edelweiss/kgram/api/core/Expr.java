@@ -41,12 +41,13 @@ public interface Expr {
         DatatypeValue getDatatypeValue();
 	
 	int type();
-        
+                
         int subtype();
         
         void setSubtype(int n);
 
 	int oper();
+        boolean match(int oper);
         
         void setOper(int n);
 

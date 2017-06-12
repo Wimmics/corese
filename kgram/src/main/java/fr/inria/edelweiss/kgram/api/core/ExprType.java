@@ -142,6 +142,9 @@ public interface ExprType {
 	public static int IN 	= 123; 
 	public static int POWER = 124; 
 	
+        // fake for query
+	public static int TINKERPOP = 150; 
+	public static int EQ_SAME = 151; 
 	
 	// extension
 	
@@ -313,6 +316,7 @@ public interface ExprType {
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;
+        public static int DB          = 452;
         
 
 }

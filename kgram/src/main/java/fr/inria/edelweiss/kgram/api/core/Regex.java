@@ -26,6 +26,8 @@ public interface Regex {
 	String getName();
 	
 	String getLongName();
+        
+        DatatypeValue getDatatypeValue();
 	
 	String toRegex();
 	

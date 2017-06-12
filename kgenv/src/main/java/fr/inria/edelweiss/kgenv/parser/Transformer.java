@@ -1364,11 +1364,11 @@ public class Transformer implements ExpType {
     /**
      * Complete compilation
      */
-    Exp complete(Exp exp, fr.inria.acacia.corese.triple.parser.Exp query, boolean opt) {
+    Exp complete(Exp exp, fr.inria.acacia.corese.triple.parser.Exp srcexp, boolean opt) {
         // complete path (deprecated)
         path(exp);
 
-        switch (getType(query)) {
+        switch (getType(srcexp)) {
 
             case MINUS:
                 // add a fake graph node 
@@ -1378,12 +1378,9 @@ public class Transformer implements ExpType {
                 break;
 
             case GRAPH:
-                compileGraph(ast, exp, query);
+                compileGraph(ast, exp, srcexp.getNamedGraph());
                 break;
                 
-//            case OPTIONAL:
-//                exp.optional();
-
         }
 
         return exp;
@@ -1392,8 +1389,7 @@ public class Transformer implements ExpType {
     /**
      * graph kg:describe BGP -> bind(kg:describe() as ?g) graph ?g BGP
      */
-    Exp compileGraph(ASTQuery ast, Exp exp, fr.inria.acacia.corese.triple.parser.Exp query) {
-        Source srcexp = (Source) query;
+    Exp compileGraph(ASTQuery ast, Exp exp, Source srcexp) {
         Atom at = srcexp.getSource();
         Atom nat = getSrc(at);
         Exp gr = compileGraph(exp, nat);

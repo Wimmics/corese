@@ -874,7 +874,7 @@ public class Memory implements Environment {
     void pop(Mapping res, boolean isEdge) {
         int n = 0;
         for (Node qNode : res.getQueryNodes()) {
-            if (qNode.getIndex() >= 0) {
+            if (qNode != null && qNode.getIndex() >= 0) {
                 pop(qNode);
                 if (res.isPath(n)) {
                     popPath(qNode);

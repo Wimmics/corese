@@ -60,6 +60,7 @@ public interface Expr {
 	boolean isRecExist();
 
         boolean isVariable();
+        boolean isConstant();
         
         boolean isFuncall();
 	

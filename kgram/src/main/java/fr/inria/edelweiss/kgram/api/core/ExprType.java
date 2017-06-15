@@ -144,7 +144,11 @@ public interface ExprType {
 	
         // fake for query
 	public static int TINKERPOP = 150; 
-	public static int EQ_SAME = 151; 
+	public static int EQ_SAME   = 151; 
+	public static int BETWEEN   = 152; 
+	public static int MORE      = 153; 
+	public static int LESS      = 154; 
+	public static int KIND      = 155; 
 	
 	// extension
 	

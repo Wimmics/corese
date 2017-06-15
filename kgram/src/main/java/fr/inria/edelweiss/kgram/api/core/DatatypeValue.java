@@ -18,4 +18,6 @@ public interface DatatypeValue {
     double doubleValue();
     
     float floatValue();
+    
+    Object objectValue();
 }

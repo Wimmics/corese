@@ -595,14 +595,26 @@ implements Regex, Filter, Expr {
             case ExprType.JOKER:
                 return true;
             case ExprType.EQ_SAME:
-                return oper() == ExprType.EQ || oper() == ExprType.SAMETERM;
+                return match(ExprType.EQ, ExprType.SAMETERM);
+            case ExprType.BETWEEN:
+                return match(ExprType.MORE, ExprType.LESS);
+            case ExprType.MORE:
+                return match(ExprType.GT, ExprType.GE);
+            case ExprType.LESS:
+                return match(ExprType.LT, ExprType.LE);   
+            case ExprType.KIND:
+                return match(ExprType.ISURI) || match(ExprType.ISBLANK, ExprType.ISLITERAL);
             case ExprType.TINKERPOP:
                 return isTinkerpop();
             default:
                 return oper() == t;
         }
     }
-    
+        
+    boolean match(int t1, int t2) {
+            return match(t1) || match(t2);
+    }
+
     /**
      * SPARQL filters available in Tinkerpop
      */

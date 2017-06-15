@@ -534,6 +534,24 @@ public class CoreseDatatype
     public boolean isDate(){
         return false;
     }
+    
+    @Override
+    public Object objectValue(){
+        switch (getCode()){
+            case INTEGER: 
+                return longValue();
+            case DOUBLE:  
+            case DECIMAL:
+                return doubleValue();
+            case FLOAT:   
+                return floatValue();
+            case BOOLEAN:
+                return booleanValue();
+                
+            default: 
+                return stringValue();
+        }
+    }
 
     @Override
     public boolean booleanValue() {

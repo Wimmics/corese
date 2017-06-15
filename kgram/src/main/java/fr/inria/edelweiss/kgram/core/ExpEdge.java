@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.core;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
@@ -78,24 +79,29 @@ public class ExpEdge extends Exp {
     }
     
     boolean match(Node n, Expr e, int type) {
-        if (e.match(type)) {
-            if (e.type() == ExprType.BOOLEAN) {
-                for (Expr ee : e.getExpList()){
-                    if (! match(n, ee, type)){
-                        return false;
-                    }
+        if (e.type() == ExprType.BOOLEAN) {
+            for (Expr ee : e.getExpList()) {
+                if (!match(n, ee, type)) {
+                    return false;
                 }
-                return true;
-            } else {
-                Expr var = e.getExp(0);
-                if (var.isVariable() && var.getLabel().equals(n.getLabel())) {
-                    if (e.arity() == 1) {
+            }
+            return true;
+        } else if (e.match(type)) {
+            Expr var = e.getExp(0);
+            if (var.isVariable() && var.getLabel().equals(n.getLabel())) {
+                if (e.arity() == 1) {
+                    return true;
+                } else {
+                    Expr cst = e.getExp(1);
+                    if (cst.isConstant()) {
                         return true;
-                    } else {
-                        Expr cst = e.getExp(1);
-                        if (cst.type() == ExprType.CONSTANT) {
-                            return true;
+                    } else if (e.oper() == ExprType.IN) {
+                        for (Expr ee : cst.getExpList()) {
+                            if (ee.isConstant()) {
+                                return false;
+                            }
                         }
+                        return true;
                     }
                 }
             }
@@ -103,6 +109,86 @@ public class ExpEdge extends Exp {
         return false;
     }
     
-   
+   /**
+     * node is node index (subject, predicate, object) Search filter like: ?o =
+     * v1 || ?o = v2 ?o in (v1, v2) return list of string value
+     */
+    @Override
+    public List<DatatypeValue> getList(int node) {        
+        List<Filter> list = getFilters(node, ExprType.IN);
+        if (list.isEmpty()) {
+            list = getFilters(node, ExprType.EQ_SAME);
+            if (list.isEmpty()){
+                return null;
+            }
+            return toList(list.get(0).getExp(), new ArrayList<DatatypeValue>());        
+        } 
+        else {
+            Expr e = list.get(0).getExp();
+            if (e.oper() != ExprType.IN){
+                // may be OR
+                return null;
+            }
+            ArrayList<DatatypeValue> ls = new ArrayList<>();
+            for (Expr ee : e.getExp(1).getExpList()) {
+                ls.add(ee.getDatatypeValue());
+            }
+            return ls;
+        }
+    }    
+    
+    /**
+     * exp: 
+     * var = cst
+     * var = cst || var = cst
+     */
+    List<DatatypeValue> toList(Expr exp, List<DatatypeValue> list){
+        if (exp.match(ExprType.OR)) {
+            toList(exp.getExp(0), list);
+            if (! list.isEmpty()){
+                toList(exp.getExp(1), list);
+            }
+        }
+        else if (exp.match(ExprType.EQ_SAME)) {
+            list.add(exp.getExp(1).getDatatypeValue());
+        }
+        else {
+            list.clear();
+        }
+        return list;
+    }
+    
+    /**
+     * var >= v1 && var <= v2
+     */
+    @Override
+    public List<DatatypeValue> getBetween(int node) {        
+        List<Filter> list = getFilters(node, ExprType.BETWEEN);
+        if (list.size() != 2){
+            return null;
+        }
+        Expr e1 = list.get(0).getExp();
+        Expr e2 = list.get(1).getExp();
+        
+        if (e1.match(ExprType.LESS) 
+         && e2.match(ExprType.MORE)){  
+            Expr tmp = e1;
+            e1 = e2;
+            e2 = tmp;
+        }
+        else if (e1.match(ExprType.MORE) 
+              && e2.match(ExprType.LESS)){   
+            // ok
+        }
+        else {
+            return null;
+        }
+        ArrayList<DatatypeValue> ld = new ArrayList<>();
+        ld.add(e1.getExp(1).getDatatypeValue());
+        ld.add(e2.getExp(1).getDatatypeValue());
+        return ld;
+    }
+    
+
     
 }

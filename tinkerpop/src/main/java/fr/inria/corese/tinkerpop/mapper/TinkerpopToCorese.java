@@ -29,12 +29,12 @@ public class TinkerpopToCorese {
 
     LoadingCache<Edge, Entity> cache;
     EdgeGeneric edge;
-    Node name;
+    Node name, property;
 
     public TinkerpopToCorese(Graph g) {
         edge = new EdgeGeneric();
         this.cache = CacheBuilder.newBuilder().
-                maximumSize(1000000).
+                maximumSize(100).
                 expireAfterAccess(100, TimeUnit.DAYS).
                 build(new CacheLoader<Edge, Entity>() {
                     IDatatype name, predicate;
@@ -64,16 +64,19 @@ public class TinkerpopToCorese {
      *
      * @param e
      */
-    public Entity buildEntity(Edge e) {
+    public Entity buildEntity2(Edge e) {
         return cache.getUnchecked(e);
     }
     
-    public Entity buildEntity2(Edge e) {
+    public Entity buildEntity(Edge e) {  
         if (name == null){
             name = DatatypeMap.createResource(e.value(EDGE_G));
         }
         edge.setGraph(name);
-        edge.setEdgeNode(DatatypeMap.createResource(e.value(EDGE_P)));
+        if (property == null || ! property.getLabel().equals(e.value(EDGE_P))){
+            property = DatatypeMap.createResource(e.value(EDGE_P));
+        }
+        edge.setEdgeNode(property);
         edge.setNode(0, unmapNode(e.outVertex()));
         edge.setNode(1, unmapNode(e.inVertex()));
         return edge;

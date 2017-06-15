@@ -19,6 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 
 /**
@@ -39,7 +40,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 		private class GremlinIterator<T> implements Iterator<Entity> {
 
-			private final Iterator<Edge> edges;
+                    private final Iterator<Edge> edges;
 			private Optional<Edge> previousEdge = Optional.empty();
 			private Optional<Edge> nextEdge = Optional.empty();
 			private boolean nextSearched = false; // flag to know whether a hasNext() has launched and find a nextEdge element before nextEdge() was called.
@@ -52,7 +53,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			public boolean hasNext() {
 				return edges.hasNext();
 			}
-
+			                       
 			@Override
 			public Entity next() {
 				Entity nextEntity = unmapper.buildEntity(edges.next());

@@ -604,6 +604,8 @@ implements Regex, Filter, Expr {
                 return match(ExprType.LT, ExprType.LE);   
             case ExprType.KIND:
                 return match(ExprType.ISURI) || match(ExprType.ISBLANK, ExprType.ISLITERAL);
+            case ExprType.BIPREDICATE:
+                return isBipredicate();
             case ExprType.TINKERPOP:
                 return isTinkerpop();
             default:
@@ -613,6 +615,17 @@ implements Regex, Filter, Expr {
         
     boolean match(int t1, int t2) {
             return match(t1) || match(t2);
+    }
+    
+    boolean isBipredicate(){
+        switch (oper()){
+            case ExprType.CONTAINS:
+            case ExprType.REGEX:
+            case ExprType.STARTS:
+            case ExprType.ENDS :
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -636,12 +649,13 @@ implements Regex, Filter, Expr {
             case ExprType.CONTAINS:
             case ExprType.STARTS:
             case ExprType.ENDS:
+            case ExprType.REGEX:
                 
             case ExprType.IN:
                 
-            case ExprType.ISURI:
-            case ExprType.ISBLANK:
-            case ExprType.ISLITERAL:
+//            case ExprType.ISURI:
+//            case ExprType.ISBLANK:
+//            case ExprType.ISLITERAL:
                                 
                return true; 
         }

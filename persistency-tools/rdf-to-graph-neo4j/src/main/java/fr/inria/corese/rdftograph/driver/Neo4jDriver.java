@@ -5,6 +5,7 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
+import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -15,21 +16,18 @@ import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.match;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -46,7 +44,13 @@ public class Neo4jDriver extends GdbDriver {
 
     Neo4jGraph graph;
     private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
-
+    
+    SPARQL2Tinkerpop sp2t;
+    
+    public Neo4jDriver(){
+        sp2t = new SPARQL2Tinkerpop();
+    }
+       
     @Override
     public Graph openDatabase(String databasePath) {
         LOGGER.entering(getClass().getName(), "openDatabase");
@@ -267,25 +271,33 @@ public class Neo4jDriver extends GdbDriver {
                 break;
 
             case "?g?sP?o":
-                P pred = getPredicate(exp, Exp.OBJECT);
+                P pred = sp2t.getPredicate(exp, Exp.OBJECT);
                 if (pred != null) {
                     filter = t -> {
                         return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, pred).inE().has(EDGE_P, p).hasLabel(RDF_EDGE_LABEL);
                     };
                 } else {
-                    String kind = getKind(exp, Exp.OBJECT);
-                    if (kind != null){
+
+                    P preds = sp2t.getPredicate(exp, Exp.SUBJECT);
+                    if (preds != null) {
                         filter = t -> {
-                            return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().has(KIND, kind));
+                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, preds).outE().has(EDGE_P, p).hasLabel(RDF_EDGE_LABEL);
                         };
-                    }
-                    else {
-                        filter = t -> {
-                            return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-                        };
+                    } else {
+
+                        String kind = sp2t.getKind(exp, Exp.OBJECT);
+                        if (kind != null) {
+                            filter = t -> {
+                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().has(KIND, kind));
+                            };
+                        } else {
+                            filter = t -> {
+                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
+                            };
+                        }
                     }
                 }
-                             
+
                 break;
 
             case "?g?s?pO":
@@ -320,111 +332,38 @@ public class Neo4jDriver extends GdbDriver {
                 break;
             case "?g?s?p?o":
             default:
-                pred = getPredicate(exp, Exp.OBJECT);
-                String kind = getKind(exp, Exp.OBJECT);
+                P po = sp2t.getPredicate(exp, Exp.OBJECT);
                 
-                if (pred != null) {
+                if (po != null) {
                     filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, pred).inE().hasLabel(RDF_EDGE_LABEL);
+                        return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, po).inE().hasLabel(RDF_EDGE_LABEL);
                     };
-                } else if (kind != null){
-                    filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).has(KIND, kind).inE().hasLabel(RDF_EDGE_LABEL);
-                    };
+                } else {
+
+                    P ps = sp2t.getPredicate(exp, Exp.SUBJECT);
+
+                    if (ps != null) {
+                        filter = t -> {
+                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, ps).outE().hasLabel(RDF_EDGE_LABEL);
+                        };
+                    } else {
+
+                        String kind = sp2t.getKind(exp, Exp.OBJECT);
+                        if (kind != null) {
+                            filter = t -> {
+                                return t.V().hasLabel(RDF_VERTEX_LABEL).has(KIND, kind).inE().hasLabel(RDF_EDGE_LABEL);
+                            };
+                        } else {
+                            filter = t -> {
+                                return t.E().hasLabel(RDF_EDGE_LABEL);
+                            };
+                        }
+                    }
                 }
-                else {
-                    filter = t -> {
-                        return t.E().hasLabel(RDF_EDGE_LABEL);
-                    };
-                }            
                 break;
                 
         }
         return filter;
     }
     
-    String getKind(Exp exp, int node){
-        if (exp == null){
-            return null;
-        }
-        List<Filter> list = exp.getFilters(node, ExprType.KIND);
-        if (list == null || list.isEmpty()){
-            return null;
-        }
-        Expr e = list.get(0).getExp();
-        switch (e.oper()){
-            case ExprType.ISURI:    return RdfToBdMap.IRI;
-            case ExprType.ISBLANK:  return RdfToBdMap.BNODE;
-            case ExprType.ISLITERAL: return RdfToBdMap.LITERAL;
-        }
-        return null;
-    }
-    
-    P getPredicate(Exp exp, int node){
-        if (exp == null){
-            return null;
-        }
-        List<Object> ls = getList(exp, node);
-        if (ls != null){
-            return P.within(ls);
-        }
-        else {
-           ls = getBetween(exp, node); 
-           if (ls != null){
-               return P.between(ls.get(0), ls.get(1));
-           }
-           else {
-               P p = getMoreLess(exp, node);
-               if (p != null){
-                   return p;
-               }
-           }
-        }
-       
-        return null;
-    }
-    
-    P getMoreLess(Exp exp, int node){
-        List<Filter> list = exp.getFilters(node, ExprType.BETWEEN);
-        if (list == null || list.isEmpty()){
-            return null;
-        }
-        
-        Expr e = list.get(0).getExp();
-        switch (e.oper()){
-            case ExprType.LT: return P.lt(e.getExp(1).getDatatypeValue().objectValue());
-            case ExprType.LE: return P.lte(e.getExp(1).getDatatypeValue().objectValue());
-            case ExprType.GE: return P.gte(e.getExp(1).getDatatypeValue().objectValue());
-            case ExprType.GT: return P.gt(e.getExp(1).getDatatypeValue().objectValue());
-        }
-        
-        return null;        
-    }
-
-            /**
-             * node is node index (subject, predicate, object)
-             * Search filter like: 
-             * ?o = v1 || ?o = v2
-             * ?o in (v1, v2)
-             * return list of string value
-             */
-    List<Object> getList(Exp exp, int node) {        
-        return toList(exp.getList(node));
-    }
-    
-     List<Object> getBetween(Exp exp, int node) {        
-        return toList(exp.getBetween(node));
-    }
-    
-    ArrayList<Object> toList(List<DatatypeValue> list){
-        if (list == null || list.isEmpty()){
-            return null;
-        }     
-        ArrayList<Object> ls = new ArrayList<>();
-        for (DatatypeValue dt : list){
-            ls.add(dt.objectValue());
-        }
-        return ls;
-    }
-          
 }

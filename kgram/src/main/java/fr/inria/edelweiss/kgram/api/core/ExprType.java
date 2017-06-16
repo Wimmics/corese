@@ -149,6 +149,7 @@ public interface ExprType {
 	public static int MORE      = 153; 
 	public static int LESS      = 154; 
 	public static int KIND      = 155; 
+	public static int BIPREDICATE = 156; 
 	
 	// extension
 	

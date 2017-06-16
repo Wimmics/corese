@@ -798,15 +798,7 @@ public class Exp extends PointerObject
     public List<Filter> getFilters(int n, int t) {
         return new ArrayList<Filter>(0);
     }
-    
-    public List<DatatypeValue> getList(int node) { 
-        return null;
-    }
-    
-    public List<DatatypeValue> getBetween(int node) { 
-        return null;
-    }  
-    
+          
     public boolean isHaving() {
         return getHavingFilter() != null;
     }

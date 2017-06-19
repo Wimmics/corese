@@ -9,6 +9,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Weigher;
 import fr.inria.corese.rdftograph.RdfToGraph;
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.core.Exp;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.BNODE;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.IRI;
@@ -241,11 +242,18 @@ public abstract class GdbDriver {
 	 * @param g
 	 * @return
 	 */
-	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g);
+	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
+        getFilter(String key, String s, String p, String o, String g);
 
         public  Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
         getFilter(Exp exp, String key, String s, String p, String o, String g){
             return getFilter(key, s, p, o, g);
         }
+        
+        public  Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
+        getFilter(Exp exp, DatatypeValue s, DatatypeValue p, DatatypeValue o, DatatypeValue g){
+            return null;
+        }
+
 
 }

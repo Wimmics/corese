@@ -42,7 +42,7 @@ public class SPARQL2Tinkerpop {
     static final BiPredicate<String, String> cont, start, end, regex, atrue ;
     static final Processor proc ;
     
-    private boolean debug = false; 
+    private boolean debug = true; 
     
     /**
      * Extended Predicates for SPARQL filters
@@ -53,7 +53,7 @@ public class SPARQL2Tinkerpop {
          start = (x, y) -> x.startsWith(y);
          end   = (x, y) -> x.endsWith(y);
          regex = (x, y) -> proc.regex(x, y, null);
-         atrue = (x, y) -> true;
+         atrue = (x, y) -> { return true; };
     }
     
     
@@ -124,7 +124,7 @@ public class SPARQL2Tinkerpop {
                     return P.test(reg, val);             
                 } 
                 else {
-                    return P.test(atrue, true);
+                    return P.test(atrue, "");
                 }  
                 
             case ExprType.IN:
@@ -142,7 +142,7 @@ public class SPARQL2Tinkerpop {
             case ExprType.GE: return P.gte(val.objectValue());
             case ExprType.GT: return P.gt(val.objectValue());
             
-            default: return P.test(atrue, true);
+            default: return P.test(atrue, "");
                 
         }        
     }

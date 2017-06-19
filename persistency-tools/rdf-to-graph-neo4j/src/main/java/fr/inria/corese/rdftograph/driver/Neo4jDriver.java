@@ -5,22 +5,15 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
-import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
@@ -28,6 +21,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outV;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -249,21 +243,14 @@ public class Neo4jDriver extends GdbDriver {
             getFilter(String key, String s, String p, String o, String g) {
         return getFilter(null, key, s, p, o, g);
     }
+            
 
-    @Override
+     @Override
     public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>>
             getFilter(Exp exp, String key, String s, String p, String o, String g) {
         Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
         switch (key) {
-            case "test":
-                filter = t -> {
-                    //return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, P.within(Arrays.asList(o, "Nice", "Cannes"))).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-                    // return t.V().hasLabel(RDF_VERTEX_LABEL).where(__.has(VERTEX_VALUE, "Antibes").or().has(VERTEX_VALUE, "Nice")).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-                    // return t.V().hasLabel(RDF_VERTEX_LABEL).union(__.has(VERTEX_VALUE, "Antibes"), __.has(VERTEX_VALUE, "Nice")).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, P.between("A", "AB")).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-                };
-                break;
-
+            
             case "?g?sPO":
                 filter = t -> {
                     return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
@@ -271,33 +258,9 @@ public class Neo4jDriver extends GdbDriver {
                 break;
 
             case "?g?sP?o":
-                P pred = sp2t.getPredicate(exp, Exp.OBJECT);
-                if (pred != null) {
-                    filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, pred).inE().has(EDGE_P, p).hasLabel(RDF_EDGE_LABEL);
-                    };
-                } else {
-
-                    P preds = sp2t.getPredicate(exp, Exp.SUBJECT);
-                    if (preds != null) {
-                        filter = t -> {
-                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, preds).outE().has(EDGE_P, p).hasLabel(RDF_EDGE_LABEL);
-                        };
-                    } else {
-
-                        String kind = sp2t.getKind(exp, Exp.OBJECT);
-                        if (kind != null) {
-                            filter = t -> {
-                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().has(KIND, kind));
-                            };
-                        } else {
-                            filter = t -> {
+                filter = t -> {
                                 return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
                             };
-                        }
-                    }
-                }
-
                 break;
 
             case "?g?s?pO":
@@ -307,7 +270,8 @@ public class Neo4jDriver extends GdbDriver {
                 break;
             case "?gSPO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p)
+                            .where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
                 };
                 break;
             case "?gSP?o":
@@ -332,37 +296,133 @@ public class Neo4jDriver extends GdbDriver {
                 break;
             case "?g?s?p?o":
             default:
+                filter = t -> {
+                                return t.E().hasLabel(RDF_EDGE_LABEL);
+                };
+                break;
+                
+        }
+        return filter;
+    }
+    
+    int getKey(DatatypeValue s, DatatypeValue p, DatatypeValue o) {
+        int key = 0;
+        key += (o == null) ? 0 : 1;
+        key += (p == null) ? 0 : 10;
+        key += (s == null) ? 0 : 100;
+        return key;
+    }
+    
+    String getKeyString(DatatypeValue s, DatatypeValue p, DatatypeValue o) {
+        StringBuilder sb = new StringBuilder();
+        sb.append((s == null) ? "?s" : "S");
+        sb.append((p == null) ? "?p" : "P");
+        sb.append((o == null) ? "?o" : "O");
+        return sb.toString();
+    }
+      
+    P getPredicate(P p){
+        if (p == null){
+            return P.test(SPARQL2Tinkerpop.atrue, "");
+        }
+        return p;
+    }
+
+    
+    Object getPredicate(DatatypeValue p){
+        if (p == null){
+            return P.test(SPARQL2Tinkerpop.atrue, "");
+        }
+        return p.stringValue();
+    }
+    
+    Object getPredicate(P p, DatatypeValue dt){
+        if (dt != null){
+            return dt.stringValue();
+        }
+        return getPredicate(p);
+    }
+
+    
+    /**
+     * Exploir relevant filters for edge
+     * exp = Exp(EDGE)
+     */
+    @Override
+    public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>>
+            getFilter(Exp exp, DatatypeValue dts, DatatypeValue dtp, DatatypeValue dto, DatatypeValue dtg) {
+        Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+
+        String s = (dts==null)?"?s":dts.stringValue();
+        String p = (dtp==null)?"?p":dtp.stringValue();
+        String o = (dto==null)?"?o":dto.stringValue();
+        String g = (dtg==null)?"?g":dtg.stringValue();
+        
+        //System.out.println(getKeyString(dts, dtp, dto));
+        
+        switch (getKeyString(dts, dtp, dto)) {
+           
+            case "?sPO":
+            case "?s?pO":
+                filter = t -> {
+                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
+                };
+                break;
+                
+            case "?sP?o":
+            case "?s?p?o":
+            default:    
+                P ps = sp2t.getPredicate(exp, Exp.SUBJECT);
                 P po = sp2t.getPredicate(exp, Exp.OBJECT);
                 
                 if (po != null) {
                     filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, po).inE().hasLabel(RDF_EDGE_LABEL);
+                        return t.V().has(RDF_VERTEX_LABEL, VERTEX_VALUE, po)
+                                .inE().has(RDF_EDGE_LABEL, EDGE_P, getPredicate(dtp))
+                                .where(outV().has(RDF_VERTEX_LABEL, VERTEX_VALUE, getPredicate(ps)));
                     };
                 } else {
-
-                    P ps = sp2t.getPredicate(exp, Exp.SUBJECT);
-
                     if (ps != null) {
                         filter = t -> {
-                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, ps).outE().hasLabel(RDF_EDGE_LABEL);
+                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, ps)
+                                    .outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
                         };
-                    } else {
+                    }                                         
+                    else {
 
                         String kind = sp2t.getKind(exp, Exp.OBJECT);
                         if (kind != null) {
                             filter = t -> {
-                                return t.V().hasLabel(RDF_VERTEX_LABEL).has(KIND, kind).inE().hasLabel(RDF_EDGE_LABEL);
+                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp)).
+                                        where(inV().hasLabel(RDF_VERTEX_LABEL).has(KIND, kind));
                             };
-                        } else {
+                        } else {                
+                            P pp = sp2t.getPredicate(exp, Exp.PREDICATE);
                             filter = t -> {
-                                return t.E().hasLabel(RDF_EDGE_LABEL);
+                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(pp, dtp));
                             };
                         }
                     }
                 }
                 break;
+                                         
                 
-        }
+            case "SPO":
+            case "S?pO":
+                filter = t -> {
+                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp))
+                            .where(inV().hasLabel(RDF_VERTEX_LABEL).hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+                };
+                break;
+                
+                
+            case "SP?o":
+            case "S?p?o":       
+                filter = t -> {
+                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
+                };
+                break;
+      }
         return filter;
     }
     

@@ -10,6 +10,7 @@ import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 
 /**
@@ -42,7 +43,7 @@ public class SPARQL2Tinkerpop {
     static final BiPredicate<String, String> cont, start, end, regex, atrue ;
     static final Processor proc ;
     
-    private boolean debug = true; 
+    private boolean debug = false; 
     
     /**
      * Extended Predicates for SPARQL filters
@@ -63,45 +64,66 @@ public class SPARQL2Tinkerpop {
      * @param node: subject|property|object
      * @return Tinkerpop Predicate translation of node relevant SPARQL filters
      */
-    public P getPredicate(Exp exp, int node){
+    P getPredicate(Exp exp, int node){
+        return getPredicate(exp, node, ExprType.TINKERPOP, e -> filter(e));        
+    }
+           
+     /**
+     * 
+     * @return isURI, isBlank, isLiteral
+     */
+    P getKind(Exp exp, int node){
+       return getPredicate(exp, node, ExprType.KIND, e -> kind(e));        
+    }
+    
+    
+    P getPredicate(Exp exp, int node, int type, Function<Expr, P> trans){
         if (exp == null){
             return null;
         }
-        List<Filter> list = exp.getFilters(node, ExprType.TINKERPOP);
+        List<Filter> list = exp.getFilters(node, type);
         if (list == null || list.isEmpty()){
             return null;
         }
-        return translate(list, 0);
+        setDebug(exp.isDebug());
+        return translate(list, 0, trans);
     }
+     
+      
     
-    P translate(List<Filter> list, int n){
-        P pred = genTranslate(list.get(n).getExp());
+    P translate(List<Filter> list, int n, Function<Expr, P> trans){
+        P pred = translate(list.get(n).getExp(), trans);
         if (n == list.size() -1){
             return pred;
         }
-        return pred.and(translate(list, n+1));
+        return pred.and(translate(list, n+1, trans));
     }
     
-    P genTranslate(Expr exp){
+    
+    P translate(Expr exp, Function<Expr, P> trans){
         if (isDebug()){
             System.out.println("SP2T: " + exp);
         }
         switch (exp.oper()){
             case ExprType.AND:
-                return genTranslate(exp.getExp(0)).and(genTranslate(exp.getExp(1)));
+                return translate(exp.getExp(0), trans).and(translate(exp.getExp(1), trans));
                 
             case ExprType.OR:
-                return genTranslate(exp.getExp(0)).or(genTranslate(exp.getExp(1)));
+                return translate(exp.getExp(0), trans).or(translate(exp.getExp(1), trans));
                 
             case ExprType.NOT:
-                return P.not(genTranslate(exp.getExp(0)));
+                return P.not(translate(exp.getExp(0), trans));
                 
-            default: return translate(exp);
+            default: return trans.apply(exp);
         }
-    }
+    }          
     
-    
-    P translate(Expr exp){
+    /**
+     * filter on VALUE slot
+     * @param exp
+     * @return 
+     */
+    P filter(Expr exp){
         DatatypeValue val = exp.getExp(1).getDatatypeValue();
                                       
         switch (exp.oper()){
@@ -146,6 +168,24 @@ public class SPARQL2Tinkerpop {
                 
         }        
     }
+    
+    /**
+     * filter on KIND slot
+     * @param exp
+     * @return 
+     */
+    P kind(Expr exp) {
+        switch (exp.oper()) {
+            case ExprType.ISURI:
+                return P.eq(RdfToBdMap.IRI);
+            case ExprType.ISBLANK:
+                return P.eq(RdfToBdMap.BNODE);
+            case ExprType.ISLITERAL: 
+                return P.eq(RdfToBdMap.LITERAL).or(P.eq(RdfToBdMap.LARGE_LITERAL));
+            default:
+                return P.test(atrue, "");
+        }
+    }
           
     /**
      * 
@@ -158,28 +198,6 @@ public class SPARQL2Tinkerpop {
             ls.add(ee.getDatatypeValue().objectValue());
         }
         return ls;
-    }
-         
-     
-    /**
-     * 
-     * @return kind if isURI, isBlank, isLiteral
-     */
-    String getKind(Exp exp, int node){
-        if (exp == null){
-            return null;
-        }
-        List<Filter> list = exp.getFilters(node, ExprType.KIND);
-        if (list == null || list.isEmpty()){
-            return null;
-        }
-        Expr e = list.get(0).getExp();
-        switch (e.oper()){
-            case ExprType.ISURI:     return RdfToBdMap.IRI;
-            case ExprType.ISBLANK:   return RdfToBdMap.BNODE;
-            //case ExprType.ISLITERAL: return RdfToBdMap.LITERAL;
-        }
-        return null;
-    }
+    }           
 
 }

@@ -187,6 +187,7 @@ public class QueryProcess extends QuerySolver {
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				logger.fatal(ex);
 				logger.fatal("impossible to create a producer, aborting");
+				ex.printStackTrace();
 				System.exit(-1);
 			}
 		}

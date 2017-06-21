@@ -6,7 +6,6 @@ package fr.inria.corese.tinkerpop;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.corese.tinkerpop.mapper.TinkerpopToCorese;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.Iterator;
 import java.util.Optional;
@@ -17,34 +16,33 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
-import java.util.logging.Level;
 
 /**
- * Bridge to make a Neo4j database accessible from Corese.
+ * Bridge to make a graph database accessible from Corese.
  *
  * @author edemairy
  */
 public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	private org.apache.tinkerpop.gremlin.structure.Graph tGraph;
-	private TinkerpopToCorese unmapper;
+	private final GdbDriver driver;
+
 
 	private final static Logger LOGGER = LogManager.getLogger(TinkerpopGraph.class.getSimpleName());
 
-	private class GremlinIterable<T extends Entity> implements Iterable<Entity> {
+	private class GremlinIterable implements Iterable<Entity> {
 
-		private final Iterator<Edge> edges;
+		private final Iterator<? extends Element> edges;
 
-		private class GremlinIterator<T> implements Iterator<Entity> {
+		private class GremlinIterator implements Iterator<Entity> {
 
-			private final Iterator<Edge> edges;
-			private Optional<Edge> previousEdge = Optional.empty();
-			private Optional<Edge> nextEdge = Optional.empty();
-			private boolean nextSearched = false; // flag to know whether a hasNext() has launched and find a nextEdge element before nextEdge() was called.
+			private final Iterator<? extends Element> edges;
 
-			GremlinIterator(Iterator<Edge> edges) {
+			GremlinIterator(Iterator<? extends Element> edges) {
 				this.edges = edges;
 			}
 
@@ -55,25 +53,25 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 			@Override
 			public Entity next() {
-				Entity nextEntity = unmapper.buildEntity(edges.next());
+				Entity nextEntity = driver.buildEdge(edges.next());
 				return nextEntity;
 			}
 
 		}
 
-		GremlinIterable(Iterator<Edge> edges) {
+		GremlinIterable(Iterator<? extends Element> edges) {
 			this.edges = edges;
 		}
 
 		@Override
 		public Iterator<Entity> iterator() {
-			return new GremlinIterator<>(edges);
+			return new GremlinIterator(edges);
 		}
 	}
 
-	public TinkerpopGraph() {
+	private TinkerpopGraph(GdbDriver driver) {
 		super();
-		unmapper = new TinkerpopToCorese(this);
+		this.driver = driver;
 	}
 
 	public void setTinkerpopGraph(org.apache.tinkerpop.gremlin.structure.Graph tGraph) {
@@ -91,7 +89,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		Configuration config = tGraph.configuration();
 		for (Iterator<String> c = config.getKeys(); c.hasNext();) {
 			String key = c.next();
-			LOGGER.debug("{0} {1}", key, config.getString(key));
+			LOGGER.debug("{} {}", key, config.getString(key));
 		}
 		LOGGER.debug("****************************");
 	}
@@ -106,22 +104,22 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	}
 
 	/**
-	 *
-	 * @param dbPath
+	 * @param driver
+	 * @param databasePath
 	 * @return
 	 */
 	public static Optional<TinkerpopGraph> create(GdbDriver driver, String databasePath) throws IOException {
 		org.apache.tinkerpop.gremlin.structure.Graph actualGraph = driver.openDatabase(databasePath);
-		TinkerpopGraph result = new TinkerpopGraph();
+		TinkerpopGraph result = new TinkerpopGraph(driver);
 		result.setTinkerpopGraph(actualGraph);
 		return Optional.of(result);
 	}
 
-	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter) {
+	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter) {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
-			GraphTraversal<?, Edge> edges = filter.apply(traversal);
-			return new GremlinIterable<Entity>(edges);//{
+			GraphTraversal<? extends Element, ? extends Element> edges = filter.apply(traversal);
+			return new GremlinIterable(edges);
 		} catch (Exception ex) {
 			LOGGER.error("An error occurred: {}", ex.toString());
 			return null;
@@ -140,7 +138,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	@Override
 	public Iterable<Entity> getEdges(String edgeName) {
 		GraphTraversalSource traversal = tGraph.traversal();
-		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> unmapper.buildEntity(e.get())).toList();
+		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> driver.buildEdge(e.get())).toList();
 		return result;
 	}
 
@@ -150,6 +148,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		tGraph.tx().commit();
 	}
 
+	@Override
 	public boolean containsCoreseNode(Node node) {
 		GraphTraversalSource traversal = tGraph.traversal();
 		GraphTraversal<Edge, Edge> result = traversal.E().has(EDGE_G, node.getLabel());

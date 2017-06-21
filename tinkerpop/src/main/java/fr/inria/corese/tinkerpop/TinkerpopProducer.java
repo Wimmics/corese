@@ -46,7 +46,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node subject = qEdge.getNode(0);
 		Node object = qEdge.getNode(1);
 
-		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
 		StringBuilder key = new StringBuilder();
 
 		String g = (gNode == null) ? "" : gNode.getLabel();
@@ -57,6 +57,7 @@ public class TinkerpopProducer extends ProducerImpl {
 //		(IDatatype) dtObject = object.getValue(); pour obtenir le type des données demandées.
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
 		LOGGER.trace("in case " + key.toString());
+
 		filter = databaseDriver.getFilter(key.toString(), s, p, o, g);
 		Iterable<Entity> result = graph.getEdges(filter);
 		return result;

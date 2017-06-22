@@ -144,12 +144,13 @@ public interface ExprType {
 	
         // fake for query
 	public static int TINKERPOP = 150; 
-	public static int EQ_SAME   = 151; 
+	public static int TINKERPOP_RESTRICT = 151; 
 	public static int BETWEEN   = 152; 
 	public static int MORE      = 153; 
 	public static int LESS      = 154; 
 	public static int KIND      = 155; 
 	public static int BIPREDICATE = 156; 
+	public static int EQ_SAME   = 157; 
 	
 	// extension
 	

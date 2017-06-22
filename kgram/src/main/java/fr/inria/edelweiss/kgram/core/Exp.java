@@ -29,6 +29,7 @@ public class Exp extends PointerObject
     public static final int SUBJECT    = 0;
     public static final int OBJECT     = 1;
     public static final int PREDICATE  = 2;
+    public static final int GRAPH_NAME = 3;
     
     static final String NL = System.getProperty("line.separator");
     static final String SP = " ";
@@ -48,6 +49,7 @@ public class Exp extends PointerObject
             isBGP = false,
             lock = false,
             isSilent = false;
+    boolean isDebug = false;
     private boolean isPostpone = false;
     private boolean BGPAble = false;
     private boolean isFunctional = false;
@@ -1949,5 +1951,13 @@ public class Exp extends PointerObject
     // optional postponed filters
     public Exp getPostpone(){
         return postpone;
+    }
+    
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean b) {
+        isDebug = b;
     }
 }

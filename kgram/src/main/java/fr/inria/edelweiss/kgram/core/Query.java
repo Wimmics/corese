@@ -135,7 +135,7 @@ public class Query extends Exp implements Graphable {
     private boolean isCompiled = false;
     private boolean hasFunctional = false;
 
-    boolean isDebug = false, isCheck = false;
+    boolean isCheck = false;
     private boolean isUseBind = true;
 
     boolean 
@@ -732,14 +732,6 @@ public class Query extends Exp implements Graphable {
 
     public void setDistinct(boolean b) {
         distinct = b;
-    }
-
-    public boolean isDebug() {
-        return isDebug;
-    }
-
-    public void setDebug(boolean b) {
-        isDebug = b;
     }
 
     public boolean isCheck() {

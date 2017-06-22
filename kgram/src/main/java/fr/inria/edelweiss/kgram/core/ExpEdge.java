@@ -71,7 +71,7 @@ public class ExpEdge extends Exp {
         }
         ArrayList<Filter> list = new ArrayList<>();
         for (Filter f : getFilters()){            
-            if (match(n, f.getExp(), type)){
+            if (match(f.getExp(), n, node, type)){
                 list.add(f);                                    
             }
         }
@@ -86,32 +86,66 @@ public class ExpEdge extends Exp {
      * second arg (if any) is constant
      * type may be a query type such as TINKERPOP that match a set of oper
      */
-    boolean match(Node n, Expr e, int type) {
+    boolean match(Expr e, Node n, int node, int type) {
         if (e.type() == ExprType.BOOLEAN) {
             for (Expr ee : e.getExpList()) {
-                if (!match(n, ee, type)) {
+                if (!match(ee, n, node, type)) {
                     return false;
                 }
             }
             return true;
-        } else if (e.match(type)) {
-            Expr var = e.getExp(0);
-            if (var.isVariable() && var.getLabel().equals(n.getLabel())) {
-                if (e.arity() == 1) {
-                    return true;
-                } else {
-                    Expr cst = e.getExp(1);
-                    if (cst.isConstant()) {
-                        return true;
-                    } else if (e.oper() == ExprType.IN) {
-                        for (Expr ee : cst.getExpList()) {
-                            if (!ee.isConstant()) {
-                                return false;
-                            }
-                        }
-                        return true;
+        } else if (e.match(type) && match(e, n, node)) {
+            if (e.arity() == 1) {
+                return true;
+            } else {
+                Expr cst = e.getExp(1);
+                if (cst.isConstant()) {
+                    if (e.arity() == 3){
+                        // regex
+                        return e.getExp(2).isConstant();
                     }
+                    return true;
+                } else if (e.oper() == ExprType.IN) {
+                    for (Expr ee : cst.getExpList()) {
+                        if (!ee.isConstant()) {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * lang, datatype not with predicate
+     */
+    boolean compatible(Expr e, int node){
+        if (node == PREDICATE){
+            if (e.match(ExprType.LANG) || e.match(ExprType.DATATYPE)){
+                return false;
+            }             
+        }
+        return true;
+    }
+    
+    /**
+     * exp is 
+     * var = cst
+     * datatype(var) = cst
+     * lang(var) = cst
+     */
+    boolean match(Expr exp, Node n, int node) {
+        if (exp.arity() > 0) {
+            Expr fst = exp.getExp(0);
+            if (fst.isVariable()){
+                return fst.getLabel().equals(n.getLabel());
+            }
+            else if (compatible(fst, node) && (fst.match(ExprType.DATATYPE) || fst.match(ExprType.LANG)) && fst.arity() == 1) {
+                // datatype(var) == cst
+                Expr var = fst.getExp(0);
+                return var.isVariable() && var.getLabel().equals(n.getLabel());
             }
         }
         return false;

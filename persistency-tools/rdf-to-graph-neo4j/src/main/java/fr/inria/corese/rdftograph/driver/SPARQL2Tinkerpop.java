@@ -7,11 +7,16 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  *
@@ -64,20 +69,20 @@ public class SPARQL2Tinkerpop {
      * @param node: subject|property|object
      * @return Tinkerpop Predicate translation of node relevant SPARQL filters
      */
-    P getPredicate(Exp exp, int node){
-        return getPredicate(exp, node, ExprType.TINKERPOP, e -> filter(e));        
+    GraphTraversal<? extends Element, Edge> 
+        getPredicate(Exp exp, int node) {
+        return getPredicate(exp, node, getType(node));        
     }
-           
-     /**
-     * 
-     * @return isURI, isBlank, isLiteral
-     */
-    P getKind(Exp exp, int node){
-       return getPredicate(exp, node, ExprType.KIND, e -> kind(e));        
+        
+    int getType(int node) {
+        if (node == Exp.PREDICATE) {
+            return ExprType.TINKERPOP_RESTRICT;
+        }
+        return ExprType.TINKERPOP;
     }
-    
-    
-    P getPredicate(Exp exp, int node, int type, Function<Expr, P> trans){
+               
+    GraphTraversal<? extends Element, Edge>
+         getPredicate(Exp exp, int node, int type){
         if (exp == null){
             return null;
         }
@@ -86,44 +91,91 @@ public class SPARQL2Tinkerpop {
             return null;
         }
         setDebug(exp.isDebug());
-        return translate(list, 0, trans);
+        return translate(list, 0, node);
     }
      
       
     
-    P translate(List<Filter> list, int n, Function<Expr, P> trans){
-        P pred = translate(list.get(n).getExp(), trans);
+    GraphTraversal<? extends Element, Edge>
+         translate(List<Filter> list, int n, int node){
+        GraphTraversal<? extends Element, Edge>
+                pred = translate(list.get(n).getExp(), node);
         if (n == list.size() -1){
             return pred;
         }
-        return pred.and(translate(list, n+1, trans));
+        return pred.and(translate(list, n+1, node));
     }
     
     
-    P translate(Expr exp, Function<Expr, P> trans){
+    GraphTraversal<? extends Element, Edge>
+         translate(Expr exp, int node){
         if (isDebug()){
             System.out.println("SP2T: " + exp);
         }
         switch (exp.oper()){
             case ExprType.AND:
-                return translate(exp.getExp(0), trans).and(translate(exp.getExp(1), trans));
+                return __.and(translate(exp.getExp(0), node), translate(exp.getExp(1), node));
                 
             case ExprType.OR:
-                return translate(exp.getExp(0), trans).or(translate(exp.getExp(1), trans));
+                return __.or(translate(exp.getExp(0), node), translate(exp.getExp(1), node));
                 
             case ExprType.NOT:
-                return P.not(translate(exp.getExp(0), trans));
+                return __.not(translate(exp.getExp(0), node));
                 
-            default: return trans.apply(exp);
+            default: return filter(exp, node);
         }
     }          
     
+    /**
+     * This Neo4j mapping splits RDF terms in several slots:
+     * value, kind, datatype, lang
+     */        
+    GraphTraversal<? extends Element, Edge> getTraversal(Expr exp, P p, int node) {
+        if (exp.match(ExprType.KIND)) {
+            return __.has(KIND, p);
+        }
+
+        if (exp.arity() >= 1) {
+            switch (exp.getExp(0).oper()) {
+                case ExprType.DATATYPE:
+                    // datatype(var) is slot TYPE
+                    return __.has(TYPE, p);
+
+                case ExprType.LANG:
+                    // lang(var) is slot LANG 
+                    return __.has(LANG, p);
+            }
+        }
+
+        if (node == Exp.PREDICATE) {
+            return __.has(EDGE_P, p);
+        }
+
+        return __.has(VERTEX_VALUE, p);
+    }
+    
+   
+            
     /**
      * filter on VALUE slot
      * @param exp
      * @return 
      */
-    P filter(Expr exp){
+    GraphTraversal<? extends Element, Edge> filter(Expr exp, int node) {       
+        return getTraversal(exp, getPredicate(exp, node), node);
+    }
+    
+    P getPredicate(Expr exp, int node){
+                
+        switch (exp.oper()) {
+            case ExprType.ISURI:
+                return P.eq(RdfToBdMap.IRI);
+            case ExprType.ISBLANK:
+                return P.eq(RdfToBdMap.BNODE);
+            case ExprType.ISLITERAL:
+                return P.eq(RdfToBdMap.LITERAL).or(P.eq(RdfToBdMap.LARGE_LITERAL));
+        }
+
         DatatypeValue val = exp.getExp(1).getDatatypeValue();
                                       
         switch (exp.oper()){
@@ -154,37 +206,19 @@ public class SPARQL2Tinkerpop {
                 
             case ExprType.EQ:
             case ExprType.SAMETERM:
-                return P.eq(val.objectValue());
+                return P.eq(val.stringValue());
                 
             case ExprType.NEQ:
-                    return P.neq(val.objectValue());
+                    return P.neq(val.stringValue());
                             
-            case ExprType.LT: return P.lt(val.objectValue());
-            case ExprType.LE: return P.lte(val.objectValue());
-            case ExprType.GE: return P.gte(val.objectValue());
-            case ExprType.GT: return P.gt(val.objectValue());
-            
+            case ExprType.LT: return P.lt(val.stringValue());
+            case ExprType.LE: return P.lte(val.stringValue());
+            case ExprType.GE: return P.gte(val.stringValue());
+            case ExprType.GT: return P.gt(val.stringValue());
+                      
             default: return P.test(atrue, "");
                 
         }        
-    }
-    
-    /**
-     * filter on KIND slot
-     * @param exp
-     * @return 
-     */
-    P kind(Expr exp) {
-        switch (exp.oper()) {
-            case ExprType.ISURI:
-                return P.eq(RdfToBdMap.IRI);
-            case ExprType.ISBLANK:
-                return P.eq(RdfToBdMap.BNODE);
-            case ExprType.ISLITERAL: 
-                return P.eq(RdfToBdMap.LITERAL).or(P.eq(RdfToBdMap.LARGE_LITERAL));
-            default:
-                return P.test(atrue, "");
-        }
     }
           
     /**
@@ -195,7 +229,7 @@ public class SPARQL2Tinkerpop {
     List<Object> getInList(Expr exp) {
         ArrayList<Object> ls = new ArrayList<>();
         for (Expr ee : exp.getExp(1).getExpList()) {
-            ls.add(ee.getDatatypeValue().objectValue());
+            ls.add(ee.getDatatypeValue().stringValue());
         }
         return ls;
     }           

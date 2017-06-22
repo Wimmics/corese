@@ -242,16 +242,16 @@ public class Neo4jDriver extends GdbDriver {
     }
 
     @Override
-    public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>>
+    public Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>>
             getFilter(String key, String s, String p, String o, String g) {
         return getFilter(null, key, s, p, o, g);
     }
             
 
      @Override
-    public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>>
+    public Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>>
             getFilter(Exp exp, String key, String s, String p, String o, String g) {
-        Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+        Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>> filter;
         switch (key) {
             
             case "?g?sPO":
@@ -323,48 +323,53 @@ public class Neo4jDriver extends GdbDriver {
         sb.append((o == null) ? "?o" : "O");
         return sb.toString();
     }
-      
-    P getPredicate(P p){
+       
+    P getPredicate(DatatypeValue p){
         if (p == null){
             return P.test(SPARQL2Tinkerpop.atrue, "");
+        }
+        return P.eq(p.stringValue());
+    }
+    
+    GraphTraversal<? extends Element, Edge> getVertexPredicate(GraphTraversal<? extends Element, Edge> p){
+        if (p == null){
+            return __.has(VERTEX_VALUE, getPredicate(null));
         }
         return p;
     }
-
-     P getPredicate(String p){
+    
+    GraphTraversal<? extends Element, Edge> getEdgePredicate(GraphTraversal<? extends Element, Edge> p){
         if (p == null){
-            return P.test(SPARQL2Tinkerpop.atrue, "");
+            return __.has(EDGE_P, getPredicate(null));
         }
-        return P.eq(p);
+        return p;
     }
+    
+    GraphTraversal<? extends Element, Edge> getEdgePredicate(GraphTraversal<? extends Element, Edge> p, DatatypeValue dt){
+        if (p != null){
+            return p;
+        }
+        return __.has(EDGE_P, getPredicate(dt));
+    }
+    
+     
+//    Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, ?>>> getFilter(Exp exp) {
+//
+//        return t - > {
+//            t.V().as("s").outE().inV().as("o").project("s", "o");
+//        };
+//
+//    }
 
-    Object getPredicate(DatatypeValue p){
-        if (p == null){
-            return P.test(SPARQL2Tinkerpop.atrue, "");
-        }
-        return p.stringValue();
-    }
-    
-    Object getPredicate(P p, DatatypeValue dt){
-        if (dt != null){
-            return dt.stringValue();
-        }
-        return getPredicate(p);
-    }
-
-    GraphTraversal<Object, Object> test(){
-    return __.has(VERTEX_VALUE, "test");
-    }
-    
-    
+       
     /**
      * Exploir relevant filters for edge
      * exp = Exp(EDGE)
      */
     @Override
-    public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>>
+    public Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>>
             getFilter(Exp exp, DatatypeValue dts, DatatypeValue dtp, DatatypeValue dto, DatatypeValue dtg) {
-        Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+        Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>> filter;
 
         String s = (dts==null)?"?s":dts.stringValue();
         String p = (dtp==null)?"?p":dtp.stringValue();
@@ -381,55 +386,43 @@ public class Neo4jDriver extends GdbDriver {
                     return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
                 };
                 break;
+               
                 
             case "?sP?o":
             case "?s?p?o":
             default:    
-                P ps = sp2t.getPredicate(exp, Exp.SUBJECT);
-                P po = sp2t.getPredicate(exp, Exp.OBJECT);
-                               
+                GraphTraversal<? extends Element, Edge> ps = sp2t.getPredicate(exp, Exp.SUBJECT);
+                GraphTraversal<? extends Element, Edge> po = sp2t.getPredicate(exp, Exp.OBJECT);
+                GraphTraversal<? extends Element, Edge> pp = sp2t.getPredicate(exp, Exp.PREDICATE);
+                    
                 if (po != null) {
                     filter = t -> {
-                        return t.V().has(RDF_VERTEX_LABEL, VERTEX_VALUE, po)
-                                .inE().has(RDF_EDGE_LABEL, EDGE_P, getPredicate(dtp))
-                                .where(outV().has(RDF_VERTEX_LABEL, VERTEX_VALUE, getPredicate(ps)));
+                        return t.V().hasLabel(RDF_VERTEX_LABEL).where(po)
+                                .inE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp))
+                                .where(outV().hasLabel(RDF_VERTEX_LABEL).where(getVertexPredicate(ps)));
                     };
-                } else {
-                    if (ps != null) {
-                        filter = t -> {
-                            return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, ps)
-                                    .outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
-                        };
-                    }                                         
-                    else {
-
-                        P ks = sp2t.getKind(exp, Exp.SUBJECT);
-                        P ko = sp2t.getKind(exp, Exp.OBJECT);
-                        
-                        if (ko != null) {
-                            filter = t -> {                            
-                                return t.V().has(RDF_VERTEX_LABEL, KIND, getPredicate(ko))
-                                    .inE().has(RDF_EDGE_LABEL, EDGE_P, getPredicate(dtp))
-                                        .where(outV().has(RDF_VERTEX_LABEL, KIND, getPredicate(ks)));
-                                    
-//                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp)).
-//                                        where(inV().hasLabel(RDF_VERTEX_LABEL).has(KIND, kind));
-                            };
-                        } 
-                        else if (ks != null) {
-                            filter = t -> {
-                                return t.V().has(RDF_VERTEX_LABEL, KIND, getPredicate(ks))
-                                    .outE().has(RDF_EDGE_LABEL, EDGE_P, getPredicate(dtp));
-                            };
-                        }
-                        else {                
-                            P pp = sp2t.getPredicate(exp, Exp.PREDICATE);
-                            filter = t -> {
-                                return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(pp, dtp));
-                            };
-                        }
-                    }
+                } else if (ps != null) {
+                    filter = t -> {
+                        return t.V().hasLabel(RDF_VERTEX_LABEL).where(ps)
+                                .outE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp));
+                    };
+                } 
+                else if (exp.getEdge().getNode(0).equals(exp.getEdge().getNode(1))) {
+                    // ?x ?p ?x
+                   filter = t -> {
+                        return t.V().hasLabel(RDF_VERTEX_LABEL).as("s")
+                                .inE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp))
+                                .where(outV().hasLabel(RDF_VERTEX_LABEL).as("o")
+                                .where(P.eq("s")));
+                    };
+                
                 }
+               else {                    
+                    filter = t -> {
+                            return t.E().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp));
+                    }; 
+                }
+                
                 break;
                                          
                 

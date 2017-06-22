@@ -20,4 +20,14 @@ public interface DatatypeValue {
     float floatValue();
     
     Object objectValue();
+    
+    String getDatatypeURI();
+    
+    String getLang();
+    
+    boolean isURI();
+    
+    boolean isBlank();
+    
+    boolean isLiteral();
 }

@@ -11,23 +11,20 @@ import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.openrdf.query.parser.sparql.ast.ASTQName;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  *
@@ -77,19 +74,18 @@ public class TinkerpopProducer extends ProducerImpl {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean isDebug = q.isDebug();
+        exp.setDebug(isDebug);
         Node subject = qEdge.getNode(0);
         Node object  = qEdge.getNode(1);
         Node predicate = getPredicate(qEdge);
 
-        Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+        Function<GraphTraversalSource, 
+                GraphTraversal<? extends Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
 
         DatatypeValue s = updateVariable(exp, Exp.SUBJECT,   subject,   env, isDebug);
         DatatypeValue p = updateVariable(exp, Exp.PREDICATE, predicate, env, isDebug);
         DatatypeValue o = updateVariable(exp, Exp.OBJECT,    object,    env, isDebug);
-        DatatypeValue g = null;
-        if (gNode != null){
-            g = updateVariable(exp, Exp.GRAPH_NAME, gNode, env, isDebug);
-        }
+        DatatypeValue g = updateVariable(exp, Exp.GRAPH_NAME, gNode,    env, isDebug);
         
         filter = databaseDriver.getFilter(exp, s, p, o, g);
         if (q.isDebug()) {
@@ -100,7 +96,17 @@ public class TinkerpopProducer extends ProducerImpl {
     }
     
     
+    @Override
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env) {
+        // <E2> GraphTraversal<S,Map<String,E2>>
+        return new Mappings();
+    }
+    
+    
     private DatatypeValue updateVariable(Exp exp, int rank, Node node, Environment env, boolean isDebug) {
+        if (node == null){
+            return null;
+        }
         DatatypeValue result = null;
         if (node.isVariable()) {
             Node value = env.getNode(node.getLabel());

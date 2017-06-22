@@ -17,6 +17,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
 import java.util.Date;
@@ -118,7 +119,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return Optional.of(result);
 	}
 
-	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter) {
+	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>> filter) {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
 			GraphTraversal<?, Edge> edges = filter.apply(traversal);

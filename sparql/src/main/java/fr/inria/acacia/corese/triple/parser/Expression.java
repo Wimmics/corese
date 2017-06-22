@@ -607,7 +607,8 @@ implements Regex, Filter, Expr {
             case ExprType.BIPREDICATE:
                 return isBipredicate();
             case ExprType.TINKERPOP:
-                return isTinkerpop();
+            case ExprType.TINKERPOP_RESTRICT:
+                return isTinkerpop(t);
             default:
                 return oper() == t;
         }
@@ -631,7 +632,7 @@ implements Regex, Filter, Expr {
     /**
      * SPARQL filters available in Tinkerpop
      */
-    public boolean isTinkerpop(){
+    public boolean isTinkerpop(int t){
         switch (type()){
             case ExprType.BOOLEAN: return true;
         }
@@ -652,12 +653,12 @@ implements Regex, Filter, Expr {
             case ExprType.REGEX:
                 
             case ExprType.IN:
-                
-//            case ExprType.ISURI:
-//            case ExprType.ISBLANK:
-//            case ExprType.ISLITERAL:
-                                
                return true; 
+                
+            case ExprType.ISURI:
+            case ExprType.ISBLANK:
+            case ExprType.ISLITERAL:
+                   return t == ExprType.TINKERPOP;            
         }
         return false;
     }

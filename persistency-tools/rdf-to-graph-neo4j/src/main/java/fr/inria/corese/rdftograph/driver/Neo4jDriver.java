@@ -8,11 +8,11 @@ package fr.inria.corese.rdftograph.driver;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -41,6 +41,10 @@ public class Neo4jDriver extends GdbDriver {
 
     Neo4jGraph graph;
     private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
+    private static final String VAR_CST = "?_var_";
+    
+    private static final String VERTEX = RDF_VERTEX_LABEL;
+    private static final String VALUE  = VERTEX_VALUE;
     
     SPARQL2Tinkerpop sp2t;
     
@@ -62,7 +66,7 @@ public class Neo4jDriver extends GdbDriver {
         try {
             graph = Neo4jGraph.open(databasePath);
             graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_P));
-            graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
+            graph.cypher(String.format("CREATE INDEX ON :%s(%s)", VERTEX, VALUE));
             graph.tx().commit();
             return graph;
         } catch (Exception e) {
@@ -157,27 +161,27 @@ public class Neo4jDriver extends GdbDriver {
         switch (RdfToGraph.getKind(v)) {
             case IRI:
             case BNODE: {
-                it = graph.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
+                it = graph.traversal().V().hasLabel(VERTEX).has(VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
                 if (it.hasNext()) {
                     result = it.next();
                 } else {
-                    result = graph.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, v.stringValue());
+                    result = graph.addVertex(VERTEX);
+                    result.property(VALUE, v.stringValue());
                     result.property(KIND, RdfToGraph.getKind(v));
                 }
                 break;
             }
             case LITERAL: {
                 Literal l = (Literal) v;
-                it = graph.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
+                it = graph.traversal().V().hasLabel(VERTEX).has(VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
                 if (l.getLanguage().isPresent()) {
                     it = it.has(LANG, l.getLanguage().get());
                 }
                 if (it.hasNext()) {
                     result = it.next();
                 } else {
-                    result = graph.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, l.getLabel());
+                    result = graph.addVertex(VERTEX);
+                    result.property(VALUE, l.getLabel());
                     result.property(TYPE, l.getDatatype().toString());
                     result.property(KIND, RdfToGraph.getKind(v));
                     if (l.getLanguage().isPresent()) {
@@ -188,15 +192,15 @@ public class Neo4jDriver extends GdbDriver {
             }
             case LARGE_LITERAL: {
                 Literal l = (Literal) v;
-                it = graph.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
+                it = graph.traversal().V().hasLabel(VERTEX).has(VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
                 if (l.getLanguage().isPresent()) {
                     it = it.has(LANG, l.getLanguage().get());
                 }
                 if (it.hasNext()) {
                     result = it.next();
                 } else {
-                    result = graph.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode()));
+                    result = graph.addVertex(VERTEX);
+                    result.property(VALUE, Integer.toString(l.getLabel().hashCode()));
                     result.property(VERTEX_LARGE_VALUE, l.getLabel());
                     result.property(TYPE, l.getDatatype().toString());
                     result.property(KIND, RdfToGraph.getKind(v));
@@ -256,7 +260,7 @@ public class Neo4jDriver extends GdbDriver {
             
             case "?g?sPO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
+                    return t.V().hasLabel(VERTEX).has(VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
                 };
                 break;
 
@@ -268,33 +272,33 @@ public class Neo4jDriver extends GdbDriver {
 
             case "?g?s?pO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE();
+                    return t.V().hasLabel(VERTEX).has(VALUE, o).inE();
                 };
                 break;
             case "?gSPO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p)
-                            .where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p)
+                            .where(inV().hasLabel(VERTEX).has(VALUE, o));
                 };
                 break;
             case "?gSP?o":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
                 };
                 break;
             case "?gS?pO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE().where(inV().hasLabel(VERTEX).has(VALUE, o));
                 };
                 break;
             case "?gS?p?o":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE();
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE();
                 };
                 break;
             case "G?sP?o":
                 filter = t -> {
-                    return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL));
+                    return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(VERTEX));
                 };
                 break;
             case "?g?s?p?o":
@@ -324,25 +328,35 @@ public class Neo4jDriver extends GdbDriver {
         return sb.toString();
     }
        
-    P getPredicate(DatatypeValue p){
-        if (p == null){
+    P getPredicate(DatatypeValue dt){
+        if (dt == null){
             return P.test(SPARQL2Tinkerpop.atrue, "");
         }
-        return P.eq(p.stringValue());
+        return P.eq(dt.stringValue());
+    }
+       
+    GraphTraversal<? extends Element, Edge> getVertexPredicate(GraphTraversal<? extends Element, Edge> p){
+        return getVertexPredicate(p, null);
     }
     
-    GraphTraversal<? extends Element, Edge> getVertexPredicate(GraphTraversal<? extends Element, Edge> p){
+     GraphTraversal<? extends Element, Edge> getVertexPredicate(GraphTraversal<? extends Element, Edge> p, DatatypeValue dt){
         if (p == null){
-            return __.has(VERTEX_VALUE, getPredicate(null));
+            if (dt == null){
+                return __.has(VALUE, P.test(SPARQL2Tinkerpop.atrue, ""));
+            }
+            else {
+                return getVertexPredicate(dt);
+            }
         }
         return p;
     }
+       
+   GraphTraversal<? extends Element, Edge> getVertexPredicate(DatatypeValue dt){
+       return sp2t.getVertexPredicate(dt);
+   }
     
     GraphTraversal<? extends Element, Edge> getEdgePredicate(GraphTraversal<? extends Element, Edge> p){
-        if (p == null){
-            return __.has(EDGE_P, getPredicate(null));
-        }
-        return p;
+       return getEdgePredicate(p, null);
     }
     
     GraphTraversal<? extends Element, Edge> getEdgePredicate(GraphTraversal<? extends Element, Edge> p, DatatypeValue dt){
@@ -353,14 +367,157 @@ public class Neo4jDriver extends GdbDriver {
     }
     
      
-//    Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, ?>>> getFilter(Exp exp) {
-//
-//        return t - > {
-//            t.V().as("s").outE().inV().as("o").project("s", "o");
-//        };
-//
-//    }
+    GraphTraversal<? extends Element, Edge> getPredicate(Exp exp, int index){
+        GraphTraversal<? extends Element, Edge> p = sp2t.getPredicate(exp, index);
+        fr.inria.edelweiss.kgram.api.core.Node node = exp.getEdge().getNode(index);
+        DatatypeValue dt = (node.isConstant()) ? node.getDatatypeValue() : null ;
+        if (p == null && dt != null){
+            p = getVertexPredicate(p, dt);
+        }
+        return p;
+    }
+    
+    /**
+     * Implements getMappings by returning Iterator<Map<String, Vertex>>
+     * Generate a Tinkerpop BGP query
+     * @param exp is a BGP
+     * @return 
+     * TODO
+     * getFilter
+     * constant in first edge
+     * complete getEdge
+     * factorize constant and filter in getEdge
+     */
+    @Override
+    public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> 
+        getFilter(Exp exp) {
+            
+        GraphTraversal<? extends Element, Edge> ps = getPredicate(exp.get(0), Exp.SUBJECT);
+        GraphTraversal<? extends Element, Edge> po = getPredicate(exp.get(0), Exp.OBJECT);       
+        GraphTraversal<? extends Element, Edge> pt = (po == null) ? ps : po;
 
+        ArrayList<GraphTraversal> edgeList = new ArrayList<>();
+        VariableTable varList = new VariableTable();
+        int i = 0;
+        // swap = true: 
+        // first edge pattern starts with object because there is a filter on object
+        boolean swap = po != null;
+        if (exp.isDebug()){
+            System.out.println("Neo fst predicate: " + pt + " swap: " + swap);
+        }
+        for (Exp e : exp.getExpList()) {
+            if (e.isEdge()) {
+                edgeList.add(getEdge(e, varList, i++, swap));
+                swap = false;
+            }
+        }
+
+        GraphTraversal[] query = new GraphTraversal[edgeList.size()];
+        edgeList.toArray(query);
+        String[] select = new String[varList.getList().size()];
+        varList.getList().toArray(select);
+
+        switch (varList.getList().size()) {
+            case 1:
+                return t -> {
+                    return t.V().match(query).select(varList.get(0));
+                };
+
+            default:
+                if (pt == null) {
+                    return t -> {
+                        return t.V().hasLabel(VERTEX).match(query).select(varList.get(0), varList.get(1), select);
+                    };
+                } else {
+                    return t -> {
+                        return t.V().hasLabel(VERTEX).where(pt).match(query).select(varList.get(0), varList.get(1), select);
+                    };
+                }
+        }
+    }
+    
+        class VariableTable {
+            ArrayList<String> list;
+            HashMap<String, String> table;
+            
+            VariableTable(){
+                list = new ArrayList<>();
+                table = new HashMap<>();
+            }
+            
+            List<String> getList(){
+                return list;
+            }
+            
+            HashMap<String, String> getTable(){
+                return table;
+            }
+            
+            String get(int i){
+                return list.get(i);
+            }
+            
+            boolean contains(String s){
+                return list.contains(s);
+            }
+            
+            // same variable for same literal
+            String getVariable(fr.inria.edelweiss.kgram.api.core.Node node, int n, int rank) {
+                String value = node.getDatatypeValue().toString();
+                String var = table.get(value);
+                if (var == null) {
+                    var = VAR_CST.concat(Integer.toString(2 * n + rank));
+                    table.put(value, var);
+                }
+                return var;
+            }
+        } 
+    
+    GraphTraversal getEdge(Exp exp, VariableTable varList, int n, boolean swap) {
+        fr.inria.edelweiss.kgram.api.core.Edge edge = exp.getEdge();
+        fr.inria.edelweiss.kgram.api.core.Node ns = edge.getNode(0);
+        fr.inria.edelweiss.kgram.api.core.Node no = edge.getNode(1);
+        fr.inria.edelweiss.kgram.api.core.Node np = edge.getPredicate();
+      
+        String s = varName(varList, ns, n, 0);
+        String o = varName(varList, no, n, 1);
+               
+        if (! varList.getList().isEmpty() && ! varList.contains(s) && varList.contains(o)){
+            // select start node: subject or object according to which is already bound
+            // in previous triples
+            swap = true;
+        }
+  
+        if (!varList.contains(s)) {
+            varList.getList().add(s);
+        }
+        if (!varList.contains(o)) {
+            varList.getList().add(o);
+        }
+        
+        DatatypeValue dts = (ns.isVariable()) ? null : ns.getDatatypeValue();
+        DatatypeValue dto = (no.isVariable()) ? null : no.getDatatypeValue();
+        DatatypeValue dtp = (np.isVariable()) ? null : np.getDatatypeValue();
+
+        GraphTraversal<? extends Element, Edge> ps = getVertexPredicate(sp2t.getPredicate(exp, Exp.SUBJECT), dts);
+        GraphTraversal<? extends Element, Edge> po = getVertexPredicate(sp2t.getPredicate(exp, Exp.OBJECT), dto);
+        GraphTraversal<? extends Element, Edge> pp = getEdgePredicate(sp2t.getPredicate(exp, Exp.PREDICATE), dtp);
+
+        if (swap) {
+            return __.as(o).hasLabel(VERTEX).where(po).inE().where(pp).outV().hasLabel(VERTEX).as(s).where(ps);
+        } else {
+            return __.as(s).hasLabel(VERTEX).where(ps).outE().where(pp).inV().hasLabel(VERTEX).as(o).where(po);
+        }
+    }
+    
+    
+    String varName(VariableTable table, fr.inria.edelweiss.kgram.api.core.Node node, int n, int rank){
+        if (node.isVariable()){
+            return node.getLabel();
+        }
+        
+        return table.getVariable(node, n, rank);
+    }
        
     /**
      * Exploir relevant filters for edge
@@ -383,7 +540,7 @@ public class Neo4jDriver extends GdbDriver {
             case "?sPO":
             case "?s?pO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
+                    return t.V().hasLabel(VERTEX).has(VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
                 };
                 break;
                
@@ -397,22 +554,22 @@ public class Neo4jDriver extends GdbDriver {
                     
                 if (po != null) {
                     filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).where(po)
+                        return t.V().hasLabel(VERTEX).where(po)
                                 .inE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp))
-                                .where(outV().hasLabel(RDF_VERTEX_LABEL).where(getVertexPredicate(ps)));
+                                .where(outV().hasLabel(VERTEX).where(getVertexPredicate(ps)));
                     };
                 } else if (ps != null) {
                     filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).where(ps)
+                        return t.V().hasLabel(VERTEX).where(ps)
                                 .outE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp));
                     };
                 } 
                 else if (exp.getEdge().getNode(0).equals(exp.getEdge().getNode(1))) {
                     // ?x ?p ?x
                    filter = t -> {
-                        return t.V().hasLabel(RDF_VERTEX_LABEL).as("s")
+                        return t.V().hasLabel(VERTEX).as("s")
                                 .inE().hasLabel(RDF_EDGE_LABEL).where(getEdgePredicate(pp, dtp))
-                                .where(outV().hasLabel(RDF_VERTEX_LABEL).as("o")
+                                .where(outV().hasLabel(VERTEX).as("o")
                                 .where(P.eq("s")));
                     };
                 
@@ -429,8 +586,8 @@ public class Neo4jDriver extends GdbDriver {
             case "SPO":
             case "S?pO":
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp))
-                            .where(inV().hasLabel(RDF_VERTEX_LABEL).hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp))
+                            .where(inV().hasLabel(VERTEX).hasLabel(VERTEX).has(VALUE, o));
                 };
                 break;
                 
@@ -438,7 +595,7 @@ public class Neo4jDriver extends GdbDriver {
             case "SP?o":
             case "S?p?o":       
                 filter = t -> {
-                    return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
+                    return t.V().hasLabel(VERTEX).has(VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, getPredicate(dtp));
                 };
                 break;
       }

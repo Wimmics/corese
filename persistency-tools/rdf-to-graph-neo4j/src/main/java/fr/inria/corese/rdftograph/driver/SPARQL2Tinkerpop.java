@@ -154,7 +154,25 @@ public class SPARQL2Tinkerpop {
         return __.has(VERTEX_VALUE, p);
     }
     
-   
+    /**
+     * BGP ?x p value 
+     * generate appropriate Tinkerpop filter to match value = dt
+     */    
+    GraphTraversal<? extends Element, Edge> getVertexPredicate(DatatypeValue dt){
+        if (dt.isLiteral()){
+            if (dt.getLang() != null && !dt.getLang().isEmpty()) {
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(LANG, dt.getLang())); 
+            }
+            else if (dt.getDatatypeURI() != null) {
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(TYPE, dt.getDatatypeURI())); 
+            }
+            else {
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()));
+            }
+        }
+        
+        return __.and(__.has(KIND, (dt.isBlank()) ? BNODE : IRI), __.has(VERTEX_VALUE, dt.stringValue()));                           
+    }
             
     /**
      * filter on VALUE slot

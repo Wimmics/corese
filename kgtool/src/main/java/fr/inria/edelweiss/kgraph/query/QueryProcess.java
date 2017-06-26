@@ -101,7 +101,7 @@ public class QueryProcess extends QuerySolver {
     }
     
 	public static void testAlgebra(boolean b) {
-         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = b;
+         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP_DEFAULT = b;
          Eval.testAlgebra = b;
     }
 

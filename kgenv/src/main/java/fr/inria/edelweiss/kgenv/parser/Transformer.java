@@ -46,8 +46,22 @@ import java.util.logging.Level;
  */
 public class Transformer implements ExpType {
 
+    /**
+     * @return the BGP
+     */
+    public boolean isBGP() {
+        return isBGP;
+    }
+
+    /**
+     * @param BGP the BGP to set
+     */
+    public void setBGP(boolean BGP) {
+        this.isBGP = BGP;
+    }
+
     private static Logger logger = LogManager.getLogger(Transformer.class);
-    public static boolean ISBGP = false;
+    public static boolean ISBGP_DEFAULT = false;
     public static final String ROOT = "?_kgram_";
     public static final String THIS = "?this";
     private static final String EXTENSION = Processor.KGEXTENSION;
@@ -74,6 +88,7 @@ public class Transformer implements ExpType {
     private boolean isUseBind = true;
     private boolean isGenerateMain = true;
     private boolean isLoadFunction = true;
+    private boolean isBGP = ISBGP_DEFAULT;
     String namespaces, base;
     private Dataset dataset;
     private Metadata metadata;
@@ -271,6 +286,13 @@ public class Transformer implements ExpType {
     void annotate(ASTQuery ast) {
         if (metadata != null) {
             ast.addMetadata(metadata);
+        }
+        annotateLocal(ast);
+    }
+    
+    void annotateLocal(ASTQuery ast){
+        if (ast.hasMetadata(Metadata.BGP)){
+            setBGP(true);
         }
     }
 
@@ -1306,7 +1328,7 @@ public class Transformer implements ExpType {
     }
     
     int bgpType(){
-       return (ISBGP) ? BGP : AND;
+       return (isBGP()) ? BGP : AND;
     }
     
     Exp compileEdge(Triple t, boolean opt) {

@@ -47,6 +47,20 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  *
  */
 public class QuerySolver  implements SPARQLEngine {
+
+    /**
+     * @return the BGP
+     */
+    public boolean isBGP() {
+        return isBGP;
+    }
+
+    /**
+     * @param BGP the BGP to set
+     */
+    public void setBGP(boolean BGP) {
+        this.isBGP = BGP;
+    }
 	private static Logger logger = LogManager.getLogger(QuerySolver.class);
         public static final String MAIN_FUN = NSManager.EXT + "main";
 	
@@ -86,6 +100,7 @@ public class QuerySolver  implements SPARQLEngine {
     private boolean isStorePath = true;
     private boolean isCachePath = false;
     private boolean isRule = false;
+    private boolean isBGP = false;
         // two blank nodes match if they have the same description
         // (their edges  and target nodes math)
         // use case: match two OWL Blank nodes that represent the same exp
@@ -417,6 +432,7 @@ public class QuerySolver  implements SPARQLEngine {
             transformer.setMetadata(metadata);
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
+            transformer.setBGP(isBGP());
             transformer.setServiceList(getServiceList());
         }
         

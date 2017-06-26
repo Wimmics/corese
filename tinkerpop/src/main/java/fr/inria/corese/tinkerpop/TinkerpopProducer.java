@@ -15,17 +15,21 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Function;
+import java.util.Iterator;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Element;
-
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 /**
  *
  * @author edemairy
@@ -69,7 +73,7 @@ public class TinkerpopProducer extends ProducerImpl {
      * @param env
      * @return 
      */
-    public Iterable<Entity> getEdgesNew(Node gNode, List<Node> from, Edge qEdge, Environment env) {
+    public Iterable<Entity> getEdgesNew(Node gNode, List<Node> from, Edge qEdge, Environment env) {        
         Exp exp = env.getExp();
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
@@ -98,11 +102,33 @@ public class TinkerpopProducer extends ProducerImpl {
     
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env) {
-        // <E2> GraphTraversal<S,Map<String,E2>>
-        return new Mappings();
+        exp.setDebug(env.getQuery().isDebug());
+        Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> filter =
+                databaseDriver.getFilter(exp);
+        Iterator<Map<String, Vertex>> vmap = graph.getMaps(filter);
+        Mappings map = Mappings.create(env.getQuery());
+        while (vmap.hasNext()){
+            Mapping m = process(vmap.next());
+            map.add(m);
+            if (env.getQuery().isDebug()){
+                System.out.println(m);
+            }
+        }
+        return map;
     }
     
     
+    Mapping process(Map<String, Vertex> m){
+        ArrayList<Node> ql = new ArrayList<Node>();
+        ArrayList<Node> tl = new ArrayList<Node>();
+        for (String s : m.keySet()){
+            ql.add(NodeImpl.createVariable(s)); 
+            tl.add(graph.getNode(m.get(s)));
+        }
+        return Mapping.create(ql, tl);
+    }
+    
+   
     private DatatypeValue updateVariable(Exp exp, int rank, Node node, Environment env, boolean isDebug) {
         if (node == null){
             return null;

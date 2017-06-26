@@ -20,8 +20,8 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
-import java.util.Date;
-import java.util.logging.Level;
+import java.util.Map;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 /**
  * Bridge to make a Neo4j database accessible from Corese.
@@ -129,11 +129,23 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 			return null;
 		}
 	}
+        
+        
+        public Iterator<Map<String, Vertex>> getMaps(Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> filter){
+            GraphTraversalSource traversal = tGraph.traversal();
+            GraphTraversal<?, Map<String, Vertex>> map = filter.apply(traversal);
+            return map;
+        }
 
 	@Override
 	public Iterable<Entity> getEdges() {
 		return getEdges(t -> t.E());
 	}
+        
+        
+        public Node getNode(Vertex v){
+            return unmapper.unmapNode(v);
+        }
 
 	/**
 	 * @param edgeName

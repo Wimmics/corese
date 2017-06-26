@@ -73,6 +73,9 @@ public interface Edge  {
 	 */
 	Node getEdgeVariable();
         
+        // edge variable or edge node
+        Node getPredicate();
+        
         Node getNode();
 	
 }

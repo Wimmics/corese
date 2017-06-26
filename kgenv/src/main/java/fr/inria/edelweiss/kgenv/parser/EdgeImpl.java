@@ -156,10 +156,19 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 		return edgeNode;
 	}
 	
+        @Override
 	public Node getEdgeVariable() {
 		// TODO Auto-generated method stub
 		return edgeVariable;
 	}
+        
+        @Override
+        public Node getPredicate(){
+            if (edgeVariable == null){
+                return edgeNode;
+            }
+            return edgeVariable;
+        }
 	
 	public void setEdgeVariable(Node n){
 		edgeVariable = n;

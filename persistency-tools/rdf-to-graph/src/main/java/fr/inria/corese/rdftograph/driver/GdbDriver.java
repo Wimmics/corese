@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.openrdf.model.Literal;
@@ -255,5 +256,7 @@ public abstract class GdbDriver {
             return null;
         }
 
-
+        public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>>  getFilter(Exp exp){
+            return null;
+        }
 }

@@ -26,6 +26,10 @@ public abstract class EdgeTop extends GraphObject implements Entity {
     public Node getEdgeNode() {
         return null;
     }
+    
+    public Node getPredicate(){
+        return getEdgeNode();
+    }
 
     public void setTag(Node node) {
     }

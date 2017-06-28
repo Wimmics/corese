@@ -248,4 +248,6 @@ public abstract class GdbDriver {
 
 	public abstract Entity buildEdge(Element e);
 	public abstract Node buildNode(Element e);
+
+	public abstract boolean isGraphNode(String label);
 }

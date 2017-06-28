@@ -220,4 +220,9 @@ public class OrientDbDriver extends GdbDriver {
 				throw new IllegalArgumentException("node " + node.toString() + " type is unknown.");
 		}
 	}
+
+	@Override
+	public boolean isGraphNode(String label) {
+		return g.traversal().E().has(EDGE_G, label).hasNext();
+	}
 }

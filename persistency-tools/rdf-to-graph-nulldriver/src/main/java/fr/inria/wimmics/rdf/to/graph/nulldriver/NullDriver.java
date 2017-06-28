@@ -62,4 +62,9 @@ public class NullDriver extends GdbDriver {
 	public Node buildNode(Element e) {
 		return null;
 	}
+
+	@Override
+	public boolean isGraphNode(String label) {
+		return true;
+	}
 }

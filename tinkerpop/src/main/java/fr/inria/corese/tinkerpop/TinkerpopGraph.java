@@ -15,11 +15,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 /**
  * Bridge to make a graph database accessible from Corese.
@@ -128,7 +128,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 
 	@Override
 	public Iterable<Entity> getEdges() {
-		return getEdges(t -> t.E());
+		return getEdges(driver.getFilter("?s?p?o?g", "", "", "", ""));
 	}
 
 	/**
@@ -137,9 +137,7 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	 */
 	@Override
 	public Iterable<Entity> getEdges(String edgeName) {
-		GraphTraversalSource traversal = tGraph.traversal();
-		Iterable<Entity> result = traversal.E().has("value", edgeName).map(e -> driver.buildEdge(e.get())).toList();
-		return result;
+		return getEdges(driver.getFilter("?sP?o?g", "", edgeName, "", ""));
 	}
 
 	@Override
@@ -148,11 +146,10 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		tGraph.tx().commit();
 	}
 
+	/** Check wether node is a graph node */
 	@Override
 	public boolean containsCoreseNode(Node node) {
-		GraphTraversalSource traversal = tGraph.traversal();
-		GraphTraversal<Edge, Edge> result = traversal.E().has(EDGE_G, node.getLabel());
-		return result.hasNext();
+		return driver.isGraphNode(node.getLabel());
 	}
 
 	public void close() {

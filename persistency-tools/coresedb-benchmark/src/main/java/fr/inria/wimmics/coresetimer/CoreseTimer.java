@@ -181,7 +181,7 @@ public class CoreseTimer {
 				}
 			}
 		}
-		adapter.saveResults(test.getOutputPath());
+//		adapter.saveResults(test.getOutputPath("results"));
 		mappings = adapter.getMappings();
 		adapter.postProcessing();
 		LOGGER.exiting(CoreseTimer.class.getName(), "run");
@@ -189,7 +189,7 @@ public class CoreseTimer {
 	}
 
 	public void writeResults() {
-		adapter.saveResults(test.getOutputPath());
+		adapter.saveResults(test.getOutputPath("results_"+mode));
 	}
 
 	public Mappings getMapping() {
@@ -277,9 +277,9 @@ public class CoreseTimer {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult streamResult = new StreamResult(new File(test.getOutputPath()));
+			StreamResult streamResult = new StreamResult(new File(test.getOutputPath("stats_"+mode)));
 			transformer.transform(source, streamResult);
-			LOGGER.log(Level.INFO, "Results were written in:", test.getOutputPath());
+			LOGGER.log(Level.INFO, "Results were written in: {}", test.getOutputPath(mode.name()));
 		} catch (ParserConfigurationException | TransformerException ex) {
 			LOGGER.log(Level.INFO, "Error when writing results:", ex.getMessage());
 			ex.printStackTrace();

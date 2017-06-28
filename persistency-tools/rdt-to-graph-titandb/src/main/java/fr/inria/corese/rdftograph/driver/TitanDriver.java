@@ -59,7 +59,7 @@ public class TitanDriver extends GdbDriver {
 		g = TitanFactory.open(dbPathTemp + "/conf.properties");
 		return g;
 	}
-	
+
 	@Override
 	public Graph createDatabase(String dbPathTemp) throws IOException {
 		File f = new File(dbPathTemp);
@@ -135,16 +135,20 @@ public class TitanDriver extends GdbDriver {
 		getTitanGraph().close();
 	}
 
-	/** Define a new entry of type String in the data model of the db.  
-	 *  @param propertyName Name of the entry to add.
+	/**
+	 * Define a new entry of type String in the data model of the db.
+	 *
+	 * @param propertyName Name of the entry to add.
 	 */
 	void makeIfNotExistProperty(String propertyName) {
 		makeIfNotExistProperty(propertyName, String.class);
 	}
 
-	/** Create in the db model a new property and the class it uses.
-	 *  @param propertyName Entry name in the model.
-	 *  @param c Class for the entry.
+	/**
+	 * Create in the db model a new property and the class it uses.
+	 *
+	 * @param propertyName Entry name in the model.
+	 * @param c Class for the entry.
 	 */
 	void makeIfNotExistProperty(String propertyName, Class<?> c) {
 		ManagementSystem manager = (ManagementSystem) getTitanGraph().openManagement();
@@ -260,7 +264,6 @@ public class TitanDriver extends GdbDriver {
 //		}
 //		return result.toString();
 //	}
-
 	int removedNodes = 0;
 
 	@Override
@@ -370,5 +373,10 @@ public class TitanDriver extends GdbDriver {
 	@Override
 	public Node buildNode(Element e) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean isGraphNode(String label) {
+		return g.traversal().E().has(EDGE_G, label).hasNext();
 	}
 }

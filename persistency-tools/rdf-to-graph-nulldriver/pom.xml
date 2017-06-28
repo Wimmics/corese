@@ -12,7 +12,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rdf-to-graph</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>corese-core</artifactId>
         </dependency>
     </dependencies>
 </project>

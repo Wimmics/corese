@@ -5,9 +5,14 @@
  */
 package fr.inria.corese.rdftograph.driver;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.rdftograph.RdfToGraph;
+
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +23,16 @@ import java.util.logging.Logger;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
+
+import java.util.concurrent.TimeUnit;
+
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.inV;
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outE;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.neo4j.graphdb.Node;
@@ -30,13 +41,28 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 
 /**
- *
  * @author edemairy
  */
 public class Neo4jDriver extends GdbDriver {
 
 	Neo4jGraph graph;
 	private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
+	private LoadingCache<Value, Vertex> cache;
+
+	public Neo4jDriver() {
+		super();
+		this.cache = CacheBuilder.newBuilder().
+			maximumSize(1000000).
+			expireAfterAccess(100, TimeUnit.DAYS).
+			build(new CacheLoader<Value, Vertex>() {
+				@Override
+				public Vertex load(Value v) throws Exception {
+					Vertex result = createOrGetNodeIntern(v);
+					return result;
+				}
+
+			});
+	}
 
 	@Override
 	public Graph openDatabase(String databasePath) {
@@ -52,6 +78,7 @@ public class Neo4jDriver extends GdbDriver {
 		try {
 			graph = Neo4jGraph.open(databasePath);
 			graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_P));
+			graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_G));
 			graph.cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
 			graph.tx().commit();
 			return graph;
@@ -97,9 +124,15 @@ public class Neo4jDriver extends GdbDriver {
 		return result;
 	}
 
+	@Override
+	public boolean isGraphNode(String label) {
+		return graph.traversal().V().hasLabel(RDF_EDGE_LABEL).has(EDGE_G, label).hasNext();
+	}
+
 	private static enum RelTypes implements RelationshipType {
 		CONTEXT
 	}
+
 	Map<String, Object> alreadySeen = new HashMap<>();
 
 	/**
@@ -133,14 +166,18 @@ public class Neo4jDriver extends GdbDriver {
 		return result.toString();
 	}
 
+	@Override
+	public Vertex createOrGetNode(Value v) {
+		return cache.getUnchecked(v);
+	}
+
 	/**
 	 * Returns a new node if v does not exist yet.
 	 *
 	 * @param v
 	 * @return
 	 */
-	@Override
-	public Vertex createOrGetNode(Value v) {
+	public Vertex createOrGetNodeIntern(Value v) {
 		GraphTraversal<Vertex, Vertex> it;
 		Vertex result = null;
 		switch (RdfToGraph.getKind(v)) {
@@ -205,7 +242,6 @@ public class Neo4jDriver extends GdbDriver {
 		Object result;
 		Vertex vSource = createOrGetNode(sourceId);
 		Vertex vObject = createOrGetNode(objectId);
-
 		ArrayList<Object> p = new ArrayList<>();
 		properties.keySet().stream().forEach((key) -> {
 			p.add(key);
@@ -213,16 +249,12 @@ public class Neo4jDriver extends GdbDriver {
 		});
 		p.add(EDGE_P);
 		p.add(predicate);
-		GraphTraversal<Vertex, Edge> alreadyExist = graph.traversal().V(vSource.id()).outE().has(EDGE_P, predicate).as("e").inV().hasId(vObject.id()).select("e");
-		try {
-			result = alreadyExist.next();
-		} catch (NoSuchElementException ex) {
-			result = null;
-		}
-		if (result == null) {
-			Edge e = vSource.addEdge(RDF_EDGE_LABEL, vObject, p.toArray());
-			result = e.id();
-		}
+		p.add(T.label);
+		p.add(RDF_EDGE_LABEL);
+		Vertex e = graph.addVertex(p.toArray());
+		e.addEdge(SUBJECT_EDGE, vSource);
+		e.addEdge(OBJECT_EDGE, vObject);
+		result = e.id();
 		return result;
 	}
 
@@ -236,66 +268,51 @@ public class Neo4jDriver extends GdbDriver {
 		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
 		switch (key) {
 			case "?g?sPO":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE(OBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
 				break;
 			case "?g?sP?o":
-				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-				};
+				filter = t -> t.V().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
 				break;
 			case "?g?s?pO":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE();
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE(OBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL);
 				break;
 			case "?gSPO":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(outE(OBJECT_EDGE).inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
 				break;
 			case "?gSP?o":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
+				break;
+			case "GSP?o":
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_G, g);
 				break;
 			case "?gS?pO":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE().where(inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().where(outE(OBJECT_EDGE).inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
 				break;
 			case "?gS?p?o":
-				filter = t -> {
-					return t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).outE();
-				};
+				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV();
 				break;
 			case "G?sP?o":
-				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(inV().hasLabel(RDF_VERTEX_LABEL));
-				};
+				filter = t -> t.V().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_G, g);
 				break;
 			case "?g?s?p?o":
 			default:
-				filter = t -> {
-					return t.E().hasLabel(RDF_EDGE_LABEL);
-				};
+				filter = t -> t.V().hasLabel(RDF_EDGE_LABEL);
 		}
 		return filter;
 	}
 
-	@Override 
+	@Override
 	public Entity buildEdge(Element e) {
-		Edge edge = (Edge) e;
-		String namedGraph = edge.value(EDGE_G);
-		Entity result = EdgeQuad.create(DatatypeMap.createResource(namedGraph),
-						buildNode(edge.outVertex()),
-						DatatypeMap.createResource((String) e.value(EDGE_P)),
-						buildNode(edge.inVertex())
-					);		
+		Vertex nodeEdge = (Vertex) e;
+		Entity result = EdgeQuad.create(
+			DatatypeMap.createResource(nodeEdge.value(EDGE_G)),
+			buildNode(nodeEdge.edges(Direction.OUT, SUBJECT_EDGE).next().inVertex()),
+			DatatypeMap.createResource(nodeEdge.value(EDGE_P)),
+			buildNode(nodeEdge.edges(Direction.OUT, OBJECT_EDGE).next().inVertex())
+		);
 		return result;
 	}
-	
+
 	@Override
 	public fr.inria.edelweiss.kgram.api.core.Node buildNode(Element e) {
 		Vertex node = (Vertex) e;

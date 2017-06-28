@@ -6473,7 +6473,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 
     
     
-    public void testDN(){
+    public void testDN() throws CoreseDatatypeException, CoreseDatatypeException{
         IDatatype dt1 = DatatypeMap.createResource(RDFS.SUBCLASSOF);
         IDatatype dt2 = DatatypeMap.createResource(RDFS.SUBCLASSOF);
         

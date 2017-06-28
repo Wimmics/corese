@@ -290,7 +290,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     Index createIndex(boolean b, int i) {
-        //return new EdgeIndexer(this, b, i);
         return new EdgeManagerIndexer(this, b, i);
         
     }

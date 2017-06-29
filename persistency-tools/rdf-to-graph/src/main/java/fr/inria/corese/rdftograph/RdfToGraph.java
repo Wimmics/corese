@@ -354,17 +354,8 @@ public class RdfToGraph {
 		throw new IllegalArgumentException("Impossible to find the type of:" + resource.stringValue());
 	}
 
-	private static boolean isType(Class c, Object o) {
-		try {
-			c.cast(o);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
 	private static boolean isLargeLiteral(Value resource) {
-		if (isType(Literal.class, resource)) {
+		if (Literal.class.isInstance(resource)) {
 			Literal l = (Literal) resource;
 			return l.getLabel().length() > MAX_INDEXABLE_LENGTH;
 		} else {
@@ -373,15 +364,15 @@ public class RdfToGraph {
 	}
 
 	private static boolean isLiteral(Value resource) {
-		return isType(Literal.class, resource);
+		return Literal.class.isInstance(resource);
 	}
 
 	private static boolean isIRI(Value resource) {
-		return isType(IRI.class, resource);
+		return IRI.class.isInstance(resource);
 	}
 
 	private static boolean isBNode(Value resource) {
-		return isType(BNode.class, resource);
+		return BNode.class.isInstance(resource);
 	}
 
 }

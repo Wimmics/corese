@@ -171,7 +171,7 @@ public class Main {
 				.setMeasuredCycles(defaultMeasuredCycles)
 				.setWarmupCycles(defaultWarmupCycles)
 				.setInput(getInput())
-				.setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId))
+				.setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId+"_%s"))
 				.setRequest(request)
 				.setInputDb(getInputDb());
 
@@ -280,8 +280,8 @@ public class Main {
 			return this;
 		}
 
-		public String getOutputPath() {
-			return outputPrefixFilename;
+		public String getOutputPath(String type) {
+			return String.format(outputPrefixFilename, type);
 		}
 	}
 

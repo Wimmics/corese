@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 import java.util.List;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ public class TinkerpopProducer extends ProducerImpl {
 	private final Logger LOGGER = LogManager.getLogger(TinkerpopProducer.class.getName());
 	private GdbDriver databaseDriver;
 	private TinkerpopGraph graph;
+	private DataProducer ei;
 
 	public TinkerpopProducer(TinkerpopGraph graph, GdbDriver databaseDriver) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		super(graph);
@@ -46,7 +48,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node subject = qEdge.getNode(0);
 		Node object = qEdge.getNode(1);
 
-		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
 		StringBuilder key = new StringBuilder();
 
 		String g = (gNode == null) ? "" : gNode.getLabel();
@@ -54,9 +56,9 @@ public class TinkerpopProducer extends ProducerImpl {
 
 		String s = updateVariable(subject.isVariable(), subject, env, key, "?s", "S");
 		String p = updateVariable(isPredicateFree(qEdge), qEdge.getEdgeNode(), env, key, "?p", "P");
-//		(IDatatype) dtObject = object.getValue(); pour obtenir le type des données demandées.
 		String o = updateVariable(object.isVariable(), object, env, key, "?o", "O");
 		LOGGER.trace("in case " + key.toString());
+
 		filter = databaseDriver.getFilter(key.toString(), s, p, o, g);
 		Iterable<Entity> result = graph.getEdges(filter);
 		return result;
@@ -73,29 +75,25 @@ public class TinkerpopProducer extends ProducerImpl {
 		return name.equals(Graph.TOPREL);
 	}
 
-	@Override
-	public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
-		Node node = env.getNode(gNode);
-		if (!graph.containsCoreseNode(node)) {
-			return false;
-		}
-		if (from.isEmpty()) {
-			return true;
-		}
-		// @TODO what should be done.
-		LOGGER.error("behaviour not defined in that case");
-		return false;
-		//return ei.getCreateDataFrom().isFrom(from, node);
-	}
-
 	public void close() {
 		graph.close();
 	}
 
+	/**
+	 * Append to "key" variable the current variable status
+	 *
+	 * @param isVariableFree
+	 * @param node
+	 * @param env
+	 * @param key
+	 * @param freeVar
+	 * @param boundVar
+	 * @return
+	 */
 	private String updateVariable(boolean isVariableFree, Node node, Environment env, StringBuilder key, String freeVar, String boundVar) {
 		String result;
 		if (isVariableFree) {
-			if (env.getNode(node.getLabel()) != null) {
+			if (env.getNode(node.getLabel()) != null) { // Variable was given free in the request, but its value is fixed by env.
 				key.append(boundVar);
 				result = env.getNode(node.getLabel()).getLabel();
 			} else {

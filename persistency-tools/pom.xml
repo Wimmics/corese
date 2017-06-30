@@ -9,7 +9,6 @@
 	<artifactId>persistency-tools</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>persistency</module>
 		<module>rdf-to-graph</module>
 	 <module>rdf-to-bd-map</module>
 	 <module>rdt-to-graph-titandb</module>

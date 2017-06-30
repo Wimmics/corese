@@ -6,6 +6,7 @@
 package fr.inria.corese.rdftograph.driver;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.IOException;
@@ -15,13 +16,18 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.tinkerpop.gremlin.orientdb.OrientGraphFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 
@@ -119,8 +125,8 @@ public class OrientDbDriver extends GdbDriver {
 	}
 
 	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> getFilter(String key, String s, String p, String o, String g) {
-		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> filter;
+	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> getFilter(String key, String s, String p, String o, String g) {
+		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
 		switch (key.toString()) {
 			case "?g?sPO":
 				filter = t -> {
@@ -169,5 +175,54 @@ public class OrientDbDriver extends GdbDriver {
 				};
 		}
 		return filter;
+	}
+
+	@Override
+	public Entity buildEdge(Element e) {
+		Edge edge = (Edge) e;
+		String namedGraph = edge.value(EDGE_G);
+		Entity result = EdgeQuad.create(DatatypeMap.createResource(namedGraph),
+			buildNode(edge.outVertex()),
+			DatatypeMap.createResource((String) e.value(EDGE_P)),
+			buildNode(edge.inVertex())
+		);
+		return result;
+	}
+
+	@Override
+	public fr.inria.edelweiss.kgram.api.core.Node buildNode(Element e) {
+		Vertex node = (Vertex) e;
+		String id = (String) node.value(VERTEX_VALUE);
+		switch ((String) node.value(KIND)) {
+			case IRI:
+				return DatatypeMap.createResource(id);
+			case BNODE:
+				return DatatypeMap.createBlank(id);
+			case LITERAL:
+				String label = (String) node.value(VERTEX_VALUE);
+				String type = (String) node.value(TYPE);
+				VertexProperty<String> lang = node.property(LANG);
+				if (lang.isPresent()) {
+					return DatatypeMap.createLiteral(label, type, lang.value());
+				} else {
+					return DatatypeMap.createLiteral(label, type);
+				}
+			case LARGE_LITERAL:
+				label = (String) node.value(VERTEX_LARGE_VALUE);
+				type = (String) node.value(TYPE);
+				lang = node.property(LANG);
+				if (lang.isPresent()) {
+					return DatatypeMap.createLiteral(label, type, lang.value());
+				} else {
+					return DatatypeMap.createLiteral(label, type);
+				}
+			default:
+				throw new IllegalArgumentException("node " + node.toString() + " type is unknown.");
+		}
+	}
+
+	@Override
+	public boolean isGraphNode(String label) {
+		return g.traversal().E().has(EDGE_G, label).hasNext();
 	}
 }

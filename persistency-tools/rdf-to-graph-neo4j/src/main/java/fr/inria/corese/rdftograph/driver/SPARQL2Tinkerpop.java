@@ -69,7 +69,7 @@ public class SPARQL2Tinkerpop {
      * @param node: subject|property|object
      * @return Tinkerpop Predicate translation of node relevant SPARQL filters
      */
-    GraphTraversal<? extends Element, Edge> 
+    GraphTraversal<? extends Element, ? extends Element> 
         getPredicate(Exp exp, int node) {
         return getPredicate(exp, node, getType(node));        
     }
@@ -81,7 +81,7 @@ public class SPARQL2Tinkerpop {
         return ExprType.TINKERPOP;
     }
                
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          getPredicate(Exp exp, int node, int type){
         if (exp == null){
             return null;
@@ -96,10 +96,9 @@ public class SPARQL2Tinkerpop {
      
       
     
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          translate(List<Filter> list, int n, int node){
-        GraphTraversal<? extends Element, Edge>
-                pred = translate(list.get(n).getExp(), node);
+        GraphTraversal<? extends Element, ? extends Element> pred = translate(list.get(n).getExp(), node);
         if (n == list.size() -1){
             return pred;
         }
@@ -107,7 +106,7 @@ public class SPARQL2Tinkerpop {
     }
     
     
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          translate(Expr exp, int node){
         if (isDebug()){
             System.out.println("SP2T: " + exp);

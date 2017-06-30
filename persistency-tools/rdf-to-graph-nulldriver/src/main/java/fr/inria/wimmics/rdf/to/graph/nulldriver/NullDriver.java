@@ -9,6 +9,9 @@ import fr.inria.corese.rdftograph.driver.GdbDriver;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Logger;
+
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -45,8 +48,23 @@ public class NullDriver extends GdbDriver {
 	}
 
 	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends Element, Edge>> getFilter(String key, String s, String p, String o, String g) {
+	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(String key, String s, String p, String o, String g) {
 		logger.fine("getFilter");
 		return null;
+	}
+
+	@Override
+	public Entity buildEdge(Element e) {
+		return null;
+	}
+
+	@Override
+	public Node buildNode(Element e) {
+		return null;
+	}
+
+	@Override
+	public boolean isGraphNode(String label) {
+		return true;
 	}
 }

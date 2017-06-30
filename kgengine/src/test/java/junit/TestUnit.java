@@ -4820,7 +4820,7 @@ String init = "prefix ex: <http://example.org/>"
      
      
      public void testBGP() throws EngineException{
-         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = true;
+         fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP_DEFAULT = true;
          String init = "prefix ex: <http://example.org/>"
                  + "insert data {"
                  + "graph ex:g1 {ex:John ex:name 'John' ;"
@@ -6473,7 +6473,7 @@ exec.setPlanProfile(Query.STD_PLAN);
 
     
     
-    public void testDN(){
+    public void testDN() throws CoreseDatatypeException, CoreseDatatypeException{
         IDatatype dt1 = DatatypeMap.createResource(RDFS.SUBCLASSOF);
         IDatatype dt2 = DatatypeMap.createResource(RDFS.SUBCLASSOF);
         

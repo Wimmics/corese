@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -243,20 +246,25 @@ public abstract class GdbDriver {
 	 * @param g
 	 * @return
 	 */
-	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
-        getFilter(String key, String s, String p, String o, String g);
+	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> getFilter(String key, String s, String p, String o, String g);
 
-        public  Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
-        getFilter(Exp exp, String key, String s, String p, String o, String g){
-            return getFilter(key, s, p, o, g);
-        }
-        
-        public  Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, org.apache.tinkerpop.gremlin.structure.Edge>> 
-        getFilter(Exp exp, DatatypeValue s, DatatypeValue p, DatatypeValue o, DatatypeValue g){
-            return null;
-        }
+	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>>
+		getFilter(Exp exp, String key, String s, String p, String o, String g) {
+		return getFilter(key, s, p, o, g);
+	}
 
-        public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>>  getFilter(Exp exp){
-            return null;
-        }
+	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>>
+		getFilter(Exp exp, DatatypeValue s, DatatypeValue p, DatatypeValue o, DatatypeValue g) {
+		return null;
+	}
+
+	public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> getFilter(Exp exp) {
+		return null;
+	}
+
+	public abstract Entity buildEdge(Element e);
+
+	public abstract Node buildNode(Element e);
+
+	public abstract boolean isGraphNode(String label);
 }

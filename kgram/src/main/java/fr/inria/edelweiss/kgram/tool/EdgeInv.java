@@ -87,6 +87,12 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
     public Node getEdgeVariable() {
         return edge.getEdgeVariable();
     }
+    
+    @Override
+    public Node getPredicate() {
+        return edge.getPredicate();
+    }
+
 
     @Override
     public Node getNode() {

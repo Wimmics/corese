@@ -36,6 +36,7 @@ public class Metadata extends ASTObject
     public static final int ENCODING= 20;
     public static final int DB      = 21;
     public static final int DB_FACTORY = 22;
+    public static final int BGP     = 23;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -89,6 +90,7 @@ public class Metadata extends ASTObject
         define("@skip",     SKIP);      
         define("@db",       DB);      
         define("@dbfactory",DB_FACTORY);      
+        define("@bgp",      BGP);      
     }
     
     static void define(String str, int type){

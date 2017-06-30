@@ -1,4 +1,4 @@
-/*
+	/*
  * Copyright Inria 2016. 
  */
 package fr.inria.wimmics.rdf_to_bd_map;
@@ -21,6 +21,8 @@ public class RdfToBdMap {
 	public static final String EDGE_P = "p_value";
 	public static final String EDGE_S = "s_value";
 	public static final String EDGE_O = "o_value";
+	public static final String SUBJECT_EDGE = "subject";
+	public static final String OBJECT_EDGE = "object";
 	public static final String VERTEX_VALUE = "v_value";
 	public static final String VERTEX_LARGE_VALUE = "v_large_value"; // not indexed
 	public static final String RDF_EDGE_LABEL = "rdf_edge";

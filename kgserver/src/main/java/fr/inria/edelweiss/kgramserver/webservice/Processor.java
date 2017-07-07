@@ -39,27 +39,25 @@ public class Processor {
     private static final String headerAccept = "Access-Control-Allow-Origin";
     public static final String SERVICE  = "/typecheck";
     public static final String GRAPHIC  = "graphic";
-    public static final String QUERY  = Profile.QUERY;
     
     static HashMap<String, String> map;
-    static URI base;
     
-    static {
-        try {
-            base = new URI(Profile.SERVER);
-        } catch (URISyntaxException ex) {
-            LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
-        }
+    static {        
+        define();
+    }
+    
+
+    static void define(){
         map = new HashMap();
-        map.put("owl",      QUERY + "owl.rq");
-        map.put("owlrl",    QUERY + "owlrl.rq");
-        map.put("owlql",    QUERY + "owlql.rq");
-        map.put("owlel",    QUERY + "owlel.rq");
-        map.put("owltc",    QUERY + "owltc.rq");
-        map.put("owlall",   QUERY + "owltc2.rq");
-        map.put("sparqltc", QUERY + "spintc.rq");        
-        map.put("sparql",   QUERY + "sparql.rq");        
-        map.put("mix",      QUERY + "mix.rq");
+        map.put("owl",      getQueryPath("owl.rq"));
+        map.put("owlrl",    getQueryPath("owlrl.rq"));
+        map.put("owlql",    getQueryPath("owlql.rq"));
+        map.put("owlel",    getQueryPath("owlel.rq"));
+        map.put("owltc",    getQueryPath("owltc.rq"));
+        map.put("owlall",   getQueryPath("owltc2.rq"));
+        map.put("sparqltc", getQueryPath("spintc.rq"));        
+        map.put("sparql",   getQueryPath("sparql.rq"));        
+        map.put("mix",      getQueryPath("mix.rq"));
     }
         
     @POST
@@ -86,6 +84,15 @@ public class Processor {
         return typecheck(uri, entail, trans, query, serv);
     }
     
+    URI resolve(String uri) throws URISyntaxException{
+        return Profile.getProfile().resolve(uri);
+    }
+    
+    static String getQueryPath(String name){
+        return Profile.getProfile().getQueryPath(name);
+    }
+    
+    
     @GET
     @Produces("text/html")
     public Response typecheck(
@@ -103,7 +110,7 @@ public class Processor {
             try {
                 URI url = new URI(s);
                 if (!url.isAbsolute()) {
-                    url = base.resolve(s);
+                    url = resolve(s);
                 }
                 if (serv.startsWith("sparql") || serv.equals("spin") || serv.equals("mix")) {
                     g = loadSPARQL(url.toString());
@@ -126,7 +133,7 @@ public class Processor {
          if (trans == null){
             temp = map.get(serv);
             if (temp == null){
-                temp = QUERY+"turtle.rq";
+                temp = getQueryPath("turtle.rq");
             }
          }
 
@@ -142,19 +149,19 @@ public class Processor {
     }
         
     
-    String resolve(String uri){
-        URI url;
-        try {
-            url = new URI(uri);
-            if (!url.isAbsolute()) {
-                url = base.resolve(uri);
-                uri= url.toString();
-            }
-        } catch (URISyntaxException ex) {
-            LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
-        }
-        return uri;
-    }
+//    String resolve(String uri){
+//        URI url;
+//        try {
+//            url = new URI(uri);
+//            if (!url.isAbsolute()) {
+//                url = base.resolve(uri);
+//                uri= url.toString();
+//            }
+//        } catch (URISyntaxException ex) {
+//            LogManager.getLogger(Processor.class.getName()).log(Level.ERROR, "", ex);
+//        }
+//        return uri;
+//    }
     
      String error(String err, String q){
         String mes = "<html><head><link href=\"/style.css\" rel=\"stylesheet\" type=\"text/css\" /></head>"

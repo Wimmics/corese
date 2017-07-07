@@ -41,7 +41,8 @@ public class SDK {
          //GraphStore g =  new Profile().getGraph("sdk.ttl");
          GraphStore g;
         try {
-            g = new Profile().loadServer("sdk.ttl");
+            //g = new Profile().loadServer("sdk.ttl");
+            g = Profile.getProfile().loadServer("sdk.ttl");
         } catch (IOException ex) {
             LogManager.getLogger(SDK.class.getName()).log(Level.ERROR, "", ex);
             g = GraphStore.create();
@@ -50,7 +51,7 @@ public class SDK {
             g = GraphStore.create();
         }
          TripleStore st = new TripleStore(g);
-         Param par = new Param("/sdk", null, null, null, Profile.QUERY + "sdk.rq", null);
+         Param par = new Param("/sdk", null, null, null, Profile.getProfile().getQueryPath("sdk.rq"), null);
          par.setValue(value);
          
          return new Transformer().template(st, par);

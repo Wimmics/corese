@@ -93,7 +93,7 @@ public class Param {
         if (getService() != null){
             ctx.setService(getService());
         }      
-        ctx.setServer(Profile.SERVER);
+        ctx.setServer(Profile.getProfile().getServer());
         ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
         ctx.setUserQuery(isUserQuery());
         

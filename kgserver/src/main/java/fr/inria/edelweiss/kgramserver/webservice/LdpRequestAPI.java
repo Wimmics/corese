@@ -135,7 +135,7 @@ public class LdpRequestAPI {
         try {
             Param par = new Param(Manager.DEFAULT);
             par.setServer(Manager.DEFAULT);
-            Transformer.getProfile().complete(par);
+            Profile.getProfile().complete(par);
             Context ctx = par.createContext();
             return ctx;
         } catch (IOException ex) {

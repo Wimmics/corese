@@ -148,7 +148,7 @@ public class Tutorial {
        if (uri == null || profile != null || transform != null){
            return profile;
        }
-       Service s = Transformer.getProfile().getService(uri);
+       Service s = Profile.getProfile().getService(uri);
        if (s != null){
            return uri;
        }

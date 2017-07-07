@@ -76,6 +76,7 @@ public class EmbeddedJettyServer {
 
 	public static URI resourceURI;
 	public static String HOME_PAGE = null;
+        private static boolean isLocalHost;
 
 	public static void main(String args[]) throws Exception {
 
@@ -103,6 +104,7 @@ public class EmbeddedJettyServer {
 		Option profileOpt = new Option("lp", "profile", false, "load profile data");
 		Option locProfileOpt = new Option("pp", "profile", true, "local profile");
 		Option versionOpt = new Option("v", "version", false, "print the version information and exit");
+		Option localhost = new Option("lh", "localhost", false, "set server name as localhost");
 
 		Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
 		Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -117,6 +119,7 @@ public class EmbeddedJettyServer {
 		options.addOption(locProfileOpt);
 		options.addOption(helpOpt);
 		options.addOption(versionOpt);
+		options.addOption(localhost);
 
 		options.addOption(sslOpt);
 		options.addOption(portSslOpt);
@@ -180,6 +183,11 @@ public class EmbeddedJettyServer {
 				localProfile = cmd.getOptionValue("pp");
 				System.out.println("Profile: " + localProfile);
 			}
+                        if (cmd.hasOption("lh")) {
+				// user defined profile.ttl to define additional servers
+				isLocalHost = true;
+				System.out.println("localhost" );
+			}
 			Server server = new Server(port);
 
 			ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
@@ -238,7 +246,9 @@ public class EmbeddedJettyServer {
 			if (localProfile != null) {
 				formData.add("profile", localProfile);
 			}
-
+                        if (isLocalHost){
+                            formData.add("localhost", "true");
+                        }
 			service.path("sparql").path("reset").post(formData);
 
 			if (dataPaths != null) {

@@ -98,7 +98,7 @@ public class Manager {
     }
 
     Profile getProfile() {
-        return Transformer.getProfile();
+        return Profile.getProfile();
     }
 
     TripleStore initTripleStore(Profile p, Service s) throws LoadException, EngineException {
@@ -124,6 +124,10 @@ public class Manager {
         return store;
     }
 
+    /**
+     * Load server content from st:content [ a sw:Workflow ; etc ]
+     * Workflow is retrieved from the profile graph.
+     */
     void init(TripleStore ts, Service service) throws LoadException, EngineException {
         Graph g = getProfile().getProfileGraph();
         Node serv = g.getNode(service.getName());

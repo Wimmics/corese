@@ -84,14 +84,15 @@ public class SPARQLRestAPI {
 	@POST
 	@Path("/reset")
 	public Response initRDF(@DefaultValue("false") @FormParam("owlrl") String owlrl, @DefaultValue("false") @FormParam("entailments") String entailments,
-			@DefaultValue("false") @FormParam("load") String load, @FormParam("profile") String profile) {
+			@DefaultValue("false") @FormParam("load") String load, @FormParam("profile") String profile,
+                        @DefaultValue("false") @FormParam("localhost") String localhost) {
 
 		boolean ent = entailments.equals("true");
 		boolean owl = owlrl.equals("true");
 		boolean ld = load.equals("true");
 		localProfile = profile;
 		store = new TripleStore(ent, owl);
-		init();
+		init(localhost.equals("true"));
 		if (ld) {
 			// loadProfileData();
 			Manager.getManager().init(store);
@@ -101,8 +102,9 @@ public class SPARQLRestAPI {
 		return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
 	}
 
-	void init() {
-		mprofile = new Profile();
+	void init(boolean localhost) {
+		mprofile = new Profile(localhost);
+                Profile.setProfile(mprofile);
 		if (localProfile != null) {
                     localProfile = NSManager.toURI(localProfile);
 			System.out.println("Load: " + localProfile);
@@ -110,18 +112,15 @@ public class SPARQLRestAPI {
 		mprofile.initServer(PROFILE_DEFAULT, localProfile);
 	}
                
-	static Profile getProfile() {
-		return mprofile;
-	}
 
-	void loadProfileData() {
-		for (Service s : mprofile.getServices()) {
-			String[] load = s.getLoad();
-			if (load != null) {
-				getTripleStore().load(load);
-			}
-		}
-	}
+//	void loadProfileData() {
+//		for (Service s : mprofile.getServices()) {
+//			String[] load = s.getLoad();
+//			if (load != null) {
+//				getTripleStore().load(load);
+//			}
+//		}
+//	}
 
 	/**
 	 * This webservice is used to load a dataset to the endpoint. Therefore, if we have many files for our datastore, we could load them by recursivelly calling this webservice

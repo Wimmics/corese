@@ -29,7 +29,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.Provider;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -48,7 +47,6 @@ public class Transformer {
     private static final String TEMPLATE_SERVICE = "/template";
     private static final String RESULT = NSManager.STL + "result";
     private static final String LOAD   = NSManager.STL + "load";
-    private static Profile mprofile;
     private static NSManager nsm;
     boolean isDebug, isDetail;
     static boolean isTest = false;
@@ -60,21 +58,20 @@ public class Transformer {
 
     static void init() {
         nsm = NSManager.create();
-        mprofile = SPARQLRestAPI.getProfile();
         contentType = new HashMap<String, String>();
         contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
         contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
         contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
     }
     
-    static Profile getProfile(){
-        return mprofile;
-    }
 
     static TripleStore getTripleStore() {
         return SPARQLRestAPI.getTripleStore();
     }
    
+    Profile getProfile(){
+        return Profile.getProfile();
+    }
 
     // Template generate HTML
     @POST
@@ -161,7 +158,7 @@ public class Transformer {
         Context ctx = null;
         try {
 
-            par = mprofile.complete(par);          
+            par = getProfile().complete(par);          
             ctx = create(par);
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
@@ -183,18 +180,8 @@ public class Transformer {
             
             complete(store.getGraph(), ctx);
             Dataset ds = createDataset(par.getFrom(), par.getNamed());
-            SemanticWorkflow sw = workflow(ctx, ds, mprofile.getProfileGraph(), squery, ctx.getTransform());
-            
-//            Data data = sw.process(new Data(store.getGraph()));
-//            ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
-//            String format = getContentType(data);
-//            if (format != null && ! ctx.getService().contains("srv")){
-//                 rb.header("Content-type", format);
-//            }
-//            return rb.build();
-            
-            return process(sw, store, par, ctx);
-            
+            SemanticWorkflow sw = workflow(ctx, ds, getProfile().getProfileGraph(), squery, ctx.getTransform());                       
+            return process(sw, store, par, ctx);           
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
@@ -304,7 +291,7 @@ public class Transformer {
             context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
         }
         context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
-        context.set(Context.STL_SERVER_PROFILE, mprofile.getProfile());
+        context.set(Context.STL_SERVER_PROFILE, getProfile().getProfileDatatype());
     }
     
     

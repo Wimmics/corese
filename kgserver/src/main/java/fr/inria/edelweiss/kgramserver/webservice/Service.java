@@ -7,8 +7,12 @@ import java.util.List;
 
 
 /**
- * Specification of a Profile (eg a Transformation)
- * or a Server with specific content to be loaded
+ * Specification of a Profile or a Server 
+ * Profile specifies st:workflow (or directly a transformation)
+ * Server specifies a triplestore with a name, possibly with a st:content Workflow,
+ * and possibly with a st:workflow; In the latter case, it is also considered as a profile
+ * and a profile object is also created with the same URI as the server.
+ * Server with name "test" is triggered with URL http://corese.inria.fr/srv/tutorial/test
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *

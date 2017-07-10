@@ -13,6 +13,20 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public class Param {
+
+    /**
+     * @return the ajax
+     */
+    public boolean isAjax() {
+        return ajax;
+    }
+
+    /**
+     * @param ajax the ajax to set
+     */
+    public void setAjax(boolean ajax) {
+        this.ajax = ajax;
+    }
     static NSManager nsm;
     private String service;
     private String server;
@@ -32,6 +46,7 @@ public class Param {
     private List<String>  named;
     private boolean protect = false;
     private boolean isUserQuery = false;
+    private boolean ajax = true;
     private Context context;
     private HttpServletRequest request;   
     

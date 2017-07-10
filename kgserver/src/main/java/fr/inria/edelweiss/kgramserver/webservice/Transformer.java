@@ -154,49 +154,48 @@ public class Transformer {
         return template(getTripleStore(), par);
     }
 
-    public Response template(TripleStore store, Param par) {        
-        Context ctx = null;
+     public Response template(TripleStore store, Param par) {        
+        Context context = null;
         try {
 
-            par = getProfile().complete(par);          
-            ctx = create(par);
+            par = getProfile().complete(par);  
+            par.setAjax(SPARQLRestAPI.isAjax);
+            
+            TransformerEngine engine = new TransformerEngine(store.getGraph(), Profile.getProfile().getProfileGraph(), par);
+            
+            context = engine.getContext();
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
                 // check profile, transform and query
-                String prof = ctx.getProfile();
+                String prof = context.getProfile();
                 if (prof != null && !nsm.toNamespace(prof).startsWith(NSManager.STL)) {
                     return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
                 }
-                String trans = ctx.getTransform();
+                String trans = context.getTransform();
                 if (trans != null && !nsm.toNamespace(trans).startsWith(NSManager.STL)) {
                     return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + trans).build();
                 }
             }
-
-            String squery = par.getQuery();            
-            if (par.getParam() != null){
-                isTest = par.getParam().equals("true");
-            }
-            
-            complete(store.getGraph(), ctx);
-            Dataset ds = createDataset(par.getFrom(), par.getNamed());
-            SemanticWorkflow sw = workflow(ctx, ds, getProfile().getProfileGraph(), squery, ctx.getTransform());                       
-            return process(sw, store, par, ctx);           
+                       
+            Data data = engine.process();
+            return process(data, par, context);           
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine");
             ex.printStackTrace();
             String err = ex.toString();
             String q = null;
-            if (ctx != null && ctx.getQueryString() != null){
-                q = ctx.getQueryString();
+            if (context != null && context.getQueryString() != null){
+                q = context.getQueryString();
             }
             return Response.status(500).header(headerAccept, "*").entity(error(err, q)).build();
         }
     }
     
-    public Response process(SemanticWorkflow sw, TripleStore store, Param par, Context ctx) {
+    
+   
+    
+    public Response process(Data data, Param par, Context ctx) {
         try {
-            Data data = sw.process(new Data(store.getGraph()));
             ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
             String format = getContentType(data);
             if (format != null && !ctx.getService().contains("srv")) {
@@ -224,76 +223,7 @@ public class Transformer {
         return null;
     }
     
-    SemanticWorkflow workflow(Context c, Dataset ds, Graph profile, String q, String t)
-            throws LoadException, EngineException {
-        SemanticWorkflow w = create(c, ds, profile, q, t);
-        if (!w.isDebug()) {
-            w.setDebug(isTest);
-        }
-        return w;
-    }
-    
-    /**
-     * Create a Workflow to process service
-     * If there is no explicit workflow specification, i.e no st:workflow [  ]
-     * create a Workflow with query/transform.
-     */
-     SemanticWorkflow create(Context context, Dataset dataset, Graph profile, String query, String transform) throws LoadException {
-        SemanticWorkflow wp = new SemanticWorkflow();
-        wp.setContext(context);
-        wp.setDataset(dataset);
-        wp.setLog(true);
-        IDatatype swdt = context.get(Context.STL_WORKFLOW); 
-        if (swdt != null) {
-            // there is a workflow
-            if (query != null){
-                logger.warn("Workflow skip query: " + query);
-            }
-            WorkflowParser parser = new WorkflowParser(wp, profile);
-            parser.parse(profile.getNode(swdt));
-        } 
-        else if (query != null) {
-            if (transform == null){
-                // emulate sparql endpoint
-                wp.addQueryMapping(query);
-                wp.add(new ResultProcess());
-                return wp;
-            }
-            else {
-                // select where return Graph Mappings
-                wp.addQueryGraph(query);
-            }
-        }
-        defaultTransform(wp, transform);
-        return wp;
-    }
-     
-     /**
-      * If transform = null and workflow does not end with transform:
-      * use st:sparql as default transform
-      */
-    void defaultTransform(SemanticWorkflow wp, String transform) {
-        boolean isDefault = false;
-        if (transform == null && ! wp.hasTransformation()) {
-            isDefault = true;
-            transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
-        }
-        if (transform != null) {
-            wp.addTemplate(transform, isDefault);
-            wp.getContext().setTransform(transform);
-            wp.getContext().set(Context.STL_DEFAULT, true);
-        }
-    }
-             
-    void complete(Graph graph, Context context) {
-        Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
-        if (cg != null) {
-            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
-        }
-        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
-        context.set(Context.STL_SERVER_PROFILE, getProfile().getProfileDatatype());
-    }
-    
+ 
     
     /**
      * Return transformation result as a HTML textarea
@@ -318,12 +248,7 @@ public class Transformer {
         return ft;
     }
     
-    String get(String name){
-        fr.inria.edelweiss.kgtool.transform.Transformer t = 
-            fr.inria.edelweiss.kgtool.transform.Transformer.create(NSManager.STL + "sparql#" + name); 
-        return t.stransform();
-    }
-
+  
     String error(String err, String q){
         String mes = "";
         //mes += "<html><head><link href=\"/style.css\" rel=\"stylesheet\" type=\"text/css\" /></head><body>";
@@ -340,35 +265,15 @@ public class Transformer {
        return s.replace("<", "&lt;");
    }
 
-    Context create(Param par) {
-        Context ctx= par.createContext();        
-        complete(ctx, par);         
-        return ctx;
-    }
-    
+     
     Context complete(Context c, Param par){
-        if (SPARQLRestAPI.isAjax){
+        if (par.isAjax()){
             c.setProtocol(Context.STL_AJAX);
             c.export(Context.STL_PROTOCOL, c.get(Context.STL_PROTOCOL));
         }
         return c;
     }
 
-    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
-        return createDataset(defaultGraphUris, namedGraphUris, null);
-    }
-
-    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris, Context c) {
-        if (c != null
-                || ((defaultGraphUris != null) && (!defaultGraphUris.isEmpty()))
-                || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
-            Dataset ds = Dataset.instance(defaultGraphUris, namedGraphUris);
-            ds.setContext(c);
-            return ds;
-        } else {
-            return null;
-        }
-    }
-    
+   
    
 }

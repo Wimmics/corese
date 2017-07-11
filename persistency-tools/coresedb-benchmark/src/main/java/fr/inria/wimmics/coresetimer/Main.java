@@ -9,24 +9,16 @@ import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.corese.rdftograph.RdfToGraph.DbDriver;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.wimmics.coresetimer.CoreseTimer.Profile;
-import java.time.LocalDateTime;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.openrdf.rio.RDFFormat;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 import fr.inria.corese.w3c.validator.W3CMappingsValidator;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openrdf.rio.Rio;
@@ -82,18 +74,18 @@ public class Main {
 			return this;
 		}
 
-		public TestSuite setInput(String input) {
-			return this.setInput(input, Rio.getParserFormatForFileName(input).orElse(RDFFormat.NQUADS));
+		public TestSuite setInputFilesPattern(String input) {
+			return this.setInputFilesPattern(input, Rio.getParserFormatForFileName(input).orElse(RDFFormat.NQUADS));
 		}
 
-		public TestSuite setInput(String input, RDFFormat format) {
+		public TestSuite setInputFilesPattern(String input, RDFFormat format) {
 			this.inputMem = input;
 			this.format = format;
 			inputDb = input.replaceFirst("\\..+", "_db");
 			return this;
 		}
 
-		public String getInput() {
+		public String getInputFilesPattern() {
 			return inputRoot + inputMem;
 		}
 
@@ -136,7 +128,7 @@ public class Main {
 				logger.info("Not creating database since it already exists at {}", databasePath);
 			} else {
 				logger.info("Creating database at {}", databasePath);
-				RdfToGraph.build().setDriver(driver).convertFileToDb(getInput(), format, getInputDb());
+				RdfToGraph.build().setDriver(driver).convertFileToDb(getInputFilesPattern(), format, getInputDb());
 			}
 			return this;
 		}
@@ -146,7 +138,7 @@ public class Main {
 		}
 
 		/**
-		 * Set the relative path to the db. 
+		 * Set the path to the db. 
 		 * @see 
 		 * @param path
 		 * @return 
@@ -170,7 +162,7 @@ public class Main {
 			TestDescription newTest = TestDescription.build(testId, this)
 				.setMeasuredCycles(defaultMeasuredCycles)
 				.setWarmupCycles(defaultWarmupCycles)
-				.setInput(getInput())
+				.setInputFilesPattern(getInputFilesPattern())
 				.setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId+"_%s"))
 				.setRequest(request)
 				.setInputDb(getInputDb());
@@ -179,110 +171,6 @@ public class Main {
 			return newTest;
 		}
 
-	}
-
-	public static class TestDescription implements Cloneable {
-
-		private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
-
-		private String testId;
-		private String request;
-		private boolean resultsEqual;
-
-		private String input;
-		private String inputDb;
-		private int warmupCycles;
-		private int measuredCycles;
-		private String resultFileName;
-		private String outputPrefixFilename;
-		private final TestSuite suite;
-
-		private TestDescription(String id, TestSuite suite) {
-			testId = id;
-			this.suite = suite;
-		}
-
-		public String getId() {
-			return testId;
-		}
-
-		static public TestDescription build(String id, TestSuite suite) {
-			return new TestDescription(id, suite);
-		}
-
-		public TestDescription setRequest(String request) {
-			this.request = request;
-			return this;
-		}
-
-		public String getRequest() {
-			return request;
-		}
-
-		public TestDescription setResultsEqual(boolean result) {
-			this.resultsEqual = result;
-			return this;
-		}
-
-		public Boolean getResultsEqual() {
-			return resultsEqual;
-		}
-
-		public TestDescription setWarmupCycles(int n) {
-			this.warmupCycles = n;
-			return this;
-		}
-
-		public int getWarmupCycles() {
-			return this.warmupCycles;
-		}
-
-		public TestDescription setMeasuredCycles(int n) {
-			this.measuredCycles = n;
-			return this;
-		}
-
-		public int getMeasuredCycles() {
-			return this.measuredCycles;
-		}
-
-		public String getResultFileName(Profile mode) {
-			resultFileName = String.format(RDF_OUTPUT_FILE_FORMAT, suite.getOutputRoot(), testId, mode);
-			return resultFileName;
-		}
-
-		public TestDescription setInput(String input) {
-			this.input = input;
-			return this;
-		}
-
-		/**
-		 * @return name of the RDF input file.
-		 */
-		public String getInput() {
-			return input;
-		}
-
-		public TestDescription setInputDb(String input) {
-			this.inputDb = input;
-			return this;
-		}
-
-		/**
-		 * @return Path for the DB.
-		 */
-		public String getInputDb() {
-			return inputDb;
-		}
-
-		public TestDescription setOutputPath(String oPath) {
-			outputPrefixFilename = oPath;
-			return this;
-		}
-
-		public String getOutputPath(String type) {
-			return String.format(outputPrefixFilename, type);
-		}
 	}
 
 	public final static String[] queries = { // @TODO afficher pour chaque requête le nombre de résultats.

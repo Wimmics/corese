@@ -9,9 +9,9 @@ import static fr.inria.corese.coresetimer.utils.VariousUtils.ensureEndWith;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.getEnvWithDefault;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
-import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import static fr.inria.wimmics.coresetimer.Main.compareResults;
+import fr.inria.wimmics.coresetimer.TestDescription;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,8 +62,7 @@ public class QualitativeTest {
 		TestSuite suite = TestSuite.build("base_tests").
 			setDriver(RdfToGraph.DbDriver.NEO4J).
 			setWarmupCycles(0).
-			setMeasuredCycles(1).
-			setInput("human_2007_04_17.rdf", RDFFormat.RDFXML).
+			setMeasuredCycles(1).setInputFilesPattern("human_2007_04_17.rdf", RDFFormat.RDFXML).
 			setInputDb("/tmp/human_db").
 			setInputRoot("./data").
 			setOutputRoot(outputRoot);
@@ -93,7 +92,7 @@ public class QualitativeTest {
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT *\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "  ?type rdfs:label ?l .\n" + "  {\n" + "   {\n" + "    ?laura rdf:type ?type\n" + "   }\n" + "   UNION\n" + "   {\n" + "    {\n" + "     ?laura ?type ?with\n" + "    }\n" + "    UNION\n" + "    {\n" + "     ?from ?type ?laura\n" + "    }\n" + "   }\n" + "  }\n" + "  FILTER ( lang(?l) = 'en' )\n" + "}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "DESCRIBE ?laura\n" + "WHERE\n" + "{\n" + "  ?laura humans:name \"Laura\" .\n" + "}")},
 			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "CONSTRUCT \n" + "{\n" + " ?x rdf:type humans:Man\n" + "}\n" + "WHERE\n" + "{\n" + " {\n" + "  ?x rdf:type humans:Man\n" + " }\n" + "  UNION\n" + " {\n" + "  ?x rdf:type humans:Male .\n" + "  ?x rdf:type humans:Person\n" + " }\n" + "}")},
-			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, //		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInput("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
+			{suite.buildTest("PREFIX humans: <http://www.inria.fr/2007/04/17/humans.rdfs#>\n" + "SELECT * WHERE\n" + "{\n" + " ?x rdf:type humans:Person .\n" + " ?x humans:name ?name .\n" + " FILTER ( regex(?name, '.*ar.*') )\n" + "}")}, //		TestDescription.build("1m_select_s_1").setWarmupCycles(2).setMeasuredCycles(5).setInputFilesPattern("btc-2010-chunk-000.nq").setInputDb("/1m_db", DB_INITIALIZED).setRequest("select * where {<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>  ?p ?y .}")
 		};
 		return tests;
 	}
@@ -109,29 +108,31 @@ public class QualitativeTest {
 			//			"btc-2010-chunk-000.nq.gz:3",
 			//			"btc-2010-chunk-000.nq.gz:10",
 			//			"btc-2010-chunk-000.nq.gz:31",
-						"btc-2010-chunk-000.nq.gz:100",
+			//			"btc-2010-chunk-000.nq.gz:100",
 			//			"btc-2010-chunk-000.nq.gz:316",
 			//			"btc-2010-chunk-000.nq.gz:1000",
-			//			"btc-2010-chunk-000.nq.gz:3162",
+			"btc-2010-chunk-000.nq.gz:3162",
 			//			"btc-2010-chunk-000.nq.gz:10000",
 			//			"btc-2010-chunk-000.nq.gz:31622",
-			//			"btc-2010-chunk-000.nq.gz:100000", 
+			//			"btc-2010-chunk-000.nq.gz:100000",
 			//			"btc-2010-chunk-000.nq.gz:316227",
-//			"btc-2010-chunk-000.nq.gz:1000000", 
-//			"btc-2010-chunk-000.nq.gz:3162277",
-		//			"btc-2010-chunk-000.nq.gz:10000000", 
-		//                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+			//			"btc-2010-chunk-000.nq.gz:1000000",
+			//			"btc-2010-chunk-000.nq.gz:3162277",
+			//			"btc-2010-chunk-000.nq.gz:10000000", 
+			//                      "btc-2010-chunk-00(0|1|2|3).nq.gz"      ,
+			"test(1|2|3).nq"
 		//                      "btc-2010-chunk-00\d.nq.gz"  ,
 		//                      "btc-2010-chunk-0\d.nq.gz"  ,
 		//                      "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"   
 		};
 		ArrayList<String> requests = new ArrayList<String>();
-//		requests.add("select ?s ?t where { ?s rdf:type ?t}");
+		requests.add("select ?s ?t where { ?s rdf:type ?t}");
 //		requests.add("select ?s ?p ?o ?q where { ?s ?p ?o . ?o ?q ?s}");
-//		requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document>"));
-//		requests.addAll(makeAllRequests("select ?s ?p ?o ?g where { graph ?g { ?s ?p ?o } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
-		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
-		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
+//		requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24>"));
+//		// À décommenter seulement une fois implémentés les appels G*** (sinon on tombe dans le cas par défaut : énumération exhaustive du graphe)
+////		requests.addAll(makeAllRequests("select ?s ?p ?o ?g where { graph ?g { ?s ?p ?o } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
+//		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
+//		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
 
 		return new Iterator<Object[]>() {
 			boolean started = false;
@@ -141,7 +142,7 @@ public class QualitativeTest {
 
 			@Override
 			public boolean hasNext() {
-				if (inputFiles.length == 0 || requests.size() == 0) {
+				if (inputFiles.length == 0 || requests.isEmpty()) {
 					return false;
 				}
 				if (started) {
@@ -166,20 +167,24 @@ public class QualitativeTest {
 					started = true;
 				}
 
-				String inputFile = inputFiles[cptInputFiles];
+				String inputFilePattern = inputFiles[cptInputFiles];
 				String request = requests.get(cptRequests);
 
 				if (cptRequests == 0) {
-					currentSuite = TestSuite.build("test_" + inputFile).
+					// build the template of the test, ie
+					// an object describing how to proceed 
+					// the test. Only the request is updated
+					// between each test.
+					currentSuite = TestSuite.build("test_" + inputFilePattern).
 						setDriver(RdfToGraph.DbDriver.NEO4J).
 						setWarmupCycles(2).
 						setMeasuredCycles(5).
-						setInput(inputFile).
-						setInputDb(inputFile.replace(":", "_").replace(",", "_") + "_db").
+						setInputFilesPattern(inputFilePattern).
+						setInputDb(inputFilePattern.replace(":", "_").replace(",", "_") + "_db").
 						setInputRoot(inputRoot).
 						setOutputRoot(outputRoot);
 					try {
-						currentSuite.createDb(TestSuite.DatabaseCreation.IF_NOT_EXIST);
+						currentSuite.createDb(TestSuite.DatabaseCreation.ALWAYS);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						throw new RuntimeException(ex);
@@ -251,10 +256,10 @@ public class QualitativeTest {
 	 * Build all the possible requests by setting the values. By example:
 	 * sparqlRequest = "select ?x ?p ?y { where ?x ?p ?y}" and data = "A B
 	 * C" will return a list containing the requests "select ?p ?y where {A
-	 * ?p ?y}", "select ?x ?y where {?x B ?y}". The variables ?x ?p ?y are
-	 * given the values of A, B, C respectively, for all the combinations
-	 * except the trivial ones (ie ?x ?p ?y not set or all set to A, B and
-	 * C).
+	 * ?p ?y}", "select ?x ?y where {?x B ?y}", etc. The variables ?x ?p ?y
+	 * are given the values of A, B, C respectively, for all the
+	 * combinations except the trivial ones (ie ?x ?p ?y not set or all set
+	 * to A, B and C).
 	 *
 	 * @param sparqlRequest
 	 * @param data

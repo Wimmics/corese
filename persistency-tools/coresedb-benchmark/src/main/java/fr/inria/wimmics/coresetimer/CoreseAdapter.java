@@ -7,6 +7,7 @@ package fr.inria.wimmics.coresetimer;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.corese.rdftograph.RdfToGraph;
+import fr.inria.corese.rdftograph.stream.CountLinesInterface;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -59,7 +60,7 @@ public class CoreseAdapter {
 			logger.log(Level.SEVERE, "Exception when trying to save results in " + resultsFileName, ex);
 		}
 	}
-
+	
 	public void postProcessing() {
 		exec.close();
 	}

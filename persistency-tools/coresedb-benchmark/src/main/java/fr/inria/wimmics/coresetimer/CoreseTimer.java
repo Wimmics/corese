@@ -8,7 +8,6 @@ package fr.inria.wimmics.coresetimer;
 import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.wimmics.coresetimer.Main.TestDescription;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
@@ -61,7 +60,7 @@ public class CoreseTimer {
 	/**
 	 *
 	 * @param adapterName class name for the adapter to the version of
-	 * corese used.
+	 * corese usede
 	 * @param runProfile kind of usage of corese (currently "db" or
 	 * "memory"). Used to classify the results and stats done.
 	 */
@@ -181,7 +180,6 @@ public class CoreseTimer {
 				}
 			}
 		}
-//		adapter.saveResults(test.getOutputPath("results"));
 		mappings = adapter.getMappings();
 		adapter.postProcessing();
 		LOGGER.exiting(CoreseTimer.class.getName(), "run");
@@ -234,6 +232,10 @@ public class CoreseTimer {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			doc = dBuilder.newDocument();
 			Element rootElement = doc.createElement("TestResult");
+			Element size = doc.createElement("Size");
+			Text sizeText = doc.createTextNode(""+test.getSize());
+			size.appendChild(sizeText);
+			rootElement.appendChild(size);
 
 			Element inputs = doc.createElement("Inputs");
 

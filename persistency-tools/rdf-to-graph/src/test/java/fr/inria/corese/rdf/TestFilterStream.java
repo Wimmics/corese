@@ -6,15 +6,12 @@ package fr.inria.corese.rdf;
  * and open the template in the editor.
  */
 import fr.inria.corese.rdftograph.RdfToGraph;
-import fr.inria.corese.rdftograph.RdfToGraph.AddressesFilterInputStream;
-import java.io.BufferedInputStream;
+import fr.inria.corese.rdftograph.stream.AddressesFilterInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.zip.GZIPInputStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;

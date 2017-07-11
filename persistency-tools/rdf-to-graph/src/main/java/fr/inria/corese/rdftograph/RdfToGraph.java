@@ -4,15 +4,16 @@
 package fr.inria.corese.rdftograph;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
+import fr.inria.corese.rdftograph.stream.AddressesFilterInputStream;
+import fr.inria.corese.rdftograph.stream.CoreseSequenceInputStream;
+import fr.inria.corese.rdftograph.stream.CountLinesInterface;
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,71 +123,6 @@ public class RdfToGraph {
 		return result;
 	}
 
-	public static class AddressesFilterInputStream extends FilterInputStream {
-
-		int start, end;
-		int currentLineNumber;
-		public static int INFINITE = -1;
-
-		public AddressesFilterInputStream(InputStream input, int start, int end) {
-			super(input);
-			this.start = start;
-			this.end = end;
-			this.in = input;
-		}
-
-		/**
-		 * Read one byte *
-		 */
-		@Override
-		public int read() throws IOException {
-			if (currentLineNumber < start) {
-				int c;
-				while ((currentLineNumber < start) && ((c = in.read()) != -1)) {
-					if ((char) c == '\n') {
-						currentLineNumber++;
-					} // else the character is ignored
-				}
-			}
-			if (currentLineNumber >= start && (currentLineNumber < end || end == INFINITE)) {
-				int c = in.read();
-				if (c == '\n') {
-					currentLineNumber++;
-				}
-				return c;
-			}
-			return -1;
-		}
-
-		@Override
-		public int read(byte[] b) throws IOException {
-			int cpt = 0;
-			int curChar;
-			while (cpt < b.length && ((curChar = read()) != -1)) {
-				b[cpt++] = (byte) curChar;
-			}
-			if (cpt == 0) {
-				return -1;
-			} else {
-				return cpt;
-			}
-		}
-
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			byte[] temp = new byte[len];
-			int res = read(temp);
-			if (res == -1) {
-				return res;
-			} else {
-				for (int i = 0; i < len; i++) {
-					b[off + i] = temp[i];
-				}
-				return res;
-			}
-		}
-	}
-
 	public static Optional<RDFFormat> getRdfFormat(String completeFilename) {
 		String[] parts = completeFilename.split(":");
 		return Rio.getParserFormatForFileName(parts[0]);
@@ -262,11 +198,11 @@ public class RdfToGraph {
 
 		if (filename.startsWith("/")) { // absolute path
 			String dirPath = filename.substring(0, filename.lastIndexOf("/") + 1);
-			filename = filename.substring(filename.lastIndexOf("/")+1, filename.length());
+			filename = filename.substring(filename.lastIndexOf("/") + 1, filename.length());
 			root = new File(dirPath);
 		} else if (filename.contains("/")) { // relative path
 			root = new File(filename.substring(0, filename.lastIndexOf("/")));
-			filename = filename.substring(filename.lastIndexOf("/")+1, filename.length());
+			filename = filename.substring(filename.lastIndexOf("/") + 1, filename.length());
 		} else {
 			root = new File("."); // filename without path
 		}
@@ -290,7 +226,7 @@ public class RdfToGraph {
 				result = newStream;
 				first = false;
 			} else {
-				result = new SequenceInputStream(result, newStream);
+				result = new CoreseSequenceInputStream(result, newStream);
 			}
 		}
 		return result;

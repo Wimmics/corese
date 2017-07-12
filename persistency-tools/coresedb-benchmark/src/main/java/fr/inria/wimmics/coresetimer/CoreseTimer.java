@@ -5,23 +5,13 @@
  */
 package fr.inria.wimmics.coresetimer;
 
-import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import java.io.File;
-import java.io.IOException;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.ManagementFactory;
-import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,263 +20,264 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.time.LocalDateTime;
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static fr.inria.corese.coresetimer.utils.VariousUtils.*;
 
 /**
- *
  * @author edemairy
  */
 public class CoreseTimer {
 
-	private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
+    private static String outputRoot;
+    public CoreseAdapter adapter;
+    public String adapterName;
+    private Mappings mappings;
 
-	public CoreseAdapter adapter;
-	public String adapterName;
-	private Mappings mappings;
+    ;
+    private Profile mode = Profile.MEMORY;
+    private boolean initialized;
+    private DescriptiveStatistics stats;
+    private DescriptiveStatistics statsMemory;
+    private TestDescription test;
+    /**
+     * @param adapterName class name for the adapter to the version of
+     *                    corese usede
+     * @param runProfile  kind of usage of corese (currently "db" or
+     *                    "memory"). Used to classify the results and stats done.
+     */
+    private CoreseTimer(TestDescription test) {
+        this.adapterName = CoreseAdapter.class.getCanonicalName();
+        initialized = false;
+        this.test = test;
+    }
 
-	public enum Profile {
-		DB, MEMORY
-	};
+    static public CoreseTimer build(TestDescription test) {
+        return new CoreseTimer(test);
+    }
 
-	private static String outputRoot;
-	private Profile mode = Profile.MEMORY;
-	private boolean initialized;
-	private DescriptiveStatistics stats;
-	private DescriptiveStatistics statsMemory;
-	private TestDescription test;
+    public CoreseTimer setMode(Profile mode) {
+        this.mode = mode;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param adapterName class name for the adapter to the version of
-	 * corese usede
-	 * @param runProfile kind of usage of corese (currently "db" or
-	 * "memory"). Used to classify the results and stats done.
-	 */
-	private CoreseTimer(TestDescription test) {
-		this.adapterName = CoreseAdapter.class.getCanonicalName();
-		initialized = false;
-		this.test = test;
-	}
+    public CoreseTimer init() {
+        switch (mode) {
+            case DB: {
+                System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
+                break;
+            }
+            case MEMORY: {
+                System.setProperty("fr.inria.corese.factory", "");
+                break;
+            }
+        }
+        ;
 
-	static public CoreseTimer build(TestDescription test) {
-		return new CoreseTimer(test);
-	}
+        // create output directory of the form ${OUTPUT_ROOT}
+        outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
+        outputRoot = ensureEndWith(outputRoot, "/");
+        outputRoot += mode;
+        outputRoot = ensureEndWith(outputRoot, "/");
+        createDir(outputRoot, "rwxr-x---");
+        initialized = true;
+        return this;
+    }
 
-	public CoreseTimer setMode(Profile mode) {
-		this.mode = mode;
-		return this;
-	}
+    public CoreseTimer run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
+        LOGGER.entering(CoreseTimer.class.getName(), "run");
+        assert (initialized);
 
-	public CoreseTimer init() {
-		switch (mode) {
-			case DB: {
-				System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
-				break;
-			}
-			case MEMORY: {
-				System.setProperty("fr.inria.corese.factory", "");
-				break;
-			}
-		};
+        // Loading the nq data in corese, then applying several times the query.
+        LOGGER.log(Level.INFO, "beginning with input #{0}", test.getInput());
+        // require to have a brand new adapter for each new input set.
+        adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
 
-		// create output directory of the form ${OUTPUT_ROOT}
-		outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
-		outputRoot = ensureEndWith(outputRoot, "/");
-		outputRoot += mode;
-		outputRoot = ensureEndWith(outputRoot, "/");
-		createDir(outputRoot, "rwxr-x---");
-		initialized = true;
-		return this;
-	}
+        String inputFileName = "";
+        switch (mode) {
+            case MEMORY: {
+                inputFileName += test.getInput();
+                adapter.preProcessing(inputFileName, true);
+                break;
+            }
+            case DB: {
+                inputFileName += test.getInputDb();
+                System.setProperty("fr.inria.corese.tinkerpop.dbinput", inputFileName);
+                adapter.preProcessing(inputFileName, false);
+                break;
+            }
+        }
 
-//	public static String makeFileName(String prefix, String suffix, int nbInput, int nbQuery) {
-//		return outputRoot + prefix + "input_" + nbInput + "_query_" + nbQuery + ".xml";
-//	}
+        String query = test.getRequest();
+        LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
+        stats = new DescriptiveStatistics();
+        statsMemory = new DescriptiveStatistics();
+        int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
+        boolean measured = true;
+        for (int i = 0; i < nbCycles; i++) {
+            LOGGER.log(Level.INFO, "iteration #{0}", i);
+            System.gc();
+            final long startTime = System.currentTimeMillis();
+            LOGGER.log(Level.INFO, "before query");
 
-	public CoreseTimer run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
-		LOGGER.entering(CoreseTimer.class.getName(), "run");
-		assert (initialized);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<?> future = executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.execQuery(query);
+                }
+            });
 
-		// Loading the nq data in corese, then applying several times the query.
-		LOGGER.log(Level.INFO, "beginning with input #{0}", test.getInput());
-		// require to have a brand new adapter for each new input set.
-		adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
+            try {
+                future.get(1, TimeUnit.HOURS);
+                measured = true;
+            } catch (InterruptedException | TimeoutException e) {
+                future.cancel(true);
+                measured = false;
+                LOGGER.log(Level.WARNING, "Terminated!");
+            } catch (ExecutionException ex) {
+                Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            executor.shutdownNow();
 
-		String inputFileName = "";
-		switch (mode) {
-			case MEMORY: {
-				inputFileName += test.getInput();
-				adapter.preProcessing(inputFileName, true);
-				break;
-			}
-			case DB: {
-				inputFileName += test.getInputDb();
-				System.setProperty("fr.inria.corese.tinkerpop.dbinput", inputFileName);
-				adapter.preProcessing(inputFileName, false);
-				break;
-			}
-		}
+            LOGGER.log(Level.INFO, "after query");
+            final long endTime = System.currentTimeMillis();
+            long delta = endTime - startTime;
+            long memoryUsage = getMemoryUsage();
+            LOGGER.info(String.format("elapsed time = %d ms", delta));
+            LOGGER.info(String.format("used memory = %d bytes", memoryUsage));
+            if (i >= test.getWarmupCycles()) {
+                if (!measured) {
+                    while (i < nbCycles) {
+                        stats.addValue(-100);
+                        statsMemory.addValue(memoryUsage);
+                        i++;
+                    }
+                } else {
+                    stats.addValue(delta);
+                    statsMemory.addValue(memoryUsage);
+                }
+            }
+        }
+        mappings = adapter.getMappings();
+        adapter.postProcessing();
+        LOGGER.exiting(CoreseTimer.class.getName(), "run");
+        return this;
+    }
 
-		String query = test.getRequest();
-		LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
-		stats = new DescriptiveStatistics();
-		statsMemory = new DescriptiveStatistics();
-		int nbCycles = test.getMeasuredCycles() + test.getWarmupCycles();
-		boolean measured = true;
-		for (int i = 0; i < nbCycles; i++) {
-			LOGGER.log(Level.INFO, "iteration #{0}", i);
-			System.gc();
-			final long startTime = System.currentTimeMillis();
-			LOGGER.log(Level.INFO, "before query");
+    public void writeResults() {
+        adapter.saveResults(test.getOutputPath("results_" + mode));
+    }
 
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Future<?> future = executor.submit(new Runnable() {
-				@Override
-				public void run() {
-					adapter.execQuery(query);
-				}
-			});
+    public Mappings getMapping() {
+        return mappings;
+    }
 
-			try {
-				future.get(1, TimeUnit.HOURS);
-				measured = true;
-			} catch (InterruptedException | TimeoutException e) {
-				future.cancel(true);
-				measured = false;
-				LOGGER.log(Level.WARNING, "Terminated!");
-			} catch (ExecutionException ex) {
-				Logger.getLogger(CoreseTimer.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			executor.shutdownNow();
+    public DescriptiveStatistics getStats() {
+        return stats;
+    }
 
-			LOGGER.log(Level.INFO, "after query");
-			final long endTime = System.currentTimeMillis();
-			long delta = endTime - startTime;
-			long memoryUsage = getMemoryUsage();
-			LOGGER.info(String.format("elapsed time = %d ms", delta));
-			LOGGER.info(String.format("used memory = %d bytes", memoryUsage));
-			if (i >= test.getWarmupCycles()) {
-				if (!measured) {
-					while (i < nbCycles) {
-						stats.addValue(-100);
-						statsMemory.addValue(memoryUsage);
-						i++;
-					}
-				} else {
-					stats.addValue(delta);
-					statsMemory.addValue(memoryUsage);
-				}
-			}
-		}
-		mappings = adapter.getMappings();
-		adapter.postProcessing();
-		LOGGER.exiting(CoreseTimer.class.getName(), "run");
-		return this;
-	}
+    public DescriptiveStatistics getStatsMemory() {
+        return statsMemory;
+    }
 
-	public void writeResults() {
-		adapter.saveResults(test.getOutputPath("results_"+mode));
-	}
+    private long getMemoryUsage() {
+        long before = getGcCount();
+        System.gc();
+        while (getGcCount() == before) ;
+        return getCurrentlyUsedMemory();
+    }
 
-	public Mappings getMapping() {
-		return mappings;
-	}
+    private long getGcCount() {
+        long sum = 0;
+        for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
+            long count = b.getCollectionCount();
+            if (count != -1) {
+                sum += count;
+            }
+        }
+        return sum;
+    }
 
-	public DescriptiveStatistics getStats() {
-		return stats;
-	}
+    private long getCurrentlyUsedMemory() {
+        return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
+                + ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
+    }
 
-	public DescriptiveStatistics getStatsMemory() {
-		return statsMemory;
-	}
+    public void writeStatistics() {
+        Document doc = null;
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            doc = dBuilder.newDocument();
+            Element rootElement = doc.createElement("TestResult");
+            Element size = doc.createElement("Size");
+            Text sizeText = doc.createTextNode("" + test.getSize());
+            size.appendChild(sizeText);
+            rootElement.appendChild(size);
 
-	private long getMemoryUsage() {
-		long before = getGcCount();
-		System.gc();
-		while (getGcCount() == before);
-		return getCurrentlyUsedMemory();
-	}
+            Element inputs = doc.createElement("Inputs");
 
-	private long getGcCount() {
-		long sum = 0;
-		for (GarbageCollectorMXBean b : ManagementFactory.getGarbageCollectorMXBeans()) {
-			long count = b.getCollectionCount();
-			if (count != -1) {
-				sum += count;
-			}
-		}
-		return sum;
-	}
+            Element inputFile = doc.createElement("Input");
+            Text inputFileText = doc.createTextNode(test.getInput());
+            inputFile.appendChild(inputFileText);
 
-	private long getCurrentlyUsedMemory() {
-		return ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()
-			+ ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed();
-	}
+            Element request = doc.createElement("Request");
+            Text requestText = doc.createTextNode(test.getRequest());
+            request.appendChild(requestText);
 
-	public void writeStatistics() {
-		Document doc = null;
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.newDocument();
-			Element rootElement = doc.createElement("TestResult");
-			Element size = doc.createElement("Size");
-			Text sizeText = doc.createTextNode(""+test.getSize());
-			size.appendChild(sizeText);
-			rootElement.appendChild(size);
+            Element timestamp = doc.createElement("Timestamp");
+            Text timestampText = doc.createTextNode(LocalDateTime.now().toString());
+            timestamp.appendChild(timestampText);
 
-			Element inputs = doc.createElement("Inputs");
+            Element[] subElements = {inputFile, request, timestamp};
+            for (Element e : subElements) {
+                inputs.appendChild(e);
+            }
 
-			Element inputFile = doc.createElement("Input");
-			Text inputFileText = doc.createTextNode(test.getInput());
-			inputFile.appendChild(inputFileText);
+            Element outputs = doc.createElement("Statistics");
 
-			Element request = doc.createElement("Request");
-			Text requestText = doc.createTextNode(test.getRequest());
-			request.appendChild(requestText);
+            Element statsMemory = doc.createElement("CPU");
+            Text statsMemoryText = doc.createTextNode(getStats().toString());
+            statsMemory.appendChild(statsMemoryText);
 
-			Element timestamp = doc.createElement("Timestamp");
-			Text timestampText = doc.createTextNode(LocalDateTime.now().toString());
-			timestamp.appendChild(timestampText);
+            Element statsMemoryCoreseMem = doc.createElement("Memory");
+            Text statsMemoryCoreseMemText = doc.createTextNode(getStatsMemory().toString());
+            statsMemoryCoreseMem.appendChild(statsMemoryCoreseMemText);
 
-			Element[] subElements = {inputFile, request, timestamp};
-			for (Element e : subElements) {
-				inputs.appendChild(e);
-			}
+            Element[] subElements2 = {statsMemory, statsMemoryCoreseMem};
+            for (Element e : subElements2) {
+                outputs.appendChild(e);
+            }
 
-			Element outputs = doc.createElement("Statistics");
+            rootElement.appendChild(inputs);
+            rootElement.appendChild(outputs);
 
-			Element statsMemory = doc.createElement("CPU");
-			Text statsMemoryText = doc.createTextNode(getStats().toString());
-			statsMemory.appendChild(statsMemoryText);
+            doc.appendChild(rootElement);
 
-			Element statsMemoryCoreseMem = doc.createElement("Memory");
-			Text statsMemoryCoreseMemText = doc.createTextNode(getStatsMemory().toString());
-			statsMemoryCoreseMem.appendChild(statsMemoryCoreseMemText);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult streamResult = new StreamResult(new File(test.getOutputPath("stats_" + mode)));
+            transformer.transform(source, streamResult);
+            LOGGER.log(Level.INFO, "Results were written in: {}", test.getOutputPath(mode.name()));
+        } catch (ParserConfigurationException | TransformerException ex) {
+            LOGGER.log(Level.INFO, "Error when writing results:", ex.getMessage());
+            ex.printStackTrace();
+        }
 
-			Element[] subElements2 = {statsMemory, statsMemoryCoreseMem};
-			for (Element e : subElements2) {
-				outputs.appendChild(e);
-			}
+    }
 
-			rootElement.appendChild(inputs);
-			rootElement.appendChild(outputs);
-
-			doc.appendChild(rootElement);
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult streamResult = new StreamResult(new File(test.getOutputPath("stats_"+mode)));
-			transformer.transform(source, streamResult);
-			LOGGER.log(Level.INFO, "Results were written in: {}", test.getOutputPath(mode.name()));
-		} catch (ParserConfigurationException | TransformerException ex) {
-			LOGGER.log(Level.INFO, "Error when writing results:", ex.getMessage());
-			ex.printStackTrace();
-		}
-
-	}
+    public enum Profile {
+        DB, MEMORY
+    }
 
 }

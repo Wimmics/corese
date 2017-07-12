@@ -6,6 +6,6 @@
 
 package fr.inria.corese
 
-def name='edemairy'
+def name = 'edemairy'
 
 println "Hello $name!"

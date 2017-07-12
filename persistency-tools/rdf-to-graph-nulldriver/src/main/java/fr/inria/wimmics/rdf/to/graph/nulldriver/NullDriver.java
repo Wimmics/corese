@@ -6,10 +6,6 @@
 package fr.inria.wimmics.rdf.to.graph.nulldriver;
 
 import fr.inria.corese.rdftograph.driver.GdbDriver;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.logging.Logger;
-
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -18,52 +14,56 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.openrdf.model.Value;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Logger;
+
 /**
- *
  * @author edemairy
  */
 public class NullDriver extends GdbDriver {
-	static final Logger logger = Logger.getLogger(NullDriver.class.getName());
-	@Override
-	public Graph openDatabase(String string) {
-		logger.fine("Opening db "+string);
-		return null;
-	}
+    static final Logger logger = Logger.getLogger(NullDriver.class.getName());
 
-	@Override
-	public void closeDb() {
-		logger.fine("Closing db");
-	}
+    @Override
+    public Graph openDatabase(String string) {
+        logger.fine("Opening db " + string);
+        return null;
+    }
 
-	@Override
-	public Object createRelationship(Value o, Value o1, String string, Map<String, Object> map) {
-		logger.fine("Creating relationship bw "+o.toString()+" and "+o1.toString());
-		return null;
-	}
+    @Override
+    public void closeDb() {
+        logger.fine("Closing db");
+    }
 
-	@Override
-	public void commit() {
-		logger.fine("Commiting");
-	}
+    @Override
+    public Object createRelationship(Value o, Value o1, String string, Map<String, Object> map) {
+        logger.fine("Creating relationship bw " + o.toString() + " and " + o1.toString());
+        return null;
+    }
 
-	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(String key, String s, String p, String o, String g) {
-		logger.fine("getFilter");
-		return null;
-	}
+    @Override
+    public void commit() {
+        logger.fine("Commiting");
+    }
 
-	@Override
-	public Entity buildEdge(Element e) {
-		return null;
-	}
+    @Override
+    public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(String key, String s, String p, String o, String g) {
+        logger.fine("getFilter");
+        return null;
+    }
 
-	@Override
-	public Node buildNode(Element e) {
-		return null;
-	}
+    @Override
+    public Entity buildEdge(Element e) {
+        return null;
+    }
 
-	@Override
-	public boolean isGraphNode(String label) {
-		return true;
-	}
+    @Override
+    public Node buildNode(Element e) {
+        return null;
+    }
+
+    @Override
+    public boolean isGraphNode(String label) {
+        return true;
+    }
 }

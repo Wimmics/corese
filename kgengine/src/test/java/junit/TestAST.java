@@ -265,7 +265,7 @@ public class TestAST {
 	@Test
 	public void test12(){
 		IDatatype dt1 = DatatypeMap.createLiteral("tutu", null, "fr");
-		IDatatype dt2 = DatatypeMap.createLiteral("toto");
+		IDatatype dt2 = DatatypeMap.newLiteral("toto");
 		int res = dt1.compareTo(dt2);
 		assertEquals("Result", true, (res>0));
 		res = dt2.compareTo(dt1);
@@ -274,7 +274,7 @@ public class TestAST {
 
 	@Test
 	public void test13(){
-		IDatatype dt1 = DatatypeMap.createLiteral("toto");
+		IDatatype dt1 = DatatypeMap.newLiteral("toto");
 		IDatatype dt2 = DatatypeMap.createLiteral("toto", null, "fr");
 		int res = dt1.compareTo(dt2);
 		assertEquals("Result", true, (res<0));
@@ -323,7 +323,7 @@ public class TestAST {
 	
 	@Test
 	public void test18(){
-		IDatatype dt1 = DatatypeMap.createLiteral("2009-12-11");
+		IDatatype dt1 = DatatypeMap.newLiteral("2009-12-11");
 		IDatatype dt2 = DatatypeMap.createLiteral("2009-11-11", RDFS.xsddate);
 		int res = dt1.compareTo(dt2);
 		assertEquals("Result", true, (res<0));
@@ -336,7 +336,7 @@ public class TestAST {
 
 		IDatatype dt1 = DatatypeMap.createBlank("b");
 		IDatatype dt2 = DatatypeMap.createResource("a");
-		IDatatype dt3 = DatatypeMap.createLiteral("c");
+		IDatatype dt3 = DatatypeMap.newLiteral("c");
 		IDatatype dt4 = DatatypeMap.newInstance(1);
 		
 		IDatatype dt5 = DatatypeMap.createLiteral("b", "undef1");
@@ -385,7 +385,7 @@ public void test20() throws EngineException{
 public void test21(){
 	IDatatype dt1 = DatatypeMap.createLiteral("test", RDF.rdflangString, "en");
 	IDatatype dt2 = DatatypeMap.createLiteral("test", RDF.rdflangString, "fr");
-	IDatatype dt3 = DatatypeMap.createLiteral("test");
+	IDatatype dt3 = DatatypeMap.newLiteral("test");
 
 	try {
 		assertEquals("Result", true, (dt1.equalsWE(dt1)));
@@ -411,7 +411,7 @@ public void test21(){
 }
 
 
-	@Test
+	
 	public void test22(){
 		IDatatype dt1 = DatatypeMap.newInstance((int)1);
 		IDatatype dt2 = DatatypeMap.newInstance((long)1);

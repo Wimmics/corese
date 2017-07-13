@@ -5405,7 +5405,7 @@ String init = "prefix ex: <http://example.org/>"
 
 
      public void testBGP() throws EngineException{
-         fr.inria.edelweiss.kgenv.eval.QuerySolver.BGP_DEFAULT = true;
+         //fr.inria.edelweiss.kgenv.eval.QuerySolver.BGP_DEFAULT = true;
          String init = "prefix ex: <http://example.org/>"
                  + "insert data {"
                  + "graph ex:g1 {ex:John ex:name 'John' ;"

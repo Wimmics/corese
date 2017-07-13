@@ -826,7 +826,7 @@ public class TestQuery {
 		IDatatype dt1 = datatype(o1);
 		IDatatype dt2 = datatype(o2);
 		String str = concat(dt1, dt2);
-		return DatatypeMap.createLiteral(str); 
+		return DatatypeMap.newLiteral(str); 
 	}
 	
 	String concat(IDatatype dt1, IDatatype dt2){

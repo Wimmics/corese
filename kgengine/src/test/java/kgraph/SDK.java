@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -110,13 +111,7 @@ public class SDK {
 	}
 	
 	Node value(int n){
-		try {
-			return  NodeImpl.create(CoreseDatatype.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
-		} catch (CoreseDatatypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return  NodeImpl.create(DatatypeMap.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
 	}
 
 	void trace(Graph graph){

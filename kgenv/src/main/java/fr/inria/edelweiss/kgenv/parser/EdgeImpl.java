@@ -8,6 +8,7 @@ import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -65,6 +66,7 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 	}
 	
 	
+        @Override
 	public String toString(){
 		String str = "";
 		String name = label;
@@ -78,8 +80,8 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 	}
         
         @Override
-     public Iterable<Object> getLoop() {
-       ArrayList<Object> list = new ArrayList();
+     public Iterable<DatatypeValue> getLoop() {
+       ArrayList<DatatypeValue> list = new ArrayList();
        for (int i = 0; i<3; i++){
            list.add(getValue(null, i));
        }
@@ -87,11 +89,11 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
     }
         
      @Override
-     public Object getValue(String var, int n){        
+     public DatatypeValue getValue(String var, int n){        
         switch (n){
-            case 0: return getNode(0).getValue();
-            case 1: return getPredicateNode().getValue();                  
-            case 2: return getNode(1).getValue();
+            case 0: return getNode(0).getDatatypeValue();
+            case 1: return getPredicate().getDatatypeValue();                  
+            case 2: return getNode(1).getDatatypeValue();
         }
         return null;
     }   

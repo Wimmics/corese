@@ -777,17 +777,9 @@ public class NSManager extends ASTObject {
     public int pointerType() {
         return NSMANAGER_POINTER;
     } 
- 
-    /**
-     * 
-     * for ((?p, ?n) in st:prefix()){ }
-     */
+    
+    
     @Override
-    public Iterable getLoop() {
-        return getList().getValues();
-    }
-    
-    
     public IDatatype getList(){
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         for (String p : tprefix.keySet()){

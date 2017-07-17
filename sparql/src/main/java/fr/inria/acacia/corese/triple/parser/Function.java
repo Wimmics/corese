@@ -46,6 +46,15 @@ public class Function extends Statement {
         }
         return null;
     }
+    
+    @Override
+    public Expression compile(ASTQuery ast){
+         Expression exp = super.compile(ast);
+         if (isTrace()){
+             System.out.println(this);
+         }
+         return exp;
+    }
 
     @Override
     public StringBuffer toString(StringBuffer sb) {

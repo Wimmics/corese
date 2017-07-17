@@ -222,16 +222,12 @@ public class Dataset extends ASTObject {
         return DATASET_POINTER;
     } 
  
-    /**
-     * 
-     * for ((?g) in xt:dataset()){ }
-     */
+    
     @Override
-    public Iterable getLoop() {
-        return getNamedList().getValues();
+    public IDatatype getList(){
+            return getNamedList();
     }
-    
-    
+
     public IDatatype getNamedList(){
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         if (getNamed() != null){

@@ -202,11 +202,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             Expression exp  = t.getDefinition();           
             Expression body = t.getBody();       
 
-            if (isLocal(var)){
-                ast.addError("Variable already defined: " + var);
-                ast.addFail(true);
-            }
-            else {
+//            if (isLocal(var)){
+//                ast.addError("Variable already defined: " + var);
+//                ast.addFail(true);
+//            }
+//            else 
+            {
                 exp.visit(this);
                 localize(var);
                 list.add(var);
@@ -228,10 +229,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         Expression exp  = t.getDefinition();
         Expression body = t.getBody();
 
-        if (isLocal(var)) {
-            ast.addError("Variable already defined: " + var);
-            ast.addFail(true);
-        } else {
+//        if (isLocal(var)) {
+//            ast.addError("Variable already defined: " + var);
+//            ast.addFail(true);
+//        } 
+//        else 
+        {
             exp.visit(this);
             localize(var);
             list.add(var);

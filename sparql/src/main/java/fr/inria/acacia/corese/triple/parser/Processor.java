@@ -97,7 +97,8 @@ public class Processor {
         private static final String XT_REST     = EXT + "rest";
         private static final String XT_GET      = EXT + "get";
         private static final String XT_GEN_GET  = EXT + "gget";
-        private static final String FUN_XT_GET  = EXT_PREF + "gget";
+        static final String FUN_XT_GGET         = EXT_PREF + "gget";
+        static final String FUN_XT_GET          = EXT_PREF + "get";
         private static final String XT_SET      = EXT + "set";
         private static final String XT_CONS     = EXT + "cons";        
         private static final String XT_ADD      = EXT + "add";
@@ -1041,12 +1042,8 @@ public class Processor {
                 }
                 
                 int j = 0;
-                for (Expression arg : match.getArgs()) {
-                    Term fun = ast.createFunction(ast.createQName(FUN_XT_GET), var);
-                    fun.add(Constant.createString(arg.getLabel()));
-                    fun.add(Constant.create(j++));
-                    Term t   = ast.defLet(arg.getVariable(), fun);
-                    l.add(t);
+                for (Expression arg : match.getArgs()) {                   
+                    l.add(ast.defGenericGet(arg.getVariable(), var, j++));
                 }
                 
                 Term let = ast.defineLet(l, term.getBody(), 0);

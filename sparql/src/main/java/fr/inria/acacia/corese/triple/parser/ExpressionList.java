@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>Title: Corese</p>
@@ -16,18 +17,30 @@ import java.util.HashMap;
  */
 
 public class ExpressionList extends ArrayList<Expression> {
-	
+   	
 	boolean isDistinct = false;
+        private boolean nested = false;
 	String separator;
         Expression eseparator;
         HashMap<String, Constant> table;
+        private List<ExpressionList> list;
 
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
 
-	/** Empty constructor: create a Vector<Expression> */
 	public ExpressionList() {
 		super();
+                list = new ArrayList<>();
+	}
+        
+        public ExpressionList(Expression e) {
+		this();
+                add(e);
+	}
+        
+        public ExpressionList(List<Expression> l) {
+		this();
+                addAll(l);
 	}
 	
 	public void setDistinct(boolean b){
@@ -75,5 +88,31 @@ public class ExpressionList extends ArrayList<Expression> {
         public HashMap<String, Constant> getTable(){
             return table;
         }
+
+    public boolean isNested() {
+        return ! list.isEmpty() || nested;
+    }
+    
+    public void setNested(boolean b){
+        nested = b;
+    }
+   
+     /**
+     * @return the list
+     */
+    public List<ExpressionList> getList() {
+        return list;
+    }
+
+    /**
+     * @param list the list to set
+     */
+    public void setList(List<ExpressionList> list) {
+        this.list = list;
+    }
+    
+    public void add(ExpressionList l){
+        list.add(l);
+    }
 
 }

@@ -263,16 +263,8 @@ public class Metadata extends ASTObject
         return METADATA_POINTER;
     } 
  
-    /**
-     * 
-     * for ((?p, ?n) in st:prefix()){ }
-     */
+   
     @Override
-    public Iterable getLoop() {
-        return getList().getValues();
-    }
-    
-    
     public IDatatype getList(){
          ArrayList<IDatatype> list = new ArrayList<IDatatype>();
          for (String key : map.keySet()){

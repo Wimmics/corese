@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
  */
 
 public class Term extends Expression {
+   
         static final String NL = System.getProperty("line.separator");
 	static final String RE_CHECK = "check";
 	static final String RE_PARA = "||";
@@ -63,11 +64,13 @@ public class Term extends Expression {
         
         // possibly dynamic processor to implement some functions: regex, ...
 	Processor proc;
-	Exp exist;
+	Exist exist;
 	Constant cname;
 	
 	ArrayList<Expression> args = new ArrayList<Expression>();
         List<Expr> lExp;
+        // ast for let (((?x, ?y)) = select where)
+        private ExpressionList nestedList;
 
 	// additional system arg:
 	Expression exp;
@@ -76,6 +79,7 @@ public class Term extends Expression {
 	isPlus = false;
 	boolean isDistinct = false;
 	boolean isShort = false;
+        private boolean nested = false;
 	String  modality;       
         int type = ExprType.UNDEF, oper = ExprType.UNDEF;
         int min = -1, max = -1;
@@ -1080,12 +1084,23 @@ public class Term extends Expression {
             }
 	}
 	
-	void setExist(Exp exp){
+	void setExist(Exist exp){
 		exist = exp;
 	}
 	
 	public Exp getExist(){
 		return exist;
+	}
+        
+        public Exist getExistPattern(){
+		return exist;
+	}
+        
+        public Exp getExistContent(){
+            if (exist == null){
+                return null;
+            }
+            return exist.getContent();
 	}
 	
 	// Exp
@@ -1208,6 +1223,34 @@ public class Term extends Expression {
      */
     public void setPlace(int place) {
         this.place = place;
+    }
+
+    /**
+     * @return the nested
+     */
+    public boolean isNested() {
+        return nested;
+    }
+
+    /**
+     * @param nested the nested to set
+     */
+    public void setNested(boolean nested) {
+        this.nested = nested;
+    }
+    
+     /**
+     * @return the nestedList
+     */
+    public ExpressionList getNestedList() {
+        return nestedList;
+    }
+
+    /**
+     * @param nestedList the nestedList to set
+     */
+    public void setNestedList(ExpressionList nestedList) {
+        this.nestedList = nestedList;
     }
     
 }

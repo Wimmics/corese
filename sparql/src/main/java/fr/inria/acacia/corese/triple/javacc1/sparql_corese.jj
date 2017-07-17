@@ -2417,11 +2417,11 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 
 
 Term For (Exp stack) : 
-{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg, el = null; }
+{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var = null; ExpressionList arg, el = null; }
 {
     (<FOR> | <LOOP> {isLoop = true;})
     <LPAREN> 
-
+    (
         ( var = Var() 
         | 
 
@@ -2432,11 +2432,16 @@ Term For (Exp stack) :
         )
 
         <IN> 
-    (
+        (
         exp = Expression(stack) 
         |
         exp = LetForExp()
-    )
+        )
+
+        |
+
+        sub = SubQueryExp()  { el = new ExpressionList(); exp = astq.toExist(sub); }
+     )
     <RPAREN>   
     body = Body(stack)
     
@@ -2491,12 +2496,14 @@ IDatatype ListTerm() : { String s; Token t1;  Atom a; }
 
 
 Term Let (Exp stack) : 
-{ Expression exp ; Expression arg; ExpressionList list; }
+{Expression exp ; Expression arg; ExpressionList list; }
 {
         <LET>
-        <LPAREN> { list = new ExpressionList(); }
-               arg = LetDef(stack) { list.add(arg); }
-               ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*
+        <LPAREN> 
+               { list = new ExpressionList(); }
+               (
+                arg = LetDef(stack) { list.add(arg); }   ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*                
+               )
         <RPAREN>
         exp = Body(stack)
     
@@ -2519,10 +2526,10 @@ Term Set (Exp stack) : { Expression exp ; Variable var;}
 Expression LetDef(Exp stack) : 
 { Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub; Constant type = null; }
 {
-  
+( 
   ( (type = IRIrefConst())? var = Var() 
     |    	       
-    el = FunArgList()
+    el = LetArgList()    
   )
   <EQ>
   (  
@@ -2530,7 +2537,11 @@ Expression LetDef(Exp stack) :
     |
     exp = LetForExp()
   )
-			
+
+ |
+  // let (select where)
+  sub = SubQueryExp() { el = new ExpressionList(); exp = astq.toExist(sub); }
+)			
    { return (el == null) ? astq.defLet(var, type, exp) : astq.defLet(el, exp);  }
  
 }
@@ -2585,19 +2596,44 @@ Function Function(Metadata la) :
 
 
 ExpressionList FunArgList() : { ExpressionList list;  Variable var; Constant type; }
-{
-  { list = new ExpressionList(); }  
-  (        	 
+{  { list = new ExpressionList(); }          	 
   <LPAREN>   		  	 	  	
-    (
+     (
 	          { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); }		              
         ( <COMMA> { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); } )*
 		    
-    ) ?	       
+    ) ?	  
   <RPAREN>    
-  )
+  
   { return list; }
 }
+
+
+ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Constant type; }
+{
+   <LPAREN> 		  	 	  	
+    ( 
+                            list = VarList() 
+    |  
+                  <LPAREN>  { glist = new ExpressionList(); } 
+                            list = VarList()  { glist.add(list); } <RPAREN>
+        ( <COMMA> <LPAREN>  list = VarList()  { glist.add(list); } <RPAREN> )*
+        { list = glist; }
+    )
+   <RPAREN>
+
+  { return list; }
+}
+
+
+
+ExpressionList VarList() : { ExpressionList list;  Variable var; }
+{
+    { list = new ExpressionList(); }  
+    var = Var() { list.add(var);  }	 ( <COMMA>  var = Var() { list.add(var); } )* 
+    { return list; }
+}
+
 
 Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 {

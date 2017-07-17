@@ -320,26 +320,12 @@ public class CoreseDatatype
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         if (isLoop()){
             for (Object obj : getLoop()){
-                list.add(getValue(obj));
+                list.add(DatatypeMap.getValue(obj));
             }
         }
         return list;
     }
-    
-    IDatatype getValue(Object value){
-        if (value instanceof IDatatype){
-            return (IDatatype) value;
-        }
-        if (value instanceof Node){
-            return (IDatatype) ((Node) value).getDatatypeValue();
-        }
-        IDatatype dt = DatatypeMap.cast(value);
-        if (dt == null){
-            dt = DatatypeMap.createObject(value);
-        }
-        return dt;
-    }
-
+     
     @Override
     public Iterable getLoop() {
         return null;

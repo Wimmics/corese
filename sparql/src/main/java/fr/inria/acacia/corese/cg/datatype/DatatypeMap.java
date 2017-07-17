@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -313,21 +314,21 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     public static IDatatype cast(Object obj) {
-        if (obj instanceof Integer) {
-            return newInstance((Integer) obj);
-        } 
+        if (obj instanceof Number) {
+            if (obj instanceof Integer) {
+                return newInstance((Integer) obj);
+            } else if (obj instanceof Float) {
+                return newInstance((Float) obj);
+            } else if (obj instanceof Double) {
+                return newInstance((Double) obj);
+            }
+        }
         else if (obj instanceof Boolean) {
             return newInstance((Boolean) obj);
-        } 
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             return newInstance((String) obj);
         }
-        else if (obj instanceof Float) {
-            return newInstance((Float) obj);
-        }
-        else if (obj instanceof Double) {
-            return newInstance((Double) obj);
-        }
+
         return null;
     }
     
@@ -518,18 +519,63 @@ public class DatatypeMap implements Cst, RDF {
         return createLiteral(name, XMLLITERAL, null);
     }
     
+    
+     public static IDatatype getValue(Object value){
+        if (value instanceof IDatatype){
+            return (IDatatype) value;
+        }
+        if (value instanceof Node){
+            return (IDatatype) ((Node) value).getDatatypeValue();
+        }
+        if (value instanceof List){
+            return getValue((List) value);
+        }
+        IDatatype dt = DatatypeMap.castObject(value);
+        return dt;
+    }
+     
+     // not for recursively nested same list
+    public static IDatatype getValue(List<Object> list){
+        ArrayList<IDatatype> l = new ArrayList<>();
+        IDatatype res = createList(l);
+        for (Object obj : list){
+            if (obj == list){
+                l.add(res);
+            }
+            else {
+                IDatatype dt = getValue(obj);
+                if (dt != null){
+                    l.add(dt);
+                }
+            }
+        }
+        return res;
+    }
+    
     public static IDatatype createObject(Object obj) {
         if (obj == null){
             return null;
         }
         return createObject(Integer.toString(obj.hashCode()), obj);
     }
+    
+    public static IDatatype castObject(Object obj) {
+        if (obj == null){
+            return null;
+        }
+        IDatatype dt = cast(obj);
+        if (dt != null) {
+            return dt;
+        }
+        return createObject(obj);
+    }
+    
 
     public static IDatatype createObject(String name, Object obj) {      
         if (obj == null){
             return null;
-        }
-        if (obj instanceof Pointerable){
+        }       
+        if (obj instanceof Pointerable){           
             return new CoresePointer(name, (Pointerable) obj);
         }
         IDatatype dt = createLiteral(name, XMLLITERAL, null);

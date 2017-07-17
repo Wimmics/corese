@@ -397,12 +397,8 @@ public class Context extends ASTObject {
     public int pointerType(){
         return Pointerable.CONTEXT_POINTER;
     }
-    
+       
     @Override
-    public Iterable getLoop(){
-        return getList().getValues();       
-    }
-    
     public IDatatype getList(){
         ArrayList<IDatatype> list = new  ArrayList<IDatatype>();
         for (String key : table.keySet()){

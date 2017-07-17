@@ -56,6 +56,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public static final String BNVAR = "?_bn_";
     public static final String MAIN_VAR = "?_main_";
     static final String FOR_VAR = "?_for_";
+    static final String LET_VAR = "?_let_";
     static final String NL = System.getProperty("line.separator");
     static int nbt = 0; // to generate an unique id for a triple if needed
     public final static int QT_SELECT = 0;
@@ -887,6 +888,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public boolean isRule() {
         return rule;
     }
+    
+    public List<Variable> getSelectOrAllVar() {
+        if (getSelectVar().isEmpty()){
+            return getSelectAllVar();
+        }
+        return getSelectVar();
+    }
 
     public List<Variable> getSelectVar() {
         return selectVar;
@@ -1215,12 +1223,56 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
     
     /**
-     * exp: var = exp | match(var_1, .., var_n) = exp
-     * match(?x, ?y) is AST for let ((?x, ?y) = exp)
+     * exp: var = ee | match(var_1, .., var_n) = ee
+     * match(?x, ?y) is AST for let ((?x, ?y) = ee)
      * this match() AST is compiled by Processor
+     * nested: let (((?x, ?y)) = select where)
      */
     Term let(Expression exp, Expression body) {
+        if (exp.getArg(0).isTerm() && exp.getArg(0).getTerm().isNested()) {
+            return let(exp.getArg(0).getTerm().getNestedList(), exp.getArg(1), body);
+        }
         return new Let(exp, body);
+    }
+          
+    /**
+     * let(varList = exp)
+     * compile as 
+     * let (var = xt:get(ee, 0), match(varList) = var){ body }
+     * use case: let (((?x, ?y)) = select where)
+     * get first Mapping, match it
+     * use case: let (((?var, ?val)) = ?m)
+     * get first Binding, match it
+     */
+    
+     Term let(ExpressionList expList, Expression exp, Expression body) { 
+         if (! exp.isTerm() || expList.getList().size() == 1){
+            return let(expList, exp, body, 0);
+         }
+         // let (var = exp)
+         Variable var = new Variable(LET_VAR + nbd++);
+         return let(defLet(var, exp), let(expList, var, body, 0));
+     }
+    
+    // recurse on  expList 
+    Term let(ExpressionList expList, Expression exp, Expression body, int n) { 
+        Variable var = new Variable(LET_VAR + nbd++);
+        ExpressionList list = expList.getList().get(n) ;
+        Term fst = defGet(var, exp, n);
+        Term snd = defLet(list, var);  
+        Expression rest =  body;
+        if (n+1 < expList.getList().size()){
+            rest = let(expList, exp, body, n+1);
+        }
+        return new Let(fst, new Let(snd, rest));
+    }
+     
+    Term let2(ExpressionList expList, Expression exp, Expression body, int n) {            
+        Variable var = new Variable(LET_VAR + nbd++);
+        Term fst = defGet(var, exp, n);
+        ExpressionList list = expList.getList().get(n) ;
+        Term snd = defLet(list, var);       
+        return new Let(fst, new Let(snd, body));
     }
 
     public Term defLet(Variable var, Constant type, Expression exp) {
@@ -1230,9 +1282,77 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public Term defLet(Variable var, Expression exp) {
         return Term.create("=", var, exp);
     }
+    
     public Term defLet(ExpressionList lvar, Expression exp) {
+        complete(lvar, exp, true);
         Term t = createFunction(Processor.MATCH, lvar);
+        t.setNestedList(lvar);
+        t.setNested(lvar.isNested());
         return Term.create("=", t, exp);
+    }
+    
+    /**
+     * exp = exists { select where }
+     * use case: let (select where)
+     */
+    void complete(ExpressionList lvar, Expression exp, boolean nest) {
+        if (lvar.isEmpty() && ! lvar.isNested() && exp.isTerm()) {
+            Exp query = exp.getTerm().getExistContent();
+            if (query != null){
+                ASTQuery ast = query.getQuery();
+                ast.validate();
+                ExpressionList el = new ExpressionList();
+                for (Variable var : ast.getSelectOrAllVar()) {
+                    el.add(var);
+                }
+                lvar.add(el);
+            }
+        }
+    }
+    
+    /**
+     * exp = exists { select where }
+     * use case: for (select where)
+     */
+    void complete(ExpressionList lvar, Expression exp) {
+        if (lvar.isEmpty() && !lvar.isNested() && exp.isTerm()) {
+            Exp query = exp.getTerm().getExistContent();
+            if (query != null){
+                ASTQuery ast = query.getQuery();
+                ast.validate();
+                for (Variable var : ast.getSelectOrAllVar()) {
+                    lvar.add(var);
+                }
+            }
+        }
+    }
+    
+    public Term defLet2(ExpressionList lvar, Expression exp) {
+        Term t = createFunction(Processor.MATCH, lvar);
+        t.setNestedList(lvar);
+        t.setNested(lvar.isNested());
+        return Term.create("=", t, exp);
+    }
+    /**
+     * 
+     * 
+     * @param var
+     * @param exp
+     * @param i
+     * @return 
+     */
+    
+    Term defGenericGet(Variable var, Expression exp, int i) {
+        Term fun = createFunction(createQName(Processor.FUN_XT_GGET), exp);
+        fun.add(Constant.createString(var.getLabel()));
+        fun.add(Constant.create(i));
+        return defLet(var, fun);
+    }
+    
+    Term defGet(Variable var, Expression exp, int i) {
+        Term fun = createFunction(createQName(Processor.FUN_XT_GET), exp);
+        fun.add(Constant.create(i));
+        return defLet(var, fun);
     }
     
     public Term defineLoop(Variable var, ExpressionList lvar, 
@@ -1255,6 +1375,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      */
     public Term defFor(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
+        complete(lvar, exp);
         return defFor(var, exp, let(defLet(lvar, var), body));
     }
     

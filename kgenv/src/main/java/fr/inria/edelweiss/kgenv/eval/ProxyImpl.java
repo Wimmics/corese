@@ -29,7 +29,10 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
+import fr.inria.edelweiss.kgram.core.PointerObject;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EvalListener;
 import fr.inria.edelweiss.kgram.event.Event;
@@ -2352,11 +2355,21 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     public IDatatype get(IDatatype dt1, IDatatype dt2){
-        return gget(dt1, dt2, dt2);
+        return gget(dt1, null, dt2);
     }
     
-    public IDatatype gget(IDatatype dt1, IDatatype dt2){
-        return gget(dt1, dt2, dt2);
+    /*
+     * Java compiler
+     * dtmap = SPARQL Query solution Mappings
+     * dtvar = variable name
+     * return value of variable in first Mapping
+     */
+    public IDatatype gget(IDatatype dtmap, IDatatype dtvar){
+        if (! dtmap.isPointer() || dtmap.pointerType() != PointerObject.MAPPINGS_POINTER){
+            return null;
+        }
+        Mappings map = dtmap.getPointerObject().getMappings();
+        return (IDatatype) map.getValue(dtvar.stringValue());
     }
     
     /**
@@ -2367,13 +2380,21 @@ public class ProxyImpl implements Proxy, ExprType {
             return DatatypeMap.get(dt, ind);
         }
         if (dt.isPointer()){
-            IDatatype res = (IDatatype) dt.getPointerObject().getValue(var.getLabel(), ind.intValue());          
-            // let ((?x, ?y) = select * where { ... optional { ?x rdf:value ?y }}
-            // ?y may be unbound, return specific UNDEF value 
-            return (res == null) ? UNDEF : res;
-        }      
+            Object res = dt.getPointerObject().getValue((var == null) ? null : var.getLabel(), ind.intValue());
+            // may be unbound, return specific UNDEF value because null would be considered an error   
+            if (res == null) {
+                if (dt.getPointerObject().pointerType() == PointerObject.MAPPING_POINTER){
+                    return UNDEF;
+                }
+                return null;
+            }                 
+            IDatatype dtres =  DatatypeMap.getValue(res);           
+            return dtres;
+        }  
         return null;
     }
+    
+    
             
     IDatatype nodeValue(Node n){
         return (IDatatype) n.getValue();

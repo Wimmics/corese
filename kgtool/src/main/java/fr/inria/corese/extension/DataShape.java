@@ -14,152 +14,155 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
  * prefix java: <function://fr.inria.corese.extension.DataShape> 
  * java:fun(?x) 
  *
- * Olivier Corby - Wimmics Inria I3S - Fri May 05 10:07:03 CEST 2017 
+ * Olivier Corby - Wimmics Inria I3S - Wed Jul 12 15:05:02 CEST 2017 
  */
 public class DataShape extends PluginImpl { 
 
-static final IDatatype _cst_0 = DatatypeMap.newInstance("main");
-static final IDatatype _cst_1 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dsmain");
-static final IDatatype _cst_2 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#bnodeid");
-static final IDatatype _cst_3 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/null");
-static final IDatatype _cst_4 = DatatypeMap.newInstance("constraint");
-static final IDatatype _cst_5 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dsconstraint");
-static final IDatatype _cst_6 = DatatypeMap.newInstance("path");
-static final IDatatype _cst_7 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dspath");
-static final IDatatype _cst_8 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/test");
-static final IDatatype _cst_9 = DatatypeMap.newInstance("core");
-static final IDatatype _cst_10 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dscore");
-static final IDatatype _cst_11 = DatatypeMap.newInstance("define");
-static final IDatatype _cst_12 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#class");
-static final IDatatype _cst_13 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ClassConstraintComponent");
-static final IDatatype _cst_14 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#datatype");
-static final IDatatype _cst_15 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#DatatypeConstraintComponent");
-static final IDatatype _cst_16 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#nodeKind");
-static final IDatatype _cst_17 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NodeKindConstraintComponent");
-static final IDatatype _cst_18 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minCount");
-static final IDatatype _cst_19 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
-static final IDatatype _cst_20 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxCount");
-static final IDatatype _cst_21 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxCountConstraintComponent");
-static final IDatatype _cst_22 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minExclusive");
-static final IDatatype _cst_23 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinExclusiveConstraintComponent");
-static final IDatatype _cst_24 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minInclusive");
-static final IDatatype _cst_25 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinInclusiveConstraintComponent");
-static final IDatatype _cst_26 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxExclusive");
-static final IDatatype _cst_27 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxExclusiveConstraintComponent");
-static final IDatatype _cst_28 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxInclusive");
-static final IDatatype _cst_29 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxInclusiveConstraintComponent");
-static final IDatatype _cst_30 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minLength");
-static final IDatatype _cst_31 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinLengthConstraintComponent");
-static final IDatatype _cst_32 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxLength");
-static final IDatatype _cst_33 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxLengthConstraintComponent");
-static final IDatatype _cst_34 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pattern");
-static final IDatatype _cst_35 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#PatternConstraintComponent");
-static final IDatatype _cst_36 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#languageIn");
-static final IDatatype _cst_37 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LanguageInConstraintComponent");
-static final IDatatype _cst_38 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#uniqueLang");
-static final IDatatype _cst_39 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#UniqueLangConstraintComponent");
-static final IDatatype _cst_40 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#equals");
-static final IDatatype _cst_41 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#EqualsConstraintComponent");
-static final IDatatype _cst_42 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#disjoint");
-static final IDatatype _cst_43 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#DisjointConstraintComponent");
-static final IDatatype _cst_44 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#lessThan");
-static final IDatatype _cst_45 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LessThanConstraintComponent");
-static final IDatatype _cst_46 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#lessThanOrEquals");
-static final IDatatype _cst_47 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LessThanOrEqualsConstraintComponent");
-static final IDatatype _cst_48 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#not");
-static final IDatatype _cst_49 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NotConstraintComponent");
-static final IDatatype _cst_50 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#and");
-static final IDatatype _cst_51 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#AndConstraintComponent");
-static final IDatatype _cst_52 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#or");
-static final IDatatype _cst_53 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#OrConstraintComponent");
-static final IDatatype _cst_54 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#xone");
-static final IDatatype _cst_55 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#XoneConstraintComponent");
-static final IDatatype _cst_56 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#node");
-static final IDatatype _cst_57 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NodeConstraintComponent");
-static final IDatatype _cst_58 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShape");
-static final IDatatype _cst_59 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedValueShapeConstraintComponent");
-static final IDatatype _cst_60 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedMinCount");
-static final IDatatype _cst_61 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedMinCountConstraintComponent");
-static final IDatatype _cst_62 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedMaxCount");
-static final IDatatype _cst_63 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedMaxCountConstraintComponent");
-static final IDatatype _cst_64 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShapeDisjoint");
-static final IDatatype _cst_65 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShapeDisjointConstraintComponent");
-static final IDatatype _cst_66 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#closed");
-static final IDatatype _cst_67 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ClosedConstraintComponent");
-static final IDatatype _cst_68 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#hasValue");
-static final IDatatype _cst_69 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#HasValueConstraintComponent");
-static final IDatatype _cst_70 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#in");
-static final IDatatype _cst_71 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#InConstraintComponent");
-static final IDatatype _cst_72 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sparql");
-static final IDatatype _cst_73 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#SPARQLConstraintComponent");
-static final IDatatype _cst_74 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#message");
-static final IDatatype _cst_75 = DatatypeMap.newInstance("?s");
-static final IDatatype _cst_76 = DatatypeMap.newInstance("?p");
-static final IDatatype _cst_77 = DatatypeMap.newInstance("?o");
-static final IDatatype _cst_78 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#severity");
-static final IDatatype _cst_79 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Violation");
-static final IDatatype _cst_80 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nconstruct {_:bn_1 rdf:type sh:ValidationReport . \n_:bn_1 sh:conforms true . }\nwhere\n{}\n\n");
-static final IDatatype _cst_81 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/trace");
-static final IDatatype _cst_82 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/graph");
-static final IDatatype _cst_83 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#classsh");
-static final IDatatype _cst_84 = DatatypeMap.newInstance("?name");
-static final IDatatype _cst_85 = DatatypeMap.newInstance("?value");
-static final IDatatype _cst_86 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#def");
-static final IDatatype _cst_87 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/turtle");
-static final IDatatype _cst_88 = DatatypeMap.newResource("http://ns.inria.fr/sparql-extension/graph");
-static final IDatatype _cst_89 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?shape ?pp ?q ?path \nwhere\n{graph ?shape {values (?q ){\n(rdf:rest )\n(sh:inversePath )\n(sh:alternativePath )\n(sh:zeroOrMorePath )\n(sh:oneOrMorePath )\n(sh:zeroOrOnePath )\n}\n\n?pp ?q ?path . }}\n\n");
-static final IDatatype _cst_90 = DatatypeMap.newInstance("?shape");
-static final IDatatype _cst_91 = DatatypeMap.newInstance("?pp");
-static final IDatatype _cst_92 = DatatypeMap.newInstance("?q");
-static final IDatatype _cst_93 = DatatypeMap.newInstance("?path");
-static final IDatatype _cst_94 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-static final IDatatype _cst_95 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sequence");
-static final IDatatype _cst_96 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?s ?p (aggregate(?o) as ?l) \nwhere\n{?s ?p ?o . }\n\n");
-static final IDatatype _cst_97 = DatatypeMap.newInstance("?s");
-static final IDatatype _cst_98 = DatatypeMap.newInstance("?p");
-static final IDatatype _cst_99 = DatatypeMap.newInstance("?l");
-static final IDatatype _cst_100 = DatatypeMap.newInstance("/user/corby/home/AAData/sttl/datashape/");
-static final IDatatype _cst_101 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path");
-static final IDatatype _cst_102 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?o ?p (aggregate(?s) as ?l) \nwhere\n{?s ?p ?o . }\n\n");
-static final IDatatype _cst_103 = DatatypeMap.newInstance("?o");
-static final IDatatype _cst_104 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?s ?p (count(*) as ?c) \nwhere\n{?s ?p ?o . }\n\n");
-static final IDatatype _cst_105 = DatatypeMap.newInstance("?c");
-static final IDatatype _cst_106 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?o ?p (count(*) as ?c) \nwhere\n{?s ?p ?o . }\n\n");
+static final IDatatype _cst_0 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dsmain");
+static final IDatatype _cst_1 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#bnodeid");
+static final IDatatype _cst_2 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/null");
+static final IDatatype _cst_3 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dsconstraint");
+static final IDatatype _cst_4 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dspath");
+static final IDatatype _cst_5 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/test");
+static final IDatatype _cst_6 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dscore");
+static final IDatatype _cst_7 = DatatypeMap.newInstance("define");
+static final IDatatype _cst_8 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#class");
+static final IDatatype _cst_9 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ClassConstraintComponent");
+static final IDatatype _cst_10 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#datatype");
+static final IDatatype _cst_11 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#DatatypeConstraintComponent");
+static final IDatatype _cst_12 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#nodeKind");
+static final IDatatype _cst_13 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NodeKindConstraintComponent");
+static final IDatatype _cst_14 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minCount");
+static final IDatatype _cst_15 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
+static final IDatatype _cst_16 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxCount");
+static final IDatatype _cst_17 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxCountConstraintComponent");
+static final IDatatype _cst_18 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minExclusive");
+static final IDatatype _cst_19 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinExclusiveConstraintComponent");
+static final IDatatype _cst_20 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minInclusive");
+static final IDatatype _cst_21 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinInclusiveConstraintComponent");
+static final IDatatype _cst_22 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxExclusive");
+static final IDatatype _cst_23 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxExclusiveConstraintComponent");
+static final IDatatype _cst_24 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxInclusive");
+static final IDatatype _cst_25 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxInclusiveConstraintComponent");
+static final IDatatype _cst_26 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#minLength");
+static final IDatatype _cst_27 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MinLengthConstraintComponent");
+static final IDatatype _cst_28 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#maxLength");
+static final IDatatype _cst_29 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#MaxLengthConstraintComponent");
+static final IDatatype _cst_30 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pattern");
+static final IDatatype _cst_31 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#PatternConstraintComponent");
+static final IDatatype _cst_32 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#languageIn");
+static final IDatatype _cst_33 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LanguageInConstraintComponent");
+static final IDatatype _cst_34 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#uniqueLang");
+static final IDatatype _cst_35 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#UniqueLangConstraintComponent");
+static final IDatatype _cst_36 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#equals");
+static final IDatatype _cst_37 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#EqualsConstraintComponent");
+static final IDatatype _cst_38 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#disjoint");
+static final IDatatype _cst_39 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#DisjointConstraintComponent");
+static final IDatatype _cst_40 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#lessThan");
+static final IDatatype _cst_41 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LessThanConstraintComponent");
+static final IDatatype _cst_42 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#lessThanOrEquals");
+static final IDatatype _cst_43 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#LessThanOrEqualsConstraintComponent");
+static final IDatatype _cst_44 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#not");
+static final IDatatype _cst_45 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NotConstraintComponent");
+static final IDatatype _cst_46 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#and");
+static final IDatatype _cst_47 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#AndConstraintComponent");
+static final IDatatype _cst_48 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#or");
+static final IDatatype _cst_49 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#OrConstraintComponent");
+static final IDatatype _cst_50 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#xone");
+static final IDatatype _cst_51 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#XoneConstraintComponent");
+static final IDatatype _cst_52 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#node");
+static final IDatatype _cst_53 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#NodeConstraintComponent");
+static final IDatatype _cst_54 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShape");
+static final IDatatype _cst_55 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedValueShapeConstraintComponent");
+static final IDatatype _cst_56 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedMinCount");
+static final IDatatype _cst_57 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedMinCountConstraintComponent");
+static final IDatatype _cst_58 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedMaxCount");
+static final IDatatype _cst_59 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#QualifiedMaxCountConstraintComponent");
+static final IDatatype _cst_60 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShapeDisjoint");
+static final IDatatype _cst_61 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedValueShapeDisjointConstraintComponent");
+static final IDatatype _cst_62 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#closed");
+static final IDatatype _cst_63 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ClosedConstraintComponent");
+static final IDatatype _cst_64 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#hasValue");
+static final IDatatype _cst_65 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#HasValueConstraintComponent");
+static final IDatatype _cst_66 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#in");
+static final IDatatype _cst_67 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#InConstraintComponent");
+static final IDatatype _cst_68 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sparql");
+static final IDatatype _cst_69 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#SPARQLConstraintComponent");
+static final IDatatype _cst_70 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#message");
+static final IDatatype _cst_71 = DatatypeMap.newInstance("?s");
+static final IDatatype _cst_72 = DatatypeMap.newInstance("?p");
+static final IDatatype _cst_73 = DatatypeMap.newInstance("?o");
+static final IDatatype _cst_74 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#severity");
+static final IDatatype _cst_75 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Violation");
+static final IDatatype _cst_76 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nconstruct {_:bn_1 rdf:type sh:ValidationReport . \n_:bn_1 sh:conforms true . }\nwhere\n{}\n\n");
+static final IDatatype _cst_77 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/trace");
+static final IDatatype _cst_78 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/graph");
+static final IDatatype _cst_79 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#classsh");
+static final IDatatype _cst_80 = DatatypeMap.newInstance("?name");
+static final IDatatype _cst_81 = DatatypeMap.newInstance("?value");
+static final IDatatype _cst_82 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#def");
+static final IDatatype _cst_83 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/turtle");
+static final IDatatype _cst_84 = DatatypeMap.newResource("http://ns.inria.fr/sparql-extension/graph");
+static final IDatatype _cst_85 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?shape ?pp ?q ?path \nwhere\n{graph ?shape {values (?q ){\n(rdf:rest )\n(sh:inversePath )\n(sh:alternativePath )\n(sh:zeroOrMorePath )\n(sh:oneOrMorePath )\n(sh:zeroOrOnePath )\n}\n\n?pp ?q ?path . }}\n\n");
+static final IDatatype _cst_86 = DatatypeMap.newInstance("?shape");
+static final IDatatype _cst_87 = DatatypeMap.newInstance("?pp");
+static final IDatatype _cst_88 = DatatypeMap.newInstance("?res");
+static final IDatatype _cst_89 = DatatypeMap.newInstance("?q");
+static final IDatatype _cst_90 = DatatypeMap.newInstance("?path");
+static final IDatatype _cst_91 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+static final IDatatype _cst_92 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sequence");
+static final IDatatype _cst_93 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?s ?p (aggregate(?o) as ?l) \nwhere\n{?s ?p ?o . }\n\n");
+static final IDatatype _cst_94 = DatatypeMap.newInstance("?s");
+static final IDatatype _cst_95 = DatatypeMap.newInstance("?p");
+static final IDatatype _cst_96 = DatatypeMap.newInstance("?_let_11");
+static final IDatatype _cst_97 = DatatypeMap.newInstance("?l");
+static final IDatatype _cst_98 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path");
+static final IDatatype _cst_99 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?o ?p (aggregate(?s) as ?l) \nwhere\n{?s ?p ?o . }\n\n");
+static final IDatatype _cst_100 = DatatypeMap.newInstance("?o");
+static final IDatatype _cst_101 = DatatypeMap.newInstance("?_let_12");
+static final IDatatype _cst_102 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?s ?p (count(*) as ?c) \nwhere\n{?s ?p ?o . }\n\n");
+static final IDatatype _cst_103 = DatatypeMap.newInstance("?_let_2");
+static final IDatatype _cst_104 = DatatypeMap.newInstance("?c");
+static final IDatatype _cst_105 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?o ?p (count(*) as ?c) \nwhere\n{?s ?p ?o . }\n\n");
+static final IDatatype _cst_106 = DatatypeMap.newInstance("?_let_3");
 static final IDatatype _cst_107 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l) \nwhere\n{graph ?shape {?pp (rdf:rest)*/rdf:first ?e . }}\n\n");
-static final IDatatype _cst_108 = DatatypeMap.newInstance("select ?_b0 ?shape ?o ?lv  where { bind (exists {graph ?shape {?lv (rdf:rest)*/rdf:first ?v . \nfilter ((?o = ?v) && ((!(isLiteral(?o))) || (datatype(?o) = datatype(?v)))) }} as ?_b0) } values (?shape ?o ?lv ) { (UNDEF UNDEF UNDEF ) }");
-static final IDatatype _cst_109 = DatatypeMap.newInstance("?lv");
-static final IDatatype _cst_110 = DatatypeMap.newInstance("?_b0");
-static final IDatatype _cst_111 = DatatypeMap.newInstance("select ?_b1 ?shape ?o ?c  where { bind (exists {?o rdf:type/(rdfs:subClassOf)* ?c . } as ?_b1) } values (?shape ?o ?c ) { (UNDEF UNDEF UNDEF ) }");
-static final IDatatype _cst_112 = DatatypeMap.newInstance("?c");
-static final IDatatype _cst_113 = DatatypeMap.newInstance("?_b1");
-static final IDatatype _cst_114 = DatatypeMap.newInstance("select ?_b2 ?shape ?o ?lv  where { bind (exists {bind(lang(?o) as ?lang)\nfilter bound(?lang) \ngraph ?shape {?lv (rdf:rest)*/rdf:first ?l . \nfilter langMatches(?lang, ?l) }} as ?_b2) } values (?shape ?o ?lv ) { (UNDEF UNDEF UNDEF ) }");
-static final IDatatype _cst_115 = DatatypeMap.newInstance("?_b2");
-static final IDatatype _cst_116 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRI");
-static final IDatatype _cst_117 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrIRI");
-static final IDatatype _cst_118 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRIOrLiteral");
-static final IDatatype _cst_119 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Literal");
-static final IDatatype _cst_120 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrLiteral");
-static final IDatatype _cst_121 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNode");
-static final IDatatype _cst_122 = DatatypeMap.newInstance("?oper");
-static final IDatatype _cst_123 = DatatypeMap.newInstance("pathmap");
-static final IDatatype _cst_124 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?sh ?s ?shape ?suc ?fail (SUM(?val) as ?count) \nwhere\n{graph ?shape {?sh (rdf:rest)*/rdf:first ?cst . }\nbind(java:testShapeCore(?shape, ?cst, ?s) as ?hasShape)\nbind(if(bound(?hasShape), if(?hasShape, ?suc, ?fail), 'error') as ?val)}\n\nvalues (?s ?suc ?fail ){\n(UNDEF UNDEF UNDEF )\n}\n");
-static final IDatatype _cst_125 = DatatypeMap.newInstance("?sh");
-static final IDatatype _cst_126 = DatatypeMap.newInstance("?suc");
-static final IDatatype _cst_127 = DatatypeMap.newInstance("?fail");
-static final IDatatype _cst_128 = DatatypeMap.newInstance("?count");
-static final IDatatype _cst_129 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nconstruct {?bnode rdf:type sh:ValidationReport . \n?bnode sh:result ?r . \n?bnode sh:conforms false . \n?r rdf:type sh:ValidationResult . \n?r sh:resultSeverity ?sev . \n?r sh:focusNode ?foc . \n?r sh:focusNodeDetail ?focDetail . \n?r sh:resultPath ?pathDetail . \n?r sh:value ?oo . \n?r sh:valueDetail ?valueDetail . \n?r sh:resultMessage ?mes . \n?r sh:sourceConstraintComponent ?def . \n?r sh:sourceShape ?sh . }\nwhere\n{bind(uuid() as ?r)\ngraph ?shape {bind(java:severity(?sh) as ?sev)\nbind(java:message(?sh) as ?m)\nbind(if(bound(?m), ?m, concat('Fail at: ', st:apply-templates-with(st:turtle, ?sh))) as ?mes)\nbind(coalesce(java:isdefby(?name), ?name) as ?def)\nbind(java:value(?p) as ?pp)\nbind(java:value(?o) as ?oo)\nbind(if(bound(?pp), java:graph(?pp), error()) as ?pathDetail)}\nbind(java:graphbnode(?foc) as ?focDetail)\nbind(if(bound(?oo), java:graphbnode(?oo), error()) as ?valueDetail)\nbind(java:bnodeid() as ?bnode)}\n\nvalues (?name ?sh ?shape ?foc ?p ?o ){\n(UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF )\n}\n");
-static final IDatatype _cst_130 = DatatypeMap.newInstance("?name");
-static final IDatatype _cst_131 = DatatypeMap.newInstance("?foc");
-static final IDatatype _cst_132 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) as ?count) \nwhere\n{graph ?shape {?sh (rdf:rest)*/rdf:first ?cst .  optional {?cst ((sh:property|sh:path)|sh:closed) ?prop . }}\nbind(if(bound(?prop), java:testShapeCore(?shape, ?cst, ?o), java:hasPath(?shape, ?cst, false, ?s, ?p, ?o)) as ?hasShape)\nbind(if(bound(?hasShape), if(?hasShape, ?suc, ?fail), 'error') as ?val)}\n\nvalues (?s ?suc ?fail ?p ?o ){\n(UNDEF UNDEF UNDEF UNDEF UNDEF )\n}\n");
+static final IDatatype _cst_108 = DatatypeMap.newInstance("?_let_10");
+static final IDatatype _cst_109 = DatatypeMap.newInstance("select ?_b0 ?shape ?o ?lv  where { bind (exists {graph ?shape {?lv (rdf:rest)*/rdf:first ?v . \nfilter ((?o = ?v) && ((!(isLiteral(?o))) || (datatype(?o) = datatype(?v)))) }} as ?_b0) } values (?shape ?o ?lv ) { (UNDEF UNDEF UNDEF ) }");
+static final IDatatype _cst_110 = DatatypeMap.newInstance("?lv");
+static final IDatatype _cst_111 = DatatypeMap.newInstance("?_b0");
+static final IDatatype _cst_112 = DatatypeMap.newInstance("select ?_b1 ?shape ?o ?c  where { bind (exists {?o rdf:type/(rdfs:subClassOf)* ?c . } as ?_b1) } values (?shape ?o ?c ) { (UNDEF UNDEF UNDEF ) }");
+static final IDatatype _cst_113 = DatatypeMap.newInstance("?c");
+static final IDatatype _cst_114 = DatatypeMap.newInstance("?_b1");
+static final IDatatype _cst_115 = DatatypeMap.newInstance("select ?_b2 ?shape ?o ?lv  where { bind (exists {bind(lang(?o) as ?lang)\nfilter bound(?lang) \ngraph ?shape {?lv (rdf:rest)*/rdf:first ?l . \nfilter langMatches(?lang, ?l) }} as ?_b2) } values (?shape ?o ?lv ) { (UNDEF UNDEF UNDEF ) }");
+static final IDatatype _cst_116 = DatatypeMap.newInstance("?_b2");
+static final IDatatype _cst_117 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRI");
+static final IDatatype _cst_118 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrIRI");
+static final IDatatype _cst_119 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRIOrLiteral");
+static final IDatatype _cst_120 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Literal");
+static final IDatatype _cst_121 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrLiteral");
+static final IDatatype _cst_122 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNode");
+static final IDatatype _cst_123 = DatatypeMap.newInstance("?oper");
+static final IDatatype _cst_124 = DatatypeMap.newInstance("pathmap");
+static final IDatatype _cst_125 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?sh ?s ?shape ?suc ?fail (SUM(?val) as ?count) \nwhere\n{graph ?shape {?sh (rdf:rest)*/rdf:first ?cst . }\nbind(java:testShapeCore(?shape, ?cst, ?s) as ?hasShape)\nbind(if(bound(?hasShape), if(?hasShape, ?suc, ?fail), 'error') as ?val)}\n\nvalues (?s ?suc ?fail ){\n(UNDEF UNDEF UNDEF )\n}\n");
+static final IDatatype _cst_126 = DatatypeMap.newInstance("?sh");
+static final IDatatype _cst_127 = DatatypeMap.newInstance("?suc");
+static final IDatatype _cst_128 = DatatypeMap.newInstance("?fail");
+static final IDatatype _cst_129 = DatatypeMap.newInstance("?_let_9");
+static final IDatatype _cst_130 = DatatypeMap.newInstance("?count");
+static final IDatatype _cst_131 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nconstruct {?bnode rdf:type sh:ValidationReport . \n?bnode sh:result ?r . \n?bnode sh:conforms false . \n?r rdf:type sh:ValidationResult . \n?r sh:resultSeverity ?sev . \n?r sh:focusNode ?foc . \n?r sh:focusNodeDetail ?focDetail . \n?r sh:resultPath ?pathDetail . \n?r sh:value ?oo . \n?r sh:valueDetail ?valueDetail . \n?r sh:resultMessage ?mes . \n?r sh:sourceConstraintComponent ?def . \n?r sh:sourceShape ?sh . }\nwhere\n{bind(uuid() as ?r)\ngraph ?shape {bind(java:severity(?sh) as ?sev)\nbind(java:message(?sh) as ?m)\nbind(if(bound(?m), ?m, concat('Fail at: ', st:apply-templates-with(st:turtle, ?sh))) as ?mes)\nbind(coalesce(java:isdefby(?name), ?name) as ?def)\nbind(java:value(?p) as ?pp)\nbind(java:value(?o) as ?oo)\nbind(if(bound(?pp), java:graph(?pp), error()) as ?pathDetail)}\nbind(java:graphbnode(?foc) as ?focDetail)\nbind(if(bound(?oo), java:graphbnode(?oo), error()) as ?valueDetail)\nbind(java:bnodeid() as ?bnode)}\n\nvalues (?name ?sh ?shape ?foc ?p ?o ){\n(UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF )\n}\n");
+static final IDatatype _cst_132 = DatatypeMap.newInstance("?name");
+static final IDatatype _cst_133 = DatatypeMap.newInstance("?foc");
+static final IDatatype _cst_134 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix java: <function://fr.inria.corese.extension.DataShape.>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix doc: <http://w3c.github.io/data-shapes/shacl/#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix fun: <http://www.w3.org/ns/shacl#>\nselect ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) as ?count) \nwhere\n{graph ?shape {?sh (rdf:rest)*/rdf:first ?cst .  optional {?cst ((sh:property|sh:path)|sh:closed) ?prop . }}\nbind(if(bound(?prop), java:testShapeCore(?shape, ?cst, ?o), java:hasPath(?shape, ?cst, false, ?s, ?p, ?o)) as ?hasShape)\nbind(if(bound(?hasShape), if(?hasShape, ?suc, ?fail), 'error') as ?val)}\n\nvalues (?s ?suc ?fail ?p ?o ){\n(UNDEF UNDEF UNDEF UNDEF UNDEF )\n}\n");
+static final IDatatype _cst_135 = DatatypeMap.newInstance("?_let_8");
 
 public IDatatype main() {
-  return pack(_cst_0, _cst_1);
+  return pack(DatatypeMap.newInstance("main", "http://www.w3.org/2001/XMLSchema#string"), _cst_0);
 }
 
 public IDatatype bnodeid() {
-  IDatatype bnode = coalesce(getPluginTransform().cget(_cst_2, _cst_2), _cst_3);
-  if (bnode.eq(_cst_3).booleanValue()) {
-    return getPluginTransform().cset(_cst_2, _cst_2, bnode());
+  IDatatype bnode = coalesce(getPluginTransform().cget(_cst_1, _cst_1), _cst_2);
+  if (bnode.eq(_cst_2).booleanValue()) {
+    return getPluginTransform().cset(_cst_1, _cst_1, bnode());
   }
   else {
     return bnode;
@@ -167,19 +170,19 @@ public IDatatype bnodeid() {
 }
 
 public IDatatype constraint() {
-  return pack(_cst_4, _cst_5);
+  return pack(DatatypeMap.newInstance("constraint", "http://www.w3.org/2001/XMLSchema#string"), _cst_3);
 }
 
 public IDatatype path() {
-  return pack(_cst_6, _cst_7);
+  return pack(DatatypeMap.newInstance("path", "http://www.w3.org/2001/XMLSchema#string"), _cst_4);
 }
 
 public IDatatype bnodeid2() {
-  return coalesce(getPluginTransform().get(_cst_2), getPluginTransform().set(_cst_2, bnode()));
+  return coalesce(getPluginTransform().get(_cst_1), getPluginTransform().set(_cst_1, bnode()));
 }
 
 public IDatatype test() {
-  return getPluginTransform().get(_cst_8, DatatypeMap.TRUE);
+  return getPluginTransform().get(_cst_5, DatatypeMap.TRUE);
 }
 
 public IDatatype starter() {
@@ -187,23 +190,23 @@ public IDatatype starter() {
 }
 
 public IDatatype core() {
-  return pack(_cst_9, _cst_10);
+  return pack(DatatypeMap.newInstance("core", "http://www.w3.org/2001/XMLSchema#string"), _cst_6);
 }
 
 public IDatatype init() {
-  return map(_cst_11, def());
+  return map(_cst_7, def());
 }
 
 public IDatatype def() {
-  IDatatype list = DatatypeMap.newList(DatatypeMap.newList(_cst_12, _cst_13), DatatypeMap.newList(_cst_14, _cst_15), DatatypeMap.newList(_cst_16, _cst_17), DatatypeMap.newList(_cst_18, _cst_19), DatatypeMap.newList(_cst_20, _cst_21), DatatypeMap.newList(_cst_22, _cst_23), DatatypeMap.newList(_cst_24, _cst_25), DatatypeMap.newList(_cst_26, _cst_27), DatatypeMap.newList(_cst_28, _cst_29), DatatypeMap.newList(_cst_30, _cst_31), DatatypeMap.newList(_cst_32, _cst_33), DatatypeMap.newList(_cst_34, _cst_35), DatatypeMap.newList(_cst_36, _cst_37), DatatypeMap.newList(_cst_38, _cst_39), DatatypeMap.newList(_cst_40, _cst_41), DatatypeMap.newList(_cst_42, _cst_43), DatatypeMap.newList(_cst_44, _cst_45), DatatypeMap.newList(_cst_46, _cst_47), DatatypeMap.newList(_cst_48, _cst_49), DatatypeMap.newList(_cst_50, _cst_51), DatatypeMap.newList(_cst_52, _cst_53), DatatypeMap.newList(_cst_54, _cst_55), DatatypeMap.newList(_cst_56, _cst_57), DatatypeMap.newList(_cst_58, _cst_59), DatatypeMap.newList(_cst_60, _cst_61), DatatypeMap.newList(_cst_62, _cst_63), DatatypeMap.newList(_cst_64, _cst_65), DatatypeMap.newList(_cst_66, _cst_67), DatatypeMap.newList(_cst_68, _cst_69), DatatypeMap.newList(_cst_70, _cst_71), DatatypeMap.newList(_cst_72, _cst_73));
+  IDatatype list = DatatypeMap.newList(DatatypeMap.newList(_cst_8, _cst_9), DatatypeMap.newList(_cst_10, _cst_11), DatatypeMap.newList(_cst_12, _cst_13), DatatypeMap.newList(_cst_14, _cst_15), DatatypeMap.newList(_cst_16, _cst_17), DatatypeMap.newList(_cst_18, _cst_19), DatatypeMap.newList(_cst_20, _cst_21), DatatypeMap.newList(_cst_22, _cst_23), DatatypeMap.newList(_cst_24, _cst_25), DatatypeMap.newList(_cst_26, _cst_27), DatatypeMap.newList(_cst_28, _cst_29), DatatypeMap.newList(_cst_30, _cst_31), DatatypeMap.newList(_cst_32, _cst_33), DatatypeMap.newList(_cst_34, _cst_35), DatatypeMap.newList(_cst_36, _cst_37), DatatypeMap.newList(_cst_38, _cst_39), DatatypeMap.newList(_cst_40, _cst_41), DatatypeMap.newList(_cst_42, _cst_43), DatatypeMap.newList(_cst_44, _cst_45), DatatypeMap.newList(_cst_46, _cst_47), DatatypeMap.newList(_cst_48, _cst_49), DatatypeMap.newList(_cst_50, _cst_51), DatatypeMap.newList(_cst_52, _cst_53), DatatypeMap.newList(_cst_54, _cst_55), DatatypeMap.newList(_cst_56, _cst_57), DatatypeMap.newList(_cst_58, _cst_59), DatatypeMap.newList(_cst_60, _cst_61), DatatypeMap.newList(_cst_62, _cst_63), DatatypeMap.newList(_cst_64, _cst_65), DatatypeMap.newList(_cst_66, _cst_67), DatatypeMap.newList(_cst_68, _cst_69));
   return list;
 }
 
 public IDatatype message(IDatatype sh) {
-  for (IDatatype _for_1 : edge(sh, _cst_74).getValueList()) {
-    IDatatype s = gget(_for_1, _cst_75, DatatypeMap.ZERO);
-    IDatatype p = gget(_for_1, _cst_76, DatatypeMap.ONE);
-    IDatatype o = gget(_for_1, _cst_77, DatatypeMap.TWO);
+  for (IDatatype _for_1 : edge(sh, _cst_70).getValueList()) {
+    IDatatype s = gget(_for_1, _cst_71, DatatypeMap.ZERO);
+    IDatatype p = gget(_for_1, _cst_72, DatatypeMap.ONE);
+    IDatatype o = gget(_for_1, _cst_73, DatatypeMap.TWO);
     return o;
   }
   return error();
@@ -211,20 +214,20 @@ public IDatatype message(IDatatype sh) {
 }
 
 public IDatatype severity(IDatatype sh) {
-  for (IDatatype _for_0 : edge(sh, _cst_78).getValueList()) {
-    IDatatype s = gget(_for_0, _cst_75, DatatypeMap.ZERO);
-    IDatatype p = gget(_for_0, _cst_76, DatatypeMap.ONE);
-    IDatatype o = gget(_for_0, _cst_77, DatatypeMap.TWO);
+  for (IDatatype _for_0 : edge(sh, _cst_74).getValueList()) {
+    IDatatype s = gget(_for_0, _cst_71, DatatypeMap.ZERO);
+    IDatatype p = gget(_for_0, _cst_72, DatatypeMap.ONE);
+    IDatatype o = gget(_for_0, _cst_73, DatatypeMap.TWO);
     return o;
   }
-  return _cst_79;
+  return _cst_75;
   
 }
 
 public IDatatype success(IDatatype b) {
   if (b.booleanValue()) {
-    IDatatype g = kgram(_cst_80);
-    getPluginTransform().visit(_cst_81, _cst_82, g);
+    IDatatype g = kgram(_cst_76);
+    getPluginTransform().visit(_cst_77, _cst_78, g);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -243,8 +246,8 @@ public IDatatype graphbnode(IDatatype var) {
 }
 
 public IDatatype clean(IDatatype q) {
-  if (q.eq(_cst_12).booleanValue()) {
-    return _cst_83;
+  if (q.eq(_cst_8).booleanValue()) {
+    return _cst_79;
   }
   else {
     return q;
@@ -252,16 +255,16 @@ public IDatatype clean(IDatatype q) {
 }
 
 public IDatatype define(IDatatype def) {
-  IDatatype name = gget(def, _cst_84, DatatypeMap.ZERO);
-  IDatatype value = gget(def, _cst_85, DatatypeMap.ONE);
-  getPluginTransform().cset(_cst_86, name, value);
+  IDatatype name = gget(def, _cst_80, DatatypeMap.ZERO);
+  IDatatype value = gget(def, _cst_81, DatatypeMap.ONE);
+  getPluginTransform().cset(_cst_82, name, value);
   return DatatypeMap.TRUE;
   
 }
 
 public IDatatype graph(IDatatype var) {
   if (isBlank(var).booleanValue()) {
-    return strdt(getPluginTransform().transform(DatatypeMap.FALSE, _cst_87, var), _cst_88);
+    return strdt(getPluginTransform().transform(DatatypeMap.FALSE, _cst_83, var), _cst_84);
   }
   else {
     return var;
@@ -269,11 +272,11 @@ public IDatatype graph(IDatatype var) {
 }
 
 public IDatatype isdefby(IDatatype name) {
-  return getPluginTransform().cget(_cst_86, name);
+  return getPluginTransform().cget(_cst_82, name);
 }
 
 public IDatatype value(IDatatype v) {
-  if (v.eq(_cst_3).booleanValue()) {
+  if (v.eq(_cst_2).booleanValue()) {
     return error();
   }
   else {
@@ -303,24 +306,31 @@ public IDatatype path(IDatatype shape, IDatatype pp) {
     return pp;
   }
   else {
-    IDatatype _var_let_ = kgram(_cst_89, _cst_90, shape, _cst_91, pp);
-    IDatatype q = gget(_var_let_, _cst_92, DatatypeMap.ZERO);
-    IDatatype path = gget(_var_let_, _cst_93, DatatypeMap.ONE);
-    if (not(bound(q)).booleanValue()) {
+    IDatatype _var_let_ = kgram(_cst_85, _cst_86, shape, _cst_87, pp);
+    IDatatype res = gget(_var_let_, _cst_88, DatatypeMap.ZERO);
+    if (not(bound(res)).booleanValue()) {
       return error();
     }
-    else if (q.eq(_cst_94).booleanValue()) {
-      return list(_cst_95, listsh(shape, pp));
-    }
     else {
-      return list(q, path(shape, path));
+      IDatatype q = gget(res, _cst_89, DatatypeMap.ZERO);
+      IDatatype path = gget(res, _cst_90, DatatypeMap.ONE);
+      if (not(bound(q)).booleanValue()) {
+        return error();
+      }
+      else if (q.eq(_cst_91).booleanValue()) {
+        return list(_cst_92, listsh(shape, pp));
+      }
+      else {
+        return list(q, path(shape, path));
+      }
     }
   }
 }
 
 public IDatatype predicate(IDatatype s, IDatatype p) {
-  IDatatype _var_let_ = kgram(_cst_96, _cst_97, s, _cst_98, p);
-  IDatatype l = gget(_var_let_, _cst_99, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_93, _cst_94, s, _cst_95, p);
+  IDatatype _let_11 = gget(_var_let_, _cst_96, DatatypeMap.ZERO);
+  IDatatype l = gget(_let_11, _cst_97, DatatypeMap.ZERO);
   return l;
 }
 
@@ -353,7 +363,7 @@ public IDatatype datatype(IDatatype o, IDatatype d) {
 
 public IDatatype pack(IDatatype test, IDatatype name) {
   if (test().booleanValue()) {
-    return concat(_cst_100, test);
+    return concat(DatatypeMap.newInstance("/user/corby/home/AAData/sttl/datashape/", "http://www.w3.org/2001/XMLSchema#string"), test);
   }
   else {
     return name;
@@ -361,7 +371,7 @@ public IDatatype pack(IDatatype test, IDatatype name) {
 }
 
 public IDatatype getPath2(IDatatype shape, IDatatype p) {
-  return coalesce(getPluginTransform().cget(_cst_101, p), getPluginTransform().cset(_cst_101, p, path(shape, p)));
+  return coalesce(getPluginTransform().cget(_cst_98, p), getPluginTransform().cset(_cst_98, p, path(shape, p)));
 }
 
 public IDatatype maxCount(IDatatype s, IDatatype m) {
@@ -369,20 +379,23 @@ public IDatatype maxCount(IDatatype s, IDatatype m) {
 }
 
 public IDatatype inverse(IDatatype o, IDatatype p) {
-  IDatatype _var_let_ = kgram(_cst_102, _cst_103, o, _cst_98, p);
-  IDatatype l = gget(_var_let_, _cst_99, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_99, _cst_100, o, _cst_95, p);
+  IDatatype _let_12 = gget(_var_let_, _cst_101, DatatypeMap.ZERO);
+  IDatatype l = gget(_let_12, _cst_97, DatatypeMap.ZERO);
   return l;
 }
 
 public IDatatype count(IDatatype s, IDatatype p) {
-  IDatatype _var_let_ = kgram(_cst_104, _cst_97, s, _cst_98, p);
-  IDatatype c = gget(_var_let_, _cst_105, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_102, _cst_94, s, _cst_95, p);
+  IDatatype _let_2 = gget(_var_let_, _cst_103, DatatypeMap.ZERO);
+  IDatatype c = gget(_let_2, _cst_104, DatatypeMap.ZERO);
   return c;
 }
 
 public IDatatype invCount(IDatatype o, IDatatype p) {
-  IDatatype _var_let_ = kgram(_cst_106, _cst_103, o, _cst_98, p);
-  IDatatype c = gget(_var_let_, _cst_105, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_105, _cst_100, o, _cst_95, p);
+  IDatatype _let_3 = gget(_var_let_, _cst_106, DatatypeMap.ZERO);
+  IDatatype c = gget(_let_3, _cst_104, DatatypeMap.ZERO);
   return c;
 }
 
@@ -391,9 +404,9 @@ public IDatatype minCount(IDatatype s, IDatatype m) {
 }
 
 public IDatatype getPath(IDatatype shape, IDatatype p) {
-  IDatatype res = coalesce(getPluginTransform().cget(_cst_101, p), _cst_3);
-  if (res.eq(_cst_3).booleanValue()) {
-    return getPluginTransform().cset(_cst_101, p, path(shape, p));
+  IDatatype res = coalesce(getPluginTransform().cget(_cst_98, p), _cst_2);
+  if (res.eq(_cst_2).booleanValue()) {
+    return getPluginTransform().cset(_cst_98, p, path(shape, p));
   }
   else {
     return res;
@@ -401,8 +414,9 @@ public IDatatype getPath(IDatatype shape, IDatatype p) {
 }
 
 public IDatatype listsh(IDatatype shape, IDatatype pp) {
-  IDatatype _var_let_ = kgram(_cst_107, _cst_90, shape, _cst_91, pp);
-  IDatatype l = gget(_var_let_, _cst_99, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_107, _cst_86, shape, _cst_87, pp);
+  IDatatype _let_10 = gget(_var_let_, _cst_108, DatatypeMap.ZERO);
+  IDatatype l = gget(_let_10, _cst_97, DatatypeMap.ZERO);
   return l;
 }
 
@@ -464,15 +478,15 @@ public IDatatype minCount(IDatatype s, IDatatype p, IDatatype m) {
 }
 
 public IDatatype in(IDatatype shape, IDatatype o, IDatatype lv) {
-  return gget(kgram(_cst_108, _cst_90, shape, _cst_103, o, _cst_109, lv), _cst_110);
+  return gget(kgram(_cst_109, _cst_86, shape, _cst_100, o, _cst_110, lv), _cst_111);
 }
 
 public IDatatype classsh(IDatatype shape, IDatatype o, IDatatype c) {
-  return gget(kgram(_cst_111, _cst_90, shape, _cst_103, o, _cst_112, c), _cst_113);
+  return gget(kgram(_cst_112, _cst_86, shape, _cst_100, o, _cst_113, c), _cst_114);
 }
 
 public IDatatype languageIn(IDatatype shape, IDatatype o, IDatatype lv) {
-  return gget(kgram(_cst_114, _cst_90, shape, _cst_103, o, _cst_109, lv), _cst_115);
+  return gget(kgram(_cst_115, _cst_86, shape, _cst_100, o, _cst_110, lv), _cst_116);
 }
 
 public IDatatype node(IDatatype shape, IDatatype o, IDatatype cst) {
@@ -492,7 +506,7 @@ public IDatatype minLength(IDatatype shape, IDatatype s, IDatatype m) {
 }
 
 public IDatatype nodeKind(IDatatype shape, IDatatype value, IDatatype kind) {
-  return or(or(and(isURI(value), in(kind, DatatypeMap.newList(_cst_116, _cst_117, _cst_118))), and(isLiteral(value), in(kind, DatatypeMap.newList(_cst_119, _cst_120, _cst_118)))), and(isBlank(value), in(kind, DatatypeMap.newList(_cst_121, _cst_117, _cst_120))));
+  return or(or(and(isURI(value), in(kind, DatatypeMap.newList(_cst_117, _cst_118, _cst_119))), and(isLiteral(value), in(kind, DatatypeMap.newList(_cst_120, _cst_121, _cst_119)))), and(isBlank(value), in(kind, DatatypeMap.newList(_cst_122, _cst_118, _cst_121))));
 }
 
 public IDatatype property(IDatatype shape, IDatatype o, IDatatype cst) {
@@ -540,8 +554,8 @@ public IDatatype path(IDatatype shape, IDatatype s, IDatatype p, IDatatype inv) 
     return pathProperty(s, p, inv);
   }
   else {
-    IDatatype oper = gget(p, _cst_122, DatatypeMap.ZERO);
-    IDatatype path = gget(p, _cst_93, DatatypeMap.ONE);
+    IDatatype oper = gget(p, _cst_123, DatatypeMap.ZERO);
+    IDatatype path = gget(p, _cst_90, DatatypeMap.ONE);
     return funcall(oper, shape, s, path, inv);
   }
 }
@@ -581,7 +595,7 @@ public IDatatype report(IDatatype name, IDatatype s, IDatatype suc, IDatatype vi
 
 public IDatatype alternativePath(IDatatype shape, IDatatype s, IDatatype p, IDatatype inv) {
   IDatatype l = get(p, DatatypeMap.ONE);
-  return merge(maplist(_cst_123, l, shape, s, inv));
+  return merge(maplist(_cst_124, l, shape, s, inv));
 }
 
 public IDatatype hasConstraint(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s) {
@@ -634,8 +648,9 @@ public IDatatype path(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s,
 }
 
 public IDatatype bool(IDatatype sh, IDatatype s, IDatatype shape, IDatatype suc, IDatatype fail) {
-  IDatatype _var_let_ = kgram(_cst_124, _cst_125, sh, _cst_97, s, _cst_90, shape, _cst_126, suc, _cst_127, fail);
-  IDatatype count = gget(_var_let_, _cst_128, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_125, _cst_126, sh, _cst_94, s, _cst_86, shape, _cst_127, suc, _cst_128, fail);
+  IDatatype _let_9 = gget(_var_let_, _cst_129, DatatypeMap.ZERO);
+  IDatatype count = gget(_let_9, _cst_130, DatatypeMap.ZERO);
   return count;
 }
 
@@ -645,7 +660,7 @@ public IDatatype and(IDatatype and, IDatatype s, IDatatype p, IDatatype o, IData
 
 public IDatatype report(IDatatype name, IDatatype sh, IDatatype shape, IDatatype foc, IDatatype suc, IDatatype vis) {
   if (and(vis, not(suc)).booleanValue()) {
-    result(name, sh, shape, foc, _cst_3, _cst_3);
+    result(name, sh, shape, foc, _cst_2, _cst_2);
     getPluginTransform().visit(name, foc, suc);
     
   }
@@ -661,8 +676,8 @@ public IDatatype hasPath(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype
 }
 
 public IDatatype result(IDatatype name, IDatatype sh, IDatatype shape, IDatatype foc, IDatatype p, IDatatype o) {
-  IDatatype g = kgram(_cst_129, _cst_130, name, _cst_125, sh, _cst_90, shape, _cst_131, foc, _cst_98, p, _cst_103, o);
-  getPluginTransform().visit(_cst_81, _cst_82, g);
+  IDatatype g = kgram(_cst_131, _cst_132, name, _cst_126, sh, _cst_86, shape, _cst_133, foc, _cst_95, p, _cst_100, o);
+  getPluginTransform().visit(_cst_77, _cst_78, g);
   return DatatypeMap.TRUE;
   
 }
@@ -672,8 +687,9 @@ public IDatatype result2(IDatatype name, IDatatype sh, IDatatype shape, IDatatyp
 }
 
 public IDatatype bool(IDatatype sh, IDatatype s, IDatatype p, IDatatype o, IDatatype shape, IDatatype suc, IDatatype fail) {
-  IDatatype _var_let_ = kgram(_cst_132, _cst_125, sh, _cst_97, s, _cst_98, p, _cst_103, o, _cst_90, shape, _cst_126, suc, _cst_127, fail);
-  IDatatype count = gget(_var_let_, _cst_128, DatatypeMap.ZERO);
+  IDatatype _var_let_ = kgram(_cst_134, _cst_126, sh, _cst_94, s, _cst_95, p, _cst_100, o, _cst_86, shape, _cst_127, suc, _cst_128, fail);
+  IDatatype _let_8 = gget(_var_let_, _cst_135, DatatypeMap.ZERO);
+  IDatatype count = gget(_let_8, _cst_130, DatatypeMap.ZERO);
   return count;
 }
 

@@ -53,6 +53,7 @@ public abstract class PointerObject implements Pointerable {
         return null;
     }
     
+    @Override
     public Iterable getLoop(){
         return empty;
     }

@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgram.core;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -695,17 +696,12 @@ public class Mapping
         return values.keySet();
     }
 
-    public Object getValue(String name) {
+    public DatatypeValue getValue(String name) {
         Node n = getNode(name);
         if (n == null) {
             return null;
         }
-        return n.getValue();
-    }
-
-    @Override
-    public Object getValue(String var, int n) {
-        return getValue(var);
+        return n.getDatatypeValue();
     }
 
     public Object getValue(Node qn) {
@@ -727,9 +723,58 @@ public class Mapping
         }
         return null;
     }
+    
+    /**
+     * Use case:
+     * let (((?var, ?val)) = ?m)
+     * let ((?x, ?y) = ?m) 
+     */
+    @Override
+    public Object getValue(String var, int n) {
+        if (var == null){
+            // let (((?var, ?val)) = ?m)  -- ?m : Mapping
+            // compiled as: let (?vv = xt:get(?m, 0), (?var, ?val) = ?vv)
+            // xt:get(?m, 0) evaluated as xt:gget(?m, null, 0)
+            // hence var == null
+            return getBinding(n);
+        }
+        // let ((?x, ?y) = ?m) -- ?m : Mapping
+        return getValue(var);
+    }
 
+    List<DatatypeValue> getBinding(int n){
+        List<List<DatatypeValue>> l = getList();
+        if (n < l.size()){
+            return l.get(n);
+        }
+        return null;
+    }
+
+    /**
+     * List of variable binding
+     * @return 
+     */
     @Override
     public Iterable getLoop() {
+        return getList();
+    }
+        
+    List<List<DatatypeValue>> getList() {    
+        ArrayList<List<DatatypeValue>> list = new ArrayList();
+        int i = 0;
+        for (Node n : getQueryNodes()) {
+            Node val = getNode(i++);
+            if (val != null){
+                ArrayList<DatatypeValue> l = new ArrayList(2);
+                l.add(n.getDatatypeValue());
+                l.add(val.getDatatypeValue());
+                list.add(l);
+            }
+        }
+        return list;
+    }
+    
+    public Iterable getLoop2() {
         ArrayList<Object> list = new ArrayList();
         for (Node n : getNodes()) {
             list.add(n.getValue());
@@ -750,7 +795,7 @@ public class Mapping
     public Node[] getNodes() {
         return nodes;
     }
-
+    
     public Edge[] getQueryEdges() {
         return qEdges;
     }

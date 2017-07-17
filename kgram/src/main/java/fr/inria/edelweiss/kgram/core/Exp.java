@@ -24,6 +24,20 @@ import java.util.HashMap;
  */
 public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
+
+    /**
+     * @return the externQuery
+     */
+    public Query getExternQuery() {
+        return externQuery;
+    }
+
+    /**
+     * @param externQuery the externQuery to set
+     */
+    public void setExternQuery(Query externQuery) {
+        this.externQuery = externQuery;
+    }
     
     public static final int ANY        = -1;
     public static final int SUBJECT    = 0;
@@ -75,6 +89,7 @@ public class Exp extends PointerObject
     private Exp path;
     private Exp bind;
     private Exp values;
+    private Query externQuery;
     Mappings map, templateMap;
     HashMap<Node, Mappings> cache;
     int min = -1, max = -1;
@@ -333,6 +348,7 @@ public class Exp extends PointerObject
         args.set(n, e);
     }
 
+    @Override
     public Query getQuery() {
         return null;
     }

@@ -320,6 +320,11 @@ public class Mappings extends PointerObject
 
     @Override
     public Object getValue(String var, int n) {
+        if (n >= size()) return null;
+        return get(n);
+    }
+    
+    public Object getValue2(String var, int n) {
         return getValue(var);
     }
 

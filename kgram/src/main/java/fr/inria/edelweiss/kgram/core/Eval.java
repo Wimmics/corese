@@ -62,8 +62,6 @@ public class Eval implements ExpType, Plugin {
     private static final String FUN_FINISH  = PREF + "finish";
     private static final String FUN_PRODUCE = PREF + "produce";
     
-    public static boolean testAlgebra = false;
-
     static final int STOP = -2;
     public static int count = 0;
     ResultListener listener;
@@ -233,7 +231,7 @@ public class Eval implements ExpType, Plugin {
                 if (q.getQueryProfile() == Query.COUNT_PROFILE) {
                     countProfile();
                 } else {
-                    if (testAlgebra){
+                    if (q.isAlgebra()){
                         memory.setResults(results);
                         completeSparql.complete(producer, results);
                     }
@@ -262,7 +260,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     int query(Node gNode, Query q) {
-        if (q.getMappings() != null && ! testAlgebra) {
+        if (q.getMappings() != null && ! q.isAlgebra()) {
             for (Mapping m : q.getMappings()) {
                 if (binding(m)) {
                     eval(gNode, q);
@@ -301,8 +299,15 @@ public class Eval implements ExpType, Plugin {
     
     /**
      * SPARQL algebra requires kgram to compute BGP exp and return Mappings
+        List<Node> from = query.getFrom(gNode);
+        Mappings map = p.getMappings(gNode, from, exp, memory);
      */
-     Mappings exec(Node gNode, Producer p, Exp exp, Mapping m){
+    Mappings exec(Node gNode, Producer p, Exp exp, Mapping m){
+        if (true){
+            List<Node> from = query.getFrom(gNode);
+            Mappings map = p.getMappings(gNode, from, exp, memory);
+            return map;
+        }
         Stack stack = Stack.create(exp);
         set(stack); 
         if (m != null){
@@ -624,7 +629,7 @@ public class Eval implements ExpType, Plugin {
             producer.init(q.nbNodes(), q.nbEdges());
             evaluator.start(memory);
             debug = q.isDebug();
-            if (testAlgebra){
+            if (q.isAlgebra()){
                 complete(q);
             }
             if (debug){
@@ -901,7 +906,7 @@ public class Eval implements ExpType, Plugin {
             }
             else {
                 // draft test
-                if (testAlgebra){
+                if (query.getGlobalQuery().isAlgebra()){
                     switch (exp.type()){
                         case BGP:
                         case JOIN:
@@ -1742,7 +1747,7 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         List<Node> from = query.getFrom(gNode);
         Mappings map = p.getMappings(gNode, from, exp, memory);
-
+        
         for (Mapping m : map) {
             m.fixQueryNodes(query);
             boolean b = memory.push(m, n, false);
@@ -2259,6 +2264,7 @@ public class Eval implements ExpType, Plugin {
         while (it.hasNext()) {
 
             Entity ent = it.next();
+            //if (query.isDebug())System.out.println("E: " + ent);
             if (ent != null) {
                 nbEdge++;
                 if (hasListener && !listener.listen(qEdge, ent)) {
@@ -2518,7 +2524,7 @@ public class Eval implements ExpType, Plugin {
             }
             
             lMap = ev.eval(subNode, subQuery, null);
-            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null && ! testAlgebra) {
+            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null && ! query.getGlobalQuery().isAlgebra()) {
                 exp.setObject(lMap);
             }
         }
@@ -2848,7 +2854,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     void submit(Mapping map) {
-        if (testAlgebra){
+        if (query.getGlobalQuery().isAlgebra()){
             // eval distinct later
             if (map != null){
                 results.add(map);

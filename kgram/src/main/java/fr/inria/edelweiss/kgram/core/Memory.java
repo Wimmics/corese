@@ -362,7 +362,7 @@ public class Memory implements Environment {
      * need select exp
      */
     Mapping store(Query q, Producer p, boolean subEval, boolean func) {
-        boolean complete = !Eval.testAlgebra;
+        boolean complete = ! q.getGlobalQuery().isAlgebra();
         clear();
         int nb = nbNode;
         if (!subEval && complete) {

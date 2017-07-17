@@ -59,16 +59,22 @@ public class Bind {
      * between top of stack and level
      */
     public Node get(Expr var) {
-        int end = (level.isEmpty()) ? 0 : level.get(level.size() - 1);                   
-        for (int i = varList.size() - 1; i >= end; i--) {
-            if (varList.get(i).equals(var)) {
-                return valList.get(i);
-            }
-        }
-       // logger.warn("Unbound variable: " + var );
-        return null;
+        int i = getIndex(var);
+        if (i == -1) return null;
+        return valList.get(i);
     }
     
+    int getIndex(Expr var){
+        int end = getCurrentLevel();                   
+        for (int i = varList.size() - 1; i >= end; i--) {
+            if (varList.get(i).equals(var)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    // todo:  why not level ???
     public boolean isBound(String label){
         for (int i = varList.size() - 1; i >= 0; i--) {
             if (varList.get(i).getLabel().equals(label)) {
@@ -77,16 +83,22 @@ public class Bind {
         }
         return false;
     }
+    
+    int getLevel(){
+        return level.get(level.size() - 1);
+    }
+    
+    int getCurrentLevel(){
+        return (level.isEmpty()) ? 0 : getLevel();
+    }
 
-    /**
+    /**t
      * set(?x = ?x + 1)
      */
     public void bind(Expr exp, Expr var, Node val) {
-        int end = (level.isEmpty()) ? 0 : level.get(level.size() - 1);                   
-        for (int i = varList.size() - 1; i >= end; i--) {
-            if (varList.get(i).equals(var)) {
-                valList.set(i, val);
-            }
+        int i = getIndex(var);
+        if (i != -1){
+           valList.set(i, val); 
         }
     }
     
@@ -94,6 +106,7 @@ public class Bind {
         set(var, val);
     }
 
+    // todo: ExprType.EQ ???
     public void set(Expr exp, List<Expr> lvar, Object[] value) {
         if (exp.oper() == ExprType.FUNCTION || exp.oper() == ExprType.EQ){
             // xt:fun(?x) = exp
@@ -139,7 +152,6 @@ public class Bind {
         }
     }
     
-    
      public List<Expr> getVariables() {
          if (level.size() > 0){
              // funcall: return variables of this funcall (including let var)
@@ -157,7 +169,7 @@ public class Bind {
       * @return 
       */
      List<Expr> getVar(){
-         int start = level.get(level.size()-1);
+         int start = getLevel();
          int top   = varList.size();
          ArrayList<Expr> list = new ArrayList();
          for (int i = start; i<top; i++){
@@ -166,12 +178,18 @@ public class Bind {
          return list;
      }
      
+     /**
+      * TODO: remove duplicates in getVariables()
+      * use case:
+      * function us:fun(?x){let (select ?x where {}) {}}
+      * variable ?x appears twice in the stack because it is redefined in the let clause
+      */     
      public Mapping getMapping(Query q) {
         ArrayList<Node> lvar = new ArrayList();
         ArrayList<Node> lval = new ArrayList();
         for (Expr var : getVariables()) {
             Node node = q.getProperAndSubSelectNode(var.getLabel());
-            if (node != null) {
+            if (node != null && ! lvar.contains(node)) {
                 lvar.add(node);
                 lval.add(get(var));
             }

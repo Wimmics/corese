@@ -151,27 +151,38 @@ public class SPARQL2Tinkerpop {
             return __.has(EDGE_P, p);
         }
 
-        return __.has(VERTEX_VALUE, p);
+        switch (exp.oper()){
+            case ExprType.CONTAINS:                                 
+            case ExprType.STARTS:                
+            case ExprType.ENDS:                               
+            case ExprType.REGEX: 
+                return __.has(VERTEX_VALUE, p)   ; 
+        }
+        
+        //System.out.println("S2T: " + exp + " " + dt);
+        //if (exp.getExp(0).getLabel().equals("?test")) return __.has(VERTEX_VALUE, p)   ; 
+        DatatypeValue dt = exp.getExp(1).getDatatypeValue();
+        return getVertexPredicate(p, dt);
     }
     
     /**
      * BGP ?x p value 
      * generate appropriate Tinkerpop filter to match value = dt
      */    
-    GraphTraversal<? extends Element, Edge> getVertexPredicate(DatatypeValue dt){
+    GraphTraversal<? extends Element, Edge> getVertexPredicate(P p, DatatypeValue dt){
         if (dt.isLiteral()){
             if (dt.getLang() != null && !dt.getLang().isEmpty()) {
-                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(LANG, dt.getLang())); 
+                return __.and(__.has(VERTEX_VALUE, p),  __.has(LANG, dt.getLang())); 
             }
             else if (dt.getDatatypeURI() != null) {
-                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(TYPE, dt.getDatatypeURI())); 
+                return __.and(__.has(VERTEX_VALUE, p),  __.has(TYPE, dt.getDatatypeURI())); 
             }
             else {
-                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()));
+                return __.and(__.has(VERTEX_VALUE, p), __.has(KIND, LITERAL));
             }
         }
         
-        return __.and(__.has(KIND, (dt.isBlank()) ? BNODE : IRI), __.has(VERTEX_VALUE, dt.stringValue()));                           
+        return __.and( __.has(VERTEX_VALUE, p), __.has(KIND, (dt.isBlank()) ? BNODE : IRI));                           
     }
             
     /**

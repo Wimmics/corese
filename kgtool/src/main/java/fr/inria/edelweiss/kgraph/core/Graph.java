@@ -332,6 +332,17 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Iterable getLoop(){
         return getEdges();
     }
+    
+    @Override 
+    public IDatatype getValue(String var, int n){
+        int i = 0;
+        for (Entity ent : getEdges()){
+            if (i++ == n){
+                return DatatypeMap.createObject(ent);
+            }
+        }
+        return null;
+    }
 
     /**
      * @return the context

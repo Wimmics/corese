@@ -256,7 +256,7 @@ public abstract class GdbDriver {
             return null;
         }
 
-        public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>>  getFilter(Exp exp){
+        public Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Object>>>  getFilter(Exp exp){
             return null;
         }
 }

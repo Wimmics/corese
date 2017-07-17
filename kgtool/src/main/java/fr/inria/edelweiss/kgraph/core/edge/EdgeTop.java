@@ -75,7 +75,7 @@ public abstract class EdgeTop extends GraphObject implements Entity {
     }
 
     IDatatype nodeValue(Node n) {
-        return (IDatatype) n.getValue();
+        return (IDatatype) n.getDatatypeValue();
     }
 
     @Override

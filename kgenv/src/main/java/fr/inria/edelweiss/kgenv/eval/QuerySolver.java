@@ -48,19 +48,7 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
  */
 public class QuerySolver  implements SPARQLEngine {
 
-    /**
-     * @return the BGP
-     */
-    public boolean isBGP() {
-        return isBGP;
-    }
-
-    /**
-     * @param BGP the BGP to set
-     */
-    public void setBGP(boolean BGP) {
-        this.isBGP = BGP;
-    }
+   
 	private static Logger logger = LogManager.getLogger(QuerySolver.class);
         public static final String MAIN_FUN = NSManager.EXT + "main";
 	
@@ -72,6 +60,9 @@ public class QuerySolver  implements SPARQLEngine {
         public static final int SERVER_MODE  = 1;
 
         private static int QUERY_PLAN  = Query.QP_DEFAULT;
+        
+        public static boolean BGP_DEFAULT = false;
+        public static boolean ALGEBRA_DEFAULT = false;
         
 	static String NAMESPACES;
 
@@ -100,7 +91,8 @@ public class QuerySolver  implements SPARQLEngine {
     private boolean isStorePath = true;
     private boolean isCachePath = false;
     private boolean isRule = false;
-    private boolean isBGP = false;
+    private boolean algebra = ALGEBRA_DEFAULT;
+    private boolean isBGP = BGP_DEFAULT;
         // two blank nodes match if they have the same description
         // (their edges  and target nodes math)
         // use case: match two OWL Blank nodes that represent the same exp
@@ -433,6 +425,7 @@ public class QuerySolver  implements SPARQLEngine {
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
             transformer.setBGP(isBGP());
+            transformer.setAlgebra(isAlgebra());
             transformer.setServiceList(getServiceList());
         }
         
@@ -819,5 +812,42 @@ public class QuerySolver  implements SPARQLEngine {
        }
        getServiceList().add(Constant.createResource(uri));
    }
+   
+   
+   
+    /**
+     * @return the algebra
+     */
+    public boolean isAlgebra() {
+        return algebra;
+    }
+
+    /**
+     * BGP must be set to true
+     * @param algebra the algebra to set
+     */
+    public void setAlgebra(boolean algebra) {
+        this.algebra = algebra;
+    }
+    
+    public static void testAlgebra(boolean b) {
+         BGP_DEFAULT = b;
+         ALGEBRA_DEFAULT = b;
+    }
+
+
+    /**
+     * @return the BGP
+     */
+    public boolean isBGP() {
+        return isBGP;
+    }
+
+    /**
+     * @param BGP the BGP to set
+     */
+    public void setBGP(boolean BGP) {
+        this.isBGP = BGP;
+    }
 	
 }

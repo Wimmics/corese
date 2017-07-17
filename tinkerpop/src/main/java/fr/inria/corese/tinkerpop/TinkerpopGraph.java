@@ -131,9 +131,9 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 	}
         
         
-        public Iterator<Map<String, Vertex>> getMaps(Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> filter){
+        public Iterator<Map<String, Object>> getMaps(Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Object>>> filter){
             GraphTraversalSource traversal = tGraph.traversal();
-            GraphTraversal<?, Map<String, Vertex>> map = filter.apply(traversal);
+            GraphTraversal<?, Map<String, Object>> map = filter.apply(traversal);
             return map;
         }
 

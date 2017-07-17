@@ -3,6 +3,7 @@
  */
 package fr.inria.corese.tinkerpop;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.Variable;
@@ -19,6 +20,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.ProducerImpl;
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -35,6 +37,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
  * @author edemairy
  */
 public class TinkerpopProducer extends ProducerImpl {
+    private static final String BGP_VAR = "?_bgp";
 
     private final Logger LOGGER = LogManager.getLogger(TinkerpopProducer.class.getName());
     private GdbDriver databaseDriver;
@@ -103,32 +106,96 @@ public class TinkerpopProducer extends ProducerImpl {
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env) {
         exp.setDebug(env.getQuery().isDebug());
-        Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Vertex>>> filter =
+        exp.setExternQuery(env.getQuery());
+        Function<GraphTraversalSource, GraphTraversal<? extends Element, Map<String, Object>>> filter =
                 databaseDriver.getFilter(exp);
-        Iterator<Map<String, Vertex>> vmap = graph.getMaps(filter);
+        Iterator<Map<String, Object>> vmap = graph.getMaps(filter);
         Mappings map = Mappings.create(env.getQuery());
+        int limit = env.getQuery().getLimit();
+        Map<String, Object> mm;
         while (vmap.hasNext()){
-            Mapping m = process(vmap.next());
-            map.add(m);
-            if (env.getQuery().isDebug()){
-                System.out.println(m);
+            mm = vmap.next();
+            Mapping m = process(mm);
+            if (m != null){
+                map.add(m);
+                if (env.getQuery().isDebug()){
+                    System.out.println(mm);
+                    System.out.println(m);
+                }
+                if (map.size()>= limit){
+                    return map;
+                }
             }
         }
         return map;
     }
     
     
-    Mapping process(Map<String, Vertex> m){
+    Mapping process(Map<String, Object> m){
         ArrayList<Node> ql = new ArrayList<Node>();
         ArrayList<Node> tl = new ArrayList<Node>();
         for (String s : m.keySet()){
-            ql.add(NodeImpl.createVariable(s)); 
-            tl.add(graph.getNode(m.get(s)));
+            if (s.startsWith(BGP_VAR)){
+                continue;
+            }
+            if (m.get(s) instanceof Vertex){
+                //System.out.println("Neo: Vertex " + graph.getNode((Vertex) m.get(s)));
+                ql.add(NodeImpl.createVariable(s)); 
+                tl.add(graph.getNode((Vertex) m.get(s)));
+            }
+            else if (m.get(s) instanceof org.apache.tinkerpop.gremlin.structure.Edge){
+               ql.add(NodeImpl.createVariable(s));
+                org.apache.tinkerpop.gremlin.structure.Edge e = (org.apache.tinkerpop.gremlin.structure.Edge) m.get(s);                
+                tl.add(DatatypeMap.newResource(e.value(EDGE_P)));
+               // System.out.println("Neo: Edge " + e.value(EDGE_P));
+            }
+            else if (m.get(s) instanceof List){
+                //System.out.println("Neo: list");
+                // property variable return Edge List when there are sereval occurrences of the variable in the query
+                List l = (List) m.get(s); 
+                if (! l.isEmpty()){
+                    if (! check(l)){
+                        return null;
+                    }
+                    String label = getLabel(l.get(0));
+                    ql.add(NodeImpl.createVariable(s));
+                    tl.add(DatatypeMap.newResource(label));
+                }
+            }            
         }
         return Mapping.create(ql, tl);
     }
     
-   
+    /**
+     * Check that all edges have same label
+     */
+    boolean check(List edgeList) {
+        String label = getLabel(edgeList.get(0));
+        if (label == null){
+            return false;
+        }
+        for (Object o : edgeList) {
+            String name = getLabel(o);
+            if (name == null || ! name.equals(label)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    String getLabel(Object obj){
+        if (obj instanceof org.apache.tinkerpop.gremlin.structure.Edge){
+            return ((org.apache.tinkerpop.gremlin.structure.Edge) obj).value(EDGE_P);
+        }
+        else if (obj instanceof Vertex){
+            Vertex node = (Vertex)obj;
+            if (node.value(KIND).equals(IRI)){
+                return node.value(VERTEX_VALUE);
+            }
+        }
+        return null;
+    }
+    
     private DatatypeValue updateVariable(Exp exp, int rank, Node node, Environment env, boolean isDebug) {
         if (node == null){
             return null;

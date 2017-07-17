@@ -47,6 +47,20 @@ import java.util.logging.Level;
 public class Transformer implements ExpType {
 
     /**
+     * @return the algebra
+     */
+    public boolean isAlgebra() {
+        return algebra;
+    }
+
+    /**
+     * @param algebra the algebra to set
+     */
+    public void setAlgebra(boolean algebra) {
+        this.algebra = algebra;
+    }
+
+    /**
      * @return the BGP
      */
     public boolean isBGP() {
@@ -61,7 +75,6 @@ public class Transformer implements ExpType {
     }
 
     private static Logger logger = LogManager.getLogger(Transformer.class);
-    public static boolean ISBGP_DEFAULT = false;
     public static final String ROOT = "?_kgram_";
     public static final String THIS = "?this";
     private static final String EXTENSION = Processor.KGEXTENSION;
@@ -87,8 +100,9 @@ public class Transformer implements ExpType {
             isSPARQL1 = true;
     private boolean isUseBind = true;
     private boolean isGenerateMain = true;
-    private boolean isLoadFunction = true;
-    private boolean isBGP = ISBGP_DEFAULT;
+    private boolean isLoadFunction = false;
+    private boolean isBGP = false;
+    private boolean algebra = false;
     String namespaces, base;
     private Dataset dataset;
     private Metadata metadata;
@@ -225,6 +239,7 @@ public class Transformer implements ExpType {
 
         Query q = compile(ast);
         q.setRule(ast.isRule());
+        q.setAlgebra(isAlgebra());
         if (ast.getContext() != null) {
             q.setContext(ast.getContext());
         }
@@ -292,7 +307,9 @@ public class Transformer implements ExpType {
     
     void annotateLocal(ASTQuery ast){
         if (ast.hasMetadata(Metadata.BGP)){
+            // @bgp use case with @db
             setBGP(true);
+            setAlgebra(true);
         }
     }
 
@@ -465,7 +482,7 @@ public class Transformer implements ExpType {
     }
 
     void compileFunction(ASTQuery ast) {
-        for (Expression fun : ast.getDefine().getFunList()) {
+        for (Function fun : ast.getDefine().getFunList()) {
             fun.compile(ast);
         }
     }
@@ -616,6 +633,7 @@ public class Transformer implements ExpType {
      */
     Query constructQuery(ASTQuery ast) {
         Transformer t = Transformer.create();
+        t.setAlgebra(isAlgebra());
         return t.transform(ast);
     }
 
@@ -758,7 +776,7 @@ public class Transformer implements ExpType {
             return;
         }
         bindings(q, ast);
-        if (q.getValues() != null && Eval.testAlgebra){
+        if (q.getValues() != null && isAlgebra()){
             if (q.getBody().size() == 0){
                 q.setBody(q.getValues());
             }
@@ -1316,7 +1334,7 @@ public class Transformer implements ExpType {
                 
                 exp = complete(exp, query, opt);
                 
-                if (Eval.testAlgebra && exp.isBGP()){
+                if (isAlgebra() && exp.isBGP()){
                     // possibly join arguments
                     exp.dispatch();
                 }
@@ -1759,7 +1777,7 @@ public class Transformer implements ExpType {
      * Must exp ee be joined with preceding statements ?
      */
     private boolean isJoinable(Exp exp, fr.inria.acacia.corese.triple.parser.Exp ee) {
-        return (Eval.testAlgebra) ? isJoinableAlgebra(exp, ee) : isJoinableBasic(ee) ;        
+        return (isAlgebra()) ? isJoinableAlgebra(exp, ee) : isJoinableBasic(ee) ;        
     }
     
     private boolean isJoinableBasic(fr.inria.acacia.corese.triple.parser.Exp ee) {

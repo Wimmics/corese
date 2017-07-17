@@ -690,18 +690,8 @@ public class ProducerImpl implements Producer, IProducerQP {
      *   Cast Java value into IDatatype 
      */
     @Override
-    public IDatatype getValue(Object value){
-        if (value instanceof IDatatype){
-            return (IDatatype) value;
-        }
-        if (value instanceof Node){
-            return nodeValue((Node) value);
-        }
-        IDatatype dt = DatatypeMap.cast(value);
-        if (dt == null){
-            dt = DatatypeMap.createObject(value);
-        }
-        return dt;
+    public IDatatype getValue(Object value){       
+        return DatatypeMap.getValue(value);
     }
     
             

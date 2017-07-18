@@ -1599,7 +1599,13 @@ public class ProxyImpl implements Proxy, ExprType {
      * */
     @Override
     public Object getConstantValue(Object value) {
+        if (value == null){
+            // xt:gget() argument evaluation fail ->  do not fail, return UNDEF 
+            return UNDEF;
+        }
         if (value == UNDEF){
+            // let (var = UNDEF) body : do not fail, do not bind var, 
+            // eval body with var unbound, can be trapped with if(bound(var)
             return null;
         }
         return value;
@@ -2380,13 +2386,17 @@ public class ProxyImpl implements Proxy, ExprType {
             return DatatypeMap.get(dt, ind);
         }
         if (dt.isPointer()){
+            //System.out.println("PI: " + dt.getPointerObject());
             Object res = dt.getPointerObject().getValue((var == null) ? null : var.getLabel(), ind.intValue());
-            // may be unbound, return specific UNDEF value because null would be considered an error   
+            // may be unbound, return specific UNDEF value because null would be considered an error  
+            //System.out.println("PI: " + res);
             if (res == null) {
-                if (dt.getPointerObject().pointerType() == PointerObject.MAPPING_POINTER){
-                    return UNDEF;
-                }
-                return null;
+//                if (dt.getPointerObject().pointerType() == PointerObject.MAPPING_POINTER){
+//                    return UNDEF;
+//                }
+                // embedding let will let the variable unbound, see getConstantValue()
+                // it can be catched with bound(var) or coalesce(var)
+                return UNDEF;
             }                 
             IDatatype dtres =  DatatypeMap.getValue(res);           
             return dtres;

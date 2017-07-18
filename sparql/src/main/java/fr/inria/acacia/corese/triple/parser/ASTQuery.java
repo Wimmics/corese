@@ -1238,7 +1238,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     /**
      * let(varList = exp)
      * compile as 
-     * let (var = xt:get(ee, 0), match(varList) = var){ body }
+     * let (var = xt:get(exp, 0), match(varList) = var){ body }
      * use case: let (((?x, ?y)) = select where)
      * get first Mapping, match it
      * use case: let (((?var, ?val)) = ?m)
@@ -1267,13 +1267,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return new Let(fst, new Let(snd, rest));
     }
      
-    Term let2(ExpressionList expList, Expression exp, Expression body, int n) {            
-        Variable var = new Variable(LET_VAR + nbd++);
-        Term fst = defGet(var, exp, n);
-        ExpressionList list = expList.getList().get(n) ;
-        Term snd = defLet(list, var);       
-        return new Let(fst, new Let(snd, body));
-    }
+//    Term let2(ExpressionList expList, Expression exp, Expression body, int n) {            
+//        Variable var = new Variable(LET_VAR + nbd++);
+//        Term fst = defGet(var, exp, n);
+//        ExpressionList list = expList.getList().get(n) ;
+//        Term snd = defLet(list, var);       
+//        return new Let(fst, new Let(snd, body));
+//    }
 
     public Term defLet(Variable var, Constant type, Expression exp) {
         return Term.create("=", var, exp);

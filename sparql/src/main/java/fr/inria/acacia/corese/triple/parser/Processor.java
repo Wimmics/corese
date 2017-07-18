@@ -1025,7 +1025,7 @@ public class Processor {
          * @param ast 
          */
        void processMatch(Let term, ASTQuery ast) {
-            Expression match = term.getArg(0).getArg(0);
+            Expression match = term.getVariableDefinition().getArg(0);
             Expression list  = term.getDefinition();
 
             if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {

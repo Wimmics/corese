@@ -51,9 +51,10 @@ public class VariousUtils {
         logger.info("Directory created at: " + dirPath.toString());
     }
 
-    // Add end string wether dirName does not ends with it.
+    // Add end string whether dirName does not ends with it.
     public static String ensureEndWith(String dirName, String end) {
         String result = (dirName.endsWith(end)) ? dirName : dirName + "/";
         return result;
     }
+
 }

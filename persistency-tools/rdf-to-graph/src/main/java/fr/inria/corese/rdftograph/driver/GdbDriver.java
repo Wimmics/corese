@@ -66,7 +66,6 @@ public abstract class GdbDriver {
                         return 1;
                     }
                 });
-        ;
 
         cache = cachebuilder.build();
     }
@@ -98,6 +97,10 @@ public abstract class GdbDriver {
                 .map(Path::toFile)
                 .peek(p -> LOGGER.log(Level.INFO, "removing: {0}", p))
                 .forEach(File::delete);
+    }
+
+    public static String filePatternToDbPath(String inputFilePattern) {
+        return inputFilePattern.replace(":", "_").replace(",", "_") + "_db";
     }
 
     /**

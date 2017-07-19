@@ -225,7 +225,7 @@ public class RdfToGraph {
     /**
      * Read a RDF stream and serialize it inside a Neo4j graph.
      *
-     * @param rdfStream Input stream containing rdf data
+     * @param fileName Input stream containing rdf data
      * @param format    Format used for the rdf representation in the input
      *                  stream
      * @param dbPath    Where to store the rdf data.

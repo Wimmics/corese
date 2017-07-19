@@ -38,22 +38,16 @@ public class CoreseTimer {
 
     private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
     private static String outputRoot;
-    public CoreseAdapter adapter;
-    public String adapterName;
+    private CoreseAdapter adapter;
+    private String adapterName;
     private Mappings mappings;
 
-    ;
     private Profile mode = Profile.MEMORY;
     private boolean initialized;
     private DescriptiveStatistics stats;
     private DescriptiveStatistics statsMemory;
     private TestDescription test;
-    /**
-     * @param adapterName class name for the adapter to the version of
-     *                    corese usede
-     * @param runProfile  kind of usage of corese (currently "db" or
-     *                    "memory"). Used to classify the results and stats done.
-     */
+
     private CoreseTimer(TestDescription test) {
         this.adapterName = CoreseAdapter.class.getCanonicalName();
         initialized = false;
@@ -80,7 +74,6 @@ public class CoreseTimer {
                 break;
             }
         }
-        ;
 
         // create output directory of the form ${OUTPUT_ROOT}
         outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
@@ -129,12 +122,7 @@ public class CoreseTimer {
             LOGGER.log(Level.INFO, "before query");
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<?> future = executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.execQuery(query);
-                }
-            });
+            Future<?> future = executor.submit(() -> adapter.execQuery(query));
 
             try {
                 future.get(1, TimeUnit.HOURS);
@@ -181,11 +169,11 @@ public class CoreseTimer {
         return mappings;
     }
 
-    public DescriptiveStatistics getStats() {
+    private DescriptiveStatistics getStats() {
         return stats;
     }
 
-    public DescriptiveStatistics getStatsMemory() {
+    private DescriptiveStatistics getStatsMemory() {
         return statsMemory;
     }
 
@@ -213,7 +201,7 @@ public class CoreseTimer {
     }
 
     public void writeStatistics() {
-        Document doc = null;
+        Document doc;
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

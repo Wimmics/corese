@@ -202,17 +202,17 @@ public class QualitativeTest implements ITest {
                 "btc-2010-chunk-000.nq.gz:10",
                 "btc-2010-chunk-000.nq.gz:31",
                 "btc-2010-chunk-000.nq.gz:100",
-                "btc-2010-chunk-000.nq.gz:316",
-                "btc-2010-chunk-000.nq.gz:1000",
-                "btc-2010-chunk-000.nq.gz:3162",
-                "btc-2010-chunk-000.nq.gz:10000",
-                "btc-2010-chunk-000.nq.gz:31622",
-                "btc-2010-chunk-000.nq.gz:100000",
-                "btc-2010-chunk-000.nq.gz:316227",
-                "btc-2010-chunk-000.nq.gz:1000000",
-                "btc-2010-chunk-000.nq.gz:3162277",
-                "btc-2010-chunk-000.nq.gz:10000000",
-                "btc-2010-chunk-00(0|1|2|3).nq.gz",
+//                "btc-2010-chunk-000.nq.gz:316",
+//                "btc-2010-chunk-000.nq.gz:1000",
+//                "btc-2010-chunk-000.nq.gz:3162",
+//                "btc-2010-chunk-000.nq.gz:10000",
+//                "btc-2010-chunk-000.nq.gz:31622",
+//                "btc-2010-chunk-000.nq.gz:100000",
+//                "btc-2010-chunk-000.nq.gz:316227",
+//                "btc-2010-chunk-000.nq.gz:1000000",
+//                "btc-2010-chunk-000.nq.gz:3162277",
+//                "btc-2010-chunk-000.nq.gz:10000000",
+//                "btc-2010-chunk-00(0|1|2|3).nq.gz",
 //                "btc-2010-chunk-00\\d.nq.gz",
 //                "btc-2010-chunk-0\\d.nq.gz",
 //                "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"
@@ -220,7 +220,7 @@ public class QualitativeTest implements ITest {
         ArrayList<String> requests = new ArrayList<String>();
         requests.add("select ?s ?t where { ?s rdf:type ?t} limit 1");
         requests.add("select ?s ?p ?o ?q where { ?s ?p ?o . ?o ?q ?s}");
-        requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24>"));
+//        requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24>"));
 //		// À décommenter seulement une fois implémentés les appels G*** (sinon on tombe dans le cas par défaut : énumération exhaustive du graphe)
 ////		requests.addAll(makeAllRequests("select ?s ?p ?o ?g where { graph ?g { ?s ?p ?o } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
 //		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");

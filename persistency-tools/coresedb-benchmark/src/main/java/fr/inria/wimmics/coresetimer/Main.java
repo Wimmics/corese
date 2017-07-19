@@ -67,8 +67,7 @@ public class Main {
 
     public static boolean compareResults(Mappings map_db, Mappings map_memory) {
         W3CMappingsValidator tester = new W3CMappingsValidator();
-        boolean result = tester.validate(map_db, map_memory) && tester.validate(map_memory, map_db) && map_memory.size() == map_db.size();
-        return result;
+        return tester.validate(map_db, map_memory) && tester.validate(map_memory, map_db) && map_memory.size() == map_db.size();
     }
 
     public static class TestSuite {
@@ -114,7 +113,7 @@ public class Main {
             return this;
         }
 
-        public String getInputFilesPattern() {
+        private String getInputFilesPattern() {
             return inputRoot + inputMem;
         }
 
@@ -192,7 +191,7 @@ public class Main {
         }
 
         public TestDescription buildTest(String request) {
-            String testId = this.testId + "_" + nbTests;
+            String testId = this.testId + "_" + Integer.toHexString(request.hashCode());
             TestDescription newTest = TestDescription.build(testId, this)
                     .setMeasuredCycles(defaultMeasuredCycles)
                     .setWarmupCycles(defaultWarmupCycles)

@@ -1,0 +1,10 @@
+stages:
+  - build
+  - package
+
+maven-build:
+  stage: clean build -T2C
+  script: "mvn package -B"
+  artifacts:
+    paths:
+      - target/*.jar

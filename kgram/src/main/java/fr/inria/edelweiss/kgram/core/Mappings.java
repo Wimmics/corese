@@ -1039,7 +1039,7 @@ public class Mappings extends PointerObject
      ********************************************************************
      */
     public Mappings union(Mappings lm) {
-        Mappings res = Mappings.create(getQuery());
+        Mappings res = (getQuery() == lm.getQuery()) ? Mappings.create(getQuery()) : new Mappings();
         for (Mapping m : this) {
             res.add(m);
         }

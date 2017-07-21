@@ -60,6 +60,7 @@ public interface Proxy {
 
 	// functions isURI regex
 	Object eval(Expr exp, Environment env, Producer p, Object[] args);
+	Object eval(Expr exp, Environment env, Producer p, Object[] args, Expr def);
         
         Object let(Expr exp, Environment env, Producer p, Object val);
         

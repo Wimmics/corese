@@ -392,13 +392,7 @@ public class Interpreter implements Evaluator, ExprType {
             case MAPEVERY:
             case MAPANY:
             case APPLY:
-                // map(xt:fun(?a, ?b), ?x, ?list)
-                
-                Object[] args = evalArguments(exp, env, p, 1);
-                if (args == ERROR_VALUE) {
-                    return null;
-                }
-                return proxy.eval(exp, env, p, args);
+                return map(exp, env, p);
                           
             default:                
                 switch (exp.getExpList().size()) {
@@ -733,6 +727,38 @@ public class Interpreter implements Evaluator, ExprType {
             return ERROR_VALUE;
         }
         return eval(exp, env, p, values, def);
+    }
+    
+    /**
+     * map(us:fun, ?list)
+     * ->
+     * map(us:fun(?x), ?list)
+     * 
+     */
+    public Object map(Expr exp, Environment env, Producer p) {
+        Object[] args = evalArguments(exp, env, p, 1);
+        if (args == ERROR_VALUE) {
+            return null;
+        }
+        if (exp.getExp(0).isVariable()){
+            // draft to be generalized
+            // get function definition
+            // see also proxy mapany
+            Expr def = getDefine(exp.getExp(0), env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
+            if (def == null){
+                return ERROR_VALUE;
+            }  
+            return proxy.eval(exp, env, p, args, def.getFunction());
+        }
+        return proxy.eval(exp, env, p, args);        
+    }
+    
+    public Object map2(Expr exp, Environment env, Producer p) {
+        Object[] args = evalArguments(exp, env, p, 1);
+        if (args == ERROR_VALUE) {
+            return null;
+        }
+        return proxy.eval(exp, env, p, args);
     }
     
      public Object funcall(Expr exp, Environment env, Producer p){

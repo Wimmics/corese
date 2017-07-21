@@ -676,7 +676,7 @@ public class ProxyImpl implements Proxy, ExprType {
                                                 
             case MAPANY:                
             case MAPEVERY:
-                 return anyevery(exp, env, p, param);
+                 return anyevery(exp, env, p, param, exp.getExp(0));
                 
             case MAP:
             case MAPLIST:
@@ -684,10 +684,10 @@ public class ProxyImpl implements Proxy, ExprType {
             case MAPAPPEND:
             case MAPFIND:
             case MAPFINDLIST:
-                return map(exp, env, p, param);
+                return eval(exp, env, p, param, exp.getExp(0));
                                
             case APPLY:
-                return apply(exp, env, p, val);
+                return apply(exp, env, p, val, exp.getExp(0));
 
             case EXTERNAL:
                 return external(exp, env, p, param);                
@@ -1956,9 +1956,29 @@ public class ProxyImpl implements Proxy, ExprType {
       * map return true
       * map on List or Loopable (IDatatype that contains e.g Mappings)
       * TODO: when getLoop() it works with only one loop
+      * def = function.getFunction()
       * @return 
       */
-    private IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param) {
+    
+    
+    @Override
+    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] oparam, Expr def) {
+        IDatatype[] param = (IDatatype[]) oparam;
+        switch (exp.oper()){
+            case ExprType.APPLY: 
+                if (param.length == 0) return null;
+                return apply(exp, env, p, param[0], def);
+            case ExprType.MAPEVERY:
+            case ExprType.MAPANY:
+                return anyevery(exp, env, p, param, def);
+                
+            default:
+                return map(exp, env, p, param, def);
+        }
+    }
+    
+    
+    IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param, Expr def) {
         boolean maplist   = exp.oper() == MAPLIST; 
         boolean mapmerge  = exp.oper() == MAPMERGE; 
         boolean mapappend  = exp.oper() == MAPAPPEND; 
@@ -2022,7 +2042,8 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
             }
 
-            IDatatype val =  let(exp.getExp(0), env, p, value);
+            //IDatatype val =  let(exp.getExp(0), env, p, value);
+            IDatatype val =  let(def, env, p, value);
 
             if (val == null){
                 return null;
@@ -2094,7 +2115,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * error follow SPARQ semantics of OR (any) AND (every)
      * @return 
      */
-    private IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param) {
+    private IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param, Expr def) {
         boolean every = exp.oper() == MAPEVERY;       
         boolean any   = exp.oper() == MAPANY;       
         IDatatype list = null; 
@@ -2140,7 +2161,8 @@ public class ProxyImpl implements Proxy, ExprType {
                 }
             }
             
-            IDatatype res =  let(exp.getExp(0), env, p, value);                   
+            //IDatatype res =  let(exp.getExp(0), env, p, value);                   
+            IDatatype res =  let(def, env, p, value);                   
             if (res == null){
                 error = true;                
             }
@@ -2168,12 +2190,11 @@ public class ProxyImpl implements Proxy, ExprType {
      * apply(kg:plus, ?list)   
      * @return 
      */
-    private IDatatype apply(Expr exp, Environment env, Producer p, IDatatype dt) {
+    private IDatatype apply(Expr exp, Environment env, Producer p, IDatatype dt, Expr fun) {
         if (! dt.isList()) {
             return null;
         }
-        Expr fun = exp.getExp(0);
-        //Expr fun = getEvaluator().getDefine(exp.getExp(0), env, p, 2).getFunction();
+        //Expr fun = exp.getExp(0);
         List<IDatatype> list = dt.getValues();
         if (list.isEmpty()){
             return neutral(fun, dt);
@@ -2183,7 +2204,7 @@ public class ProxyImpl implements Proxy, ExprType {
         value[0] = res;
         
         for (int i = 1; i < list.size(); i++) {            
-            value[1] = list.get(i);            
+            value[1] = list.get(i);  
             res =  let(fun, env, p, value);   
             if (res == null) {
                return error();
@@ -2235,7 +2256,7 @@ public class ProxyImpl implements Proxy, ExprType {
     
     private IDatatype let(Expr exp, Environment env, Producer p, IDatatype[] values) {
         int i = 0;
-        for (Expr var : exp.getExpList()){        
+        for (Expr var : exp.getExpList()){  
             env.set(exp, var, values[i++]);
         }
         Object res = eval.eval(exp, env, p);

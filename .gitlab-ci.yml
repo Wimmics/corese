@@ -8,6 +8,7 @@ maven-build:
 
 maven-build:
   stage: test
-  script: "mvn test"
+  script: "mvn package"
+  allow_failure: true
 
 

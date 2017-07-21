@@ -29,6 +29,11 @@ public class Function extends Statement {
     public Term getFunction() {
         return getArg(0).getTerm();
     }
+    
+    @Override
+    public IDatatype getDatatypeValue(){
+        return getFunction().getCName().getDatatypeValue();
+    }
 
     @Override
     public Expression getBody() {

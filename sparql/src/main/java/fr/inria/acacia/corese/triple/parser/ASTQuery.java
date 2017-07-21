@@ -57,6 +57,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public static final String MAIN_VAR = "?_main_";
     static final String FOR_VAR = "?_for_";
     static final String LET_VAR = "?_let_";
+    static final String FUN_NAME = NSManager.EXT_PREF+":_fun_";
     static final String NL = System.getProperty("line.separator");
     static int nbt = 0; // to generate an unique id for a triple if needed
     public final static int QT_SELECT = 0;
@@ -169,6 +170,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     int Offset = 0;
     int nbBNode = 0;
     int nbd = 0; // to generate an unique id for a variable if needed
+    int nbfun = 0;
     int resultForm = QT_SELECT;
     private int priority = 100;
     int countVar = 0;
@@ -1077,6 +1079,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         Term term = createFunction(name.getName(), el);
         term.setCName(name);
         return term;
+    }
+    
+    public Constant functionName(){
+        return createQName(FUN_NAME + nbfun++);
     }
    
     /**

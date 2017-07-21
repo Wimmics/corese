@@ -1073,6 +1073,11 @@ public class Processor {
                 }
                 term.setArg(0, fun);
             }
+            else if (fst.isFunction() && fst.oper() == ExprType.FUNCTION){
+                // fst is lambda(?x) bpdy
+                Term t = fst.getFunction();
+                term.setArg(0, t);
+            }
         }
     }
               

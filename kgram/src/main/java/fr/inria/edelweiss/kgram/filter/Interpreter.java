@@ -288,8 +288,9 @@ public class Interpreter implements Evaluator, ExprType {
             case GROUPBY:
             case STL_DEFINE:
             case PACKAGE:
-            case FUNCTION:
                 return TRUE;
+            case FUNCTION:
+                return exp.getDatatypeValue();
 
             case BOUND:
                 Node node = env.getNode(exp.getExp(0));

@@ -716,7 +716,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 return and(param); 
                 
             case XT_SET: 
-                return DatatypeMap.set(param[0], param[1], param[2]);
+                return set(param[0], param[1], param[2]);
+                
+            case XT_ADD: 
+                return add(param[0], param[1], param[2]);    
                 
             case XT_GEN_GET:
                 return gget(param[0], param[1], param[2]);
@@ -2339,8 +2342,16 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.cons(dt1, dt2);
     }
     
-    public IDatatype add(IDatatype dt1, IDatatype dt2){
-        return DatatypeMap.add(dt1, dt2);
+    public IDatatype add(IDatatype dt, IDatatype dtlist){
+        return DatatypeMap.add(dt, dtlist);
+    }
+    
+    public IDatatype add(IDatatype dt, IDatatype dtlist, IDatatype dtind){
+        return DatatypeMap.add(dt, dtlist, dtind);
+    }
+    
+    public IDatatype set(IDatatype dt1, IDatatype dtind, IDatatype dtval){
+        return DatatypeMap.set(dt1, dtind, dtval);
     }
     
     public IDatatype append(IDatatype dt1, IDatatype dt2){
@@ -2351,7 +2362,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return DatatypeMap.merge(dt1, dt2);
     }
     
-     public IDatatype merge(IDatatype dt){
+    public IDatatype merge(IDatatype dt){
         return DatatypeMap.merge(dt);
     }
 

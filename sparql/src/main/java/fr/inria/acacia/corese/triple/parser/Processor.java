@@ -1057,6 +1057,10 @@ public class Processor {
          * map(xt:fun, ?list)
          * -> 
          * map(xt:fun(?x), ?list)
+         * 
+         * map(function xt:fun_0(?x) {us:f(?x) } 
+         * ->
+         * map(xt:fun_0(?x), ?list)
          * @param ast 
          */
       void processMap(Term term, ASTQuery ast) {
@@ -1074,7 +1078,7 @@ public class Processor {
                 term.setArg(0, fun);
             }
             else if (fst.isFunction() && fst.oper() == ExprType.FUNCTION){
-                // fst is lambda(?x) bpdy
+                // fst is lambda(?x) body
                 Term t = fst.getFunction();
                 term.setArg(0, t);
             }

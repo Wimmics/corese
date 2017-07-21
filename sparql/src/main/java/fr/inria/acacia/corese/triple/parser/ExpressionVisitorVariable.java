@@ -267,6 +267,31 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                         localize(var);
                         remove(var);
                     }
+                }                
+            }
+            else if (fun.isVariable()){
+                Variable var = fun.getVariable();
+                localize(var);
+                remove(var);
+            }
+            
+            for (int i = 1; i<t.getArgs().size(); i++){
+                t.getArg(i).visit(this);
+            }
+        }       
+    }
+    
+    void map2(Term t) {
+        if (trace) System.out.println("Vis Map: " + t);
+        if (t.getArgs().size() >= 2){
+            Expression fun = t.getArg(0);
+            if (fun.isFunction()) {
+                for (Expression arg : fun.getArgs()){  
+                    if (arg.isVariable()){
+                        Variable var = arg.getVariable();
+                        localize(var);
+                        remove(var);
+                    }
                 }
                 for (int i = 1; i<t.getArgs().size(); i++){
                     t.getArg(i).visit(this);

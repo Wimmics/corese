@@ -890,6 +890,15 @@ public class DatatypeMap implements Cst, RDF {
           return list;
       }
      
+     // modify
+     public static IDatatype add(IDatatype elem, IDatatype list, IDatatype ind){
+          if (! list.isList()){
+              return null;
+          }  
+          list.getValues().add(ind.intValue(), elem);
+          return list;
+      }
+     
      // copy
      public static IDatatype cons(IDatatype elem, IDatatype list){
           if (! list.isList()){
@@ -933,7 +942,7 @@ public class DatatypeMap implements Cst, RDF {
           return newInstance(res);
       }
        
-       // dt is a list of list
+       // dt is a list, possibly list of lists
        // merge lists and remove duplicates
        public static IDatatype merge(IDatatype list){
           if (! list.isList()){

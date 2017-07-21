@@ -3,8 +3,7 @@ stages:
   - package
 
 maven-build:
-  stage: clean build -T2C
-  script: "mvn package -B"
-  artifacts:
-    paths:
-      - target/*.jar
+  stage: build
+  script: "mvn clean install -T2C"
+
+

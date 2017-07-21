@@ -4,6 +4,6 @@ stages:
 
 maven-build:
   stage: build
-  script: "mvn clean install -T2C"
+  script: "mvn clean install -T2C -Dmaven.test.skip=true"
 
 

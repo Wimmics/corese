@@ -2387,6 +2387,7 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   | term = Let(stack)
   | term = Set(stack)
   | term = For(stack)
+  | term = Lambda()
   )
 
   { return term; }
@@ -2590,6 +2591,20 @@ Function Function(Metadata la) :
 
   { 
   	term = astq.defineFunction(cst, v, body, la );        
+  }
+  { return term; }
+}
+
+Function Lambda () : 
+{Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
+{
+  <LAMBDA> 
+  { cst = gast.functionName(); stack = BasicGraphPattern.create(); }
+  v = FunArgList()
+  body = Body(stack)
+
+  { 
+  	term = gast.defineFunction(cst, v, body, null);        
   }
   { return term; }
 }
@@ -3067,6 +3082,7 @@ TOKEN [IGNORE_CASE] :
 | <TUPLE: "tuple">
 | <XPATH: "xpath">
 | <FUNCTION: "function">
+| <LAMBDA: "lambda">
 | <EXPORT: "export">
 | <PACKAGE: "package">
 }

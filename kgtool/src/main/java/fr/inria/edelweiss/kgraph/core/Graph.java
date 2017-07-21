@@ -2794,7 +2794,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             Node n = addNode((IDatatype) ent.getNode(i).getValue());
             list.add(n);
         }
-
         Edge e = addEdge(g, p, list);
         return e;
     }
@@ -2923,6 +2922,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Graph gu = Graph.create();
         gu.copy(this);
         gu.copy(g);
+        gu.init();
         return gu;       
     }
 

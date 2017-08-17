@@ -1366,7 +1366,7 @@ public class ProxyImpl implements Proxy, ExprType {
         
         return result(env, sb, isString, (ok && lang != null)?lang:null, isSTLConcat);
     }
-    
+     
     boolean isFuture(Expr e){
         if  (e.oper() == STL_NUMBER 
                 //|| e.oper() == STL_FUTURE
@@ -1858,6 +1858,11 @@ public class ProxyImpl implements Proxy, ExprType {
     @Override
     public Expr createFunction(String name, List<Object> args, Environment env) {
         return null;    
+    }
+    
+    @Override
+    public Expr getDefine(Environment env, String name, int n){
+        return plugin.getDefine(env, name, n);
     }
 
     @Override

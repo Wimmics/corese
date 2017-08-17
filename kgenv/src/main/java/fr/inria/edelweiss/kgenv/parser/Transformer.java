@@ -19,7 +19,6 @@ import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.*;
 import static fr.inria.edelweiss.kgram.api.core.ExpType.NODE;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
-import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
@@ -247,12 +246,20 @@ public class Transformer implements ExpType {
             q.setTemplateVisitor(ast.getTemplateVisitor());
         }
         template(q, ast);
-
+        // compile select filters
         q = transform(q, ast);
-
+        
+//        compileFunction(ast);
+        compileLambda(q, ast);
+        
         error(q, ast);
         
         toJava(ast);
+        
+        if (ast.hasMetadata(Metadata.TRACE)){
+            System.out.println(ast);
+            //System.out.println(q.getExtension());
+        }
         
         return q;
     }
@@ -475,23 +482,29 @@ public class Transformer implements ExpType {
             System.out.println("Compiler: extension function not available in server mode");
             return;
         }
-
-        Extension ext = new Extension();
-        q.setExtension(ext);
-        define(ast.getDefine(), ext, q);
-    }
-
-    void compileFunction(ASTQuery ast) {
-        for (Function fun : ast.getDefine().getFunList()) {
-            fun.compile(ast);
-        }
+       
+        define(ast.getDefine(), q);
     }
 
     void compileFunction(Query q, ASTQuery ast) {
-        for (Expression fun : ast.getDefine().getFunList()) {
-            compileExist(fun, false);
-            q.defineFunction(fun);
+        compileFunction(q, ast, ast.getDefine());
+    }
+    
+    void compileLambda(Query q, ASTQuery ast) {
+        compileFunction(q, ast, ast.getDefineLambda());      
+        define(ast.getDefineLambda(), q);
+    }
+    
+    void compileFunction(Query q, ASTQuery ast, ASTExtension ext) {
+        for (Function fun : ext.getFunList()) {
+            compileFunction(q, ast, fun);
         }
+    }
+    
+    void compileFunction(Query q, ASTQuery ast, Function fun) {
+        fun.compile(ast);
+        compileExist(fun, false);
+        q.defineFunction(fun);
     }
 
     void error(Query q, ASTQuery ast) {
@@ -546,9 +559,10 @@ public class Transformer implements ExpType {
     /**
      * Define function into Extension Export into Interpreter
      */
-    void define(ASTExtension aext, Extension ext, Query q) {
+    void define(ASTExtension aext,  Query q) {
+        Extension ext = q.getCreateExtension();        
         for (ASTFunMap m : aext.getMaps()) {
-            for (Expression exp : m.values()) {
+            for (Function exp : m.values()) {
                 ext.define(exp);
                 if (exp.isPublic()) {
                     definePublic(exp, q);
@@ -556,7 +570,7 @@ public class Transformer implements ExpType {
             }
         }
     }
-
+      
     // TODO: check isSystem() because it is exported
     /**
      * ext is loaded function definitions define them as public
@@ -575,25 +589,24 @@ public class Transformer implements ExpType {
     public void definePublic(Extension ext, Query q, boolean isDefine) {
         for (FunMap m : ext.getMaps()) {
             for (Expr exp : m.values()) {
-                Expression e = (Expression) exp;
-                //e.setPublic(true);
+                Function e = (Function) exp;
                 definePublic(e, q, isDefine);
             }
         }
     }
 
-    void definePublic(Expression exp, Query q) {
-        definePublic(exp, q, true);
+    void definePublic(Function fun, Query q) {
+        definePublic(fun, q, true);
     }
 
-    void definePublic(Expression exp, Query q, boolean isDefine) {
+    void definePublic(Function fun, Query q, boolean isDefine) {
         if (isDefine) {
-            Interpreter.define(exp);
+            Interpreter.define(fun);
         }
-        exp.setPublic(true);
-        if (exp.isSystem()) {
+        fun.setPublic(true);
+        if (fun.isSystem()) {
             // export function with exists {} 
-            exp.getTerm().setPattern(q);
+            fun.getTerm().setPattern(q);
         }
     }
 
@@ -612,10 +625,11 @@ public class Transformer implements ExpType {
      * order to get fresh new nodes
      */
     Query compile(ASTQuery ast) {
-        compileFunction(ast);
+        //compileFunction(ast);
         Exp ee = compile(ast.getExtBody(), false);
         Query q = Query.create(ee);
         q.setUseBind(isUseBind);
+        //compileFunction(ast);
         compileFunction(q, ast);
         q.setAST(ast);
         q.setHasFunctional(ast.hasFunctional());

@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
@@ -23,6 +24,7 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Loopable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
@@ -1087,6 +1089,23 @@ public class PluginImpl extends ProxyImpl {
         return pt.createFunction(name, args, env);
     }
     
+    /**
+     * 
+     * Generate extension function for predefined function name
+     * rq:plus -> function rq:plus(x, y){ rq:plus(x, y) }
+     */
+    @Override
+    public Expr getDefine(Environment env, String name, int n){
+        if (Processor.getOper(name) == ExprType.UNDEF){
+            return null;            
+        }
+        Query q = env.getQuery();
+        ASTQuery ast = (ASTQuery) q.getAST();
+        Function fun = ast.defExtension(name, name, n);
+        q.defineFunction(fun);
+        q.getCreateExtension().define(fun);
+        return fun;
+    }
     
      public class TreeNode extends TreeMap<IDatatype, IDatatype> {
 

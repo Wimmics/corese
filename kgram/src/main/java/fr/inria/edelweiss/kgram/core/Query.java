@@ -2490,6 +2490,13 @@ public class Query extends Exp implements Graphable {
         return extension;
     }
     
+    public Extension getCreateExtension() {
+        if (getExtension() == null){
+            setExtension(new Extension());
+        }
+        return getExtension();
+    }
+    
     public Extension getActualExtension(){
         return getGlobalQuery().getExtension();
     }

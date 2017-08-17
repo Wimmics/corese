@@ -84,4 +84,7 @@ public interface Proxy {
         Proxy getPlugin();
 
         Expr createFunction(String name, List<Object> args, Environment env);
+        
+        Expr getDefine(Environment env, String name, int n);
+
 }

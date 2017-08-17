@@ -740,17 +740,11 @@ public class Interpreter implements Evaluator, ExprType {
         if (args == ERROR_VALUE) {
             return null;
         }
-        if (exp.getExp(0).isVariable()){
-            // draft to be generalized
-            // get function definition
-            // see also proxy mapany
-            Expr def = getDefine(exp.getExp(0), env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
-            if (def == null){
-                return ERROR_VALUE;
-            }  
-            return proxy.eval(exp, env, p, args, def.getFunction());
-        }
-        return proxy.eval(exp, env, p, args);        
+        Expr def = getDefine(exp.getExp(0), env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
+        if (def == null){
+            return ERROR_VALUE;
+        }  
+        return proxy.eval(exp, env, p, args, def.getFunction());
     }
     
     public Object map2(Expr exp, Environment env, Producer p) {
@@ -784,7 +778,7 @@ public class Interpreter implements Evaluator, ExprType {
          if (name == ERROR_VALUE){
             return null;
         }
-        Expr def = getDefine(env, p.getDatatypeValue(name).stringValue(), n);
+        Expr def = getDefineGenerate(env, p.getDatatypeValue(name).stringValue(), n);
         if (def == null){
             return null;
         } 
@@ -889,14 +883,12 @@ public class Interpreter implements Evaluator, ExprType {
         if (ext != null) {          
             Expr def = ext.get(exp);
             if (def != null) {
-                //exp.setDefine(def);
                 return def;
             }
         }
        
         Expr def = extension.get(exp);
         if (def != null) {
-            //exp.setDefine(def);
             return def;
         }
  
@@ -919,8 +911,16 @@ public class Interpreter implements Evaluator, ExprType {
         return extension.get(name);    
     }
      
+    Expr getDefineGenerate(Environment env, String name, int n){
+       Expr fun =  getDefine(env, name, n);
+       if (fun == null){
+           fun = proxy.getDefine(env, name, n);
+       }
+       return fun;
+    }
+    
     @Override
-     public Expr getDefine(Environment env, String name, int n){
+    public Expr getDefine(Environment env, String name, int n){
         Extension ext = env.getExtension();
         if (ext != null) {
            Expr ee = ext.get(name, n);
@@ -928,8 +928,8 @@ public class Interpreter implements Evaluator, ExprType {
                return ee;
            }
         }
-        return extension.get(name, n);               
-     }
+        return extension.get(name, n);  
+    }
        
     public static void define(Expr exp){
         extension.define(exp);

@@ -57,6 +57,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public static final String MAIN_VAR = "?_main_";
     static final String FOR_VAR = "?_for_";
     static final String LET_VAR = "?_let_";
+    static final String FUN_VAR = "?_fun_var_";
     static final String FUN_NAME = NSManager.EXT_PREF+":_fun_";
     static final String NL = System.getProperty("line.separator");
     static int nbt = 0; // to generate an unique id for a triple if needed
@@ -170,7 +171,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     int Offset = 0;
     int nbBNode = 0;
     int nbd = 0; // to generate an unique id for a variable if needed
-    int nbfun = 0;
+    int nbfun = 0, nbvar = 0;
     int resultForm = QT_SELECT;
     private int priority = 100;
     int countVar = 0;
@@ -228,7 +229,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     Values values;
     List<Boolean> reverseTable = new ArrayList<Boolean>();
     HashMap<String, Expression> selectFunctions = new HashMap<String, Expression>();
-    private ASTExtension define;
+    private ASTExtension define, lambdaDefine;
     private HashMap<String, Expression> undefined;
     ExprTable selectExp = new ExprTable();
     ExprTable regexExpr = new ExprTable();
@@ -325,6 +326,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public ASTExtension getDefine() {
         return define;
     }
+    
+    public ASTExtension getDefineLambda() {
+        return lambdaDefine;
+    }
 
     /**
      * @param define the define to set
@@ -398,6 +403,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     private ASTQuery() {
         dataset = Dataset.create();
         define = new ASTExtension();
+        lambdaDefine = new ASTExtension();
         undefined = new HashMap();
     }
 
@@ -891,11 +897,15 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return rule;
     }
     
-    public List<Variable> getSelectOrAllVar() {
-        if (getSelectVar().isEmpty()){
-            return getSelectAllVar();
+    public List<Variable> getSelectVariables() {
+        ArrayList<Variable> list = new ArrayList<>();
+        list.addAll(getSelectVar());
+        for (Variable var : getSelectAllVar()){
+            if (! list.contains(var)){
+                list.add(var);
+            }
         }
-        return getSelectVar();
+        return list;
     }
 
     public List<Variable> getSelectVar() {
@@ -1089,28 +1099,82 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * function name(el) { exp } -> function (name(el), exp)
      */
     public Function defineFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
+        Function fun = defFunction(name, el, exp, annot);
+        record(fun);    
+        return fun;
+    }
+    
+    // lambda(?x) {}
+     public Function defineLambda(ExpressionList el, Expression exp, Metadata annot) {
+         return getGlobalAST().defineLambdaUtil(el, exp, annot);
+     }
+     
+     Function defineLambdaUtil(ExpressionList el, Expression exp, Metadata annot) {
+        Constant name = functionName();
+        Function fun = defFunction(name, el, exp, annot);
+        fun.setLambda(true);
+        record(fun);    
+        return fun;
+    }
+     
+    
+    /**
+     * Define lambda for function URI
+     * use case:  
+     * apply(rq:plus, ?list) ->
+     * apply(lambda(?x, ?y) { rq:plus(?x, ?y) }, ?list)
+     * Use globalAST in case of lambda generated in subquery
+     */
+    Function defineLambda(Constant uri, int arity) {
+        return getGlobalAST().defineLambdaUtil(uri, arity);
+    }
+    
+    Function defineLambdaUtil(Constant uri, int arity) {
+        ExpressionList el = new ExpressionList();
+        for (int i = 0; i < arity; i++){
+            el.add(createVariable(FUN_VAR+nbvar++));
+        }
+        Term t = createFunction(uri, el);
+        Function fun = defFunction(functionName(), el, t, null);
+        fun.setLambda(true);
+        record(fun);
+        return fun;
+    }
+           
+    void record(Function fun){
+         if (fun.isLambda()){
+             lambdaDefine.defineFunction(fun);
+         }
+         else {
+             define.defineFunction(fun);
+         }
+    }
+        
+    Function defFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
         Term fun = createFunction(name, el);
         Function def = new Function(fun, exp);
         annotate(def, annot);
         if (el.getTable() != null){
             def.setTable(el.getTable());
         }
-        define.defineFunction(def);
         return def;
     }
+          
 
     /**
-     * Create an extension ext function for predefined name function function
-     * rq:isURI(?x) { isURI(?x) }
+     * Runtime create extension function ext for predefined  function name
+     * function rq:isURI(?x) { isURI(?x) }
      */
-    Function defExtension(String ext, String name, int arity) {
+    public Function defExtension(String ext, String name, int arity) {
         Constant c = Constant.create(ext);
         ExpressionList el = new ExpressionList();
         for (int i = 0; i < arity; i++) {
-            el.add(new Variable("?_var_" + i));
+            el.add(createVariable(FUN_VAR + i));
         }
         Term t = createFunction(Constant.create(name), el);
-        return defineFunction(c, el, t, null);
+        Function fun = defineFunction(c, el, t, null);
+        fun.compile(this);
+        return fun;
     }
 
     public void annotate(Function t, Metadata la) {
@@ -1308,7 +1372,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
                 ASTQuery ast = query.getQuery();
                 ast.validate();
                 ExpressionList el = new ExpressionList();
-                for (Variable var : ast.getSelectOrAllVar()) {
+                for (Variable var : ast.getSelectVariables()) {
                     el.add(var);
                 }
                 lvar.add(el);
@@ -1326,7 +1390,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
             if (query != null){
                 ASTQuery ast = query.getQuery();
                 ast.validate();
-                for (Variable var : ast.getSelectOrAllVar()) {
+                for (Variable var : ast.getSelectVariables()) {
                     lvar.add(var);
                 }
             }

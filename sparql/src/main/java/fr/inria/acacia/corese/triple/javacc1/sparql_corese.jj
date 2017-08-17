@@ -2599,12 +2599,12 @@ Function Lambda () :
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
   <LAMBDA> 
-  { cst = gast.functionName(); stack = BasicGraphPattern.create(); }
+  { stack = BasicGraphPattern.create(); }
   v = FunArgList()
   body = Body(stack)
 
   { 
-  	term = gast.defineFunction(cst, v, body, null);        
+  	term = gast.defineLambda(v, body, null);        
   }
   { return term; }
 }

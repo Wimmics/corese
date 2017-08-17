@@ -5967,10 +5967,10 @@
   final public Function Lambda() throws ParseException {
  Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;
     jj_consume_token(LAMBDA);
-    cst = gast.functionName(); stack = BasicGraphPattern.create();
+    stack = BasicGraphPattern.create();
     v = FunArgList();
     body = Body(stack);
-        term = gast.defineFunction(cst, v, body, null);
+        term = gast.defineLambda(v, body, null);
     {if (true) return term;}
     throw new Error("Missing return statement in function");
   }

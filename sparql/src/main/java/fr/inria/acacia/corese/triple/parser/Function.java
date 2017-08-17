@@ -15,6 +15,7 @@ public class Function extends Statement {
     private boolean isTest = false;
     private boolean isTrace = false;
     private boolean isPublic = false;
+    private boolean lambda = false;
     
     Metadata annot;
     private HashMap<String, Constant> table;
@@ -206,6 +207,20 @@ public class Function extends Statement {
      */
     public void setTable(HashMap<String, Constant> table) {
         this.table = table;
+    }
+
+    /**
+     * @return the lambda
+     */
+    public boolean isLambda() {
+        return lambda;
+    }
+
+    /**
+     * @param lambda the lambda to set
+     */
+    public void setLambda(boolean lambda) {
+        this.lambda = lambda;
     }
 
 }

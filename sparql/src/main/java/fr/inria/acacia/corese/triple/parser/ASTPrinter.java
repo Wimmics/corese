@@ -292,6 +292,13 @@ public class ASTPrinter {
         for (Expression fun : ast.getDefine().getFunList()) {
             fun.toString(sb);
             sb.append(NL);
+            sb.append(NL);
+        }
+        
+        for (Expression fun : ast.getDefineLambda().getFunList()) {
+            fun.toString(sb);
+            sb.append(NL);
+            sb.append(NL);
         }
     }
     

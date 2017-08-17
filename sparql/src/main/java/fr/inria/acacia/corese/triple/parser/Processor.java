@@ -874,7 +874,7 @@ public class Processor {
             define(key, value);
         }
         
-         static void defextoper(String key, int value){
+        static void defextoper(String key, int value){
             defextoper(key, value, 2);
         }
          
@@ -903,8 +903,6 @@ public class Processor {
                 name = SPARQL + key;
             }
             Function fun = ast.defExtension(name, key, arity);
-            fun.setPublic(true);
-            System.out.println(fun);
         }
         
         public static ASTQuery getAST(){
@@ -992,6 +990,7 @@ public class Processor {
                 case ExprType.MAPEVERY:
                 case ExprType.MAPANY:
                 case ExprType.APPLY:
+                case ExprType.FUNCALL:
                     processMap(term, ast);
                     break;
                     
@@ -1054,6 +1053,36 @@ public class Processor {
         
 
         /**
+         * map(rq:fun, ?list)
+         * -> 
+         * map(lambda(?x){ rq:fun(?x) }, ?list)
+         * TODO: check number of arguments eg regex ...
+         */
+    void processMap(Term term, ASTQuery ast) {
+        if (term.getArgs().size() > 1) {
+            Expression fst = term.getArg(0);
+            if (fst.isConstant()) {
+                Constant cst = fst.getConstant();
+                if (isDefined(cst.getLabel())) {
+                    Function fun = ast.defineLambda(cst, arity(term));
+                    term.setArg(0, fun);
+                }
+            }
+        }
+    }
+      
+      int arity(Term t){
+          if (t.getLabel().equals(APPLY)){
+              return 2;
+          }
+          return t.getArgs().size() - 1;
+      }
+      
+      boolean isDefined(String uri){
+          return getOper(uri) != ExprType.UNDEF;
+      }
+      
+       /**
          * map(xt:fun, ?list)
          * -> 
          * map(xt:fun(?x), ?list)
@@ -1063,7 +1092,7 @@ public class Processor {
          * map(xt:fun_0(?x), ?list)
          * @param ast 
          */
-      void processMap(Term term, ASTQuery ast) {
+      void processMap2(Term term, ASTQuery ast) {
         if (term.getArgs().size() >= 2) {
             Expression fst = term.getArg(0);
 

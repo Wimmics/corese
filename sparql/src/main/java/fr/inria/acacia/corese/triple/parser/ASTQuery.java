@@ -21,6 +21,7 @@ import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>Title: Corese</p>
@@ -59,6 +60,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     static final String LET_VAR = "?_let_";
     static final String FUN_VAR = "?_fun_var_";
     static final String FUN_NAME = NSManager.EXT_PREF+":_fun_";
+    static final String FUN_PREF = NSManager.EXT_PREF+":";
     static final String NL = System.getProperty("line.separator");
     static int nbt = 0; // to generate an unique id for a triple if needed
     public final static int QT_SELECT = 0;
@@ -630,7 +632,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * Used by VariableVisitor, called by Transformer def = function(st:foo(?x)
      * = st:bar(?x))
      */
-    void define(Expression fun) {
+    void define(Function fun) {
         Expression t = fun.getFunction(); 
         getGlobalAST().getUndefined().remove(t.getLabel());
     }
@@ -1091,7 +1093,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return term;
     }
     
-    public Constant functionName(){
+    Constant functionName(){
+        UUID uuid = UUID.randomUUID();
+        return createQName(FUN_PREF +  uuid.toString());
+    }
+    
+    Constant functionName2(){
         return createQName(FUN_NAME + nbfun++);
     }
    

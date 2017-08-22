@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import java.util.HashMap;
 
@@ -11,11 +12,13 @@ import java.util.HashMap;
  *
  */
 public class Function extends Statement {
+   
     private boolean isDebug = false;
     private boolean isTest = false;
     private boolean isTrace = false;
     private boolean isPublic = false;
     private boolean lambda = false;
+    private boolean visited = false;
     
     Metadata annot;
     private HashMap<String, Constant> table;
@@ -221,6 +224,25 @@ public class Function extends Statement {
      */
     public void setLambda(boolean lambda) {
         this.lambda = lambda;
+    }
+    
+    /**
+     * @return the visited
+     */
+    public boolean isVisited() {
+        return visited;
+    }
+
+    /**
+     * @param visited the visited to set
+     */
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+    
+    @Override
+    void visit(ExpressionVisitor v) {
+        v.visit(this);
     }
 
 }

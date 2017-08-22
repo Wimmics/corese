@@ -78,26 +78,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.FOR:
                 loop(t);
                 break;
-                
-            case ExprType.FUNCTION:
-                define((Function) t);
-                break;
-                                           
-            case ExprType.MAP:
-            case ExprType.MAPLIST:                
-            case ExprType.MAPMERGE:                
-            case ExprType.MAPFIND:                
-            case ExprType.MAPFINDLIST:                
-            case ExprType.MAPEVERY:                
-            case ExprType.MAPANY: 
-                 map(t);
-                break;
-                
-            case ExprType.APPLY:                
-                map(t);
-                //apply(t);
-                break;
-                
+                                                                      
             case ExprType.AGGREGATE:
                 aggregate(t);
                 break;
@@ -114,27 +95,18 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
-    void visitExist(Term t) {
-        if (fun != null) {
-            // inside a function 
-
-            //if (fun.isExport()) {
-                // special case: export function contain exists {}
-                // will be evaluated with query that defines function
-                fun.setSystem(true);
-            //}
-
-            if (t.isSystem() && fun.hasMetadata()) {
-                // let (?m = select where {}){}
-                Exp e = t.getExist().getBody().get(0).get(0);
-                if (e.isQuery()) {
-                    ASTQuery ast = e.getQuery();
-                    ast.inherit(fun.getMetadata());
-                }
-            }
+    /**
+     * function xt:fun(?x) { exp }
+     * create a new Visitor to have own local variables index
+     */
+    @Override
+    public void visit(Function f) {
+        if (! f.isVisited()) {
+           f.setVisited(true);
+           function(f);
         }
     }
-    
+      
 
     @Override
     public void visit(Variable v) {
@@ -150,8 +122,39 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         return count;
     }
     
+    void function(Function f) {
+        if (trace) {
+            System.out.println("**** Vis Fun: " + f);
+        }
+        Expression body = f.getBody();
+
+        ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, f);
+        body.visit(vis);
+
+        f.setPlace(vis.count());
+        ast.define(f);
+        if (trace) {
+            System.out.println("count: " + vis.count());
+        }
+    }
     
-    
+    void visitExist(Term t) {
+        if (fun != null) {
+            // inside a function 
+            // special case: export function contain exists {}
+            // will be evaluated with query that defines function
+            fun.setSystem(true);
+            if (t.isSystem() && fun.hasMetadata()) {
+                // let (?m = select where {}){}
+                Exp e = t.getExist().getBody().get(0).get(0);
+                if (e.isQuery()) {
+                    ASTQuery ast = e.getQuery();
+                    ast.inherit(fun.getMetadata());
+                }
+            }
+        }
+    }
+       
     
     void variable(Variable v) {
         if (isLocal(v)) {
@@ -162,24 +165,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
 
-    
-    
-    /**
-     * function(xt:fun(?x) = exp)
-     * create a new Visitor to have own local variables index
-     */
-    void define(Function t){
-        if (trace) System.out.println("Vis Fun: " + t);
-        Expression body = t.getBody(); 
         
-        ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, t);
-        body.visit(vis);
-        
-        t.setPlace(vis.count());
-        ast.define(t); //fun);
-        if (trace) System.out.println("count: " + vis.count());
-    }
-    
     /**
      * @deprecated
      * 
@@ -193,61 +179,36 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
+    
+     void letloop(Term t) {
+        Variable var = t.getVariable();
+        Expression exp = t.getDefinition();
+        Expression body = t.getBody();
+
+        exp.visit(this);
+        localize(var);
+        list.add(var);
+        clet++;
+        body.visit(this);
+        clet--;
+        list.remove(list.size() - 1);
+        remove(var);
+        if (!define && clet == 0) {
+            // top level let
+            t.setPlace(count);
+        }
+    }
+    
     /**
      * let (?x = e1, e2)
-     */
-    void let(Term t){
-        if (trace) System.out.println("Vis Let: " + t);
-            Variable var    = t.getVariable();
-            Expression exp  = t.getDefinition();           
-            Expression body = t.getBody();       
-
-//            if (isLocal(var)){
-//                ast.addError("Variable already defined: " + var);
-//                ast.addFail(true);
-//            }
-//            else 
-            {
-                exp.visit(this);
-                localize(var);
-                list.add(var);
-                clet++;
-                body.visit(this);
-                clet--;
-                list.remove(list.size()-1);
-                remove(var);
-                if (! define && clet == 0){
-                    // top level let
-                    t.setPlace(count);
-                }
-            }        
+     */    
+    void let(Term t) {
+        letloop(t);
     }
     
     // for (?x in exp){ exp }
     void loop(Term t) {
-        Variable var    = t.getVariable();
-        Expression exp  = t.getDefinition();
-        Expression body = t.getBody();
-
-//        if (isLocal(var)) {
-//            ast.addError("Variable already defined: " + var);
-//            ast.addFail(true);
-//        } 
-//        else 
-        {
-            exp.visit(this);
-            localize(var);
-            list.add(var);
-            clet++;
-            body.visit(this);
-            clet--;
-            list.remove(list.size() - 1);
-            remove(var);
-            if (!define && clet == 0) {
-                // top level let
-                t.setPlace(count);
-            }
-        }
+        letloop(t);
     }
     
     
@@ -255,66 +216,33 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      * map (xt:fun(?x), ?list)
      * var ?x is local because it is interpreted as:
      * (for dt : ?list) {let (?x = dt, xt:fun(?x))}
-    */
-    void map(Term t) {
-        if (trace) System.out.println("Vis Map: " + t);
-        if (t.getArgs().size() >= 2){
-            Expression fun = t.getArg(0);
-            if (fun.isFunction()) {
-                for (Expression arg : fun.getArgs()){  
-                    if (arg.isVariable()){
-                        Variable var = arg.getVariable();
-                        localize(var);
-                        remove(var);
-                    }
-                }                
-            }
-            else if (fun.isVariable()){
-                Variable var = fun.getVariable();
-                localize(var);
-                remove(var);
-            }
-            
-            for (int i = 1; i<t.getArgs().size(); i++){
-                t.getArg(i).visit(this);
-            }
-        }       
-    }
-    
-    void map2(Term t) {
-        if (trace) System.out.println("Vis Map: " + t);
-        if (t.getArgs().size() >= 2){
-            Expression fun = t.getArg(0);
-            if (fun.isFunction()) {
-                for (Expression arg : fun.getArgs()){  
-                    if (arg.isVariable()){
-                        Variable var = arg.getVariable();
-                        localize(var);
-                        remove(var);
-                    }
-                }
-                for (int i = 1; i<t.getArgs().size(); i++){
-                    t.getArg(i).visit(this);
-                }
-                return;
-            }
-        }
-        ast.setError("Incorrect Map: " + t);
-        ast.setFail(true);
-    }
-    
-    void apply(Term t) {
-        if (trace) System.out.println("Vis Apply: " + t);
-        if (t.getArgs().size() >= 2){        
-            for (int i = 1; i < t.getArgs().size(); i++) {
-                t.getArg(i).visit(this);
-            }
-            return;
-        }
-        ast.setError("Incorrect Apply: " + t);
-        ast.setFail(true);
-    }
-    
+     * 
+    */  
+//    void map(Term t) {
+//        if (trace) System.out.println("Vis Map: " + t);
+//        if (t.getArgs().size() >= 2){
+//            Expression fun = t.getArg(0);
+//            if (fun.isFunction()) {
+//                for (Expression arg : fun.getArgs()){  
+//                    if (arg.isVariable()){
+//                        Variable var = arg.getVariable();
+//                        localize(var);
+//                        remove(var);
+//                    }
+//                }                
+//            }
+//            else if (fun.isVariable()){
+//                Variable var = fun.getVariable();
+//                localize(var);
+//                remove(var);
+//            }
+//            
+//            for (int i = 1; i<t.getArgs().size(); i++){
+//                t.getArg(i).visit(this);
+//            }
+//        }       
+//    }
+       
     /**
      * aggregate(?x, xt:mediane(?list))
      * @param t 

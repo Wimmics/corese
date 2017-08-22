@@ -1099,7 +1099,7 @@ public class PluginImpl extends ProxyImpl {
         if (Processor.getOper(name) == ExprType.UNDEF){
             return null;            
         }
-        Query q = env.getQuery();
+        Query q = env.getQuery().getGlobalQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         Function fun = ast.defExtension(name, name, n);
         q.defineFunction(fun);

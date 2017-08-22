@@ -566,6 +566,9 @@ public class Interpreter implements Evaluator, ExprType {
             return null;
         }
         
+//        System.out.println("I: " + memory);
+//        System.out.println("I: " + memory.getBind());
+      
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);        
         Mappings map = null;
@@ -843,7 +846,7 @@ public class Interpreter implements Evaluator, ExprType {
     
     /**
      * Eval a function in new kgram with function's query
-     * use case: export function with exists {}
+     * use case:  function with exists {}
      * @param exp function ex:name() {}
      */
     Object funEval(Expr exp, Query q, Environment env, Producer p){

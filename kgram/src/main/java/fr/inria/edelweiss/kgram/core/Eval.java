@@ -516,25 +516,20 @@ public class Eval implements ExpType, Plugin {
         isSubEval = b;
     }
 
-    // copy memory for path
-//    private Memory copyMemory(Query query) {
-//        return copyMemory(memory, query, null);
-//    }
-
     /**
      * copy memory for sub query 
      * copy sub query select variables that are
      * already bound in current memory
      * Use case: subquery and exists
      */
-    private Memory copyMemory(Memory memory, Query query, Query sub) {
+    private Memory copyMemory(Memory memory, Query query, Query sub, Exp exp) {
         Memory mem = new Memory(match, evaluator);
         if (sub == null) {
             mem.init(query);
         } else {
             mem.init(sub);
         }
-        memory.copyInto(sub, mem);
+        memory.copyInto(sub, mem, exp);
         if (hasEvent) {
             memory.setEventManager(manager);
         }
@@ -557,12 +552,14 @@ public class Eval implements ExpType, Plugin {
         if (memory.isFake()) {
             // Temporary memory created by PathFinder
             mem = memory;
-        } else if (!memory.hasBind() && exp.getObject() != null) {
+        } 
+        else if (!memory.hasBind() && exp.getObject() != null) {
             mem = (Memory) exp.getObject();
             mem.start();
-            memory.copyInto(null, mem);
-        } else {
-            mem = copyMemory(memory, memory.getQuery(), null);
+            memory.copyInto(null, mem, exp);
+        } 
+        else {
+            mem = copyMemory(memory, memory.getQuery(), null, exp);
             exp.setObject(mem);
         }
         return mem;
@@ -578,7 +575,7 @@ public class Eval implements ExpType, Plugin {
     public Memory getMemory(Mapping map, Exp exp) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
-        mem.copy(map);
+        mem.copy(map, exp);
         return mem;
     }
 
@@ -1328,7 +1325,18 @@ public class Eval implements ExpType, Plugin {
         return lMap;
     }
 
-    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind ) {
+    /**
+     * fresh memory mem inherits data from current memory to evaluate exp (in main)
+     * 
+     */
+    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind ) { 
+        if (main != null && memory.hasBind()) {
+            switch (main.type()) {
+                default:
+                   // mem.setBind(memory.getBind());
+            }
+        }
+        
         if (m != null) {
             mem.push(m, -1);
         }
@@ -1342,7 +1350,7 @@ public class Eval implements ExpType, Plugin {
                 if (node != null) {
                     mem.push(qnode, node, -1);
                 }
-            }
+            }           
         }
     }
 
@@ -1677,6 +1685,7 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
+    @Deprecated
     private int oldJoin(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
@@ -2507,10 +2516,11 @@ public class Eval implements ExpType, Plugin {
         if (exp.getObject() != null && !isBound(subQuery, env) && gNode == null) {
             // result is cached, can reuse it
             lMap = (Mappings) exp.getObject();
-        } else {
+        } else 
+        {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
-            Eval ev = copy(copyMemory(memory, query, subQuery), p1, evaluator, subQuery);
+            Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery);
 
             Node subNode = null;
 
@@ -2806,8 +2816,11 @@ public class Eval implements ExpType, Plugin {
         Query qq = query;
 
         for (Node subNode : subQuery.getSelect()) {
+            if (env.isBound(subNode)){
+                return true;
+            }
             // get outer node:
-            Node outNode = qq.getOuterNodeSelf(subNode);
+            Node outNode = qq.getOuterNodeSelf(subNode);            
             if (outNode != null && env.isBound(outNode)) {
                 return true;
             }

@@ -15,6 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 public class Param {
 
     /**
+     * @return the hostname
+     */
+    public String getHostname() {
+        return hostname;
+    }
+
+    /**
+     * @param hostname the hostname to set
+     */
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    /**
      * @return the ajax
      */
     public boolean isAjax() {
@@ -30,6 +44,7 @@ public class Param {
     static NSManager nsm;
     private String service;
     private String server;
+    private String hostname;
     private String profile;    
     private String transform;
     private String uri;
@@ -54,7 +69,7 @@ public class Param {
         nsm = NSManager.create();
     }
 
-    Param(String s) {
+    public Param(String s) {
         service = s;
     }
    
@@ -75,6 +90,9 @@ public class Param {
         return str;
     }
     
+    String ns (String str){
+        return nsm.toNamespace(str);                              
+    }
     
     Context createContext() {
         Context ctx= getContext();
@@ -82,22 +100,22 @@ public class Param {
             ctx = new Context();
         }
         if (getProfile() != null) {
-            ctx.setProfile(nsm.toNamespace(getProfile()));
+            ctx.setProfile(ns(getProfile()));
         }
         if (getTransform() != null) {
-            ctx.setTransform(nsm.toNamespace(getTransform()));
+            ctx.setTransform(ns(getTransform()));
         }
         if (getUri() != null) {
-            ctx.setURI(nsm.toNamespace(getUri()));
+            ctx.setURI(ns(getUri()));
         }
         if (getMode() != null) {
-            ctx.setMode(nsm.toNamespace(getMode()));
+            ctx.setMode(ns(getMode()));
         }
          if (getParam()!= null) {
             ctx.setParam(getParam());
         }
         if (getFormat()!= null) {
-            ctx.setFormat(nsm.toNamespace(getFormat()));
+            ctx.setFormat(ns(getFormat()));
         }
         if (getQuery() != null) {
             ctx.setQueryString(getQuery());
@@ -107,9 +125,11 @@ public class Param {
         }
         if (getService() != null){
             ctx.setService(getService());
-        }      
-        ctx.setServer(Profile.getProfile().getServer());
-        ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
+        } 
+        if (getHostname() != null){
+            ctx.setServer(getHostname());
+            ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
+        }
         ctx.setUserQuery(isUserQuery());
         
         if (getRequest() != null){

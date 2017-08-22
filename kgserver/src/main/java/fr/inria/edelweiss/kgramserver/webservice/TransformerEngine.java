@@ -36,11 +36,19 @@ public class TransformerEngine {
     // Web service parameters
     Param param;
 
-    
-    TransformerEngine(GraphStore g, GraphStore prof, Param par) {
-        this.graph = g;
-        this.profile = prof;
-        this.param = par;
+    /**
+     * 
+     * @param graph    RDF graph to be processed
+     * @param profile  RDF graph specifies workflow to be executed on graph
+     * @param param    service Param and Context
+     * 
+     * Workflow URI/bnode IDatatype dt = param.getContext().get(Context.STL_WORKFLOW) // st:workflow
+     * Workflow node = profile.getNode(dt)
+     */
+    public TransformerEngine(GraphStore graph, GraphStore profile, Param param) {
+        this.graph = graph;
+        this.profile = profile;
+        this.param = param;
         init();
     }
     
@@ -53,7 +61,7 @@ public class TransformerEngine {
      * Create and run a Workflow
      * Workflow result is data.stringValue();
      */
-    Data process() throws EngineException, LoadException {
+    public Data process() throws EngineException, LoadException {
         Dataset ds = createDataset(param.getFrom(), param.getNamed());
         SemanticWorkflow sw = workflow(getContext(), ds, profile, param.getQuery());
         Data data = sw.process(new Data(graph));

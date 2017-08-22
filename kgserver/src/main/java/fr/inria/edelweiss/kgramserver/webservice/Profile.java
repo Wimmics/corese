@@ -132,7 +132,7 @@ public class Profile {
    
     
 
-    Profile() {
+    public Profile() {
         this(false);
     }
 
@@ -171,7 +171,7 @@ public class Profile {
                 complete(par, serverContext);
             }
         }
-        
+        par.setHostname(getServer());
         String value = par.getValue();
         String profile = par.getProfile();
         String uri = par.getUri();
@@ -508,7 +508,7 @@ public class Profile {
       /**
      * Functions shared by server STTL transformations
      */
-    void initFunction() throws IOException, EngineException{
+    public void initFunction() throws IOException, EngineException{
         String str = getResource("query/function.rq");
         QueryProcess exec = QueryProcess.create(Graph.create());
         Query q = exec.compile(str);

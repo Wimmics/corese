@@ -85,6 +85,6 @@ public interface Proxy {
 
         Expr createFunction(String name, List<Object> args, Environment env);
         
-        Expr getDefine(Environment env, String name, int n);
+        Expr getDefine(Expr exp, Environment env, String name, int n);
 
 }

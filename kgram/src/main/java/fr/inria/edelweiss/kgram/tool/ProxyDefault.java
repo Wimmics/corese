@@ -204,7 +204,7 @@ public class ProxyDefault implements Proxy, ExprType {
     }
 
     @Override
-    public Expr getDefine(Environment env, String name, int n) {
+    public Expr getDefine(Expr exp, Environment env, String name, int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

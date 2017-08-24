@@ -392,7 +392,7 @@ public class Interpreter implements Evaluator, ExprType {
             case MAPEVERY:
             case MAPANY:
             case APPLY:
-                return map(exp, env, p);
+                return mapapply(exp, env, p);
                           
             default:                
                 switch (exp.getExpList().size()) {
@@ -738,32 +738,32 @@ public class Interpreter implements Evaluator, ExprType {
      * map(us:fun(?x), ?list)
      * 
      */
-    public Object map(Expr exp, Environment env, Producer p) {
+    public Object mapapply(Expr exp, Environment env, Producer p) {
         Object[] args = evalArguments(exp, env, p, 1);
         if (args == ERROR_VALUE) {
             return null;
         }
-        Expr def = getDefine(exp.getExp(0), env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
+        Expr def = getDefine(exp, env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
         if (def == null){
             return ERROR_VALUE;
         }  
         return proxy.eval(exp, env, p, args, def.getFunction());
     }
     
-    public Object map2(Expr exp, Environment env, Producer p) {
-        Object[] args = evalArguments(exp, env, p, 1);
-        if (args == ERROR_VALUE) {
-            return null;
-        }
-        return proxy.eval(exp, env, p, args);
-    }
+//    public Object map2(Expr exp, Environment env, Producer p) {
+//        Object[] args = evalArguments(exp, env, p, 1);
+//        if (args == ERROR_VALUE) {
+//            return null;
+//        }
+//        return proxy.eval(exp, env, p, args);
+//    }
     
      public Object funcall(Expr exp, Environment env, Producer p){
         Object[] args = evalArguments(exp, env, p, 1);
         if (args == null){
             return ERROR_VALUE;
         }
-        Expr def = getDefine(exp.getExp(0), env, p, args.length);
+        Expr def = getDefine(exp, env, p, args.length);
         if (def == null){
             return ERROR_VALUE;
         }
@@ -771,17 +771,17 @@ public class Interpreter implements Evaluator, ExprType {
     }
      
      /**
-      * exp is an expression that evaluates to a function name URI
-      * evaluate exp
+      * exp is funcall(arg, arg) arg is an expression that evaluates to a function name URI
+      * evaluate arg
       * return function definition corresponding to name with arity n.
       */
     @Override
      public Expr getDefine(Expr exp, Environment env, Producer p, int n){
-         Object name = eval(exp, env, p);
+         Object name = eval(exp.getExp(0), env, p);
          if (name == ERROR_VALUE){
             return null;
         }
-        Expr def = getDefineGenerate(env, p.getDatatypeValue(name).stringValue(), n);
+        Expr def = getDefineGenerate(exp, env, p.getDatatypeValue(name).stringValue(), n);
         if (def == null){
             return null;
         } 
@@ -914,10 +914,10 @@ public class Interpreter implements Evaluator, ExprType {
         return extension.get(name);    
     }
      
-    Expr getDefineGenerate(Environment env, String name, int n){
+    Expr getDefineGenerate(Expr exp, Environment env, String name, int n){
        Expr fun =  getDefine(env, name, n);
        if (fun == null){
-           fun = proxy.getDefine(env, name, n);
+           fun = proxy.getDefine(exp, env, name, n);
        }
        return fun;
     }

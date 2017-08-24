@@ -459,8 +459,8 @@ public class Processor {
 	}
                             
        void prepare(Term term, ASTQuery ast) {
-        //name = term.getLabel();
-        if (term.isFunction()) {
+        if (term.isFunction() && ! term.isFunctionSignature()) {
+            // skip signature of function xsd:integer(?n) { xsd:integer(?x) }
             switch (term.oper()) {                
                 case ExprType.HASH:
                     compileHash(term);
@@ -478,8 +478,7 @@ public class Processor {
                 case ExprType.XPATH:                   
                 case ExprType.SQL:                   
                 case ExprType.EXTERNAL:                    
-                case ExprType.CUSTOM:
-                    
+                case ExprType.CUSTOM:                    
                     prepareOwn(term, ast);
             }
         }
@@ -1024,96 +1023,18 @@ public class Processor {
          * @param ast 
          */
        void processMatch(Let term, ASTQuery ast) {
-            Expression match = term.getVariableDefinition().getArg(0);
-            Expression list  = term.getDefinition();
-
-            if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
-                ExpressionList l = new ExpressionList();
-                
-                Variable var;
-                if (list.isVariable()){
-                    var = list.getVariable();                    
-                }
-                else {
-                    // eval list exp once, store it in variable
-                    var = Variable.create("?_var_let_");
-                    l.add(ast.defLet(var, list));
-                }
-                
-                int j = 0;
-                for (Expression arg : match.getArgs()) {                   
-                    l.add(ast.defGenericGet(arg.getVariable(), var, j++));
-                }
-                
-                Term let = ast.defineLet(l, term.getBody(), 0);
-                term.setArgs(let.getArgs());          
-            }
+            ast.processMatch(term);
         }
-        
-        
-
+               
         /**
          * map(rq:fun, ?list)
          * -> 
          * map(lambda(?x){ rq:fun(?x) }, ?list)
-         * TODO: check number of arguments eg regex ...
          */
     void processMap(Term term, ASTQuery ast) {
-        if (term.getArgs().size() > 1) {
-            Expression fst = term.getArg(0);
-            if (fst.isConstant()) {
-                Constant cst = fst.getConstant();
-                if (isDefined(cst.getLabel())) {
-                    Function fun = ast.defineLambda(cst, arity(term));
-                    term.setArg(0, fun);
-                }
-            }
-        }
+        ast.processMap(term);
     }
-      
-      int arity(Term t){
-          if (t.getLabel().equals(APPLY)){
-              return 2;
-          }
-          return t.getArgs().size() - 1;
-      }
-      
-      boolean isDefined(String uri){
-          return getOper(uri) != ExprType.UNDEF;
-      }
-      
-       /**
-         * map(xt:fun, ?list)
-         * -> 
-         * map(xt:fun(?x), ?list)
-         * 
-         * map(function xt:fun_0(?x) {us:f(?x) } 
-         * ->
-         * map(xt:fun_0(?x), ?list)
-         * @param ast 
-         */
-      void processMap2(Term term, ASTQuery ast) {
-        if (term.getArgs().size() >= 2) {
-            Expression fst = term.getArg(0);
-
-            if (fst.isConstant()) {
-                Term fun = ast.createFunction(fst.getConstant());
-                int max = (term.oper() == ExprType.APPLY) ? 2 : term.getArgs().size() - 1;
-                // create 2 variables for apply(kg:plus, ?list) for ?a + ?b
-                for (int i = 0; i < max; i++) {
-                    Variable var = ASTQuery.createVariable("?_map_var" + i);
-                    fun.add(var);
-                }
-                term.setArg(0, fun);
-            }
-            else if (fst.isFunction() && fst.oper() == ExprType.FUNCTION){
-                // fst is lambda(?x) body
-                Term t = fst.getFunction();
-                term.setArg(0, t);
-            }
-        }
-    }
-              
+                          
       // aggregate(?x, xt:mediane)
       void processAggregate(Term term, ASTQuery ast) {
         if (term.getArgs().size() == 2) {
@@ -1126,20 +1047,15 @@ public class Processor {
             }
         }
     } 
-
-                     
-        Term cstToFun(ASTQuery ast, Constant cst) {
-            Variable var = ASTQuery.createVariable("_map_");
-            Term fun = ast.createFunction(cst, var);
-            return fun;
-        }
-	
+                     	
 	/**
 	 * sha256(?x) ->
 	 * hash("SHA-256", ?x)
 	 */
 	void compileHash(Term term){
 		String name = term.getName();
+                // use case:  rq:sha256
+                name = NSManager.nstrip(name);
 		if (name.startsWith("sha") || name.startsWith("SHA")){
 			name = "SHA-" + name.substring(3);
 		}
@@ -1152,10 +1068,7 @@ public class Processor {
 			term.setModality(ast.getNSM().getBase());
 		}
 	}
-        
-        void compileExist(Term term){
-        }
-			
+        			
 	/**
 	 * term = regex(?x,  ".*toto",  ["i"])
 	 * match.reset(string);
@@ -1212,13 +1125,7 @@ public class Processor {
                     compilePattern(term.getArg(1).getLabel(), sflag, false);
 		}
 	}
-	
-	// TODO: test if constant
-//	void compileReplace(String str){
-//		pat = Pattern.compile(str);
-//		match = pat.matcher("");
-//	}
-	
+		
 	// replace('%abc@def#', '[^a-z0-9]', '-')
 	public String replace(String str, String pat, String rep, String flag){ 
             if (! isCompiled){

@@ -26,6 +26,8 @@ public class Function extends Statement {
 
     Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
+        fun.setExpression(this);
+        body.setExpression(this);
         table = new HashMap<>();
     }
 
@@ -229,6 +231,7 @@ public class Function extends Statement {
     /**
      * @return the visited
      */
+    @Override
     public boolean isVisited() {
         return visited;
     }
@@ -236,6 +239,7 @@ public class Function extends Statement {
     /**
      * @param visited the visited to set
      */
+    @Override
     public void setVisited(boolean visited) {
         this.visited = visited;
     }

@@ -15,9 +15,11 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
+import static fr.inria.acacia.corese.triple.parser.Processor.APPLY;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Graphable;
 import java.io.IOException;
 import java.util.Map;
@@ -59,6 +61,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     static final String FOR_VAR = "?_for_";
     static final String LET_VAR = "?_let_";
     static final String FUN_VAR = "?_fun_var_";
+
     static final String FUN_NAME = NSManager.EXT_PREF+":_fun_";
     static final String FUN_PREF = NSManager.EXT_PREF+":";
     static final String NL = System.getProperty("line.separator");
@@ -1066,32 +1069,6 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return expression;
     }
 
-    public Term createFunction(String name) {
-        Term term = Term.function(name);
-        // no toNamespaceB()
-        term.setLongName(getNSM().toNamespace(name));
-        return term;
-    }
-
-    // TBD: clean this
-    public Term createFunction(Constant name) {
-        Term term = createFunction(name.getName());
-        term.setCName(name);
-        return term;
-    }
-    
-    public Term createReturn(Expression exp) {
-        Term term = createFunction(Processor.RETURN);
-        term.setCName(Constant.createResource(Processor.RETURN));
-        term.add(exp);
-        return term;
-    }
-
-    public Term createFunction(Constant name, ExpressionList el) {
-        Term term = createFunction(name.getName(), el);
-        term.setCName(name);
-        return term;
-    }
     
     Constant functionName(){
         UUID uuid = UUID.randomUUID();
@@ -1173,12 +1150,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      * function rq:isURI(?x) { isURI(?x) }
      */
     public Function defExtension(String ext, String name, int arity) {
-        Constant c = Constant.create(ext);
+        Constant c = createQNameURI(ext);
         ExpressionList el = new ExpressionList();
         for (int i = 0; i < arity; i++) {
             el.add(createVariable(FUN_VAR + i));
         }
-        Term t = createFunction(Constant.create(name), el);
+        Term t = createFunction(createQNameURI(name), el);
         Function fun = defineFunction(c, el, t, null);
         fun.compile(this);
         return fun;
@@ -1369,6 +1346,67 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
     
     /**
+     * let (match(?x, ?p, ?y) = ?l) {} ::= 
+     * let (?x = xt:get(?l, 0), ?p =
+     * xt:get(?l, 1), ?y = xt:get(?l, 2)) {}
+     *
+     */
+    void processMatch(Let term) {
+        Expression match = term.getVariableDefinition().getArg(0);
+        Expression list = term.getDefinition();
+
+        if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
+            ExpressionList l = new ExpressionList();
+
+            Variable var;
+            if (list.isVariable()) {
+                var = list.getVariable();
+            } else {
+                // eval list exp once, store it in variable
+                var = Variable.create(LET_VAR + nbd++);
+                l.add(defLet(var, list));
+            }
+
+            int j = 0;
+            for (Expression arg : match.getArgs()) {
+                l.add(defGenericGet(arg.getVariable(), var, j++));
+            }
+
+            Term let = defineLet(l, term.getBody(), 0);
+            term.setArgs(let.getArgs());
+        }
+    }
+    
+    /**
+         * map(rq:fun, ?list)
+         * -> 
+         * map(lambda(?x){ rq:fun(?x) }, ?list)
+         */
+    void processMap(Term term) {
+        if (term.getArgs().size() > 1) {
+            Expression fst = term.getArg(0);
+            if (fst.isConstant()) {
+                Constant cst = fst.getConstant();
+                if (isDefined(cst.getLabel())) {
+                    Function fun = defineLambda(cst, arity(term));
+                    term.setArg(0, fun);
+                }
+            }
+        }
+    }
+    
+      int arity(Term t){
+          if (t.getLabel().equals(APPLY)){
+              return 2;
+          }
+          return t.getArgs().size() - 1;
+      }
+      
+      boolean isDefined(String uri){
+          return Processor.getOper(uri) != ExprType.UNDEF;
+      }
+    
+    /**
      * exp = exists { select where }
      * use case: let (select where)
      */
@@ -1492,6 +1530,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         def.getArg(0).setPublic(true);
         def.setPublic(true);
     }
+    
+    public Term createFunction(Constant name) {
+        Term term = createFunction(name.getName());
+        term.setCName(name);
+        return term;
+    }
 
     public Term createFunction(Constant name, Expression exp) {
         Term term = createFunction(name.getName(), exp);
@@ -1504,14 +1548,46 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         term.add(e2);
         return term;
     }
-
+    
+    public Term createFunction(Constant name, ExpressionList el) {
+        Term term = createFunction(name.getName(), el);
+        term.setCName(name);
+        return term;
+    }  
+    
+    
+    public Term createFunction(String name) {
+        Term term = Term.function(name);
+        // no toNamespaceB()
+        term.setLongName(getNSM().toNamespace(name));
+        term.setAST(this);
+        return term;
+    }
+    
     public Term createFunction(String name, ExpressionList el) {
         if (name.equals(Processor.MAPFUN)){
             return createMapfun(name, el);
         }
         return createFun(name, el);
     }
-        
+    
+    public Term createFunction(String name, Expression expression1) {
+        Term term = createFunction(name);
+        term.add(expression1);
+        return term;
+    }
+
+
+
+ 
+    
+    public Term createReturn(Expression exp) {
+        Term term = createFunction(Processor.RETURN);
+        term.setCName(Constant.createResource(Processor.RETURN));
+        term.add(exp);
+        return term;
+    }
+
         
     Term createFun(String name, ExpressionList el) {
         Term term = createFunction(name);
@@ -1654,12 +1730,6 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
                 createQName(RDFS.qrdfFirst));
     }
 
-    public Term createFunction(String name, Expression expression1) {
-        Term term = createFunction(name);
-        term.add(expression1);
-        return term;
-    }
-
     static Term createTerm(String s) {
         Term term = new Term(s);
         return term;
@@ -1689,16 +1759,26 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return cst;
     }
 
-    // ex:name
-    public Constant createQName(String s) {
-        String lname = getNSM().toNamespaceB(s);
-        Constant cst = Constant.createResource(s, lname);
-        if (s.equals(lname)) {
-            addError("Undefined prefix: ", s);
+    public Constant createQName(String qname) {
+        String uri = getNSM().toNamespaceB(qname);
+        Constant cst = Constant.createResource(qname, uri);
+        if (qname.equals(uri)) {
+            addError("Undefined prefix: ", qname);
         }
         cst.setQName(true);
         return cst;
     }
+    
+    // only for defined namespaces
+    public Constant createQNameURI(String uri) {
+        String qname = getNSM().toPrefix(uri, true);
+        Constant cst = Constant.createResource(qname, uri);
+        if (! uri.equals(qname)) {
+           cst.setQName(true); 
+        }       
+        return cst;
+    }
+    
 
     // <uri>
     public Constant createURI(String s) {

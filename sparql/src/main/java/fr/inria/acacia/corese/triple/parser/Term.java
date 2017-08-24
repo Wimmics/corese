@@ -1129,9 +1129,19 @@ public class Term extends Expression {
                     getArg().prepare(ast);
                 }
                 
-		return this;
-		
+		return this;		
 	}
+        
+       
+        /**
+         * Is this term a function signature ?
+         * 
+         */
+        boolean isFunctionSignature(){
+            return hasExpression() 
+                    && getExpression().oper() == ExprType.FUNCTION
+                    && this == getExpression().getFunction();
+        }
         
 	
         @Override

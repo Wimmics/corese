@@ -40,6 +40,8 @@ implements Regex, Filter, Expr {
 	
 	String name, longName;
 	Expression exp;
+        private Expression expression;
+        private ASTQuery ast;
 
 	public Expression(){}
 	
@@ -210,7 +212,7 @@ implements Regex, Filter, Expr {
 	public boolean isFunction(){
 		return false;
 	}
-        
+               
         @Override
         public boolean isFuncall(){
 		return false;
@@ -409,7 +411,7 @@ implements Regex, Filter, Expr {
         public Term getTerm(){
             return null;
         }
-	
+        	
         @Override
 	public Variable getVariable(){
 		return null;
@@ -819,5 +821,36 @@ implements Regex, Filter, Expr {
         @Override
     public void setSubtype(int t) {
     }
+
+    /**
+     * @return the ancestor
+     */
+    public Expression getExpression() {
+        return expression;
+    }
+
+    /**
+     * @param ancestor the ancestor to set
+     */
+    public void setExpression(Expression ancestor) {
+        this.expression = ancestor;
+    }
+    
+    public boolean hasExpression(){
+        return expression != null;
+    }
+    
+    public ASTQuery getAST(){
+        return ast;
+    }
+    
+    public void setAST(ASTQuery ast){
+        this.ast = ast;
+    }
+    
+    public boolean hasAST(){
+        return ast != null;
+    }
+    
      
 }

@@ -14,9 +14,9 @@ import java.util.List;
  *
  */
 public class ExpressionVisitorVariable implements ExpressionVisitor {
-
+   
     boolean let = false;
-    boolean define = false;
+    private boolean functionDefinition = false;
     boolean trace = false;
     int count = 0;
     int clet = 0;
@@ -44,7 +44,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         this.list = fun.getFunction().getFunVariables();
         this.ast = ast;
         this.fun = fun;
-        define = true;
+        functionDefinition = true;
         init();
     }
     
@@ -126,6 +126,15 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         if (trace) {
             System.out.println("**** Vis Fun: " + f);
         }
+        
+        if (isFunctionDefinition()){
+            // f is lambda inside a function
+            if (fun.isPublic()){
+                // f is also public
+                f.setPublic(true);
+            }
+        }
+        
         Expression body = f.getBody();
 
         ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, f);
@@ -139,7 +148,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     void visitExist(Term t) {
-        if (fun != null) {
+        if (isFunctionDefinition()) {
             // inside a function 
             // special case: export function contain exists {}
             // will be evaluated with query that defines function
@@ -160,7 +169,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         if (isLocal(v)) {
             localize(v);
         } 
-        else if (define) {
+        else if (isFunctionDefinition()) {
             v.undef();
         }
     }
@@ -193,7 +202,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         clet--;
         list.remove(list.size() - 1);
         remove(var);
-        if (!define && clet == 0) {
+        if (!isFunctionDefinition() && clet == 0) {
             // top level let
             t.setPlace(count);
         }
@@ -287,4 +296,20 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         var.localize();
         index(var);
     }
+    
+    
+    /**
+     * @return the functionDefinition
+     */
+    public boolean isFunctionDefinition() {
+        return functionDefinition;
+    }
+
+    /**
+     * @param functionDefinition the functionDefinition to set
+     */
+    public void setFunctionDefinition(boolean functionDefinition) {
+        this.functionDefinition = functionDefinition;
+    }
+    
 }

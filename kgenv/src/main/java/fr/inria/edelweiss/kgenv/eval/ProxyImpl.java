@@ -29,7 +29,6 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
-import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.PointerObject;
@@ -1861,8 +1860,8 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     @Override
-    public Expr getDefine(Environment env, String name, int n){
-        return plugin.getDefine(env, name, n);
+    public Expr getDefine(Expr exp, Environment env, String name, int n){
+        return plugin.getDefine(exp, env, name, n);
     }
 
     @Override

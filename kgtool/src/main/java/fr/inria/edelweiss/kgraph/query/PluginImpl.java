@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.storage.util.StorageFactory;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
@@ -1090,21 +1091,33 @@ public class PluginImpl extends ProxyImpl {
     }
     
     /**
-     * 
+     * exp = funcall(arg, arg)
+     * arg evaluates to name
      * Generate extension function for predefined function name
      * rq:plus -> function rq:plus(x, y){ rq:plus(x, y) }
      */
     @Override
-    public Expr getDefine(Environment env, String name, int n){
+    public Expr getDefine(Expr exp, Environment env, String name, int n){
         if (Processor.getOper(name) == ExprType.UNDEF){
             return null;            
         }
         Query q = env.getQuery().getGlobalQuery();
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast = getAST((Expression) exp, q);
         Function fun = ast.defExtension(name, name, n);
         q.defineFunction(fun);
         q.getCreateExtension().define(fun);
         return fun;
+    }
+    
+    // use exp AST to compile exp
+    // use case: uri() uses ast base
+    ASTQuery getAST(Expression exp, Query q){
+        ASTQuery ast = exp.getAST();
+        if (ast != null) {
+            return ast.getGlobalAST();
+        } else {
+            return (ASTQuery) q.getAST();
+        }
     }
     
      public class TreeNode extends TreeMap<IDatatype, IDatatype> {

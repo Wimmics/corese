@@ -54,18 +54,18 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	 * can be cast to a float, double, decimal or integer, if this value is 0, then return false, else return true
 	 */
         @Override
-	public IDatatype cast(IDatatype target, IDatatype javaType) {
-		if (target.getLabel().equals(RDF.xsdboolean)){
+	public IDatatype cast(String target) { 
+		if (target.equals(RDF.xsdboolean)){
 			try {
 				Float f = new Float(getLabel());
 				if (f == 0)      return CoreseBoolean.FALSE;
 				else if (f == 1) return CoreseBoolean.TRUE;
 				else return null;
 			} catch (NumberFormatException e) {
-				return super.cast(target, javaType);
+				return super.cast(target); 
 			}		   
 		} else {
-			return super.cast(target, javaType);
+			return super.cast(target); 
 		}
 	}
 

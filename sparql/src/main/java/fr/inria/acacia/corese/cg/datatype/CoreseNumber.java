@@ -26,25 +26,21 @@ public abstract class CoreseNumber extends CoreseDatatype {
      * Cast a number to a boolean is always allowed and should always give a
      * result
      */
-    @Override
-    public IDatatype cast(IDatatype target, IDatatype javaType) {
-        return cast(target, javaType.getLabel());
-    }   
-    
-    public IDatatype cast(IDatatype target, String javaType) {
-        switch (DatatypeMap.getCode(target.getLabel())){
+
+    public IDatatype cast(String target){ 
+        switch (DatatypeMap.getCode(target)){
             case INTEGER: return DatatypeMap.newInteger(longValue());
             case DOUBLE:  return DatatypeMap.newInstance(doubleValue());
             case FLOAT:   return DatatypeMap.newInstance(floatValue());
-            case DECIMAL: return DatatypeMap.newInstance(doubleValue(), RDF.xsddecimal);
+            case DECIMAL: return DatatypeMap.newDecimal(doubleValue());
             case GENERIC_INTEGER: 
-                return DatatypeMap.newInstance(Integer.toString(intValue()), target.getLabel()); 
+                return DatatypeMap.newInstance(Integer.toString(intValue()), target); 
                 
             case STRING:  return DatatypeMap.newInstance(getLabel());
             case BOOLEAN: return castBoolean();
                
             default:                                               
-                return super.cast(target.getLabel(), javaType);
+                return super.cast(target);
         }        
     }
     
@@ -58,12 +54,6 @@ public abstract class CoreseNumber extends CoreseDatatype {
         }
     }
     
-     @Override
-    public IDatatype cast(IDatatype datatype){
-        String javaType = DatatypeMap.getJavaType(datatype.getLabel());
-        if (javaType == null){return null;}
-        return cast(datatype, javaType);
-    }
 
     @Override
     public boolean isNumber() {

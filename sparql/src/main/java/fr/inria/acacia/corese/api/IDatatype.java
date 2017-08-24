@@ -110,12 +110,12 @@ public interface IDatatype
     /**
      * Cast a value
      *
-     * @param target the java type (ex: xsd:integer)
-     * @param javaType the CoreseDatatype that corresponds (ex: CoreseInteger)
+     * @param datatype ex: xsd:integer
      * @return the datatype casted
      */
-    IDatatype cast(IDatatype target, IDatatype javaType);
-    IDatatype cast(IDatatype target);
+    //IDatatype cast(IDatatype target, IDatatype javaType);
+    IDatatype cast(IDatatype datatype);
+    IDatatype cast(String datatype);
 
     /**
      * @return the lang as a datatype

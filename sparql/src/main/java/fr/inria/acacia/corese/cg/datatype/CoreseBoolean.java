@@ -77,18 +77,27 @@ public class CoreseBoolean extends CoreseStringLiteral {
     * Cast a boolean to integer return 0/1
     */
   @Override
-   public IDatatype cast(IDatatype target, IDatatype javaType) {
-	   String lab = target.getLabel();
-	   if (lab.equals(RDF.xsdinteger)) {
-		   return DatatypeMap.newInstance(value());
-	   } else if (lab.equals(RDF.xsdfloat)) {
-		   return new CoreseFloat(value());
-	   } else if (lab.equals(RDF.xsddouble)) {
-		   return new CoreseDouble(value());
-	   } else if (lab.equals(RDF.xsddecimal)) {
-		   return new CoreseDecimal(value());
-	   }
-	   else return super.cast(target, javaType);
+   public IDatatype cast(String datatype){ 
+//	   if (datatype.equals(RDF.xsdinteger)) {
+//		   return DatatypeMap.newInstance(value());
+//	   } else if (datatype.equals(RDF.xsdfloat)) {
+//		   return new CoreseFloat(value());
+//	   } else if (datatype.equals(RDF.xsddouble)) {
+//		   return new CoreseDouble(value());
+//	   } else if (datatype.equals(RDF.xsddecimal)) {
+//		   return new CoreseDecimal(value());
+//	   }
+//	   else return super.cast(datatype); 
+           
+           switch (DatatypeMap.getCode(datatype)){
+            case INTEGER: return DatatypeMap.newInteger(value());
+            case DOUBLE:  return DatatypeMap.newDouble(value());
+            case FLOAT:   return DatatypeMap.newFloat(value());
+            case DECIMAL: return DatatypeMap.newDecimal(value());
+            case GENERIC_INTEGER: return DatatypeMap.newInstance(Integer.toString(value()), datatype); 
+            default: return super.cast(datatype); 
+           }
+                
    }
 
 

@@ -468,10 +468,7 @@ public class Processor {
                 case ExprType.URI:
                     compileURI(term, ast);
                     break;
-                case ExprType.CAST:
-                    compileCast(term);
-                    break;               
-                    
+                   
                 case ExprType.REGEX:
                 case ExprType.EXIST:                  
                 case ExprType.STRREPLACE:                   
@@ -957,27 +954,7 @@ public class Processor {
 		}
 	}
 	
-	
-	/**
-	 * xsd:integer(?x)
-	 * ->
-	 * cast(?x, xsd:integer, CoreseInteger)
-	 */
-	void compileCast(Term  term){
-		// name = xsd:integer | ... | str
-		String name = term.getName();
-		Constant dt = Constant.createResource(name);
-		dt.getDatatypeValue();
-		// type = CoreseInteger
-		Constant type = Constant.create(Constant.getJavaType(name), RDFS.xsdstring);
-		type.getDatatypeValue();
-		List<Expr> lExp = new ArrayList<Expr>();
-		lExp.add(term.getArg(0));
-		lExp.add(dt);
-		lExp.add(type);
-                term.setExpList(lExp);
-	}
-        
+		       
         void preprocess(Term term, ASTQuery ast){
             switch (term.oper()){
                 

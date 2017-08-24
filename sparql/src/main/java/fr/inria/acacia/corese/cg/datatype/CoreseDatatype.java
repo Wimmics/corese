@@ -241,19 +241,21 @@ public class CoreseDatatype
     }
 
     @Override
-    public IDatatype cast(IDatatype datatype, IDatatype javaType) {       
-        return cast(datatype.getLabel(), javaType.getLabel());
+    public IDatatype cast(String datatype) {
+        String javaType = DatatypeMap.getJavaType(datatype);
+        if (javaType == null) {
+            return null;
+        }
+        return cast(datatype, javaType);
     }
-    
+        
     @Override
     public IDatatype cast(IDatatype datatype){
-        String javaType = DatatypeMap.getJavaType(datatype.getLabel());
-        if (javaType == null){return null;}
-        return cast(datatype.getLabel(), javaType);
+        return cast(datatype.getLabel());
     }
     
     IDatatype cast(String datatype, String javaType) {
-        IDatatype dt = cast(javaType);
+        IDatatype dt = caster(javaType);
         // effective for undef only :
         if (dt != null) {
             dt.setDatatype(datatype);
@@ -264,7 +266,7 @@ public class CoreseDatatype
     /**
      * cast above set the datatype uri should have datatype as extra arg
      */
-    IDatatype cast(String type) {
+    IDatatype caster(String type) {
         try {
             if (isBlank() && type.equals(Cst.jTypeString)) {
                 return CoreseDatatype.create(type, null, "", null);

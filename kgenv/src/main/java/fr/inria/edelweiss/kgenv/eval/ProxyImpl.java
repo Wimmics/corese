@@ -467,6 +467,9 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case DATATYPE:
                 return datatype(dt);
+                
+             case CAST: // xsd:string(?x)
+                return cast(dt, exp.getLabel());        
 
             case DISPLAY:
                return display(exp, dt, null);
@@ -609,6 +612,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case STRLANG:
                 return strlang(dt1, dt2);
+                
+            case CAST: // cast(?x, xsd:string)
+                //return cast(dt1, dt2);    
+                return cast(dt1, exp.getLabel());    
                 
             case REGEX: 
                return regex(exp, dt1, dt2, null);
@@ -757,10 +764,6 @@ public class ProxyImpl implements Proxy, ExprType {
 
             case SUBSTR:               
                 return substr(dt, dt1, (param.length > 2) ? param[2] : null);
-
-            case CAST: // cast(?x, xsd:string, CoreseString)
-                return cast(dt, dt1, param[2]);
-
 
             case STRREPLACE:
 
@@ -1031,7 +1034,16 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     IDatatype cast(IDatatype dt, IDatatype dt1, IDatatype dt2){
-        return dt.cast(dt1, dt2);
+        //return dt.cast(dt1, dt2);
+        return dt.cast(dt1);
+    }
+    
+    IDatatype cast(IDatatype dt, IDatatype dt1){
+        return dt.cast(dt1);
+    }
+    
+    IDatatype cast(IDatatype dt, String dt1){
+        return dt.cast(dt1);
     }
     
     public IDatatype substr(IDatatype dt, IDatatype ind) {

@@ -114,23 +114,22 @@ public class JavaCompiler {
     public JavaCompiler toJava(ASTQuery ast) throws IOException {
         this.ast = ast;
         path(ast);
+        head.process(pack, name);
         toJava(ast.getDefine());
+        toJava(ast.getDefineLambda());
+        trailer();
         return this;
     }
 
     public void toJava(ASTExtension ext) throws IOException {
-        head.process(pack, name);
-
         for (ASTExtension.ASTFunMap m : ext.getMaps()) {
             for (Function exp : m.values()) {
                 if (! exp.hasMetadata(Metadata.SKIP)){ 
-                    toJava(exp);
+                    compile(exp);
                     append(NL);
                 }
             }
         }
-
-        trailer();
     }
     
     void path(ASTQuery ast){
@@ -166,7 +165,7 @@ public class JavaCompiler {
     /**
      * Compile one function
      */
-    void toJava(Function exp) {
+    void compile(Function exp) {
         stack.push(exp);
         functionDeclaration(exp);
         append(" {");
@@ -186,7 +185,7 @@ public class JavaCompiler {
     }
 
     public void toJava(Variable var) {
-        append(name(var));
+        append(JavaCompiler.this.name(var));
     }
   
     public void toJava(Constant cst) {
@@ -205,7 +204,11 @@ public class JavaCompiler {
             term(term);
         }
     }
-
+    
+    public void toJava(Function fun){
+        append(dtc.string(name(fun)));
+    }
+    
     public void toJava(Statement term) {
         switch (term.oper()) {
             case ExprType.LET:
@@ -218,9 +221,7 @@ public class JavaCompiler {
         }
     }
     
-    
-    
-    
+   
     String name(Variable var){
         return var.getSimpleName();
     }
@@ -229,7 +230,7 @@ public class JavaCompiler {
     void functionDeclaration(Function fun) {
         Term term = fun.getFunction();
         append("public").append(SPACE).append(IDATATYPE).append(SPACE);
-        append(term.javaName()).append("(");
+        append(name(fun)).append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
             append(IDATATYPE).append(SPACE);
@@ -240,6 +241,13 @@ public class JavaCompiler {
             }
         }
         append(")");
+    }
+    
+    String name(Function fun){
+        if (fun.isLambda()){
+            return "xt" + fun.getFunction().javaName().replace("-", "_");
+        }
+        return fun.getFunction().javaName();
     }
 
      void nl() {
@@ -317,6 +325,7 @@ public class JavaCompiler {
         append(IDATATYPE).append(SPACE);
         toJava(term.getVariable());
         append(" = ");
+        System.out.println("JC: " + term.getDefinition());
         toJava(term.getDefinition());
         pv();
         nl();
@@ -452,7 +461,6 @@ public class JavaCompiler {
                 map(term);
                 return;
                 
-                
             case ExprType.APPLY_TEMPLATES_WITH:
             case ExprType.APPLY_TEMPLATES_WITH_ALL:
                 template(term);
@@ -480,12 +488,7 @@ public class JavaCompiler {
         append(mapName(term)).append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
-            if (i == 0){
-                append(dtc.string(exp.getTerm().javaName()));
-            }
-            else {
-                toJava(exp);                
-            }
+            toJava(exp);                
             if (i++ < term.arity() - 1) {
                 append(", ");
             }

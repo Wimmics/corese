@@ -2373,7 +2373,7 @@ Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, e
   { return term; }
 }
 
-Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; }
+Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; Exp sub; }
 {	
 	// distance namespace isMulti sqrt depth cardinality isuri occurence
   ((
@@ -2388,9 +2388,21 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   | term = Set(stack)
   | term = For(stack)
   | term = Lambda()
+  | term = QueryExp()
   )
 
   { return term; }
+}
+
+Term QueryExp () : {Term term; Exp sub;}
+{
+   <QUERY> <LPAREN> 
+    (
+    sub = SubQueryExp() 
+    |
+    sub = SubConstruct() { sub = BasicGraphPattern.create(sub); }
+    )
+    <RPAREN> { return astq.toExist(sub); }
 }
 
 
@@ -2600,7 +2612,8 @@ Function Lambda () :
 {
   <LAMBDA> 
   { stack = BasicGraphPattern.create(); }
-  v = FunArgList()
+//  v = FunArgList()
+  v = LambdaArgList()
   body = Body(stack)
 
   { 
@@ -2623,6 +2636,29 @@ ExpressionList FunArgList() : { ExpressionList list;  Variable var; Constant typ
   { return list; }
 }
 
+
+ExpressionList LambdaArgList() : { ExpressionList glist, list;  Variable var; Constant type; }
+{
+   <LPAREN> 		  	 	  	
+    (                           
+                  <LPAREN>  { glist = new ExpressionList(); } 
+                            list = LambdaVarList()  { glist.add(list); } <RPAREN>
+        ( <COMMA> <LPAREN>  list = LambdaVarList()  { glist.add(list); } <RPAREN> )*
+        { list = glist; }
+
+    | list = LambdaVarList() 
+    )
+   <RPAREN>
+
+  { return list; }
+}
+
+ExpressionList LambdaVarList() : { ExpressionList list;  Variable var; }
+{
+    { list = new ExpressionList(); }  
+    ( var = Var() { list.add(var);  }	 ( <COMMA>  var = Var() { list.add(var); } )*  ) ?
+    { return list; }
+}
 
 ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Constant type; }
 {
@@ -3083,6 +3119,7 @@ TOKEN [IGNORE_CASE] :
 | <XPATH: "xpath">
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">
+| <QUERY: "query">
 | <EXPORT: "export">
 | <PACKAGE: "package">
 }

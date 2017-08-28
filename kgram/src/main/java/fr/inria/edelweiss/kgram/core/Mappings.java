@@ -260,7 +260,7 @@ public class Mappings extends PointerObject
             if (ptr && obj != null
                     && obj != this
                     && obj instanceof PointerObject) {
-                sb.append(" : ");
+                sb.append(" : \n");
                 sb.append(obj.toString());
             }
             sb.append("; ");

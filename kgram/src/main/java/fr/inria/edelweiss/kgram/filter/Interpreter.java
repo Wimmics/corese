@@ -426,6 +426,7 @@ public class Interpreter implements Evaluator, ExprType {
             switch (exp.oper()){
                 case UNDEF:
                     logger.error("Error eval arguments: " + exp);
+                    break;
                 case XT_GEN_GET:
                     // let (var = xt:gget()) return UNDEF and let will not bind var
                     // see let() here

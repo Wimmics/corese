@@ -53,10 +53,18 @@ public interface IDatatype
     public static final String QUERY    = KGRAM + "Query";
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
-    public static final String LIST     = ExpType.DT + "list";
-    public static final String POINTER  = ExpType.DT + "pointer";
-    public static final String SYSTEM   = ExpType.DT + "system";
     
+    public static final String LIST     = ExpType.DT + "list";   
+    public static final String SYSTEM   = ExpType.DT + "system";
+    public static final String POINTER  = ExpType.DT + "pointer";
+    public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";
+    public static final String TRIPLE_DATATYPE   = ExpType.DT + "triple";
+    public static final String MAPPINGS_DATATYPE = ExpType.DT + "mappings";
+    public static final String MAPPING_DATATYPE  = ExpType.DT + "mapping";
+    public static final String CONTEXT_DATATYPE  = ExpType.DT + "context";
+    public static final String NSM_DATATYPE      = ExpType.DT + "nsmanager";
+    public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
+   
     /**
      * @return true if we have a blanknode
      */

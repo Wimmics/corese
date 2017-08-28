@@ -5,6 +5,8 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Visit filter/select/bind expressions
@@ -14,6 +16,7 @@ import java.util.List;
  *
  */
 public class ExpressionVisitorVariable implements ExpressionVisitor {
+    private static Logger logger = LogManager.getLogger(ASTQuery.class);
    
     boolean let = false;
     private boolean functionDefinition = false;
@@ -170,6 +173,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             localize(v);
         } 
         else if (isFunctionDefinition()) {
+            logger.error("Undefined variable: " + v + " in function: " + fun.getSignature().getName());
             v.undef();
         }
     }
@@ -220,37 +224,6 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         letloop(t);
     }
     
-    
-    /**
-     * map (xt:fun(?x), ?list)
-     * var ?x is local because it is interpreted as:
-     * (for dt : ?list) {let (?x = dt, xt:fun(?x))}
-     * 
-    */  
-//    void map(Term t) {
-//        if (trace) System.out.println("Vis Map: " + t);
-//        if (t.getArgs().size() >= 2){
-//            Expression fun = t.getArg(0);
-//            if (fun.isFunction()) {
-//                for (Expression arg : fun.getArgs()){  
-//                    if (arg.isVariable()){
-//                        Variable var = arg.getVariable();
-//                        localize(var);
-//                        remove(var);
-//                    }
-//                }                
-//            }
-//            else if (fun.isVariable()){
-//                Variable var = fun.getVariable();
-//                localize(var);
-//                remove(var);
-//            }
-//            
-//            for (int i = 1; i<t.getArgs().size(); i++){
-//                t.getArg(i).visit(this);
-//            }
-//        }       
-//    }
        
     /**
      * aggregate(?x, xt:mediane(?list))

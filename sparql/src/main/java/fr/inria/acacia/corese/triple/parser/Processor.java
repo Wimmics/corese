@@ -117,7 +117,9 @@ public class Processor {
         private static final String XT_AST      = EXT + "ast";
         private static final String XT_CONTEXT  = EXT + "context";
         private static final String XT_METADATA = EXT + "metadata";
+        private static final String XT_ANNOTATION= EXT + "annotation";        
         private static final String XT_PREFIX   = EXT + "prefix";        
+        private static final String XT_NSMANAGER= EXT + "nsmanager";        
         private static final String XT_FROM     = EXT + "from";        
         private static final String XT_NAMED    = EXT + "named";        
         private static final String XT_TRIPLE   = EXT + "triple";
@@ -644,6 +646,9 @@ public class Processor {
 		defoper(XT_AST,          ExprType.XT_AST);
 		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
 		defoper(XT_METADATA,     ExprType.XT_METADATA);
+		defoper(XT_ANNOTATION,   ExprType.XT_METADATA);
+		defoper(XT_NSMANAGER,    ExprType.STL_PREFIX);
+                
 		defoper(XT_FROM,         ExprType.XT_FROM);
 		defoper(XT_NAMED,        ExprType.XT_NAMED);
                 

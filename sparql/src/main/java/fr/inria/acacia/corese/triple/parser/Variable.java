@@ -254,17 +254,14 @@ public class Variable extends Atom {
         }
         
        public boolean isLocal(){
-            //return index == ExprType.LOCAL;
             return type == ExprType.LOCAL;
         }
        
        public void localize(){
-          // index = ExprType.LOCAL;
            setType(ExprType.LOCAL);
        }
        
        void undef(){
-          //index = ExprType.UNDEF; 
           setType(ExprType.UNDEF);
        }
 

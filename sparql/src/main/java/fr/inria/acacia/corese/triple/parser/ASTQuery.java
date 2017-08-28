@@ -1090,6 +1090,16 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     
     // lambda(?x) {}
      public Function defineLambda(ExpressionList el, Expression exp, Metadata annot) {
+         if (el.isNested()){
+             // lambda((?x, ?y)){ exp } 
+             // ->
+             // lambda(?m) { let ((?x, ?y) = ?m) { exp }}
+             Variable var = new Variable(LET_VAR + nbd++);
+             ExpressionList list = new ExpressionList(var);
+             Term deflet = defLet(el.getList().get(0), var);
+             Term let = let(deflet, exp);
+             return defineLambda(list, let, annot);
+         }
          return getGlobalAST().defineLambdaUtil(el, exp, annot);
      }
      

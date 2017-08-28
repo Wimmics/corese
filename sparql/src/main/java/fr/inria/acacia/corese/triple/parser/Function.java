@@ -33,6 +33,10 @@ public class Function extends Statement {
 
     @Override
     public Term getFunction() {
+        return getSignature();
+    }
+    
+    public Term getSignature(){
         return getArg(0).getTerm();
     }
     

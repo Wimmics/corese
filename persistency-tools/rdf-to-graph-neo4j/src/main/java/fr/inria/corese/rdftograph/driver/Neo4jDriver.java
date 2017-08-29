@@ -302,14 +302,6 @@ public class Neo4jDriver extends GdbDriver {
         return filter;
     }
 
-    int getKey(DatatypeValue s, DatatypeValue p, DatatypeValue o) {
-        int key = 0;
-        key += (o == null) ? 0 : 1;
-        key += (p == null) ? 0 : 10;
-        key += (s == null) ? 0 : 100;
-        return key;
-    }
-
     String getKeyString(DatatypeValue s, DatatypeValue p, DatatypeValue o) {
         StringBuilder sb = new StringBuilder();
         sb.append((s == null) ? "?s" : "S");

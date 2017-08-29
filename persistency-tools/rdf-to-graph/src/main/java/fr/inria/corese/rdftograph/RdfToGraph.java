@@ -137,23 +137,14 @@ public class RdfToGraph {
         }
         File root;
 
-        if (filename.startsWith("/")) { // absolute path
-            String dirPath = filename.substring(0, filename.lastIndexOf("/") + 1);
-            filename = filename.substring(filename.lastIndexOf("/") + 1, filename.length());
-            root = new File(dirPath);
-        } else if (filename.contains("/")) { // relative path
-            root = new File(filename.substring(0, filename.lastIndexOf("/")));
+        if (filename.contains("/")) {
+            root = new File(filename.substring(0, filename.lastIndexOf("/")+1));
             filename = filename.substring(filename.lastIndexOf("/") + 1, filename.length());
         } else {
             root = new File("."); // filename without path
         }
         final String finalFilename = filename;
-        File[] files = root.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.matches(finalFilename);
-            }
-        });
+        File[] files = root.listFiles((File dir, String name) -> name.matches(finalFilename));
         Arrays.sort(files);
         boolean first = true;
         for (File file : files) {
@@ -226,9 +217,9 @@ public class RdfToGraph {
      * Read a RDF stream and serialize it inside a Neo4j graph.
      *
      * @param fileName Input stream containing rdf data
-     * @param format    Format used for the rdf representation in the input
-     *                  stream
-     * @param dbPath    Where to store the rdf data.
+     * @param format   Format used for the rdf representation in the input
+     *                 stream
+     * @param dbPath   Where to store the rdf data.
      */
     public void convertFileToDb(String fileName, RDFFormat format, String dbPath) throws Exception {
         try {

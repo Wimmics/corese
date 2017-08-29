@@ -52,6 +52,7 @@ public class GnuplotDrawer {
                 cptArg++;
             } else {
                 filenames.add(args[cptArg]);
+                logger.info("Adding filename pattern: "+args[cptArg]);
             }
         }
 
@@ -240,45 +241,6 @@ public class GnuplotDrawer {
         } else {
             throw new IllegalArgumentException("the node provided does not contain any median");
         }
-    }
-
-    private static long guessSize(Document document) {
-        long size;
-        String dbName = document.getElementsByTagName("Input").item(0).getTextContent();
-        Pattern patternWithAddress = Pattern.compile(".*(?:nq|gz)[:](\\d+),(\\d+)");
-        Pattern patternSize = Pattern.compile(".*(?:nq|gz)[:](\\d+)");
-        Pattern patternSimple = Pattern.compile(".*(?:nq|gz)");
-        Pattern for40m = Pattern.compile(".*-00\\(0\\|1\\|2\\|3\\).nq.gz");
-        Pattern for100m = Pattern.compile(".*-00\\d+.nq.gz");
-        Pattern for1g = Pattern.compile(".*-0\\d+.nq.gz");
-        Pattern for4g = Pattern.compile(".*-\\d+.nq.gz");
-
-        Matcher m = patternWithAddress.matcher(dbName);
-        if (m.matches()) {
-            long start = Long.parseLong(m.group(1));
-            long end = Long.parseLong(m.group(2));
-            size = end - start + 1;
-        } else {
-            m = patternSize.matcher(dbName);
-            if (m.matches()) {
-                size = Long.parseLong(m.group(1));
-            } else if (for4g.matcher(dbName).matches()) {
-                size = 4_000_000_000L;
-            } else if (for1g.matcher(dbName).matches()) {
-                size = 1_000_000_000L;
-            } else if (for100m.matcher(dbName).matches()) {
-                size = 100_000_000L;
-            } else if (for40m.matcher(dbName).matches()) {
-                size = 40_000_000;
-            } else {
-                if (patternSimple.matcher(dbName).matches()) {
-                    size = 10_000_000;
-                } else {
-                    size = -1;
-                }
-            }
-        }
-        return size;
     }
 
     private static String getGitVersion(String path) throws IOException {

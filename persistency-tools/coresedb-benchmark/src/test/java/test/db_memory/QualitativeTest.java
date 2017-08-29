@@ -6,7 +6,6 @@
 package test.db_memory;
 
 import fr.inria.corese.rdftograph.RdfToGraph;
-import fr.inria.corese.rdftograph.driver.GdbDriver;
 import fr.inria.wimmics.coresetimer.CoreseTimer;
 import fr.inria.wimmics.coresetimer.Main.TestSuite;
 import fr.inria.wimmics.coresetimer.TestDescription;
@@ -20,7 +19,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -50,7 +51,37 @@ public class QualitativeTest implements ITest {
     public QualitativeTest() {
     }
 
-    @Test(dataProvider = "quantitative", groups = "")
+    /**
+     * Test only that the results are equal using the Database or memory.
+     * */
+    @Test(dataProvider =  "SparqlSemanticTests", groups = "")
+    public static void testResults(TestDescription test) {
+        test.setWarmupCycles(0);
+        test.setMeasuredCycles(1);
+        CoreseTimer timerMemory = null;
+        CoreseTimer timerDb = null;
+        try {
+            setCacheForDb(test);
+            timerDb = CoreseTimer.build(test).setMode(CoreseTimer.Profile.DB).init().run();
+            timerMemory = CoreseTimer.build(test).setMode(CoreseTimer.Profile.MEMORY).init().run();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        System.out.println("running test: " + test.getId());
+        boolean result;
+        try {
+            result = compareResults(timerDb.getMapping(), timerMemory.getMapping());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            result = false;
+        }
+        test.setResultsEqual(result);
+        timerDb.writeResults();
+        timerMemory.writeResults();
+        assertTrue(result, test.getId());
+    }
+
+    @Test(dataProvider = "SparqlSemanticTests", groups = "", enabled = false)
     public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
         java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
@@ -226,66 +257,47 @@ public class QualitativeTest implements ITest {
 //		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
 //		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
 
-        return new Iterator<Object[]>() {
-            boolean started = false;
-            int cptInputFiles = 0;
-            int cptRequests = 0;
-            TestSuite currentSuite;
+        return new FileAndRequestIterator(inputFiles, requests).setInputRoot(inputRoot).setOutputRoot(outputRoot);
+    }
 
-            @Override
-            public boolean hasNext() {
-                if (inputFiles.length == 0 || requests.isEmpty()) {
-                    return false;
+    @DataProvider(name = "SparqlSemanticTests", parallel = false)
+    public Iterator<Object[]> buildSparqlSemanticTests() throws Exception {
+        String[] inputFiles = {"dbpedia.ttl"};
+        ArrayList<String> requests = new ArrayList<String>();
+        for (File f : searchFiles("./src/test/resources/requests/db/dbpedia/.*\\.rq")) {
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+                String currentLine;
+                while ((currentLine = br.readLine()) != null) {
+                    sb.append(currentLine);
+                    sb.append('\n');
                 }
-                if (started) {
-                    return !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.size() - 1);
-                } else {
-                    return true;
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            @Override
-            public Object[] next() {
-                if (started) {
-                    cptRequests++;
-                    if (cptRequests >= requests.size()) {
-                        cptRequests = 0;
-                        cptInputFiles++;
-                    }
-                    if (cptInputFiles >= inputFiles.length) {
-                        throw new IllegalArgumentException("no more elements");
-                    }
-                } else {
-                    started = true;
-                }
+            requests.add(sb.toString());
+        }
+        return new FileAndRequestIterator(inputFiles, requests).setInputRoot(inputRoot).setOutputRoot(outputRoot);
+    }
 
-                String inputFilePattern = inputFiles[cptInputFiles];
-                String request = requests.get(cptRequests);
 
-                if (cptRequests == 0) {
-                    // build the template of the test, ie
-                    // an object describing how to proceed
-                    // the test. Only the request is updated
-                    // between each test.
-                    currentSuite = TestSuite.build("test_" + inputFilePattern).
-                            setDriver(RdfToGraph.DbDriver.NEO4J).
-                            setWarmupCycles(2).
-                            setMeasuredCycles(5).
-                            setInputFilesPattern(inputFilePattern).
-                            setInputDb(GdbDriver.filePatternToDbPath(inputFilePattern)).
-                            setInputRoot(inputRoot).
-                            setOutputRoot(outputRoot);
-                    try {
-                        currentSuite.createDb(TestSuite.DatabaseCreation.IF_NOT_EXIST);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        throw new RuntimeException(ex);
-                    }
+    private File[] searchFiles(String pattern) {
+        File root;
+        String searchedFilename;
+        if (pattern.contains("/")) {
+            root = new File(pattern.substring(0, pattern.lastIndexOf("/") + 1));
+            searchedFilename = pattern.substring(pattern.lastIndexOf("/") + 1, pattern.length());
+        } else {
+            root = new File("."); // filename without path
+            searchedFilename = pattern;
+        }
+        File[] result = root.listFiles((File dir, String name) -> {
+                    System.out.println(name);
+                    return name.matches(searchedFilename);
                 }
-                TestDescription[] result = {currentSuite.buildTest(request)};
-                return result;
-            }
-        };
+        );
+        return result;
     }
 
     /**
@@ -324,7 +336,7 @@ public class QualitativeTest implements ITest {
             int posInCurrent = 0;
             String currentRequest = sparqlRequest;
             while (current != 0) {
-                if (current % 2 == 1) { // replace all occurences of "posInCurrent"-th variable in sparqlRequest by "posInCurrent"-th value in data, if the posInCurrent bit is set in "current" value.
+                if (current % 2 == 1) { // replace all occurrences of "posInCurrent"-th variable in sparqlRequest by "posInCurrent"-th value in data, if the posInCurrent bit is set in "current" value.
                     String currentVariable = sparqlVariables.get(posInCurrent);
                     currentRequest = currentRequest.replaceFirst("\\" + currentVariable, "").replace(currentVariable, dataValues[posInCurrent]);
                 }

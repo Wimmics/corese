@@ -109,7 +109,8 @@ public class CoreseTimer {
             }
         }
 
-        String query = test.getRequest();
+        String query = test.getRequest().replaceAll("<AT_DB>", "");
+
         LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
         stats = new DescriptiveStatistics();
         statsMemory = new DescriptiveStatistics();

@@ -1,0 +1,9 @@
+prefix p: <http://fr.dbpedia.org/property/>
+select * where {
+  service <db:/home/corby/soft/db/dbpedia_db> {
+    ?x p:latitude ?lat 
+    filter (?lat = "43.580834"^^xsd:double) 
+    ?x rdfs:label  ?l
+  }
+}
+

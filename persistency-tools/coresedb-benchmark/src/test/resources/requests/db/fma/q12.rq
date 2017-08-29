@@ -1,0 +1,8 @@
+prefix ex: <http://example.org/>
+@db </home/corby/soft/db/fma_db>
+@test
+select debug * where {
+?x ?p ?x
+
+}
+limit 1

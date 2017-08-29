@@ -1,0 +1,42 @@
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:ns1='http://example.org/'
+  xmlns:ft='http://ns.inria.fr/sparql-template/format/rdfxml/'
+  xmlns:us='http://ns.inria.fr/sparql-extension/user/'
+  xmlns:st='http://ns.inria.fr/sparql-template/'
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='http://example.org/Jack'>
+  <ns1:value>http://www.example.org</ns1:value>
+  <ns1:value rdf:datatype='&xsd;integer'>12</ns1:value>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.org/James'>
+  <ns1:value xml:lang='en'>http://www.example.org/ns1:value>
+  <ns1:value rdf:datatype='&xsd;decimal'>12.0</ns1:value>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.org/Jesse'>
+  <ns1:value xml:lang='fr'>http://www.example.org/ns1:value>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.org/Jim'>
+  <ns1:value>
+    <rdf:Description rdf:nodeID='_:b0'>
+      <ns1:value>12</ns1:value>
+    </rdf:Description>
+  </ns1:value>
+  <ns1:value rdf:resource='http://www.example.org' />
+  <ns1:value rdf:datatype='&xsd;double'>12</ns1:value>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.org/John'>
+  <ns1:value>12</ns1:value>
+</rdf:Description>
+
+
+
+</rdf:RDF>

@@ -1,0 +1,7 @@
+select * where {
+  service <db:/home/corby/soft/db/dbpedia_db> {
+    ?x rdfs:label "Antibes"@fr , ?l
+filter (?l = "Antibes"@fr)
+  }
+}
+

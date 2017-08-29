@@ -1,0 +1,7 @@
+@db </home/corby/soft/db/fma_db>
+@test
+select *  where {
+?x rdfs:label ?l 
+filter (?l = "Structural gene"@fr) 
+
+}

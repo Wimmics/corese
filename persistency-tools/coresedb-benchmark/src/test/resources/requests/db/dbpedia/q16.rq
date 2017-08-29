@@ -1,0 +1,13 @@
+<AT_DB>
+@test
+select  debug * where {
+    ?x rdfs:label ?l 
+filter (?l = "Paris"@fr || ?l = "Nice"@fr
+|| contains(?l, "Antibes")
+|| strstarts(?l, "Cannes")
+|| strends(?l, "Vence")
+|| regex(?l, "^Paris")
+)
+}
+limit 5
+

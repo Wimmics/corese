@@ -1,0 +1,7 @@
+@db </home/corby/soft/db/fma_db>
+@test
+select debug  * where {
+    ?test ?p ?l 
+
+}
+limit 1

@@ -20,7 +20,7 @@ import java.util.List;
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
-        extends ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
+        extends Iterable<IDatatype>, ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
     static final int VALUE  = -1;
     static final int RESULT = -2;
     // use case: cast
@@ -84,6 +84,7 @@ public interface IDatatype
 
     List<IDatatype> getValues();
     List<IDatatype> getValueList();
+    IDatatype toList();
     
     Iterable getLoop();
 

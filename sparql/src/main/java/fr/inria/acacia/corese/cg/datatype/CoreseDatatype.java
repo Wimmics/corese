@@ -22,6 +22,7 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -315,17 +316,62 @@ public class CoreseDatatype
     }
     
     @Override
-     public List<IDatatype> getValueList() {   
+    public List<IDatatype> getValueList() {   
         if (isList()){
              return getValues();
         }
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
         if (isLoop()){
-            for (Object obj : getLoop()){
-                list.add(DatatypeMap.getValue(obj));
+            for (IDatatype dt : this){
+                if (dt != null){
+                    list.add(dt);
+                }
             }
         }
         return list;
+    }
+    
+    @Override
+    public IDatatype toList(){
+        if (isList()){
+            return this;
+        }
+        else {
+            return DatatypeMap.newInstance(getValueList());
+        }
+    }
+    
+    @Override
+    public Iterator<IDatatype> iterator() {
+        if (isList()){
+            return getValues().iterator();
+        }
+        else if (isLoop()){
+            return loopIterator();
+        }
+        else {
+            return new ArrayList<IDatatype>(0).iterator();
+        }
+    }
+    
+    Iterator<IDatatype> loopIterator() {
+        return new Iterator<IDatatype>() {
+            final Iterator it = getLoop().iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public IDatatype next() {
+                Object obj = it.next();
+                if (obj == null) {
+                    return null;
+                }
+                return DatatypeMap.getValue(obj);
+            }
+        };
     }
      
     @Override

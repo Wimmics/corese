@@ -67,7 +67,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     
     @Override
     public boolean isLoop(){
-        return pobject != null && pobject instanceof Loopable;
+        return pobject != null;
     }
     
     @Override

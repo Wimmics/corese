@@ -24,7 +24,7 @@ public class CoreseBoolean extends CoreseStringLiteral {
   public static final CoreseBoolean FALSE = new CoreseBoolean(false);
   static final CoreseURI datatype=new CoreseURI(RDF.xsdboolean);
   boolean bvalue=true;
-  private Object object;
+//  private Object object;
 
   /**
    * Construct a Corese boolean
@@ -199,31 +199,31 @@ public class CoreseBoolean extends CoreseStringLiteral {
   }
      
 
-    /**
-     * @return the object
-     */
-  @Override
-    public Object getObject() {
-        return object;
-    }
-
-    /**
-     * @param object the object to set
-     */
-  @Override
-    public void setObject(Object object) {
-        this.object = object;
-    }
-  
-  @Override
-   public boolean isLoop(){
-        return object != null && object instanceof Loopable;
-    }
-    
-  @Override
-    public Iterable getLoop(){
-        return ((Loopable) object).getLoop();
-    }
-  
+//    /**
+//     * @return the object
+//     */
+//  @Override
+//    public Object getObject() {
+//        return object;
+//    }
+//
+//    /**
+//     * @param object the object to set
+//     */
+//  @Override
+//    public void setObject(Object object) {
+//        this.object = object;
+//    }
+//  
+//  @Override
+//   public boolean isLoop(){
+//        return object != null && object instanceof Loopable;
+//    }
+//    
+//  @Override
+//    public Iterable getLoop(){
+//        return ((Loopable) object).getLoop();
+//    }
+//  
 
 }

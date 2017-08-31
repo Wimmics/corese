@@ -38,6 +38,7 @@ public class Processor {
 	public static final String COUNT    = "count";
 	public static final String INLIST   = Term.LIST;
 	public static final String XT_LIST     = EXT+"list";
+	public static final String XT_TOLIST   = EXT+"toList";
 	public static final String XT_IOTA     = EXT+"iota";
 	public static final String XT_REVERSE  = EXT+"reverse";
 	public static final String XT_APPEND   = EXT+"append";
@@ -597,6 +598,7 @@ public class Processor {
 		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
 		defoper(XT_LIST,        ExprType.LIST);
+		defoper(XT_TOLIST,      ExprType.XT_TOLIST);
 		defoper(XT_IOTA,        ExprType.IOTA);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);

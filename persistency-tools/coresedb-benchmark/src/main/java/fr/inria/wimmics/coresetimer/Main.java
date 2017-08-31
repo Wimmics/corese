@@ -80,7 +80,6 @@ public class Main {
         private String inputRoot;
         private String outputRoot;
         private String testId;
-        private int nbTests = 0;
         private String inputDb;
         private RDFFormat format;
         private String outputFilename;
@@ -91,6 +90,7 @@ public class Main {
         static public TestSuite build(String id) {
             return new TestSuite(id);
         }
+
 
         public String getId() {
             return testId;
@@ -191,7 +191,11 @@ public class Main {
         }
 
         public TestDescription buildTest(String request) {
-            String testId = this.testId + "_" + Integer.toHexString(request.hashCode());
+            return buildTest(request, "");
+        }
+
+        public TestDescription buildTest(String request, String idSuffix) {
+            String testId = String.format("%s_%s_%s", this.testId, idSuffix, Integer.toHexString(request.hashCode()));
             TestDescription newTest = TestDescription.build(testId, this)
                     .setMeasuredCycles(defaultMeasuredCycles)
                     .setWarmupCycles(defaultWarmupCycles)
@@ -199,9 +203,8 @@ public class Main {
                     .setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId + "_%s"))
                     .setRequest(request)
                     .setInputDb(getInputDb());
-
-            nbTests++;
             return newTest;
+
         }
 
         public enum DatabaseCreation {

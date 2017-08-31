@@ -5,6 +5,10 @@ import fr.inria.corese.rdftograph.driver.GdbDriver;
 import fr.inria.wimmics.coresetimer.Main;
 import fr.inria.wimmics.coresetimer.TestDescription;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,6 +19,7 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
     private Main.TestSuite currentSuite;
     private String[] inputFiles;
     private ArrayList<String> requests;
+    private ArrayList<String> requestsName;
     private String inputRoot;
     private String outputRoot;
     private Main.TestSuite.DatabaseCreation creationMode = Main.TestSuite.DatabaseCreation.IF_NOT_EXIST;
@@ -22,6 +27,36 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
     public FileAndRequestIterator(String[] _inputFiles, ArrayList<String> _requests) {
         inputFiles = _inputFiles;
         requests = _requests;
+        requestsName = new ArrayList<>(_requests.size());
+        _requests.forEach((String s) ->
+                requestsName.add("")
+        );
+    }
+
+    public FileAndRequestIterator(String[] _inputFiles, String requestFilesPattern) {
+        ArrayList<String> requests = new ArrayList<String>();
+        ArrayList<String> requestsName = new ArrayList<String>();
+        for (File f : searchFiles("./src/test/resources/requests/db/dbpedia/.*\\.rq")) {
+            requestsName.add(f.getName());
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+                String currentLine;
+                while ((currentLine = br.readLine()) != null) {
+                    sb.append(currentLine);
+                    sb.append('\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            requests.add(sb.toString());
+        }
+
+
+        inputFiles = _inputFiles;
+        this.requests = requests;
+        this.requestsName = requestsName;
+        assert(requests.size() == requestsName.size());
     }
 
     public FileAndRequestIterator setInputRoot(String inputRoot) {
@@ -89,7 +124,25 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
                 throw new RuntimeException(ex);
             }
         }
-        TestDescription[] result = {currentSuite.buildTest(request)};
+        TestDescription[] result = {currentSuite.buildTest(request, requestsName.get(cptRequests))};
+        return result;
+    }
+
+    private File[] searchFiles(String pattern) {
+        File root;
+        String searchedFilename;
+        if (pattern.contains("/")) {
+            root = new File(pattern.substring(0, pattern.lastIndexOf("/") + 1));
+            searchedFilename = pattern.substring(pattern.lastIndexOf("/") + 1, pattern.length());
+        } else {
+            root = new File("."); // filename without path
+            searchedFilename = pattern;
+        }
+        File[] result = root.listFiles((File dir, String name) -> {
+                    System.out.println(name);
+                    return name.matches(searchedFilename);
+                }
+        );
         return result;
     }
 }

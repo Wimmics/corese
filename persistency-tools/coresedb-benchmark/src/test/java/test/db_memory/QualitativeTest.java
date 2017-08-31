@@ -55,15 +55,15 @@ public class QualitativeTest implements ITest {
      * Test only that the results are equal using the Database or memory.
      * */
     @Test(dataProvider =  "SparqlSemanticTests", groups = "")
-    public static void testResults(TestDescription test) {
+    public void testResults(TestDescription test) {
         test.setWarmupCycles(0);
         test.setMeasuredCycles(1);
-        CoreseTimer timerMemory = null;
-        CoreseTimer timerDb = null;
+        CoreseTimer timerMemory = CoreseTimer.build(test).setMode(CoreseTimer.Profile.DB).init();
+        CoreseTimer timerDb = CoreseTimer.build(test).setMode(CoreseTimer.Profile.MEMORY).init();
         try {
             setCacheForDb(test);
-            timerDb = CoreseTimer.build(test).setMode(CoreseTimer.Profile.DB).init().run();
-            timerMemory = CoreseTimer.build(test).setMode(CoreseTimer.Profile.MEMORY).init().run();
+            timerDb = timerMemory.run();
+            timerMemory = timerMemory.run();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -82,7 +82,7 @@ public class QualitativeTest implements ITest {
     }
 
     @Test(dataProvider = "SparqlSemanticTests", groups = "", enabled = false)
-    public static void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
         java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
         java.util.logging.Logger.getGlobal().setUseParentHandlers(false);
@@ -119,7 +119,7 @@ public class QualitativeTest implements ITest {
     }
 
     // Useful only for titandb.
-    private static void setCacheForDb(TestDescription test) {
+    private void setCacheForDb(TestDescription test) {
         String confFileName = String.format("%s/conf.properties", test.getInputDb());
         try {
             PropertiesConfiguration config = new PropertiesConfiguration(new File(confFileName));
@@ -263,41 +263,7 @@ public class QualitativeTest implements ITest {
     @DataProvider(name = "SparqlSemanticTests", parallel = false)
     public Iterator<Object[]> buildSparqlSemanticTests() throws Exception {
         String[] inputFiles = {"dbpedia.ttl"};
-        ArrayList<String> requests = new ArrayList<String>();
-        for (File f : searchFiles("./src/test/resources/requests/db/dbpedia/.*\\.rq")) {
-            StringBuilder sb = new StringBuilder();
-            try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-                String currentLine;
-                while ((currentLine = br.readLine()) != null) {
-                    sb.append(currentLine);
-                    sb.append('\n');
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            requests.add(sb.toString());
-        }
-        return new FileAndRequestIterator(inputFiles, requests).setInputRoot(inputRoot).setOutputRoot(outputRoot);
-    }
-
-
-    private File[] searchFiles(String pattern) {
-        File root;
-        String searchedFilename;
-        if (pattern.contains("/")) {
-            root = new File(pattern.substring(0, pattern.lastIndexOf("/") + 1));
-            searchedFilename = pattern.substring(pattern.lastIndexOf("/") + 1, pattern.length());
-        } else {
-            root = new File("."); // filename without path
-            searchedFilename = pattern;
-        }
-        File[] result = root.listFiles((File dir, String name) -> {
-                    System.out.println(name);
-                    return name.matches(searchedFilename);
-                }
-        );
-        return result;
+        return new FileAndRequestIterator(inputFiles, "./src/test/resources/requests/db/dbpedia/.*\\.rq").setInputRoot(inputRoot).setOutputRoot(outputRoot);
     }
 
     /**

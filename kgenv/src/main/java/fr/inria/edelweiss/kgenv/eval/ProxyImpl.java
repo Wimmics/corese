@@ -322,11 +322,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case SEQUENCE:
                 return sequence(exp, env, p);
-                
-            case XT_DISPLAY:
-                System.out.println();
-                return TRUE;
-                
+                              
             case XT_MAPPING:
                 // use case: aggregate(xt:mapping())
                 return DatatypeMap.createObject(env);
@@ -507,13 +503,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_REJECT:
                 return reject(env, dt); 
-                
-            case XT_DISPLAY:
-                display(dt);
-                System.out.println();
-                return TRUE;
-                    
-                                                               
+                                                                                                 
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1);
@@ -527,17 +517,40 @@ public class ProxyImpl implements Proxy, ExprType {
         System.out.println(dt1 + " " + dt2);
         return TRUE;
     }
-
     
-    public IDatatype display(IDatatype dt){        
+    IDatatype xt_display(IDatatype[] param) {
+       return xt_display(param, true);
+    }
+    
+    IDatatype xt_display(IDatatype[] param, boolean turtle) {
+        for (IDatatype dt : param) {
+            xt_display(dt, turtle);
+            System.out.print(" ");
+        }
+        System.out.println();
+        return TRUE;
+    }
+    
+    IDatatype xt_display(IDatatype dt){  
+        return xt_display(dt, true);
+    }      
+
+    IDatatype xt_display(IDatatype dt, boolean turtle){        
         if (dt.getObject() != null){
             System.out.print(dt.getObject());
         }
-        else {
+        else if (turtle) {
             System.out.print(dt);
+        }
+        else {
+            System.out.print(dt.stringValue());
         }
         return dt;
     }
+    
+     public IDatatype display(IDatatype dt){ 
+         return xt_display(dt);
+     }
        
     IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
         if (dt.getObject() != null) {
@@ -662,14 +675,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_GET:
                 return get(dt1, dt2);
-                
-            case XT_DISPLAY:
-                display(dt1);
-                System.out.print(" ");
-                display(dt2);
-                System.out.println();
-                return TRUE;    
-                
+                               
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1, o2);
@@ -687,20 +693,20 @@ public class ProxyImpl implements Proxy, ExprType {
         IDatatype val = (param.length>0) ?  param[0] : null;
         switch (exp.oper()) {
                                                 
-            case MAPANY:                
-            case MAPEVERY:
-                 return anyevery(exp, env, p, param, exp.getExp(0));
-                
-            case MAP:
-            case MAPLIST:
-            case MAPMERGE:
-            case MAPAPPEND:
-            case MAPFIND:
-            case MAPFINDLIST:
-                return eval(exp, env, p, param, exp.getExp(0));
-                               
-            case APPLY:
-                return apply(exp, env, p, val, exp.getExp(0));
+//            case MAPANY:                
+//            case MAPEVERY:
+//                 return anyevery(exp, env, p, param, exp.getExp(0));
+//                
+//            case MAP:
+//            case MAPLIST:
+//            case MAPMERGE:
+//            case MAPAPPEND:
+//            case MAPFIND:
+//            case MAPFINDLIST:
+//                return eval(exp, env, p, param, exp.getExp(0));
+//                               
+//            case APPLY:
+//                return apply(exp, env, p, val, exp.getExp(0));
 
             case EXTERNAL:
                 return external(exp, env, p, param);                
@@ -746,11 +752,10 @@ public class ProxyImpl implements Proxy, ExprType {
                 return concat(exp, env, p, param);
                 
             case XT_DISPLAY:
-                for (IDatatype dt : param){
-                    display(dt); System.out.println(" ");
-                }
-                System.out.println();
-                return TRUE;       
+               return xt_display(param);  
+                
+            case XT_PRINT:
+                return xt_display(param, false);
             
         }
 
@@ -1988,9 +1993,9 @@ public class ProxyImpl implements Proxy, ExprType {
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] oparam, Expr def) {
         IDatatype[] param = (IDatatype[]) oparam;
         switch (exp.oper()){
-            case ExprType.APPLY: 
+            case ExprType.REDUCE: 
                 if (param.length == 0) return null;
-                return apply(exp, env, p, param[0], def);
+                return reduce(exp, env, p, param[0], def);
             case ExprType.MAPEVERY:
             case ExprType.MAPANY:
                 return anyevery(exp, env, p, param, def);
@@ -2260,14 +2265,13 @@ public class ProxyImpl implements Proxy, ExprType {
     }
        
     /**
-     * apply(kg:plus, ?list)   
+     * reduce(kg:plus, ?list)   
      * @return 
      */
-    private IDatatype apply(Expr exp, Environment env, Producer p, IDatatype dt, Expr fun) {
+    private IDatatype reduce(Expr exp, Environment env, Producer p, IDatatype dt, Expr fun) {
         if (! dt.isList()) {
             return null;
         }
-        //Expr fun = exp.getExp(0);
         List<IDatatype> list = dt.getValues();
         if (list.isEmpty()){
             return neutral(fun, dt);

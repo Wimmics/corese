@@ -21,7 +21,6 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
 import java.util.HashMap;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -377,12 +376,21 @@ public class Interpreter implements Evaluator, ExprType {
             case UNDEF:
             case STL_PROCESS:
             case LIST:
-            case IOTA:           
+            case IOTA:  
+            case XT_DISPLAY:
+            case XT_PRINT:
+                // use function call below with param array 
                 break;
                 
             case FUNCALL:
                 return funcall(exp, env, p);
+
+            case APPLY:
+                return apply(exp, env, p);
                 
+            case REDUCE:
+                return reduce(exp, env, p);
+
             case MAP:
             case MAPLIST:
             case MAPMERGE:
@@ -391,8 +399,7 @@ public class Interpreter implements Evaluator, ExprType {
             case MAPFINDLIST:
             case MAPEVERY:
             case MAPANY:
-            case APPLY:
-                return mapapply(exp, env, p);
+                return mapreduce(exp, env, p);
                           
             default:                
                 switch (exp.getExpList().size()) {
@@ -739,27 +746,45 @@ public class Interpreter implements Evaluator, ExprType {
      * map(us:fun(?x), ?list)
      * 
      */
-    public Object mapapply(Expr exp, Environment env, Producer p) {
+    public Object mapreduce(Expr exp, Environment env, Producer p) {
         Object[] args = evalArguments(exp, env, p, 1);
         if (args == ERROR_VALUE) {
             return null;
         }
-        Expr def = getDefine(exp, env, p, (exp.oper() == ExprType.APPLY) ? 2 : args.length);
+        Expr def = getDefine(exp, env, p, (exp.oper() == ExprType.REDUCE) ? 2 : args.length);
         if (def == null){
             return ERROR_VALUE;
         }  
         return proxy.eval(exp, env, p, args, def.getFunction());
     }
     
-//    public Object map2(Expr exp, Environment env, Producer p) {
-//        Object[] args = evalArguments(exp, env, p, 1);
-//        if (args == ERROR_VALUE) {
-//            return null;
-//        }
-//        return proxy.eval(exp, env, p, args);
-//    }
+    public Object reduce(Expr exp, Environment env, Producer p){
+        return mapreduce(exp, env, p);
+    }
     
-     public Object funcall(Expr exp, Environment env, Producer p){
+    /**
+     *   apply(fun, list(a, b)) = funcall(fun, a, b)
+     */
+    public Object apply(Expr exp, Environment env, Producer p){
+        Object[] args = evalArguments(exp, env, p, 1);
+        if (args == null || args.length == 0){
+            return ERROR_VALUE;
+        }
+        /*
+         * args[0] == list of values
+         * args := args[0].getValueList().toArray()
+         */
+        DatatypeValue dt = p.getDatatypeValue(args[0]);
+        args = dt.getValueList().toArray();
+        Expr def = getDefine(exp, env, p, args.length);
+        if (def == null){
+            return ERROR_VALUE;
+        }
+        return eval(exp, env, p, args, def);
+    }
+
+    
+    public Object funcall(Expr exp, Environment env, Producer p){
         Object[] args = evalArguments(exp, env, p, 1);
         if (args == null){
             return ERROR_VALUE;

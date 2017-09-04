@@ -1,6 +1,8 @@
 
 package fr.inria.edelweiss.kgram.api.core;
 
+import java.util.List;
+
 /**
  *
  * Olivier Corby - Wimmics, Inria, I3S, 2015
@@ -24,6 +26,8 @@ public interface DatatypeValue {
     String getDatatypeURI();
     
     String getLang();
+    
+    List getValueList();
     
     boolean isURI();
     

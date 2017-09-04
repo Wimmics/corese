@@ -277,6 +277,7 @@ public interface ExprType {
 	public static int FUNCALL       = 326;
 	public static int FOR           = 327;
 	public static int MAPAPPEND     = 328;
+	public static int REDUCE        = 329;
         
 	public static int XT_SORT       = 330;
         
@@ -305,7 +306,7 @@ public interface ExprType {
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
-        public static int XT_TUNE        = 424;
+        public static int XT_PRINT       = 424;
         
         public static int XT_UNION       = 425;
         public static int XT_MINUS       = 426;
@@ -320,6 +321,7 @@ public interface ExprType {
         public static int XT_MEMBER      = 435;
         public static int XT_MERGE       = 436;
         public static int XT_TOLIST      = 437;
+        public static int XT_TUNE        = 438;
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;

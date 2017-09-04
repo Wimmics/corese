@@ -3,8 +3,6 @@ package fr.inria.acacia.corese.triple.parser;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,6 +90,7 @@ public class Processor {
 	private static final String MAPFIND   = "mapfind";
 	private static final String MAPFINDLIST   = "mapfindlist";
 	static final String APPLY   = "apply";
+	static final String REDUCE  = "reduce";
         
         private static final String XT_SELF     = EXT + "self";
         private static final String XT_FIRST    = EXT + "first";
@@ -354,6 +353,7 @@ public class Processor {
         static final String RQ_GT 	= SPARQL + "gt";
                       
         static final String XT_DISPLAY 	= EXT + "display";
+        static final String XT_PRINT 	= EXT + "print";
         static final String XT_TUNE 	= EXT + "tune";
         static final String XT_UNION 	= EXT + "union";
         static final String XT_MINUS 	= EXT + "minus";
@@ -608,6 +608,7 @@ public class Processor {
                 
 		defoper(FUNCALL,           ExprType.FUNCALL);                
 		defsysoper(EVAL,           ExprType.EVAL);                
+		defsysoper(REDUCE,         ExprType.REDUCE);
 		defsysoper(APPLY,          ExprType.APPLY);
 		defsysoper(MAP,            ExprType.MAP);
 		defsysoper(FOR,            ExprType.FOR);
@@ -813,6 +814,7 @@ public class Processor {
                 
                 
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
+                defoper(XT_PRINT,  ExprType.XT_PRINT);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 
                 
                 defoper(XT_UNION,  ExprType.XT_UNION);  

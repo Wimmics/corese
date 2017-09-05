@@ -268,15 +268,20 @@ public class QuerySolver  implements SPARQLEngine {
 		return query(query, map);
 	}
 	
-        @Override
 	public Mappings eval(Query query){
             return query(query, null);
         }
         
-         @Override
-	public Mappings eval(Query query, Mapping m){
+        @Override
+        public Mappings eval(Query query, Mapping m, Producer p) {
             return query(query, m);
         }
+
+        public Mappings eval(Query query, Mapping m) {
+            return query(query, m);
+        }
+        
+        
 	/**
 	 * Core QueryExec processor
 	 */

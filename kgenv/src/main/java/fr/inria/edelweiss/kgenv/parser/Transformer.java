@@ -1539,7 +1539,9 @@ public class Transformer implements ExpType {
             Term term = (Term) exp;
             Exp pat = compile(term.getExist(), opt);
             term.setPattern(pat);
-        } else {
+        } 
+        //else 
+        {
             for (Expr ee : exp.getExpList()) {
                 compileExist(ee, opt);
             }

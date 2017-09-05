@@ -104,6 +104,7 @@ public class Processor {
         private static final String XT_ADD      = EXT + "add";
         private static final String XT_MAPPING  = EXT + "mapping";
         private static final String XT_SIZE     = EXT + "size";      
+        private static final String XT_FOCUS    = EXT + "focus";
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
         private static final String XT_PROPERTY = EXT + "property";
@@ -352,6 +353,7 @@ public class Processor {
         static final String RQ_GE 	= SPARQL + "ge";
         static final String RQ_GT 	= SPARQL + "gt";
                       
+        static final String XT_LOAD 	= EXT + "load";
         static final String XT_DISPLAY 	= EXT + "display";
         static final String XT_PRINT 	= EXT + "print";
         static final String XT_TUNE 	= EXT + "tune";
@@ -634,7 +636,7 @@ public class Processor {
 		defoper(XT_SET,         ExprType.XT_SET);
  		defoper(XT_REJECT,      ExprType.XT_REJECT);
                
-		//defoper(XT_COUNT,        ExprType.XT_COUNT);
+		defoper(XT_FOCUS,        ExprType.XT_FOCUS);
 		defoper(XT_SIZE,         ExprType.XT_COUNT);		
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
 		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
@@ -813,6 +815,7 @@ public class Processor {
                 defoper(RQ_GE,     ExprType.GE); 
                 
                 
+                defoper(XT_LOAD,   ExprType.LOAD);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_PRINT,  ExprType.XT_PRINT);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 

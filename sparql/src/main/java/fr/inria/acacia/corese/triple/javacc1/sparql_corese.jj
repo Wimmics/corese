@@ -2394,15 +2394,19 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   { return term; }
 }
 
-Term QueryExp () : {Term term; Exp sub;}
+Term QueryExp () : {Expression exp = null; Exp stack; Term term; Exp sub;}
 {
-   <QUERY> <LPAREN> 
+   <QUERY> <LPAREN>    
     (
     sub = SubQueryExp() 
     |
     sub = SubConstruct() { sub = BasicGraphPattern.create(sub); }
     )
-    <RPAREN> { return astq.toExist(sub); }
+    (  <COMMA>
+        { stack = BasicGraphPattern.create(); }
+        exp = Expression(stack) 
+    )?
+    <RPAREN> { return astq.term(sub, exp); }
 }
 
 
@@ -2453,7 +2457,7 @@ Term For (Exp stack) :
 
         |
 
-        sub = SubQueryExp()  { el = new ExpressionList(); exp = astq.toExist(sub); }
+        sub = SubQueryExp()  { el = new ExpressionList(); exp = astq.term(sub); }
      )
     <RPAREN>   
     body = Body(stack)
@@ -2465,11 +2469,11 @@ Term For (Exp stack) :
 Expression LetForExp() : {Exp sub; Expression exp;}
 {
 (
-    sub = SubQueryExp() { exp = astq.toExist(sub); }
+    sub = SubQueryExp() { exp = astq.term(sub); }
     |
-    sub = ServiceExp()  { exp = astq.toExist(sub); }
+    sub = ServiceExp()  { exp = astq.term(sub); }
     |
-    sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+    sub = SubConstruct() { exp = astq.term(BasicGraphPattern.create(sub)); }
     | 
     <AT> exp = CstList() 
 
@@ -2553,7 +2557,7 @@ Expression LetDef(Exp stack) :
 
  |
   // let (select where)
-  sub = SubQueryExp() { el = new ExpressionList(); exp = astq.toExist(sub); }
+  sub = SubQueryExp() { el = new ExpressionList(); exp = astq.term(sub); }
 )			
    { return (el == null) ? astq.defLet(var, type, exp) : astq.defLet(el, exp);  }
  

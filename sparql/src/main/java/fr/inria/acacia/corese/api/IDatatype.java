@@ -54,7 +54,7 @@ public interface IDatatype
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
     
-    public static final String LIST     = ExpType.DT + "list";   
+    public static final String LIST_DATATYPE     = ExpType.DT + "list";   
     public static final String SYSTEM   = ExpType.DT + "system";
     public static final String POINTER  = ExpType.DT + "pointer";
     public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";

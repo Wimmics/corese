@@ -13,7 +13,7 @@ public class CoreseList extends CoreseUndefLiteral {
     private List<IDatatype> list;
     private static int count = 0;
     private static final String SEED = "_l_";
-    private static final IDatatype dt = getGenericDatatype(IDatatype.LIST);
+    private static final IDatatype dt = getGenericDatatype(IDatatype.LIST_DATATYPE);
 
     public CoreseList(String value) {
         super(value);

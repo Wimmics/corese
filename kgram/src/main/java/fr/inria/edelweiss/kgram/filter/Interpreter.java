@@ -307,9 +307,9 @@ public class Interpreter implements Evaluator, ExprType {
                 }
                 return null;
                 
-//            case SEQUENCE:
-//                return sequence(exp, env, p);
-                
+            case XT_FOCUS:
+               return focus(exp, env, p);
+                               
             case FOR:
                 return proxy.function(exp, env, p);
                 
@@ -551,14 +551,23 @@ public class Interpreter implements Evaluator, ExprType {
     }
 
     /**
-     *
-     * filter(! exists {PAT})
+     * filter exists { }
+     * exists statement is also used to embed LDScript nested query
+     * in this case it is tagged as system
      */
     Object exist(Expr exp, Environment env, Producer p) {
         if (hasListener) {
             listener.listen(exp);
         }
-        
+        if (exp.arity() == 1){
+            Object res = eval(exp.getExp(0), env, p);
+            if (res == ERROR_VALUE){
+                return ERROR_VALUE;
+            }
+            if (p.isProducer((Node)res)){
+                p = p.getProducer((Node)res, env);
+            }
+        }
         Query q = env.getQuery();
         Exp pat = q.getPattern(exp);
         Node gNode = env.getGraphNode();
@@ -573,16 +582,15 @@ public class Interpreter implements Evaluator, ExprType {
         else {
             return null;
         }
-        
-//        System.out.println("I: " + memory);
-//        System.out.println("I: " + memory.getBind());
-      
+              
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);        
         Mappings map = null;
         
         if (exp.isSystem()) {
-            // system generated exists:
+            // system generated for LDScript nested query 
+            // e.g. for (?m in select where) {}
+            // is compiled with internal system exists 
             // for (?m in exists {select where}){}
             Exp sub = pat.get(0).get(0);
 
@@ -591,12 +599,12 @@ public class Interpreter implements Evaluator, ExprType {
                 qq.setFun(true);
                 if (qq.isConstruct()) {
                     // let (?g =  construct where)
-                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq), p);                     
                     return producer.getValue(m.getGraph());
                 } 
                 if (qq.getService() != null){
                     // @service <uri> let (?m = select where)
-                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq));                     
+                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq), p);                     
                     return producer.getValue(m);
                 }
                 else {
@@ -610,7 +618,7 @@ public class Interpreter implements Evaluator, ExprType {
             }
         } 
         else {
-            // exists {}
+            // SPARQL exists {}
             eval.setLimit(1);
             map = eval.subEval(q, gNode, Stack.create(pat), 0);
         }
@@ -686,6 +694,17 @@ public class Interpreter implements Evaluator, ExprType {
         proxy.finish(producer, env);
     }
     
+    private Object focus(Expr exp, Environment env, Producer p){
+        if (exp.arity() < 2){
+            return ERROR_VALUE;
+        }
+        Object res = eval(exp.getExp(0), env, p);
+        if (res == ERROR_VALUE || !  p.isProducer((Node)res)){
+            return ERROR_VALUE;
+        }
+        Producer pp = p.getProducer((Node)res, env);
+        return eval(exp.getExp(1), env, pp);
+    }
 
     /**
      * let (?x = ?y, exp) 
@@ -833,29 +852,27 @@ public class Interpreter implements Evaluator, ExprType {
      */
     @Override
     public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
-        //count++;
-        Expr fun = def.getFunction(); //getExp(0);
+        Expr fun = def.getFunction(); 
         env.set(def, fun.getExpList(), values);
         if (isDebug || def.isDebug()){
             System.out.println(exp);
             System.out.println(env.getBind());
         }
         Object res;
-        // TODO: check also getGlobalQuery()
-        if (def.isSystem() 
-                && def.isPublic() 
-                && env.getQuery() != def.getPattern()){
-            // function is export and has exists {}
-            // use function query
-            res = funEval(def, (Query) def.getPattern(), env, p); 
-        }
-        else if (def.isSystem()){
-            // function has exists {}
+        if (def.isSystem()) {
+            // function contains nested query or exists
             // use fresh Memory for not to screw Bind & Memory
             // use case: exists { exists { } }
             // the inner exists need outer exists BGP to be bound
             // hence we need a fresh Memory to start
-            res = funEval(def, env.getQuery(), env, p); 
+            Query q = env.getQuery();
+            if (def.isPublic() && env.getQuery() != def.getPattern()) {
+                // function is public and contains query or exists
+                // use function definition global query in order to have Memory 
+                // initialized with the right set of Nodes for the nested query
+                q = (Query) def.getPattern();
+            }
+            res = funEval(def, q, env, p);
         }
         else {
             res = eval(def.getBody(), env, p); 
@@ -872,7 +889,7 @@ public class Interpreter implements Evaluator, ExprType {
     
     /**
      * Eval a function in new kgram with function's query
-     * use case:  function with exists {}
+     * use case:  function with exists or nested query
      * @param exp function ex:name() {}
      */
     Object funEval(Expr exp, Query q, Environment env, Producer p){

@@ -9,10 +9,8 @@ import fr.inria.edelweiss.kgram.core.Query;
  * @author corby
  */
 public interface SPARQLEngine {
-    
-    Mappings eval(Query q);
-    
-    Mappings eval(Query q, Mapping m);
+        
+    Mappings eval(Query q, Mapping m, Producer p);
     
     Query load(String path);
     

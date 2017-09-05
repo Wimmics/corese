@@ -154,11 +154,11 @@ public class ExtendGraph {
     }
 
     
-     Object load(Producer p, Expr exp, Environment env, IDatatype dt) {
+     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt) {
          return load(p, exp, env, dt, null);
      }
 
-      Object load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
+      IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
          Graph g = Graph.create();
          Load ld = Load.create(g);
          try {
@@ -170,7 +170,7 @@ public class ExtendGraph {
              logger.error(ex);
              ex.printStackTrace();
          }
-        IDatatype res = create("load", g, IDatatype.GRAPH);
+        IDatatype res = DatatypeMap.createObject(g);
         return res;
     }
       

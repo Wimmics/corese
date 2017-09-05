@@ -197,7 +197,7 @@ public class QueryProcess extends QuerySolver {
         exec.setMatch(isMatch);
         return exec;
     }
-     
+            
     public static synchronized Producer getCreateProducer(Graph g, String factory, String db) {
         if (db == null) {
             if (p == null) {
@@ -381,7 +381,18 @@ public class QueryProcess extends QuerySolver {
     public Mappings eval(Query query, Mapping m) {
         return qquery(query, m, null);
     }
-
+    
+    /**
+     * Use case: LDScript function execute query(construct where)
+     */
+    @Override
+    public Mappings eval(Query query, Mapping m, Producer p) {
+        if (p != getProducer()){
+            return create(p).qquery(query, m, null);
+        }
+        return qquery(query, m, null);
+    }
+    
     @Override
     public Query load(String path) {
         QueryLoad ql = QueryLoad.create();

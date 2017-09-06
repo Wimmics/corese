@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,17 +66,6 @@ public class CoreseTimer {
     }
 
     public CoreseTimer init() {
-        switch (mode) {
-            case DB: {
-                System.setProperty("fr.inria.corese.factory", "fr.inria.corese.tinkerpop.Factory");
-                break;
-            }
-            case MEMORY: {
-                System.setProperty("fr.inria.corese.factory", "");
-                break;
-            }
-        }
-
         // create output directory of the form ${OUTPUT_ROOT}
         outputRoot = getEnvWithDefault("OUTPUT_ROOT", "./");
         outputRoot = ensureEndWith(outputRoot, "/");
@@ -85,10 +76,7 @@ public class CoreseTimer {
         return this;
     }
 
-    public CoreseTimer run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
-        LOGGER.entering(CoreseTimer.class.getName(), "run");
-        assert (initialized);
-
+    public CoreseTimer load() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
         // Loading the nq data in corese, then applying several times the query.
         LOGGER.log(Level.INFO, "beginning with input #{0}", test.getInput());
         // require to have a brand new adapter for each new input set.
@@ -108,8 +96,34 @@ public class CoreseTimer {
                 break;
             }
         }
+        return this;
+    }
 
-        String query = test.getRequest().replaceAll("<AT_DB>", "");
+    public CoreseTimer run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, LoadException {
+        LOGGER.entering(CoreseTimer.class.getName(), "run");
+        assert (initialized);
+
+        // Process the query
+        String inputFileName = "";
+        Map<String, String> tagReplacement = new HashMap<>();
+        switch (mode) {
+            case MEMORY: {
+                tagReplacement.put("<AT_DB>", "");
+                tagReplacement.put("<BEGIN_SERVICE>", "");
+                tagReplacement.put("<END_SERVICE>", "");
+                break;
+            }
+            case DB: {
+                tagReplacement.put("<AT_DB>", String.format("@db <%s>", test.getTestSuite().getDatabasePath()));
+                tagReplacement.put("<BEGIN_SERVICE>", String.format("service <db:%s> {", test.getTestSuite().getDatabasePath()));
+                tagReplacement.put("<END_SERVICE>", "}");
+                break;
+            }
+        }
+        String query = test.getRequest();
+        for (String key : tagReplacement.keySet()) {
+            query = query.replaceAll(key, tagReplacement.get(key));
+        }
 
         LOGGER.log(Level.INFO, "processing nbQuery #{0}", query);
         stats = new DescriptiveStatistics();
@@ -123,7 +137,8 @@ public class CoreseTimer {
             LOGGER.log(Level.INFO, "before query");
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<?> future = executor.submit(() -> adapter.execQuery(query));
+            final String finalQuery = query;
+            Future<?> future = executor.submit(() -> adapter.execQuery(finalQuery));
 
             try {
                 future.get(1, TimeUnit.HOURS);
@@ -163,7 +178,9 @@ public class CoreseTimer {
     }
 
     public void writeResults() {
-        adapter.saveResults(test.getOutputPath("results_" + mode));
+        String resultsFileName = test.getOutputPath("results_" + mode);
+        LOGGER.log(Level.INFO, "Writing results in {0}", resultsFileName);
+        adapter.saveResults(resultsFileName);
     }
 
     public Mappings getMapping() {
@@ -263,6 +280,10 @@ public class CoreseTimer {
             ex.printStackTrace();
         }
 
+    }
+
+    public void setTest(TestDescription test) {
+        this.test = test;
     }
 
     public enum Profile {

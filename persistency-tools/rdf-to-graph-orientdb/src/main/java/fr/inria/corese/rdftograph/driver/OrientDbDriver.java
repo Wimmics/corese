@@ -65,7 +65,7 @@ public class OrientDbDriver extends GdbDriver {
     }
 
     @Override
-    public void closeDb() {
+    public void closeDatabase() {
         try {
             graph.getTx().close();
         } catch (Exception ex) {
@@ -178,7 +178,7 @@ public class OrientDbDriver extends GdbDriver {
         String namedGraph = edge.value(EDGE_G);
         Entity result = EdgeQuad.create(DatatypeMap.createResource(namedGraph),
                 buildNode(edge.outVertex()),
-                DatatypeMap.createResource((String) e.value(EDGE_P)),
+                DatatypeMap.createResource(e.value(EDGE_P)),
                 buildNode(edge.inVertex())
         );
         return result;
@@ -187,15 +187,15 @@ public class OrientDbDriver extends GdbDriver {
     @Override
     public fr.inria.edelweiss.kgram.api.core.Node buildNode(Element e) {
         Vertex node = (Vertex) e;
-        String id = (String) node.value(VERTEX_VALUE);
+        String id = node.value(VERTEX_VALUE);
         switch ((String) node.value(KIND)) {
             case IRI:
                 return DatatypeMap.createResource(id);
             case BNODE:
                 return DatatypeMap.createBlank(id);
             case LITERAL:
-                String label = (String) node.value(VERTEX_VALUE);
-                String type = (String) node.value(TYPE);
+                String label = node.value(VERTEX_VALUE);
+                String type = node.value(TYPE);
                 VertexProperty<String> lang = node.property(LANG);
                 if (lang.isPresent()) {
                     return DatatypeMap.createLiteral(label, type, lang.value());
@@ -203,8 +203,8 @@ public class OrientDbDriver extends GdbDriver {
                     return DatatypeMap.createLiteral(label, type);
                 }
             case LARGE_LITERAL:
-                label = (String) node.value(VERTEX_LARGE_VALUE);
-                type = (String) node.value(TYPE);
+                label = node.value(VERTEX_LARGE_VALUE);
+                type = node.value(TYPE);
                 lang = node.property(LANG);
                 if (lang.isPresent()) {
                     return DatatypeMap.createLiteral(label, type, lang.value());

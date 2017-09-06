@@ -31,7 +31,7 @@ public class NullDriver extends GdbDriver {
     }
 
     @Override
-    public void closeDb() {
+    public void closeDatabase() {
         logger.fine("Closing db");
     }
 

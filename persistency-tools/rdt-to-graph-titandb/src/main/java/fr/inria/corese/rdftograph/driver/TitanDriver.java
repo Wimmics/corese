@@ -163,7 +163,7 @@ public class TitanDriver extends GdbDriver {
     }
 
     @Override
-    public void closeDb() {
+    public void closeDatabase() {
         getTitanGraph().close();
     }
 

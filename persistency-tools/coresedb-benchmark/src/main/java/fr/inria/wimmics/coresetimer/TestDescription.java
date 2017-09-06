@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class TestDescription implements Cloneable {
 
     private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
-    private final Main.TestSuite suite;
+    private final TestSuite suite;
     private String testId;
     private String request;
     private boolean resultsEqual;
@@ -31,12 +31,12 @@ public class TestDescription implements Cloneable {
     private String outputPrefixFilename;
     private int size = -1;
 
-    private TestDescription(String id, Main.TestSuite suite) {
+    private TestDescription(String id, TestSuite suite) {
         testId = id;
         this.suite = suite;
     }
 
-    static public TestDescription build(String id, Main.TestSuite suite) {
+    static public TestDescription build(String id, TestSuite suite) {
         return new TestDescription(id, suite);
     }
 
@@ -137,5 +137,9 @@ public class TestDescription implements Cloneable {
 
     public String getOutputPath(String type) {
         return String.format(outputPrefixFilename, type);
+    }
+
+    public TestSuite getTestSuite() {
+        return suite;
     }
 }

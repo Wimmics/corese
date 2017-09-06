@@ -93,8 +93,8 @@ public class Neo4jDriver extends GdbDriver {
     }
 
     @Override
-    public void closeDb() throws Exception {
-        LOGGER.entering(getClass().getName(), "closeDb");
+    public void closeDatabase() throws Exception {
+        LOGGER.entering(getClass().getName(), "closeDatabase");
         try {
             while (graph.tx().isOpen()) {
                 graph.tx().commit();
@@ -535,15 +535,15 @@ public class Neo4jDriver extends GdbDriver {
     @Override
     public fr.inria.edelweiss.kgram.api.core.Node buildNode(Element e) {
         Vertex node = (Vertex) e;
-        String id = (String) node.value(VERTEX_VALUE);
+        String id = node.value(VERTEX_VALUE);
         switch ((String) node.value(KIND)) {
             case IRI:
                 return DatatypeMap.createResource(id);
             case BNODE:
                 return DatatypeMap.createBlank(id);
             case LITERAL:
-                String label = (String) node.value(VERTEX_VALUE);
-                String type = (String) node.value(TYPE);
+                String label = node.value(VERTEX_VALUE);
+                String type = node.value(TYPE);
                 VertexProperty<String> lang = node.property(LANG);
                 if (lang.isPresent()) {
                     return DatatypeMap.createLiteral(label, type, lang.value());
@@ -551,8 +551,8 @@ public class Neo4jDriver extends GdbDriver {
                     return DatatypeMap.createLiteral(label, type);
                 }
             case LARGE_LITERAL:
-                label = (String) node.value(VERTEX_LARGE_VALUE);
-                type = (String) node.value(TYPE);
+                label = node.value(VERTEX_LARGE_VALUE);
+                type = node.value(TYPE);
                 lang = node.property(LANG);
                 if (lang.isPresent()) {
                     return DatatypeMap.createLiteral(label, type, lang.value());
@@ -564,7 +564,7 @@ public class Neo4jDriver extends GdbDriver {
         }
     }
 
-    private static enum RelTypes implements RelationshipType {
+    private enum RelTypes implements RelationshipType {
         CONTEXT
     }
 

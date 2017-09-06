@@ -119,7 +119,7 @@ public abstract class GdbDriver {
         return null;
     }
 
-    public abstract void closeDb() throws Exception;
+    public abstract void closeDatabase() throws Exception;
 
     public abstract void commit();
 

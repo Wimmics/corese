@@ -1,6 +1,6 @@
 select * where {
-  service <db:<AT_DB>> {
+  <BEGIN_SERVICE>
     ?x rdfs:label "Antibes"@fr ; ?p ?y
-  }
+  <END_SERVICE> 
 }
 

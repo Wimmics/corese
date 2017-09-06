@@ -6,7 +6,6 @@
 package fr.inria.wimmics.coresetimer;
 
 import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.wimmics.coresetimer.Main.TestSuite;
 
 import java.io.IOException;
 

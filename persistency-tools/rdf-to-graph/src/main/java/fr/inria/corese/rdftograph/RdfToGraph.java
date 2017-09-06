@@ -231,7 +231,7 @@ public class RdfToGraph {
             driver.commit();
             LOGGER.info("Writing graph in db");
             LOGGER.info("closing DB");
-            driver.closeDb();
+            driver.closeDatabase();
             LOGGER.info("** end of convert **");
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Exception during conversion: {0}", ex.toString());

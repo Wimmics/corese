@@ -2,8 +2,8 @@ package test.db_memory;
 
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.corese.rdftograph.driver.GdbDriver;
-import fr.inria.wimmics.coresetimer.Main;
 import fr.inria.wimmics.coresetimer.TestDescription;
+import fr.inria.wimmics.coresetimer.TestSuite;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,13 +16,13 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
     private boolean started = false;
     private int cptInputFiles = 0;
     private int cptRequests = 0;
-    private Main.TestSuite currentSuite;
+    private TestSuite currentSuite;
     private String[] inputFiles;
     private ArrayList<String> requests;
     private ArrayList<String> requestsName;
     private String inputRoot;
     private String outputRoot;
-    private Main.TestSuite.DatabaseCreation creationMode = Main.TestSuite.DatabaseCreation.IF_NOT_EXIST;
+    private TestSuite.DatabaseCreation creationMode = TestSuite.DatabaseCreation.IF_NOT_EXIST;
 
     public FileAndRequestIterator(String[] _inputFiles, ArrayList<String> _requests) {
         inputFiles = _inputFiles;
@@ -69,7 +69,7 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
         return this;
     }
 
-    public FileAndRequestIterator setCreationMode(Main.TestSuite.DatabaseCreation mode) {
+    public FileAndRequestIterator setCreationMode(TestSuite.DatabaseCreation mode) {
         this.creationMode = mode;
         return this;
     }
@@ -109,16 +109,16 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
             // an object describing how to proceed
             // the test. Only the request is updated
             // between each test.
-            currentSuite = Main.TestSuite.build("test_" + inputFilePattern).
+            currentSuite = TestSuite.build("test_" + inputFilePattern).
                     setDriver(RdfToGraph.DbDriver.NEO4J).
                     setWarmupCycles(2).
                     setMeasuredCycles(5).
                     setInputFilesPattern(inputFilePattern).
-                    setInputDb(GdbDriver.filePatternToDbPath(inputFilePattern)).
+                    setDatabasePath(GdbDriver.filePatternToDbPath(inputFilePattern)).
                     setInputRoot(inputRoot).
                     setOutputRoot(outputRoot);
             try {
-                currentSuite.createDb(creationMode);
+                currentSuite.createDatabase(creationMode);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 throw new RuntimeException(ex);

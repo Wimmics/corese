@@ -74,5 +74,17 @@ public class CoresePointer extends CoreseUndefLiteral {
     public Iterable getLoop(){
         return ((Loopable) pobject).getLoop();
     }
+    
+    @Override
+    public IDatatype display(){
+       return DatatypeMap.createUndef(getContent(), getDatatypeURI());
+    }
+ 
+    public String display2(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"").append(getContent()).append("\"");
+        sb.append("^^").append(nsm.toPrefix(getDatatypeURI()));
+        return sb.toString();
+    }
 
 }

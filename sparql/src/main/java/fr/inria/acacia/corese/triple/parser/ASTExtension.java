@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,13 @@ public class ASTExtension {
     private static Logger logger = LogManager.getLogger(ASTExtension.class);	
 
     static final String NL = System.getProperty("line.separator");
+    public static final String TYPE = ExpType.TYPE_METADATA;
     //FunMap map;
     ASTFunMap[] maps;
     private String name;
     private Constant pack;
     ArrayList<Function> funList;
+    int nbfun = 0;
     
     public class ASTFunMap extends HashMap<String, Function> {}
 
@@ -84,13 +87,28 @@ public class ASTExtension {
      * exp: function(st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1)))
      */
     public void define(Function exp) {
-        Expression fun = exp.getFunction(); //exp.getArg(0);
+        Expression fun = exp.getFunction(); 
         ASTFunMap fm = getMap(fun);
         if (fm == null){
             logger.error("To many args: " + exp);
             return;
         }
-        fm.put(fun.getLabel(), exp);
+        fm.put(defLabel(exp), exp);
+        //fm.put(fun.getLabel(), exp);
+    }
+    
+    /**
+     * If function is a method, it is stored with a fake unique label in the hashmap 
+     * to allow overloading (same URI for different datatypes)
+     * The name of the function remains its URI
+     * This is only in this ASTExtension
+     * The Query Extension will manage  specific maps for methods
+     */
+    String defLabel(Function exp){
+        if (exp.getMetadataValues(TYPE) != null){
+            return exp.getFunction().getLabel().concat(Integer.toString(nbfun++));
+        }
+        return exp.getFunction().getLabel();
     }
     
     public void add(ASTExtension ext){

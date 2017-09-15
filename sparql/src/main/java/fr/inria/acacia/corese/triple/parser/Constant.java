@@ -168,7 +168,10 @@ public class Constant extends Atom {
                 toString(name, sb);
                 sb.append(KeywordPP.LANG).append(getLang());
             } else if (hasRealDatatype()) {
-                if (datatype.equals(RDF.qxsdInteger)
+                if (getDatatypeValue().isList()){
+                    sb.append("@").append(getDatatypeValue().getContent());
+                }
+                else if (datatype.equals(RDF.qxsdInteger)
                         || datatype.equals(RDF.xsdinteger)
                         || datatype.equals(RDF.qxsdBoolean)
                         || datatype.equals(RDF.xsdboolean)) {
@@ -199,8 +202,7 @@ public class Constant extends Atom {
     }
 
     public StringBuffer toString2(StringBuffer sb) {
-        String str = getDatatypeValue().toString();
-        sb.append(str);
+        sb.append(getDatatypeValue().toString());
         return sb;
     }
 

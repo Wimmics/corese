@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Function definition function xt:fun(x) { exp }
@@ -73,6 +74,10 @@ public class Function extends Statement {
 
     @Override
     public StringBuffer toString(StringBuffer sb) {
+        if (getMetadata() != null){
+//            sb.append(getMetadata());
+//            sb.append(Term.NL);
+        }
         sb.append(getLabel());
         sb.append(" ");
         getFunction().toString(sb);
@@ -99,6 +104,12 @@ public class Function extends Statement {
     
     public boolean hasMetadata(int type) {
         return annot != null && annot.hasMetadata(type);
+    }
+    
+    @Override
+    public List<String> getMetadataValues(String name){
+        if (getMetadata() == null) return null;
+        return getMetadata().getValues(name);
     }
     
     void annotate(Metadata m){

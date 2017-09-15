@@ -62,13 +62,31 @@ public class CoreseList extends CoreseUndefLiteral {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
+        sb.append("\"");
+        getContent(sb);
+        sb.append("\"^^").append(nsm.toPrefix(getDatatypeURI()));
+        return sb.toString();
+    }
+    
+    void getContent(StringBuffer sb) {
         sb.append("(");
         for (IDatatype dt : list) {
-            sb.append(dt);
+            sb.append((dt.isList()) ? dt.getContent() : dt);
             sb.append(" ");
         }
         sb.append(")");
+    }
+    
+    @Override
+    public String getContent() {
+        StringBuffer sb = new StringBuffer();
+        getContent(sb);
         return sb.toString();
+    }
+    
+    @Override
+    public String toSparql(boolean prefix, boolean xsd) {
+        return toString();
     }
 
     @Override
@@ -78,6 +96,10 @@ public class CoreseList extends CoreseUndefLiteral {
 
     public CoreseList getList() {
         return this;
+    }
+    
+    public Object getObject(){
+        return list;
     }
 
     public void set(IDatatype[] dts) {

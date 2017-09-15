@@ -62,6 +62,23 @@ public class CoreseDatatype
     public IDatatype getDataLang() {
         return empty;
     }
+    
+    @Override
+    public String getContent(){
+        if (getObject() == null){
+            return "";
+        }
+        return getObject().toString();
+    }
+    
+    /**
+     * Same as toString() except for Pointer that may display the content
+     * Use case: xt:display()
+     */
+    @Override
+    public IDatatype display() {
+        return this;
+    }
 
     @Override
     public String toString() {

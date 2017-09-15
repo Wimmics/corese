@@ -478,8 +478,7 @@ implements Regex, Filter, Expr {
 
 	
         @Override
-	public Expr getExp() {
-		
+	public Expr getExp() {		
 		return this;
 	}
 
@@ -792,6 +791,11 @@ implements Regex, Filter, Expr {
     
           @Override
     public Term getFunction(){
+        return null;
+    }
+          
+        @Override
+    public List<String> getMetadataValues(String name) {
         return null;
     }
     

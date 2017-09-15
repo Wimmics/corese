@@ -368,10 +368,21 @@ public class Term extends Expression {
 
     StringBuffer funExist(StringBuffer sb){
         if (isSystem()){
-            Exp exp = getExist().get(0).get(0);
-            return exp.toString(sb);
+            return ldscriptExist(sb);
         }
         return getExist().toString(sb);
+    }
+    
+    StringBuffer ldscriptExist(StringBuffer sb) {
+        Exp exp = getExist().get(0).get(0);
+        sb.append("query(");
+        exp.toString(sb);
+        if (arity() > 0){
+            sb.append(", ");
+            getArg(0).toString(sb);
+        }
+        sb.append(")");
+        return sb;
     }
         
     StringBuffer funSequence(StringBuffer sb){

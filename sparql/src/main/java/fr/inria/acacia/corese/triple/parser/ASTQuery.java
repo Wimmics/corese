@@ -1656,8 +1656,9 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
 
 
     public Constant createLDSList(IDatatype dt){
-        Constant list = Constant.createBlank("_:list");
-        list.setDatatypeValue(dt);
+//        Constant list = Constant.createBlank("_:list");
+//        list.setDatatypeValue(dt);
+        Constant list = Constant.create(dt);
         return list;
     }
     

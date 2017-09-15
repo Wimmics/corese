@@ -12,6 +12,7 @@ import java.util.List;
 public class ASTPrinter {
     
     ASTQuery ast;
+    private boolean prefix = true;
     
     public ASTPrinter(ASTQuery a){
         ast = a;
@@ -29,7 +30,9 @@ public class ASTPrinter {
         if (ast.isUpdate()) {
             ast.getUpdate().toString(sb);
         } else {
-            getSparqlPrefix(sb);
+            if (isPrefix()){
+                getSparqlPrefix(sb);
+            }
             getSparqlHeader(sb);
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
                 ast.getBody().toString(sb);
@@ -270,7 +273,7 @@ public class ASTPrinter {
         }
 
         if (sb.length() > 0) {
-            sb.append(NL);
+            //sb.append(NL);
         }
 
         return sb;
@@ -300,6 +303,20 @@ public class ASTPrinter {
             sb.append(NL);
             sb.append(NL);
         }
+    }
+
+    /**
+     * @return the prefix
+     */
+    public boolean isPrefix() {
+        return prefix;
+    }
+
+    /**
+     * @param prefix the prefix to set
+     */
+    public void setPrefix(boolean prefix) {
+        this.prefix = prefix;
     }
     
     

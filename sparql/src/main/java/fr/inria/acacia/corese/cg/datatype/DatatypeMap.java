@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
@@ -52,6 +53,10 @@ public class DatatypeMap implements Cst, RDF {
     public static final IDatatype ERROR   = CoreseUndefLiteral.ERROR;
     public static final IDatatype UNBOUND = CoreseUndefLiteral.UNBOUND;
     
+    public static final IDatatype URI_DATATYPE      = newResource(IDatatype.URI_DATATYPE);
+    public static final IDatatype BNODE_DATATYPE    = newResource(IDatatype.BNODE_DATATYPE);
+    public static final IDatatype LITERAL_DATATYPE  = newResource(IDatatype.LITERAL_DATATYPE);
+       
     private static Hashtable<String, Mapping> ht;
     private static HashMap<String, Integer> dtCode;
     static DatatypeMap dm; 

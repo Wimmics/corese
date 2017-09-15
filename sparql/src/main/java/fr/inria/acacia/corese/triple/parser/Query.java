@@ -15,7 +15,10 @@ public class Query extends Exp {
 	
         @Override
 	public StringBuffer toString(StringBuffer sb){
-		sb.append(ast.toString());
+		//sb.append(ast.toString());
+                ASTPrinter pr = new ASTPrinter(ast);
+                pr.setPrefix(false);
+                pr.toString(sb);
 		return sb;
 	}
 	

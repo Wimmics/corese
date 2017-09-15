@@ -126,6 +126,10 @@ public class Processor {
         private static final String XT_TRIPLE   = EXT + "triple";
         static public final String XT_MAIN      = EXT + "main";
         static public final String FUN_XT_MAIN  = EXT_PREF + "main";
+        private static final String XT_ENTAILMENT = EXT + "entailment";
+        private static final String XT_DATATYPE = EXT + "datatype";
+        private static final String XT_KIND     = EXT + "kind";
+        private static final String XT_METHOD   = EXT + "method";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -354,8 +358,11 @@ public class Processor {
         static final String RQ_GT 	= SPARQL + "gt";
                       
         static final String XT_LOAD 	= EXT + "load";
-        static final String XT_DISPLAY 	= EXT + "display";
-        static final String XT_PRINT 	= EXT + "print";
+        static final String XT_CONTENT 	= EXT + "content";
+        public static final String XT_DISPLAY 	= EXT + "display";
+        public static final String XT_PRINT 	= EXT + "print";
+        static final String XT_GDISPLAY = EXT + "gdisplay";
+        static final String XT_GPRINT 	= EXT + "gprint";
         static final String XT_TUNE 	= EXT + "tune";
         static final String XT_UNION 	= EXT + "union";
         static final String XT_MINUS 	= EXT + "minus";
@@ -653,6 +660,10 @@ public class Processor {
 		defoper(XT_METADATA,     ExprType.XT_METADATA);
 		defoper(XT_ANNOTATION,   ExprType.XT_METADATA);
 		defoper(XT_NSMANAGER,    ExprType.STL_PREFIX);
+		defoper(XT_ENTAILMENT,   ExprType.XT_ENTAILMENT);
+		defoper(XT_DATATYPE,     ExprType.XT_DATATYPE);
+		defoper(XT_KIND,         ExprType.XT_KIND);
+		defoper(XT_METHOD,       ExprType.XT_METHOD);
                 
 		defoper(XT_FROM,         ExprType.XT_FROM);
 		defoper(XT_NAMED,        ExprType.XT_NAMED);
@@ -816,8 +827,11 @@ public class Processor {
                 
                 
                 defoper(XT_LOAD,   ExprType.LOAD);  
+                defoper(XT_CONTENT,ExprType.XT_CONTENT);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_PRINT,  ExprType.XT_PRINT);  
+                defoper(XT_GDISPLAY,ExprType.XT_DISPLAY);  
+                defoper(XT_GPRINT, ExprType.XT_PRINT);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 
                 
                 defoper(XT_UNION,  ExprType.XT_UNION);  

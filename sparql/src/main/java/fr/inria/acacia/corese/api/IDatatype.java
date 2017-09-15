@@ -54,9 +54,17 @@ public interface IDatatype
     public static final String GRAPH    = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
     
+    public static final String ENTITY_DATATYPE   = ExpType.DT + "entity";
+    public static final String RESOURCE_DATATYPE = ExpType.DT + "resource";
+    public static final String URI_DATATYPE      = ExpType.DT + "uri";
+    public static final String BNODE_DATATYPE    = ExpType.DT + "bnode";
+    public static final String LITERAL_DATATYPE  = ExpType.DT + "literal";
+    public static final String STANDARD_DATATYPE = ExpType.DT + "standard";
+    public static final String EXTENDED_DATATYPE = ExpType.DT + "extended";
+    
     public static final String LIST_DATATYPE     = ExpType.DT + "list";   
-    public static final String SYSTEM   = ExpType.DT + "system";
-    public static final String POINTER  = ExpType.DT + "pointer";
+    public static final String SYSTEM            = ExpType.DT + "system";
+    public static final String POINTER           = ExpType.DT + "pointer";
     public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";
     public static final String TRIPLE_DATATYPE   = ExpType.DT + "triple";
     public static final String MAPPINGS_DATATYPE = ExpType.DT + "mappings";
@@ -149,6 +157,10 @@ public interface IDatatype
     void setObject(Object obj);
 
     Object getObject();
+    
+    String getContent();
+    
+    IDatatype display();
 
     /**
      * ************************************************************************

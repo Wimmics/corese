@@ -80,7 +80,7 @@ public class Metadata extends ASTObject
         define("@more",     MORE);      
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
-        define("@encoding",     ENCODING);      
+        define("@encoding", ENCODING);      
         define("@bind",     BIND);      
         define("@import",   IMPORT);      
         define("@display",  DISPLAY);      
@@ -233,11 +233,7 @@ public class Metadata extends ASTObject
          if (name == null){
              return null;
          }
-         List<String> val = value.get(name);
-         if (val == null){
-             return null;
-         }
-         return val;
+         return  value.get(name);
     }
     
     @Override

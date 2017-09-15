@@ -1,6 +1,9 @@
 package fr.inria.edelweiss.kgram.filter;
 
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
+import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.edelweiss.kgram.api.query.Hierarchy;
 import java.util.HashMap;
 
 /**
@@ -14,15 +17,20 @@ import java.util.HashMap;
 public class Extension {
 
     static final String NL = System.getProperty("line.separator");
+    public static final String TYPE = ExpType.TYPE_METADATA;
     //FunMap map;
     FunMap[] maps;
     private String name;
     private Object pack;
     
     public class FunMap extends HashMap<String, Expr> {}
+    // datatype -> Extension for methods of the datatype
+    HashMap<String, Extension> method;
+    // Embedding extension in case of method
+    private Extension extension;
+    private Hierarchy hierarchy;
 
     public Extension() {
-        //map = new FunMap();
         maps = new FunMap[11];
         for (int i=0; i<maps.length; i++){
             maps[i] = new FunMap();
@@ -54,14 +62,56 @@ public class Extension {
      * exp: st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1))
      */
     public void define(Expr exp) {
-        Expr fun = exp.getFunction(); //exp.getExp(0);
+        if (exp.getMetadataValues(TYPE) != null){
+            defineMethod(exp);
+        }
+        else {
+            defineFunction(exp);
+        }
+    }
+    
+    void defineFunction(Expr exp) {       
+        Expr fun = exp.getFunction(); 
         getMap(fun).put(fun.getLabel(), exp);
+    }
+    
+    /**
+     * Record function as method of datatype(s)
+     */
+    void defineMethod(Expr exp) {   
+         for (String type : exp.getMetadataValues(TYPE)){
+            getCreateMethodExtension(type).defineFunction(exp);
+         }
+    }
+    
+    /**
+     * Return the Extension that records the methods of type    
+     */
+    Extension getCreateMethodExtension(String type){
+        Extension ext = getMethod().get(type);
+        if (ext == null){
+            ext = new Extension();
+            ext.setExtension(this);
+            getMethod().put(type, ext);
+        }
+        return ext;
+    }
+    
+    Extension getMethodExtension(String type){
+        return getMethod().get(type);
+    }
+    
+    HashMap<String, Extension> getMethod(){
+        if (method == null){
+            method = new HashMap<>();
+        }
+        return method;
     }
     
     public void add(Extension ext){
         for (FunMap m : ext.getMaps()){
             for (Expr e : m.values()){
-                if (! isDefined(e.getFunction())){ //getExp(0))){
+                if (! isDefined(e.getFunction())){ 
                     define(e);
                 }
             }
@@ -121,6 +171,27 @@ public class Extension {
         return m.get(label);
     }
     
+    /**
+     * Retrieve a method with label name and param[0] (data)type 
+     * There are two possible Hierarchies: DatatypeHierarchy and ClassHierarchy
+     * ClassHierarchy extends DatatypeHierarchy (for literals only)
+     * By default, return  function if there is no method
+     */    
+    public Expr getMethod(String label, Object[] param) {
+        if (getActualHierarchy() != null && param.length > 0) {
+            for (String type : getActualHierarchy().getSuperTypes((DatatypeValue) param[0])) {
+                Extension ext = getMethodExtension(type);
+                if (ext != null) {
+                    Expr exp = ext.get(label, param.length);
+                    if (exp != null) {
+                        return exp;
+                    }
+                }
+            }
+        }
+        return get(label, param.length);
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -163,4 +234,44 @@ public class Extension {
     public void setPackage(Object pack) {
         this.pack = pack;
     }
+    
+    /**
+     * @return the extension
+     */
+    public Extension getExtension() {
+        return extension;
+    }
+
+    /**
+     * @param extension the extension to set
+     */
+    public void setExtension(Extension extension) {
+        this.extension = extension;
+    }
+    
+      /**
+     * @return the hierarchy
+     */
+    public Hierarchy getActualHierarchy() {
+        if (getExtension() != null){
+            return getExtension().getHierarchy();
+        }
+        return getHierarchy();
+    }
+
+    
+     /**
+     * @return the hierarchy
+     */
+    public Hierarchy getHierarchy() {
+        return hierarchy;
+    }
+
+    /**
+     * @param hierarchy the hierarchy to set
+     */ 
+    public void setHierarchy(Hierarchy hierarchy) {
+        this.hierarchy = hierarchy;
+    }
+    
 }

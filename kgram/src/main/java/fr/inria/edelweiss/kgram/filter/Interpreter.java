@@ -379,6 +379,7 @@ public class Interpreter implements Evaluator, ExprType {
             case IOTA:  
             case XT_DISPLAY:
             case XT_PRINT:
+            case XT_METHOD:
                 // use function call below with param array 
                 break;
                 
@@ -975,6 +976,21 @@ public class Interpreter implements Evaluator, ExprType {
            }
         }
         return extension.get(name, n);  
+    }
+    
+    /**
+     * Retrieve a method with name and type
+     */
+      @Override
+    public Expr getDefineMethod(Environment env, String name, Object[] param){
+        Extension ext = env.getExtension();
+        if (ext != null) {
+           Expr ee = ext.getMethod(name, param);
+           if (ee != null){
+               return ee;
+           }
+        }
+        return extension.getMethod(name, param);  
     }
        
     public static void define(Expr exp){

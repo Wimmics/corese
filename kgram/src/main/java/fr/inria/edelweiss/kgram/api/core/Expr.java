@@ -87,5 +87,7 @@ public interface Expr {
         Expr getVariable();
         
         Expr getDefinition();
+        
+        List<String> getMetadataValues(String name);
         	
 }

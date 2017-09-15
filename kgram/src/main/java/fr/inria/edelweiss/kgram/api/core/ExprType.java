@@ -323,6 +323,11 @@ public interface ExprType {
         public static int XT_TOLIST      = 437;
         public static int XT_TUNE        = 438;
         public static int XT_FOCUS       = 439;
+        public static int XT_CONTENT     = 440;
+        public static int XT_ENTAILMENT  = 441;
+        public static int XT_DATATYPE    = 442;
+        public static int XT_KIND        = 443;
+        public static int XT_METHOD      = 444;
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;

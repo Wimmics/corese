@@ -68,6 +68,8 @@ public interface Evaluator {
                               
         Expr getDefine(Environment env, String name, int n);
         
+        Expr getDefineMethod(Environment env, String name, Object[] values);
+
         Expr getDefine(String name);
         
         int compare(Environment env, Producer p, Node n1, Node n2);

@@ -19,6 +19,8 @@ public interface ExpType {
 	public static final String UXT    = "http://ns.inria.fr/sparql-extension/user/";
 	public static final String DT     = "http://ns.inria.fr/sparql-datatype/";
 	public static final String SWL    = "http://ns.inria.fr/sparql-workflow/";
+        public static final String TYPE_METADATA = "@type";
+
 
 	public static final String KPREF = "kg";
 

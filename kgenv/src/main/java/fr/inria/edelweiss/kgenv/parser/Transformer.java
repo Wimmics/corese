@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgenv.parser;
 
+import fr.inria.acacia.corese.cg.datatype.DatatypeHierarchy;
 import fr.inria.corese.kgenv.federate.ServiceVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -256,12 +257,19 @@ public class Transformer implements ExpType {
         
         toJava(ast);
         
-        if (ast.hasMetadata(Metadata.TRACE)){
-            System.out.println(ast);
-            //System.out.println(q.getExtension());
-        }
+        metadata(ast, q);
         
         return q;
+    }
+    
+    
+    void metadata(ASTQuery ast, Query q){
+        if (ast.hasMetadata(Metadata.TRACE)){
+            System.out.println(ast);
+        }
+        if (ast.hasMetadata(Metadata.TEST)){
+            q.setTest(true);
+        }
     }
     
     void toJava(ASTQuery ast){
@@ -560,7 +568,8 @@ public class Transformer implements ExpType {
      * Define function into Extension Export into Interpreter
      */
     void define(ASTExtension aext,  Query q) {
-        Extension ext = q.getCreateExtension();        
+        Extension ext = q.getCreateExtension();  
+        ext.setHierarchy(new DatatypeHierarchy());
         for (ASTFunMap m : aext.getMaps()) {
             for (Function exp : m.values()) {
                 ext.define(exp);

@@ -61,6 +61,7 @@ public class ProxyImpl implements Proxy, ExprType {
     static final String UTF8 = "UTF-8";
     public static final String RDFNS = NSManager.RDF; //"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String RDFTYPE = RDFNS + "type";
+    private static final String USER_DISPLAY = NSManager.USER+"display";
     public static int count = 0;
     Proxy plugin;
     Custom custom;
@@ -170,6 +171,12 @@ public class ProxyImpl implements Proxy, ExprType {
           IDatatype[] args = new IDatatype[2];
           args[0] = o1;
           args[1] = o2;
+          return args;
+     }
+     
+      IDatatype[] array(IDatatype o1){
+          IDatatype[] args = new IDatatype[1];
+          args[0] = o1;
           return args;
      }
      
@@ -501,6 +508,15 @@ public class ProxyImpl implements Proxy, ExprType {
             case XT_SORT:
                 return sort(dt);
                 
+            case XT_CONTENT: 
+                return content(dt);
+                
+            case XT_DATATYPE:
+                return xt_datatype(dt);
+                
+            case XT_KIND:
+                return xt_kind(dt);
+                                
             case XT_REJECT:
                 return reject(env, dt); 
                                                                                                  
@@ -513,44 +529,118 @@ public class ProxyImpl implements Proxy, ExprType {
         return null;
     }
     
-    public IDatatype display(IDatatype dt1, IDatatype dt2) {
-        System.out.println(dt1 + " " + dt2);
-        return TRUE;
+  
+    IDatatype xt_display(Environment env, Producer p, IDatatype[] param) {
+       return xt_display(env, p, param, true, true);
     }
     
-    IDatatype xt_display(IDatatype[] param) {
-       return xt_display(param, true);
-    }
-    
-    IDatatype xt_display(IDatatype[] param, boolean turtle) {
+    IDatatype xt_display(Environment env, Producer p, IDatatype[] param, boolean turtle, boolean content) {
         for (IDatatype dt : param) {
-            xt_display(dt, turtle);
+            xt_display(env, p, dt, turtle, content);
             System.out.print(" ");
         }
         System.out.println();
         return TRUE;
     }
     
-    IDatatype xt_display(IDatatype dt){  
-        return xt_display(dt, true);
+    IDatatype xt_display(Environment env, Producer p, IDatatype dt){  
+        return xt_display(env, p, dt, true, true);
     }      
 
-    IDatatype xt_display(IDatatype dt, boolean turtle){        
-        if (dt.getObject() != null){
-            System.out.print(dt.getObject());
+    IDatatype xt_display(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content){        
+        if (turtle) {           
+            IDatatype res = method(USER_DISPLAY, array(dt), env, p);
+            if (res == null){
+                System.out.print(dt.display());
+            }
+            else {
+               System.out.print(res); 
+            }
         }
-        else if (turtle) {
-            System.out.print(dt);
+        else if (dt.isList()){
+            System.out.print(dt.getContent());
         }
         else {
             System.out.print(dt.stringValue());
         }
+        if (content && ! dt.isList() && dt.getObject() != null){
+            System.out.println();
+            System.out.print(dt.getContent());
+        } 
         return dt;
     }
     
-     public IDatatype display(IDatatype dt){ 
-         return xt_display(dt);
-     }
+   
+    // skip n first elements
+    IDatatype[] copy(IDatatype [] param, int n){
+        IDatatype [] arg = new IDatatype [param.length - n];
+        System.arraycopy(param, n, arg, 0, arg.length);
+        return arg;
+    }
+    
+         
+    IDatatype method(IDatatype name, IDatatype[] param, Environment env, Producer p) {
+        return method(name.stringValue(), param, env, p);
+    }
+      
+     /**
+     * Try to execute a method name in the namespace of the generalized datatype URI
+     * http://ns.inria.fr/sparql-datatype/triple#display(?x)
+     * URI:   dt:uri#name
+     * bnode: dt:bnode#name
+     * literal: dt:datatype#name or dt:literal#name
+     */   
+    IDatatype method(String name, IDatatype[] param, Environment env, Producer p) {   
+        if (env == null){
+            return null;
+        }       
+        Expr exp = getDefinition(env, name, param);
+        if (exp == null) {
+            return null;
+        }
+        else {
+           return (IDatatype) eval.eval(exp.getFunction(), env, p, param, exp); 
+        }       
+    }
+    
+    /**
+     * Search a method definition for the generalized datatype of dt
+     * dt:uri, dt:bnode and datatype(dt)
+     *   if datatype(dt) fail, try dt:literal
+     * if it fail, try standard function (without datatype)
+     */    
+    Expr getDefinition(Environment env, String name, IDatatype[] param){
+        // try dt:uri, dt:bnode and datatype(dt)
+        Expr exp = eval.getDefineMethod(env, name, param);
+        return exp;
+    }
+              
+    IDatatype xt_datatype(IDatatype dt){
+        if (dt.isLiteral()) return dt.getDatatype();
+        return xt_kind(dt);
+    }
+          
+    IDatatype xt_kind(IDatatype dt){
+        if (dt.isLiteral()) return DatatypeMap.LITERAL_DATATYPE;
+        if (dt.isURI()) return DatatypeMap.URI_DATATYPE;
+        return DatatypeMap.BNODE_DATATYPE;
+    }
+        
+    IDatatype content(IDatatype dt){
+        if (dt.getObject() != null){
+            return DatatypeMap.newInstance(dt.getContent());
+        }
+        return dt;
+    }
+        
+    public IDatatype display(IDatatype dt1, IDatatype dt2) {
+        System.out.println(dt1 + " " + dt2);
+        return TRUE;
+    }
+      
+    public IDatatype display(IDatatype dt) {
+        return xt_display(null, null, dt);
+    }
        
     IDatatype display(Expr exp, IDatatype dt, IDatatype arg) {
         if (dt.getObject() != null) {
@@ -675,13 +765,11 @@ public class ProxyImpl implements Proxy, ExprType {
                 
             case XT_GET:
                 return get(dt1, dt2);
-                               
+                                               
             default:
                 if (plugin != null) {
                     return plugin.function(exp, env, p, o1, o2);
                 }
-
-
         }
 
         return null;
@@ -752,10 +840,16 @@ public class ProxyImpl implements Proxy, ExprType {
                 return concat(exp, env, p, param);
                 
             case XT_DISPLAY:
-               return xt_display(param);  
-                
+                // turtle + content if gdisplay
+               return xt_display(env, p, param, true, (!exp.getLabel().equals(Processor.XT_DISPLAY))); 
+                            
             case XT_PRINT:
-                return xt_display(param, false);
+                // string + content if gprint
+                return xt_display(env, p, param, false, (!exp.getLabel().equals(Processor.XT_PRINT)));
+                
+            case XT_METHOD:
+                //return getMethodName(env, param[0].stringValue(), param[1], param.length - 1) ;  
+                return method(param[0], copy(param, 1), env, p) ;  
             
         }
 

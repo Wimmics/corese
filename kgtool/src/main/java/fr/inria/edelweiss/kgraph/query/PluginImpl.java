@@ -37,12 +37,14 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
@@ -134,11 +136,26 @@ public class PluginImpl extends ProxyImpl {
             break;                
         }
     }
-    
-    // DRAFT: store current query in the Graph
+       
     @Override
     public void start(Producer p, Environment env){
-        
+        if (env.getQuery().getGlobalQuery().isTest()){
+            test(p, env);
+        }
+    }
+    
+    /**
+     * Draft test
+     * Assign class hierarchy to query extension 
+     * Goal: emulate method inheritance for xt:method(name, term)
+     * Search method name in type hierarchy 
+     * @test select where 
+     */
+    void test(Producer p, Environment env){
+        Extension ext = env.getQuery().getActualExtension();
+        if (ext != null){
+            ext.setHierarchy(new ClassHierarchy(getGraph(p)));
+        }
     }
     
     @Override
@@ -172,6 +189,10 @@ public class PluginImpl extends ProxyImpl {
                  return edge(exp, env, p, null, null, null);    
              case APP_SIM:
                  return pas.eval(exp, env, p);
+                 
+             case XT_ENTAILMENT:
+                 return entailment(exp, env, p, null);
+                   
             default: 
                 return pt.function(exp, env, p);
                 
@@ -272,6 +293,9 @@ public class PluginImpl extends ProxyImpl {
                  
              case XT_TUNE:
                  return tune(exp, env, p, dt);
+                 
+             case XT_ENTAILMENT:
+                 return entailment(exp, env, p, dt);
                                          
              default:
                  return pt.function(exp, env, p, dt);
@@ -659,6 +683,18 @@ public class PluginImpl extends ProxyImpl {
      */
     public PluginTransform getPluginTransform () {
         return pt;
+    }
+       
+    private IDatatype entailment(Expr exp, Environment env, Producer p, IDatatype dt) { 
+        Graph g = getGraph(p);
+        if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == Pointerable.GRAPH_POINTER){
+            g = (Graph) dt.getPointerObject().getTripleStore();
+        }
+        g = g.copy();
+        RuleEngine re = RuleEngine.create(g);
+        re.setProfile(RuleEngine.OWL_RL);
+        re.process();
+        return DatatypeMap.createObject(g);
     }
     
     /*

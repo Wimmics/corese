@@ -154,7 +154,11 @@ public class PluginImpl extends ProxyImpl {
     void test(Producer p, Environment env){
         Extension ext = env.getQuery().getActualExtension();
         if (ext != null){
-            ext.setHierarchy(new ClassHierarchy(getGraph(p)));
+            ClassHierarchy ch = new ClassHierarchy(getGraph(p));
+            if (env.getQuery().getGlobalQuery().isDebug()){
+                ch.setDebug(true);
+            }
+            ext.setHierarchy(ch);           
         }
     }
     

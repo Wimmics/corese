@@ -27,13 +27,19 @@ import java.util.logging.Logger;
  *
  */
 public class ClassHierarchy extends DatatypeHierarchy {
-    
+
+      
     Graph graph, fake;
     QueryProcess exec;
     
     ClassHierarchy(Graph g){
         graph = g;
         exec = QueryProcess.create(g);
+        init(g);
+    }
+    
+    void init(Graph g){
+        g.setClassDistance();
     }
 
     /**
@@ -44,18 +50,40 @@ public class ClassHierarchy extends DatatypeHierarchy {
     */
     @Override
     public List<String> getSuperTypes(DatatypeValue value) {
+//        List<String> list = superTypes(value.stringValue());
+//        if (list != null){
+//            // already in cache
+//            return list;
+//        }
         List<String> list = getSuperTypes((IDatatype) value);
         if (list.isEmpty()){
             return super.getSuperTypes(value);
         }
+        if (isDebug()){
+            System.out.println("CH: " + value + " " + list);
+        }
+        // store in cache
+        //defSuperTypes(value.stringValue(), list);
         return list;
+    }
+      
+    void defSuperTypes(String name, List<String> list){
+        for (String sup : list){
+            defSuperType(name, sup);
+        }
     }
     
     /**
-     * Compute type list with a query
+     * Compute class list with a query
+     * more precise class first
      */
     List<String> getSuperTypes(IDatatype val) {
-        String query = "select (aggregate(distinct ?c) as ?list) where { ?x rdf:type/rdfs:subClassOf* ?c }";
+        String query = 
+                "select (aggregate(?c) as ?list) where { "
+                + "select distinct ?c ?x where {"
+                + "?x rdf:type/rdfs:subClassOf* ?c "
+                + "} order by desc(kg:depth(?c))"
+                + "}";
         try {
             Mapping m = getMapping("?x", val);
             Mappings map = exec.query(query, m);
@@ -90,5 +118,7 @@ public class ClassHierarchy extends DatatypeHierarchy {
         }
         return n;
     }
+    
+    
 
 }

@@ -568,8 +568,11 @@ public class Transformer implements ExpType {
      * Define function into Extension Export into Interpreter
      */
     void define(ASTExtension aext,  Query q) {
-        Extension ext = q.getCreateExtension();  
-        ext.setHierarchy(new DatatypeHierarchy());
+        Extension ext = q.getCreateExtension(); 
+        DatatypeHierarchy dh = new DatatypeHierarchy();
+        if (q.isDebug()) dh.setDebug(true);
+        ext.setHierarchy(dh);
+        
         for (ASTFunMap m : aext.getMaps()) {
             for (Function exp : m.values()) {
                 ext.define(exp);

@@ -38,6 +38,7 @@ import java.util.List;
 public class DatatypeHierarchy implements Hierarchy {
     
     HashMap<String, List<String>> hierarchy;
+    private boolean debug = false;
     
     public DatatypeHierarchy() {
         hierarchy = new HashMap<String, List<String>>();
@@ -49,7 +50,7 @@ public class DatatypeHierarchy implements Hierarchy {
         defResource(IDatatype.BNODE_DATATYPE);                     
     }
     
-    void defSuperType(String name, String sup){
+    public void defSuperType(String name, String sup){
         List<String> list = superTypes(name);
         if (list == null){
             list = new ArrayList<String>();
@@ -64,7 +65,9 @@ public class DatatypeHierarchy implements Hierarchy {
 
     @Override
     public List<String> getSuperTypes(DatatypeValue value) {
-        return getSuperTypes((IDatatype) value);
+        List<String> list = getSuperTypes((IDatatype) value);
+        if (isDebug()) System.out.println("DH: " + value + " " + list);
+        return list;
     }
     
     List<String> getSuperTypes(IDatatype dt) {
@@ -105,6 +108,20 @@ public class DatatypeHierarchy implements Hierarchy {
             return DatatypeMap.URI_DATATYPE;
         }
         return DatatypeMap.BNODE_DATATYPE;
+    }
+    
+     /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
 }

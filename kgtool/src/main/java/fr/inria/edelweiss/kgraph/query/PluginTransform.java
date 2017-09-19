@@ -359,57 +359,19 @@ public class PluginTransform implements ExprType {
         QueryLoad ql = QueryLoad.create();
         return ql.readWE(stream);
     }
+              
     
-    
-          
-    IDatatype format(IDatatype dt){
-        return plugin.getValue(getFormat(dt));
-    }
-    
-    IDatatype format(IDatatype dt1, IDatatype dt2){
-        return plugin.getValue(String.format(getFormat(dt1), dt2.stringValue()));
-    }
-    
-    IDatatype format(IDatatype[] par){
+    IDatatype format(IDatatype... par){
         String f = getFormat(par[0]);
-        switch (par.length){
-            case 2: return plugin.getValue(String.format(f, par[1].stringValue()));
-            case 3: return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue()));
-            case 4: return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), par[3].stringValue()));
-            case 5: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue()));
-            case 6: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue()));                                   
-            case 7: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
-                        par[6].stringValue()));                                   
-            case 8: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
-                        par[6].stringValue(), par[7].stringValue())); 
-            case 9: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
-                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue()));
-
-            case 10: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
-                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue(), par[9].stringValue()));        
-            case 11: 
-                return plugin.getValue(String.format(f, par[1].stringValue(), par[2].stringValue(), 
-                        par[3].stringValue(), par[4].stringValue(), par[5].stringValue(),
-                        par[6].stringValue(), par[7].stringValue(), par[8].stringValue(), 
-                        par[9].stringValue(), par[10].stringValue())); 
-        
+        Object [] arr = new Object[par.length-1];
+        for (int i = 0; i<arr.length; i++) {
+            IDatatype dt = par[i+1];
+            arr[i] = dt.objectValue();                            
         }
-        return null;
+        String res = String.format(f, arr);
+        return plugin.getValue(res);
     }
-    
-
+     
     private IDatatype bool(Expr exp, Environment env, Producer p, IDatatype dt) {
         if (dt.stringValue().contains("false")) {
             return FALSE;

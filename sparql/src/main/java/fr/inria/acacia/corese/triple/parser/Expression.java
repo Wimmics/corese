@@ -8,10 +8,16 @@ import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
+import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 
 /**
  * <p>Title: Corese</p>
@@ -26,7 +32,7 @@ import fr.inria.edelweiss.kgram.api.core.Regex;
  */
 
 public class Expression extends TopExp 
-implements Regex, Filter, Expr {
+implements Regex, Filter, Expr, Pointerable  {
 	public static final int STDFILTER = 0;
 	public static final int ENDFILTER = 1;
 	public static final int POSFILTER = 2;
@@ -854,6 +860,51 @@ implements Regex, Filter, Expr {
     
     public boolean hasAST(){
         return ast != null;
+    }
+
+    @Override
+    public int pointerType() {
+        return Pointerable.EXPRESSION_POINTER;
+    }
+
+    @Override
+    public Mappings getMappings() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Mapping getMapping() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Entity getEntity() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Query getQuery() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TripleStore getTripleStore() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getValue(String var, int n) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterable getLoop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
      

@@ -1103,10 +1103,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
          return getGlobalAST().defineLambdaUtil(el, exp, annot);
      }
      
-     Function defineLambdaUtil(ExpressionList el, Expression exp, Metadata annot) {
-        Constant name = functionName();
+    Function defineLambdaUtil(ExpressionList el, Expression exp, Metadata annot) {
+        return  defineLambdaUtil(functionName(), el, exp, annot);
+    }
+        
+    Function defineLambdaUtil(Constant name, ExpressionList el, Expression exp, Metadata annot) {    
         Function fun = defFunction(name, el, exp, annot);
-        fun.setLambda(true);
+        fun.defineLambda();
         record(fun);    
         return fun;
     }
@@ -1129,9 +1132,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
             el.add(createVariable(FUN_VAR+nbvar++));
         }
         Term t = createFunction(uri, el);
-        Function fun = defFunction(functionName(), el, t, null);
-        fun.setLambda(true);
-        record(fun);
+        Function fun = defineLambdaUtil(el, t, null);
+//        Function fun = defFunction(functionName(), el, t, null);
+//        fun.setLambda(true);
+//        record(fun);
         return fun;
     }
            

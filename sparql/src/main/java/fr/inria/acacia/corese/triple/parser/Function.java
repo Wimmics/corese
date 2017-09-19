@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ public class Function extends Statement {
     private boolean isPublic = false;
     private boolean lambda = false;
     private boolean visited = false;
+    
+    private IDatatype dt;
     
     Metadata annot;
     private HashMap<String, Constant> table;
@@ -43,6 +46,9 @@ public class Function extends Statement {
     
     @Override
     public IDatatype getDatatypeValue(){
+        if (dt != null){
+            return dt;
+        }
         return getFunction().getCName().getDatatypeValue();
     }
 
@@ -234,6 +240,11 @@ public class Function extends Statement {
      */
     public boolean isLambda() {
         return lambda;
+    }
+    
+    void defineLambda(){
+        setLambda(true);;
+        dt = DatatypeMap.createObject(getDatatypeValue().stringValue(), this);
     }
 
     /**

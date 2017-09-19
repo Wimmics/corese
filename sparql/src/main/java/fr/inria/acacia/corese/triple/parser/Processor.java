@@ -753,6 +753,8 @@ public class Processor {
 		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
 		defoper(STL_FORMAT,             ExprType.STL_FORMAT);
+		defoper(EXT+"format",           ExprType.STL_FORMAT);
+                
 		defoper(STL_INDEX,              ExprType.STL_INDEX);
 		defoper(STL_FUTURE,             ExprType.STL_FUTURE);
 		defoper(STL_LOAD,               ExprType.STL_LOAD);

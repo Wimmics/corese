@@ -68,6 +68,11 @@ public class CoreseList extends CoreseUndefLiteral {
         return sb.toString();
     }
     
+    @Override
+    public IDatatype display(){
+       return DatatypeMap.createUndef(getContent(), getDatatypeURI());
+    }
+    
     void getContent(StringBuffer sb) {
         sb.append("(");
         for (IDatatype dt : list) {

@@ -19,6 +19,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     private static final IDatatype context_dt   = getGenericDatatype(IDatatype.CONTEXT_DATATYPE);
     private static final IDatatype nsmanager_dt = getGenericDatatype(IDatatype.NSM_DATATYPE);
     private static final IDatatype annotation_dt= getGenericDatatype(IDatatype.METADATA_DATATYPE);
+    private static final IDatatype expression_dt= getGenericDatatype(IDatatype.EXPRESSION_DATATYPE);
 
     Pointerable pobject;
     
@@ -41,6 +42,7 @@ public class CoresePointer extends CoreseUndefLiteral {
             case Pointerable.CONTEXT_POINTER:   return context_dt;
             case Pointerable.NSMANAGER_POINTER: return nsmanager_dt;
             case Pointerable.METADATA_POINTER:  return annotation_dt;
+            case Pointerable.EXPRESSION_POINTER:return expression_dt;
             default: return dt;
         }
     }
@@ -67,9 +69,15 @@ public class CoresePointer extends CoreseUndefLiteral {
     
     @Override
     public boolean isLoop(){
-        return pobject != null;
+        if (pobject == null){
+            return false; 
+        }
+        switch (pobject.pointerType()){
+            case EXPRESSION_POINTER: return false;
+            default: return true;
+        }
     }
-    
+           
     @Override
     public Iterable getLoop(){
         return ((Loopable) pobject).getLoop();

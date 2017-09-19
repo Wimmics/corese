@@ -19,7 +19,6 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprLabel;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -547,7 +546,21 @@ public class ProxyImpl implements Proxy, ExprType {
         return xt_display(env, p, dt, true, true);
     }      
 
-    IDatatype xt_display(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content){        
+    IDatatype xt_display(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content) {
+        IDatatype res = method(USER_DISPLAY, array(dt), env, p);
+        if (res == null) {
+            res = dt.display();
+        } 
+        if (turtle){
+            System.out.println(res);
+        }
+        else {
+            System.out.println(res.stringValue());
+        }
+        return dt;
+    }
+    
+    IDatatype xt_display2(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content){        
         if (turtle) {           
             IDatatype res = method(USER_DISPLAY, array(dt), env, p);
             if (res == null){

@@ -72,6 +72,7 @@ public interface IDatatype
     public static final String CONTEXT_DATATYPE  = ExpType.DT + "context";
     public static final String NSM_DATATYPE      = ExpType.DT + "nsmanager";
     public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
+    public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
    
     /**
      * @return true if we have a blanknode

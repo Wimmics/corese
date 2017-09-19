@@ -20,6 +20,7 @@ public interface Pointerable extends Loopable {
     public static final int QUERY_POINTER    = 7;
     public static final int METADATA_POINTER = 8;
     public static final int DATASET_POINTER  = 9;
+    public static final int EXPRESSION_POINTER  = 10;
     
     int pointerType();
     

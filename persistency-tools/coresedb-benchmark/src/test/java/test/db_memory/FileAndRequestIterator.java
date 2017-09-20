@@ -23,6 +23,7 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
     private String inputRoot;
     private String outputRoot;
     private TestSuite.DatabaseCreation creationMode = TestSuite.DatabaseCreation.IF_NOT_EXIST;
+    private TestDescription.ResultStrategy resultResultStrategy;
 
     public FileAndRequestIterator(String[] _inputFiles, ArrayList<String> _requests) {
         inputFiles = _inputFiles;
@@ -74,16 +75,17 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
         return this;
     }
 
+    public FileAndRequestIterator setResultResultStrategy(TestDescription.ResultStrategy resultStrategy) {
+        this.resultResultStrategy = resultStrategy;
+        return this;
+    }
+
     @Override
     public boolean hasNext() {
         if (inputFiles.length == 0 || requests.isEmpty()) {
             return false;
         }
-        if (started) {
-            return !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.size() - 1);
-        } else {
-            return true;
-        }
+        return !started || !(cptInputFiles == inputFiles.length - 1 && cptRequests == requests.size() - 1);
     }
 
     @Override
@@ -116,6 +118,7 @@ public class FileAndRequestIterator implements Iterator<Object[]> {
                     setInputFilesPattern(inputFilePattern).
                     setDatabasePath(GdbDriver.filePatternToDbPath(inputFilePattern)).
                     setInputRoot(inputRoot).
+                    setResultStrategy(resultResultStrategy).
                     setOutputRoot(outputRoot);
             try {
                 currentSuite.createDatabase(creationMode);

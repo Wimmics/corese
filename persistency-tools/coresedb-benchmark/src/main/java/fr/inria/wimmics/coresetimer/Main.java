@@ -61,5 +61,8 @@ public class Main {
         return tester.validate(map_db, map_memory) && tester.validate(map_memory, map_db) && map_memory.size() == map_db.size();
     }
 
+    public static boolean compareSizeOnly(Mappings map_db, Mappings map_memory) {
+        return map_db.size() == map_memory.size();
+    }
 
 }

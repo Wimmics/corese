@@ -6,10 +6,14 @@
 package fr.inria.wimmics.coresetimer;
 
 import fr.inria.corese.rdftograph.RdfToGraph;
+import fr.inria.edelweiss.kgram.core.Mappings;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +21,9 @@ import java.util.logging.Logger;
  * @author edemairy
  */
 public class TestDescription implements Cloneable {
-
+    public enum ResultStrategy {Equality, SizeOnly};
+    private Map<ResultStrategy, BiFunction<Mappings, Mappings, Boolean> > testResultStrategies = new HashMap<>();
+    private BiFunction<Mappings, Mappings, Boolean> testResultStrategy;
     private final String RDF_OUTPUT_FILE_FORMAT = "%s/rdf_result_%s_%s.xml";
     private final TestSuite suite;
     private String testId;
@@ -34,6 +40,9 @@ public class TestDescription implements Cloneable {
     private TestDescription(String id, TestSuite suite) {
         testId = id;
         this.suite = suite;
+        testResultStrategies.put(ResultStrategy.Equality, fr.inria.wimmics.coresetimer.Main::compareResults);
+        testResultStrategies.put(ResultStrategy.SizeOnly, fr.inria.wimmics.coresetimer.Main::compareSizeOnly);
+        setResultStrategy(ResultStrategy.Equality);
     }
 
     static public TestDescription build(String id, TestSuite suite) {
@@ -141,5 +150,14 @@ public class TestDescription implements Cloneable {
 
     public TestSuite getTestSuite() {
         return suite;
+    }
+
+    public TestDescription setResultStrategy(ResultStrategy resultStrategy) {
+        this.testResultStrategy = testResultStrategies.get(resultStrategy);
+        return this;
+    }
+
+    public boolean computeTestResult(Mappings mapping, Mappings mapping1) {
+        return testResultStrategy.apply(mapping, mapping);
     }
 }

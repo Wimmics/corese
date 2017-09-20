@@ -28,9 +28,11 @@ public class TestSuite {
     private String outputFilename;
     private CoreseTimer memoryTimer;
     private CoreseTimer memoryDatabase;
+    private TestDescription.ResultStrategy resultStrategy;
 
     private TestSuite(String id) {
         this.testId = id;
+        this.resultStrategy = TestDescription.ResultStrategy.Equality;
     }
 
     static public TestSuite build(String id) {
@@ -148,6 +150,7 @@ public class TestSuite {
                 .setInputFilesPattern(getInputFilesPattern())
                 .setOutputPath(String.format(OUTPUT_FILE_FORMAT, getOutputRoot(), testId + "_%s"))
                 .setRequest(request)
+                .setResultStrategy(resultStrategy)
                 .setInputDb(getDatabasePath());
         return newTest;
 
@@ -169,6 +172,11 @@ public class TestSuite {
             memoryDatabase.setTest(test);
         }
         return memoryDatabase;
+    }
+
+    public TestSuite setResultStrategy(TestDescription.ResultStrategy resultStrategy) {
+        this.resultStrategy = resultStrategy;
+        return this;
     }
 
     public enum DatabaseCreation {

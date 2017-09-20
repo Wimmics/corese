@@ -107,6 +107,10 @@
             <version>3.2.4</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>fr.inria.wimmics</groupId>
+            <artifactId>corese-core</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

@@ -33,7 +33,7 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
  */
 public class OrientDbDriver extends GdbDriver {
 
-    OrientGraphFactory graph;
+    private OrientGraphFactory graph;
     Map<Value, Vertex> alreadySeen = new HashMap<>();
 
     @Override

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * @author edemairy
  */
 public class NullDriver extends GdbDriver {
-    static final Logger logger = Logger.getLogger(NullDriver.class.getName());
+    private static final Logger logger = Logger.getLogger(NullDriver.class.getName());
 
     @Override
     public Graph openDatabase(String string) {

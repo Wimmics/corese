@@ -43,9 +43,9 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
  */
 public class TitanDriver extends GdbDriver {
 
-    static final Logger logger = Logger.getLogger(TitanDriver.class.getName());
+    private static final Logger logger = Logger.getLogger(TitanDriver.class.getName());
 
-    String dbPath;
+    private String dbPath;
     //	String nodeId(Value v) {
 //		StringBuilder result = new StringBuilder();
 //		String kind = RdfToGraph.getKind(v);
@@ -172,7 +172,7 @@ public class TitanDriver extends GdbDriver {
      *
      * @param propertyName Name of the entry to add.
      */
-    void makeIfNotExistProperty(String propertyName) {
+    private void makeIfNotExistProperty(String propertyName) {
         makeIfNotExistProperty(propertyName, String.class);
     }
 
@@ -182,7 +182,7 @@ public class TitanDriver extends GdbDriver {
      * @param propertyName Entry name in the model.
      * @param c            Class for the entry.
      */
-    void makeIfNotExistProperty(String propertyName, Class<?> c) {
+    private void makeIfNotExistProperty(String propertyName, Class<?> c) {
         ManagementSystem manager = (ManagementSystem) getTitanGraph().openManagement();
         if (!manager.containsPropertyKey(propertyName)) {
             manager.makePropertyKey(propertyName).dataType(c).cardinality(Cardinality.SINGLE).make();

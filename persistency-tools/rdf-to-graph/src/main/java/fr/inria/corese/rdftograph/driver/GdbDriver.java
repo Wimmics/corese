@@ -10,8 +10,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Weigher;
 import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Exp;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -99,6 +97,11 @@ public abstract class GdbDriver {
                 .forEach(File::delete);
     }
 
+    /**
+     * Build a directory path for the database from the pattern for input files.
+     * @param inputFilePattern Patterns for the input files for the database.
+     * @return A string that can be used as a directory name for the filesystem.
+     */
     public static String filePatternToDbPath(String inputFilePattern) {
         return inputFilePattern.replace(":", "_").replace(",", "_") + "_db";
     }
@@ -106,12 +109,21 @@ public abstract class GdbDriver {
     /**
      * Open an existing database.
      *
-     * @param dbPath
-     * @return
-     * @throws IOException
+     * @param dbPath Directory where are stored the data.
+     * @return A tinkerpop Graph object.
      */
     public abstract Graph openDatabase(String dbPath);
 
+    /**
+     * Delete the dbPath directory if it already exists.
+     * Must be overriden to actually create the database and initialize it.
+     * Some examples of what should be done:
+     * - set up the indexes to be used
+     * -
+     * @param dbPath Path where to create the database.
+     * @return A tinkerpop Graph object.
+     * @throws IOException If the deletion of the dbPath directory cannot be done.
+     */
     public Graph createDatabase(String dbPath) throws IOException {
         if (Files.exists(Paths.get(dbPath))) {
             wipeDirectory(dbPath);
@@ -119,8 +131,14 @@ public abstract class GdbDriver {
         return null;
     }
 
+    /** Close the database.
+     * @throws Exception
+     */
     public abstract void closeDatabase() throws Exception;
 
+    /**
+     *  Force the pending operations to be commited to the database.
+     */
     public abstract void commit();
 
     public Graph getTinkerpopGraph() {
@@ -149,18 +167,14 @@ public abstract class GdbDriver {
             }
             case LARGE_LITERAL: {
                 Literal l = (Literal) v;
-                it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString()).has(VERTEX_LARGE_VALUE, l.getLabel());
-                if (l.getLanguage().isPresent()) {
-                    it = it.has(LANG, l.getLanguage().get());
-                }
+                final GraphTraversal<Vertex, Vertex>  start = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString()).has(VERTEX_LARGE_VALUE, l.getLabel());
+                it = l.getLanguage().map(lang -> start.has(LANG, lang)).orElse(start);
                 break;
             }
             case LITERAL: {
                 Literal l = (Literal) v;
-                it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString());
-                if (l.getLanguage().isPresent()) {
-                    it = it.has(LANG, l.getLanguage().get());
-                }
+                final GraphTraversal<Vertex, Vertex>  start = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(KIND, RdfToGraph.getKind(v)).has(TYPE, l.getDatatype().toString()).has(VERTEX_LARGE_VALUE, l.getLabel());
+                it = l.getLanguage().map(lang -> start.has(LANG, lang)).orElse(start);
                 break;
             }
         }
@@ -175,6 +189,12 @@ public abstract class GdbDriver {
         return result;
     }
 
+    /**
+     * Use @link{getNode} to search if an node storing the v value already exist.
+     * If not, a new node representing v is created.
+     * @param v Jena value to be represented in the database.
+     * @return The node representing v.
+     */
     public Vertex createOrGetNode(Value v) {
         Vertex newVertex = null;
         Vertex result = getNode(v);
@@ -223,7 +243,7 @@ public abstract class GdbDriver {
     }
 
     /**
-     * Add an edge in the DB from the Jena artefacts.
+     * Add an edge in the database from the Jena artefacts.
      *
      * @param sourceId   Source (ie start) of the edge.
      * @param objectId   Object (ie end) of the edge.
@@ -257,9 +277,24 @@ public abstract class GdbDriver {
         return null;
     }
 
-    public abstract Entity buildEdge(Element e);
+    /**
+     * Low-level call unmapping a Tinkerpop element to a Corese EdgeQuad.
+     * @param e A tinkerpop element representing and edge.
+     * @return A Corese EdgeQuad.
+     */
+    public abstract fr.inria.edelweiss.kgraph.core.edge.EdgeQuad buildEdge(org.apache.tinkerpop.gremlin.structure.Element e);
 
-    public abstract Node buildNode(Element e);
+    /**
+     * Low-level call unmapping a Tinkerpop element to a Corese Node.
+     * @param e A tinkerpop element representing a node.
+     * @return A Corese Node.
+     */
+    public abstract fr.inria.edelweiss.kgram.api.core.Node buildNode(org.apache.tinkerpop.gremlin.structure.Element e);
 
+    /**
+     * Returns whether label is a named graph used in the current dataset.
+     * @param label Searched named graph.
+     * @return
+     */
     public abstract boolean isGraphNode(String label);
 }

@@ -67,7 +67,8 @@ public class ProviderImpl implements Provider {
         ProviderImpl p = new ProviderImpl();
         p.set(LOCALHOST, 1.1);
         p.set(LOCALHOST2, 1.1);
-        //p.set(DBPEDIA, 1.1);
+        p.set("https://data.archives-ouvertes.fr/sparql", 1.1);
+        p.set("http://corese.inria.fr/sparql", 1.1);
         return p;
     }
 

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.edelweiss.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -28,7 +23,23 @@ import java.util.logging.Logger;
  */
 public class ClassHierarchy extends DatatypeHierarchy {
 
-      
+     static final String queryObject = 
+                "select (aggregate(?c) as ?list) where { "
+                + "select distinct ?c ?x where {"
+                + "?x rdf:type/rdfs:subClassOf* ?c "
+                + "} order by desc(kg:depth(?c))"
+                + "}";
+     
+     static final String queryClass = 
+                "select (aggregate(?c) as ?list) where { "
+                + "select distinct ?c ?x where {"
+                + "?x rdfs:subClassOf* ?c "
+                + "} order by desc(kg:depth(?c))"
+                + "}";
+     
+    static final String X = "?x";
+    static final String LIST = "?list";
+     
     Graph graph, fake;
     QueryProcess exec;
     
@@ -43,29 +54,29 @@ public class ClassHierarchy extends DatatypeHierarchy {
     }
 
     /**
-    * value is a node in graph
-    * return the list of class and superclass of value
+    * object is a node in graph, type may be its type or null
+    * return the list of class and superclass of object/type
     * if value have no type or is a literal, delegate to DatatypeHierarchy
     * TODO: store the list in HashMap
     */
     @Override
-    public List<String> getSuperTypes(DatatypeValue value) {
-//        List<String> list = superTypes(value.stringValue());
-//        if (list != null){
-//            // already in cache
-//            return list;
-//        }
-        List<String> list = getSuperTypes((IDatatype) value);
+    public List<String> getSuperTypes(DatatypeValue object, DatatypeValue type) {
+        List<String> list;
+        if (type == null){
+            list = getSuperTypes((IDatatype) object, queryObject);
+        }
+        else {
+            list = getSuperTypes((IDatatype) type, queryClass);
+        }
         if (list.isEmpty()){
-            return super.getSuperTypes(value);
+            return super.getSuperTypes(object, type);
         }
         if (isDebug()){
-            System.out.println("CH: " + value + " " + list);
-        }
-        // store in cache
-        //defSuperTypes(value.stringValue(), list);
+            System.out.println("CH: " + object + " " + list);
+        }       
         return list;
     }
+   
       
     void defSuperTypes(String name, List<String> list){
         for (String sup : list){
@@ -77,23 +88,19 @@ public class ClassHierarchy extends DatatypeHierarchy {
      * Compute class list with a query
      * more precise class first
      */
-    List<String> getSuperTypes(IDatatype val) {
-        String query = 
-                "select (aggregate(?c) as ?list) where { "
-                + "select distinct ?c ?x where {"
-                + "?x rdf:type/rdfs:subClassOf* ?c "
-                + "} order by desc(kg:depth(?c))"
-                + "}";
+    List<String> getSuperTypes(IDatatype val, String query) {       
         try {
-            Mapping m = getMapping("?x", val);
+            Mapping m = getMapping(X, val);
             Mappings map = exec.query(query, m);
-            IDatatype dt = (IDatatype) map.getValue("?list");
+            IDatatype dt = (IDatatype) map.getValue(LIST);
             return getList(dt);
         } catch (EngineException ex) {
             Logger.getLogger(ClassHierarchy.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new ArrayList<String>(0);
     }
+    
+   
     
     List<String> getList(IDatatype dt){
         ArrayList<String> list = new ArrayList<String>();

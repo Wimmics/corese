@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface Hierarchy {
         
-    List<String> getSuperTypes(DatatypeValue dt);
-    
+    List<String> getSuperTypes(DatatypeValue object, DatatypeValue type);
+        
 }

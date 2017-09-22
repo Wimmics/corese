@@ -328,6 +328,7 @@ public interface ExprType {
         public static int XT_DATATYPE    = 442;
         public static int XT_KIND        = 443;
         public static int XT_METHOD      = 444;
+        public static int XT_METHOD_TYPE = 445;
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;

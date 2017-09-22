@@ -982,17 +982,17 @@ public class Interpreter implements Evaluator, ExprType {
      * Retrieve a method with name and type
      */
       @Override
-    public Expr getDefineMethod(Environment env, String name, Object[] param){
+    public Expr getDefineMethod(Environment env, String name, Object type, Object[] param){
         Extension ext = env.getExtension();
         if (ext != null) {
-           Expr ee = ext.getMethod(name, param);
+           Expr ee = ext.getMethod(name, type, param);
            if (ee != null){
                return ee;
            }
         }
-        return extension.getMethod(name, param);  
+        return extension.getMethod(name, type, param);  
     }
-       
+            
     public static void define(Expr exp){
         extension.define(exp);
     }

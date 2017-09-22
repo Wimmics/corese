@@ -547,7 +547,7 @@ public class ProxyImpl implements Proxy, ExprType {
     }      
 
     IDatatype xt_display(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content) {
-        IDatatype res = method(USER_DISPLAY, array(dt), env, p);
+        IDatatype res = method(USER_DISPLAY, null, array(dt), env, p);
         if (res == null) {
             res = dt.display();
         } 
@@ -557,29 +557,6 @@ public class ProxyImpl implements Proxy, ExprType {
         else {
             System.out.println(res.stringValue());
         }
-        return dt;
-    }
-    
-    IDatatype xt_display2(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content){        
-        if (turtle) {           
-            IDatatype res = method(USER_DISPLAY, array(dt), env, p);
-            if (res == null){
-                System.out.print(dt.display());
-            }
-            else {
-               System.out.print(res); 
-            }
-        }
-        else if (dt.isList()){
-            System.out.print(dt.getContent());
-        }
-        else {
-            System.out.print(dt.stringValue());
-        }
-        if (content && ! dt.isList() && dt.getObject() != null){
-            System.out.println();
-            System.out.print(dt.getContent());
-        } 
         return dt;
     }
     
@@ -593,9 +570,9 @@ public class ProxyImpl implements Proxy, ExprType {
     
          
     IDatatype method(IDatatype name, IDatatype[] param, Environment env, Producer p) {
-        return method(name.stringValue(), param, env, p);
+        return method(name.stringValue(), null, param, env, p);
     }
-      
+          
      /**
      * Try to execute a method name in the namespace of the generalized datatype URI
      * http://ns.inria.fr/sparql-datatype/triple#display(?x)
@@ -603,11 +580,11 @@ public class ProxyImpl implements Proxy, ExprType {
      * bnode: dt:bnode#name
      * literal: dt:datatype#name or dt:literal#name
      */   
-    IDatatype method(String name, IDatatype[] param, Environment env, Producer p) {   
+    IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {   
         if (env == null){
             return null;
         }       
-        Expr exp = getDefinition(env, name, param);
+        Expr exp = eval.getDefineMethod(env, name, type, param);
         if (exp == null) {
             return null;
         }
@@ -616,17 +593,6 @@ public class ProxyImpl implements Proxy, ExprType {
         }       
     }
     
-    /**
-     * Search a method definition for the generalized datatype of dt
-     * dt:uri, dt:bnode and datatype(dt)
-     *   if datatype(dt) fail, try dt:literal
-     * if it fail, try standard function (without datatype)
-     */    
-    Expr getDefinition(Environment env, String name, IDatatype[] param){
-        // try dt:uri, dt:bnode and datatype(dt)
-        Expr exp = eval.getDefineMethod(env, name, param);
-        return exp;
-    }
               
     IDatatype xt_datatype(IDatatype dt){
         if (dt.isLiteral()) return dt.getDatatype();
@@ -861,8 +827,11 @@ public class ProxyImpl implements Proxy, ExprType {
                 return xt_display(env, p, param, false, (!exp.getLabel().equals(Processor.XT_PRINT)));
                 
             case XT_METHOD:
-                //return getMethodName(env, param[0].stringValue(), param[1], param.length - 1) ;  
-                return method(param[0], copy(param, 1), env, p) ;  
+                return method(param[0].stringValue(), null, copy(param, 1), env, p) ;  
+                
+            case XT_METHOD_TYPE:
+                return method(param[0].stringValue(), param[1], copy(param, 2), env, p) ;  
+                    
             
         }
 

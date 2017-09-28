@@ -1,0 +1,6 @@
+prefix geo: <http://fr.dbpedia.org/property/>
+<AT_DB>
+select (count(*) as ?c) where {
+?x rdfs:label ?l
+}
+

@@ -30,25 +30,24 @@ import fr.inria.edelweiss.kgtool.load.QueryLoad;
 public class SDK {
 	List<Node> lVar = new ArrayList<Node>();
 	List<Node> lValue = new ArrayList<Node>();
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		new SDK().process();
 	}
 
-	void process(){
+	void process() {
 		String data = "/home/corby/workspace/kgengine/src/test/resources/data/";
 		Graph graph = Graph.create();
 		Load ld = Load.create(graph);
-		
+
 		long t1 = new Date().getTime();
 
 		ld.load(data + "kgraph/sdk.rdf");
 
 		//System.out.println(graph.getInference().display());		
 		long t2 = new Date().getTime();
-		System.out.println((t2-t1) / 1000.0 + "s");
+		System.out.println((t2 - t1) / 1000.0 + "s");
 
-	
 		QueryProcess exec = QueryProcess.create(graph);
 		//exec.setSort(true);
 		//exec.set(new SorterImpl());
@@ -57,9 +56,8 @@ public class SDK {
 //		Edge edge = graph.getEdge(RDFS.RDF + "value", "http://www.inria.fr/acacia/sdk#query", 0);
 //		String str = edge.getNode(1).getLabel();
 		QueryLoad ql = QueryLoad.create();
-		
-		
-		String query  = ql.read(data + "kgraph/sdk.rq");
+
+		String query = ql.read(data + "kgraph/sdk.rq");
 
 		try {
 			trace(graph);
@@ -69,28 +67,27 @@ public class SDK {
 			System.out.println("start");
 
 			Mappings res = null;
-			
+
 			exec.query(query);
 
 			t1 = new Date().getTime();
-			
+
 			res = exec.query(query);
 
 			t2 = new Date().getTime();
 			//if (lMap.size()<=10) 
 			System.out.println(res);
-			System.out.println(res.size() + " " + (t2-t1) / 1000.0 + "s");
+			System.out.println(res.size() + " " + (t2 - t1) / 1000.0 + "s");
 
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	
-	Mapping init(){
-		lVar.clear(); 
-		lValue.clear(); 
+
+	Mapping init() {
+		lVar.clear();
+		lValue.clear();
 
 		add("?a1", 2);
 		add("?b2", 5);
@@ -99,22 +96,21 @@ public class SDK {
 		Mapping map = new Mapping(lVar, lValue);
 		return map;
 	}
-	
-	void add(String var, int val){
+
+	void add(String var, int val) {
 		lVar.add(var(var));
 		lValue.add(value(val));
 	}
-	
-	
-	Node var(String var){
+
+	Node var(String var) {
 		return fr.inria.edelweiss.kgenv.parser.NodeImpl.createVariable(var);
 	}
-	
-	Node value(int n){
-		return  NodeImpl.create(DatatypeMap.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
-	}
 
-	void trace(Graph graph){
+	Node value(int n) {
+		return  NodeImpl.create(DatatypeMap.createLiteral(Integer.toString(n), RDFS.xsdinteger, null));
+		}
+
+	void trace(Graph graph) {
 		System.out.println(graph);
 		//		graph.init();
 		//System.out.println(graph.getIndex());

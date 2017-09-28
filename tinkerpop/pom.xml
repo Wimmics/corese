@@ -29,12 +29,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rdf-to-bd-map</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>corese-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -55,7 +53,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rdf-to-graph</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>

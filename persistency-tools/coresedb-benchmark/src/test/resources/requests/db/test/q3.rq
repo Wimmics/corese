@@ -1,0 +1,7 @@
+prefix ex: <http://example.org/>
+select * where {
+service <db:/home/corby/soft/db/test_db> {
+?x ?p ?y
+?y ?p ?z
+}
+}

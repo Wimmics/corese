@@ -1,0 +1,8 @@
+@db </home/corby/soft/db/fma_db>
+@test
+@bgp
+select *  where {
+?x rdfs:label ?l
+filter regex(?l, "gene")
+}
+limit 2

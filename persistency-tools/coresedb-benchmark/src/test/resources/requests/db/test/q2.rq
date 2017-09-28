@@ -1,0 +1,6 @@
+prefix ex: <http://example.org/>
+@db </home/corby/soft/db/test_db>
+select * where {
+?x ex:value ?y
+?x ex:value+ ?z
+}

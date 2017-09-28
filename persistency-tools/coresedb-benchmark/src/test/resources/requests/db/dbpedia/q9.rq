@@ -1,0 +1,9 @@
+# 44 sec
+prefix p: <http://fr.dbpedia.org/property/>
+<AT_DB>
+select (count(*) as ?c) where {
+    ?x p:latitude ?lat 
+   
+
+}
+

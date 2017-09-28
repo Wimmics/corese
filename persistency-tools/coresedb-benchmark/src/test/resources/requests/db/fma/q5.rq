@@ -1,0 +1,11 @@
+#
+# Join local graph and DB with overloaded named graph pattern
+#
+select *  where {
+  bind (kg:db(</home/corby/soft/db/fma_db>) as ?db)
+  graph ?db {
+    ?x rdfs:label "Structural gene"@en 
+    ?x rdfs:subClassOf* ?y 
+    ?y rdfs:label ?l
+  }
+}

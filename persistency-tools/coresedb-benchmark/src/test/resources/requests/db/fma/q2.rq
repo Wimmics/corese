@@ -1,0 +1,5 @@
+@db </home/corby/soft/db/fma_db>
+select *  where {
+?x rdfs:label "Structural gene"@en 
+?x ?p ?y
+}

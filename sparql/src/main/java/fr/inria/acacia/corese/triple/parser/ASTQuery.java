@@ -15,7 +15,6 @@ import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
-import static fr.inria.acacia.corese.triple.parser.Processor.APPLY;
 import fr.inria.acacia.corese.triple.printer.SPIN;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.corese.compiler.java.JavaCompiler;
@@ -1410,7 +1409,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
     
       int arity(Term t){
-          if (t.getLabel().equals(APPLY)){
+          if (t.getLabel().equals(Processor.REDUCE)){
               return 2;
           }
           return t.getArgs().size() - 1;
@@ -1515,7 +1514,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      *   for (var in exp){
      *     xt:add(body, ?list)
      *   }
-     *   apply(rq:concat, ?list)
+     *   reduce(rq:concat, ?list)
      * }
      */
     public Term defLoop(Variable var, Expression exp, Expression body) {
@@ -1524,7 +1523,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         Expression add = createFunction(createQName("xt:add"), body, list);
         Expression loop = new ForLoop(var, exp, add);
         Expression app  = 
-                createFunction(Constant.createResource("apply"), 
+                createFunction(Constant.createResource("reduce"), 
                 createQName("rq:concat"), list);
         Expression stmt = createFunction(Constant.createResource("sequence"), 
                 loop, app);
@@ -1624,7 +1623,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
          el.remove(0);
          Term maplist = createFunction(Processor.MAPLIST, el);
          list.add(maplist);
-         Term mapfun = createFunction(Processor.APPLY, list);
+         Term mapfun = createFunction(Processor.REDUCE, list);
          return mapfun;
      }
     

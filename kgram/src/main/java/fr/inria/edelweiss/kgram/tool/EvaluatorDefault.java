@@ -146,7 +146,7 @@ public class EvaluatorDefault implements Evaluator {
     }
 
     @Override
-    public Expr getDefineMethod(Environment env, String name, Object[] values) {
+    public Expr getDefineMethod(Environment env, String name, Object type, Object[] values) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

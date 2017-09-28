@@ -64,12 +64,12 @@ public class DatatypeHierarchy implements Hierarchy {
     }
 
     @Override
-    public List<String> getSuperTypes(DatatypeValue value) {
+    public List<String> getSuperTypes(DatatypeValue value, DatatypeValue type) {
         List<String> list = getSuperTypes((IDatatype) value);
         if (isDebug()) System.out.println("DH: " + value + " " + list);
         return list;
     }
-    
+      
     List<String> getSuperTypes(IDatatype dt) {
         String name = xt_kind(dt).stringValue();
         List<String> list = hierarchy.get(name);

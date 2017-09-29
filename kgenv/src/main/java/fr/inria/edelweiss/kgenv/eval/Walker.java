@@ -214,9 +214,9 @@ public class Walker extends Interpreter {
                 // aggregate(?x, xt:mediane) ->
                 // aggregate(?x, xt:mediane(?list))
                 IDatatype dt = DatatypeMap.createList(list);
-                if (exp.arity() == 2){
-                    return (IDatatype) eval.getProxy().let(exp.getExp(1), env, p, dt);
-                }                               
+                if (exp.arity() == 2) {
+                    return (IDatatype) eval.eval(exp.getExp(1).getLabel(), env, p, dt);                    
+                }                        
                 return dt;
                 
             case STL_AGGREGATE: 

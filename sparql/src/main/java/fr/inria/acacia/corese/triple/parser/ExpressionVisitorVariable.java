@@ -59,9 +59,13 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
+    /**
+     * Declare function parameter and let/for variable
+     */
     void define(Variable var){
         list.add(var);
         localize(var);
+        var.setIndex(getNbVariable());
         setNbVariable(getNbVariable() + 1);
     }
     
@@ -233,9 +237,8 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             }
         }
     }
-    
-    
-     void letloop(Term t) {
+        
+    void letloop(Term t) {
         Variable var = t.getVariable();
         Expression exp = t.getDefinition();
         Expression body = t.getBody();
@@ -246,7 +249,6 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         body.visit(this);
         clet--;
         pop(var);
-        //remove(var);
         if (!isFunctionDefinition() && clet == 0) {
             // top level let
             t.setPlace(count);
@@ -254,37 +256,23 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     /**
-     * let (?x = e1, e2)
+     * let (var = exp) { body }
      */    
     void let(Term t) {
         letloop(t);
     }
     
-    // for (?x in exp){ exp }
+    // for (var in exp){ body }
     void loop(Term t) {
         letloop(t);
     }
     
        
     /**
-     * aggregate(?x, xt:mediane(?list))
-     * TODO:
-     * special case with 2nd arg = function call
-     * all other cases are either function URI or lambda
-     * variable ?list is a fake local variable
-     * it must not be related to a embedding variable ?list
-     * FIX: 
-     * should be processed like funcall, apply, etc and have no variable:
-     * aggregate(?x, xt:mediane).
+     * aggregate(exp, us:mediane)
      */
     void aggregate(Term t){
         t.getArg(0).visit(this);
-//        if (t.getArgs().size() == 2){
-//            Expression fun = t.getArg(1);
-//            Expression arg = fun.getArg(0);
-//            Variable var = arg.getVariable();
-//            localize(var);
-//        }
     }
          
     /**

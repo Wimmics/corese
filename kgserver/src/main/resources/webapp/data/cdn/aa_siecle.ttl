@@ -70,6 +70,7 @@ rdfs:label "XXe Siècle" ;
 rdfs:comment "" .
 
 
+cn:VII-   rdfs:label "-VII" ; 	cn:start  -700   ; cn:finish -601 .
 cn:VI-    rdfs:label "-VI" ; 	cn:start  -600   ; cn:finish -501 .
 cn:V-     rdfs:label "-V" ; 	cn:start  -500   ; cn:finish -401 .
 cn:IV-    rdfs:label "-IV" ; 	cn:start  -400   ; cn:finish -301 .

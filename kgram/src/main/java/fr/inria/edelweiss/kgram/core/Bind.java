@@ -23,6 +23,7 @@ public class Bind {
     // every funcall add a level
     // let add no level
     ArrayList<Integer> level;
+    Expr current;
     
     private static Logger logger = LogManager.getLogger(Bind.class);
 
@@ -83,12 +84,19 @@ public class Bind {
     }
     
     int computeIndex(Expr var){
+       
         int end = getCurrentLevel();                   
         for (int i = index(); i >= end; i--) {
             if (varList.get(i).equals(var)) {  
                 if (var.getDefinition() != null && var.getDefinition() != varList.get(i)){                   
                     return -1;
                 }
+                 if (var.getDefinition() == null){
+            System.out.println("**********************************");
+            System.out.println(current);
+            System.out.println(var);
+            System.out.println("**********************************");
+        }
                 return i;
             }
         }
@@ -138,6 +146,7 @@ public class Bind {
         if (exp.oper() == ExprType.FUNCTION) {
             // Parameters and local variables of this function are above level 
             level.add(varList.size()); 
+            current = exp;
         }
         int i = 0;
         for (Expr var : lvar) {
@@ -151,7 +160,6 @@ public class Bind {
     private void set(Expr var, Node val) {
         varList.add(var);
         valList.add(val);
-        var.setIndex(index());
     }
 
 
@@ -160,9 +168,7 @@ public class Bind {
     }
 
     public void unset(Expr exp, List<Expr> lvar) {
-        if (exp.oper() == ExprType.FUNCTION ||exp.oper() == ExprType.EQ){
-            // xt:fun(?x) = exp
-            // funcall        
+        if (exp.oper() == ExprType.FUNCTION){ // ||exp.oper() == ExprType.EQ){
            if (! level.isEmpty()) {
                level.remove(level.size()-1);
            }
@@ -182,7 +188,6 @@ public class Bind {
             varList.remove(index());
             valList.remove(valList.size() - 1);           
         }
-        var.setIndex(ExprType.UNBOUND);
     }
     
      public List<Expr> getVariables() {

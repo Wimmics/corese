@@ -53,13 +53,25 @@ public class Tester {
     
        @Test
     public void test4() {
-        String service = "http://localhost:8080/template";
+        String service = "http://localhost:8080/tutorial/cdn";
         Client client = Client.create();
         WebResource resource = client.resource(service);
-        String res = resource.queryParam("profile", "st:cdn")
-                .get(String.class);
+        String res = resource.get(String.class);
         assertEquals(true, res.contains("Siècle"));
     }
+       
+       
+         @Test
+    public void test5() {
+        String service = "http://localhost:8080/process/owlrl";
+        Client client = Client.create();
+        WebResource resource = client.resource(service);
+        String res = resource.queryParam("uri", "/data/primer.owl").get(String.class);
+        assertEquals(true, res.contains("Statement not supported in an Equivalent Class Expression"));
+    }  
+         
+         
+         
     
      public String process(String service, String query, String mime) {
         if (isDebug){

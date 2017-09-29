@@ -18,5 +18,5 @@ function ex:fun(?n) {
 }
 
 function ex:sigma(?n) {
-   apply (rq:plus, maplist (ex:fun, xt:iota(0, ?n)))
+   reduce (rq:plus, maplist (ex:fun, xt:iota(0, ?n)))
 }

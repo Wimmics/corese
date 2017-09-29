@@ -3,17 +3,19 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:start {
-
-  group { 
+    if (st:get(st:number, true), 
+        st:format("# %s%s", st:number(), st:nl()), "")
+        
     st:apply-templates(?x)
+    
     ; separator = "\n\n"
-  }
-
 }
 where {
   
   select distinct ?x where { 
     bind (st:focus() as ?x)
+    bind (st:get(st:uri) as ?uri)
+    bind (bound(?uri) as ?sort)    
     ?x ?p ?y     
     filter ( 
       isURI(?x) 
@@ -23,6 +25,6 @@ where {
 	   || exists { ?x ?q ?x }
 	  ))
     )
-  } order by ?x
+  } order by if (?sort, ?x != ?uri, true) ?x
 }
 

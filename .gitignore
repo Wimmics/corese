@@ -9,3 +9,4 @@ log/
 /kgtool/nbproject/
 /kgenv/nbproject/
 /persistency-tools/coresedb-benchmark/nbproject/
+/persistency-tools/rdf-to-graph-neo4j/targetsave/

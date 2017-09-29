@@ -195,8 +195,6 @@ public class TestW3C11KGraphNew {
 
     public TestW3C11KGraphNew() {
         DatatypeMap.setSPARQLCompliant(true);
-        // distinguish 1 & 1.0
-        Graph.setDistinctDatatype(true);
         tko = new Testing();
         tok = new Testing();
         earl = new Earl(); 
@@ -1057,6 +1055,8 @@ public class TestW3C11KGraphNew {
                     }
                     System.out.println("kgram result: ");
                     System.out.println(res);
+                    System.out.println("w3c result:");
+                    System.out.println(w3XMLResult);
                     System.out.println("w3c: " + nbres + "; kgram: " + res.size());
                 }
                 System.out.println(query);

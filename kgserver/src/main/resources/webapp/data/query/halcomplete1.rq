@@ -12,3 +12,11 @@ where {
     }
 }
 
+#
+# add /rdf for hal RDF resource URI
+#
+function us:completehal(?t) {
+    if (strends(?t, "rdf") || contains(?t, "#"), 
+        ?t, 
+        uri(concat(?t, if (strends(?t, "/"), "rdf", "/rdf"))))
+}

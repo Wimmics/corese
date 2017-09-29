@@ -8,27 +8,10 @@ prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
 
 
-#[] owl:imports <profile-test.ttl>
-
-
-st:azkar a st:Server ;
-st:service "azkar" ;
-
-st:content st:democontent ;
-st:param [
-    st:include (("mode" st:mode)("param" st:param)) ;
-    st:hyperlink true ;
-    st:export true
-]
-.
+#[] owl:imports <profile2.ttl>
 
 
 
-st:democontent a sw:Workflow ; sw:body (
-    [ a sw:Load ; sw:path <azkar/dataSet.ttl>  ; sw:name st:data1 ] 
-    [ a sw:Load ; sw:path <azkar/Ontologie.ttl>  ; sw:name st:data2 ] 
-  )
-.
 
 
 st:dbpedia a st:Profile ;   
@@ -75,6 +58,35 @@ st:dbpediatestwf a sw:Workflow ;
 
 st:hal a st:Server ;
 st:service "hal" ;
+st:param [ 
+    # export context parameters to subtransformation (st:profile, etc.):
+    st:export true;
+    # transformation does not focus on uri but display whole graph:
+    st:focus false ;
+    # transformation generates HTML hypertext links:
+    st:hyperlink true ;
+    # generate number for each displayed resource
+    st:number true ;
+    st:lodprofile (
+        (<https://data.archives-ouvertes.fr/>    st:hal)
+        (<http://www.w3c.org/ns/org>             st:hal)    
+        (<http://fr.dbpedia.org/resource/>       st:dbpedia)
+        ("*"                                     st:lod)
+    ) 
+] ;
+st:workflow [
+    a sw:Workflow ;
+    sw:body (
+        <query/halquery.rq>
+        [ a sw:Transformation ; sw:uri st:hturtle ]
+    )
+]
+.
+
+
+
+st:hal3 a st:Server ;
+st:service "hal3" ;
 st:param [ 
     # export context parameters to subtransformation (st:profile, etc.):
     st:export true;
@@ -467,6 +479,7 @@ st:tutorialhal a st:Server ;
     st:sttl st:hturtle ; 
     st:param "verbatim" ; 
     st:hyperlink true ; 
+    st:number true ;
     st:export true ;
     st:focus false ;
     st:lodprofile (
@@ -600,12 +613,7 @@ st:cdncontent a sw:Workflow ; sw:body (
     ] .
           
 
-st:owlrl2 a st:Server ;
-    st:service "owlrl" ;
-    st:transform st:hturtle ;
-    st:schema 
-    [ st:uri <primer.owl> ] 
-.
+
 
 # ************************************************************************
 # Former Java hard coded Process implemented as declarative Workflow

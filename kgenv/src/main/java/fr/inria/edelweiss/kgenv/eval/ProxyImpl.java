@@ -324,7 +324,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return struuid();
                 
             case FOR:
-                return loop(exp, env, p);
+                return ProxyImpl.this.loop(exp, env, p);
                 
             case SEQUENCE:
                 return sequence(exp, env, p);
@@ -2006,12 +2006,7 @@ public class ProxyImpl implements Proxy, ExprType {
     }
 
      /**
-      * for (var in list) { exp }
-      * loop = for(var, list, exp)
-      * @param exp
-      * @param env
-      * @param p
-      * @return 
+      * loop: for (var in list) { exp }
       */
     IDatatype loop(Expr loop, Environment env, Producer p){
         IDatatype list = (IDatatype) eval.eval(loop.getDefinition(), env, p);
@@ -2020,7 +2015,7 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         if (list.isList()){
             for (IDatatype dt : list.getValues()){           
-                IDatatype res = let(loop.getBody(), loop.getVariable(), dt, env, p);
+                IDatatype res = step(loop, env, p, dt);
                 if (isReturn(res)){
                     return res;
                 }
@@ -2028,13 +2023,24 @@ public class ProxyImpl implements Proxy, ExprType {
         }
         else { 
             for (IDatatype dt : list){ 
-                IDatatype res = let(loop.getBody(), loop.getVariable(), dt, env, p);               
+                IDatatype res = step(loop, env, p, dt);               
                 if (isReturn(res)){
                     return res;
                 }
             }
         }
         return TRUE;
+    }
+    
+     /**
+     * for (var = value) { body }
+     * + see above
+     */
+    IDatatype step(Expr loop, Environment env, Producer p, IDatatype value){
+        env.set(loop, loop.getVariable(), value);
+        Object res = eval.eval(loop.getBody(), env, p);
+        env.unset(loop, loop.getVariable());
+        return (IDatatype) res;
     }
     
     
@@ -2352,17 +2358,6 @@ public class ProxyImpl implements Proxy, ExprType {
         }
     }
          
-
-    /**
-     * for (var = value) { exp }
-     * + see above
-     */
-    IDatatype let(Expr exp, Expr var, IDatatype value, Environment env, Producer p){
-        env.set(exp, var, value);
-        Object res = eval.eval(exp, env, p);
-        env.unset(exp, var);
-        return (IDatatype) res;
-    }
     
     /**
      * map(fun, list)

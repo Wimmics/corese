@@ -12,7 +12,7 @@ sw:param [
 
 sw:body ( st:dbpediawf 
 
-[ a sw:Assert ; sw:value 50 ;
+[ a sw:Assert ;  sw:value 50 ;
   sw:exp "let ((?c) = select (count(*) as ?c) where { ?x ?p ?y }){ ?c }" ; ]
   
 )

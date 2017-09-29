@@ -23,5 +23,5 @@ sw:body (
     [ a sw:Workflow ;  sw:uri <subworkflow.ttl> ]
    )]
   
-  [ a sw:Template ; sw:uri st:turtle ]
+  [ a sw:Transformation ; sw:uri st:turtle ]
 ) .

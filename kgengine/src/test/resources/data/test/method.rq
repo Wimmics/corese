@@ -3,11 +3,31 @@
 #
 @test 
 select * 
+(xt:methodType(us:area, us:Circle, ?x) as ?aa) 
 (xt:method(us:area, ?x) as ?a) 
 (xt:method(us:perimeter, ?x) as ?p) 
 where {
-    ?x a us:Composite
+    ?x a us:Circle 
 }
+
+
+@type dt:literal 
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
+}
+
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
+}
+
+function us:perimeter(?x) {
+    xt:display("perimeter: ", ?x) ;
+    return (0)
+}
+
+
 
 
 @type us:Composite 
@@ -78,7 +98,7 @@ function us:perimeter(?x) {
 
 
 
-@type us:SquareCircle
+@type us:Figure
 function us:compose(?x, ?p, ?fun) {
    let (select * where { ?x ?p ?s }) {
         funcall(?fun, ?s)

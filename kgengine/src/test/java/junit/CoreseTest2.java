@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import fr.inria.acacia.corese.api.*;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
@@ -285,7 +286,7 @@ public class CoreseTest2 extends TestCase {
 			}
 			
 			if (nb!=expected){
-				System.out.println("** PB: "  + nb + " " + expected + "\n" + query);
+				System.out.println("** PB find:"  + nb + " expect: " + expected + "\n" + query);
 			}
 					
 			assertEquals(query + " : ", expected, nb);
@@ -358,6 +359,7 @@ public class CoreseTest2 extends TestCase {
 		//String data = "/home/corby/workspace/coreseV2/src/test/resources/data/";
                 //String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
                 String data = CoreseTest2.class.getClassLoader().getResource("data").getPath() + "/";
+                //DatatypeMap.setSPARQLCompliant(true);
 
 		graph = Graph.create(true);
                // tune(graph);

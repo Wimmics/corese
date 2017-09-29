@@ -26,13 +26,13 @@ function ag:median(?list){
 #
 function ag:sigma(?list){
   let (?m = ag:avg(?list),
-       ?dev = apply (rq:plus, maplist(ag:sqdiff, ?list, ?m)) / xt:size(?list))
+       ?dev = reduce (rq:plus, maplist(ag:sqdiff, ?list, ?m)) / xt:size(?list))
   { power(?dev, 0.5) }
   
 }
 
 function ag:avg(?list){
-  apply (rq:plus, ?list) / xt:size(?list) 
+  reduce (rq:plus, ?list) / xt:size(?list) 
 }
 
 function ag:sqdiff(?x, ?m){
@@ -43,7 +43,7 @@ function ag:sqdiff(?x, ?m){
 # group_concat that would sort its argument list
 #
 function ag:sort_concat(?list){
-  apply(ag:concat, xt:sort(?list))
+  reduce(ag:concat, xt:sort(?list))
 }
 
 function ag:concat(?x, ?y){

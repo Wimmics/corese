@@ -2,7 +2,6 @@ package junit;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -26,7 +25,6 @@ import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -34,7 +32,6 @@ import fr.inria.edelweiss.kgram.event.StatListener;
 import fr.inria.edelweiss.kgraph.core.EdgeFactory;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgraph.core.producer.DFFactory;
 import fr.inria.edelweiss.kgraph.core.producer.DataFilter;
 import fr.inria.edelweiss.kgraph.core.producer.DataFilterFactory;
 import fr.inria.edelweiss.kgraph.logic.RDF;
@@ -46,7 +43,6 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
@@ -57,7 +53,6 @@ import fr.inria.edelweiss.kgtool.util.QueryManager;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.io.File;
 import java.util.ArrayList;
-import static junit.TestUnit.data;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -167,6 +162,279 @@ public class TestQuery1 {
 
     }
     
+    @Test
+    public void testrecfun() throws EngineException {
+        String q = "select (us:fac(5) as ?t) where {}"
+                + "function us:fac(?n) {"
+                + "if (?n = 0) {"
+                + " return(1) "
+                + "}"
+                + "else {"
+                + " let (?m = ?n, ?res = ?n * us:fac(?n - 1)) { "
+                + "if (?m = ?n, ?res, 0)"
+                + "}"
+                + "}"
+                + "}";
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?t");
+        assertEquals(120, dt.intValue());
+    }
+    
+    
+    @Test              
+        public void testmethod() throws EngineException, LoadException{
+             Graph g = createGraph();
+             QueryProcess exec = QueryProcess.create(g);           
+             QueryLoad ql = QueryLoad.create();
+             
+            String init = 
+                    "insert data {"
+                    + "us:square a us:Square ;  us:size 5 ."
+                    + "us:rect a us:Rectangle ; us:width 3 ; us:length 4 ."
+                    + "us:circ a us:Circle ;    us:radius 3 ."                    
+                    + "us:comp1 a us:Composite ; us:member (us:square us:rect us:circ)"
+                    + "us:comp2 a us:Composite ; us:member (us:comp1)"
+
+                    + "us:Rectangle     rdfs:subClassOf us:Figure "                    
+                    + "us:SquareCircle  rdfs:subClassOf us:Figure "                    
+                    + "us:Square        rdfs:subClassOf us:SquareCircle "
+                    + "us:Circle        rdfs:subClassOf us:SquareCircle "                    
+                    + "}";
+            
+             String q = ql.readWE(data + "junit/query/method.rq");
+             
+             exec.query(init);
+             Mappings map = exec.query(q);             
+            // ?a = "65.2744"^^xsd:decimal; ?p = "52.849599999999995"^^xsd:decimal; 
+            IDatatype a = (IDatatype) map.getValue("?a");
+            IDatatype p = (IDatatype) map.getValue("?p");
+            assertEquals(65.2744, a.doubleValue(),   1e-5);
+            assertEquals(52.8496, p.doubleValue(), 1e-5);
+        }
+    
+    
+    
+    
+     
+        
+        public void testdh() throws EngineException{
+            String init = "insert data { us:John rdfs:label 'John' }";
+            
+        String q = 
+                  "@test "
+                + "select "             
+                + "(method(us:display, 1.5) as ?dec)"                
+                + "(method(us:display, us:John) as ?uri)"                
+                + "(method(us:display, 12) as ?int)" 
+                + "(method(us:display, bnode()) as ?bn)" 
+                + "(method(us:display, xt:graph()) as ?g)"
+                + "(let((?tt) = xt:graph()) {?tt} as ?triple)"                
+                + "(method(us:display, ?triple) as ?t)"                
+                + "where { }"
+                
+                + "@type dt:uri "
+                + "function us:display(?x) {"
+                + "concat('uri: ', ?x)"
+                + "}"
+                
+                + "function us:display(?x) {"
+                + "concat('default: ', ?x)"
+                + "}"
+                
+                + "@type dt:bnode "
+                + "function us:display(?x) {"
+                + "concat('bnode: ', ?x)"
+                + "}"
+                
+                + "@type dt:standard "
+                + "function us:display(?x) {"
+                + "concat('standard: ', ?x)"
+                + "}"
+                
+                + "@type dt:extended "
+                + "function us:display(?x) {"
+                + "concat('extended: ', ?x)"
+                + "}"
+                
+                + "@type dt:triple "
+                + "function us:display(?x) {"
+                + "concat('triple: ', ?x)"
+                + "}"
+                
+                + "@type dt:entity "
+                + "function us:display(?x) {"
+                + "concat('entity: ', ?x)"
+                + "}"
+                
+                + "@type dt:literal "
+                + "function us:display(?x) {"
+                + "concat('literal: ', ?x)"
+                + "}"
+                
+                + "@type xsd:integer "
+                + "function us:display(?x) {"
+                + "concat('int: ', ?x)"
+                + "}"
+                ;
+            
+        
+              
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        assertEquals(true, strValue(map, "?dec").contains("standard"));
+        assertEquals(true, strValue(map, "?uri").contains("uri"));
+        assertEquals(true, strValue(map, "?int").contains("int"));
+        assertEquals(true, strValue(map, "?bn").contains("bnode"));
+        assertEquals(true, strValue(map, "?g").contains("extended"));
+        assertEquals(true, strValue(map, "?t").contains("triple"));
+        }
+        
+        String stringValue(Mappings m, String var){
+            return ((IDatatype) m.getValue(var)).stringValue();
+        }
+        
+        
+    
+    @Test
+    public void testch() throws EngineException{
+        String init = "insert data {"
+                + "us:Man rdfs:subClassOf us:Person "
+                + "us:Person rdfs:subClassOf us:Entity "
+                + "us:Entity rdfs:subClassOf rdfs:Resource "
+                + "us:man a us:Man "
+                + "us:person a us:Person "
+                + "us:entity  a us:Entity "
+                + "us:android  a us:Android ; rdfs:label 'James' "
+                + "[] a us:Person "
+                + "}";
+        
+        String q = "@test "
+                + "select ?x (method(us:test, ?x) as ?t) (method(us:test, ?ll) as ?l) "
+                + "where { ?x a ?type optional { ?x rdfs:label ?ll }}"
+                
+                
+                + "@type us:Man "
+                + "function us:test(?x) {"
+                + "'man'"
+                + "}"
+                
+//                + "@type us:Person "
+//                + "function us:test(?x) {"
+//                + "'person'"
+//                + "}"
+                
+                + "@type rdfs:Resource "
+                + "function us:test(?x) {"
+                + "'resource'"
+                + "}"
+                
+                + "@type dt:literal "
+                + "function us:test(?x) {"
+                + "'literal'"
+                + "}"
+                
+                + "function us:test(?x) {"
+                + "'default'"
+                + "}"
+                ;
+        
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        for (Mapping m : map){
+            IDatatype x = (IDatatype) m.getValue("?x");
+            IDatatype v = (IDatatype) m.getValue("?t");
+            String obj = x.stringValue();
+            String val = v.stringValue();
+            if (obj.contains("man")) assertEquals(val, "man");
+            if (obj.contains("person") || obj.contains("entity")) assertEquals(val, "resource");
+            if (obj.contains("android")) assertEquals(val, "default");
+            if (x.isBlank()) assertEquals(val, "resource");
+        }
+    }
+    
+    
+    
+    @Test
+ 
+    public void testExtFun21() throws EngineException {
+        String init = "prefix ex: <http://example.org/> "
+                + "insert data {"
+                + "ex:John rdf:value 1 . "
+                + "[] rdfs:label 2 ."
+                + "us:Jim rdf:value (1 (2 3) 4 ())"
+                + "us:James rdf:value ()"
+                + "}";
+               
+        String q = "select  (us:foo(us:bar()) as ?t1) (us:foo(xt:graph()) as ?t2) (us:gee() as ?t3)"
+                + "where {}"
+                
+                + "function us:foo(?g) {"
+                + "query(construct  where { ?x ?p ?y }, ?g)"
+                + "}"
+                
+                + "function us:bar() {"
+                + "query(construct where {?x rdf:value ?y})"
+                + "}"
+                
+                 + "function us:gee() {"
+                + "query(select * where { ?x ?p ?y}, query (construct where {?x rdf:value ?y}))"
+                + "}"
+                
+                ;
+              
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        IDatatype dt1 = (IDatatype) map.getValue("?t1");
+        IDatatype dt2 = (IDatatype) map.getValue("?t2");
+        IDatatype dt3 = (IDatatype) map.getValue("?t3");
+        Graph g1 = (Graph) dt1.getPointerObject().getTripleStore();
+        Graph g2 = (Graph) dt2.getPointerObject().getTripleStore();
+        Mappings m = dt3.getPointerObject().getMappings();
+        assertEquals(3, g1.size());
+        assertEquals(16, g2.size());
+        assertEquals(3, m.size());
+    }
+    
+     @Test
+    public void testExtFun20() throws EngineException {
+
+        String init = "prefix ex: <http://example.org/> "
+                + "insert data {"
+                + "ex:John rdf:value 1 ; rdfs:label 2"
+                + "}";
+
+        String q = "select (datatype(query(construct where {?x ?p ?y})) as ?g) "
+                + "(datatype( let((?a) = construct where {?x ?p ?y}) {?a} ) as ?t) "
+                + "(datatype(query(select * where {?x ?p ?y})) as ?s)"
+                + "(datatype( let((?b) = select * where {?x ?p ?y}) {?b}) as ?m)"
+                + "(datatype(xt:iota(5)) as ?l)"
+                + "where {}";
+
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+        Mappings map = exec.query(q);
+        IDatatype dg = (IDatatype) map.getValue("?g");
+        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype ds = (IDatatype) map.getValue("?s");
+        IDatatype dm = (IDatatype) map.getValue("?m");
+        IDatatype dl = (IDatatype) map.getValue("?l");
+        assertEquals(IDatatype.GRAPH_DATATYPE, dg.stringValue());
+        assertEquals(IDatatype.TRIPLE_DATATYPE, dt.stringValue());
+        assertEquals(IDatatype.MAPPINGS_DATATYPE, ds.stringValue());
+        assertEquals(IDatatype.MAPPING_DATATYPE, dm.stringValue());
+        assertEquals(IDatatype.LIST_DATATYPE, dl.stringValue());
+    }
     
     @Test
     public void testExtFun19() throws EngineException {

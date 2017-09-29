@@ -4,8 +4,11 @@
 
 <> cn:topic cn:rome
 
+<http://fr.dbpedia.org/resource/Ariane_(mythologie)> a foaf:Person ;
+cn:date -700 ;
+rdfs:label "Mythologie" .
 
-<http://fr.dbpedia.org/resource/Histoire_de_Marseille_de_sa_fondation_au_Ve_siècle> a o:Place ;
+<http://fr.dbpedia.org/resource/Marseille_antique> a o:Place ;
 cn:date -600 ;
 rdfs:label "Fondation de Massalia par les grecs de Phocée" .
 
@@ -19,7 +22,6 @@ cn:date -287 ;
   rdfs:label "Archimède"@fr ;
   rdfs:comment "-287 -212".
 
-  
 
 r:Pythagore a foaf:Person ;
 cn:date -495 ;
@@ -32,10 +34,24 @@ cn:date -547 ;
 rdfs:comment "-625 -547" ;
 rdfs:label "Thalès"@fr .
 
+r:Socrate a foaf:Person ;
+cn:date -470 ;
+rdfs:label "Socrate" ;
+rdfs:comment "-470 -399" .
 
 r:Platon a foaf:Person ;
 cn:date -427 ;
 rdfs:label "Platon" .
+
+
+r:Aristote a foaf:Person ;
+cn:date -384 ;
+rdfs:label "Aristote" ;
+rdfs:comment "-384 -322" .
+
+
+
+
 
 r:Alexandre_le_Grand a foaf:Person ;
 cn:date -356 ;
@@ -78,6 +94,12 @@ r:Guerre_des_Gaules cn:date -58 ;
 rdfs:label "Guerre des Gaules" ;
 rdfs:comment "De -58 à -51" .
 
+
+r:Marc_Antoine a foaf:Person ;
+cn:date -83 ;
+rdfs:label "Marc Antoine" ;
+rdfs:comment "-83 30" .
+
 r:Gergovie a o:Place ;
 cn:date -52 ;
 rdfs:label "Siège de Gergovie" .
@@ -90,6 +112,13 @@ rdfs:label "Siège d\'Alésia" .
 r:Pompée a foaf:Person ;
 cn:date -48 ;
 rdfs:label "Pompée" .
+
+r:Germanicus a foaf:Person ;
+cn:date -15 ;
+rdfs:label "Germanicus" ;
+rdfs:comment "-15 19" .
+
+
 
 r:Vercingétorix a foaf:Person ;
 cn:date -46 ;
@@ -610,7 +639,6 @@ rdfs:label "Trophée d'Auguste, La Turbie".
   rdfs:comment """Maximien Galère, dit Galère (Caius Galerius Valerius Maximianus en latin), né vers 250 à Felix Romuliana et mort en avril 311 en Dardanie est un empereur romain du Bas-Empire ayant régné pendant la Tétrarchie. Originaire d\'une famille illyrienne très modeste, Galère entre très tôt dans l\'armée et progresse rapidement dans la hiérarchie militaire. Repéré par l\'empereur Dioclétien, il épouse sa fille Valeria et devient son César, soit son vice-empereur, en charge de l\'Illyrie, en 293."""@fr ;
   rdfs:label "Galère (empereur romain)"@fr .
 
-<http://fr.dbpedia.org/resource/Germanicus> rdfs:label "Germanicus"@fr .
 
 <http://fr.dbpedia.org/resource/Glycérius> a foaf:Person ;
   cn:begin 473 ;

@@ -24,7 +24,7 @@ function us:after(?date){
 }
 
 function us:digit(?n){
-  if (?n < 10, concat("0", ?n), ?n)
+  if (?n < 10 && strlen(str(?n)) = 1, concat("0", ?n), ?n)
 }
 
 function us:year(?date, ?incr){

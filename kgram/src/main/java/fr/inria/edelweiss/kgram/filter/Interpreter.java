@@ -712,15 +712,14 @@ public class Interpreter implements Evaluator, ExprType {
     }
 
     /**
-     * let (?x = ?y, exp) 
+     * let (var = exp, body) 
      */
-    private Object let(Expr exp, Environment env, Producer p) {
-       // Node val  = eval(exp.getDefinition().getFilter(), env, p); 
-        Node val  = (Node) eval(exp.getDefinition(), env, p); 
+    private Object let(Expr let, Environment env, Producer p) {
+        Node val  = (Node) eval(let.getDefinition(), env, p); 
         if (val == ERROR_VALUE){
             return null;
         }
-        return let(exp.getBody(), env, p, exp, exp.getVariable(), val);
+        return let(let, env, p, val);
     }
     
     /**
@@ -739,12 +738,13 @@ public class Interpreter implements Evaluator, ExprType {
      * PRAGMA: let ((?y) = select where)
      * if ?y is not bound, let do not bind ?y 
      */
-     private Object let(Expr exp, Environment env, Producer p, Expr let, Expr var, Node val) { 
+     private Object let(Expr let, Environment env, Producer p, Node val) { 
+        Expr var = let.getVariable();
         boolean bound =  proxy.getConstantValue(val) != null;
         if (bound){
             env.set(let, var, val);
         }
-        Object res = eval(exp, env, p);
+        Object res = eval(let.getBody(), env, p);
         if (bound){
             env.unset(let, var);
         }

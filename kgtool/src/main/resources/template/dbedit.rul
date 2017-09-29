@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:44 CEST 2017
+Thu Aug 24 11:53:21 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -57,6 +57,7 @@ prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
 prefix dc:  <http://purl.org/dc/element/1.1/>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix o:   <http://dbpedia.org/ontology/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  st:dbpediafortest(?date) {
      
@@ -287,7 +288,7 @@ function us:after(?date){
 }
 
 function us:digit(?n){
-  if (?n < 10, concat("0", ?n), ?n)
+  if (?n < 10 && strlen(str(?n)) = 1, concat("0", ?n), ?n)
 }
 
 function us:year(?date, ?incr){

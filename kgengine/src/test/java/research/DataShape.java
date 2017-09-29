@@ -170,7 +170,7 @@ public class DataShape {
         //DatatypeMap.setSPARQLCompliant(true);
         for (String name : names) {
 
-//            if (!name.contains("property")){
+//            if (!name.contains("path")){
 //                continue;
 //            }
 

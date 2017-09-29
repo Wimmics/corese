@@ -7,7 +7,7 @@ function st:aggregate(?out) {
 }
 
 function us:merge(?list) {
-    apply(rq:and, ?list)
+    reduce(rq:and, ?list)
 }
 
 function st:default(?term){

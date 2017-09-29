@@ -4,18 +4,20 @@
 # Olivier Corby - Wimmics Inria I3S - 2015
 #
 prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>
+prefix java: <function://fr.inria.corese.extension.SPQR>
+#@compile <SPQR>
 select 
 
 (9999 as ?n)
-(spqr:romain(?n) as ?r)
-(spqr:digit(?r)  as ?d)
+
+
+(java:romain(?n) as ?r)
+(java:digit(?r)  as ?d)
 
 where {}
 
 
-export {
-function xt:romain(?n) {  spqr:spqr(?n) }
-function xt:digit(?r)  { spqr:parse(?r) }
+@public {
 
 function spqr:romain(?n) {  spqr:spqr(?n) }
 function spqr:digit(?r)  { spqr:parse(?r) }
@@ -28,7 +30,7 @@ function spqr:mod(?a, ?b) {  xsd:integer(?a - (?b * spqr:div(?a, ?b))) }
 function spqr:rep(?s, ?n) { 
   if (?n = 0, "",
   if (?n = 1, ?s,
-  concat(?s, spqr:rep(?s, ?n - 1))))
+  return(concat(?s, spqr:rep(?s, ?n - 1)))))
  }
 
 function spqr:r1(?n) { 
@@ -48,47 +50,47 @@ function spqr:r1000(?n) {
  }
 
 function spqr:num(?n, ?u, ?f, ?t) { 
-  if (?n <= 3, spqr:rep(?u, ?n),  
-  if (?n = 4, concat(?u, ?f),
-  if (?n < 9, concat(?f, spqr:rep(?u, ?n - 5)), 
-  if (?n = 9, concat(?u, ?t), ""))))
+  if (?n <= 3, return(spqr:rep(?u, ?n)),  
+  if (?n = 4, return(concat(?u, ?f)),
+  if (?n < 9, return(concat(?f, spqr:rep(?u, ?n - 5))), 
+  if (?n = 9, return(concat(?u, ?t)), ""))))
  }
 
 function spqr:spqr(?n) { 
-  if (?n < 10, spqr:r1(?n),
+  if (?n < 10, return(spqr:r1(?n)),
   if (?n < 100, 
     let (?c = spqr:div(?n, 10), 
          ?r = spqr:mod(?n, 10)){ 
-      concat(spqr:r10(?c), spqr:spqr(?r))
+      return(concat(spqr:r10(?c), spqr:spqr(?r)))
     },
     
   if (?n < 1000,
     let (?c = spqr:div(?n, 100),
          ?r = spqr:mod(?n, 100)){
-      concat(spqr:r100(?c), spqr:spqr(?r))
+      return(concat(spqr:r100(?c), spqr:spqr(?r)))
     },
     
   if (?n < 10000,
     let (?c = spqr:div(?n, 1000),
          ?r = spqr:mod(?n, 1000)){
-      concat(spqr:r1000(?c), spqr:spqr(?r))
+      return(concat(spqr:r1000(?c), spqr:spqr(?r)))
     },       
-    ?n))))
+    return(?n)))))
 }
 
 # parse romain number
 
 function spqr:parse(?s) { 
-  if (strlen(?s) = 0, 0,
+  if (strlen(?s) = 0, return(0),
     let (?f = substr(?s, 1, 1)){
-      if (?f = "I", spqr:step(?s, "I", "V", "X", 1, 5, 10),
-      if (?f = "V", 5 + spqr:parse(substr(?s, 2)),
-      if (?f = "X", spqr:step(?s, "X", "L", "C", 10, 50, 100),
-      if (?f = "L", 50 + spqr:parse(substr(?s, 2)),
-      if (?f = "C", spqr:step(?s, "C", "D", "M", 100, 500, 1000),
-      if (?f = "D", 500   + spqr:parse(substr(?s, 2)),
-      if (?f = "M", 1000  + spqr:parse(substr(?s, 2)),
-      0)))))))
+      if (?f = "I", return(spqr:step(?s, "I", "V", "X", 1, 5, 10)),
+      if (?f = "V", return(5 + spqr:parse(substr(?s, 2))),
+      if (?f = "X", return(spqr:step(?s, "X", "L", "C", 10, 50, 100)),
+      if (?f = "L", return(50 + spqr:parse(substr(?s, 2))),
+      if (?f = "C", return(spqr:step(?s, "C", "D", "M", 100, 500, 1000)),
+      if (?f = "D", return(500   + spqr:parse(substr(?s, 2))),
+      if (?f = "M", return(1000  + spqr:parse(substr(?s, 2))),
+      return(0))))))))
       }
   )	      
 }
@@ -96,9 +98,9 @@ function spqr:parse(?s) {
 function spqr:step(?s, ?su, ?sc, ?sd, ?u, ?c, ?d) { 
   if (strlen(?s) = 1, ?u,
     let (?r = substr(?s, 2, 1)){
-      if (?r = ?sc,   ?c - ?u + spqr:parse(substr(?s, 3)),
-	if (?r = ?sd, ?d - ?u + spqr:parse(substr(?s, 3)),
-	  ?u + spqr:parse(substr(?s, 2))))
+      if (?r = ?sc,   return(?c - ?u + spqr:parse(substr(?s, 3))),
+	if (?r = ?sd, return(?d - ?u + spqr:parse(substr(?s, 3))),
+	  return(?u + spqr:parse(substr(?s, 2)))))
     }
   )
 }

@@ -2,7 +2,6 @@
 [] owl:imports <profile.ttl>
 
 us:test a sw:Workflow ;
-
 sw:param [
   st:uri <http://fr.dbpedia.org/resource/Auguste> ;
   st:profile st:dbpedia ;

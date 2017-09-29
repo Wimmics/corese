@@ -603,7 +603,7 @@ public class TestW3C11KGraph {
 
         // here
 
-       // if (! fquery.contains("bind08.rq") ) return true;
+       // if (! fquery.contains("distinct-1.rq") ) return true;
 
         if (trace) {
             System.out.println(pp(fquery));

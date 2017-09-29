@@ -77,7 +77,7 @@ public class Approx {
                    + "order by desc(sim()) " ;
             
                      Load ld = Load.create(g);
-                     ld.loadWE("/home/corby/Cours/2016/done/tp/human_2013.rdf");
+                     ld.parse("/home/corby/Cours/2016/done/tp/human_2013.rdf");
              exec.query(i);
              
              Mappings map = exec.query(q2);

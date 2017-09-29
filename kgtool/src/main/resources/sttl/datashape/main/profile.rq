@@ -1,9 +1,9 @@
-prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <function://fr.inria.corese.extension.DataShape>  
-prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
+prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
-#@compile <fr.inria.corese.extension.DataShape>  @path </user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
+#@compile <fr.inria.corese.extension.DataShape>  @path </home/corby/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
 
 template st:profile {} where {}
 
@@ -299,12 +299,12 @@ function sh:clean(?q){
 }
 
 function sh:count(?s, ?p){
-  let ((?c) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o } )
+  let (((?c)) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
 
 function sh:invCount(?o, ?p){
-  let ((?c) = select ?o ?p (count(*) as ?c) where { ?s ?p ?o } )
+  let (((?c)) = select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
 
@@ -378,6 +378,8 @@ function sh:classsh(?shape, ?o, ?c){
 
 function sh:in(?shape, ?o, ?lv){
   exists { 
+    # "declare" Node ?o to allow parameter passing
+    values ?o { UNDEF }
     graph ?shape { ?lv rdf:rest*/rdf:first ?v  
         filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
     }
@@ -387,6 +389,8 @@ function sh:in(?shape, ?o, ?lv){
 
 function sh:languageIn(?shape, ?o, ?lv){
   exists { 
+    # "declare" Node ?o to allow parameter passing
+    values ?o { UNDEF }
     bind (lang(?o) as ?lang)
     filter bound(?lang)
     graph ?shape { 
@@ -430,7 +434,7 @@ function sh:xone(?or, ?s, ?p, ?o, ?shape){
 # property (predicate or path)
 # ?fun = sh:hasPath
 function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
-    let ((?count) = 
+    let (((?count)) = 
         SELECT ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
 			GRAPH ?shape {
@@ -444,8 +448,7 @@ function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
 			AS ?hasShape)
 			BIND (IF (bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
 		}
-		values (?s ?suc ?fail ?p ?o ) { (UNDEF UNDEF UNDEF UNDEF UNDEF) }
-		)
+		values (?s ?suc ?fail ?p ?o ) { (UNDEF UNDEF UNDEF UNDEF UNDEF) }) 
 		{ return(?count) }
 }
 
@@ -470,7 +473,7 @@ function sh:xone(?or, ?s, ?shape){
 
 # core
 function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
-    let ((?count) = 
+    let (((?count)) = 
         SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
             graph ?shape { 
@@ -479,8 +482,7 @@ function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
 			BIND (java:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
 		}
-		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) }
-		)
+		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) })
 		{ return(?count) }
 }
 
@@ -530,7 +532,7 @@ function sh:equal(?l1, ?l2){
 function sh:path(?shape, ?pp) {
   if (isURI(?pp)) { ?pp }
   else {
-    let ((?q, ?path) = 
+    let ((?res) = 
         select ?shape ?pp ?q ?path where {
             graph ?shape { 
                 # rdf:rest is for a sequence
@@ -540,11 +542,18 @@ function sh:path(?shape, ?pp) {
                 ?pp ?q ?path   
             }
         } ) {
-        
-        if (! bound(?q))
-            { return(error()) }      
-        else if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
-        else { return(xt:list(?q, sh:path(?shape, ?path))) }
+        if (! bound(?res))
+                { return(error()) }   
+        else { 
+            let ((?q, ?path) = ?res) {                    
+             if (! bound(?q))
+                { return(error()) }   
+                else { 
+                if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
+                    else { return(xt:list(?q, sh:path(?shape, ?path))) }
+                    }
+                }
+        }
     }
   }
 }
@@ -554,7 +563,7 @@ function sh:path(?shape, ?pp) {
 # Rewrite recursively RDF list ?pp as a list
 #
 function sh:listsh(?shape, ?pp){
-   let ( (?l) = 
+   let ( ((?l)) = 
         select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
         where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
         return(?l)
@@ -715,13 +724,13 @@ function sh:pathProperty(?s, ?p, ?inv){
 }
 
 function sh:predicate(?s, ?p){
-    let ((?l) = select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
+    let (((?l)) = select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }
 
 function sh:inverse(?o, ?p){
-    let ((?l) = select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
+    let (((?l)) = select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }

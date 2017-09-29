@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:44 CEST 2017
+Thu Aug 24 11:53:21 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -23,40 +23,13 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:type {
-"<span class='type'>"
-
-  group {
-  
-     if (bound(?pr), "<span class='tag'>", "")        
-         "a " 
-     if (bound(?pr), "</span>", "")  
-     
-     if (?refer, st:turtle(?c), ?c)  
-     
-     if (bound(?pr), st:call-template(st:provenance, ?pr), "")
-     
-     ; separator = concat(" ;", st:nl()) 
-  }
-  
-  "</span>"
-  if (?rest, concat(" ;", st:nl()), "")
+template st:link(?uri, ?title) {
+   format {
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
+   }
 }
 where {
-  values ?p { rdf:type }
-  ?in ?p ?c 
-  bind (kg:provenance(?p) as ?pr)
-  
-    bind(
-    exists { ?in ?q ?v . filter (?q != rdf:type) }
-    as ?rest)
-    
-    bind(isBlank(?c) && exists { ?x ?q ?c . filter(?in != ?x) }
-    as ?refer)
 }
 ]]>
 </body>
@@ -70,17 +43,18 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:start {
-
-  group { 
+    if (st:get(st:number, true), 
+        st:format("# %s%s", st:number(), st:nl()), "")
+    
     st:apply-templates(?x)
     ; separator = "\n\n"
-  }
-
 }
 where {
   
   select distinct ?x where { 
     bind (st:focus() as ?x)
+    bind (st:get(st:uri) as ?uri)
+    bind (bound(?uri) as ?sort)
     ?x ?p ?y     
     filter ( 
       isURI(?x) 
@@ -90,7 +64,7 @@ where {
 	   || exists { ?x ?q ?x }
 	  ))
     )
-  } order by ?x
+  } order by if (?sort, ?x != ?uri, true) ?x
 }
 
 ]]>
@@ -106,24 +80,20 @@ where {
 #
 template st:value {
 
-     if (bound(?pr), "<span class='tag'>", "")                     
-     ?p " " 	
-     if (bound(?pr), "</span>", "")        
-	       
-    if (?refer, st:turtle(?y), 
-    if (isURI(?y) && ?y = rdf:nil, "()", ?y))
+format {
+    if (?p = rdf:type, "<span class='type'>a %2$s</span>", "%s %s")
     
-    if (bound(?pr), st:call-template(st:provenance, ?pr), "")
-	
-    ; separator = concat(" ;", st:nl())             
+	st:process(?p)  	       
+	if (?refer, st:turtle(?y), 
+        if (isURI(?y) && ?y = rdf:nil, "()", st:process(?y)))
+}
+             
+   ; separator = concat(" ;", st:nl()) 
 }
 where {
   ?in ?p ?y 
-  bind (kg:provenance(?p) as ?pr)
-  
-  filter(?p not in (rdf:type))
-  
-  bind(
+    
+  bind (
     isBlank(?y) 
     && ( (st:isStart() && exists { ?x ?q ?y . filter(?in != ?x) })
          || exists { ?y ?q ?y } 
@@ -132,7 +102,7 @@ where {
   as ?refer)
     
 }
-order by ?p ?y
+order by if (?p = rdf:type, 0, 1) ?p ?y
 ]]>
 </body>
 </rule>
@@ -300,7 +270,7 @@ where {}
 #
 function st:process(?in) { 
   if (isBlank(?in), st:blank(?in),	  
-  if (isURI(?in), us:uri(?in),
+  if (isURI(?in), us:puri(?in),
   if (datatype(?in) = xt:graph, st:clean(str(?in)),
   st:literal(st:clean(st:turtle(?in))))))
 }
@@ -320,9 +290,13 @@ function st:blank(?in){
     st:id(?in), st:apply-templates(?in))
 }
 
+function us:puri(?in){
+    if (st:get(st:hyperlink, true),    
+        st:display(?in), us:uri(?in))
+}
+
 function us:uri(?in){
-if (st:get(st:hyperlink, true),    
-    st:display(?in), st:clean(st:turtle(?in)))
+    st:clean(st:turtle(?in))
 }
 
 function st:id(?in){
@@ -349,6 +323,27 @@ function st:lod(?x){
 function st:display(?x){
     let (?profile = coalesce(st:get(st:profile), st:null)){
       if (?profile = st:null){ 
+        us:uri(?x) 
+      }
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:link, ?x, us:uri(?x))
+      }
+      else {
+        st:call-template(st:link, coalesce(st:pplink(us:prepare(?x)), us:prepare(?x)), us:uri(?x))
+      }     
+    }
+}
+
+function us:prepare(?uri){
+    ?uri
+#    coalesce(funcall(st:get(st:prepare), ?uri), ?uri)
+}
+
+
+
+function st:display2(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
         st:call-template-with(st:sparql, st:esc, ?x) 
       }
       else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
@@ -358,23 +353,6 @@ function st:display(?x){
         st:call-template-with(st:sparql, st:linkprofile, ?x)
       }     
     }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:ibox(?in) {
-
-  ibox {      
-	st:call-template(st:type, ?in)	  
-	st:call-template(st:value, ?in)	
-   }
-}
-where {
-
 }
 ]]>
 </body>
@@ -415,7 +393,6 @@ template {
      
 ibox { 
 	st:nl()
-	st:call-template(st:type, ?in)	
 	st:call-template(st:value, ?in)
 } 
             
@@ -438,12 +415,14 @@ limit 1
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template {
-  if (?refer, concat(st:turtle(?in), " "), "[")     
+  if (?refer, concat(st:turtle(?in), " "), "[") 
   
-  if (st:visited(?in), 
-    st:call-template(st:pperror, st:call-template(st:ibox, ?in)),
-  	st:call-template(st:ibox, ?in)
-  )
+  ibox {
+    if (st:visited(?in), 
+        st:call-template(st:pperror, st:call-template(st:value, ?in)),
+        st:call-template(st:value, ?in)
+    )
+  }
   
   if (?refer, " .", 
   if (?nested, "]", "] ."))

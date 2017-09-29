@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 05 09:04:23 CEST 2017
+Thu Aug 24 11:53:21 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -511,7 +511,7 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <function://fr.inria.corese.extension.DataShape>  
 
-template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?l, ?o){
+template sh:uniqueLang (?shape, ?sh, ?vis, ?s, ?p, ?v, ?o){
     let (?suc = false, ?b = java:report(sh:uniqueLang, ?sh, ?shape, ?s, ?p, ?lang, ?suc, ?vis)){
         sh:safe(?shape, ?sh, ?suc)
     } 
@@ -655,7 +655,9 @@ where {
       sh:and sh:or sh:xone sh:not 
       sh:qualifiedValueShape sh:sparql
     }
-    ?sh ?oper ?b    
+    ?sh ?oper ?b  
+    # uniqueLang test case requires boolean true and skip boolean "1"^^xsd:boolean !!!
+    filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
   }
   
   values ?s { unnest(?ls) }

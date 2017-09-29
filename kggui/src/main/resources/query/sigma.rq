@@ -18,13 +18,13 @@ function us:median(?list){
 
 function us:sigma(?list){
   let (?avg = us:avg(?list),
-       ?sum = apply (kg:plus, maplist(us:sqdiff, ?list, ?avg))){
+       ?sum = reduce (kg:plus, maplist(us:sqdiff, ?list, ?avg))){
     power(?sum / xt:size(?list), 0.5)
   }
 }
 
 function us:avg(?list){
-  apply (kg:plus, ?list) / xt:size(?list) 
+  reduce (kg:plus, ?list) / xt:size(?list) 
 }
 
 function us:sqdiff(?x, ?avg){

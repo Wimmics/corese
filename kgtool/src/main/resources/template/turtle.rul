@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:44 CEST 2017
+Thu Aug 24 11:53:21 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -13,21 +13,23 @@ Mon Mar 27 11:33:44 CEST 2017
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:main {
+template st:main { 
     st:apply-templates(?x)
     ; separator = "\n\n"
 }
 where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
-    ?x ?p ?y     
+    
+    ?x ?p ?y  
+    
     filter ( 
       isURI(?x) 
       || not exists { ?z ?q ?x }
       || (isBlank(?x) 
         && not exists { ?x rdf:first ?e }
-        && (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }
-            || exists { ?x ?q ?x })
+        && ( if (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }, st:cset(st:refer, ?x, true), false)
+              || exists { ?x ?q ?x } )
 	     )
     )
   } order by ?x
@@ -50,7 +52,9 @@ template st:start {
   str(?main)
 }
 where {
-  bind (st:call-template(st:main) as ?main)
+  bind (st:set(st:allgraph, true)  as ?s1)
+  bind (st:call-template(st:main)  as ?main)
+  bind (st:set(st:allgraph, false) as ?s2)
 }
 
 ]]>
@@ -76,16 +80,16 @@ template st:value {
 }
 where {
   ?in ?p ?y 
-    
+  
   bind (
     isBlank(?y) 
     && not exists { ?y rdf:first ?e }
-    && ( (st:isStart() && exists { ?x ?q ?y . filter(?in != ?x) })
-         || exists { ?y ?q ?y } 
-         || ?in = ?y
+    && ( 
+        (st:get(st:allgraph, true) && exists { ?x ?q ?y . filter(?in != ?x) } )
+        || exists { ?y ?q ?y } 
+        || ?in = ?y
        )
-  as ?refer)
-    
+  as ?refer)      
 }
 order by if (?p = rdf:type, 0, 1) ?p ?y
 ]]>
@@ -227,7 +231,7 @@ where {
   filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
   
   bind (isBlank(?e) && 
-    ((st:isStart() &&  exists { ?x ?p ?e . filter(?x != ?r) })
+    ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
     || exists { ?e ?q ?e })
     as ?refer)
 }
@@ -244,7 +248,7 @@ pragma { st:template st:priority 1000 }
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template {
+template  {
   ?in " "
   
   ibox {   
@@ -253,9 +257,9 @@ template {
       
   " ."      
 }
-where {
-  ?in ?p ?y   
-  filter isUri(?in) 
+where { 
+  ?in ?pp ?y   
+  filter isURI(?in)
 }
 limit 1
 ]]>
@@ -283,15 +287,18 @@ where {
   ?in ?p ?y   
   filter isBlank(?in)
   filter not exists { ?in rdf:first ?e } 
-  
+    
   bind (exists { ?a ?q ?in } as ?nested)
   
   bind (
     ?nested 
-    && ((st:isStart() && exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
+    && (
+    (st:get(st:allgraph, true) && coalesce(st:cget(st:refer, ?in), false) )
+    #exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
 	|| exists { ?in ?q ?in }
        )
   as ?refer)
+  
 }
 limit 1
 ]]>

@@ -4,19 +4,17 @@
 #
 # Olivier Corby - Wimmics, Inria, I3S - 2015
 #
-prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
-
+#prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+prefix cal: <function://fr.inria.corese.extension.Calendar>
+#@compile <Calendar>
 select (cal:jour(now()) as ?fr)
 where  { }
 
 
 @public {
 
-function xt:day(?d)  { cal:day(?d) }
 
-function xt:jour(?d) { cal:jour(?d) }
 
-function cal:day(?d)  { cal:en(cal:find(?d)) }
 
 function cal:jour(?d) { cal:fr(cal:find(?d)) }
 
@@ -47,16 +45,16 @@ function cal:monthday(?m, ?y) {
 	    if (?m in (5), 5, 6)))))))
 }
 	    
-function cal:get(?y, ?m, ?d) {
+function cal:getDate(?y, ?m, ?d) {
   let (?n = cal:k(?y) + cal:q(?y) + cal:cd(?y) +
         cal:monthday(?m, ?y) + ?d + 2 + 5 * cal:ab(?y))
     {
-      cal:mod(?n, 7)
+      return(cal:mod(?n, 7))
     }
 }
     
 function cal:find(?d) {
-  cal:get(year(?d), month(?d), day(?d))
+  cal:getDate(year(?d), month(?d), day(?d))
 }
   
 function cal:en(?n) {
@@ -92,8 +90,8 @@ function cal:num(?day) {
 function cal:days(?y, ?m) {
     let (?list = 
 	xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)){ 
-        if (?m != 2, xt:get(?list, ?m - 1),
-            if (cal:bisextile(?y), 29, 28))
+        if (?m != 2, return(xt:get(?list, ?m - 1)),
+            if (cal:bisextile(?y), return(29), return(28)))
     }
 }
 

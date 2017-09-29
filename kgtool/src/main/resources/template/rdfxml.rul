@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Mar 27 11:33:44 CEST 2017
+Thu Aug 24 11:53:21 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -280,6 +280,12 @@ function st:lod(?x){
      coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
 }
     
+function us:prepare(?uri){
+    ?uri
+#    coalesce(funcall(st:get(st:prepare), ?uri), ?uri)
+}
+
+
 
 # display resource uri
 function st:display(?x){
@@ -291,7 +297,7 @@ function st:display(?x){
         st:call-template(st:link, str(?x), str(?x))
       }
       else {
-        st:call-template(st:link, coalesce(st:pplink(?x), ?x), str(?x))
+        st:call-template(st:link, coalesce(st:pplink(us:prepare(?x)), us:prepare(?x)), str(?x))
       }     
     }
 }

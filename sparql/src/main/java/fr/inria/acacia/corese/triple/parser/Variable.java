@@ -193,12 +193,12 @@ public class Variable extends Atom {
         
         @Override
 	public int getIndex() {
-            return getActualIndex() ;
+            return index ;
 	}
 
 	@Override
 	public void setIndex(int n) {
-            setActualIndex(n);
+            index = n;
 	}
         
         int getRealIndex() {

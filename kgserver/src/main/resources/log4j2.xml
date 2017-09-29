@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- To override this configuration, add the following option to the JVM:
+     -Dlog4j.configurationFile=file:/C:/Users/fmichel/Documents/Research/PhD/Softwares/Corese-server/log4j2.xml -->
+      
+<Configuration status="WARN">
+
+  <Appenders>
+
+    <Console name="STDOUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n"/>
+    </Console>
+    
+    <RollingFile name="FILE" fileName="log/kgram_server.log" filePattern="log/kgram_server.log.%d{yyyy-MM-dd-HH:mm:ss}-%i.gz">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="20 MB"/>
+      </Policies>
+    </RollingFile>
+        
+  </Appenders>
+
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="STDOUT"/>
+      <AppenderRef ref="FILE"/>
+    </Root>
+
+    <Logger name="fr.inria.edelweiss.kgramserver.webservice" level="info"/>
+    <Logger name="com.hp.hpl.jena" level="warn"/>
+    <Logger name="org.openjena" level="warn"/>
+    <Logger name="org.eclipse.jetty" level="warn"/>
+    <Logger name="org.apache.http" level="warn"/>
+    <Logger name="fr" level="info"/>
+  </Loggers>
+
+</Configuration>
+

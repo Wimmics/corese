@@ -120,6 +120,11 @@ pre  a {
   height: 60% 
 }
 
+.maptiny {
+   height: 25%  ;
+   width:  50%
+}
+
 .mapsmall {
    height: 40%  
 }

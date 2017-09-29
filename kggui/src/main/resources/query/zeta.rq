@@ -14,5 +14,5 @@ values ?n { 1000 }
  function ex:fun(?n, ?p) { 1 / power(?n, ?p) }
   
  function ex:zeta(?n, ?p) {
-    apply(kg:plus, (maplist(ex:fun, xt:iota(?n), ?p)))
+    reduce(kg:plus, (maplist(ex:fun, xt:iota(?n), ?p)))
 }

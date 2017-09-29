@@ -1,4 +1,4 @@
-@export package { 
+@public package { 
 
 # Specify focus node of transformation 
 # default is st:get(st:uri) as usual
@@ -15,7 +15,12 @@ function xt:turtle() {
 }
 
 function xt:turtle(?x) {  
-    st:apply-templates-with(st:turtle, ?x)
+    if (isLiteral(?x) && datatype(?x) = dt:graph){
+        xt:focus(?x, st:apply-templates-with(st:turtle))
+    }
+    else {
+        st:apply-templates-with(st:turtle, ?x)
+    }
 }
 
 function xt:rdfxml() {  

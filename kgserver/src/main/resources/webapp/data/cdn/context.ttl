@@ -162,6 +162,11 @@ cn:date 1320 ;
 rdfs:label "Bertrand Du Guesclin" ;
 rdfs:comment "1320-1380" .
 
+r:Ibn_Khaldoun a foaf:Person ;
+cn:date 1332 ;
+rdfs:label "Ibn Khaldoun" ;
+rdfs:comment "1332-1406" .
+
 r:Peste_noire cn:date 1348 ;
 rdfs:label "Peste noire" ;
 rdfs:comment "40% de la population européenne disparait : 25 millions de morts" .

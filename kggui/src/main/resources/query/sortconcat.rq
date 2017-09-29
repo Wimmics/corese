@@ -8,7 +8,7 @@ where {
 }
 
 function us:sort_concat(?list){
-  apply(us:concat, xt:sort(?list))
+  reduce(us:concat, xt:sort(?list))
 }
 
 function us:concat(?x, ?y){

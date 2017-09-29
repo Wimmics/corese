@@ -217,11 +217,12 @@
                 </div>
                 <div class="panel-body">
                     <form method='POST' action='/template' id='sparqlQueryForm'>
-                        <label >Data source:</label>
-                        <select name="tmp" id='select' onChange="document.getElementById('serv').action = document.getElementById('select').value;">
-                            <option value="/template">Server</option>
-                            <option value="/tutorial/rdf">Tutorial RDF</option>
-                            <option value="/tutorial/cdn">Tutorial CDN</option>
+                        <label>Profile:</label>
+                        <select name="profile" id='select'>
+                            <option value="st:sparql">Triple</option>
+                            <option value="st:hturtle">Turtle</option>
+                            <option value="st:endpoint">Result</option>
+                            <option value="st:halendpoint">Hal Result</option>
                         </select>
                         <br/>
                         <textarea  class="form-control custom-control"  rows='8' name='query'>
@@ -230,7 +231,7 @@
   }
                         </textarea>
                         <br/>
-                        <input type='hidden' name='profile' value='st:sparql' />
+                        <input type='hidden' name='profile2' value='st:sparql' />
                         <input type='submit' value='Query' class="btn btn-success"  onclick="trans(this.form); return false;">
                     </form>
                 </div>

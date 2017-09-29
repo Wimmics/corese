@@ -1171,28 +1171,38 @@ public class Transformer  {
         return display(dt, ope);
     }
     
-    
-    /**
-     * st:default(?dt) return default value when transformer fail 
-     * st:defaultNamed(?dt)
-     */
     IDatatype eval(String name, Query q, IDatatype dt, IDatatype def, Environment env) {
         Extension ext = q.getExtension();
         if (ext != null) {
-            Expr exp = ext.get(name, (dt==null)?0:1);
-            if (exp != null) { 
-                IDatatype res = null;
-                if (dt == null){
-                    res =  (IDatatype) exec.getEvaluator().eval(exp.getFunction(), getEnvironment(env, q), exec.getProducer()) ;
-                }
-                else {
-                    res = (IDatatype) exec.getEvaluator().getProxy().let(exp.getFunction(), getEnvironment(env, q), exec.getProducer(), dt);
-                }
-                return res;
+            Expr function = ext.get(name, (dt == null) ? 0 : 1);
+            if (function != null) { 
+                return (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt) ;
             }
         }
         return def;
     }
+    
+    
+//    IDatatype eval2(String name, Query q, IDatatype dt, IDatatype def, Environment env) {
+//        Extension ext = q.getExtension();
+//        if (ext != null) {
+//            Expr function = ext.get(name, (dt==null)?0:1);
+//            if (function != null) { 
+//                IDatatype res = null;
+//                if (dt == null){
+//                    res =  (IDatatype) exec.getEvaluator().eval(function.getFunction(), getEnvironment(env, q), exec.getProducer()) ;
+//                }
+//                else {
+//                    IDatatype[] arr = new IDatatype[1];
+//                    arr[0] = dt;
+//                    //res = (IDatatype) exec.getEvaluator().getProxy().let(function.getFunction(), getEnvironment(env, q), exec.getProducer(), dt);
+//                    res = (IDatatype) exec.getEvaluator().eval(function.getFunction(), getEnvironment(env, q), exec.getProducer(), arr, function);
+//                }
+//                return res;
+//            }
+//        }
+//        return def;
+//    }
     
     Environment getEnvironment(Environment env, Query q){
         if (env == null){

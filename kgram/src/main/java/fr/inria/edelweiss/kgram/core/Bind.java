@@ -36,14 +36,20 @@ public class Bind {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Level: ").append(level).append(NL);
-        for (int i = varList.size() - 1; i >= 0; i--) {
-            sb.append(varList.get(i)).append(" = ").append(valList.get(i)).append(NL);
+        for (int i = index(); i >= 0; i--) {
+            sb.append("(").append(i).append(") ");
+            sb.append(varList.get(i)).append(" = ").append(valList.get(i));                    
+            sb.append(NL);
         }
         return sb.toString();
     }
     
     public int size() {
         return varList.size();
+    }
+    
+    int index(){
+        return varList.size() - 1;
     }
     
     /**
@@ -65,9 +71,24 @@ public class Bind {
     }
     
     int getIndex(Expr var){
+        return computeIndex(var);        
+    }
+    
+    int getIndex1(Expr var){
+        int index = var.getIndex();
+        if (index == ExprType.UNBOUND){           
+            return -1;
+        }
+        return index;
+    }
+    
+    int computeIndex(Expr var){
         int end = getCurrentLevel();                   
-        for (int i = varList.size() - 1; i >= end; i--) {
-            if (varList.get(i).equals(var)) {
+        for (int i = index(); i >= end; i--) {
+            if (varList.get(i).equals(var)) {  
+                if (var.getDefinition() != null && var.getDefinition() != varList.get(i)){                   
+                    return -1;
+                }
                 return i;
             }
         }
@@ -76,7 +97,7 @@ public class Bind {
     
     // todo:  why not level ???
     public boolean isBound(String label){
-        for (int i = varList.size() - 1; i >= 0; i--) {
+        for (int i = index(); i >= 0; i--) {
             if (varList.get(i).getLabel().equals(label)) {
                 return true;
             }
@@ -92,8 +113,9 @@ public class Bind {
         return (level.isEmpty()) ? 0 : getLevel();
     }
 
-    /**t
-     * set(?x = ?x + 1)
+    /**
+     * set(?x = exp)
+     * ?x is already bound, assign variable
      */
     public void bind(Expr exp, Expr var, Node val) {
         int i = getIndex(var);
@@ -102,15 +124,19 @@ public class Bind {
         }
     }
     
+    /**
+     * let (?x = exp)
+     */
     public void set(Expr exp, Expr var, Node val) {
         set(var, val);
     }
 
-    // todo: ExprType.EQ ???
+    /**
+     * us:fun(?x, ?y)
+     */
     public void set(Expr exp, List<Expr> lvar, Object[] value) {
-        if (exp.oper() == ExprType.FUNCTION || exp.oper() == ExprType.EQ){
-            // xt:fun(?x) = exp
-            // funcall          
+        if (exp.oper() == ExprType.FUNCTION) {
+            // Parameters and local variables of this function are above level 
             level.add(varList.size()); 
         }
         int i = 0;
@@ -118,6 +144,16 @@ public class Bind {
             set(var, (Node) value[i++]);
         }
     }
+    
+    /**
+     * define parameter/local variable and set its value
+     */
+    private void set(Expr var, Node val) {
+        varList.add(var);
+        valList.add(val);
+        var.setIndex(index());
+    }
+
 
     public void unset(Expr exp, Expr var) {
         unset(var);
@@ -140,16 +176,13 @@ public class Bind {
         }
     }
 
-    private void set(Expr var, Node val) {
-        varList.add(var);
-        valList.add(val);
-    }
 
     private void unset(Expr var) {
         if (! varList.isEmpty()){
-            varList.remove(varList.size() - 1);
-            valList.remove(valList.size() - 1);
+            varList.remove(index());
+            valList.remove(valList.size() - 1);           
         }
+        var.setIndex(ExprType.UNBOUND);
     }
     
      public List<Expr> getVariables() {

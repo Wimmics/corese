@@ -101,11 +101,6 @@ public class EvaluatorDefault implements Evaluator {
     }
 
     @Override
-    public Object eval(Expr f, Environment e, Producer p, Object[] values, String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Object eval(Expr f, Environment e, Producer p, Object[] values, Expr ee) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -147,6 +142,16 @@ public class EvaluatorDefault implements Evaluator {
 
     @Override
     public Expr getDefineMethod(Environment env, String name, Object type, Object[] values) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object eval(String name, Environment e, Producer p, Object value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object eval(Expr f, Environment e, Producer p, Object value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

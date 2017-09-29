@@ -376,7 +376,8 @@ public class Interpreter implements Evaluator, ExprType {
             case UNDEF:
             case STL_PROCESS:
             case LIST:
-            case IOTA:  
+            case IOTA: 
+            case XT_ITERATE:
             case XT_DISPLAY:
             case XT_PRINT:
             case XT_METHOD:
@@ -494,6 +495,9 @@ public class Interpreter implements Evaluator, ExprType {
             Expr arg = exp.getExp(j);
             Object o = eval(arg, env, p);
             if (o == ERROR_VALUE) {
+                if (env.getQuery().isDebug()){
+                    logger.error("Error eval argument: " + arg + " in: " + exp);
+                }
                 return null;
             }
             args[i++] = o;
@@ -771,11 +775,11 @@ public class Interpreter implements Evaluator, ExprType {
         if (args == ERROR_VALUE) {
             return null;
         }
-        Expr def = getDefine(exp, env, p, (exp.oper() == ExprType.REDUCE) ? 2 : args.length);
-        if (def == null){
+        Expr function = getDefine(exp, env, p, (exp.oper() == ExprType.REDUCE) ? 2 : args.length);
+        if (function == null){
             return ERROR_VALUE;
         }  
-        return proxy.eval(exp, env, p, args, def.getFunction());
+        return proxy.eval(exp, env, p, args, function); //.getFunction());
     }
     
     public Object reduce(Expr exp, Environment env, Producer p){
@@ -833,53 +837,58 @@ public class Interpreter implements Evaluator, ExprType {
         } 
         return def;
      }
-    
-    /**
-     * name is the name of a proxy function that overloads the function of exp
-     * use case: overload operator for extended datatypes
-     * name = http://example.org/datatype/equal
-     */
+     
     @Override
-     public Object eval(Expr exp, Environment env, Producer p, Object[] values, String name){ 
-        Expr def = getDefine(exp, env, name);
-        if (def == null){
-            return null;
-        }
-        return eval(exp, env, p, values, def);
+    public Object eval(String name, Environment env, Producer p, Object value) {       
+        Expr function = getDefine(env, name, (value == null) ? 0 : 1);
+        if (function == null) {
+            return ERROR_VALUE;
+        }       
+        return eval(function, env, p, value);
     }
-        
+            
+    @Override
+    public Object eval(Expr function, Environment env, Producer p, Object value){
+        if (value == null){
+            return eval(function.getFunction(), env, p, new Object[0], function);
+        }
+        Object[] values = new Object[1];
+        values[0] = value;
+        return eval(function.getFunction(), env, p, values, function);
+    }
+    
     /**
      * Extension function call  
      */
     @Override
-    public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr def){   
-        Expr fun = def.getFunction(); 
-        env.set(def, fun.getExpList(), values);
-        if (isDebug || def.isDebug()){
+    public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr function){   
+        Expr fun = function.getFunction(); 
+        env.set(function, fun.getExpList(), values);
+        if (isDebug || function.isDebug()){
             System.out.println(exp);
             System.out.println(env.getBind());
         }
         Object res;
-        if (def.isSystem()) {
+        if (function.isSystem()) {
             // function contains nested query or exists
             // use fresh Memory for not to screw Bind & Memory
             // use case: exists { exists { } }
             // the inner exists need outer exists BGP to be bound
             // hence we need a fresh Memory to start
             Query q = env.getQuery();
-            if (def.isPublic() && env.getQuery() != def.getPattern()) {
+            if (function.isPublic() && env.getQuery() != function.getPattern()) {
                 // function is public and contains query or exists
                 // use function definition global query in order to have Memory 
                 // initialized with the right set of Nodes for the nested query
-                q = (Query) def.getPattern();
+                q = (Query) function.getPattern();
             }
-            res = funEval(def, q, env, p);
+            res = funEval(function, q, env, p);
         }
         else {
-            res = eval(def.getBody(), env, p); 
+            res = eval(function.getBody(), env, p); 
         }
-        env.unset(def, fun.getExpList()); 
-        if (isDebug || def.isDebug()){
+        env.unset(function, fun.getExpList()); 
+        if (isDebug || function.isDebug()){
             System.out.println(exp + " : " + res);
         }
         if (res == ERROR_VALUE){

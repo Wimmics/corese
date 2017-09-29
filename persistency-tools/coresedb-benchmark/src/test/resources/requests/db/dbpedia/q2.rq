@@ -1,0 +1,5 @@
+<AT_DB>
+select * where {
+    ?x rdfs:label "Antibes"@fr ; ?p ?y
+}
+

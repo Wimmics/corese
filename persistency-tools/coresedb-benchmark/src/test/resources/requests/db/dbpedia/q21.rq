@@ -1,0 +1,11 @@
+prefix ex: <http://example.org/>
+<AT_DB>
+@test
+select  * where {
+?x rdfs:label ?y
+?x rdfs:subClassOf* ?c
+?c rdfs:label ?l
+filter regex(?y, "gene")
+
+}
+limit 10

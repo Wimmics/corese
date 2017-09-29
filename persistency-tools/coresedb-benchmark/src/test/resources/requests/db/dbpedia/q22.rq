@@ -1,0 +1,8 @@
+<AT_DB>
+@test
+@bgp
+select debug * where {
+    ?x rdfs:label ?l 
+filter (?l = "Antibes"@fr )
+}
+limit 3

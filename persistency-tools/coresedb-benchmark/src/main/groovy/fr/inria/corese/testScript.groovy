@@ -6,6 +6,11 @@
 
 package fr.inria.corese
 
-def name='edemairy'
-
-println "Hello $name!"
+def testRoot = '/Users/edemairy/Developpement/Corese-master/persistency-tools/coreseTimer-common/'
+def fileNames = ['result_input_1_query_0.xml']
+def tester = new DbMemoryTest()
+fileNames.each {
+    def result = tester.checkEqual(testRoot + "DB/${it}", testRoot + "MEMORY/${it}")
+    println "${it}: ${result}"
+}
+def name = 'edemairy'

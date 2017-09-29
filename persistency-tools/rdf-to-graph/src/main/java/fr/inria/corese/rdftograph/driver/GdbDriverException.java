@@ -6,9 +6,8 @@
 package fr.inria.corese.rdftograph.driver;
 
 /**
- *
  * @author edemairy
  */
 class GdbDriverException extends RuntimeException {
-	
+
 }

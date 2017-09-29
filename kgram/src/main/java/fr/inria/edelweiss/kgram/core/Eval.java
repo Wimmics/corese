@@ -858,10 +858,7 @@ public class Eval implements ExpType, Plugin {
                 if (ee.type() != AND) {
                     level = n;
                     maxExp = stack.get(n);
-                    String s = Integer.toString(n);
-                    if (n <= 9) {
-                        s = "0" + s;
-                    }
+                    String s = String.format("%02d", n);
                     Message.log(Message.EVAL, s + " " + maxExp);
                 }
             }
@@ -2280,7 +2277,6 @@ public class Eval implements ExpType, Plugin {
                     continue;
                 }
 
-                boolean trace = false;
                 Edge edge = ent.getEdge();
                 graph = ent.getGraph();
 

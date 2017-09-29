@@ -7,19 +7,19 @@ import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap;
-import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiPredicate;
+
+import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+
 /**
- *
  * Compile SPARQL filter to Tinkerpop filter
  * Given Exp(EDGE) and node index (subject, property, object)
  * extract relevant filters that match node 
@@ -27,7 +27,6 @@ import org.apache.tinkerpop.gremlin.structure.Element;
  * compile filter as Tinkerprop predicate
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
- *
  */
 public class SPARQL2Tinkerpop {
 
@@ -69,7 +68,7 @@ public class SPARQL2Tinkerpop {
      * @param node: subject|property|object
      * @return Tinkerpop Predicate translation of node relevant SPARQL filters
      */
-    GraphTraversal<? extends Element, Edge> 
+    GraphTraversal<? extends Element, ? extends Element>
         getPredicate(Exp exp, int node) {
         return getPredicate(exp, node, getType(node));        
     }
@@ -81,7 +80,7 @@ public class SPARQL2Tinkerpop {
         return ExprType.TINKERPOP;
     }
                
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          getPredicate(Exp exp, int node, int type){
         if (exp == null){
             return null;
@@ -95,11 +94,9 @@ public class SPARQL2Tinkerpop {
     }
      
       
-    
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          translate(List<Filter> list, int n, int node){
-        GraphTraversal<? extends Element, Edge>
-                pred = translate(list.get(n).getExp(), node);
+        GraphTraversal<? extends Element, ? extends Element> pred = translate(list.get(n).getExp(), node);
         if (n == list.size() -1){
             return pred;
         }
@@ -107,7 +104,7 @@ public class SPARQL2Tinkerpop {
     }
     
     
-    GraphTraversal<? extends Element, Edge>
+    GraphTraversal<? extends Element, ? extends Element>
          translate(Expr exp, int node){
         if (isDebug()){
             System.out.println("SP2T: " + exp);
@@ -122,7 +119,8 @@ public class SPARQL2Tinkerpop {
             case ExprType.NOT:
                 return __.not(translate(exp.getExp(0), node));
                 
-            default: return filter(exp, node);
+            default:
+                return filter(exp, node);
         }
     }          
     
@@ -172,17 +170,15 @@ public class SPARQL2Tinkerpop {
     GraphTraversal<? extends Element, Edge> getVertexPredicate(P p, DatatypeValue dt){
         if (dt.isLiteral()){
             if (dt.getLang() != null && !dt.getLang().isEmpty()) {
-                return __.and(__.has(VERTEX_VALUE, p),  __.has(LANG, dt.getLang())); 
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(LANG, dt.getLang()));
+            } else if (dt.getDatatypeURI() != null) {
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()), __.has(TYPE, dt.getDatatypeURI()));
+            } else {
+                return __.and(__.has(KIND, LITERAL), __.has(VERTEX_VALUE, dt.stringValue()));
             }
-            else if (dt.getDatatypeURI() != null) {
-                return __.and(__.has(VERTEX_VALUE, p),  __.has(TYPE, dt.getDatatypeURI())); 
             }
-            else {
-                return __.and(__.has(VERTEX_VALUE, p), __.has(KIND, LITERAL));
-            }
-        }
         
-        return __.and( __.has(VERTEX_VALUE, p), __.has(KIND, (dt.isBlank()) ? BNODE : IRI));                           
+        return __.and(__.has(KIND, (dt.isBlank()) ? BNODE : IRI), __.has(VERTEX_VALUE, dt.stringValue()));
     }
             
     /**
@@ -220,13 +216,11 @@ public class SPARQL2Tinkerpop {
             case ExprType.REGEX: 
                 if (exp.arity() == 2){
                     return P.test(regex, val.stringValue()); 
-                }
-                else if (exp.getExp(2).isConstant()) {
+                } else if (exp.getExp(2).isConstant()) {
                     String mode = exp.getExp(2).getDatatypeValue().stringValue();
                     BiPredicate<String, String> reg = (x, y) -> proc.regex(x, y, mode);
                     return P.test(reg, val);             
-                } 
-                else {
+                } else {
                     return P.test(atrue, "");
                 }  
                 
@@ -240,18 +234,22 @@ public class SPARQL2Tinkerpop {
             case ExprType.NEQ:
                     return P.neq(val.stringValue());
                             
-            case ExprType.LT: return P.lt(val.stringValue());
-            case ExprType.LE: return P.lte(val.stringValue());
-            case ExprType.GE: return P.gte(val.stringValue());
-            case ExprType.GT: return P.gt(val.stringValue());
+            case ExprType.LT:
+                return P.lt(val.stringValue());
+            case ExprType.LE:
+                return P.lte(val.stringValue());
+            case ExprType.GE:
+                return P.gte(val.stringValue());
+            case ExprType.GT:
+                return P.gt(val.stringValue());
                       
-            default: return P.test(atrue, "");
+            default:
+                return P.test(atrue, "");
                 
         }        
     }
           
     /**
-     * 
      * @param exp: ?x in (v1, .. vn)
      * @return List(v1, .. vn)
      */

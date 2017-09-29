@@ -1,0 +1,7 @@
+prefix ex: <http://example.org/>
+@db </home/corby/soft/db/test_db>
+@dbfactory <fr.inria.corese.tinkerpop.Factory>
+select * where {
+?x ?p ?y
+?y ?p ?z
+}

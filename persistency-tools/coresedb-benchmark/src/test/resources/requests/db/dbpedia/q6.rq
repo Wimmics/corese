@@ -1,0 +1,7 @@
+select * where {
+  <BEGIN_SERVICE>
+    ?x rdfs:label "Antibes"@fr , ?l
+filter (?l = "Antibes"@fr)
+  <END_SERVICE> 
+}
+

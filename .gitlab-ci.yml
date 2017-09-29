@@ -1,0 +1,14 @@
+stages:
+  - build
+  - test
+
+maven-build:
+  stage: build
+  script: "mvn clean install -T2C -Dmaven.test.skip=true"
+
+maven-build:
+  stage: test
+  script: "mvn package"
+  allow_failure: true
+
+

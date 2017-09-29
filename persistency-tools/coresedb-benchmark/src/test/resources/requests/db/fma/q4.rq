@@ -1,0 +1,9 @@
+#43 sec -> 31 sec with optimize node creation @ getEdges
+@db </home/corby/soft/db/fma_db>
+select ?p (count(*) as ?c) 
+
+where {
+   ?x ?p ?y
+}
+group by ?p 
+order by desc(?c) ?p

@@ -1,0 +1,8 @@
+<AT_DB>
+@test
+select   * where {
+    ?x ?p ?l 
+filter regex(?p, "label") 
+
+}
+limit 10

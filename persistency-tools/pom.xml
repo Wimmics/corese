@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>fr.inria.wimmics</groupId>
-		<artifactId>corese-parent</artifactId>
-		<version>3.2.1p-SNAPSHOT</version>
-	</parent>
-	<artifactId>persistency-tools</artifactId>
-	<packaging>pom</packaging>
-	<modules>
-		<module>persistency</module>
-		<module>rdf-to-graph</module>
-	 <module>rdf-to-bd-map</module>
-	 <module>rdt-to-graph-titandb</module>
-	 <module>rdf-to-graph-neo4j</module>
-	 <module>rdf-to-graph-orientdb</module>
-	 <module>rdf-to-graph-app</module>
-	 <module>coresedb-benchmark</module>
-	 <module>rdf-to-graph-nulldriver</module>
-	 <module>draw-gnuplot</module>
-	</modules>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>fr.inria.wimmics</groupId>
+        <artifactId>corese-parent</artifactId>
+        <version>3.2.1p-SNAPSHOT</version>
+    </parent>
+    <artifactId>persistency-tools</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>rdf-to-graph</module>
+        <module>rdf-to-bd-map</module>
+        <module>rdt-to-graph-titandb</module>
+        <module>rdf-to-graph-neo4j</module>
+        <module>rdf-to-graph-orientdb</module>
+        <module>rdf-to-graph-app</module>
+        <module>coresedb-benchmark</module>
+        <module>rdf-to-graph-nulldriver</module>
+        <module>draw-gnuplot</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

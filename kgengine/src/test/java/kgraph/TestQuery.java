@@ -793,7 +793,7 @@ public class TestQuery {
 			exec.query(update);
 			
 			Mappings map = exec.query(query);
-			//System.out.println(map);
+//			System.out.println(map);
 			assertEquals("Result", 0, map.size());			
 			
 		} catch (EngineException e) {

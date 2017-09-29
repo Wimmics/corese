@@ -396,6 +396,9 @@ public class PluginImpl extends ProxyImpl {
             case IOTA:
                 return iota(param);
                 
+            case XT_ITERATE:
+                return iterate(param);
+                
             case APPROXIMATE:
                 return pas.eval(exp, env, p, args);
                 
@@ -483,6 +486,33 @@ public class PluginImpl extends ProxyImpl {
             start += step;
         }
         IDatatype dt = DatatypeMap.createList(ldt);
+        return dt;
+    }
+    
+    
+      IDatatype iterate(IDatatype... args){
+        int start = 0;
+        int end = 1;
+        
+        if (args.length > 1){
+            start = args[0].intValue();
+            end =   args[1].intValue();
+        }
+        else {
+            end =   args[0].intValue();
+        }
+        
+        int step = 1;
+        
+        if (end < start){
+            step = -1;
+        }
+        
+        if (args.length == 3){
+            step = args[2].intValue();
+        }
+                      
+        IDatatype dt = DatatypeMap.newIterate(start, end, step);
         return dt;
     }
     
@@ -912,7 +942,7 @@ public class PluginImpl extends ProxyImpl {
 
     IDatatype depth(Graph g, Object o) {
         Node n = node(g, o);
-        if (n == null){ // || g.getClassDistance() == null) {
+        if (n == null){ 
             return null;
         }
         Integer d = g.setClassDistance().getDepth(n);

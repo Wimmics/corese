@@ -27,6 +27,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
      * result
      */
 
+    @Override
     public IDatatype cast(String target){ 
         switch (DatatypeMap.getCode(target)){
             case INTEGER: return DatatypeMap.newInteger(longValue());

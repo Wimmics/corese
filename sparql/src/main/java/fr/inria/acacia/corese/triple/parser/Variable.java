@@ -28,6 +28,7 @@ public class Variable extends Atom {
         
 	List<Variable> lVar;
         private Variable proxy;
+        private Variable variableDeclaration;
 	// var as IDatatype for comparing variables in KGRAM
 	IDatatype dt;
 	
@@ -192,13 +193,44 @@ public class Variable extends Atom {
         
         @Override
 	public int getIndex() {
-		return index ;
+            return getActualIndex() ;
 	}
 
 	@Override
 	public void setIndex(int n) {
-		index = n;
+            setActualIndex(n);
 	}
+        
+        int getRealIndex() {
+            return index ;
+	}
+
+        void setRealIndex(int n) {
+            index = n;
+	}
+        
+        /**
+        * Local variable index is found in its declaration
+        * Standard variable index is as usual
+        */
+        int getActualIndex(){
+            if (getDeclaration() == null){
+                return getRealIndex();
+            }
+            return getDeclaration().getRealIndex();
+        }
+        
+        /**
+         * Local variable index is found in its declaration 
+         * Standard variable index is as usual
+         */
+        void setActualIndex(int n) {
+            if (getDeclaration() == null) {
+                setRealIndex(n);
+            } else {
+                getDeclaration().setRealIndex(n);
+            }
+        }
 	
 	// fake value in case where a variable node is used as a target value node
 	// see ProducerDefault
@@ -301,6 +333,26 @@ public class Variable extends Atom {
      */
     public void setVariableProxy(Variable var) {
         this.proxy = var;
+    }
+    
+        @Override
+    public Variable getDefinition() {
+        return getDeclaration();
+    }
+    /**
+     * @return the superVariable
+     */
+    public Variable getDeclaration() {
+        return variableDeclaration;
+    }
+    
+    
+
+    /**
+     * @param superVariable the superVariable to set
+     */
+    public void setDeclaration(Variable superVariable) {
+        this.variableDeclaration = superVariable;
     }
  
 	

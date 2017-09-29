@@ -16,21 +16,22 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class ExpressionVisitorVariable implements ExpressionVisitor {
+  
     private static Logger logger = LogManager.getLogger(ASTQuery.class);
    
-    boolean let = false;
+    private boolean let = false;
     private boolean functionDefinition = false;
-    boolean trace = false;
-    int count = 0;
-    int clet = 0;
+    private boolean trace = false;
+    private int count = 0;
+    private int clet = 0;
+    private int nbVariable = 0;
     
+    // stack of defined variables: function parameter/let/for
     List<Variable> list;
-    HashMap<String, Integer> map;
     ASTQuery ast;
     Function fun;
 
     ExpressionVisitorVariable() {
-        map = new HashMap<String, Integer>();
         list = new ArrayList<Variable>();
     }
     
@@ -38,34 +39,69 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     ExpressionVisitorVariable(ASTQuery ast) {
         this();
         this.ast = ast;
-        init();
     }
     
     // function f(?x) { exp }
     ExpressionVisitorVariable(ASTQuery ast, Function fun) {
         this();
-        this.list = fun.getFunction().getFunVariables();
         this.ast = ast;
         this.fun = fun;
         functionDefinition = true;
-        init();
+        define(fun.getSignature().getFunVariables());
     }
-    
-    void init(){
-        //trace = ast.isDebug();
-        if (list != null){
-            declare();
-        }
-    }
-    
-    void declare(){
+       
+    /**
+     * Declare function parameters as local variables
+     */
+    void define(List<Variable> list){
         for (Variable var : list){
-            localize(var);
+            define(var);
         }
     }
     
+    void define(Variable var){
+        list.add(var);
+        localize(var);
+        setNbVariable(getNbVariable() + 1);
+    }
     
+    void pop(Variable var){
+        list.remove(list.size() - 1);
+    }
+    
+    boolean reference(Variable var) {
+        Variable decl = getDefinition(var);
+        if (decl != null) {
+            var.setDeclaration(decl);
+            localize(var);
+            return true;
+        } 
+        return false;
+    }
+    
+    Variable getDefinition(Variable var) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            Variable v = list.get(i);
+            if (var.equals(v)) {
+                return v;
+            }
+        }
+        return null;
+    }
 
+
+    void localize(Variable var) {
+        var.localize();
+    }
+    
+    /**
+     * Visit starts here
+     */
+    @Override
+    public void start(Expression exp){
+        exp.visit(this);
+    }
+       
     @Override
     public void visit(Exp exp) {
     }
@@ -141,7 +177,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         Expression body = f.getBody();
 
         ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, f);
-        body.visit(vis);
+        //body.visit(vis);
+        vis.start(body);
+        f.setNbVariable(vis.getNbVariable());
 
         f.setPlace(vis.count());
         ast.define(f);
@@ -167,14 +205,18 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
        
-    
-    void variable(Variable v) {
-        if (isLocal(v)) {
-            localize(v);
-        } 
+    /**
+     * Visit variable in statement: declare it as local if it
+     * corresponds to a parameter/let/for variable
+     * Variable var refers to its declaration decl
+     */
+    void variable(Variable var) {
+        if (reference(var)){   
+            // ok
+        }       
         else if (isFunctionDefinition()) {
-            logger.error("Undefined variable: " + v + " in function: " + fun.getSignature().getName());
-            v.undef();
+            logger.error("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
+            var.undef();
         }
     }
 
@@ -199,13 +241,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         Expression body = t.getBody();
 
         exp.visit(this);
-        localize(var);
-        list.add(var);
+        define(var);
         clet++;
         body.visit(this);
         clet--;
-        list.remove(list.size() - 1);
-        remove(var);
+        pop(var);
+        //remove(var);
         if (!isFunctionDefinition() && clet == 0) {
             // top level let
             t.setPlace(count);
@@ -227,50 +268,25 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
        
     /**
      * aggregate(?x, xt:mediane(?list))
-     * @param t 
+     * TODO:
+     * special case with 2nd arg = function call
+     * all other cases are either function URI or lambda
+     * variable ?list is a fake local variable
+     * it must not be related to a embedding variable ?list
+     * FIX: 
+     * should be processed like funcall, apply, etc and have no variable:
+     * aggregate(?x, xt:mediane).
      */
     void aggregate(Term t){
         t.getArg(0).visit(this);
-        if (t.getArgs().size() == 2){
-            Expression fun = t.getArg(1);
-            Expression arg = fun.getArg(0);
-            Variable var = arg.getVariable();
-            localize(var);
-            remove(var);
-        }
+//        if (t.getArgs().size() == 2){
+//            Expression fun = t.getArg(1);
+//            Expression arg = fun.getArg(0);
+//            Variable var = arg.getVariable();
+//            localize(var);
+//        }
     }
-    
-   
-    boolean isLocal(Variable var) {
-        for (Variable v : list) {
-            if (v.equals(var)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void index(Variable var) {
-        Integer n = map.get(var.getLabel());
-        if (n == null) {
-            count += 1;
-            n = count;
-            map.put(var.getLabel(), n);
-        }
-        var.setIndex(n);
-        if (trace) System.out.println("EVL: " + var + " " + n);
-    }
-    
-    void remove(Variable var){
-        map.remove(var.getLabel());
-    }
-
-    void localize(Variable var) {
-        var.localize();
-        index(var);
-    }
-    
-    
+         
     /**
      * @return the functionDefinition
      */
@@ -283,6 +299,20 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      */
     public void setFunctionDefinition(boolean functionDefinition) {
         this.functionDefinition = functionDefinition;
+    }
+    
+     /**
+     * @return the nbVariable
+     */
+    public int getNbVariable() {
+        return nbVariable;
+    }
+
+    /**
+     * @param nbVariable the nbVariable to set
+     */
+    public void setNbVariable(int nbVariable) {
+        this.nbVariable = nbVariable;
     }
     
 }

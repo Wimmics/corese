@@ -1408,6 +1408,24 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         }
     }
     
+    /**
+     * 
+     * aggregate(?x, xt:mediane) ->
+     * aggregate(?x, xt:mediane(?y))
+     * TODO: fix it as above
+     */
+    void processAggregate(Term term) {
+        if (term.getArgs().size() == 2) {
+            Expression rst = term.getArg(1);
+            if (rst.isConstant()) {
+                Term fun = createFunction(rst.getConstant());
+                Variable var = ASTQuery.createVariable("?_agg_var");
+                fun.add(var);
+                term.setArg(1, fun);
+            }
+        }
+    }
+    
       int arity(Term t){
           if (t.getLabel().equals(Processor.REDUCE)){
               return 2;

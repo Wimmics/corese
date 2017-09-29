@@ -73,6 +73,10 @@ public class CoreseInteger extends CoreseNumber {
     public int intValue() {
         return (int) lvalue;
     }
+    
+    void setValue(int n){
+        lvalue = n;
+    }
 
     @Override
     public double doubleValue() {
@@ -193,13 +197,17 @@ public class CoreseInteger extends CoreseNumber {
         }
     }
 
-//    @Override
-//    public String getNormalizedLabel() {
-//        return Integer.toString(ivalue);
-//    }
-
     @Override
     public String getLowerCaseLabel() {
         return getLabel();
+    }
+    
+    @Override
+    public String getLabel() {
+        String str = super.getLabel();
+        if (str == null){
+            return Long.toString(lvalue);
+        }
+        return str;
     }
 }

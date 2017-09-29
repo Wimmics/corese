@@ -87,7 +87,7 @@ implements Regex, Filter, Expr, Pointerable  {
          */
         void local(ASTQuery ast){
             ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast);
-            visit(vis);
+            vis.start(this);
         }
         
         Expression prepare(ASTQuery ast){

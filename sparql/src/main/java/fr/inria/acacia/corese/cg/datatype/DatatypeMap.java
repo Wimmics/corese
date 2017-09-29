@@ -607,6 +607,14 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype newList(IDatatype... ldt) {
         return new CoreseList(ldt);
     }
+    
+    public static IDatatype newIterate(int start, int end) {
+        return newIterate(start, end, 1);
+    }
+    
+    public static IDatatype newIterate(int start, int end, int step) {
+        return new CoreseIterate(start, end, step);      
+    }
      
     public static IDatatype newInstance(IDatatype... ldt) {
         return new CoreseList(ldt);
@@ -904,6 +912,18 @@ public class DatatypeMap implements Cst, RDF {
           return list;
       }
      
+     // modify
+     public static IDatatype swap(IDatatype list, IDatatype i1, IDatatype i2){
+          if (! list.isList()){
+              return null;
+          }  
+          List<IDatatype> l = list.getValues();
+          IDatatype dt = l.get(i1.intValue());
+          l.set(i1.intValue(), l.get(i2.intValue()));
+          l.set(i2.intValue(), dt);          
+          return list;
+      } 
+     
      // copy
      public static IDatatype cons(IDatatype elem, IDatatype list){
           if (! list.isList()){
@@ -977,11 +997,10 @@ public class DatatypeMap implements Cst, RDF {
           if (! list.isList()){
               return null;
           }
-          List<IDatatype> arr = list.getValues();
-          if (n.intValue() >= arr.size()){
+          if (n.intValue() >= list.size()){
               return null;
           }
-          return arr.get(n.intValue());
+          return list.get(n.intValue());
       }
       
      public static IDatatype set(IDatatype list, IDatatype n, IDatatype val) {

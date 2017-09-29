@@ -103,6 +103,7 @@ public class CoreseList extends CoreseUndefLiteral {
         return this;
     }
     
+    @Override
     public Object getObject(){
         return list;
     }

@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class Function extends Statement {
     private boolean isPublic = false;
     private boolean lambda = false;
     private boolean visited = false;
+    private int nbVariable = 0;
     
     private IDatatype dt;
     
@@ -273,6 +275,36 @@ public class Function extends Statement {
     @Override
     void visit(ExpressionVisitor v) {
         v.visit(this);
+    }
+    
+    public boolean typecheck(ASTQuery ast){
+        Term t = getSignature();
+        List<Variable> list = new ArrayList<Variable>();
+        int i = 1;
+        for (Expression var : t.getArgs()) {
+            if (list.contains(var.getVariable())){
+                ast.addError("Duplicate parameter: " + var + " in: \n" + toString());
+                return false;
+            }
+            else {
+                list.add(var.getVariable());
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return the nbVariable
+     */
+    public int getNbVariable() {
+        return nbVariable;
+    }
+
+    /**
+     * @param nbVariable the nbVariable to set
+     */
+    public void setNbVariable(int nbVariable) {
+        this.nbVariable = nbVariable;
     }
 
 }

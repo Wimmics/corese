@@ -38,6 +38,7 @@ public class Processor {
 	public static final String XT_LIST     = EXT+"list";
 	public static final String XT_TOLIST   = EXT+"toList";
 	public static final String XT_IOTA     = EXT+"iota";
+	public static final String XT_ITERATE = EXT+"iterate";
 	public static final String XT_REVERSE  = EXT+"reverse";
 	public static final String XT_APPEND   = EXT+"append";
 	public static final String XT_MEMBER   = EXT+"member";
@@ -102,6 +103,7 @@ public class Processor {
         private static final String XT_SET      = EXT + "set";
         private static final String XT_CONS     = EXT + "cons";        
         private static final String XT_ADD      = EXT + "add";
+        private static final String XT_SWAP     = EXT + "swap";
         private static final String XT_MAPPING  = EXT + "mapping";
         private static final String XT_SIZE     = EXT + "size";      
         private static final String XT_FOCUS    = EXT + "focus";
@@ -610,6 +612,7 @@ public class Processor {
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_TOLIST,      ExprType.XT_TOLIST);
 		defoper(XT_IOTA,        ExprType.IOTA);
+		defoper(XT_ITERATE,     ExprType.XT_ITERATE);
 		defoper(XT_REVERSE,     ExprType.XT_REVERSE);
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_MERGE,       ExprType.XT_MERGE);
@@ -640,6 +643,7 @@ public class Processor {
 		defoper(XT_REST,        ExprType.XT_REST);
 		defoper(XT_SELF,        ExprType.SELF);
 		defoper(XT_GET,         ExprType.XT_GET);
+		defoper(XT_SWAP,        ExprType.XT_SWAP);
 		defoper(XT_GEN_GET,     ExprType.XT_GEN_GET);
 		defoper(XT_SET,         ExprType.XT_SET);
  		defoper(XT_REJECT,      ExprType.XT_REJECT);
@@ -1046,16 +1050,8 @@ public class Processor {
     }
                           
       // aggregate(?x, xt:mediane)
-      void processAggregate(Term term, ASTQuery ast) {
-        if (term.getArgs().size() == 2) {
-            Expression rst = term.getArg(1);
-            if (rst.isConstant()) {
-                Term fun = ast.createFunction(rst.getConstant());
-                Variable var = ASTQuery.createVariable("?_agg_var");
-                fun.add(var);
-                term.setArg(1, fun);
-            }
-        }
+    void processAggregate(Term term, ASTQuery ast) {
+        //ast.processAggregate(term);
     } 
                      	
 	/**

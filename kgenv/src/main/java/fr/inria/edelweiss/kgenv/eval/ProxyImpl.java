@@ -324,7 +324,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 return struuid();
                 
             case FOR:
-                return ProxyImpl.this.loop(exp, env, p);
+                return loop(exp, env, p);
                 
             case SEQUENCE:
                 return sequence(exp, env, p);
@@ -759,21 +759,6 @@ public class ProxyImpl implements Proxy, ExprType {
         IDatatype[] param =  (IDatatype[]) args;
         IDatatype val = (param.length>0) ?  param[0] : null;
         switch (exp.oper()) {
-                                                
-//            case MAPANY:                
-//            case MAPEVERY:
-//                 return anyevery(exp, env, p, param, exp.getExp(0));
-//                
-//            case MAP:
-//            case MAPLIST:
-//            case MAPMERGE:
-//            case MAPAPPEND:
-//            case MAPFIND:
-//            case MAPFINDLIST:
-//                return eval(exp, env, p, param, exp.getExp(0));
-//                               
-//            case APPLY:
-//                return apply(exp, env, p, val, exp.getExp(0));
 
             case EXTERNAL:
                 return external(exp, env, p, param);                
@@ -1703,7 +1688,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * use case: ?y in not bound in let (?y) = select where  
      * */
     @Override
-    public Object getConstantValue(Object value) {
+    public Node getConstantValue(Node value) {
         if (value == null){
             // xt:gget() argument evaluation fail ->  do not fail, return UNDEF 
             return UNDEF;
@@ -2014,20 +1999,26 @@ public class ProxyImpl implements Proxy, ExprType {
             return null;
         }
         if (list.isList()){
+            env.set(loop, loop.getVariable(), TRUE);
             for (IDatatype dt : list.getValues()){           
                 IDatatype res = step(loop, env, p, dt);
                 if (isReturn(res)){
+                    env.unset(loop, loop.getVariable(), dt);            
                     return res;
                 }
             }
+            env.unset(loop, loop.getVariable(), TRUE);            
         }
         else { 
-            for (IDatatype dt : list){ 
+            env.set(loop, loop.getVariable(), TRUE);
+            for (IDatatype dt : list) { 
                 IDatatype res = step(loop, env, p, dt);               
                 if (isReturn(res)){
+                    env.unset(loop, loop.getVariable(), dt);            
                     return res;
                 }
             }
+            env.unset(loop, loop.getVariable(), TRUE);            
         }
         return TRUE;
     }
@@ -2037,9 +2028,10 @@ public class ProxyImpl implements Proxy, ExprType {
      * + see above
      */
     IDatatype step(Expr loop, Environment env, Producer p, IDatatype value){
-        env.set(loop, loop.getVariable(), value);
+        //env.set(loop, loop.getVariable(), value);
+        env.bind(loop, loop.getVariable(), value);
         Object res = eval.eval(loop.getBody(), env, p);
-        env.unset(loop, loop.getVariable());
+        //env.unset(loop, loop.getVariable());
         return (IDatatype) res;
     }
     

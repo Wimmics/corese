@@ -508,7 +508,6 @@ public class Interpreter implements Evaluator, ExprType {
     Object term(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
-
             case IN:
                 return in(exp, env, p);
         }
@@ -740,13 +739,22 @@ public class Interpreter implements Evaluator, ExprType {
      */
      private Object let(Expr let, Environment env, Producer p, Node val) { 
         Expr var = let.getVariable();
+        Node arg =  proxy.getConstantValue(val);
+        env.set(let, var, arg);
+        Object res = eval(let.getBody(), env, p);
+        env.unset(let, var, arg);
+        return res;
+    }
+     
+     private Object let2(Expr let, Environment env, Producer p, Node val) { 
+        Expr var = let.getVariable();
         boolean bound =  proxy.getConstantValue(val) != null;
         if (bound){
             env.set(let, var, val);
         }
         Object res = eval(let.getBody(), env, p);
         if (bound){
-            env.unset(let, var);
+            env.unset(let, var, val);
         }
         return res;
     }
@@ -850,9 +858,9 @@ public class Interpreter implements Evaluator, ExprType {
     @Override
     public Object eval(Expr function, Environment env, Producer p, Object value){
         if (value == null){
-            return eval(function.getFunction(), env, p, new Object[0], function);
+            return eval(function.getFunction(), env, p, proxy.createParam(0), function);
         }
-        Object[] values = new Object[1];
+        Object[] values = proxy.createParam(1);
         values[0] = value;
         return eval(function.getFunction(), env, p, values, function);
     }
@@ -863,7 +871,7 @@ public class Interpreter implements Evaluator, ExprType {
     @Override
     public Object eval(Expr exp, Environment env, Producer p, Object[] values, Expr function){   
         Expr fun = function.getFunction(); 
-        env.set(function, fun.getExpList(), values);
+        env.set(function, fun.getExpList(), (Node[])values);
         if (isDebug || function.isDebug()){
             System.out.println(exp);
             System.out.println(env.getBind());

@@ -70,8 +70,6 @@ public interface Expr {
 
 	int arity();
         
-        int place();
-
 	int getIndex();
 
 	void setIndex(int index);
@@ -87,6 +85,7 @@ public interface Expr {
         Expr getVariable();
         
         Expr getDefinition();
+        int getNbVariable();
         
         List<String> getMetadataValues(String name);
         	

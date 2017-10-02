@@ -42,7 +42,7 @@ public class ProxyDefault implements Proxy, ExprType {
 	}
 
 	@Override
-	public Object getConstantValue(Object value) {
+	public Node getConstantValue(Node value) {
 		// TODO Auto-generated method stub
 		return value;
 	}

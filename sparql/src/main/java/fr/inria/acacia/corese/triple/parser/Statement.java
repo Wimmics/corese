@@ -11,6 +11,7 @@ import fr.inria.corese.compiler.java.JavaCompiler;
  *
  */
 public class Statement  extends Term {
+    int nbVariable = 0;
     
     Statement(){}
     
@@ -22,6 +23,22 @@ public class Statement  extends Term {
     @Override
     public boolean isStatement(){
         return true;
+    }
+    
+    /**
+     * @return the nbVariable
+     */
+    @Override
+    public int getNbVariable() {
+        return nbVariable;
+    }
+
+    /**
+     * @param nbVariable the nbVariable to set
+     */
+    @Override
+    public void setNbVariable(int nbVariable) {
+        this.nbVariable = nbVariable;
     }
     
     @Override

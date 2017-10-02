@@ -1230,22 +1230,7 @@ public class Term extends Expression {
     public Term getTerm(){
         return this;
     }
-
-    /**
-     * @return the place
-     */
-        @Override
-    public int place() {
-        return place;
-    }
-
-    /**
-     * @param place the place to set
-     */
-    public void setPlace(int place) {
-        this.place = place;
-    }
-
+    
     /**
      * @return the nested
      */

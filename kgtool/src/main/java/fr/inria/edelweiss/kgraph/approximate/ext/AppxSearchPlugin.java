@@ -31,7 +31,7 @@ public class AppxSearchPlugin implements ExprType {
         this.plugin = p;
     }
 
-    public Object eval(Expr exp, Environment env, Producer p) {
+    public IDatatype eval(Expr exp, Environment env, Producer p) {
         switch (exp.oper()) {
             case APP_SIM:
                 ApproximateSearchEnv appxEnv = env.getAppxSearchEnv();
@@ -44,7 +44,7 @@ public class AppxSearchPlugin implements ExprType {
         }
     }
 
-    public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
+    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
         IDatatype[] param = (IDatatype[]) args;
         switch (exp.oper()) {
             

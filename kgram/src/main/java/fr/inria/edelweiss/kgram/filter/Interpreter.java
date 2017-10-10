@@ -9,9 +9,11 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Binder;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
@@ -20,6 +22,7 @@ import fr.inria.edelweiss.kgram.core.Memory;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Stack;
 import fr.inria.edelweiss.kgram.event.ResultListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 
@@ -639,9 +642,34 @@ public class Interpreter implements Evaluator, ExprType {
     
     Mapping getMapping(Environment env, Query q){
         if (env.hasBind()){
-             return env.getBind().getMapping(q);
+             return getMapping(env.getBind(), q);
         }
        return  null;
+    }
+    
+    @Override
+    public Binder getBinder(){
+        return Bind.create();
+    }
+    
+    /**
+      * TODO: remove duplicates in getVariables()
+      * use case:
+      * function us:fun(?x){let (select ?x where {}) {}}
+      * variable ?x appears twice in the stack because it is redefined in the let clause
+      */     
+     Mapping getMapping(Binder b, Query q) {
+        ArrayList<Node> lvar = new ArrayList();
+        ArrayList<Node> lval = new ArrayList();
+        for (Expr var : b.getVariables()) {
+            Node node = q.getProperAndSubSelectNode(var.getLabel());
+            if (node != null && ! lvar.contains(node)) {
+                lvar.add(node);
+                lval.add(b.get(var));
+            }
+        }
+        Mapping m = Mapping.create(lvar, lval);
+        return m;
     }
     
 
@@ -691,6 +719,11 @@ public class Interpreter implements Evaluator, ExprType {
     @Override
     public void start(Environment env) {
         proxy.start(producer, env);
+    }
+    
+    @Override
+    public void init(Environment env) {
+        env.setBind(Bind.create());
     }
  
     @Override

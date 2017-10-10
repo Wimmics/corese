@@ -15,6 +15,7 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.edelweiss.kgram.api.query.Binder;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Result;
 import fr.inria.edelweiss.kgram.filter.Extension;
@@ -60,7 +61,7 @@ public class Mapping
     Query query;
     Map bnode;
     boolean read = false;
-    private Bind bind;
+    private Binder bind;
 
     Mapping() {
         this.qEdges = emptyEdge;;
@@ -1116,8 +1117,13 @@ public class Mapping
     }
 
     @Override
-    public Bind getBind() {
+    public Binder getBind() {
         return bind;
+    }
+    
+    @Override
+    public void setBind(Binder b) {
+        bind = b;
     }
 
     @Override
@@ -1125,7 +1131,7 @@ public class Mapping
         return bind != null && bind.hasBind();
     }
     
-    Bind getCreateBind(){
+    Binder getCreateBind(){
         if (bind == null) {
             bind = Bind.create();
         }

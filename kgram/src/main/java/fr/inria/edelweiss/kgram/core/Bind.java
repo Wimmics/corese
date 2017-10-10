@@ -3,28 +3,34 @@ package fr.inria.edelweiss.kgram.core;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Binder;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Local variable bindings
  *
- * @author Olivier Corby, Wimmics INRIA I3S, 2015
+ * Stack vor LDScript variable bindings
+ * Variable have a relative index 
+ * stack index = level + var index
+ * level is the level of current function call in the stack
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Bind {
+public class Bind implements Binder {
 
     static final String NL = System.getProperty("line.separator");
-    public static boolean isIndex = true;
-
+    static final int UNBOUND = ExprType.UNBOUND;
+    
     ArrayList<Expr> varList;
     ArrayList<Node> valList;
     // level of the stack before function call
     // every funcall add a level
     // let add no level
     ArrayList<Integer> level;
+    int currentLevel = 0;
     Expr current;
     
     private static Logger logger = LogManager.getLogger(Bind.class);
@@ -36,9 +42,18 @@ public class Bind {
     }
     
     public static Bind create(){
-        return (isIndex) ? new BindIndex() : new Bind();
+         return new Bind();
+    }
+    
+    @Override
+    public void clear(){
+        varList.clear();
+        valList.clear();
+        level.clear();
+        currentLevel = 0;
     }
 
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -67,28 +82,134 @@ public class Bind {
         return varList.size() > 0 || level.size()>0;
     }
 
+    
+    
+    int getIndex(Expr var) {
+        return currentLevel + var.getIndex();
+    }
+
+    
+    public void set(Expr exp, Expr var, Node val) {
+        switch (exp.oper()) {
+            case ExprType.FUNCTION:
+                // special case: walker aggregate
+                allocate(exp); break;
+                
+            case ExprType.LET:
+            case ExprType.FOR:
+                if (exp.getNbVariable() > 0){
+                    allocate(exp); 
+                }               
+        }
+        set(var, val);
+    }
+
+    
+    public void unset(Expr exp, Expr var, Node val) {
+        switch (exp.oper()) {
+            case ExprType.FUNCTION:
+                // special case: walker aggregate
+                desallocate(exp);
+                break;
+                
+            case ExprType.LET:
+            case ExprType.FOR:
+                if (exp.getNbVariable() > 0){
+                    desallocate(exp); return;
+                } 
+                // else continue
+                
+            default: unset(var);
+        }        
+    }
+
+    /**
+     * Level of current function call in the stack
+     * Also level of filter for/let
+     */
+    void pushLevel() {
+        level.add(varList.size());
+        currentLevel = varList.size();
+    }
+
+    void popLevel() {
+        if (!level.isEmpty()) {
+            level.remove(level.size() - 1);
+        }
+        if (level.isEmpty()){
+            currentLevel = 0;
+        }
+        else {
+           currentLevel = level.get(level.size() -1);
+        }
+    }
+    
+    void pop(){
+       varList.remove(varList.size() - 1);
+       valList.remove(valList.size() - 1); 
+    }
+
+    /**
+     * Allocate block in the stack for local variables of exp
+     */
+    void allocate(Expr exp) {
+        pushLevel();
+        // allocate block for fun
+        for (int i = 0; i < exp.getNbVariable(); i++) {
+            varList.add(null);
+            valList.add(null);
+        }
+    }
+
+    /**
+     * Desallocate block in the stack for local variables of exp
+     */
+    void desallocate(Expr exp) {
+        for (int i = 0; i < exp.getNbVariable(); i++) {
+            pop();
+        }
+        popLevel();
+    }
+
+    /**
+     * Function call
+     */
+    
+    public void set(Expr exp, List<Expr> lvar, Node[] value) {
+        // Parameters and local variables of this function are above level 
+        allocate(exp);
+        int i = 0;
+        for (Expr var : lvar) {
+            // push parameter value
+            set(var, value[i++]);
+        }
+    }
+
+    
+    void set(Expr var, Node val) {
+        int index = getIndex(var);
+        varList.set(index, var);
+        valList.set(index, val);
+    }
+
+    
+    public void unset(Expr exp, List<Expr> lvar) {
+        desallocate(exp);
+    }
+
+    
+    void unset(Expr var) {
+        valList.set(getIndex(var), null);
+    }
+    
     /**
      * Get variable value within current function call binding environment
      * between top of stack and level
      */
-    public Node get(Expr var) {
-        int i = getIndex(var);
-        if (i == -1) return null;       
-        return valList.get(i);
+    public Node get(Expr var) {    
+        return valList.get(getIndex(var));
     }
-                   
-    int getIndex(Expr var){      
-        int end = getCurrentLevel();                   
-        for (int i = index(); i >= end; i--) {
-            if (varList.get(i).equals(var)) {  
-                if (var.getDefinition() != varList.get(i)){                   
-                    return -1;
-                }                
-                return i;
-            }
-        }
-        return -1;
-    }
+                      
     
     // todo:  why not level ???
     public boolean isBound(String label){
@@ -113,79 +234,10 @@ public class Bind {
      * ?x is already bound, assign variable
      */
     public void bind(Expr exp, Expr var, Node val) {
-        int i = getIndex(var);
-        if (i != -1){
-           valList.set(i, val); 
-        }
+         valList.set(getIndex(var), val); 
     }
     
-    /**
-     * let (?x = exp)
-     * TODO:
-     * This function is used by Walker to evaluate extension aggregate
-     * It should add a level when exp is FUNCTION and unset should pop level
-     * Anyway, it works fine for usual case select (aggregate(exp, fun) as ?ag)
-     * It would not work in case of select (let (var = exp) { aggregate(var, fun) } as ?ag)
-     */
-    public void set(Expr exp, Expr var, Node val) {
-        if (val != null){
-            set(var, val);
-        }
-    }
-
-    /**
-     * us:fun(?x, ?y)
-     */
-    public void set(Expr exp, List<Expr> lvar, Node[] value) {
-        if (exp.oper() == ExprType.FUNCTION) {
-            // Parameters and local variables of this function are above level 
-            level.add(varList.size()); 
-            current = exp;
-        }
-        int i = 0;
-        for (Expr var : lvar) {
-            set(var, (Node) value[i++]);
-        }
-    }
-    
-    /**
-     * define parameter/local variable and set its value
-     */
-    void set(Expr var, Node val) {
-        varList.add(var);
-        valList.add(val);
-    }
-
-
-    public void unset(Expr exp, Expr var, Node val) {
-        if (val != null){
-            unset(var);
-        }
-    }
-
-    public void unset(Expr exp, List<Expr> lvar) {
-        if (exp.oper() == ExprType.FUNCTION){ 
-           if (! level.isEmpty()) {
-               level.remove(level.size() - 1);
-           }
-           else {
-               System.out.println("Bind: \n" + exp);
-               System.out.println(this);
-           }
-        }
-        for (int j = lvar.size() - 1; j >= 0; j--) {
-            unset(lvar.get(j));
-        }
-    }
-
-
-    void unset(Expr var) {
-        if (! varList.isEmpty()){
-            varList.remove(index());
-            valList.remove(valList.size() - 1);           
-        }
-    }
-    
+  
      public List<Expr> getVariables() {
          if (level.size() > 0){
              // funcall: return variables of this funcall (including let var)

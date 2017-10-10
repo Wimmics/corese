@@ -6,6 +6,7 @@ import java.util.Map;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Binder;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -195,7 +196,7 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public Bind getBind() {
+    public Binder getBind() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -211,6 +212,11 @@ public class EnvironmentImpl implements Environment {
 
     @Override
     public ApproximateSearchEnv getAppxSearchEnv() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setBind(Binder b) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

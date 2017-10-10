@@ -79,6 +79,7 @@ public interface Evaluator {
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 
+        Binder getBinder();
 	
 	/**
 	 * Evaluate a filter and return a list of Node
@@ -112,5 +113,6 @@ public interface Evaluator {
         
         void start(Environment env);
         void finish(Environment env);
+        void init(Environment env);
         
 }

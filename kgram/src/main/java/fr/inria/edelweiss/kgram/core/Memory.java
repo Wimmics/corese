@@ -10,6 +10,7 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgram.api.query.Binder;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Matcher;
@@ -66,14 +67,14 @@ public class Memory implements Environment {
     EventManager manager;
     boolean hasEvent = false;
     int nbEdge = 0, nbNode = 0;
-    private Bind bind;
+    private Binder bind;
     private ApproximateSearchEnv appxSearchEnv;
 
     public Memory(Matcher m, Evaluator e) {
         match = m;
         eval = e;
         bnode = new HashMap();
-        bind =  Bind.create();
+        //bind =  Bind.create();
         this.appxSearchEnv = new ApproximateSearchEnv();
     }
 
@@ -313,7 +314,7 @@ public class Memory implements Environment {
      * Copy this Bind local variable stack into this memory Use case: function
      * xt:foo(?x) { exists { ?x ex:pp ?y } }
      */
-    void copy(Bind bind, Exp exp) {
+    void copy(Binder bind, Exp exp) {
         List<Node> list = exp.getNodes();
         for (Expr var : bind.getVariables()) {
             Node qn = getNode(var.getLabel(), list);
@@ -1037,6 +1038,31 @@ public class Memory implements Environment {
         }
         return ExprType.UNBOUND;
     }
+    
+     
+    public Node getNode2(Expr var) {
+
+        switch (var.subtype()) {
+            case ExprType.LOCAL:
+                return bind.get(var);
+
+            case ExprType.UNDEF:
+                return null;
+
+            case ExprType.GLOBAL:
+            default:
+                int index = var.getIndex();
+                if (index == ExprType.UNBOUND) {
+                    index = getIndex(var.getLabel());
+                    var.setIndex(index);
+                    if (index == ExprType.UNBOUND) {
+                        return null;
+                    }
+                }
+                return getNode(index);
+        }
+
+    }
 
     @Override
     public Node getNode(Expr var) {
@@ -1197,12 +1223,12 @@ public class Memory implements Environment {
         bind.unset(exp, lvar);
     }
 
-    public void setBind(Bind b) {
+    public void setBind(Binder b) {
         bind = b;
     }
 
     @Override
-    public Bind getBind() {
+    public Binder getBind() {
         return bind;
     }
 
@@ -1210,7 +1236,7 @@ public class Memory implements Environment {
     public boolean hasBind() {
         return bind != null && bind.hasBind();
     }
-
+    
     @Override
     public ApproximateSearchEnv getAppxSearchEnv() {
         return this.appxSearchEnv;

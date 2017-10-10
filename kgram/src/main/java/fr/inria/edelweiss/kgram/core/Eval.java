@@ -524,6 +524,7 @@ public class Eval implements ExpType, Plugin {
      */
     private Memory copyMemory(Memory memory, Query query, Query sub, Exp exp) {
         Memory mem = new Memory(match, evaluator);
+        getEvaluator().init(mem);
         if (sub == null) {
             mem.init(query);
         } else {
@@ -574,6 +575,7 @@ public class Eval implements ExpType, Plugin {
      */
     public Memory getMemory(Mapping map, Exp exp) {
         Memory mem = new Memory(match, evaluator);
+        getEvaluator().init(mem);
         mem.init(query);
         mem.copy(map, exp);
         return mem;
@@ -617,7 +619,8 @@ public class Eval implements ExpType, Plugin {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
             q.complete(producer);//service while1 / Query
-            memory = new Memory(match, evaluator);           
+            memory = new Memory(match, evaluator); 
+            getEvaluator().init(memory);
             // create memory bind stack
             memory.init(q);
             if (hasEvent) {
@@ -953,7 +956,7 @@ public class Eval implements ExpType, Plugin {
                         if (gg != null && p.isProducer(gg)) {
                             // graph $path { }
                             // named graph in GraphStore 
-                            // switch Producer                            
+                            // switch Producer  
                             backtrack = inGraph(p, p.getProducer(gg, memory),
                                     gNode, exp, stack, n);
                         }                        
@@ -1310,6 +1313,7 @@ public class Eval implements ExpType, Plugin {
 
     private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m, boolean bind) {
         Memory mem = new Memory(match, evaluator);
+        getEvaluator().init(mem);
         mem.init(query);
         mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
@@ -2630,6 +2634,8 @@ public class Eval implements ExpType, Plugin {
                     for (Exp f : exp.getPostpone()) {
                         r2.setQuery(query);
                         r2.setMap(memory.getMap());
+                        // draft: only for Interpreter.testNewEval
+                        // r2.setBind(evaluator.getBinder());
                         success = evaluator.test(f.getFilter(), r2);
                         if (!success) {
                             break;

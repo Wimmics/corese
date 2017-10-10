@@ -86,6 +86,7 @@ public interface Expr {
         
         Expr getDefinition();
         int getNbVariable();
+        DatatypeValue[] getArguments(int n);
         
         List<String> getMetadataValues(String name);
         	

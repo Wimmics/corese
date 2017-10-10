@@ -122,9 +122,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 loop(t);
                 break;
                                                                       
-            case ExprType.AGGREGATE:
-                aggregate(t);
-                break;
+//            case ExprType.AGGREGATE:
+//                aggregate(t);
+//                break;
                                
             case ExprType.EXIST:
                visitExist(t);
@@ -132,11 +132,24 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                                
             default:
         
-            for (Expression e : t.getArgs()) {
-                e.visit(this);
+            process(t);
+        }
+    }
+    
+    
+    void process(Term t) {
+        for (int i=0; i<t.getArgs().size(); i++) {
+            Expression e = t.getArg(i);
+            e.visit(this);
+            if (e.isVariable() && e.subtype() == ExprType.LOCAL){
+                VariableLocal var = new VariableLocal(e.getLabel());
+                var.setIndex(e.getIndex());
+                t.setArg(i, var);
+                t.setExp(i, var);
             }
         }
     }
+            
     
     /**
      * function xt:fun(?x) { exp }
@@ -207,7 +220,8 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             // ok
         }       
         else if (isFunctionDefinition()) {
-            logger.error("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
+            ast.addError("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
+            ast.addFail(true);
             var.undef();
         }
     }
@@ -252,9 +266,9 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     /**
      * aggregate(exp, us:mediane)
      */
-    void aggregate(Term t){
-        t.getArg(0).visit(this);
-    }
+//    void aggregate(Term t){
+//        t.getArg(0).visit(this);
+//    }
     
     boolean isTopLevel(){
         return isExpression() && getNbVariable() == 0;

@@ -41,6 +41,11 @@ public  class CoreseDouble extends CoreseNumber{
 	
         @Override
 	public boolean isTrue() {
+		return booleanValue();
+	}
+        
+         @Override
+	public boolean booleanValue() {
 		return dvalue != 0.0;
 	}
 	

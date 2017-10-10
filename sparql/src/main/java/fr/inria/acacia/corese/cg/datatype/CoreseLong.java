@@ -55,6 +55,11 @@ public  class CoreseLong extends CoreseNumber {
 	public boolean isTrue() {
 		return lvalue != 0;
 	}
+        
+        @Override
+	public boolean booleanValue() {
+		return lvalue != 0;
+	}
 
         @Override
 	public long longValue(){

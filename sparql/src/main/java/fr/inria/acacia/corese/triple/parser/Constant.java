@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.Computer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -10,7 +11,10 @@ import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.term.Binding;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.List;
 
 /**
@@ -461,5 +465,10 @@ public class Constant extends Atom {
         if (!l.contains(this)) {
             l.add(this);
         }
+    }
+    
+    @Override
+     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
+        return getDatatypeValue();
     }
 }

@@ -579,7 +579,10 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype createObject(String name, Object obj) {      
         if (obj == null){
             return null;
-        }       
+        } 
+        if (obj instanceof Node){
+            return (IDatatype) ((Node)obj).getDatatypeValue();
+        }
         if (obj instanceof Pointerable){           
             return new CoresePointer(name, (Pointerable) obj);
         }

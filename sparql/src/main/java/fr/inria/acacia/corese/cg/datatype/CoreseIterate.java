@@ -66,8 +66,8 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
     public IDatatype next() {
         res.setValue(i);
         i += step;
-        return this;
-        //return res;
+        //return this;
+        return res;
     }
     
     @Override

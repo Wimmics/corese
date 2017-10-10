@@ -61,6 +61,11 @@ public class CoreseInteger extends CoreseNumber {
 
     @Override
     public boolean isTrue() {
+        return booleanValue();
+    }
+    
+     @Override
+    public boolean booleanValue() {
         return lvalue != 0;
     }
 

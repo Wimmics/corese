@@ -87,6 +87,11 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
         @Override
 	public boolean isTrue() throws CoreseDatatypeException {
+		return booleanValue();
+	}
+        
+        @Override
+	public boolean booleanValue () {
 		return getLabel().length() > 0;
 	}
 

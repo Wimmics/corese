@@ -41,7 +41,10 @@ public class CoreseResource extends CoreseStringableImpl {
          return false;
        }
        
-  
+    @Override
+    public boolean booleanValue() {
+        return false;
+    }
 
     @Override
        public boolean isLiteral() {

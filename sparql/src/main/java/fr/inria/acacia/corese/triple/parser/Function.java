@@ -73,6 +73,7 @@ public class Function extends Statement {
     @Override
     public Expression compile(ASTQuery ast){
          Expression exp = super.compile(ast);
+         typecheck(ast);
          if (isTrace()){
              System.out.println(this);
          }
@@ -276,13 +277,14 @@ public class Function extends Statement {
         v.visit(this);
     }
     
-    public boolean typecheck(ASTQuery ast){
+    boolean typecheck(ASTQuery ast){
         Term t = getSignature();
         List<Variable> list = new ArrayList<Variable>();
         int i = 1;
         for (Expression var : t.getArgs()) {
             if (list.contains(var.getVariable())){
                 ast.addError("Duplicate parameter: " + var + " in: \n" + toString());
+                ast.addFail(true);
                 return false;
             }
             else {

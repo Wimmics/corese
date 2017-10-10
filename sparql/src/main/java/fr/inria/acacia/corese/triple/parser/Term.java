@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
@@ -9,9 +10,32 @@ import java.util.List;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.Funcall;
+import fr.inria.corese.triple.function.Get;
+import fr.inria.corese.triple.function.IfThenElseTerm;
+import fr.inria.corese.triple.function.Iterate;
+import fr.inria.corese.triple.function.Sequence;
+import fr.inria.corese.triple.function.Swap;
+import fr.inria.corese.triple.term.AndTerm;
+import fr.inria.corese.triple.term.Binding;
+import fr.inria.corese.triple.term.Div;
+import fr.inria.corese.triple.term.Equal;
+import fr.inria.corese.triple.term.Greater;
+import fr.inria.corese.triple.term.GreaterEqual;
+import fr.inria.corese.triple.term.In;
+import fr.inria.corese.triple.term.Less;
+import fr.inria.corese.triple.term.LessEqual;
+import fr.inria.corese.triple.term.MinusTerm;
+import fr.inria.corese.triple.term.Mult;
+import fr.inria.corese.triple.term.NotTerm;
+import fr.inria.corese.triple.term.NotEqual;
+import fr.inria.corese.triple.term.OrTerm;
+import fr.inria.corese.triple.term.Plus;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 
 /**
  * <p>Title: Corese</p>
@@ -61,6 +85,7 @@ public class Term extends Expression {
 
         // default processor to compile term
         static Processor processor;
+        static final NSManager nsm = NSManager.create();
         
         // possibly dynamic processor to implement some functions: regex, ...
 	Processor proc;
@@ -69,6 +94,7 @@ public class Term extends Expression {
 	
 	ArrayList<Expression> args = new ArrayList<Expression>();
         List<Expr> lExp;
+        IDatatype[] arguments;
         // ast for let (((?x, ?y)) = select where)
         private ExpressionList nestedList;
 
@@ -107,12 +133,39 @@ public class Term extends Expression {
 		args.add(exp2);
 	}
 	
-	public static Term create(String name, Expression exp1, Expression exp2){
-		return new Term(name, exp1, exp2);
+	public static Term create(String name, Expression exp1, Expression exp2){           
+            //return new Term(name, exp1, exp2);
+            return term(name, exp1, exp2);
 	}
+        
+        static Term term(String name, Expression exp1, Expression exp2){
+            switch (Processor.getOper(name)){
+                case ExprType.IN:   return new In(name, exp1, exp2);
+                case ExprType.OR:   return new OrTerm(name, exp1, exp2);
+                case ExprType.AND:  return new AndTerm(name, exp1, exp2);
+                //case ExprType.NOT:  return new Not(name, exp1);
+                    
+                case ExprType.EQ:   return new Equal(name, exp1, exp2);
+                case ExprType.NEQ:  return new NotEqual(name, exp1, exp2);
+                case ExprType.LT:   return new Less(name, exp1, exp2);
+                case ExprType.LE:   return new LessEqual(name, exp1, exp2);
+                case ExprType.GE:   return new GreaterEqual(name, exp1, exp2);
+                case ExprType.GT:   return new Greater(name, exp1, exp2);
+                
+                case ExprType.PLUS: return new Plus(name, exp1, exp2);
+                case ExprType.MULT: return new Mult(name, exp1, exp2);
+                case ExprType.MINUS:return new MinusTerm(name, exp1, exp2);
+                case ExprType.DIV:  return new Div(name, exp1, exp2);
+
+                default: return new Term(name, exp1, exp2);
+            }
+        }
 	
 	public static Term create(String name, Expression exp1){
-		return new Term(name, exp1);
+            switch (Processor.getOper(name)){
+                case ExprType.NOT:  return new NotTerm(name, exp1);
+                default: return new Term(name, exp1);
+            }
 	}
 	
 	public static Term create(String name){
@@ -120,10 +173,23 @@ public class Term extends Expression {
 	}
 	
 	public static Term function(String name){
-		Term fun = new Term(name); 
+		//Term fun = new Term(name); 
+                Term fun = newFunction(name);
 		fun.isFunction = true;
 		return fun;
 	}
+        
+        static Term newFunction(String name){
+            switch (Processor.getOper(nsm.toNamespace(name))){
+                case ExprType.IF:           return new IfThenElseTerm(name); 
+                case ExprType.FUNCALL:      return new Funcall(name); 
+                case ExprType.SEQUENCE:     return new Sequence(name); 
+                case ExprType.XT_GET:       return new Get(name); 
+                case ExprType.XT_SWAP:      return new Swap(name); 
+                case ExprType.XT_ITERATE:   return new Iterate(name); 
+                default: return new Term(name);
+            }
+        }
 	
 	public static Term list(){
 		return Term.function(LIST);
@@ -221,7 +287,8 @@ public class Term extends Expression {
 	}
 
 	public static Term negation(Expression exp){
-		return new Term(SENOT, exp);
+		//return new Term(SENOT, exp);
+		return create(SENOT, exp);
 	}
 	
         @Override
@@ -1041,11 +1108,11 @@ public class Term extends Expression {
                 lExp.add(i, e);
             }
         }
-        
-        @Override
-        public void addExp(int i, Expr e){
-            lExp.add(i, e);
-        }
+//        
+//        @Override
+//        public void addExp(int i, Expr e){
+//            lExp.add(i, e);
+//        }
 
 	
 	void setArguments(){
@@ -1077,9 +1144,20 @@ public class Term extends Expression {
 		return lExp;
 	}
         
-        void setExpList(List<Expr> l){
-            lExp = l;
+        @Override
+        public IDatatype[] getArguments(int n){
+            if (arguments == null){
+                arguments = new IDatatype[n];
+            }
+            else {
+                java.util.Arrays.fill(arguments, null);
+            }
+            return arguments;
         }
+        
+//        void setExpList(List<Expr> l){
+//            lExp = l;
+//        }
 	
         @Override
 	public ExpPattern getPattern(){
@@ -1258,5 +1336,11 @@ public class Term extends Expression {
     public void setNestedList(ExpressionList nestedList) {
         this.nestedList = nestedList;
     }
+    
+    @Override
+     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
+        return eval.eval((Expr)this, env, p);
+    }
+        
     
 }

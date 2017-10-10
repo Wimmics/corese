@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
@@ -8,6 +9,8 @@ import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.term.Binding;
+import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -15,6 +18,9 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Pointerable;
 import fr.inria.edelweiss.kgram.api.core.Regex;
 import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Evaluator;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -818,6 +824,11 @@ implements Regex, Filter, Expr, Pointerable  {
         return null;
     } 
         
+        @Override
+    public DatatypeValue[] getArguments(int n) {
+        return null;
+    }
+        
      public Let getLet(){
          return null;
      } 
@@ -869,7 +880,13 @@ implements Regex, Filter, Expr, Pointerable  {
     public int pointerType() {
         return Pointerable.EXPRESSION_POINTER;
     }
-
+    
+    
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
+        return null;
+    }
+    
+  
     @Override
     public Mappings getMappings() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

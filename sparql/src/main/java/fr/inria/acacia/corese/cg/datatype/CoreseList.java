@@ -142,7 +142,7 @@ public class CoreseList extends CoreseUndefLiteral {
     }
 
     @Override
-    public boolean isTrue() throws CoreseDatatypeException {
+    public boolean isTrue()  {
         return list != null && list.size() > 0;
     }
 
@@ -153,10 +153,6 @@ public class CoreseList extends CoreseUndefLiteral {
     
     @Override
     public boolean booleanValue(){
-        try {
-            return isTrue();
-        } catch (CoreseDatatypeException ex) {
-            return false;
-        }
+        return isTrue();
     }
 }

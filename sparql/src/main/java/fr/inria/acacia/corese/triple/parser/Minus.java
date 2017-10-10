@@ -11,8 +11,8 @@ public class Minus extends And {
 		e.add(exp);
 		return e;
 	}
-	
-	
+
+        
         @Override
 	public boolean isMinus(){
 		return true;

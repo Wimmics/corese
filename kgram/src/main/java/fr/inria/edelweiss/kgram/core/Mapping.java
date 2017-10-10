@@ -1124,53 +1124,42 @@ public class Mapping
     public boolean hasBind() {
         return bind != null && bind.hasBind();
     }
+    
+    Bind getCreateBind(){
+        if (bind == null) {
+            bind = Bind.create();
+        }
+        return bind;
+    }
 
     @Override
     public void bind(Expr exp, Expr var, Node value) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        bind.bind(exp, var, value);
+        getCreateBind().bind(exp, var, value);
     }
 
     @Override
     public void set(Expr exp, Expr var, Node value) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        bind.set(exp, var, value);
+        getCreateBind().set(exp, var, value);
     }
 
     @Override
-    public void set(Expr exp, List<Expr> lvar, Object[] value) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        bind.set(exp, lvar, value);
+    public void set(Expr exp, List<Expr> lvar, Node[] value) {
+        getCreateBind().set(exp, lvar, value);
     }
 
     @Override
     public Node get(Expr var) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        return bind.get(var);
+        return getCreateBind().get(var);
     }
 
     @Override
-    public void unset(Expr exp, Expr var) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        bind.unset(exp, var);
+    public void unset(Expr exp, Expr var, Node value) {
+        getCreateBind().unset(exp, var, value);
     }
 
     @Override
     public void unset(Expr exp, List<Expr> lvar) {
-        if (bind == null) {
-            bind = new Bind();
-        }
-        bind.unset(exp, lvar);
+        getCreateBind().unset(exp, lvar);
     }
 
     @Override

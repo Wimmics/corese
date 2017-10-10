@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 public class Bind {
 
     static final String NL = System.getProperty("line.separator");
+    public static boolean isIndex = true;
+
     ArrayList<Expr> varList;
     ArrayList<Node> valList;
     // level of the stack before function call
@@ -31,6 +33,10 @@ public class Bind {
         varList = new ArrayList();
         valList = new ArrayList();
         level   = new ArrayList();
+    }
+    
+    public static Bind create(){
+        return (isIndex) ? new BindIndex() : new Bind();
     }
 
     @Override
@@ -67,36 +73,17 @@ public class Bind {
      */
     public Node get(Expr var) {
         int i = getIndex(var);
-        if (i == -1) return null;
+        if (i == -1) return null;       
         return valList.get(i);
     }
-    
-    int getIndex(Expr var){
-        return computeIndex(var);        
-    }
-    
-    int getIndex1(Expr var){
-        int index = var.getIndex();
-        if (index == ExprType.UNBOUND){           
-            return -1;
-        }
-        return index;
-    }
-    
-    int computeIndex(Expr var){
-       
+                   
+    int getIndex(Expr var){      
         int end = getCurrentLevel();                   
         for (int i = index(); i >= end; i--) {
             if (varList.get(i).equals(var)) {  
-                if (var.getDefinition() != null && var.getDefinition() != varList.get(i)){                   
+                if (var.getDefinition() != varList.get(i)){                   
                     return -1;
-                }
-                 if (var.getDefinition() == null){
-            System.out.println("**********************************");
-            System.out.println(current);
-            System.out.println(var);
-            System.out.println("**********************************");
-        }
+                }                
                 return i;
             }
         }
@@ -134,15 +121,22 @@ public class Bind {
     
     /**
      * let (?x = exp)
+     * TODO:
+     * This function is used by Walker to evaluate extension aggregate
+     * It should add a level when exp is FUNCTION and unset should pop level
+     * Anyway, it works fine for usual case select (aggregate(exp, fun) as ?ag)
+     * It would not work in case of select (let (var = exp) { aggregate(var, fun) } as ?ag)
      */
     public void set(Expr exp, Expr var, Node val) {
-        set(var, val);
+        if (val != null){
+            set(var, val);
+        }
     }
 
     /**
      * us:fun(?x, ?y)
      */
-    public void set(Expr exp, List<Expr> lvar, Object[] value) {
+    public void set(Expr exp, List<Expr> lvar, Node[] value) {
         if (exp.oper() == ExprType.FUNCTION) {
             // Parameters and local variables of this function are above level 
             level.add(varList.size()); 
@@ -157,20 +151,22 @@ public class Bind {
     /**
      * define parameter/local variable and set its value
      */
-    private void set(Expr var, Node val) {
+    void set(Expr var, Node val) {
         varList.add(var);
         valList.add(val);
     }
 
 
-    public void unset(Expr exp, Expr var) {
-        unset(var);
+    public void unset(Expr exp, Expr var, Node val) {
+        if (val != null){
+            unset(var);
+        }
     }
 
     public void unset(Expr exp, List<Expr> lvar) {
-        if (exp.oper() == ExprType.FUNCTION){ // ||exp.oper() == ExprType.EQ){
+        if (exp.oper() == ExprType.FUNCTION){ 
            if (! level.isEmpty()) {
-               level.remove(level.size()-1);
+               level.remove(level.size() - 1);
            }
            else {
                System.out.println("Bind: \n" + exp);
@@ -183,7 +179,7 @@ public class Bind {
     }
 
 
-    private void unset(Expr var) {
+    void unset(Expr var) {
         if (! varList.isEmpty()){
             varList.remove(index());
             valList.remove(valList.size() - 1);           
@@ -210,8 +206,10 @@ public class Bind {
          int start = getLevel();
          int top   = varList.size();
          ArrayList<Expr> list = new ArrayList();
-         for (int i = start; i<top; i++){
-             list.add(varList.get(i));
+         for (int i = start; i<top; i++) {
+             if (varList.get(i) != null && valList.get(i) != null){
+                list.add(varList.get(i));
+             }
          }
          return list;
      }

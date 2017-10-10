@@ -30,7 +30,7 @@ public interface Proxy {
 	boolean isTrue(Object value);
 
 	// Query Node value (e.g. KGRAM IDatatype)  to target proxy value
-	Object getConstantValue(Object value);
+	Node getConstantValue(Node value);
         
         // return a IDatatype and store obj in it
         Object getValue(Object val, Object obj);

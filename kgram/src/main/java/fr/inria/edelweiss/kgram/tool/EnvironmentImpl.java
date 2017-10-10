@@ -175,12 +175,12 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public void unset(Expr exp, Expr var) {
+    public void unset(Expr exp, Expr var, Node value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void set(Expr exp, List<Expr> var, Object[] value) {
+    public void set(Expr exp, List<Expr> var, Node[] value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

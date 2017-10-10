@@ -3,14 +3,14 @@ package fr.inria.acacia.corese.triple.parser;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Visit filter/select/bind expressions
- * function, let, map: declare arguments as local variables, index
+ * function, let, map: declare arguments as local variables, 
+ * generate variable index
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
@@ -22,14 +22,12 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     private boolean let = false;
     private boolean functionDefinition = false;
     private boolean trace = false;
-    private int count = 0;
-    private int clet = 0;
     private int nbVariable = 0;
     
     // stack of defined variables: function parameter/let/for
-    List<Variable> list;
-    ASTQuery ast;
-    Function fun;
+    private List<Variable> list;
+    private ASTQuery ast;
+    private Function fun;
 
     ExpressionVisitorVariable() {
         list = new ArrayList<Variable>();
@@ -65,6 +63,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     void define(Variable var){
         list.add(var);
         localize(var);
+        var.setDeclaration(var);
         var.setIndex(getNbVariable());
         setNbVariable(getNbVariable() + 1);
     }
@@ -77,6 +76,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         Variable decl = getDefinition(var);
         if (decl != null) {
             var.setDeclaration(decl);
+            var.setIndex(decl.getIndex());
             localize(var);
             return true;
         } 
@@ -159,12 +159,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     @Override
     public void visit(Constant c) {
     }
-    
-    
-    int count(){
-        return count;
-    }
-    
+        
     void function(Function f) {
         if (trace) {
             System.out.println("**** Vis Fun: " + f);
@@ -179,17 +174,10 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
         
         Expression body = f.getBody();
-
         ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, f);
-        //body.visit(vis);
         vis.start(body);
         f.setNbVariable(vis.getNbVariable());
-
-        f.setPlace(vis.count());
-        ast.define(f);
-        if (trace) {
-            System.out.println("count: " + vis.count());
-        }
+        ast.define(f);        
     }
     
     void visitExist(Term t) {
@@ -224,34 +212,27 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
 
-        
     /**
-     * @deprecated
-     * 
-     */
-    void export(Term t) {
-        for (Expression exp : t.getArgs()) {
-            if (exp.isTerm() && !exp.getArgs().isEmpty()) {
-                Expression fun = exp.getArg(0);
-                fun.setPublic(true);
-            }
-        }
-    }
-        
+     * let (var = exp) { body }
+     * for (var in exp) { body }
+     * declare var as local variable in body
+     * toplevel means SPARQL filter (not in function)
+     * toplevel let/for manage its own number of local variables for stack allocation (Bind)
+     */ 
     void letloop(Term t) {
-        Variable var = t.getVariable();
-        Expression exp = t.getDefinition();
+        boolean isTopLevel = isTopLevel();
+        Variable var    = t.getVariable();
+        Expression exp  = t.getDefinition();
         Expression body = t.getBody();
 
         exp.visit(this);
         define(var);
-        clet++;
         body.visit(this);
-        clet--;
         pop(var);
-        if (!isFunctionDefinition() && clet == 0) {
-            // top level let
-            t.setPlace(count);
+        if (isTopLevel) {
+            // top level let/for, not in function
+            t.setNbVariable(getNbVariable());
+            setNbVariable(0);
         }
     }
     
@@ -273,6 +254,14 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      */
     void aggregate(Term t){
         t.getArg(0).visit(this);
+    }
+    
+    boolean isTopLevel(){
+        return isExpression() && getNbVariable() == 0;
+    }
+    
+    boolean isExpression() {
+        return ! isFunctionDefinition();
     }
          
     /**

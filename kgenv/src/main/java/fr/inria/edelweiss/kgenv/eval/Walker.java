@@ -246,6 +246,13 @@ public class Walker extends Interpreter {
         return true;
     }
     
+    void eval(Expr function, Environment env, Producer p, IDatatype dt) {
+        Expr var = function.getFunction().getExp(0);
+        env.set(function, var, dt);
+        eval(function.getBody().getFilter(), env, p);
+        env.unset(function, var, dt);
+    }
+    
     /**
      * map is a Mapping
      */
@@ -293,10 +300,11 @@ public class Walker extends Interpreter {
             switch (f.getExp().oper()) {
                 
                 case STL_AGGREGATE:
-                    Expr var = getDefinition().getFunction().getExp(0);
-                    env.set(exp, var, dt);
-                    eval(getDefinition().getBody().getFilter(), env, p);
-                    env.unset(exp, var);
+                    eval(getDefinition(), env, p, dt);
+//                    Expr var = getDefinition().getFunction().getExp(0);
+//                    env.set(exp, var, dt);
+//                    eval(getDefinition().getBody().getFilter(), env, p);
+//                    env.unset(exp, var);
                     break;
 
                 case MIN:

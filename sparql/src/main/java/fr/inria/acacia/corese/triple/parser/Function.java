@@ -22,7 +22,6 @@ public class Function extends Statement {
     private boolean isPublic = false;
     private boolean lambda = false;
     private boolean visited = false;
-    private int nbVariable = 0;
     
     private IDatatype dt;
     
@@ -291,20 +290,6 @@ public class Function extends Statement {
             }
         }
         return true;
-    }
-
-    /**
-     * @return the nbVariable
-     */
-    public int getNbVariable() {
-        return nbVariable;
-    }
-
-    /**
-     * @param nbVariable the nbVariable to set
-     */
-    public void setNbVariable(int nbVariable) {
-        this.nbVariable = nbVariable;
-    }
+    }   
 
 }

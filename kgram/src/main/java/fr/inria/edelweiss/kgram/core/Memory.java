@@ -73,7 +73,7 @@ public class Memory implements Environment {
         match = m;
         eval = e;
         bnode = new HashMap();
-        bind = new Bind();
+        bind =  Bind.create();
         this.appxSearchEnv = new ApproximateSearchEnv();
     }
 
@@ -1178,7 +1178,7 @@ public class Memory implements Environment {
     }
 
     @Override
-    public void set(Expr exp, List<Expr> lvar, Object[] value) {
+    public void set(Expr exp, List<Expr> lvar, Node[] value) {
         bind.set(exp, lvar, value);
     }
 
@@ -1188,8 +1188,8 @@ public class Memory implements Environment {
     }
 
     @Override
-    public void unset(Expr exp, Expr var) {
-        bind.unset(exp, var);
+    public void unset(Expr exp, Expr var, Node value) {
+        bind.unset(exp, var, value);
     }
 
     @Override

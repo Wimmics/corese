@@ -116,6 +116,15 @@ implements Regex, Filter, Expr, Pointerable  {
 	public String getName(){
 		return name;
 	}
+        
+        @Override
+        public int getNbVariable() {
+            return 0;
+        }
+        
+        public void setNbVariable(int n){
+            
+        }
 	
         @Override
 	public String getLongName(){
@@ -518,13 +527,7 @@ implements Regex, Filter, Expr, Pointerable  {
 		
 		return 0;
 	}
-        
-        @Override
-        public int place(){
-            return -1;
-        }
-
-	
+               
         @Override
 	public String getLabel() {
 		

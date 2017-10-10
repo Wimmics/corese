@@ -1175,7 +1175,7 @@ public class Transformer  {
         Extension ext = q.getExtension();
         if (ext != null) {
             Expr function = ext.get(name, (dt == null) ? 0 : 1);
-            if (function != null) { 
+            if (function != null) {                 
                 return (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt) ;
             }
         }

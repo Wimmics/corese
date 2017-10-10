@@ -15,13 +15,13 @@ import fr.inria.edelweiss.kgram.api.query.Environment;
  * @author corby
  *
  */
-class VariableResolverImpl implements VariableResolver {
+public class VariableResolverImpl implements VariableResolver {
 	Document document;
 	QName var;
 	Text value;
 	Environment env;
 	
-	VariableResolverImpl(Environment e){
+	public VariableResolverImpl(Environment e){
 		env = e;
 	}
 			

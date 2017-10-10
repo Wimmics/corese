@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Custom {
     
-    IDatatype eval(Expr exp, Environment env, Producer p, Object[] param) {
+    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] param) {
         try {
             return evalWE(exp, env, p, param);
         } catch (NoSuchMethodException ex) {

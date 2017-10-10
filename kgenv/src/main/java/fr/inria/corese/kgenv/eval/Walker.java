@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +17,6 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.util.ArrayList;
 
@@ -67,7 +66,7 @@ public class Walker extends Interpreter {
     boolean test = false;
     ArrayList<IDatatype> list;
 
-    Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
+    public Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
         super(p);
 
         Query q = env.getQuery();
@@ -195,7 +194,7 @@ public class Walker extends Interpreter {
 
 
             case COUNT:
-                return (IDatatype) proxy.getValue(num);
+                return proxy.getValue(num);
 
             case GROUPCONCAT:
             case STL_GROUPCONCAT: 
@@ -220,7 +219,8 @@ public class Walker extends Interpreter {
                 return dt;
                 
             case STL_AGGREGATE: 
-                return getResult(getDefinition().getBody(), env, p);
+                IDatatype adt =  getResult(getDefinition().getBody(), env, p);
+                return adt;
 
         }
 
@@ -245,8 +245,17 @@ public class Walker extends Interpreter {
         }
         return true;
     }
-          
-    void eval(Expr function, Environment env, Producer p, IDatatype dt) {
+    
+    @Override
+    public IDatatype eval(Expr function, Environment env, Producer p, IDatatype dt) {
+        Expr var = function.getFunction().getExp(0);
+        env.set(function, var, dt);
+        Node res = eval(function.getBody().getFilter(), env, p);
+        env.unset(function, var, dt);
+        return  dt;
+    }
+    
+    void eval2(Expr function, Environment env, Producer p, IDatatype dt) {
         Expr var = function.getFunction().getExp(0);
         env.set(function, var, dt);
         eval(function.getBody().getFilter(), env, p);
@@ -259,7 +268,9 @@ public class Walker extends Interpreter {
     @Override
     public Node eval(Filter f, Environment env, Producer p) {
         Mapping map = (Mapping) env;
-        
+        if (testNewEval && map.getBind() == null) {
+            map.setBind(getBinder());
+        }
         switch (f.getExp().oper()) {
 
             case GROUPCONCAT:
@@ -357,7 +368,6 @@ public class Walker extends Interpreter {
                     break;
 
                 case AGGAND:
-
                     if (dt == null) {
                         isError = true;
                     } else {

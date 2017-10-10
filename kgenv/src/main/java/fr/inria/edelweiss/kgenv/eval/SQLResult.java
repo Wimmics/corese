@@ -11,7 +11,7 @@ public class SQLResult {
 		rs = r;
 	}
 	
-	SQLResult (ResultSet r, boolean b){
+	public SQLResult (ResultSet r, boolean b){
 		rs = r;
 		isSort = b;
 	}

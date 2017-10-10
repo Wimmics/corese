@@ -20,11 +20,11 @@ public class Hash {
 	//static String SHA224 = "SHA-224";
 	String name;
 	
-	Hash(String n){
+	public Hash(String n){
 		name = n;
 	}
 	
-	String hash(String str){
+	public String hash(String str){
 //		if (name.equals(SHA224)){
 //			return sha224(str);
 //		}

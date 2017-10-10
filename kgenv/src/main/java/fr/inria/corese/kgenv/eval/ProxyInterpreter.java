@@ -1,5 +1,6 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
+import fr.inria.edelweiss.kgenv.eval.*;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.util.Map;
@@ -50,10 +51,10 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class ProxyImpl implements Proxy, ExprType {
+public class ProxyInterpreter implements Proxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
-    private static Logger logger = LogManager.getLogger(ProxyImpl.class);
+    private static Logger logger = LogManager.getLogger(ProxyInterpreter.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
@@ -68,7 +69,7 @@ public class ProxyImpl implements Proxy, ExprType {
     ProxyPlugin plugin;
     Custom custom;
     SQLFun sql;
-    Evaluator eval;
+    Interpreter eval;
     private Producer producer;
     EvalListener el;
     // for LDScript java compiling only
@@ -81,14 +82,14 @@ public class ProxyImpl implements Proxy, ExprType {
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
     
 
-    public ProxyImpl() {
+    public ProxyInterpreter() {
         sql = new SQLFun();
         custom = new Custom();
     }
 
     @Override
     public void setEvaluator(Evaluator ev) {
-        eval = ev;
+        eval = (Interpreter) ev;
         if (plugin != null) {
             plugin.setEvaluator(ev);
         }
@@ -200,7 +201,7 @@ public class ProxyImpl implements Proxy, ExprType {
                 // the extended datatype
                 Expr exp = eval.getDefine(env, ExprLabel.COMPARE, 2);
                 if (exp != null){
-                     IDatatype res = (IDatatype) eval.eval(exp.getFunction(), env, p, array(dt1, dt2), exp);
+                     IDatatype res = eval.eval(exp.getFunction(), env, p, array(dt1, dt2), exp);
                      if (res == null){
                          return 0;
                      }
@@ -214,9 +215,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
     @Override
     public IDatatype term(Expr exp, Environment env, Producer p, Object o1, Object o2) {
-        IDatatype dt1 = (IDatatype) o1;
-        IDatatype dt2 = (IDatatype) o2;
-        
+        return term(exp, env, p, (IDatatype)o1, (IDatatype)o2);
+    }
+    
+    public IDatatype term(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {       
         if (dt1.getCode() == IDatatype.UNDEF && dt2.getCode() == IDatatype.UNDEF){
             String d1 = dt1.getDatatypeURI();
             if (d1.equals(dt2.getDatatypeURI())){   
@@ -224,20 +226,11 @@ public class ProxyImpl implements Proxy, ExprType {
                 // the extended datatype
                 Expr ee = eval.getDefine(env, label(exp, d1), exp.arity()); 
                 if (ee != null){
-                   return  (IDatatype) eval.eval(exp, env, p, array(dt1, dt2), ee);
+                   return   eval.eval(exp, env, p, array(dt1, dt2), ee);
                 }                
             }
         }
-
-        // TODO: this should depend on a boolean bnodeExtension
-//        if (dt1.isBlank() && dt2.isBlank() && ! exp.isFuncall()) {
-//            // exclude funcall kg:equal() to prevent a loop
-//            Expr ee = eval.getDefine(env, label(exp, ExpType.BNODE), exp.arity());
-//            if (ee != null) {
-//                return eval.eval(exp, env, p, array(dt1, dt2), ee);
-//            }
-//        }
-        
+       
         boolean b = true;
 
         try {
@@ -400,9 +393,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
     @Override
     public IDatatype function(Expr exp, Environment env, Producer p, Object o1) {
-
-        IDatatype dt = (IDatatype) o1;
-
+        return function(exp, env, p, (IDatatype)o1);
+    }
+    
+    public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
         switch (exp.oper()) {
 
             case ISURI:
@@ -599,7 +593,7 @@ public class ProxyImpl implements Proxy, ExprType {
             return null;
         }
         else {
-           return (IDatatype) eval.eval(exp.getFunction(), env, p, param, exp); 
+           return  eval.eval(exp.getFunction(), env, p, param, exp); 
         }       
     }
     
@@ -650,8 +644,10 @@ public class ProxyImpl implements Proxy, ExprType {
 
     @Override
     public IDatatype function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
-        IDatatype dt1 = (IDatatype) o1;
-        IDatatype dt2 = (IDatatype) o2;
+        return function(exp, env, p, (IDatatype)o1, (IDatatype)o2);
+    }
+    
+    public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         boolean b;
 
         switch (exp.oper()) {
@@ -669,7 +665,7 @@ public class ProxyImpl implements Proxy, ExprType {
             case LE:
             case GT:
             case GE:
-                return term(exp, env, p, o1, o2);
+                return term(exp, env, p, dt1, dt2);
                 
             case OR:
                 return or(dt1, dt2);
@@ -766,19 +762,22 @@ public class ProxyImpl implements Proxy, ExprType {
 
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
-        IDatatype[] param =  (IDatatype[]) args;
+        return eval(exp, env, p, (IDatatype[])args);
+    }
+    
+    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
         switch (exp.oper()) {
 
             case EXTERNAL:
                 return external(exp, env, p, param);                
                 
             case CUSTOM:
-                return custom.eval(exp, env, p, args);
+                return custom.eval(exp, env, p, param);
 
             case KGRAM:
             case EXTERN:
             case PROCESS:
-                return (IDatatype) plugin.eval(exp, env, p, param);
+                return  plugin.eval(exp, env, p, param);
 
             case DEBUG:
                 if (el == null) {
@@ -905,8 +904,8 @@ public class ProxyImpl implements Proxy, ExprType {
         String name = proc.getMethod().getName();
         try {
             Object obj = proc.getProcessor();
-            if (obj instanceof ProxyImpl){
-                ProxyImpl pi = (ProxyImpl) obj;
+            if (obj instanceof ProxyInterpreter){
+                ProxyInterpreter pi = (ProxyInterpreter) obj;
                 pi.setEvaluator(eval);
                 pi.setPlugin(plugin);
                 pi.setProducer(p);
@@ -1393,7 +1392,7 @@ public class ProxyImpl implements Proxy, ExprType {
                     j++;
                     continue;
                 }
-                dt = (IDatatype) eval.eval(ee, env, p);
+                dt =  eval.eval(ee, env, p);
             } else {
                 dt =  lval[j];
             }
@@ -1685,7 +1684,7 @@ public class ProxyImpl implements Proxy, ExprType {
         // apply the aggregate on current group Mapping, 
         env.aggregate(walk, p, exp.getFilter());
 
-        IDatatype res = (IDatatype) walk.getResult(env, p);
+        IDatatype res =  walk.getResult(env, p);
         return res;
     }
     
@@ -1985,7 +1984,7 @@ public class ProxyImpl implements Proxy, ExprType {
         return dt == null || DatatypeMap.isResult(dt);
     }
     
-     IDatatype getResultValue(IDatatype dt){
+    public IDatatype getResultValue(IDatatype dt){
         return DatatypeMap.getResultValue(dt);
     }
      
@@ -1997,7 +1996,7 @@ public class ProxyImpl implements Proxy, ExprType {
     private IDatatype sequence(Expr exp, Environment env, Producer p) {
         IDatatype res = TRUE;
         for (Expr e : exp.getExpList()){
-            res = (IDatatype) eval.eval(e, env, p);
+            res =  eval.eval(e, env, p);
             if (isReturn(res)){
                 return res;
             }
@@ -2009,32 +2008,34 @@ public class ProxyImpl implements Proxy, ExprType {
       * loop: for (var in list) { exp }
       */
     IDatatype loop(Expr loop, Environment env, Producer p){
-        IDatatype list = (IDatatype) eval.eval(loop.getDefinition(), env, p);
+        IDatatype list =  eval.eval(loop.getDefinition(), env, p);
         if (list == null){ 
             return null;
         }
+        Expr var = loop.getVariable();
+        IDatatype res = null;
+        env.set(loop, var, TRUE);
+        
         if (list.isList()){
-            env.set(loop, loop.getVariable(), TRUE);
             for (IDatatype dt : list.getValues()){           
-                IDatatype res = step(loop, env, p, dt);
+                res = step(loop, env, p, dt);
                 if (isReturn(res)){
-                    env.unset(loop, loop.getVariable(), dt);            
+                    env.unset(loop, var, dt);            
                     return res;
                 }
             }
-            env.unset(loop, loop.getVariable(), TRUE);            
         }
-        else { 
-            env.set(loop, loop.getVariable(), TRUE);
+        else {            
             for (IDatatype dt : list) { 
-                IDatatype res = step(loop, env, p, dt);               
+                res = step(loop, env, p, dt);    
                 if (isReturn(res)){
-                    env.unset(loop, loop.getVariable(), dt);            
+                    env.unset(loop, var, dt); 
                     return res;
                 }
             }
-            env.unset(loop, loop.getVariable(), TRUE);            
         }
+        
+        env.unset(loop, var, TRUE); 
         return TRUE;
     }
     
@@ -2045,7 +2046,7 @@ public class ProxyImpl implements Proxy, ExprType {
     IDatatype step(Expr loop, Environment env, Producer p, IDatatype value){
         //env.set(loop, loop.getVariable(), value);
         env.bind(loop, loop.getVariable(), value);
-        return (IDatatype) eval.eval(loop.getBody(), env, p);
+        return eval.eval(loop.getBody(), env, p);
         //env.unset(loop, loop.getVariable());
     }
     
@@ -2370,7 +2371,7 @@ public class ProxyImpl implements Proxy, ExprType {
      * reduce(fun, list)
      */
     private IDatatype call(Expr function, Environment env, Producer p, IDatatype[] values) {
-       return (IDatatype) eval.eval(function.getFunction(), env, p, values, function);
+       return eval.eval(function.getFunction(), env, p, values, function);
     }
          
      public IDatatype or(IDatatype dt1, IDatatype dt2) {
@@ -2600,7 +2601,8 @@ public class ProxyImpl implements Proxy, ExprType {
     }
     
     public IDatatype get(IDatatype dt1, IDatatype dt2){
-        return gget(dt1, null, dt2);
+        if (dt1.isList()) return DatatypeMap.get(dt1, dt2);
+        return gget(dt1, null, dt2);       
     }
     
     /*

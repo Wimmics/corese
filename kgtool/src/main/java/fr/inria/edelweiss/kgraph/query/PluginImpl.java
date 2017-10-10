@@ -19,8 +19,10 @@ import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.corese.kgenv.eval.ProxyInterpreter;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.edelweiss.kgenv.api.ProxyPlugin;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
@@ -64,14 +66,16 @@ import org.apache.logging.log4j.Level;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
  */
-public class PluginImpl extends ProxyImpl {
+public class PluginImpl 
+        extends ProxyInterpreter //ProxyImpl 
+        implements ProxyPlugin
+{
 
     static public Logger logger = LogManager.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
-    static final String alpha = "abcdefghijklmnoprstuvwxyz";
-    static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   
     static int nbBufferedValue = 0;
     static final String EXT = ExpType.EXT;
     public static final String LISTEN = EXT+"listen";
@@ -171,12 +175,12 @@ public class PluginImpl extends ProxyImpl {
     }
 
     @Override
-    public Object function(Expr exp, Environment env, Producer p) {
+    public IDatatype function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {         
 
             case KG_GRAPH:
-                return getGraph(p);
+                return DatatypeMap.createObject(getGraph(p));
                 
             case SIM:
                 Graph g = getGraph(p);
@@ -201,13 +205,10 @@ public class PluginImpl extends ProxyImpl {
                 return pt.function(exp, env, p);
                 
         }
-
     }
-
+      
     @Override
-    public Object function(Expr exp, Environment env, Producer p, Object o) {
-        IDatatype dt = datatypeValue(o);
-
+    public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
         switch (exp.oper()) {
 
             case KGRAM:
@@ -226,14 +227,14 @@ public class PluginImpl extends ProxyImpl {
                     case KGRAM:
                         return kgram(env, g, dt);
 
-                    case NODE:
-                        return node(g, o);
+//                    case NODE:
+//                        return node(g, o);
 
 //                    case LOAD:
 //                        return load(g, o);
 
                     case DEPTH:
-                        return depth(g, o);
+                        return depth(g, dt);
                         
                      case SKOLEM:               
                         return g.skolem(dt);  
@@ -252,23 +253,23 @@ public class PluginImpl extends ProxyImpl {
             case ODD:
                 return odd(exp, dt);
 
-            case GET_OBJECT:
-                return getObject(o);
-
-            case SET_OBJECT:
-                return setObject(o, null);
+//            case GET_OBJECT:
+//                return DatatypeMap.createObject(getObject(o));
+//
+//            case SET_OBJECT:
+//                return setObject(o, null);
 
             case QNAME:
                 return qname(dt, env);
                 
             case PROVENANCE:
-                return provenance(exp, env, o);
+                return provenance(exp, env, dt);
                 
             case TIMESTAMP:
-                return timestamp(exp, env, o);
+                return timestamp(exp, env, dt);
                 
             case INDEX:
-               return index(p, exp, env, o); 
+               return index(p, exp, env, dt); 
           
             case ID:
                return id(exp, env, dt); 
@@ -295,8 +296,8 @@ public class PluginImpl extends ProxyImpl {
              case XT_EDGE:
                  return edge(exp, env, p, null, dt, null);
                  
-             case XT_TUNE:
-                 return tune(exp, env, p, dt);
+//             case XT_TUNE:
+//                 return tune(exp, env, p, dt);
                  
              case XT_ENTAILMENT:
                  return entailment(exp, env, p, dt);
@@ -310,9 +311,7 @@ public class PluginImpl extends ProxyImpl {
 
  
     @Override
-    public Object function(Expr exp, Environment env, Producer p, Object o1, Object o2) {
-        IDatatype dt1 = (IDatatype) o1,
-                dt2 = (IDatatype) o2;
+    public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1 , IDatatype dt2) {        
         switch (exp.oper()) {
 
             case GETP:
@@ -381,9 +380,7 @@ public class PluginImpl extends ProxyImpl {
     }
 
     @Override
-    public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
-       IDatatype[] param = (IDatatype[]) args;
-       
+    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {       
         switch (exp.oper()) {
             
             case SETP:
@@ -392,17 +389,10 @@ public class PluginImpl extends ProxyImpl {
                 IDatatype dt2 =  param[1];
                 IDatatype dt3 =  param[2];
                 return setProperty(dt1, dt2.intValue(), dt3);
-                                        
-            case IOTA:
-                return iota(param);
-                
-            case XT_ITERATE:
-                return iterate(param);
-                
+                                                                 
             case APPROXIMATE:
-                return pas.eval(exp, env, p, args);
-                
-                
+                return pas.eval(exp, env, p, param);
+                               
             case XT_EDGE:
                 return edge(exp, env, p, param[0], param[1], param[2]);
                 
@@ -420,101 +410,7 @@ public class PluginImpl extends ProxyImpl {
 
     }
     
-    public IDatatype iota(IDatatype... args){
-        IDatatype dt = args[0];
-        if (dt.isNumber()){
-            return iotaNumber(args);
-        }
-        return iotaString(args);
-    }
-    
-    IDatatype iotaNumber(IDatatype[] args){
-        int start = 1;
-        int end = 1;
-        
-        if (args.length > 1){
-            start = args[0].intValue();
-            end =   args[1].intValue();
-        }
-        else {
-            end =    args[0].intValue();
-        }
-        if (end < start){
-            return DatatypeMap.createList();
-        }
-        
-        int step = 1;
-        if (args.length == 3){
-            step = args[2].intValue();
-        }
-        int length = (end - start + step) / step;
-        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
-        
-        for (int i=0; i<length; i++){
-            ldt.add(DatatypeMap.newInstance(start));
-            start += step;
-        }
-        IDatatype dt = DatatypeMap.createList(ldt);
-        return dt;
-    }
-    
-    IDatatype iotaString(IDatatype[] args){
-        String fst =  args[0].stringValue();
-        String snd = args[1].stringValue();
-        int step = 1;
-        if (args.length == 3){
-            step =  args[2].intValue();
-        }               
-        String str = alpha;
-        int start = str.indexOf(fst);
-        int end   = str.indexOf(snd);
-        if (start == -1){
-            str = ALPHA;
-            start = str.indexOf(fst);
-            end   = str.indexOf(snd);
-        }
-        if (start == -1 || end == -1){
-            return null;
-        }
-       
-        
-        int length = (end - start + step) / step;
-        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>(length);
-        
-        for (int i=0; i<length; i++){
-            ldt.add(DatatypeMap.newInstance(str.substring(start, start+1)));
-            start += step;
-        }
-        IDatatype dt = DatatypeMap.createList(ldt);
-        return dt;
-    }
-    
-    
-      IDatatype iterate(IDatatype... args){
-        int start = 0;
-        int end = 1;
-        
-        if (args.length > 1){
-            start = args[0].intValue();
-            end =   args[1].intValue();
-        }
-        else {
-            end =   args[0].intValue();
-        }
-        
-        int step = 1;
-        
-        if (end < start){
-            step = -1;
-        }
-        
-        if (args.length == 3){
-            step = args[2].intValue();
-        }
-                      
-        IDatatype dt = DatatypeMap.newIterate(start, end, step);
-        return dt;
-    }
+   
     
     IDatatype similarity(Graph g, IDatatype dt1, IDatatype dt2) {
 
@@ -656,16 +552,16 @@ public class PluginImpl extends ProxyImpl {
         return mem.getEdge(exp.getExp(0).getLabel());
     }
     
-    private Object provenance(Expr exp, Environment env, Object o) {
+    private IDatatype provenance(Expr exp, Environment env, IDatatype dt) {
        Entity e = getEdge(exp, env);
        if (e == null){
            return  null;
        }
-        return e.getProvenance();
+        return DatatypeMap.createObject(e.getProvenance());
     }
     
     // index of rule provenance object
-     private Object id(Expr exp, Environment env, IDatatype dt) {
+     private IDatatype id(Expr exp, Environment env, IDatatype dt) {
        Object obj = dt.getObject();
        if (obj != null && obj instanceof Query){
            Query q = (Query) obj;
@@ -674,7 +570,7 @@ public class PluginImpl extends ProxyImpl {
        return null;
     }
 
-    private Object timestamp(Expr exp, Environment env, Object o) {
+    private IDatatype timestamp(Expr exp, Environment env, IDatatype dt) {
          Entity e = getEdge(exp, env);
         if (e == null){
             return  null;
@@ -684,23 +580,22 @@ public class PluginImpl extends ProxyImpl {
     }
     
     
-    public IDatatype index(Producer p, Expr exp, Environment env, Object o){
-        IDatatype dt = (IDatatype) o;
+    public IDatatype index(Producer p, Expr exp, Environment env, IDatatype dt){
         Node n = p.getNode(dt);
         return getValue(n.getIndex());
     }
     
-    private Object test(Producer p, Expr exp, Environment env, IDatatype dt) {
+    private IDatatype test(Producer p, Expr exp, Environment env, IDatatype dt) {
         IDatatype res = DatatypeMap.createObject("rule", env.getQuery());
         return res;
     }
 
-    private Object even(Expr exp, IDatatype dt) {
+    private IDatatype even(Expr exp, IDatatype dt) {
         boolean b = dt.intValue() % 2 == 0 ;
         return getValue(b);
     }
     
-    private Object odd(Expr exp, IDatatype dt) {
+    private IDatatype odd(Expr exp, IDatatype dt) {
         boolean b = dt.intValue() % 2 != 0 ;
         return getValue(b);        
     }
@@ -750,7 +645,7 @@ public class PluginImpl extends ProxyImpl {
        Loopable loop = new Loopable(){
            @Override
            public Iterable getLoop() {
-               Graph g = getGraph(p);             
+               Graph g = getGraph(p); 
                return g.getEdges(value(subj), value(pred), value(obj));
            }          
        };
@@ -782,23 +677,23 @@ public class PluginImpl extends ProxyImpl {
         return null;
     }
     
-    private Object access(Expr exp, Environment env, Producer p, IDatatype dt) {
+    private IDatatype access(Expr exp, Environment env, Producer p, IDatatype dt) {
         if (! (dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)){
             return null;
         }
         Entity ent = dt.getPointerObject().getEntity();        
         switch (exp.oper()){
             case XT_GRAPH:
-                return ent.getGraph().getValue();
+                return (IDatatype) ent.getGraph().getDatatypeValue();
                 
             case XT_SUBJECT:
-                return ent.getNode(0).getValue();
+                return (IDatatype) ent.getNode(0).getDatatypeValue();
                 
             case XT_OBJECT:
-                return ent.getNode(1).getValue();
+                return (IDatatype) ent.getNode(1).getDatatypeValue();
                 
             case XT_PROPERTY:
-                return ent.getEdge().getEdgeNode().getValue();
+                return (IDatatype) ent.getEdge().getEdgeNode().getDatatypeValue();
                 
             case XT_INDEX:
                 return getValue(ent.getEdge().getIndex());
@@ -809,7 +704,7 @@ public class PluginImpl extends ProxyImpl {
     /**
      * value of a property
      */
-    private Object value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred) {
+    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred) {
        Graph g = getGraph(p);
        Node ns = g.getNode(subj);
        Node np = g.getPropertyNode(pred.getLabel());
@@ -820,7 +715,7 @@ public class PluginImpl extends ProxyImpl {
        if (edge == null){
            return null;
        }
-       return edge.getNode(1).getValue();
+       return (IDatatype) edge.getNode(1).getDatatypeValue();
     }
     
     private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
@@ -929,19 +824,18 @@ public class PluginImpl extends ProxyImpl {
         return TRUE;
     }
 
-    Object getProperty(Object o, Integer n) {
+    IDatatype getProperty(Object o, Integer n) {
         PTable t = getPTable(n);
-        return t.get(o);
+        return DatatypeMap.createObject(t.get(o));
     }
 
-    Node node(Graph g, Object o) {
-        IDatatype dt = (IDatatype) o;
+    Node node(Graph g, IDatatype dt) {
         Node n = g.getNode(dt, false, false);
         return n;
     }
 
-    IDatatype depth(Graph g, Object o) {
-        Node n = node(g, o);
+    IDatatype depth(Graph g, IDatatype dt) {
+        Node n = node(g, dt);
         if (n == null){ 
             return null;
         }
@@ -952,6 +846,7 @@ public class PluginImpl extends ProxyImpl {
         return getValue(d);
     }
 
+    @Deprecated
     IDatatype load(Graph g, Object o) {
         if (! readWriteAuthorized){
             return FALSE;
@@ -985,11 +880,11 @@ public class PluginImpl extends ProxyImpl {
         return DatatypeMap.createObject(p);
     }
 
-    Node kgram(Environment env, Graph g, IDatatype dt) {
+    IDatatype kgram(Environment env, Graph g, IDatatype dt) {
         return kgram(env, g, dt.getLabel(), null);
     }
     
-    Node kgram(Environment env, Producer p, Graph g, IDatatype[] param) {
+    IDatatype kgram(Environment env, Producer p, Graph g, IDatatype[] param) {
         return kgram(env, g, param[0].getLabel(), createMapping(p, param, 1));
     }
     
@@ -1016,7 +911,7 @@ public class PluginImpl extends ProxyImpl {
     
     
       
-     Node kgram(Environment env, Graph g, String  query, Mapping m) {  
+     IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {

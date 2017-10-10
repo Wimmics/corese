@@ -76,7 +76,7 @@ public class ExtendGraph {
      * bind (kg:extension(eng:describe) as ?g)
      * graph ?g { }
      */
-     Object extension(Producer p, Expr exp, Environment env, IDatatype dt) {
+     IDatatype extension(Producer p, Expr exp, Environment env, IDatatype dt) {
          if (dt.getLabel().startsWith(KGEXTQUERY)){
              return eval(p, exp, env, dt);
          }
@@ -103,7 +103,7 @@ public class ExtendGraph {
      * 
      * Take a picture of the memory stack as a Graph
      */
-     Object stack(Producer p, Expr exp, Environment env){
+     IDatatype stack(Producer p, Expr exp, Environment env){
         Graph g = Graph.create();
         for (Entity e : env.getEdges()){
             if (e != null){
@@ -117,13 +117,13 @@ public class ExtendGraph {
     /**
      * SPIN graph of rules of a rule engine  
      */
-    Object engine(Producer p, Expr exp, Environment env) {
+    IDatatype engine(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
         Node q = g.getContext().getRuleEngineNode();
-        return q;
+        return (IDatatype) q.getDatatypeValue();
     }
     
-    Object visited(Producer p, Expr exp, Environment env) {
+    IDatatype visited(Producer p, Expr exp, Environment env) {
         TemplateVisitor vis = plugin.getVisitor(env, p);
         if (vis == null){
             return null;
@@ -132,13 +132,13 @@ public class ExtendGraph {
     }
 
    
-     Object record(Producer p, Expr exp, Environment env) {
+     IDatatype record(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
         Node q = g.getContext().getRecordNode();       
-        return q;
+        return (IDatatype) q.getDatatypeValue();
     }
    
-    Object query(Producer p, Expr exp, Environment env, IDatatype dt) {
+    IDatatype query(Producer p, Expr exp, Environment env, IDatatype dt) {
         Graph g = getGraph(p);
         Node q;
         if (dt == null){
@@ -150,7 +150,7 @@ public class ExtendGraph {
         if (q == null){
             q = create("query", env.getQuery(), IDatatype.QUERY);
         }
-        return q;
+        return (IDatatype) q.getDatatypeValue();
     }
 
     
@@ -190,7 +190,7 @@ public class ExtendGraph {
         return res;
     }
     
-     Object describe(Producer p, Expr exp, Environment env) {
+     IDatatype describe(Producer p, Expr exp, Environment env) {
         Graph g = (Graph) p.getGraph();
         IDatatype res = create("index", g.describe(), IDatatype.GRAPH);
         return res;
@@ -201,7 +201,7 @@ public class ExtendGraph {
      * obj has getObject() which is Graphable
      * store the graph has an extended named graph
      */
-     Object store(Producer p, Environment env, IDatatype name, IDatatype obj) {
+     IDatatype store(Producer p, Environment env, IDatatype name, IDatatype obj) {
         if (p.isProducer(obj)){
             Producer pp = p.getProducer(obj, env);
             Graph g = (Graph) p.getGraph();
@@ -218,10 +218,10 @@ public class ExtendGraph {
         return null;
     }
 
-    private Object eval(Producer p, Expr exp, Environment env, IDatatype dt) {
+    private IDatatype eval(Producer p, Expr exp, Environment env, IDatatype dt) {
        try {
             String q = load(dt.getLabel());
-            Node res = plugin.kgram(env, getGraph(p), q, null);
+            IDatatype res = plugin.kgram(env, getGraph(p), q, null);
             return res;
         } catch (IOException ex) {
             return null;

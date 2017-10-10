@@ -19,7 +19,10 @@ import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
+//import fr.inria.edelweiss.kgram.filter.Interpreter;
+import fr.inria.corese.kgenv.eval.Interpreter;
+import fr.inria.corese.kgenv.eval.ProxyInterpreter;
+//import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
@@ -297,11 +300,30 @@ public class QueryProcess extends QuerySolver {
     }
 
     public static Interpreter createInterpreter(Producer p, Matcher m) {
-        Interpreter eval = interpreter(p);
-        eval.getProxy().setPlugin(PluginImpl.create(m));
+        PluginImpl plugin = PluginImpl.create(m);
+        ProxyInterpreter  proxy = new ProxyInterpreter();
+        proxy.setPlugin(plugin);
+        Interpreter eval  = new Interpreter(proxy);
+	eval.setProducer(p);
         return eval;
     }
-
+    
+//    public static Interpreter createInterpreter(Producer p, Matcher m) {
+//        PluginImpl plugin = PluginImpl.create(m);
+//        ProxyImpl  proxy = new ProxyImpl();
+//        proxy.setPlugin(plugin);
+//        Interpreter eval  = new Interpreter(proxy);
+//	eval.setProducer(p);
+//        return eval;
+//    }    
+    
+    
+//    public static Interpreter createInterpreter(Producer p, Matcher m) {       
+//        Interpreter eval = interpreter(p);        
+//        eval.getProxy().setPlugin(PluginImpl.create(m));
+//        return eval;
+//    }
+    
     /**
 	 * *************************************************************
      *
@@ -315,6 +337,7 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public Mappings query(String squery) throws EngineException {
+        //System.out.println(squery);
         return doQuery(squery, null, null);
     }
 

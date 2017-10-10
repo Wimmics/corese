@@ -51,7 +51,7 @@ public class PluginTransform implements ExprType {
         plugin = p;
     }
 
-    public Object function(Expr exp, Environment env, Producer p) {
+    public IDatatype function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
             
@@ -99,7 +99,7 @@ public class PluginTransform implements ExprType {
         return null;
     }
 
-    public Object function(Expr exp, Environment env, Producer p, IDatatype dt) {
+    public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
 
         switch (exp.oper()) {
 
@@ -184,7 +184,7 @@ public class PluginTransform implements ExprType {
     }
     
     
-        public Object function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
             switch(exp.oper()){
                 
             case APPLY_TEMPLATES:
@@ -245,8 +245,7 @@ public class PluginTransform implements ExprType {
     
     
     
-    public Object eval(Expr exp, Environment env, Producer p, Object[] args) {
-        IDatatype[] param = (IDatatype[]) args;
+    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
         switch (exp.oper()){
             
            case STL_PROCESS:
@@ -608,10 +607,10 @@ public class PluginTransform implements ExprType {
      * Transformer what is default behavior set st:process() to it's default
      * behavior the default behavior is st:turtle
      */
-    public Object processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
+    public IDatatype processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
         Extension ext = env.getQuery().getExtension();
         if (ext != null && ext.isDefined(exp)) {
-            return plugin.getEvaluator().eval(exp, env, p, args, ext);
+            return (IDatatype) plugin.getEvaluator().eval(exp, env, p, args, ext);
         }
 
         Transformer pp = getTransformer(env, p);
@@ -620,8 +619,8 @@ public class PluginTransform implements ExprType {
         // overload current st:process() oper code to default behaviour oper code
         // future executions of this st:process() will directly execute target default behavior
         exp.setOper(oper);
-        Object res = plugin.function(exp, env, p,  args[0]);
-        return res;
+        IDatatype res = plugin.function(exp, env, p,  args[0]);
+        return  res;
 
     }
   
@@ -945,7 +944,7 @@ public class PluginTransform implements ExprType {
         t.load(dt.getLabel());
     }
 
-    private Object getFocusNode(IDatatype dt, Environment env) {
+    private IDatatype getFocusNode(IDatatype dt, Environment env) {
         String name = Transformer.IN;
         if (dt != null) {
             name = dt.getLabel();
@@ -954,7 +953,7 @@ public class PluginTransform implements ExprType {
         if (node == null) {
             return null;
         }
-        return node.getValue();
+        return (IDatatype) node.getValue();
     }
      
 }

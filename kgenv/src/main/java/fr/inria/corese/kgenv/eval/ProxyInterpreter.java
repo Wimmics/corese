@@ -1,5 +1,6 @@
 package fr.inria.corese.kgenv.eval;
 
+import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.edelweiss.kgenv.eval.*;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
@@ -51,7 +52,7 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class ProxyInterpreter implements Proxy, ExprType {
+public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
     private static Logger logger = LogManager.getLogger(ProxyInterpreter.class);
@@ -67,6 +68,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
     static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static int count = 0;
     ProxyPlugin plugin;
+    ProxyInterpreter castPlugin;
     Custom custom;
     SQLFun sql;
     Interpreter eval;
@@ -107,6 +109,9 @@ public class ProxyInterpreter implements Proxy, ExprType {
     public void setPlugin(ProxyPlugin p) {
         plugin = p;
         plugin.setEvaluator(eval);
+        if (plugin instanceof ProxyInterpreter){
+            castPlugin = (ProxyInterpreter) plugin;
+        }
     }
     
     @Override
@@ -115,10 +120,20 @@ public class ProxyInterpreter implements Proxy, ExprType {
     }
 
     @Override
-    public Proxy getPlugin() {
+    public ProxyPlugin getPlugin() {
         return plugin;
     }
-
+    
+    @Override
+    public ComputerProxy getComputerPlugin() {
+        return castPlugin;
+    }
+    
+    @Override
+    public ComputerProxy getComputerTransform() {
+        return castPlugin.getComputerTransform();
+    }
+    
     @Override
     public void setMode(int mode) {
         switch (mode) {
@@ -201,7 +216,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
                 // the extended datatype
                 Expr exp = eval.getDefine(env, ExprLabel.COMPARE, 2);
                 if (exp != null){
-                     IDatatype res = eval.eval(exp.getFunction(), env, p, array(dt1, dt2), exp);
+                     IDatatype res = eval.call(exp.getFunction(), env, p, array(dt1, dt2), exp);
                      if (res == null){
                          return 0;
                      }
@@ -226,7 +241,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
                 // the extended datatype
                 Expr ee = eval.getDefine(env, label(exp, d1), exp.arity()); 
                 if (ee != null){
-                   return   eval.eval(exp, env, p, array(dt1, dt2), ee);
+                   return   eval.call(exp, env, p, array(dt1, dt2), ee);
                 }                
             }
         }
@@ -588,13 +603,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
         if (env == null){
             return null;
         }       
-        Expr exp = eval.getDefineMethod(env, name, type, param);
-        if (exp == null) {
-            return null;
-        }
-        else {
-           return  eval.eval(exp.getFunction(), env, p, param, exp); 
-        }       
+        return eval.method(name, type, param, env, p);
     }
     
               
@@ -647,6 +656,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
         return function(exp, env, p, (IDatatype)o1, (IDatatype)o2);
     }
     
+    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         boolean b;
 
@@ -760,11 +770,9 @@ public class ProxyInterpreter implements Proxy, ExprType {
         return null;
     }
 
-    @Override
-    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
-        return eval(exp, env, p, (IDatatype[])args);
-    }
+   
     
+    @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
         switch (exp.oper()) {
 
@@ -1049,51 +1057,9 @@ public class ProxyInterpreter implements Proxy, ExprType {
         return !SPARQLCompliant || DatatypeMap.isStringLiteral(dt);
     }
     
-    public IDatatype encode_for_uri(IDatatype dt) {
-        String str = encodeForUri(dt.getLabel());
-        return DatatypeMap.newLiteral(str);
-    }
-
-    public String encodeForUri(String str) {
-
-        StringBuilder sb = new StringBuilder(2 * str.length());
-
-        for (int i = 0; i < str.length(); i++) {
-            
-            char c = str.charAt(i);
-
-            if (stdChar(c)) {
-                sb.append(c);
-            } else {
-                try {
-                    byte[] bytes = Character.toString(c).getBytes("UTF-8");
-
-                    for (byte b : bytes) {
-                        sb.append("%");
-
-                        char cc = (char) (b & 0xFF);
-
-                        String hexa = Integer.toHexString(cc).toUpperCase();
-
-                        if (hexa.length() == 1) {
-                            sb.append("0");
-                        }
-
-                        sb.append(hexa);
-                    }
-
-                } catch (UnsupportedEncodingException e) {
-                }
-            }
-        }
-
-        return sb.toString();
-    }
-
-    boolean stdChar(char c) {
-        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' 
-                || c == '-' || c == '.' || c == '_' || c == '~';
-    }
+    public IDatatype encode_for_uri(IDatatype dt) {       
+        return DatatypeMap.encode_for_uri(dt);
+    }  
     
     public IDatatype strstarts(IDatatype dt1, IDatatype dt2) {
         if (!compatible(dt1, dt2)) {
@@ -1338,7 +1304,8 @@ public class ProxyInterpreter implements Proxy, ExprType {
      * literals with same lang return literal@lang all strings return string
      * else return literal error if not literal or string
      */
-      IDatatype concat(Expr exp, Environment env, Producer p) {
+    @Override
+      public IDatatype concat(Expr exp, Environment env, Producer p) {
             return concat(exp, env, p, null);
       }
 
@@ -1393,8 +1360,10 @@ public class ProxyInterpreter implements Proxy, ExprType {
                     continue;
                 }
                 dt =  eval.eval(ee, env, p);
-            } else {
+            } else {               
                 dt =  lval[j];
+                 System.out.println("******************************************");
+                System.out.println(dt);
             }
             // Do not touch to j++ (see below int k = j;)             
             j++;
@@ -1647,7 +1616,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
         return DatatypeMap.getSecond(dt);
     }
 
-    IDatatype hash(Expr exp, IDatatype dt) {
+    public IDatatype hash(Expr exp, IDatatype dt) {
         String name = exp.getModality();
         String str = dt.getLabel();
         String res = new Hash(name).hash(str);
@@ -1676,6 +1645,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
     /**
      * sum(?x)
      */
+    @Deprecated
     @Override
     public IDatatype aggregate(Expr exp, Environment env, Producer p, Node qNode) {
         //exp = decode(exp, env, p);
@@ -2066,15 +2036,12 @@ public class ProxyInterpreter implements Proxy, ExprType {
       * TODO: when getLoop() it works with only one loop
       * @return 
       */
-    
-    
-    @Override
-    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] oparam, Expr function) {
-        IDatatype[] param = (IDatatype[]) oparam;
+    @Deprecated
+   IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
         switch (exp.oper()){
             case ExprType.REDUCE: 
                 if (param.length == 0) return null;
-                return reduce(exp, env, p, param[0], function);
+                return reduce(exp, env, p, param, function);
             case ExprType.MAPEVERY:
             case ExprType.MAPANY:
                 return anyevery(exp, env, p, param, function);
@@ -2085,7 +2052,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
     }
     
     
-    IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+    public IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
         boolean maplist     = exp.oper() == MAPLIST; 
         boolean mapmerge    = exp.oper() == MAPMERGE; 
         boolean mapappend   = exp.oper() == MAPAPPEND; 
@@ -2233,7 +2200,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
      * error follow SPARQ semantics of OR (any) AND (every)
      * @return 
      */
-    private IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+   IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
         boolean every = exp.oper() == MAPEVERY;       
         boolean any   = exp.oper() == MAPANY;       
         IDatatype list = null; 
@@ -2317,7 +2284,9 @@ public class ProxyInterpreter implements Proxy, ExprType {
      * reduce(kg:plus, ?list)   
      * @return 
      */
-    private IDatatype reduce(Expr exp, Environment env, Producer p, IDatatype dt, Expr function) {
+    IDatatype reduce(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+        if (param.length == 0) return null;
+        IDatatype dt = param[0];
         if (! dt.isList()) {
             return null;
         }
@@ -2371,7 +2340,7 @@ public class ProxyInterpreter implements Proxy, ExprType {
      * reduce(fun, list)
      */
     private IDatatype call(Expr function, Environment env, Producer p, IDatatype[] values) {
-       return eval.eval(function.getFunction(), env, p, values, function);
+       return eval.call(function.getFunction(), env, p, values, function);
     }
          
      public IDatatype or(IDatatype dt1, IDatatype dt2) {
@@ -2695,5 +2664,13 @@ public class ProxyInterpreter implements Proxy, ExprType {
         this.environment = environment;
     }
 
-   
+    @Override
+    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] param, Expr function) {
+        return eval(exp, env, p, (IDatatype[])param, function);
+    }
+    
+     @Override
+    public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
+        return eval(exp, env, p, (IDatatype[])args);
+    }
 }

@@ -141,6 +141,9 @@ public interface ExprType {
 	public static int START = 122; // ^
 	public static int IN 	= 123; 
 	public static int POWER = 124; 
+        public static int STAR  = 125;         
+        
+        
 	
         // fake for query
 	public static int TINKERPOP = 150; 

@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
@@ -35,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class PluginTransform implements ExprType {
+public class PluginTransform implements ComputerProxy, ExprType {
     static Logger logger = LogManager.getLogger(PluginTransform.class);
     private static final String FORMAT_LIB = "/webapp/data/format/";
 
@@ -51,6 +52,7 @@ public class PluginTransform implements ExprType {
         plugin = p;
     }
 
+    @Override
     public IDatatype function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
@@ -99,6 +101,7 @@ public class PluginTransform implements ExprType {
         return null;
     }
 
+    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
 
         switch (exp.oper()) {
@@ -184,6 +187,7 @@ public class PluginTransform implements ExprType {
     }
     
     
+    @Override
         public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
             switch(exp.oper()){
                 
@@ -245,6 +249,7 @@ public class PluginTransform implements ExprType {
     
     
     
+    @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
         switch (exp.oper()){
             
@@ -954,6 +959,26 @@ public class PluginTransform implements ExprType {
             return null;
         }
         return (IDatatype) node.getValue();
+    }
+
+    @Override
+    public ComputerProxy getComputerPlugin() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ComputerProxy getComputerTransform() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype concat(Expr exp, Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype hash(Expr exp, IDatatype dt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
      
 }

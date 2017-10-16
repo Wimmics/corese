@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.edelweiss.kgraph.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 
@@ -146,6 +147,11 @@ public class PluginImpl
         if (env.getQuery().getGlobalQuery().isTest()){
             test(p, env);
         }
+    }
+    
+    @Override
+    public ComputerProxy getComputerTransform(){
+        return pt;
     }
     
     /**

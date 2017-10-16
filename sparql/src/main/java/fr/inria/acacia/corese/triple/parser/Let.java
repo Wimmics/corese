@@ -1,5 +1,11 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.Computer;
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
+
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
@@ -55,6 +61,23 @@ public class Let extends Statement {
         sb.append(NL);
         sb.append("}");
         return sb;
+    }
+     
+     
+     @Override
+    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+        IDatatype val = getDefinition().eval(eval, b, env, p);
+        if (val == null) {
+            return null;
+        }
+        if (val == DatatypeMap.UNBOUND){
+            val = null;
+        }
+        Variable var = getVariable();
+        b.set(this, var, val);
+        IDatatype res = getBody().eval(eval, b, env, p);
+        env.unset(this, var, val);
+        return res;
     }
     
 }

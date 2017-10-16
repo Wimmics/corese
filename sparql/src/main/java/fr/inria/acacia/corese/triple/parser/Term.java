@@ -5,32 +5,16 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.List;
-
-
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.corese.compiler.java.JavaCompiler;
-import fr.inria.corese.triple.function.Funcall;
-import fr.inria.corese.triple.function.Get;
-import fr.inria.corese.triple.function.IfThenElseTerm;
-import fr.inria.corese.triple.function.Iterate;
-import fr.inria.corese.triple.function.Sequence;
-import fr.inria.corese.triple.function.Swap;
-import fr.inria.corese.triple.term.AndTerm;
-import fr.inria.corese.triple.term.Binding;
-import fr.inria.corese.triple.term.Div;
-import fr.inria.corese.triple.term.Equal;
-import fr.inria.corese.triple.term.Greater;
-import fr.inria.corese.triple.term.GreaterEqual;
-import fr.inria.corese.triple.term.In;
-import fr.inria.corese.triple.term.Less;
-import fr.inria.corese.triple.term.LessEqual;
-import fr.inria.corese.triple.term.MinusTerm;
-import fr.inria.corese.triple.term.Mult;
-import fr.inria.corese.triple.term.NotTerm;
-import fr.inria.corese.triple.term.NotEqual;
-import fr.inria.corese.triple.term.OrTerm;
-import fr.inria.corese.triple.term.Plus;
+import fr.inria.corese.triple.function.term.*;
+import fr.inria.corese.triple.function.core.*;
+import fr.inria.corese.triple.function.script.*;
+import fr.inria.corese.triple.function.extension.*;
+import fr.inria.corese.triple.function.proxy.GraphFunction;
+import fr.inria.corese.triple.function.proxy.TemplateFunction;
+import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -143,19 +127,19 @@ public class Term extends Expression {
                 case ExprType.IN:   return new In(name, exp1, exp2);
                 case ExprType.OR:   return new OrTerm(name, exp1, exp2);
                 case ExprType.AND:  return new AndTerm(name, exp1, exp2);
-                //case ExprType.NOT:  return new Not(name, exp1);
                     
-                case ExprType.EQ:   return new Equal(name, exp1, exp2);
-                case ExprType.NEQ:  return new NotEqual(name, exp1, exp2);
-                case ExprType.LT:   return new Less(name, exp1, exp2);
-                case ExprType.LE:   return new LessEqual(name, exp1, exp2);
-                case ExprType.GE:   return new GreaterEqual(name, exp1, exp2);
-                case ExprType.GT:   return new Greater(name, exp1, exp2);
+                case ExprType.EQ:   
+                case ExprType.NEQ:  
+                case ExprType.LT:   
+                case ExprType.LE:   
+                case ExprType.GE:   
+                case ExprType.GT:   return new Compare(name, exp1, exp2);
                 
-                case ExprType.PLUS: return new Plus(name, exp1, exp2);
-                case ExprType.MULT: return new Mult(name, exp1, exp2);
-                case ExprType.MINUS:return new MinusTerm(name, exp1, exp2);
-                case ExprType.DIV:  return new Div(name, exp1, exp2);
+                case ExprType.POWER: 
+                case ExprType.PLUS: 
+                case ExprType.MULT: 
+                case ExprType.MINUS:
+                case ExprType.DIV:  return new Operation(name, exp1, exp2);
 
                 default: return new Term(name, exp1, exp2);
             }
@@ -172,21 +156,173 @@ public class Term extends Expression {
 		return new Term(name);
 	}
 	
-	public static Term function(String name){
+        public static Term function(String name, String longName){
 		//Term fun = new Term(name); 
-                Term fun = newFunction(name);
+                Term fun = newFunction(name, longName);
 		fun.isFunction = true;
 		return fun;
 	}
         
-        static Term newFunction(String name){
-            switch (Processor.getOper(nsm.toNamespace(name))){
+	public static Term function(String name){
+		return function(name, nsm.toNamespace(name));
+	}
+        
+        static Term newFunction(String name, String longName){
+            switch (Processor.getOper(longName)){
+                // term as function: rq:plus(exp, exp)
+                case ExprType.IN:           return new In(name);
+                case ExprType.OR:           return new OrTerm(name);
+                case ExprType.AND:          return new AndTerm(name);
+                    
+                case ExprType.EQ:   
+                case ExprType.NEQ:  
+                case ExprType.LT:   
+                case ExprType.LE:   
+                case ExprType.GE:   
+                case ExprType.GT:           return new Compare(name);
+                
+                case ExprType.POWER: 
+                case ExprType.PLUS: 
+                case ExprType.MULT: 
+                case ExprType.MINUS:
+                case ExprType.DIV:          return new Operation(name);
+                
                 case ExprType.IF:           return new IfThenElseTerm(name); 
-                case ExprType.FUNCALL:      return new Funcall(name); 
-                case ExprType.SEQUENCE:     return new Sequence(name); 
-                case ExprType.XT_GET:       return new Get(name); 
+                case ExprType.BOUND:        return new Bound(name); 
+                case ExprType.COALESCE:     return new Coalesce(name); 
+                case ExprType.EXIST:        return new ExistFunction(name);
+                    
+                case ExprType.HASH:    
+                case ExprType.STR:
+                case ExprType.URI:    
+                case ExprType.STRLEN:
+                case ExprType.UCASE: 
+                case ExprType.LCASE:    
+                case ExprType.ENCODE:    
+                case ExprType.XSDSTRING: 
+                case ExprType.LANG:
+                case ExprType.CAST:    
+                case ExprType.CEILING:
+                case ExprType.FLOOR:
+                case ExprType.ABS:
+                case ExprType.ROUND:
+                case ExprType.DATATYPE:    
+                case ExprType.ISLITERAL:    
+                case ExprType.ISURI:        
+                case ExprType.ISBLANK: 
+                case ExprType.ISNUMERIC:    
+                case ExprType.ISWELLFORMED: return new UnaryFunction(name); 
+                    
+                case ExprType.CONCAT:       return new Concat(name); 
+                case ExprType.CONTAINS:
+                case ExprType.STRBEFORE:
+                case ExprType.STRAFTER:
+                case ExprType.STARTS:       
+                case ExprType.ENDS:         return new StrPredicate(name); 
+                case ExprType.REGEX:
+                case ExprType.SUBSTR: 
+                case ExprType.STRREPLACE:    
+                    return new BiTriFunction(name);
+                case ExprType.STRLANG:     
+                case ExprType.STRDT: 
+                case ExprType.SAMETERM:    
+                case ExprType.LANGMATCH:    return new BinaryFunction(name);
+                case ExprType.FUUID:
+                case ExprType.STRUUID:      return new UUIDFunction(name);  
+                case ExprType.NOW:
+                case ExprType.RANDOM:       return new ZeroaryFunction(name); 
+                    
+                case ExprType.YEAR:   
+                case ExprType.MONTH:   
+                case ExprType.DAY:   
+                case ExprType.HOURS:   
+                case ExprType.MINUTES:   
+                case ExprType.SECONDS:      
+                case ExprType.TIMEZONE:  
+                case ExprType.TZ:   
+                    return new DateFunction(name); 
+                
+                case ExprType.COUNT:
+                case ExprType.MIN:
+                case ExprType.MAX:
+                case ExprType.SUM:
+                case ExprType.AVG:
+                case ExprType.SAMPLE:
+                case ExprType.GROUPCONCAT:
+                case ExprType.STL_GROUPCONCAT:
+                case ExprType.AGGAND:
+                case ExprType.AGGLIST:
+                case ExprType.STL_AGGREGATE:
+                case ExprType.AGGREGATE:    return new Aggregate(name);                       
+                case ExprType.UNDEF:        return new Extension(name); 
+                case ExprType.XT_METHOD:    return new MethodCall(name);
+                case ExprType.XT_METHOD_TYPE: return new MethodTypeCall(name);
+                case ExprType.APPLY:        //return new Apply(name); 
+                case ExprType.FUNCALL:      return new Funcall(name);
+                case ExprType.REDUCE:       return new Reduce(name); 
+                case ExprType.SELF:         return new Self(name); 
+                case ExprType.RETURN:       return new Return(name); 
+                case ExprType.ERROR:        return new ErrorFunction(name);
+                
+                case ExprType.BNODE:
+                case ExprType.PATHNODE:     return new BlankNode(name); 
+                   
+                case ExprType.MAPANY:
+                case ExprType.MAPEVERY:     return new MapAnyEvery(name); 
+                case ExprType.MAP:
+                case ExprType.MAPLIST:
+                case ExprType.MAPMERGE:
+                case ExprType.MAPAPPEND:
+                case ExprType.MAPFIND:
+                case ExprType.MAPFINDLIST:  return new MapFunction(name); 
+                    
+                case ExprType.SEQUENCE:     return new Sequence(name);
+                case ExprType.SET:          return new SetFunction(name);
+                
+                case ExprType.LENGTH:       return new ZeroAry(name);
+                               
+                case ExprType.XT_GEN_GET:   return new GetGen(name); 
+                case ExprType.XT_GET:       return new Get(name);     
+                case ExprType.XT_FIRST:          
+                case ExprType.XT_REST:      return new ListUnary(name);     
+                case ExprType.LIST:         return new ListTerm(name);     
+                case ExprType.XT_COUNT:     return new Size(name);                                
+                case ExprType.XT_CONS:            
+                case ExprType.XT_MEMBER:    return new ListBinary(name); 
+                case ExprType.XT_SET:
+                case ExprType.XT_ADD:
+                case ExprType.XT_MERGE:    
+                case ExprType.IOTA:         return new ListNary(name); 
                 case ExprType.XT_SWAP:      return new Swap(name); 
                 case ExprType.XT_ITERATE:   return new Iterate(name); 
+                    
+                case ExprType.STL_CONCAT:    return new Concat(name);    
+                case ExprType.APPLY_TEMPLATES_WITH_GRAPH:                       
+                case ExprType.APPLY_TEMPLATES_WITH_ALL:                       
+                case ExprType.APPLY_TEMPLATES_WITH:
+                case ExprType.APPLY_TEMPLATES:
+                case ExprType.APPLY_TEMPLATES_ALL:    
+                case ExprType.CALL_TEMPLATE: 
+                case ExprType.CALL_TEMPLATE_WITH:     
+                case ExprType.STL_GET:
+                case ExprType.STL_SET:
+                case ExprType.STL_CGET:
+                case ExprType.STL_CSET:
+                case ExprType.STL_PROCESS:
+                case ExprType.STL_FORMAT:                    
+                case ExprType.TURTLE:                    
+                case ExprType.INDENT:                    
+                case ExprType.STL_NL:                    
+                case ExprType.STL_VISIT:                    
+                case ExprType.STL_VISITED: 
+                case ExprType.STL_NUMBER:    
+                    return new TemplateFunction(name); 
+                    
+                case ExprType.DEPTH:
+                case ExprType.XT_EDGE:
+                case ExprType.SIM:
+                    return new GraphFunction(name);
+                    
                 default: return new Term(name);
             }
         }
@@ -1035,29 +1171,29 @@ public class Term extends Expression {
 		return this;
 	}
 	
-	public Term differ(){
-		if (args.size() >= 2){
-			Term res =  diff(args, 0);
-			return res;
-		}
-		else return this;
-	}
-	
-	/**
-	 * generate ?x != ?y ?x != ?z ?y != ?z 
-	 * from (?x ?y ?z)
-	 */
-	public Term diff(ArrayList<Expression> vars, int start){
-		Term res = null;
-		for (int i=start; i<vars.size(); i++){
-			for (int j=i+1; j<vars.size(); j++){
-				Term tt = 	new Term(Keyword.SNEQ, getArg(i), getArg(j));
-				if (res == null) res = tt;
-				else res = new Term(Keyword.SEAND, res, tt);
-			}
-		}
-		return res;
-	}
+//	public Term differ(){
+//		if (args.size() >= 2){
+//			Term res =  diff(args, 0);
+//			return res;
+//		}
+//		else return this;
+//	}
+//	
+//	/**
+//	 * generate ?x != ?y ?x != ?z ?y != ?z 
+//	 * from (?x ?y ?z)
+//	 */
+//	public Term diff(ArrayList<Expression> vars, int start){
+//		Term res = null;
+//		for (int i=start; i<vars.size(); i++){
+//			for (int j=i+1; j<vars.size(); j++){
+//				Term tt = 	new Term(Keyword.SNEQ, getArg(i), getArg(j));
+//				if (res == null) res = tt;
+//				else res = new Term(Keyword.SEAND, res, tt);
+//			}
+//		}
+//		return res;
+//	}
 	
 	
 	/**
@@ -1338,8 +1474,8 @@ public class Term extends Expression {
     }
     
     @Override
-     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
-        return eval.eval((Expr)this, env, p);
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){       
+        return eval.function((Expr)this, env, p);
     }
         
     

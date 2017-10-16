@@ -1060,9 +1060,9 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public Expression createUnaryExpression(String oper, Expression expression) {
         checkBlank(expression);
         if (oper.equals(SENOT)) {
-            expression = new Term(oper, expression);
+            expression = Term.negation(expression);
         } else if (oper.equals("-")) {
-            expression = new Term(oper,
+            expression = Term.create(oper,
                     Constant.create("0", RDFS.qxsdInteger), expression);
         } // else : oper.equals("+") => don't do anything
         return expression;
@@ -1148,7 +1148,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
         
     Function defFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
-        Term fun = createFunction(name, el);
+        Term fun = createFunction(name, el);      
         Function def = new Function(fun, exp);
         annotate(def, annot);
         if (el.getTable() != null){
@@ -1588,9 +1588,10 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     
     
     public Term createFunction(String name) {
-        Term term = Term.function(name);
+        String longName = getNSM().toNamespace(name);
+        Term term = Term.function(name, longName);
         // no toNamespaceB()
-        term.setLongName(getNSM().toNamespace(name));
+        term.setLongName(longName);
         term.setAST(this);
         return term;
     }

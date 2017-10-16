@@ -62,7 +62,7 @@ public class ForLoop extends Statement {
     
     
     @Override
-    public IDatatype eval(Computer eval, fr.inria.corese.triple.term.Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
         IDatatype list = getDefinition().eval(eval, b, env, p);
         if (list == null) {
             return null;

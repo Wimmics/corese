@@ -1,9 +1,12 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,11 @@ public class Function extends Statement {
             return dt;
         }
         return getFunction().getCName().getDatatypeValue();
+    }
+    
+    @Override
+    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+        return getDatatypeValue();
     }
 
     @Override

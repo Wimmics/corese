@@ -573,6 +573,10 @@ public class Processor {
 		defoper("-", 	ExprType.MINUS);
 		defoper("*", 	ExprType.MULT);
 		defoper("/", 	ExprType.DIV);
+		defoper("&&", 	ExprType.AND);
+		defoper("||", 	ExprType.OR);
+		defoper("!", 	ExprType.NOT);
+		defoper(Term.STAR, ExprType.STAR);
 				
 		defoper(BOUND, ExprType.BOUND);
 		defoper(COUNT, 	ExprType.COUNT);
@@ -805,6 +809,7 @@ public class Processor {
 		defoper(PSIMILAR, ExprType.PSIM);
 		defoper(ANCESTOR, ExprType.ANCESTOR);
 		defoper(DEPTH,   ExprType.DEPTH);
+		defoper(EXT+"depth",   ExprType.DEPTH);
 		defoper(GRAPH,   ExprType.KG_GRAPH);
 		defoper(NODE,    ExprType.NODE);
 		defoper(GET_OBJECT,     ExprType.GET_OBJECT);
@@ -958,27 +963,24 @@ public class Processor {
                 return getOper(term.getLabel());
         }
                 
-        public static int getOper(String name){
-		Integer n = table.get(name.toLowerCase());
-		if (n == null){
-			if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD) || 
-				name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)){
-				n = ExprType.CAST;
-			}
-                        else if (name.startsWith(CUSTOM)){
-				n = ExprType.CUSTOM;
-			}
-			else if (name.startsWith(KeywordPP.CORESE_PREFIX)){
-				n = ExprType.EXTERNAL;
-			}
-			else {
-				n = ExprType.UNDEF;
-			}
-		}
-		// draft: record occurrences during test case
-		//toccur.put(n, name);
-		return n;
-	}
+       public static int getOper(String name) {
+        Integer n = table.get(name.toLowerCase());
+        if (n == null) {
+            if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD)
+                    || name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)) {
+                n = ExprType.CAST;
+            } else if (name.startsWith(CUSTOM)) {
+                n = ExprType.CUSTOM;
+            } else if (name.startsWith(KeywordPP.CORESE_PREFIX)) {
+                n = ExprType.EXTERNAL;
+            } else {
+                n = ExprType.UNDEF;
+            }
+        }
+        // draft: record occurrences during test case
+        //toccur.put(n, name);
+        return n;
+    }
         	
 	public static void finish(){
 		for (Integer n : table.values()){

@@ -19,13 +19,6 @@ public interface Computer {
     
     IDatatype method(String name, IDatatype type, IDatatype[] args, Environment env, Producer p);    
     IDatatype function(Expr exp, Environment env, Producer p);
-    IDatatype funcall(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p);
-    IDatatype apply(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p);
-    IDatatype reduce(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p);
-    IDatatype map(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p);
-    IDatatype mapanyevery(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p);
-    
-    IDatatype call(Expr exp, Environment env, Producer p, IDatatype[] values, Expr function);   
     IDatatype aggregate(Expr exp, Environment env, Producer p);
     IDatatype exist(Expr exp, Environment env, Producer p);
         

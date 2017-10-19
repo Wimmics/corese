@@ -39,7 +39,10 @@ public class TermEval extends Term {
     public TermEval(String name){
         super(name);
     }
-       
+    
+    public TermEval(){
+    } 
+    
     public boolean isTrue(IDatatype dt) {
         try {
             return dt.isTrue();
@@ -101,6 +104,19 @@ public class TermEval extends Term {
         int i = 0;
         for (int j = start; j < arity(); j++) {
             args[i] = getArg(j).eval(eval, b, env, p);
+            if (args[i] == null) {                
+                return null;
+            }
+            i++;
+        }
+        return args;
+    }
+    
+     public IDatatype[] evalArguments(Computer eval, Environment env, Producer p, IDatatype[] param, int size, int start) {
+        IDatatype[] args = new IDatatype[size];
+        int i = 0;
+        for (int j = start; j < arity(); j++) {
+            args[i] = getArg(j).eval(eval, env, p, param);
             if (args[i] == null) {                
                 return null;
             }

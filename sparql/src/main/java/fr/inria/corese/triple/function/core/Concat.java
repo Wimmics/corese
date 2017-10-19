@@ -32,16 +32,6 @@ public class Concat extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-       //IDatatype dt = eval2(eval, b, env, p);      
-       IDatatype dt = eval.getComputerProxy().concat(this, env, p);  
-//         if (tmp == null){
-//            System.out.println("********************");
-//            System.out.println(this);
-//            System.out.println(dt);
-//        }
-        return dt;
-    }
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
         String str = "";
         String lang = null;
 
@@ -63,6 +53,7 @@ public class Concat extends TermEval {
         IDatatype dt = null;
         int i = 0;
         List<Expression> argList = getArgs();
+        boolean isCompliant = eval.isCompliant();
         for (int j = 0; j < ((length > 0) ? length : argList.size());) {
 
             Expression ee = argList.get(j);
@@ -115,10 +106,7 @@ public class Concat extends TermEval {
             }
             i++;
 
-            if (!isStringLiteral(dt)) {               
-                    System.out.println(ee);
-                    System.out.println("strliteral: " + dt + " " + dt.getClass().getName());
-                    System.out.println(env.getQuery().getAST());
+            if (isCompliant && !isStringLiteral(dt)) {                                   
                    return null;             
             }
 

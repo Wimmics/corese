@@ -40,4 +40,26 @@ public class Operation extends TermEval {
         return null;
     }
     
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param) {
+        IDatatype dt1 = getArg(0).eval(eval, env, p, param);
+        IDatatype dt2 = getArg(1).eval(eval, env, p, param);
+        if (dt1 == null || dt2 == null) {
+            return null;
+        }
+        switch (oper()) {
+            case ExprType.PLUS:
+                return dt1.plus(dt2);
+            case ExprType.MULT:
+                return dt1.mult(dt2);
+            case ExprType.DIV:
+                return dt1.div(dt2);
+            case ExprType.MINUS:
+                return dt1.minus(dt2);
+            case ExprType.POWER:
+                return DatatypeMap.newInstance(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
+        }
+        return null;
+    }
+
 }

@@ -35,4 +35,17 @@ public class IfThenElseTerm extends TermEval {
             return getArg(2).eval(eval, b, env, p);
         }
     }
+    
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param) {
+        IDatatype test = getArg(0).eval(eval, env, p, param);
+        if (test == null) {
+            return null;
+        }
+        if (isTrue(test)) { 
+            return getArg(1).eval(eval, env, p, param);
+        } else {
+            return getArg(2).eval(eval, env, p, param);
+        }
+    }
 }

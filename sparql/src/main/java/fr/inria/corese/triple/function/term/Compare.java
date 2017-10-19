@@ -38,5 +38,29 @@ public class Compare extends TermEval {
             case ExprType.GE: return dt1.ge(dt2);
         }
         return null;
-    } 
+    }
+    
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param) {
+        IDatatype dt1 = getArg(0).eval(eval, env, p, param);
+        IDatatype dt2 = getArg(1).eval(eval, env, p, param);
+        if (dt1 == null || dt2 == null) {
+            return null;
+        }
+        switch (oper()) {
+            case ExprType.EQ:
+                return dt1.eq(dt2);
+            case ExprType.NEQ:
+                return dt1.neq(dt2);
+            case ExprType.LE:
+                return dt1.le(dt2);
+            case ExprType.LT:
+                return dt1.lt(dt2);
+            case ExprType.GT:
+                return dt1.gt(dt2);
+            case ExprType.GE:
+                return dt1.ge(dt2);
+        }
+        return null;
+    }
 }

@@ -80,4 +80,26 @@ public class Extension extends TermEval {
         }
         return DatatypeMap.getResultValue(dt);
     }
+    
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] mem) {
+        if (function == null) {
+            function = (Function) eval.getDefine(this, env);
+            if (function == null) {
+                logger.error("Undefined function: " + this);
+                return null;
+            } else {
+                isUnary = arity() == 1 && !function.isSystem();
+                if (isUnary) {
+                    exp = getArg(0);
+                    var = function.getFunction().getExp(0);
+                    body = function.getBody();
+                }
+            }
+        }
+        
+        IDatatype[] param = evalArguments(eval, env, p, mem, function.getNbVariable(), 0);
+        return function.getBody().eval(eval, env, p, param);
+    }
+    
 }

@@ -43,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class Interpreter implements Computer, Evaluator, ExprType {
-    public static boolean testNewEval = !true;
+    public static boolean testNewEval = true;
     private static Logger logger = LogManager.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
@@ -218,7 +218,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p) {
-        if (testNewEval) return ((Expression)exp).eval(this, (Binding)env.getBind(), env, p);
+        if (testNewEval) {
+            return ((Expression)exp).eval(this, (Binding)env.getBind(), env, p);
+            //return ((Expression)exp).eval(this,  env, p);
+        }
         return eval2(exp, env, p);
     }
        
@@ -608,14 +611,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Node gNode = env.getGraphNode();
         Memory memory = null;
 
+        // push env Bind stack into new memory
         if (env instanceof Memory) {
             memory = kgram.getMemory((Memory) env, pat);
         } else if (env instanceof Mapping) {
-            memory = kgram.getMemory((Mapping) env, pat);
+            memory = kgram.getMemory((Mapping) env, pat);           
         } else {
             return null;
         }
-
+               
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);
         Mappings map = null;
@@ -820,7 +824,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
    
     
     // new eval
-    @Override
+    
     public IDatatype map(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p) {
         Expr function = getDefineGenerate(exp, env, name.stringValue(), args.length);
         if (function == null) {
@@ -830,7 +834,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
      // new eval
-    @Override
+    
     public IDatatype mapanyevery(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p) {
         Expr function = getDefineGenerate(exp, env, name.stringValue(), args.length);
         if (function == null) {
@@ -840,7 +844,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
       // new eval
-    @Override
+    
     public IDatatype reduce(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p) {
         Expr function = getDefineGenerate(exp, env, name.stringValue(), 2);
         if (function == null) {
@@ -850,7 +854,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
      // new eval
-    @Override
+    
     public IDatatype funcall(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p) {
         Expr function = getDefineGenerate(exp, env, name.stringValue(), args.length);
         if (function == null) {
@@ -861,7 +865,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     
     
     // new eval
-    @Override
+    
     public IDatatype apply(IDatatype name, IDatatype[] args, Expr exp, Environment env, Producer p) {
         if (args.length == 0) return null;
         IDatatype dt = args[0];
@@ -1004,7 +1008,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     /**
      * Extension function call
      */
-    @Override
+    
     public IDatatype call(Expr exp, Environment env, Producer p, IDatatype[] values, Expr function) {
         Expr fun = function.getFunction();
         env.set(function, fun.getExpList(),  values);

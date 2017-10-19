@@ -66,12 +66,12 @@ public class Walker extends Interpreter {
     boolean test = false;
     ArrayList<IDatatype> list;
 
-    public Walker(Expr exp, Node qNode, Proxy p, Environment env, Producer prod) {
-        super(p);
+    public Walker(Expr exp, Node qNode, Proxy proxy, Environment env, Producer p) {
+        super(proxy);
 
         Query q = env.getQuery();
        
-        eval = p.getEvaluator();
+        eval = proxy.getEvaluator();
         this.qNode = qNode;
         
         switch (exp.oper()){
@@ -96,9 +96,9 @@ public class Walker extends Interpreter {
 
         switch (exp.oper()){
             case STL_AGGREGATE:
-                format(getDefinition().getBody(), env, prod); break;
+                format(getDefinition().getBody(), env, p); break;
             default: 
-                format(getExp(), env, prod);
+                format(getExp(), env, p);
         }
            
         int size = env.getMappings().size();        
@@ -246,6 +246,9 @@ public class Walker extends Interpreter {
         return true;
     }
     
+    /**
+     * function st:aggregate(?x) { st:agg_and(?x) }
+     */
     @Override
     public IDatatype eval(Expr function, Environment env, Producer p, IDatatype dt) {
         Expr var = function.getFunction().getExp(0);
@@ -254,14 +257,7 @@ public class Walker extends Interpreter {
         env.unset(function, var, dt);
         return  dt;
     }
-    
-    void eval2(Expr function, Environment env, Producer p, IDatatype dt) {
-        Expr var = function.getFunction().getExp(0);
-        env.set(function, var, dt);
-        eval(function.getBody().getFilter(), env, p);
-        env.unset(function, var, dt);
-    }
-    
+       
     /**
      * map is a Mapping
      */
@@ -294,8 +290,7 @@ public class Walker extends Interpreter {
                     }
                     return null;
                 }  
-                break;
-                
+                break;                
         }
 
 
@@ -312,10 +307,6 @@ public class Walker extends Interpreter {
                 
                 case STL_AGGREGATE:
                     eval(getDefinition(), env, p, dt);
-//                    Expr var = getDefinition().getFunction().getExp(0);
-//                    env.set(exp, var, dt);
-//                    eval(getDefinition().getBody().getFilter(), env, p);
-//                    env.unset(exp, var);
                     break;
 
                 case MIN:

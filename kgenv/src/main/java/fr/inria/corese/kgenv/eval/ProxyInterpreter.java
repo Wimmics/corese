@@ -2,7 +2,6 @@ package fr.inria.corese.kgenv.eval;
 
 import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.edelweiss.kgenv.eval.*;
-import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;

@@ -2045,7 +2045,7 @@ public class TestQuery1 {
             ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
 
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(5, g.size());
     }
@@ -2061,7 +2061,7 @@ public class TestQuery1 {
             ld.parseDir(data + "junit/data");                      
             ld.parseDir(data + "junit/data", "http://example.org/");                      
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(4, g.size());
     }
@@ -5000,7 +5000,7 @@ public class TestQuery1 {
 
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
             assertEquals("result", true, ex);
         }
 
@@ -5077,7 +5077,7 @@ public class TestQuery1 {
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -5106,7 +5106,7 @@ public class TestQuery1 {
             //System.out.println(map);
             assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }

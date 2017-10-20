@@ -57,6 +57,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 
 
 //import static junit.TestUnit.root;
@@ -161,6 +162,161 @@ public class TestQuery1 {
         assertEquals(g.size(), gg.size());
 
     }
+    
+    @Test
+     public void testBindIndex7() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select "
+                + "(us:test(3, 3) as ?t) where {}"
+                
+                + "function us:test(?n, ?n)  {xt:display('here') ;"
+                + "let (?n = ?n) {"
+                + "for (?x in (xt:iota(?n))) {"
+                + "if (?x > 1) {"
+                + "return (?x)}"
+                + "} "
+                + "}"
+                + "}"
+                
+               ;
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(0, map.size());
+     }
+     
+    
+    @Test
+     public void testBindIndex6() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select "
+                + "(us:test(3) as ?t) "
+                + "where {}"
+                
+                + "function us:test(?n)  {xt:display('here') ;"
+                + "let (?n = ?z) {"
+                + "for (?x in (xt:iota(?n))) {"
+                + "if (?x > 1) {"
+                + "return (?x)}"
+                + "} "
+                + "}"
+                + "}"
+                
+               ;
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(0, map.size());
+     }
+    
+    @Test
+     public void testBindIndex5() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select (us:test(3) as ?t) where {}"
+                
+                + "function us:test(?n)  {"
+                + "let (?n = ?n) {"
+                + "for (?x in (xt:iota(?n))) {"
+                + "if (?x > 1) {"
+                + "return (?x)}"
+                + "}"
+                + "}"
+                + "}"
+                
+               ;
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(2, getValue(map, "?t").intValue());
+     }
+    
+    @Test
+     public void testBindIndex4() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select "
+                + "(let(?x = false, ?y = true) { ?y } as ?t1)"
+                + "(if (?t1, let(?x = 2, ?y = 3) { ?y }, let(?z = 4) { ?z }) as ?t2)"
+                + " where {}"
+                
+               ;
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(true, getValue(map, "?t1").booleanValue());
+        Assert.assertEquals(3, getValue(map, "?t2").intValue());
+     }
+    
+    @Test
+     public void testBindIndex3() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select (us:test(2) as ?t) where {}"
+                
+                + "function us:test(?x) {"
+                + "let ((?y, ?x) = @(1)) {"
+                + "bound(?x);"
+                
+                + "let ((?x, ?y) = @(1)) {"
+                + "bound(?x)"
+                + "}"     
+                
+                + "}"                
+                + "}";
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(true, getValue(map, "?t").booleanValue());
+     }
+    
+    @Test
+     public void testBindIndex2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select (us:test(2) as ?t) where {}"
+                
+                + "function us:test(?x) {"
+                + "let ((?y, ?x) = @(1)) {"
+                + "bound(?x)"
+                + "}"                
+                + "}";
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        Assert.assertEquals(false, getValue(map, "?t").booleanValue());
+     }
+
+    
+    @Test
+     public void testBindIndex() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select (us:test(2) as ?t) where {}"
+                
+                + "function us:test(?x) {"
+                + "let (?x = ?x * ?x) {"
+                + "?x;"
+                + "let (?x = ?x * ?x) {"
+                + "?x}"
+                + "}"
+                + "}";
+        
+        Mappings map = exec.query(q);
+        System.out.println(map);
+        assertEquals(16, getValue(map, "?t").intValue());
+     }
+    
+     
     
     @Test
     public void testrecfun() throws EngineException {
@@ -436,7 +592,7 @@ public class TestQuery1 {
         assertEquals(IDatatype.LIST_DATATYPE, dl.stringValue());
     }
     
-    @Test
+    //@Test
     public void testExtFun19() throws EngineException {
         
         String init = "prefix ex: <http://example.org/> "
@@ -477,7 +633,7 @@ public class TestQuery1 {
     }
     
     
-    @Test
+    //@Test
     public void testExtFun18() throws EngineException {
         
         String init = "prefix ex: <http://example.org/> "
@@ -549,7 +705,7 @@ public class TestQuery1 {
                 + "ex:John rdf:value 1 ; rdfs:label 2"
                 + "}";
 
-        String q = "@trace select (us:foo() as ?t) "
+        String q = " select (us:foo() as ?t) "
                 + "(us:bar() as ?tt) "
                 + "where {}"
                 
@@ -640,7 +796,7 @@ public class TestQuery1 {
                 + "ex:John rdf:value 1 ; rdfs:label 2"
                 + "}";
         
-        String q = "@trace select (us:bar() as ?t) (datatype(?t) as ?d) where {}"
+        String q = " select (us:bar() as ?t) (datatype(?t) as ?d) where {}"
                 
                 + "@public function us:bar() {"
                 + "let (?fun = rq:regex) {"
@@ -695,7 +851,7 @@ public class TestQuery1 {
     public void testapply6() throws EngineException {
         QueryProcess exec = QueryProcess.create(Graph.create());
                         
-        String q = "@trace "
+        String q = " "
                 + "select (us:foo (5) as ?t) (us:foo (10) as ?r)"
                 + "where {"
                 + "}"
@@ -956,12 +1112,12 @@ public class TestQuery1 {
     public void testLetQuery() throws EngineException {
         String init
                 = "insert data {"
-                + "us:John us:child us:Jim, us:Jane, us:Janis .\n"
-                + "us:Jane a us:Woman ;\n"
-                + "us:child us:Jack, us:Mary .\n"
-                + "us:Mary a us:Woman\n"
-                + "us:Janis a us:Woman ;\n"
-                + "us:child us:James, us:Sylvia .\n"
+                + "us:John us:child us:Jim, us:Jane, us:Janis ."
+                + "us:Jane a us:Woman ;"
+                + "us:child us:Jack, us:Mary ."
+                + "us:Mary a us:Woman . "
+                + "us:Janis a us:Woman ;"
+                + "us:child us:James, us:Sylvia ."
                 + "us:Sylvia a us:Woman ."
                 + "}";
 
@@ -969,12 +1125,12 @@ public class TestQuery1 {
                 + "values ?t { unnest(us:pattern(us:John)) } "
                 + "}"
                 
-                + "function us:pattern(?x){\n"
-                + "    let (select ?x (xt:cons(aggregate(?y), aggregate(us:pattern(?y))) as ?l) \n"
-                + "         where { ?x us:child ?y . ?y a us:Woman }\n"
-                + "         group by ?x){\n"
-                + "        reduce(xt:merge, ?l)\n"
-                + "    }\n"
+                + "function us:pattern(?x){"
+                + "    let (select ?x (xt:cons(aggregate(?y), aggregate(us:pattern(?y))) as ?l) "
+                + "         where { ?x us:child ?y . ?y a us:Woman }"
+                + "         group by ?x){"
+                + "        reduce(xt:merge, ?l)"
+                + "    }"
                 + "}";
 
         Graph g = createGraph();
@@ -1366,8 +1522,27 @@ public class TestQuery1 {
 
     }
     
-    @Test
+  @Test
     public void testGenAgg() throws EngineException{
+    String q = 
+            "select (st:aggregate(?x) as ?list) (us:merge(maplist(us:fun, ?list)) as ?y)"
+            + "where { values ?x {unnest(xt:iota(10))}}"
+            
+            + "function st:aggregate(?x){ aggregate(?x) }"
+            
+            + "function us:fun(?x){ 1 / (?x * ?x)}"
+            
+            + "function us:merge(?list){ reduce(rq:plus, ?list) }"
+            ;
+    Graph g = Graph.create();
+    QueryProcess exec = QueryProcess.create(g);
+    Mappings map = exec.query(q);
+    IDatatype dt = (IDatatype) map.getValue("?y");
+    assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
+} 
+ 
+    
+    public void testGenAggOld() throws EngineException{
     String q = 
             "select (st:aggregate(?x) as ?y) "
             + "where { values ?x {unnest(xt:iota(10))}}"
@@ -1870,7 +2045,7 @@ public class TestQuery1 {
             ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
 
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(5, g.size());
     }
@@ -1886,7 +2061,7 @@ public class TestQuery1 {
             ld.parseDir(data + "junit/data");                      
             ld.parseDir(data + "junit/data", "http://example.org/");                      
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(4, g.size());
     }
@@ -2973,7 +3148,7 @@ public class TestQuery1 {
         assertEquals(3, map.size());
     }
 
-    @Test
+    //@Test
     public void testSolution() throws EngineException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -3006,7 +3181,7 @@ public class TestQuery1 {
                 + "[] rdf:value 1, 2, 3"
                 + "}";
 
-        String q = "select (aggregate(?v, us:mediane) as ?res)"
+        String q = "select (aggregate(?v) as ?list) ( us:mediane(?list) as ?res)"
                 + "where {"
                 + "  ?x rdf:value ?v "
                 + "}"
@@ -3116,7 +3291,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testExtDT() throws EngineException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -3983,7 +4158,7 @@ public class TestQuery1 {
     }
 
     @Test
-    public void testTCff() throws EngineException, LoadException {
+    public void testOWLRL() throws EngineException, LoadException {
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
         Load ld = Load.create(gs);
@@ -4062,7 +4237,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testeng() throws EngineException, LoadException {
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
@@ -4825,7 +5000,7 @@ public class TestQuery1 {
 
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
             assertEquals("result", true, ex);
         }
 
@@ -4902,7 +5077,7 @@ public class TestQuery1 {
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -4931,7 +5106,7 @@ public class TestQuery1 {
             //System.out.println(map);
             assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestUnit2.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -5505,46 +5680,46 @@ public class TestQuery1 {
 //            assertEquals("Result", true, e);
 //        }
 //    }
-    @Test
-    public void test11() {
+//    @Test
+//    public void test11() {
+//
+//        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
+//                "select * (count(?doc) as ?c)"
+//                + "(kg:setObject(?x, ?c) as ?t)"
+//                + "where {"
+//                + "?x c:hasCreated ?doc"
+//                + ""
+//                + "}"
+//                + "group by ?x";
+//
+//        String query2 ="prefix c: <http://www.inria.fr/acacia/comma#>" +
+//                "select distinct ?x"
+//                + "(kg:getObject(?x) as ?v)"
+//                + "where {"
+//                + "?x c:hasCreated ?doc filter(kg:getObject(?x) > 0)"
+//                + "}"
+//                + "order by desc(kg:getObject(?x))";
+//
+//
+//        try {
+//
+//            QueryProcess exec = QueryProcess.create(graph);
+//
+//            exec.query(query);
+//            Mappings map = exec.query(query2);
+//
+//            assertEquals("Result", 3, map.size());
+//
+//            IDatatype dt = getValue(map, "?v");
+//
+//            assertEquals("Result", 2, dt.getIntegerValue());
+//
+//        } catch (EngineException e) {
+//            assertEquals("Result", true, e);
+//        }
+//    }
 
-        String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
-                "select * (count(?doc) as ?c)"
-                + "(kg:setObject(?x, ?c) as ?t)"
-                + "where {"
-                + "?x c:hasCreated ?doc"
-                + ""
-                + "}"
-                + "group by ?x";
-
-        String query2 ="prefix c: <http://www.inria.fr/acacia/comma#>" +
-                "select distinct ?x"
-                + "(kg:getObject(?x) as ?v)"
-                + "where {"
-                + "?x c:hasCreated ?doc filter(kg:getObject(?x) > 0)"
-                + "}"
-                + "order by desc(kg:getObject(?x))";
-
-
-        try {
-
-            QueryProcess exec = QueryProcess.create(graph);
-
-            exec.query(query);
-            Mappings map = exec.query(query2);
-
-            assertEquals("Result", 3, map.size());
-
-            IDatatype dt = getValue(map, "?v");
-
-            assertEquals("Result", 2, dt.getIntegerValue());
-
-        } catch (EngineException e) {
-            assertEquals("Result", true, e);
-        }
-    }
-
-    @Test
+    
     public void test111() {
 
         String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
@@ -5685,7 +5860,7 @@ public class TestQuery1 {
     public void test16() {
 
         String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
-                "select  * (kg:number() as ?num)  where {"
+                "select  * (st:number() as ?num)  where {"
                 + "?x c:hasCreated ?doc "
                 + "}";
 
@@ -5696,7 +5871,7 @@ public class TestQuery1 {
             Mapping m = map.get(map.size() - 1);
             IDatatype dt = datatype(m.getNode("?num"));
             //System.out.println(map);
-            assertEquals("Result", map.size(), dt.getIntegerValue() + 1);
+            assertEquals("Result", map.size(), dt.intValue());
         } catch (EngineException e) {
             assertEquals("Result", true, e);
         }
@@ -6964,7 +7139,7 @@ public class TestQuery1 {
         }
     }
 
-    @Test
+    //@Test
     public void test64() {
 
         QueryProcess exec = QueryProcess.create(graph);

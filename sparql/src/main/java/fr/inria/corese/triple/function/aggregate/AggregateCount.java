@@ -32,7 +32,7 @@ public class AggregateCount extends Aggregate {
     }
 
     
-     IDatatype count(Environment env){
+    IDatatype count(Environment env){
         init(env);
         int count = 0;
         for (Mapping map : env.getAggregate()) {

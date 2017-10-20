@@ -48,7 +48,6 @@ public class UnaryFunction extends TermEval {
             case ExprType.LCASE:        return result(dt, dt.getLabel().toLowerCase());
             case ExprType.ENCODE:       return DatatypeMap.encode_for_uri(dt);
             case ExprType.URI:          return uri(dt);
-            case ExprType.HASH:         return eval.getComputerProxy().hash(this, dt);       
         }
         return null;
     }

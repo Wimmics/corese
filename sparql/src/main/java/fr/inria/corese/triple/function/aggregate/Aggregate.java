@@ -3,6 +3,7 @@ package fr.inria.corese.triple.function.aggregate;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.corese.triple.function.aggregate.Distinct.TreeData;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
@@ -36,8 +37,20 @@ public class Aggregate extends TermEval {
         super(name);
     } 
     
-    Aggregate duplicate() throws InstantiationException, IllegalAccessException{
-        Aggregate agg = getClass().newInstance();
+    Aggregate duplicate() {
+        try {
+            Aggregate agg = getClass().newInstance();
+            fill(agg);
+            return agg;
+        } catch (InstantiationException ex) {
+            Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
+    }
+    
+    void fill(Term agg){
         agg.setOper(oper());
         agg.setType(type());
         agg.setModality(getModality());
@@ -46,7 +59,6 @@ public class Aggregate extends TermEval {
         agg.setLongName(getLongName());
         agg.setArgs(getArgs());
         agg.setExpList(getExpList());
-        return agg;
     }
     
      //@Override
@@ -57,16 +69,8 @@ public class Aggregate extends TermEval {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         if (isRunning){
-            // Use case: recursive query eval aggregate within aggregate
-            try {
-                return duplicate().eval(eval, b, env, p);
-            } catch (InstantiationException ex) {
-                Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
+            // Use case: recursive query evaluate aggregate within aggregate
+            return duplicate().eval(eval, b, env, p);
         }
         
         isRunning = true;
@@ -84,7 +88,9 @@ public class Aggregate extends TermEval {
             // TODO: should we inherit Binding b for aggregate eval ?
             // (let (x = exp) { sum(z + x) } as ?sum)
             Binding bind = (Binding) map.getBind();
+            // eval aggregate exp
             dt = getArg(0).eval(eval, bind, map, p);
+            
             if (dt != null) {
                 switch (oper()){
                     case ExprType.SAMPLE: 
@@ -92,12 +98,16 @@ public class Aggregate extends TermEval {
                         return dt;
                     case ExprType.GROUPCONCAT:
                     case ExprType.STL_GROUPCONCAT:
+                    case ExprType.STL_AGGREGATE:    
                         if (dt.isFuture()) {
                             Expression ee = (Expression) dt.getObject();
                             // template ?out = future(concat(str, st:number(), str))
                             // eval(concat(str, st:number(), str))
                             dt = ee.eval(eval, bind, map, p);
                         }
+                        // continue
+                      
+                    // process aggregate    
                     default: aggregate(dt);
                 }
             }
@@ -128,8 +138,7 @@ public class Aggregate extends TermEval {
     public void aggregate(IDatatype dt) {
     }
 
-    public void start() {
-        
+    public void start() {       
     }
 
     public IDatatype result() {

@@ -63,15 +63,15 @@ public class Extension extends TermEval {
             IDatatype[] param = evalArguments(eval, b, env, p, 0);
             if (param == null) {
                 return null;
-            }
-            Expr fun = function.getSignature();
+            }            
+            Expression fun = function.getSignature();
             b.set(function, fun.getExpList(), param);
             if (function.isSystem()) {                
                 Computer  cc = eval.getComputer(env, p, function);               
                 dt = function.getBody().eval(cc, b, cc.getEnvironment(), p);
             } else {
                 dt = function.getBody().eval(eval, b, env, p);
-            }
+            }            
             b.unset(function, fun.getExpList());
         }
 

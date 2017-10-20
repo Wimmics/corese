@@ -31,7 +31,7 @@ public class AggregateGroupConcat extends Aggregate {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        sep = format(eval, b, env, p);
+        init(eval, b, env, p);
         return super.eval(eval, b, env, p);
     }
 
@@ -71,6 +71,10 @@ public class AggregateGroupConcat extends Aggregate {
                 }
             }
         }
+    }
+    
+    void init(Computer eval, Binding b, Environment env, Producer prod) {
+        sep = format(eval, b, env, prod);
     }
 
     String format(Computer eval, Binding b, Environment env, Producer prod) {

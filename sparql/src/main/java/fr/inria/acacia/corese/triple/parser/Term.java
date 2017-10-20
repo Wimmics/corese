@@ -193,7 +193,11 @@ public class Term extends Expression {
                 case ExprType.COALESCE:     return new Coalesce(name); 
                 case ExprType.EXIST:        return new ExistFunction(name);
                     
-                case ExprType.HASH:    
+                case ExprType.DISPLAY:    
+                case ExprType.XT_DISPLAY:     
+                case ExprType.XT_PRINT:     return new Display(name);    
+                case ExprType.EXTERNAL:     return new Extern(name);
+                case ExprType.HASH:         return new HashFunction(name);
                 case ExprType.STR:
                 case ExprType.URI:    
                 case ExprType.STRLEN:
@@ -287,10 +291,13 @@ public class Term extends Expression {
                                
                 case ExprType.XT_GEN_GET:   return new GetGen(name); 
                 case ExprType.XT_GET:       return new Get(name);     
+                case ExprType.XT_REVERSE:          
+                case ExprType.XT_SORT:          
                 case ExprType.XT_FIRST:          
                 case ExprType.XT_REST:      return new ListUnary(name);     
                 case ExprType.LIST:         return new ListTerm(name);     
                 case ExprType.XT_COUNT:     return new Size(name);                                
+                case ExprType.XT_APPEND:            
                 case ExprType.XT_CONS:            
                 case ExprType.XT_MEMBER:    return new ListBinary(name); 
                 case ExprType.XT_SET:
@@ -298,7 +305,10 @@ public class Term extends Expression {
                 case ExprType.XT_MERGE:    
                 case ExprType.IOTA:         return new ListNary(name); 
                 case ExprType.XT_SWAP:      return new Swap(name); 
-                case ExprType.XT_ITERATE:   return new Iterate(name); 
+                case ExprType.XT_ITERATE:   return new Iterate(name);
+                
+                case ExprType.INDEX:        return new UnaryExtension(name);
+                
                     
                 case ExprType.STL_CONCAT:    return new Concat(name); 
                 
@@ -320,7 +330,12 @@ public class Term extends Expression {
                 case ExprType.STL_NL:                    
                 case ExprType.STL_VISIT:                    
                 case ExprType.STL_VISITED: 
-                case ExprType.STL_NUMBER:    
+                case ExprType.STL_NUMBER: 
+                case ExprType.STL_PREFIX:     
+                case ExprType.PROLOG:
+                case ExprType.FOCUS_NODE:
+                case ExprType.XSDLITERAL:
+                    
                     return new TemplateFunction(name); 
                     
                 case ExprType.DEPTH:

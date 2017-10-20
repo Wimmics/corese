@@ -24,10 +24,10 @@ import org.junit.Test;
 public class TestUnit {
 
     //static String data = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/data/";
-    static String data = TestUnit2.class.getClassLoader().getResource("data").getPath() + "/";
-    static String rule = TestUnit2.class.getClassLoader().getResource("rule").getPath() + "/";
+    static String data = TestUnit.class.getClassLoader().getResource("data").getPath() + "/";
+    static String rule = TestUnit.class.getClassLoader().getResource("rule").getPath() + "/";
     //static String webapp = TestUnit.class.getClassLoader().getResource("webapp").getPath() + "/";
-    static String QUERY = TestUnit2.class.getClassLoader().getResource("query").getPath() + "/";
+    static String QUERY = TestUnit.class.getClassLoader().getResource("query").getPath() + "/";
     static String root = data;
     static String text = "/home/corby/NetBeansProjects/kgram/trunk/kgengine/src/test/resources/text/";
     static String ndata = "/home/corby/workspace/kgtool/src/test/resources/data/";

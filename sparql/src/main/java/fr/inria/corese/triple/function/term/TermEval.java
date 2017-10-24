@@ -8,10 +8,14 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -19,6 +23,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  *
  */
 public class TermEval extends Term {
+    public static Logger logger = LogManager.getLogger(TermEval.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
     
@@ -39,7 +44,10 @@ public class TermEval extends Term {
     public TermEval(String name){
         super(name);
     }
-       
+    
+    public TermEval(){
+    } 
+    
     public boolean isTrue(IDatatype dt) {
         try {
             return dt.isTrue();
@@ -101,6 +109,36 @@ public class TermEval extends Term {
         int i = 0;
         for (int j = start; j < arity(); j++) {
             args[i] = getArg(j).eval(eval, b, env, p);
+            if (args[i] == null) {                
+                return null;
+            }
+            i++;
+        }
+        return args;
+    }
+    
+    /**
+     * This is an Extension function call    
+     */
+    public boolean evalPushArguments(Function function, Computer eval, Binding b, Environment env, Producer p, int start) {
+        int i = 0;
+        for (int j = start; j < arity(); j++) {
+            IDatatype dt = getArg(j).eval(eval, b, env, p);
+            if (dt == null) {   
+                return false;
+            }
+            else {
+                b.set(function.getSignature().getArg(i++), dt);
+            }           
+        }
+        return true;
+    }
+    
+     public IDatatype[] evalArguments(Computer eval, Environment env, Producer p, IDatatype[] param, int size, int start) {
+        IDatatype[] args = new IDatatype[size];
+        int i = 0;
+        for (int j = start; j < arity(); j++) {
+            args[i] = getArg(j).eval(eval, env, p, param);
             if (args[i] == null) {                
                 return null;
             }

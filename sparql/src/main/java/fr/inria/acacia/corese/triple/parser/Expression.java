@@ -886,6 +886,14 @@ implements Regex, Filter, Expr, Pointerable  {
         return null;
     }
     
+    public IDatatype eval(Computer eval, Environment env, Producer p) {
+        return eval(eval, env, p, new IDatatype[0]);
+    }
+
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param) {
+        return null;
+    }
+    
   
     @Override
     public Mappings getMappings() {

@@ -32,7 +32,8 @@ public class ListBinary extends TermEval {
                 return DatatypeMap.member(dt1, dt2);            
             case ExprType.XT_CONS:
                 return DatatypeMap.cons(dt1, dt2);
-            
+            case ExprType.XT_APPEND:
+                return DatatypeMap.append(dt1, dt2);
         }
         return null;
     }

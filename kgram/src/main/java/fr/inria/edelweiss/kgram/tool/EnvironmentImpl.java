@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
@@ -217,6 +218,16 @@ public class EnvironmentImpl implements Environment {
 
     @Override
     public void setBind(Binder b) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterable<Mapping> getAggregate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void aggregate(Mapping m, int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

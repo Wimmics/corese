@@ -1110,6 +1110,19 @@ public class Mapping
             }
         }
     }
+    
+    @Override
+    public Iterable<Mapping> getAggregate(){
+        if (getMappings().isFake()) {
+            return new ArrayList<Mapping>(0);
+        }
+        return getMappings();
+    }
+    
+    @Override
+    public void aggregate(Mapping m, int n){
+        
+    }
 
     @Override
     public Extension getExtension() {

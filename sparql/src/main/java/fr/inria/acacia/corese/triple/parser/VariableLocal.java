@@ -23,5 +23,11 @@ public class VariableLocal extends Variable {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
         return b.get(this);
     }
+    
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param){
+        return param[getIndex()];
+    }
+    
 
 }

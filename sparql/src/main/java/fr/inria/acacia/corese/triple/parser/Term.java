@@ -8,6 +8,7 @@ import java.util.List;
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.aggregate.*;
 import fr.inria.corese.triple.function.term.*;
 import fr.inria.corese.triple.function.core.*;
 import fr.inria.corese.triple.function.script.*;
@@ -192,7 +193,11 @@ public class Term extends Expression {
                 case ExprType.COALESCE:     return new Coalesce(name); 
                 case ExprType.EXIST:        return new ExistFunction(name);
                     
-                case ExprType.HASH:    
+                case ExprType.DISPLAY:    
+                case ExprType.XT_DISPLAY:     
+                case ExprType.XT_PRINT:     return new Display(name);    
+                case ExprType.EXTERNAL:     return new Extern(name);
+                case ExprType.HASH:         return new HashFunction(name);
                 case ExprType.STR:
                 case ExprType.URI:    
                 case ExprType.STRLEN:
@@ -242,18 +247,21 @@ public class Term extends Expression {
                 case ExprType.TZ:   
                     return new DateFunction(name); 
                 
-                case ExprType.COUNT:
                 case ExprType.MIN:
-                case ExprType.MAX:
-                case ExprType.SUM:
-                case ExprType.AVG:
-                case ExprType.SAMPLE:
-                case ExprType.GROUPCONCAT:
-                case ExprType.STL_GROUPCONCAT:
-                case ExprType.AGGAND:
+                case ExprType.MAX:          return new AggregateMinMax(name); 
+                case ExprType.COUNT:        return new AggregateCount(name);
+                case ExprType.SUM:          
+                case ExprType.AVG:          return new AggregateSumAvg(name);
                 case ExprType.AGGLIST:
-                case ExprType.STL_AGGREGATE:
-                case ExprType.AGGREGATE:    return new Aggregate(name);                       
+                case ExprType.AGGREGATE:    return new AggregateList(name);
+                    
+                case ExprType.GROUPCONCAT:
+                case ExprType.STL_GROUPCONCAT: return new AggregateGroupConcat(name); 
+                    
+                case ExprType.AGGAND:       return new AggregateAnd(name); 
+                case ExprType.SAMPLE:       return new Aggregate(name); 
+                case ExprType.STL_AGGREGATE: return new AggregateTemplate(name); 
+                    
                 case ExprType.UNDEF:        return new Extension(name); 
                 case ExprType.XT_METHOD:    return new MethodCall(name);
                 case ExprType.XT_METHOD_TYPE: return new MethodTypeCall(name);
@@ -283,10 +291,13 @@ public class Term extends Expression {
                                
                 case ExprType.XT_GEN_GET:   return new GetGen(name); 
                 case ExprType.XT_GET:       return new Get(name);     
+                case ExprType.XT_REVERSE:          
+                case ExprType.XT_SORT:          
                 case ExprType.XT_FIRST:          
                 case ExprType.XT_REST:      return new ListUnary(name);     
                 case ExprType.LIST:         return new ListTerm(name);     
                 case ExprType.XT_COUNT:     return new Size(name);                                
+                case ExprType.XT_APPEND:            
                 case ExprType.XT_CONS:            
                 case ExprType.XT_MEMBER:    return new ListBinary(name); 
                 case ExprType.XT_SET:
@@ -294,9 +305,13 @@ public class Term extends Expression {
                 case ExprType.XT_MERGE:    
                 case ExprType.IOTA:         return new ListNary(name); 
                 case ExprType.XT_SWAP:      return new Swap(name); 
-                case ExprType.XT_ITERATE:   return new Iterate(name); 
+                case ExprType.XT_ITERATE:   return new Iterate(name);
+                
+                case ExprType.INDEX:        return new UnaryExtension(name);
+                
                     
-                case ExprType.STL_CONCAT:    return new Concat(name);    
+                case ExprType.STL_CONCAT:    return new Concat(name); 
+                
                 case ExprType.APPLY_TEMPLATES_WITH_GRAPH:                       
                 case ExprType.APPLY_TEMPLATES_WITH_ALL:                       
                 case ExprType.APPLY_TEMPLATES_WITH:
@@ -315,7 +330,12 @@ public class Term extends Expression {
                 case ExprType.STL_NL:                    
                 case ExprType.STL_VISIT:                    
                 case ExprType.STL_VISITED: 
-                case ExprType.STL_NUMBER:    
+                case ExprType.STL_NUMBER: 
+                case ExprType.STL_PREFIX:     
+                case ExprType.PROLOG:
+                case ExprType.FOCUS_NODE:
+                case ExprType.XSDLITERAL:
+                    
                     return new TemplateFunction(name); 
                     
                 case ExprType.DEPTH:
@@ -1113,7 +1133,7 @@ public class Term extends Expression {
 		return args.size();
 	}
         
-        void setArgs(ArrayList<Expression> list){
+        public void setArgs(ArrayList<Expression> list){
             args = list;
         }
 	
@@ -1291,9 +1311,9 @@ public class Term extends Expression {
             return arguments;
         }
         
-//        void setExpList(List<Expr> l){
-//            lExp = l;
-//        }
+        public void setExpList(List<Expr> l){
+            lExp = l;
+        }
 	
         @Override
 	public ExpPattern getPattern(){

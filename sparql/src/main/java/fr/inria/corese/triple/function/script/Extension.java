@@ -63,15 +63,15 @@ public class Extension extends TermEval {
             IDatatype[] param = evalArguments(eval, b, env, p, 0);
             if (param == null) {
                 return null;
-            }
-            Expr fun = function.getSignature();
+            }            
+            Expression fun = function.getSignature();
             b.set(function, fun.getExpList(), param);
             if (function.isSystem()) {                
                 Computer  cc = eval.getComputer(env, p, function);               
                 dt = function.getBody().eval(cc, b, cc.getEnvironment(), p);
             } else {
                 dt = function.getBody().eval(eval, b, env, p);
-            }
+            }            
             b.unset(function, fun.getExpList());
         }
 
@@ -80,4 +80,26 @@ public class Extension extends TermEval {
         }
         return DatatypeMap.getResultValue(dt);
     }
+    
+    @Override
+    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] mem) {
+        if (function == null) {
+            function = (Function) eval.getDefine(this, env);
+            if (function == null) {
+                logger.error("Undefined function: " + this);
+                return null;
+            } else {
+                isUnary = arity() == 1 && !function.isSystem();
+                if (isUnary) {
+                    exp = getArg(0);
+                    var = function.getFunction().getExp(0);
+                    body = function.getBody();
+                }
+            }
+        }
+        
+        IDatatype[] param = evalArguments(eval, env, p, mem, function.getNbVariable(), 0);
+        return function.getBody().eval(eval, env, p, param);
+    }
+    
 }

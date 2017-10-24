@@ -160,7 +160,7 @@ public class Binding implements Binder {
     /**
      * Allocate block in the stack for local variables of exp
      */
-    void allocate(Expr exp) {
+    public void allocate(Expr exp) {
         pushLevel();
         // allocate block for fun
         for (int i = 0; i < exp.getNbVariable(); i++) {
@@ -172,7 +172,7 @@ public class Binding implements Binder {
     /**
      * Desallocate block in the stack for local variables of exp
      */
-    void desallocate(Expr exp) {
+    public void desallocate(Expr exp) {
         for (int i = 0; i < exp.getNbVariable(); i++) {
             pop();
         }

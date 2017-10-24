@@ -711,6 +711,7 @@ public class Processor {
 		defoper(QNAME,          ExprType.QNAME);
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);
  		defoper(INDEX,          ExprType.INDEX);
+ 		//defoper(EXT+"index",    ExprType.INDEX);
  		defoper(ID,             ExprType.ID);
  		defoper(TIMESTAMP,      ExprType.TIMESTAMP);
  		defoper(TEST,           ExprType.TEST);
@@ -760,7 +761,7 @@ public class Processor {
 		defoper(STL_NL,                 ExprType.STL_NL);
 		defoper(STL_SELF,               ExprType.SELF);
 		defoper(STL_URILITERAL, 	ExprType.URILITERAL);
-		defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
+		//defoper(STL_XSDLITERAL,         ExprType.XSDLITERAL);
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
 		defoper(STL_FORMAT,             ExprType.STL_FORMAT);
 		defoper(EXT+"format",           ExprType.STL_FORMAT);

@@ -3,10 +3,8 @@ package fr.inria.corese.triple.function.script;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import static fr.inria.edelweiss.kgram.api.core.ExprType.AND;
 import static fr.inria.edelweiss.kgram.api.core.ExprType.CONCAT;
@@ -43,7 +41,6 @@ public class Reduce extends Funcall {
         }
                 
         Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 2);
-        boolean isSystem = function.isSystem();
         IDatatype dt = param[0];
         if (! dt.isList()) {
             return null;

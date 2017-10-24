@@ -972,11 +972,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
 
     @Override
-    public IDatatype concat(Expr exp, Environment env, Producer p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public IDatatype hash(Expr exp, IDatatype dt) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

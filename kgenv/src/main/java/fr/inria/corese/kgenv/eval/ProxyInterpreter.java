@@ -2,7 +2,6 @@ package fr.inria.corese.kgenv.eval;
 
 import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.edelweiss.kgenv.eval.*;
-import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;
@@ -1304,7 +1303,6 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
      * literals with same lang return literal@lang all strings return string
      * else return literal error if not literal or string
      */
-    @Override
       public IDatatype concat(Expr exp, Environment env, Producer p) {
             return concat(exp, env, p, null);
       }
@@ -1361,9 +1359,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
                 }
                 dt =  eval.eval(ee, env, p);
             } else {               
-                dt =  lval[j];
-                 System.out.println("******************************************");
-                System.out.println(dt);
+                dt =  lval[j];               
             }
             // Do not touch to j++ (see below int k = j;)             
             j++;
@@ -1396,8 +1392,8 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
                 lang = dt.getLang();
             }
             i++;
-            
             if (!isStringLiteral(dt)) {
+            System.out.println("PI: " + dt + " " + dt.getClass().getName());
                 return null;
             }
 

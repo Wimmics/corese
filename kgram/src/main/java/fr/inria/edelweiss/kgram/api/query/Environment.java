@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Bind;
 import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.EventManager;
@@ -153,6 +154,10 @@ public interface Environment {
         Node[] getQueryNodes();
         
         Mappings getMappings();
+        
+        Iterable<Mapping> getAggregate();
+        
+        void aggregate(Mapping m, int n);
         
         // bind : set(?x, ?x + 1)
         void bind(Expr exp, Expr var, Node value);

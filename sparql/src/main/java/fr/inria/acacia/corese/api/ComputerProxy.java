@@ -17,6 +17,5 @@ public interface ComputerProxy {
     IDatatype function(Expr exp, Environment env, Producer p);
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt);
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
-    IDatatype concat(Expr exp, Environment env, Producer p);
     IDatatype hash(Expr exp, IDatatype dt);
 }

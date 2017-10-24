@@ -21,6 +21,7 @@ import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
+import java.util.ArrayList;
 
 /**
  * Node and Edge binding stacks for KGRAM evaluator
@@ -1107,7 +1108,7 @@ public class Memory implements Environment {
     // sum(?x)
     @Override
     public void aggregate(Evaluator eval, Producer p, Filter f) {
-        current().process(eval, f, this, p);
+        current().aggregate(eval, f, this, p);
     }
 
     public Node max(Node qNode) {
@@ -1132,6 +1133,34 @@ public class Memory implements Environment {
     @Override
     public Mappings getMappings() {
         return current();
+    }
+    
+    /**
+     * Iterate Mappings for aggregate
+     * @return 
+     */
+    @Override
+    public Iterable<Mapping> getAggregate() {
+        if (current().isFake()) {
+            return new ArrayList<Mapping>(0);
+        }
+        return current();
+    }
+    
+    /**
+     * Prepare Mapping for aggregate
+     * @param map
+     * @param n 
+     */
+    @Override
+    public void aggregate(Mapping map, int n) {
+        current().setCount(n);
+        // in case there is a nested aggregate, map will be an Environment
+        // it must implement aggregate() and hence must know current Mappings group
+        map.setMappings(current());
+        map.setQuery(getQuery());
+        // share same bnode table in all Mapping of current group solution
+        map.setMap(getMap());
     }
 
     @Override

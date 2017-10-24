@@ -1011,7 +1011,7 @@ public class Mappings extends PointerObject
      * sum(?x)) on the list of Mapping with Mapping as environment to get
      * variable binding
      */
-    void process(Evaluator eval, Filter f, Environment env, Producer p) {
+    void aggregate(Evaluator eval, Filter f, Environment env, Producer p) {
         if (isFake()) {
             // fake Mappings because there were no result
             return;
@@ -1028,7 +1028,7 @@ public class Mappings extends PointerObject
             eval.eval(f, map, p);
         }
     }
-    
+       
     /**
      * *******************************************************************
      *

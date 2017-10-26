@@ -4,7 +4,6 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -67,7 +66,8 @@ public class Extension extends TermEval {
             Expression fun = function.getSignature();
             b.set(function, fun.getExpList(), param);
             if (function.isSystem()) {                
-                Computer  cc = eval.getComputer(env, p, function);               
+                Computer  cc = eval.getComputer(env, p, function); 
+                // PRAGMA: b = cc.getEnvironment().getBind()
                 dt = function.getBody().eval(cc, b, cc.getEnvironment(), p);
             } else {
                 dt = function.getBody().eval(eval, b, env, p);

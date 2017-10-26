@@ -25,10 +25,10 @@ public class TemplateFunction extends TermEval {
         if (param == null){
             return null;
         }
-        switch (oper()){
-            case ExprType.STL_PROCESS:
-            return eval.getComputerTransform().eval(this, env, p, param); 
-        }
+//        switch (oper()){
+//            case ExprType.STL_PROCESS:
+//            return eval.getComputerTransform().eval(this, env, p, param); 
+//        }
         switch (param.length){
             case 0:  return eval.getComputerTransform().function(this, env, p); 
             case 1:  return eval.getComputerTransform().function(this, env, p, param[0]); 

@@ -1,5 +1,7 @@
-package fr.inria.acacia.corese.triple.parser;
+package fr.inria.corese.triple.function.script;
 
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.corese.compiler.java.JavaCompiler;
 
 /**

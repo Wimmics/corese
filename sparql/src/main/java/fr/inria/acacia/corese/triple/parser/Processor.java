@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.corese.triple.function.script.Let;
+import fr.inria.corese.triple.function.script.Function;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
@@ -81,7 +83,7 @@ public class Processor {
 	public static final String SEQUENCE  = "sequence";
 	public static final String SET     = "set";
 	public static final String LET     = "let";
-        static final String FOR             = "for";
+        public static final String FOR             = "for";
 	private static final String MAP     = "map";
 	static final String MAPLIST = "maplist";
 	static final String MAPFUN = "mapfun";
@@ -147,7 +149,8 @@ public class Processor {
 	private static final String IRI = "iri";
 
 	private static final String SELF = "self";
-	private static final String DEBUG = "trace";
+	private static final String DEBUG = EXT+"debug";
+	private static final String TRACE = EXT+"trace";
 
 	static final String EXTERN 	= "extern";
 	public static final String XPATH= Term.XPATH;
@@ -210,7 +213,7 @@ public class Processor {
 	static final String STL_LEVEL               = STL + "level"; 
         static final String STL_DEFINE              = STL + "define";
         static final String DEFINE                  = "define";
-        static final String FUNCTION                = "function";
+        public static final String FUNCTION                = "function";
         static final String PACKAGE                 = "package";
         static final String EXPORT                  = "export";
         static final String LAMBDA                  = "lambda";
@@ -688,6 +691,7 @@ public class Processor {
 		defoper(IRI, 		ExprType.URI);
 		defoper(SELF, 		ExprType.SELF);
 		defoper(DEBUG, 		ExprType.DEBUG);
+		defoper(TRACE, 		ExprType.XT_TRACE);
 
 		defoper(MATCH, 	ExprType.SKIP);
 		defoper(PLENGTH, ExprType.LENGTH);
@@ -707,6 +711,7 @@ public class Processor {
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
 		defoper(READ,           ExprType.READ);
+		defoper(EXT+"write",    ExprType.WRITE);
 		defoper(WRITE,          ExprType.WRITE);
 		defoper(QNAME,          ExprType.QNAME);
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);

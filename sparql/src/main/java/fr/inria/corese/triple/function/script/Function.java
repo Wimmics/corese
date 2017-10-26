@@ -1,9 +1,16 @@
-package fr.inria.acacia.corese.triple.parser;
+package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -32,7 +39,7 @@ public class Function extends Statement {
     private HashMap<String, Constant> table;
        
 
-    Function(Term fun, Expression body) {
+    public Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
         fun.setExpression(this);
         body.setExpression(this);
@@ -110,11 +117,11 @@ public class Function extends Statement {
     }
     
     
-    Metadata getMetadata(){
+    public Metadata getMetadata(){
         return annot;
     }
     
-    boolean hasMetadata(){
+    public boolean hasMetadata(){
         return annot != null;
     }
     
@@ -128,7 +135,7 @@ public class Function extends Statement {
         return getMetadata().getValues(name);
     }
     
-    void annotate(Metadata m){
+    public void annotate(Metadata m){
         if (m == null){
             return;
         }
@@ -252,7 +259,7 @@ public class Function extends Statement {
         return lambda;
     }
     
-    void defineLambda(){
+    public void defineLambda(){
         setLambda(true);;
         dt = DatatypeMap.createObject(getDatatypeValue().stringValue(), this);
     }
@@ -281,7 +288,7 @@ public class Function extends Statement {
     }
     
     @Override
-    void visit(ExpressionVisitor v) {
+    public void visit(ExpressionVisitor v) {
         v.visit(this);
     }
     

@@ -1,5 +1,8 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.corese.triple.function.script.Let;
+import fr.inria.corese.triple.function.script.Function;
+import fr.inria.corese.triple.function.script.ForLoop;
 import fr.inria.acacia.corese.api.IDatatype;
 import java.util.ArrayList;
 import java.util.Collection;

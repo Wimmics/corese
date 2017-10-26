@@ -37,8 +37,10 @@ public class Binding implements Binder {
     // every funcall add a level
     // let add no level
     ArrayList<Integer> level;
-    int currentLevel = 0;
+    int currentLevel = 0, count = 0;
     Expr current;
+    
+    private boolean debug = false;
     
     private static Logger logger = LogManager.getLogger(fr.inria.edelweiss.kgram.core.Bind.class);
 
@@ -101,7 +103,7 @@ public class Binding implements Binder {
         switch (exp.oper()) {
             case ExprType.FUNCTION:
                 // special case: walker aggregate
-                allocate(exp); break;
+                count++; allocate(exp); break;
                 
             case ExprType.LET:
             case ExprType.FOR:
@@ -110,6 +112,9 @@ public class Binding implements Binder {
                 }               
         }
         set(var, val);
+        if (isDebug()){
+            trace(exp, val);
+        }
     }
 
     
@@ -184,13 +189,36 @@ public class Binding implements Binder {
      */
     
     public void set(Expr exp, List<Expr> lvar, IDatatype[] value) {
-        // Parameters and local variables of this function are above level 
+        // Parameters and local variables of this function are above level
+        count++;
         allocate(exp);
         int i = 0;
         for (Expr var : lvar) {
             // push parameter value
             set(var, value[i++]);
         }
+        if (isDebug()) {
+           trace(exp, value);
+        }
+    }
+    
+    void trace(Expr exp, IDatatype[] value) {
+        System.out.print(pretty(count) + " " + pretty(level.size()) + " " );
+        System.out.print((exp.getFunction() == null) ? exp.getDefinition() : exp.getFunction()+ " ");
+        for (IDatatype dt : value){
+            System.out.print(" " + dt );
+        }
+        System.out.println();
+    }
+    
+    String pretty(int n){
+        return "(" + ((n<10) ? ("0"+n) : n) + ")";
+    }
+    
+    void trace(Expr exp, IDatatype value) {
+        IDatatype[] aa = new IDatatype[1];
+        aa[0] = value;
+        trace(exp, aa);
     }
 
     
@@ -279,6 +307,24 @@ public class Binding implements Binder {
          }
          return list;
      }
+     
+     /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public int getCount(){
+        return count;
+    }
 
     @Override
     public void bind(Expr exp, Expr var, Node val) {

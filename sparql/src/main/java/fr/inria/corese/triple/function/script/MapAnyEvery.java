@@ -2,7 +2,6 @@ package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import static fr.inria.edelweiss.kgram.api.core.ExprType.MAPANY;
 import static fr.inria.edelweiss.kgram.api.core.ExprType.MAPEVERY;

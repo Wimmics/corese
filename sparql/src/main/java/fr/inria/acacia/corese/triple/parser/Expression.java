@@ -1,5 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.corese.triple.function.script.Let;
+import fr.inria.corese.triple.function.script.ForLoop;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ASTVisitor;
@@ -789,7 +791,7 @@ implements Regex, Filter, Expr, Pointerable  {
             return this;
         }
         
-        void visit(ExpressionVisitor v){
+        public void visit(ExpressionVisitor v){
             
         }
         

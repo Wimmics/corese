@@ -49,22 +49,11 @@ public class Aggregate extends TermEval {
         }
         return this;
     }
-    
-    void fill(Term agg){
-        agg.setOper(oper());
-        agg.setType(type());
-        agg.setModality(getModality());
-        agg.setArg(getArg());
-        agg.setName(getName());
-        agg.setLongName(getLongName());
-        agg.setArgs(getArgs());
-        agg.setExpList(getExpList());
-    }
-    
+         
      //@Override
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
-        return eval.aggregate(this, env, p);
-    }
+//    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
+//        return eval.aggregate(this, env, p);
+//    }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
@@ -142,7 +131,7 @@ public class Aggregate extends TermEval {
     }
 
     public IDatatype result() {
-        return TRUE;
+        return null;
     }
 
     public boolean accept(IDatatype dt) {

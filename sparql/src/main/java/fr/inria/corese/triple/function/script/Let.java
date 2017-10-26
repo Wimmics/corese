@@ -1,8 +1,12 @@
-package fr.inria.acacia.corese.triple.parser;
+package fr.inria.corese.triple.function.script;
 
+import fr.inria.corese.triple.function.script.Statement;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 
@@ -13,7 +17,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Let extends Statement {
 
-     Let (Expression def, Expression body) {
+     public Let (Expression def, Expression body) {
         super(Processor.LET, def, body);
     }
      

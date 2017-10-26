@@ -15,6 +15,7 @@ import fr.inria.corese.triple.function.script.*;
 import fr.inria.corese.triple.function.extension.*;
 import fr.inria.corese.triple.function.proxy.GraphFunction;
 import fr.inria.corese.triple.function.proxy.TemplateFunction;
+import fr.inria.corese.triple.function.proxy.TemplateProcess;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.core.ExpPattern;
 import fr.inria.edelweiss.kgram.api.core.Expr;
@@ -33,7 +34,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 
 public class Term extends Expression {
    
-        static final String NL = System.getProperty("line.separator");
+        public static final String NL = System.getProperty("line.separator");
 	static final String RE_CHECK = "check";
 	static final String RE_PARA = "||";
 	public static final String RE_ALT = "|";
@@ -307,11 +308,11 @@ public class Term extends Expression {
                 case ExprType.XT_SWAP:      return new Swap(name); 
                 case ExprType.XT_ITERATE:   return new Iterate(name);
                 
+                case ExprType.DEBUG:        return new SystemFunction(name);
+                               
                 case ExprType.INDEX:        return new UnaryExtension(name);
-                
-                    
-                case ExprType.STL_CONCAT:    return new Concat(name); 
-                
+                                   
+                case ExprType.STL_CONCAT:    return new Concat(name);                
                 case ExprType.APPLY_TEMPLATES_WITH_GRAPH:                       
                 case ExprType.APPLY_TEMPLATES_WITH_ALL:                       
                 case ExprType.APPLY_TEMPLATES_WITH:
@@ -322,8 +323,7 @@ public class Term extends Expression {
                 case ExprType.STL_GET:
                 case ExprType.STL_SET:
                 case ExprType.STL_CGET:
-                case ExprType.STL_CSET:
-                case ExprType.STL_PROCESS:
+                case ExprType.STL_CSET:               
                 case ExprType.STL_FORMAT:                    
                 case ExprType.TURTLE:                    
                 case ExprType.INDENT:                    
@@ -334,13 +334,15 @@ public class Term extends Expression {
                 case ExprType.STL_PREFIX:     
                 case ExprType.PROLOG:
                 case ExprType.FOCUS_NODE:
-                case ExprType.XSDLITERAL:
+                case ExprType.XSDLITERAL:   return new TemplateFunction(name);                    
+                case ExprType.STL_PROCESS:  return new TemplateProcess(name);                    
                     
-                    return new TemplateFunction(name); 
-                    
+                case ExprType.APPROXIMATE:
                 case ExprType.DEPTH:
                 case ExprType.XT_EDGE:
                 case ExprType.SIM:
+                case ExprType.LOAD:    
+                case ExprType.WRITE:    
                     return new GraphFunction(name);
                     
                 default: return new Term(name);
@@ -1019,8 +1021,9 @@ public class Term extends Expression {
         @Override
         public boolean isFuncall(){
 		return isFunction;
-	}        
-        void setFunction(boolean b){
+	}  
+        
+        public void setFunction(boolean b){
             isFunction = b;
         }
 	
@@ -1441,7 +1444,7 @@ public class Term extends Expression {
     }
         
         @Override
-    void visit(ExpressionVisitor v){
+   public void visit(ExpressionVisitor v){
          v.visit(this);
     }   
 

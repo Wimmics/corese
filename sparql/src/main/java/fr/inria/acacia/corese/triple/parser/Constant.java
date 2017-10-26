@@ -444,7 +444,7 @@ public class Constant extends Atom {
     }
 
     @Override
-    void visit(ExpressionVisitor v) {
+    public void visit(ExpressionVisitor v) {
         v.visit(this);
     }
 

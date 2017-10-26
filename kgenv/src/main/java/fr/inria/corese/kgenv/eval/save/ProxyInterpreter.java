@@ -1,4 +1,4 @@
-package fr.inria.corese.kgenv.eval;
+package fr.inria.corese.kgenv.eval.save;
 
 import fr.inria.acacia.corese.api.ComputerProxy;
 import fr.inria.edelweiss.kgenv.eval.*;
@@ -314,7 +314,11 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
 
         switch (exp.oper()) {
 
-           
+             case CONCAT:
+             case STL_CONCAT:
+             //case XT_CONCAT:
+                return concat(exp, env, p);
+                 
             case NUMBER:
                 return getValue(env.count());
                            
@@ -336,6 +340,8 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
             case STRUUID:
                 return struuid();
                 
+            case FOR:
+                return loop(exp, env, p);
                 
             case SEQUENCE:
                 return sequence(exp, env, p);
@@ -816,7 +822,11 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
             case LIST:
                 return DatatypeMap.list(param);  
                                            
-           
+            case CONCAT:
+            case STL_CONCAT:
+            //case XT_CONCAT:            
+                return concat(exp, env, p, param);
+                
             case XT_DISPLAY:
                 // turtle + content if gdisplay
                return xt_display(env, p, param, true, (!exp.getLabel().equals(Processor.XT_DISPLAY))); 
@@ -1289,6 +1299,177 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return null;
     }
 
+    /**
+     * literals with same lang return literal@lang all strings return string
+     * else return literal error if not literal or string
+     */
+      public IDatatype concat(Expr exp, Environment env, Producer p) {
+            return concat(exp, env, p, null);
+      }
+
+    /**
+     * std usage: lval is null, evaluate exp
+     * lval = list of values in this use case:
+     * apply(concat(), maplist(st:fun(?x) , xt:list(...)))
+     * TODO: lval is deprecated ?
+     * 
+     */
+    IDatatype concat(Expr exp, Environment env, Producer p, IDatatype[] lval) {
+        String str = "";
+        String lang = null;
+
+        if (exp.arity() == 0 && lval == null) {
+            return EMPTY;
+        }
+        int length = 0;
+        if (lval != null){
+            length = lval.length;
+        }
+        
+        // when template st:concat()
+        // st:number() is not evaluated now
+        // it will be evaluated by template group_concat aggregate
+        // return future(concat(str, st:number(), str))
+        boolean isSTLConcat = exp.oper() == STL_CONCAT;
+
+        StringBuilder sb = new StringBuilder();
+        ArrayList<Object> list = null;
+        boolean ok = true, hasLang = false, isString = true;
+        IDatatype dt = null;
+        int i = 0;
+        List<Expr> argList = exp.getExpList();
+        for (int j = 0; j < ((length > 0) ? length : argList.size()); ) {
+
+            if (lval == null) {
+                Expr ee = argList.get(j);
+
+                if (isSTLConcat && isFuture(ee)) {
+                    // create a future
+                    if (list == null) {
+                        list = new ArrayList<Object>();
+                    }
+                    if (sb.length() > 0) {
+                        list.add(result(env, sb, isString, (ok && lang != null) ? lang : null, isSTLConcat));
+                        sb = new StringBuilder();
+                    }
+                    list.add(ee);
+                    // Do not touch to j++ (see below int k = j;)   
+                    j++;
+                    continue;
+                }
+                dt =  eval.eval(ee, env, p);
+            } else {               
+                dt =  lval[j];               
+            }
+            // Do not touch to j++ (see below int k = j;)             
+            j++;
+            
+            if (dt == null){
+                return null;
+            }
+
+            if (isSTLConcat && dt.isFuture()){
+                // result of ee is a Future
+                // use case: ee = box { e1 st:number() e2 }
+                // ee = st:concat(e1, st:number(), e2) 
+                // dt = Future(concat(e1, st:number(), e2))
+                // insert Future arg list (e1, st:number(), e2) into current argList
+                // arg list is inserted after ee (indice j is already  set to j++)
+                ArrayList<Expr> el = new ArrayList(argList.size());
+                el.addAll(argList);
+                Expr future = (Expr) dt.getObject();
+                int k = j;
+
+                for (Expr arg : future.getExpList()){
+                    el.add(k++, arg);
+                }
+                argList = el;
+                continue; 
+            }
+            
+            if (i == 0 && dt.hasLang()) {
+                hasLang = true;
+                lang = dt.getLang();
+            }
+            i++;
+            if (!isStringLiteral(dt)) {
+            System.out.println("PI: " + dt + " " + dt.getClass().getName());
+                return null;
+            }
+
+            if (dt.getStringBuilder() != null) {
+                sb.append(dt.getStringBuilder());
+            } else {
+                sb.append(dt.getLabel());
+            }
+          
+            if (ok) {
+                if (hasLang) {
+                    if (!(dt.hasLang() && dt.getLang().equals(lang))) {
+                        ok = false;
+                    }
+                } else if (dt.hasLang()) {
+                    ok = false;
+                }
+
+                if (!DatatypeMap.isString(dt)) {
+                    isString = false;
+                }
+            }
+            
+        }
+            
+        if (list != null){
+            // return ?out = future(concat(str, st:number(), str)
+            // will be evaluated by template group_concat(?out) aggregate
+            if (sb.length()>0){
+                list.add(result(env, sb, isString, (ok && lang != null)?lang:null, isSTLConcat));
+            }  
+            Expr e = plugin.createFunction(Processor.CONCAT, list, env);
+            IDatatype res = DatatypeMap.createFuture(e);
+            return res;
+        }
+        
+        return result(env, sb, isString, (ok && lang != null)?lang:null, isSTLConcat);
+    }
+     
+    boolean isFuture(Expr e){
+        if  (e.oper() == STL_NUMBER 
+                //|| e.oper() == STL_FUTURE
+                ){
+            return true;
+        }
+        if  (e.oper() == CONCAT || e.oper() == STL_CONCAT){
+            // use case:  group { st:number() } box { st:number() }
+            return false;
+        }
+        if (e.arity() > 0){
+            for (Expr a : e.getExpList()){
+                if (isFuture(a)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     *     
+     */
+    IDatatype result(Environment env, StringBuilder sb, boolean isString, String lang, boolean isSTL){
+        if (lang != null) {
+            return DatatypeMap.createLiteral(sb.toString(), null, lang);
+        } else if (isString) {
+            if (isSTL){
+                return  plugin.getBufferedValue(sb, env);
+            }
+            else {
+                return DatatypeMap.newStringBuilder(sb);
+            }
+        } else {
+            return DatatypeMap.newLiteral(sb.toString());
+        }
+    }
     
     IDatatype and(IDatatype[] val){
         for (IDatatype dt : val){
@@ -1359,7 +1540,31 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     public IDatatype tz(IDatatype dt) {
         return DatatypeMap.getTZ(dt);
     }         
-          
+           
+//    IDatatype time(Expr exp, IDatatype dt) {
+//        if (dt.getDatatypeURI().equals(RDF.xsddate)
+//                || dt.getDatatypeURI().equals(RDF.xsddateTime)) {
+//
+//            switch (exp.oper()) {
+//
+//                case YEAR:
+//                    return DatatypeMap.getYear(dt);
+//                case MONTH:
+//                    return DatatypeMap.getMonth(dt);
+//                case DAY:
+//                    return DatatypeMap.getDay(dt);
+//
+//                case HOURS:
+//                    return DatatypeMap.getHour(dt);
+//                case MINUTES:
+//                    return DatatypeMap.getMinute(dt);
+//                case SECONDS:
+//                    return DatatypeMap.getSecond(dt);
+//            }
+//        }
+//
+//        return null;
+//    }
     
     boolean isDate(IDatatype dt){
         return dt.isDate();
@@ -1439,8 +1644,14 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     @Deprecated
     @Override
     public IDatatype aggregate(Expr exp, Environment env, Producer p, Node qNode) {
-        
-        return null;
+        //exp = decode(exp, env, p);
+        Walker walk = new Walker(exp, qNode, this, env, p);
+
+        // apply the aggregate on current group Mapping, 
+        env.aggregate(walk, p, exp.getFilter());
+
+        IDatatype res =  walk.getResult(env, p);
+        return res;
     }
     
     @Override
@@ -1759,13 +1970,374 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return res;
     }
 
-   
+     /**
+      * loop: for (var in list) { exp }
+      */
+    IDatatype loop(Expr loop, Environment env, Producer p){
+        IDatatype list =  eval.eval(loop.getDefinition(), env, p);
+        if (list == null){ 
+            return null;
+        }
+        Expr var = loop.getVariable();
+        IDatatype res = null;
+        env.set(loop, var, TRUE);
+        
+        if (list.isList()){
+            for (IDatatype dt : list.getValues()){           
+                res = step(loop, env, p, dt);
+                if (isReturn(res)){
+                    env.unset(loop, var, dt);            
+                    return res;
+                }
+            }
+        }
+        else {            
+            for (IDatatype dt : list) { 
+                res = step(loop, env, p, dt);    
+                if (isReturn(res)){
+                    env.unset(loop, var, dt); 
+                    return res;
+                }
+            }
+        }
+        
+        env.unset(loop, var, TRUE); 
+        return TRUE;
+    }
+    
+     /**
+     * for (var = value) { body }
+     * + see above
+     */
+    IDatatype step(Expr loop, Environment env, Producer p, IDatatype value){
+        //env.set(loop, loop.getVariable(), value);
+        env.bind(loop, loop.getVariable(), value);
+        return eval.eval(loop.getBody(), env, p);
+        //env.unset(loop, loop.getVariable());
+    }
+    
     
     public IDatatype list(IDatatype... ldt){
         return DatatypeMap.newList(ldt);
     } 
    
-   
+      
+     /**
+      * map (xt:fun, ?x, ?l)
+      * maplist (xt:fun, ?l1, ?l2)
+      * maplist return list of results
+      * mapselect return sublist of elements that match a boolean predicate
+      * map return true
+      * map on List or Loopable (IDatatype that contains e.g Mappings)
+      * TODO: when getLoop() it works with only one loop
+      * @return 
+      */
+    @Deprecated
+   IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+        switch (exp.oper()){
+            case ExprType.REDUCE: 
+                if (param.length == 0) return null;
+                return reduce(exp, env, p, param, function);
+            case ExprType.MAPEVERY:
+            case ExprType.MAPANY:
+                return anyevery(exp, env, p, param, function);
+                
+            default:
+                return map(exp, env, p, param, function);
+        }
+    }
+    
+    
+    public IDatatype map(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+        boolean maplist     = exp.oper() == MAPLIST; 
+        boolean mapmerge    = exp.oper() == MAPMERGE; 
+        boolean mapappend   = exp.oper() == MAPAPPEND; 
+        boolean mapfindelem = exp.oper() == MAPFIND;
+        boolean mapfindlist = exp.oper() == MAPFINDLIST;
+        boolean mapfind     = mapfindelem || mapfindlist;
+        boolean hasList     = maplist || mapmerge || mapappend;
+
+        IDatatype list = null;
+        IDatatype ldt = null;
+        Iterator<IDatatype> loop = null ;
+        boolean isList = false, isLoop = false;
+        
+        int k = 0;
+        for (IDatatype dt : param){  
+            if (dt.isList() && ! isList && ! isLoop){
+                isList = true;
+                list = dt;
+            }
+            else if (dt.isLoop()) {
+                if (! isList && ! isLoop) {
+                    isLoop = true;
+                    ldt = dt;
+                    loop = ldt.iterator();
+                }
+                else {
+                    // list + loop || loop + loop
+                    // loop.toList()
+                    param[k] = dt.toList();
+                }
+            }
+            
+            k++;
+        }               
+        if (list == null && ldt == null){
+            return null;
+        }
+        IDatatype[] value = new IDatatype[param.length];
+        ArrayList<IDatatype> res = (hasList)     ? new ArrayList<IDatatype>() : null;
+        ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<IDatatype>() : null;
+        int size = 0; 
+        
+        for (int i = 0;  (isList) ? i< list.size() : loop.hasNext(); i++){ 
+            IDatatype elem = null;
+            
+            for (int j = 0; j<value.length; j++){
+                IDatatype dt = param[j];
+                if (dt.isList()){                   
+                    /**
+                     * if list size is <= i,  focus on last element of the list
+                     * use case: maplist(?fun, ?list, xt:list(?lst))
+                     * The second ?lst argument is itself a list and we do not want to iterate this one
+                     */  
+                    value[j] = (i < dt.size()) ? dt.get(i) : dt.get(dt.size()-1);
+                    if (mapfind && elem == null){
+                        elem = value[j];
+                    }
+                }
+                else if (isLoop && dt.isLoop()){
+                    // TODO: track several dt Loop
+                    if (loop.hasNext()){
+                       value[j] = loop.next(); 
+                       if (mapfind && elem == null){
+                         elem = value[j];
+                       }
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    value[j] = dt;
+                }
+            }
+
+            IDatatype val =  call(function, env, p, value);
+
+            if (val == null){
+                return null;
+            }
+            else if (hasList) {
+                if (val.isList()){
+                    size += val.size();
+                }
+                else {
+                    size += 1;
+                }
+               res.add(val);
+            }
+            else if (mapfindelem && val.booleanValue()){
+                return elem;
+            }
+            else if (mapfindlist && val.booleanValue()){
+                    // select elem whose predicate is true
+                    // mapselect (xt:prime, xt:iota(1, 100))
+                    sub.add(elem);
+            }
+            
+        }
+        
+        if (mapmerge || mapappend){
+            int i = 0;
+            ArrayList<IDatatype> mlist = new ArrayList<IDatatype>();
+            for (IDatatype dt : res){
+                if (dt.isList()){
+                    for (IDatatype v : dt.getValues()){
+                        add(mlist, v, mapmerge);
+                    }
+                }
+                else {
+                    add(mlist, dt, mapmerge);
+                }
+            }
+            return DatatypeMap.createList(mlist);
+        }
+        else if (maplist){
+            return DatatypeMap.createList(res); 
+        }
+        else if (mapfindlist){
+            return DatatypeMap.createList(sub);
+        }
+        else if (mapfindelem){
+            return null;
+        }
+        return TRUE;
+    }
+    
+    void add(List<IDatatype> list, IDatatype dt, boolean merge){
+        if (merge){
+            if (! list.contains(dt)){
+                list.add(dt);
+            }
+        }
+        else {
+            list.add(dt);
+        }
+    }
+      
+  
+    /**
+     * every (xt:fun, ?list)   
+     * every (xt:fun, ?x, ?list) 
+     * every (xt:fun, ?l1, ?l2) 
+     * TODO: when getLoop() it works with only one loop
+     * error follow SPARQ semantics of OR (any) AND (every)
+     * @return 
+     */
+   IDatatype anyevery(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+        boolean every = exp.oper() == MAPEVERY;       
+        boolean any   = exp.oper() == MAPANY;       
+        IDatatype list = null; 
+        IDatatype ldt = null;
+        Iterator<IDatatype> loop = null ;
+        boolean isList = false, isLoop = false;
+        
+        
+        int k = 0;
+        for (IDatatype dt : param){  
+            if (dt.isList() && ! isList && ! isLoop){
+                isList = true;
+                list = dt;
+            }
+            else if (dt.isLoop()) {
+                if (! isList && ! isLoop) {
+                    isLoop = true;
+                    ldt = dt;
+                    loop = ldt.iterator();
+                }
+                else {
+                    // list + loop || loop + loop
+                    // snd_loop.toList()
+                    param[k] = dt.toList();
+                }
+            }
+            
+            k++;
+        }         
+        if (list == null && ldt == null){
+            return null;
+        }
+        IDatatype[] value = new IDatatype[param.length];
+        boolean error = false;      
+        for (int i = 0; (isList) ? i < list.size() : loop.hasNext(); i++){ 
+
+            for (int j = 0; j<value.length; j++){
+                IDatatype dt = param[j];
+                if (dt.isList()){
+                    value[j] = (i < dt.size()) ? dt.get(i) : dt.get(dt.size()-1);  
+                }
+                else if (isLoop && dt.isLoop()){
+                    if (loop.hasNext()){
+                       // TODO:  track the case with several dt loop
+                       value[j] = loop.next(); //(IDatatype) p.getValue(loop.next());
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    value[j] = dt;
+                }
+            }
+            
+            IDatatype res =  call(function, env, p, value);                   
+            if (res == null){
+                error = true;                
+            }
+            else {
+                if (every) {
+                    if (! res.booleanValue()){
+                        return FALSE;
+                    }
+                }
+                else if (any) {
+                    // any
+                    if (res.booleanValue()){
+                        return TRUE;
+                    }
+                }
+            }
+        }
+        if (error){
+            return null;
+        }
+        return getValue(every);
+    }
+       
+    /**
+     * reduce(kg:plus, ?list)   
+     * @return 
+     */
+    IDatatype reduce(Expr exp, Environment env, Producer p, IDatatype[] param, Expr function) {
+        if (param.length == 0) return null;
+        IDatatype dt = param[0];
+        if (! dt.isList()) {
+            return null;
+        }
+        List<IDatatype> list = dt.getValues();
+        if (list.isEmpty()){
+            return neutral(function, dt);
+        }
+        IDatatype[] value = new IDatatype[2];
+        IDatatype res = list.get(0);
+        value[0] = res;
+        
+        for (int i = 1; i < list.size(); i++) {            
+            value[1] = list.get(i);  
+            res =  call(function, env, p, value);   
+            if (res == null) {
+               return error();
+            }
+            value[0] = res;
+        }
+        return res;
+    }
+    
+    IDatatype neutral(Expr exp, IDatatype dt){
+        switch (exp.oper()){
+            case OR:
+                return FALSE;
+                
+            case AND:
+                return TRUE;
+                
+            case CONCAT:
+                return DatatypeMap.EMPTY_STRING;
+                
+            case PLUS:
+                return DatatypeMap.ZERO;
+                
+            case MULT:
+                return DatatypeMap.ONE; 
+                
+            case XT_APPEND:
+            case XT_MERGE:
+                return DatatypeMap.EMPTY_LIST;
+                
+            default: return dt;
+        }
+    }
+         
+    
+    /**
+     * map(fun, list)
+     * reduce(fun, list)
+     */
+    private IDatatype call(Expr function, Environment env, Producer p, IDatatype[] values) {
+       return eval.call(function.getFunction(), env, p, values, function);
+    }
          
      public IDatatype or(IDatatype dt1, IDatatype dt2) {
         boolean e1 = error(dt1);
@@ -2090,7 +2662,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
 
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] param, Expr function) {
-        return null;
+        return eval(exp, env, p, (IDatatype[])param, function);
     }
     
      @Override

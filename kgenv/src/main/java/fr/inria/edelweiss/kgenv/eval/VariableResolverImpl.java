@@ -25,6 +25,7 @@ public class VariableResolverImpl implements VariableResolver {
 		env = e;
 	}
 			
+        @Override
 	public void start(org.w3c.dom.Node doc){
 		if (doc instanceof Document) {
 			document = (Document)doc;
@@ -33,6 +34,7 @@ public class VariableResolverImpl implements VariableResolver {
 		value = null;
 	}
 	
+        @Override
 	public Object resolveVariable(QName name) {
 		if (var != null && value != null && name.equals(var)){
 			return value;

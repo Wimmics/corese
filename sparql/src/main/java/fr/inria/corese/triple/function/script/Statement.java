@@ -1,8 +1,8 @@
 package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.term.TermEval;
 
 /**
  *
@@ -12,7 +12,7 @@ import fr.inria.corese.compiler.java.JavaCompiler;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class Statement  extends Term {
+public class Statement  extends TermEval {
     int nbVariable = 0;
     
     Statement(){}

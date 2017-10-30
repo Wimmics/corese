@@ -59,6 +59,7 @@ public class Funcall extends TermEval {
         if (dt == null) {
             return null;
         }
-        return DatatypeMap.getResultValue(dt);
+        //return DatatypeMap.getResultValue(dt);
+        return b.resultValue(dt);
     }
 }

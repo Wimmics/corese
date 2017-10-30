@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.corese.triple.function.extension;
 
 import fr.inria.acacia.corese.api.Computer;
@@ -16,7 +11,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 
 /**
  *
- * @author Olivier Corby, Wimmics INRIA I3S, 2016
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
 public class UnaryExtension extends TermEval {

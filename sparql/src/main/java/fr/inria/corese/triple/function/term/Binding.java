@@ -43,6 +43,7 @@ public class Binding implements Binder {
     private boolean debug = false;
     
     private static Logger logger = LogManager.getLogger(fr.inria.edelweiss.kgram.core.Bind.class);
+    private boolean result;
 
     Binding() {
         varList = new ArrayList();
@@ -345,6 +346,37 @@ public class Binding implements Binder {
     public void unset(Expr exp, Expr var, Node value) {
         unset(exp, var, (IDatatype) value);
     }
-     
     
+    /**
+     * return(dt) LDScript function set boolean result field to true
+     * @param dt
+     * @return 
+     */
+    public IDatatype result(IDatatype dt) {
+        result = true;
+        return dt;
+    }
+    
+    /**
+     * sequence and for loop LDScript statements check whether intermediate
+     * evaluation is a return(dt); if true, evaluation resumes
+     *
+     * @return the result
+     */
+    public boolean isResult() {
+        return result;
+    }
+
+    
+    /**
+     * LDScript function call return dt and set boolean result field to false
+     * @param dt
+     * @return 
+     */
+    public IDatatype resultValue(IDatatype dt) {
+        result = false;
+        return dt;
+    }
+    
+  
 }

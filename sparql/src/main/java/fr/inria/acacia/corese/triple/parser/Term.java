@@ -311,6 +311,7 @@ public class Term extends Expression {
                 case ExprType.DEBUG:        return new SystemFunction(name);
                                
                 case ExprType.INDEX:        return new UnaryExtension(name);
+                case ExprType.XT_FOCUS:     return new Focus(name);
                                    
                 case ExprType.STL_CONCAT:    return new Concat(name);                
                 case ExprType.APPLY_TEMPLATES_WITH_GRAPH:                       

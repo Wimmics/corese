@@ -12,6 +12,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class Function extends Statement {
     }
     
     @Override
-    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         return getDatatypeValue();
     }
 

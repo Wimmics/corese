@@ -128,8 +128,8 @@ public class Processor {
         private static final String XT_FROM     = EXT + "from";        
         private static final String XT_NAMED    = EXT + "named";        
         private static final String XT_TRIPLE   = EXT + "triple";
-        static public final String XT_MAIN      = EXT + "main";
-        static public final String FUN_XT_MAIN  = EXT_PREF + "main";
+        public static  final String XT_MAIN      = EXT + "main";
+        public static  final String FUN_XT_MAIN  = EXT_PREF + "main";
         private static final String XT_ENTAILMENT = EXT + "entailment";
         private static final String XT_DATATYPE = EXT + "datatype";
         private static final String XT_KIND     = EXT + "kind";

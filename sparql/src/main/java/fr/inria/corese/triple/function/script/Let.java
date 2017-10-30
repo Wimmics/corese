@@ -7,6 +7,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 
@@ -69,7 +70,7 @@ public class Let extends Statement {
      
      
      @Override
-    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype val = getDefinition().eval(eval, b, env, p);
         if (val == null) {
             return null;

@@ -888,6 +888,10 @@ implements Regex, Filter, Expr, Pointerable  {
         return null;
     }
     
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) {
+        return null;
+    }
+    
     public IDatatype eval(Computer eval, Environment env, Producer p) {
         return eval(eval, env, p, new IDatatype[0]);
     }

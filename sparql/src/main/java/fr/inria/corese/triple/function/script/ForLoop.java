@@ -1,6 +1,5 @@
 package fr.inria.corese.triple.function.script;
 
-import fr.inria.corese.triple.function.script.Statement;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
@@ -8,6 +7,7 @@ import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 
@@ -67,7 +67,7 @@ public class ForLoop extends Statement {
     
     
     @Override
-    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype list = getDefinition().eval(eval, b, env, p);
         if (list == null) {
             return null;
@@ -81,7 +81,7 @@ public class ForLoop extends Statement {
             for (IDatatype dt : list.getValues()) {
                 b.bind(this, var, dt);
                 res = body.eval(eval, b, env, p);
-                if (isReturn(res)) {
+                if (b.isResult()) { //if (isReturn(res)) {
                     b.unset(this, var, dt);
                     return res;
                 }
@@ -90,7 +90,7 @@ public class ForLoop extends Statement {
             for (IDatatype dt : list) {
                 b.bind(this, var, dt);
                 res = body.eval(eval, b, env, p);
-                if (isReturn(res)) {
+                if (b.isResult()) { //if (isReturn(res)) {
                     b.unset(this, var, dt);
                     return res;
                 }
@@ -101,9 +101,5 @@ public class ForLoop extends Statement {
         return TRUE;
     }
    
-    boolean isReturn(IDatatype dt){
-        return dt == null || DatatypeMap.isResult(dt);
-    }
-    
     
 }

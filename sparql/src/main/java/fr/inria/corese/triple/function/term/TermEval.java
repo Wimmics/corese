@@ -129,23 +129,6 @@ public class TermEval extends Term {
         return args;
     }
     
-    /**
-     * This is an Extension function call    
-     */
-    public boolean evalPushArguments(Function function, Computer eval, Binding b, Environment env, Producer p, int start) {
-        int i = 0;
-        for (int j = start; j < arity(); j++) {
-            IDatatype dt = getArg(j).eval(eval, b, env, p);
-            if (dt == null) {   
-                return false;
-            }
-            else {
-                b.set(function.getSignature().getArg(i++), dt);
-            }           
-        }
-        return true;
-    }
-    
      public IDatatype[] evalArguments(Computer eval, Environment env, Producer p, IDatatype[] param, int size, int start) {
         IDatatype[] args = new IDatatype[size];
         int i = 0;
@@ -159,8 +142,10 @@ public class TermEval extends Term {
         return args;
     }
     
-     public boolean isReturn(IDatatype dt){
-        return dt == null || DatatypeMap.isResult(dt);
-    }
+//    public boolean isReturn(IDatatype dt){
+//        return dt == null || DatatypeMap.isResult(dt);
+//    }
+//     
+     
     
 }

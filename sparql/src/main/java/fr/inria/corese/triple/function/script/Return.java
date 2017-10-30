@@ -23,7 +23,8 @@ public class Return extends TermEval {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype dt = getArg(0).eval(eval, b, env, p);
         if (dt == null) return null;
-        return DatatypeMap.result(dt);
+        //return DatatypeMap.result(dt);
+        return b.result(dt);
     }
     
     

@@ -559,10 +559,11 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     }      
 
     IDatatype xt_display(Environment env, Producer p, IDatatype dt, boolean turtle, boolean content) {
-        IDatatype res = method(USER_DISPLAY, null, array(dt), env, p);
-        if (res == null) {
-            res = dt.display();
-        } 
+//        IDatatype res = method(USER_DISPLAY, null, array(dt), env, p);
+//        if (res == null) {
+//            res = dt.display();
+//        } 
+        IDatatype res = dt.display();
         if (turtle){
             System.out.println(res);
         }
@@ -581,10 +582,10 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     }
     
          
-    IDatatype method(IDatatype name, IDatatype[] param, Environment env, Producer p) {
-        return method(name.stringValue(), null, param, env, p);
-    }
-          
+//    IDatatype method(IDatatype name, IDatatype[] param, Environment env, Producer p) {
+//        return method(name.stringValue(), null, param, env, p);
+//    }
+//          
      /**
      * Try to execute a method name in the namespace of the generalized datatype URI
      * http://ns.inria.fr/sparql-datatype/triple#display(?x)
@@ -592,12 +593,12 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
      * bnode: dt:bnode#name
      * literal: dt:datatype#name or dt:literal#name
      */   
-    IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {   
-        if (env == null){
-            return null;
-        }       
-        return eval.method(name, type, param, env, p);
-    }
+//    IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {   
+//        if (env == null){
+//            return null;
+//        }       
+//        return eval.method(name, type, param, env, p);
+//    }
     
               
     IDatatype xt_datatype(IDatatype dt){
@@ -825,11 +826,11 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
                 // string + content if gprint
                 return xt_display(env, p, param, false, (!exp.getLabel().equals(Processor.XT_PRINT)));
                 
-            case XT_METHOD:
-                return method(param[0].stringValue(), null, copy(param, 1), env, p) ;  
-                
-            case XT_METHOD_TYPE:
-                return method(param[0].stringValue(), param[1], copy(param, 2), env, p) ;  
+//            case XT_METHOD:
+//                return method(param[0].stringValue(), null, copy(param, 1), env, p) ;  
+//                
+//            case XT_METHOD_TYPE:
+//                return method(param[0].stringValue(), param[1], copy(param, 2), env, p) ;  
                     
             
         }

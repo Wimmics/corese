@@ -243,24 +243,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
             case SKIP:
             case GROUPBY:
-            case STL_DEFINE:
             case PACKAGE:
                 return TRUE;
-  
-            case XT_FOCUS:
-                return focus(exp, env, p);
-         
+             
             case EXIST:
                 return exist(exp, env, p);
 
-            case LENGTH: {
-                Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
-                if (qNode == null) {
-                    return null;
-                }
-                int value = env.pathLength(qNode);
-                return proxy.getValue(value);
-            }
+            
 
             case PWEIGHT: {
                 Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
@@ -272,11 +261,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             }
          
 
-            case SELF:
-                return eval(exp.getExp(0), env, p);
-
             case STL_AND:
-            case EXTERNAL:
             case CUSTOM:
                 // use function call below with param array 
                 break;
@@ -309,27 +294,21 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
 
         IDatatype[] args = evalArguments(exp, env, p, 0);
+        
         if (args == null) {
-            switch (exp.oper()) {
-                case UNDEF:
-                    logger.error("Error eval arguments: " + exp);
-                    break;
-                case XT_GEN_GET:
-                    // let (var = xt:gget()) return UNDEF and let will not bind var
-                    // see let() here
-                    return proxy.getConstantValue(null);
-            }
             return null;
         }
 
         return eval(exp, env, p, args);
     }
 
+    // called by Eval for system functions (xt:produce()) and xt:main
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] args) {
         switch (exp.oper()) {
 
             case UNDEF:
-                return extension(exp, env, p, args);
+                return ((Expression)exp).eval(this, (Binding) env.getBind(), env, p, args);
+                //return extension(exp, env, p, args);               
 
             default:
                 return proxy.eval(exp, env, p, args);
@@ -534,14 +513,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * variables, managed in a specific stack
      */
     //@Override
-    public IDatatype extension(Expr exp, Environment env, Producer p, IDatatype[] values) {
-        Expr def = getDefine(exp, env);
-        if (def == null) {
-            logger.error("Undefined function: " + exp);
-            return ERROR_VALUE;
-        }
-        return call(exp, env, p, values, def);
-    }
+//    public IDatatype extension(Expr exp, Environment env, Producer p, IDatatype[] values) {
+//        Expr def = getDefine(exp, env);
+//        if (def == null) {
+//            logger.error("Undefined function: " + exp);
+//            return ERROR_VALUE;
+//        }
+//        return call(exp, env, p, values, def);
+//    }
 
  
     /**

@@ -6,7 +6,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;
@@ -176,7 +175,6 @@ public class TestUnit {
         
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        Interpreter.testNewEval = true;
         Mappings map = exec.query(q);
         System.out.println(map);
      }
@@ -222,34 +220,62 @@ public class TestUnit {
     
  
      
+     public void testfocus() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select (us:foo() as ?f) where {"
+                + ""
+                + "}"
+                
+                + "function us:foo() {"
+                + "let (?g = construct {us:John rdfs:label 'John'} where {}) {"
+                + "xt:focus(?g, us:bar())"
+                + "}"
+                + "}" 
+                
+                + "function us:bar() {"
+                + "let (select (count(*) as ?c) where {?x ?p ?y}) { ?c }"
+                + "}"
+                
+                ;
+        Mappings map = exec.query(q);
+        IDatatype dt = getValue(map, "?f");
+        assertEquals(1, dt.intValue());
+     }
+     
     public void testLetQuery() throws EngineException {
         String init
                 = "insert data {"
-                + "us:John us:child us:Jim, us:Jane, us:Janis ."
-                + "us:Jane a us:Woman ; us:child us:Jack, us:Mary ."
-                + "us:Mary a us:Woman ."
-                + "us:Janis a us:Woman ; us:child us:James, us:Sylvia ."
-                + "us:Sylvia a us:Woman ."
+                + "us:John rdf:value 1"
                 + "}";
+       
+       // 1000 000 = 5.148  vs 2.923 sans fun
 
-        String q = "select *  where {"
-                + "values ?t { unnest(us:pattern(us:John)) } "
+        String q = "select ?t "
+                //+ "(us:pattern(?t) as ?b) where "
+                + "{"
+                + "values ?t { unnest(xt:iota(1000000)) }"
+                //+ "filter exists {?x ?p ?t}"
+                + "filter us:pattern(?t) "
+               
                 + "}"
                 
-                + "function us:pattern(?x){"
-                + "    let (select ?x (xt:cons(aggregate(?y), aggregate(us:pattern(?y))) as ?l) "
-                + "         where { ?x us:child ?y . ?y a us:Woman }"
-                + "         group by ?x){"
-                + "        reduce(xt:merge, ?l)"
-                + "    }"
+                + "function us:pattern(?v){"
+                + "exists { ?x ?p ?v}"
+               
                 + "}";
 
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
+        Date d1 = new Date();
         Mappings map = exec.query(q);
-        assertEquals(4, map.size());
+        Date d2 = new Date();
+        System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));        
+        System.out.println(map.size());
     }
+    
+    
     
  
   public void testagg() throws EngineException, LoadException {
@@ -269,26 +295,38 @@ public class TestUnit {
         System.out.println(map);
  }
  
-  @Test
-    public void testFuture() throws EngineException {
+  
+     public void testbnode() throws EngineException, LoadException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        String init = "insert data { <John> rdf:value 1, 2, 3, 4, 5, 6, 7, 8 .}";
-        String q =
-                "template {"
-                + "st:number() ' : ' ?y}"
-                + "where {"
-                + "?x rdf:value ?y "
-                + "} order by desc(?y)";
-
-
-        exec.query(init);
+        
+        String q = "select * where {"
+               
+                + "bind (xt:debug(true) as ?d)"
+                + "bind (us:test(1, 2) as ?t)"
+                + "bind(bnode('a') as ?b1)"
+                + "bind(bnode('a') as ?b2)"
+                + "bind(bnode() as ?b)"
+                + "}"
+                
+                + "function us:test(?x, ?y) {"
+                + "us:fun(?x, ?y)"
+                + "}"
+                
+                 + "function us:fun(?y, ?z) {"
+                + ""
+                + "}"
+               ;
+        
         Mappings map = exec.query(q);
-        String str = map.getTemplateStringResult();
-        //assertEquals(true, str.contains("8 : 1"));
-        System.out.println(str);
-        System.out.println(map.getQuery().getAST());
-    }
+        System.out.println(map);
+        for (Mapping m : map){
+            assertEquals(true, m.getValue("?b1") == m.getValue("?b2"));
+            assertEquals(false, m.getValue("?b1") == m.getValue("?b3"));
+            
+        }
+        //Assert.assertEquals(0, map.size());
+     }
  
  
    public void testsort() throws EngineException, LoadException {
@@ -303,17 +341,21 @@ public class TestUnit {
 
         Mappings map = null;
         System.out.println("warm up");
-        Interpreter.testNewEval = true;
+        //Interpreter.testNewEval = true;
         map = exec.query(q);
-        Date d1 = new Date();
+        
         int n = 10;
+        long total = 0;
         for (int i = 0; i < n; i++) {
-            System.out.println(i);
-            map = exec.query(q);
-        }
-        Date d2 = new Date();
+           Date d1 = new Date();
+           map = exec.query(q);
+           Date d2 = new Date();
+           long time = d2.getTime() - d1.getTime();
+           System.out.println(i + " : " + (time) / (1000.0));
+           total += time;
+       }
         System.out.println(map);
-        System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (n * 1000.0));
+        System.out.println("Time: " + (total) / (n * 1000.0));
 
         String q2 = "select (us:fun(2) as ?t) where {}"
                 + ""

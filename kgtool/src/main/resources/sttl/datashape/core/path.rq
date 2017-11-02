@@ -2,9 +2,7 @@
 # evaluate sh:path of shape ?sh
 # ?list is the list of target nodes of shape ?sh
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?list) {
    sh:safe(?shape, ?sh, ?suc)
@@ -15,7 +13,7 @@ where {
         filter not exists { ?sh sh:deactivated true}
     }
     
-    bind (java:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
+    bind (sh:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
 }
 
 

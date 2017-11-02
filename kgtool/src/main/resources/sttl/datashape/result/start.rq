@@ -1,9 +1,7 @@
 #
 # Display SHACL validation result on server 
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape> 
+prefix sh: <http://www.w3.org/ns/shacl#>
  
 template st:start {
     st:call-template(st:main)

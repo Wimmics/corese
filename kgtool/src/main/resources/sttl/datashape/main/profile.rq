@@ -1,9 +1,9 @@
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix java: <http://www.w3.org/ns/shacl#>  
 prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
-#@compile <fr.inria.corese.extension.DataShape>  @path </home/corby/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
+#@compile <fr.inria.corese.extension.DataShape>  @path </user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
 
 template st:profile {} where {}
 
@@ -35,7 +35,7 @@ function st:optimize(?shape, ?sh){
 @public {
 
 function sh:test(){
-    st:get(st:test, true)
+    st:get(st:test, true) 
 }
 
 function sh:pack(?test, ?name){
@@ -92,7 +92,7 @@ function sh:safe(?shape, ?sh, ?suc) {
     ?suc
 }
 
-function sh:report(?name, ?s, ?suc, ?vis) {
+function st:report(?name, ?s, ?suc, ?vis) {
     if (?vis) {
         st:visit(?name, ?s, ?suc)
     } ;
@@ -103,7 +103,7 @@ function sh:report(?name, ?s, ?suc, ?vis) {
 # ?suc is success/failure of the shape
 # ?vis true means generate a ValidationResult
 #
-function sh:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
+function st:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
     if (?vis && ! ?suc) { 
         sh:result(?name, ?sh, ?shape, ?foc,  ?p, ?o) ;
         st:visit(?name, ?foc, ?suc)
@@ -111,7 +111,7 @@ function sh:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
     return(true)
 }
 
-function sh:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
+function st:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
     if (?vis && ! ?suc) { 
         sh:result(?name, ?sh, ?shape, ?foc,  st:null, st:null) ;
         st:visit(?name, ?foc, ?suc)
@@ -299,12 +299,12 @@ function sh:clean(?q){
 }
 
 function sh:count(?s, ?p){
-  let (((?c)) = select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
+  let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
 
 function sh:invCount(?o, ?p){
-  let (((?c)) = select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
+  let (select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
 
@@ -434,7 +434,7 @@ function sh:xone(?or, ?s, ?p, ?o, ?shape){
 # property (predicate or path)
 # ?fun = sh:hasPath
 function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
-    let (((?count)) = 
+    let ( 
         SELECT ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
 			GRAPH ?shape {
@@ -473,7 +473,7 @@ function sh:xone(?or, ?s, ?shape){
 
 # core
 function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
-    let (((?count)) = 
+    let ( 
         SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
 		WHERE {
             graph ?shape { 
@@ -530,9 +530,10 @@ function sh:equal(?l1, ?l2){
 # ex:parent sh:alternativePath (ex:father ex:mother)
 #
 function sh:path(?shape, ?pp) {
+
   if (isURI(?pp)) { ?pp }
   else {
-    let ((?res) = 
+    let ( 
         select ?shape ?pp ?q ?path where {
             graph ?shape { 
                 # rdf:rest is for a sequence
@@ -542,18 +543,13 @@ function sh:path(?shape, ?pp) {
                 ?pp ?q ?path   
             }
         } ) {
-        if (! bound(?res))
-                { return(error()) }   
-        else { 
-            let ((?q, ?path) = ?res) {                    
+          
              if (! bound(?q))
                 { return(error()) }   
                 else { 
                 if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
                     else { return(xt:list(?q, sh:path(?shape, ?path))) }
-                    }
-                }
-        }
+                    }                
     }
   }
 }
@@ -563,7 +559,7 @@ function sh:path(?shape, ?pp) {
 # Rewrite recursively RDF list ?pp as a list
 #
 function sh:listsh(?shape, ?pp){
-   let ( ((?l)) = 
+   let ( 
         select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
         where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
         return(?l)
@@ -693,7 +689,7 @@ function sh:seqlist(?shape, ?s, ?lp, ?inv){
     else {
         let (?l = sh:path(?shape, ?s, xt:first(?lp), ?inv), 
             ?res = xt:list()){
-            for (?e in ?l){
+            for (?e in ?l){ 
                 # merge removes duplicate nodes
                 set(?res = xt:merge(?res, sh:seqlist(?shape, ?e, xt:rest(?lp), ?inv)))
             } ;
@@ -724,13 +720,13 @@ function sh:pathProperty(?s, ?p, ?inv){
 }
 
 function sh:predicate(?s, ?p){
-    let (((?l)) = select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
+    let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }
 
 function sh:inverse(?o, ?p){
-    let (((?l)) = select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
+    let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }

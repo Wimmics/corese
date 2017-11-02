@@ -163,6 +163,54 @@ public class TestQuery1 {
 
     }
     
+      @Test
+     public void testfocus() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select (us:foo() as ?f) where {"
+                + ""
+                + "}"
+                
+                + "function us:foo() {"
+                + "let (?g = construct {us:John rdfs:label 'John'} where {}) {"
+                + "xt:focus(?g, us:bar())"
+                + "}"
+                + "}" 
+                
+                + "function us:bar() {"
+                + "let (select (count(*) as ?c) where {?x ?p ?y}) { ?c }"
+                + "}"
+                
+                ;
+        Mappings map = exec.query(q);
+        IDatatype dt = getValue(map, "?f");
+        assertEquals(1, dt.intValue());
+     }
+    
+    
+    @Test
+     public void testbnode() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String q = "select * where {"
+                + "values ?n { 1 2 }"
+                + "bind(bnode('a') as ?b1)"
+                + "bind(bnode('a') as ?b2)"
+                + "bind(bnode() as ?b)"
+                + "}"
+               ;
+        
+        Mappings map = exec.query(q);
+        for (Mapping m : map){
+            assertEquals(true, m.getValue("?b1") == m.getValue("?b2"));
+            assertEquals(false, m.getValue("?b1") == m.getValue("?b3"));
+            
+        }
+        //Assert.assertEquals(0, map.size());
+     }
+ 
+    
     @Test
      public void testBindIndex7() throws EngineException, LoadException {
         Graph g = Graph.create();

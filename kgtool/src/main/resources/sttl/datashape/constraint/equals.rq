@@ -1,6 +1,4 @@
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:equals (?shape, ?sh, ?vis, ?s, ?p){
      st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p)

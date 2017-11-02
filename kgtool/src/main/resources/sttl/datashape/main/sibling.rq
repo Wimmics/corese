@@ -1,9 +1,6 @@
 #
 # Store sibling shapes of qualified shapes
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
 template sh:sibling(?shape) {   
     if (bound(?qsh), st:cset(sh:sibling, ?qsh, ?list), true)
 }

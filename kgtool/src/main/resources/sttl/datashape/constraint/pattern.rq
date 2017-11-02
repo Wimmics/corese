@@ -1,6 +1,4 @@
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:pattern (?shape, ?sh, ?vis, ?s, ?exp) {
   sh:safe(?shape, ?sh, ?suc)
@@ -17,6 +15,6 @@ where {
         false) 
   as ?suc )
 
-  bind (java:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 

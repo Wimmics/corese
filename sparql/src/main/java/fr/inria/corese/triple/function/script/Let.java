@@ -18,45 +18,46 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Let extends Statement {
 
-     public Let (Expression def, Expression body) {
+    public Let(Expression def, Expression body) {
         super(Processor.LET, def, body);
     }
-     
-     @Override
-     public Let getLet(){
-         return this;
-     }
-     
-      /**
-       * let (var = exp){ exp }
-       * @return 
-       */
-        @Override
-      public Variable getVariable(){
-          return getVariableDefinition().getArg(0).getVariable();
-      }
-        
-        @Override
-        public Expression getDefinition(){
-            return getVariableDefinition().getArg(1);
-        }
-        
-        @Override
-        public Expression getBody(){
-            return getArg(1);
-        }
-        
-        public Expression getVariableDefinition(){
-            return getArg(0);
-        }
-    
-     @Override
-    public StringBuffer toString(StringBuffer sb) {         
+
+    @Override
+    public Let getLet() {
+        return this;
+    }
+
+    /**
+     * let (var = exp){ exp }
+     *
+     * @return
+     */
+    @Override
+    public Variable getVariable() {
+        return getVariableDefinition().getBasicArg(0).getVariable();
+    }
+
+    @Override
+    public Expression getDefinition() {
+        return getVariableDefinition().getBasicArg(1);
+    }
+
+    @Override
+    public Expression getBody() {
+        return getBasicArg(1);
+    }
+
+    public Expression getVariableDefinition() {
+        return getBasicArg(0);
+    }
+
+    @Override
+    public StringBuffer toString(StringBuffer sb) {
         sb.append(Processor.LET);
         Expression def = getArg(0);
-        sb.append(" (");        
+        sb.append(" (");
         getArg(0).getArg(0).toString(sb);
-        sb.append(" = "); 
+        sb.append(" = ");
         // may be match() after parsing ...
         getDefinition().toString(sb);
         sb.append(") {");
@@ -67,15 +68,14 @@ public class Let extends Statement {
         sb.append("}");
         return sb;
     }
-     
-     
-     @Override
+
+    @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype val = getDefinition().eval(eval, b, env, p);
         if (val == null) {
             return null;
         }
-        if (val == DatatypeMap.UNBOUND){
+        if (val == DatatypeMap.UNBOUND) {
             val = null;
         }
         Variable var = getVariable();
@@ -84,5 +84,5 @@ public class Let extends Statement {
         env.unset(this, var, val);
         return res;
     }
-    
+
 }

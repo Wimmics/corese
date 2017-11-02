@@ -17,6 +17,8 @@ import fr.inria.acacia.corese.api.IDatatype;
 public  class CoreseFloat extends CoreseDouble{
 	static final CoreseURI datatype=new CoreseURI(RDF.xsdfloat);
 	static final int code = FLOAT;
+        
+        CoreseFloat() {}
 	
 	public CoreseFloat(String value) {
 		super(value);
@@ -29,6 +31,18 @@ public  class CoreseFloat extends CoreseDouble{
 	public CoreseFloat(double value) {
 		super(value);
 	}
+        
+        public static CoreseFloat create(float val) {
+            CoreseFloat dt = new CoreseFloat();
+            dt.setValue(val);
+            return dt;
+        }
+        
+        public static CoreseFloat create(double val) {
+            CoreseFloat dt = new CoreseFloat();
+            dt.setValue(val);
+            return dt;
+        }
 	
         @Override
 	public IDatatype getDatatype(){

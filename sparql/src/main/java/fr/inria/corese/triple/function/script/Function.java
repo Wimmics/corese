@@ -35,13 +35,16 @@ public class Function extends Statement {
     private boolean visited = false;
     
     private IDatatype dt;
-    
+    Term signature;
+    Expression body;
     Metadata annot;
     private HashMap<String, Constant> table;
        
 
     public Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
+        this.signature = fun;
+        this.body = body;
         fun.setExpression(this);
         body.setExpression(this);
         table = new HashMap<>();
@@ -53,7 +56,12 @@ public class Function extends Statement {
     }
     
     public Term getSignature(){
-        return getArg(0).getTerm();
+        return signature; //getArg(0).getTerm();
+    }
+    
+    @Override
+    public Expression getBody() {
+        return body; //getArg(1);
     }
     
     @Override
@@ -61,19 +69,14 @@ public class Function extends Statement {
         if (dt != null){
             return dt;
         }
-        return getFunction().getCName().getDatatypeValue();
+        return getSignature().getCName().getDatatypeValue();
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         return getDatatypeValue();
     }
-
-    @Override
-    public Expression getBody() {
-        return getArg(1);
-    }
-    
+   
     public Constant getType(Variable var){
         return getTable().get(var.getLabel());
     }
@@ -89,7 +92,6 @@ public class Function extends Statement {
     @Override
     public Expression compile(ASTQuery ast){
          Expression exp = super.compile(ast);
-         typecheck(ast);
          if (isTrace()){
              System.out.println(this);
          }
@@ -293,7 +295,8 @@ public class Function extends Statement {
         v.visit(this);
     }
     
-    boolean typecheck(ASTQuery ast){
+    @Override
+    public boolean typecheck(ASTQuery ast){
         Term t = getSignature();
         List<Variable> list = new ArrayList<Variable>();
         int i = 1;

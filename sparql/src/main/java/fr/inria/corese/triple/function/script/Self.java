@@ -16,11 +16,12 @@ public class Self extends TermEval {
     
     public Self(String name){
         super(name);
+        setArity(1);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        return getArg(0).eval(eval, b, env, p);
+        return getBasicArg(0).eval(eval, b, env, p);
     }
     
     

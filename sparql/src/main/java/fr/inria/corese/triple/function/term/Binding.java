@@ -7,6 +7,7 @@ package fr.inria.corese.triple.function.term;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
@@ -136,14 +137,26 @@ public class Binding implements Binder {
             default: unset(var);
         }        
     }
+    
+    
+    public void set(Function exp, Expr var, IDatatype val) {
+        allocate(exp);
+        set(var, val);
+    }
 
+    
+    public void unset(Function exp, Expr var, IDatatype val) {
+        desallocate(exp);
+    }
+    
+  
     /**
      * Level of current function call in the stack
      * Also level of filter for/let
      */
     void pushLevel() {
-        level.add(varList.size());
         currentLevel = varList.size();
+        level.add(currentLevel);
     }
 
     void popLevel() {

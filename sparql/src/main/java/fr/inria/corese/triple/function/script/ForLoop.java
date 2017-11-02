@@ -52,17 +52,17 @@ public class ForLoop extends Statement {
 
     @Override
     public Variable getVariable() {
-        return getArg(0).getVariable();
+        return getBasicArg(0).getVariable();
     }
 
     @Override
     public Expression getDefinition() {
-        return getArg(1);
+        return getBasicArg(1);
     }
 
     @Override
     public Expression getBody() {
-        return getArg(2);
+        return getBasicArg(2);
     }
     
     

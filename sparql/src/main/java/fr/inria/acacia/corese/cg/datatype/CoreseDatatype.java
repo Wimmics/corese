@@ -43,6 +43,8 @@ public class CoreseDatatype
     private static Logger logger = LogManager.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
+    static final CoreseBoolean TRUE = CoreseBoolean.TRUE;
+    static final CoreseBoolean FALSE = CoreseBoolean.FALSE;
     static final CoreseDatatypeException failure = new CoreseDatatypeException("Datatype Exception, statically created");
     static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>(); // 'en' -> CoreseString('en')
     static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); // datatype name -> CoreseURI datatype
@@ -963,7 +965,7 @@ public class CoreseDatatype
     @Override
     public IDatatype eq(IDatatype dt) {
         try {
-            return getValue(this.equalsWE(dt));
+            return (this.equalsWE(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
@@ -972,16 +974,16 @@ public class CoreseDatatype
     @Override
     public IDatatype neq(IDatatype dt) {
         try {
-            return getValue(!this.equalsWE(dt));
+            return (!this.equalsWE(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
     }
 
     @Override
-    public IDatatype le(IDatatype dt) {
+    public IDatatype le(IDatatype dt) {       
         try {
-            return getValue(this.lessOrEqual(dt));
+            return (this.lessOrEqual(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
@@ -990,7 +992,7 @@ public class CoreseDatatype
     @Override
     public IDatatype lt(IDatatype dt) {
         try {
-            return getValue(this.less(dt));
+            return (this.less(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
@@ -999,7 +1001,7 @@ public class CoreseDatatype
     @Override
     public IDatatype ge(IDatatype dt) {
         try {
-            return getValue(this.greaterOrEqual(dt));
+            return (this.greaterOrEqual(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
@@ -1008,14 +1010,14 @@ public class CoreseDatatype
     @Override
     public IDatatype gt(IDatatype dt) {
         try {
-            return getValue(this.greater(dt));
+            return (this.greater(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
             return null;
         }
     }
 
     IDatatype getValue(boolean b) {
-        return (b) ? CoreseBoolean.TRUE : CoreseBoolean.FALSE;
+        return (b) ? TRUE : FALSE;
     }
 
     @Override

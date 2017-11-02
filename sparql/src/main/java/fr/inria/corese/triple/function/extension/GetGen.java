@@ -18,16 +18,17 @@ public class GetGen extends TermEval {
 
     public GetGen(String name){
         super(name);
+        setArity(2);
     }
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt    = getArg(0).eval(eval, b, env, p);
-        IDatatype dtind = getArg(1).eval(eval, b, env, p);
+        IDatatype dt    = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype dtind = getBasicArg(1).eval(eval, b, env, p);
         IDatatype dtvar = null;
         if (arity() == 3){
            dtvar = dtind;
-           dtind = getArg(2).eval(eval, b, env, p); 
+           dtind = getBasicArg(2).eval(eval, b, env, p); 
         }
         
         if (dt == null || dtind == null) {

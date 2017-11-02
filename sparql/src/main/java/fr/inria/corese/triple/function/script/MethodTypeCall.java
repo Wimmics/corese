@@ -15,12 +15,13 @@ public class MethodTypeCall extends Funcall {
     
     public MethodTypeCall(String name){
         super(name);
+        setArity(2);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype name = getArg(0).eval(eval, b, env, p);
-        IDatatype type = getArg(1).eval(eval, b, env, p);
+        IDatatype name = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype type = getBasicArg(1).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 2);
         if (name == null || type == null || param == null){
             return null;

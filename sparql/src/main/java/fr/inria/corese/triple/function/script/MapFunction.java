@@ -27,11 +27,12 @@ public class MapFunction extends Funcall {
     
     public MapFunction(String name){
         super(name);
+        setArity(2);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype name    = getArg(0).eval(eval, b, env, p);
+        IDatatype name    = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
             return null;

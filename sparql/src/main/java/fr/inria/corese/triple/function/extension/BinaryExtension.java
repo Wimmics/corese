@@ -20,8 +20,8 @@ public class BinaryExtension extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt1 = getArg(0).eval(eval, b, env, p);
-        IDatatype dt2 = getArg(1).eval(eval, b, env, p);
+        IDatatype dt1 = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);
         if (dt1 == null || dt2 == null) {
             return null;
         }

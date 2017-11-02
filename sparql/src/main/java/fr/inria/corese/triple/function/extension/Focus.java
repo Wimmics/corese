@@ -18,16 +18,17 @@ public class Focus extends TermEval {
 
     public Focus(String name) {
         super(name);
+        setArity(2);
     }
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt = getArg(0).eval(eval, b, env, p);       
+        IDatatype dt = getBasicArg(0).eval(eval, b, env, p);       
         if (dt == null || !p.isProducer(dt)) {
             return null;
         }
         Producer pp = p.getProducer(dt, env);
-        return getArg(1).eval(eval, b, env, pp);
+        return getBasicArg(1).eval(eval, b, env, pp);
     }
 
    

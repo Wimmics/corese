@@ -17,6 +17,7 @@ public class Iterate extends TermEval {
     
     public Iterate(String name){
         super(name);
+        setArity(2);
     }
     
     @Override

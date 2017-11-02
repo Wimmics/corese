@@ -39,7 +39,7 @@ public class BlankNode extends TermEval {
     }
     
     IDatatype bnode(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt = getArg(0).eval(eval, b, env, p);
+        IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
         if (dt == null) return null;
         Map map = env.getMap();
         IDatatype bn = (IDatatype) map.get(dt.getLabel());

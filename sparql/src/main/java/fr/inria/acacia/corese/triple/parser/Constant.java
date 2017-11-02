@@ -469,7 +469,7 @@ public class Constant extends Atom {
     
     @Override
      public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
-        return getDatatypeValue();
+        return dt;
     }
      @Override
      public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param){

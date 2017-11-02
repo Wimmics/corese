@@ -3,8 +3,8 @@ package fr.inria.corese.triple.function.extension;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.corese.triple.function.core.BinaryFunction;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 
@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Get extends TermEval {
+public class Get extends BinaryFunction {
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
 
     public Get(String name){
@@ -22,8 +22,8 @@ public class Get extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt    = getArg(0).eval(eval, b, env, p);
-        IDatatype dtind = getArg(1).eval(eval, b, env, p);
+        IDatatype dt    = getExp1().eval(eval, b, env, p);
+        IDatatype dtind = getExp2().eval(eval, b, env, p);
                
         if (dt == null || dtind == null) {
             return null;

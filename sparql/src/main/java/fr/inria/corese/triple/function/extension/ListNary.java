@@ -28,7 +28,10 @@ public class ListNary extends TermEval {
         switch (oper()) {
             case ExprType.IOTA: return DatatypeMap.iota(param);
             case ExprType.XT_SET:
-                DatatypeMap.set(param[0], param[1], param[2]);
+                if (param.length == 3) {
+                    return DatatypeMap.set(param[0], param[1], param[2]);
+                }
+                break;
             case ExprType.XT_MERGE:
                 return (param.length == 2) ? DatatypeMap.merge(param[0], param[1]) :  DatatypeMap.merge(param[0]);   
             case ExprType.XT_ADD:

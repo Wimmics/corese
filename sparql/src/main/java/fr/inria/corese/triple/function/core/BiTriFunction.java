@@ -17,17 +17,18 @@ public class BiTriFunction extends TermEval {
        
     public BiTriFunction(String name){
         super(name);
+        setArity(2);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt1 = getArg(0).eval(eval, b, env, p);
-        IDatatype dt2 = getArg(1).eval(eval, b, env, p);
+        IDatatype dt1 = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);
         if (dt1 == null || dt2 == null) return null;
         
         IDatatype dt3 = null, dt4 = null;
         if (arity() == 3) {
-            dt3 = getArg(2).eval(eval, b, env, p);
+            dt3 = getBasicArg(2).eval(eval, b, env, p);
         }
         switch (oper()) {
             case ExprType.REGEX:
@@ -43,7 +44,7 @@ public class BiTriFunction extends TermEval {
              case ExprType.STRREPLACE:
                  if (dt3 == null) return null;
                  if (arity() == 4){
-                     dt4 = getArg(3).eval(eval, b, env, p);
+                     dt4 = getBasicArg(3).eval(eval, b, env, p);
                      if (dt4 == null) return null;
                  }
                 String str = getProcessor().replace(dt1.stringValue(), dt2.stringValue(), dt3.stringValue(), (dt4 == null) ? null : dt4.stringValue());

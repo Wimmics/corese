@@ -17,11 +17,12 @@ public class Bound extends TermEval {
     
     public Bound(String name){
         super(name);
+        setArity(1);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        Node node = env.getNode(getExp(0));
+        Node node = env.getNode(getBasicArg(0));
         if (node == null) {
             return FALSE;
         }

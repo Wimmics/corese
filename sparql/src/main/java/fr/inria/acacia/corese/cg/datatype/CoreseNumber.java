@@ -120,6 +120,21 @@ public abstract class CoreseNumber extends CoreseDatatype {
         }
         return null;
     }
+    
+    @Override
+    public IDatatype minus(long val) {
+        switch (getCode()) {
+            case DOUBLE:
+                return CoreseDouble.create(doubleValue() - val);
+            case FLOAT:
+                return CoreseFloat.create(floatValue() - val);
+            case DECIMAL:
+                return CoreseDecimal.create(doubleValue() - val);
+            case INTEGER:
+                return CoreseInteger.create(longValue() - val);
+        }
+        return null;
+    }
 
     @Override
     public IDatatype minus(IDatatype dt) {

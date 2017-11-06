@@ -31,6 +31,11 @@ public class Sequence extends TermEval {
         return res;
     }
     
-    
+    @Override
+    public void tailRecursion(Function fun){
+        if (getArity() > 0){
+            getArg(getArity() - 1).tailRecursion(fun);
+        }
+    }
    
 }

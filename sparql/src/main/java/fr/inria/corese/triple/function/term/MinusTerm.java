@@ -13,27 +13,41 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  *
  */
 public class MinusTerm extends BinaryFunction {
+    long val;
+    boolean isConstant = false; 
         
     public MinusTerm(String name){
         super(name);
     }
     
-    public MinusTerm(String name, Expression e1, Expression e2){
+    public MinusTerm(String name, Expression e1, Expression e2) {
         super(name, e1, e2);
+        if (e2.isConstant() && e2.getDatatypeValue().getCode() == IDatatype.INTEGER){
+            val = e2.getDatatypeValue().longValue();
+            isConstant = true;
+        }
     }
     
-    public static MinusTerm create(String name, Expression e1, Expression e2){        
+    public static MinusTerm create(String name, Expression e1, Expression e2) {        
         return new MinusTerm(name, e1, e2);
     }
          
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype dt1 = getExp1().eval(eval, b, env, p);
-        IDatatype dt2 = getExp2().eval(eval, b, env, p);
-        if (dt1 == null || dt2 == null) {
+        if (dt1 == null) {
             return null;
         }
-        return dt1.minus(dt2);
+        if (isConstant) {
+            return dt1.minus(val);
+        }
+        else {
+            IDatatype dt2 = getExp2().eval(eval, b, env, p);
+            if (dt2 == null) {
+                return null;
+            }
+            return dt1.minus(dt2);
+        }
     }
       
 }

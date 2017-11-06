@@ -84,5 +84,9 @@ public class Let extends Statement {
         env.unset(this, var, val);
         return res;
     }
-
+    
+    @Override
+    public void tailRecursion(Function fun) {
+        getBody().tailRecursion(fun);
+    }
 }

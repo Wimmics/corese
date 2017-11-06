@@ -256,6 +256,7 @@ public interface IDatatype
      * @return iod.getValue() - this.getValue()
      */
     IDatatype minus(IDatatype iod);
+    IDatatype minus(long val);
 
     /**
      *

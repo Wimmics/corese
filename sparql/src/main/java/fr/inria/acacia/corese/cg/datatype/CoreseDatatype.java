@@ -1040,6 +1040,11 @@ public class CoreseDatatype
     public IDatatype minus(IDatatype iod) {
         return null;
     }
+    
+    @Override
+    public IDatatype minus(long val) {
+        return null;
+    }
 
     @Override
     public IDatatype mult(IDatatype iod) {

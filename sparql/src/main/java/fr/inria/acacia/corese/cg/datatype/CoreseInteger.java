@@ -351,6 +351,11 @@ public class CoreseInteger extends CoreseNumber {
         }
         return null;
     }
+    
+    @Override
+    public IDatatype minus(long val) {
+        return CoreseInteger.create(longValue() - val);
+    }
 
     @Override
     public String getLowerCaseLabel() {

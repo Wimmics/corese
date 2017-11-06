@@ -2,7 +2,6 @@ package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -27,6 +26,9 @@ public class Return extends TermEval {
         return b.result(dt);
     }
     
-    
+     @Override
+    public void tailRecursion(Function fun) {
+        getArg(0).tailRecursion(fun);
+    }
    
 }

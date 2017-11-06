@@ -11,6 +11,7 @@ import java.util.List;
 
 import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.api.core.Entity;
@@ -93,6 +94,10 @@ public class Expression extends TopExp
     
     public boolean typecheck(ASTQuery ast) {
         return true;
+    }
+    
+    public void tailRecursion(Function fun){
+        
     }
 
     /**

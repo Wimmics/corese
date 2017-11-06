@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -104,6 +105,11 @@ public class BinaryFunction extends TermEval {
             return value(l1.toLowerCase().equals(l2.toLowerCase()));
         }
         return value(l1.regionMatches(true, 0, l2, 0, 2));
+    }
+    
+    @Override
+    public void tailRecursion(Function fun){
+        e2.tailRecursion(fun);
     }
  
 }

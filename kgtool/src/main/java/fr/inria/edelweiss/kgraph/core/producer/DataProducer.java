@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core.producer;
 
+import fr.inria.acacia.corese.api.IDatatype;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,7 +91,51 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return this;
     }
      
+    DataProducer empty(){
+        setIterable(new ArrayList<Entity>(0));
+        return this; 
+    } 
      
+    /**
+     * if arg is bnode and bnode is in target graph, bnode is considered as bnode of target graph
+     * if arg is bnode and bnode is not in target graph, it is considered as a joker (a variable) in the triple pattern
+     */
+    public DataProducer iterate(IDatatype s, IDatatype p, IDatatype o) {
+        Node ns = null, np, no = null;
+        if (p == null || p.isBlank()){
+            np = graph.getTopProperty();
+        }
+        else {
+            np = graph.getPropertyNode(p);
+            if (np == null){
+                return empty();
+            }
+        }
+        if (s != null){
+            ns = graph.getNode(s);
+            if (ns == null && ! s.isBlank()){
+                return empty();
+            }
+        }        
+        if (o != null){
+            no = graph.getNode(o);
+            if (no == null && ! o.isBlank()){
+                 return empty();
+            }
+        }
+        
+        if (ns == null) {
+            if (no == null) {
+                return iterate(np);
+            } else {
+                return iterate(np, no, 1);
+            }
+        } else if (no == null) {
+            return iterate(np, ns, 0);
+        } else {
+            return iterate(np, ns, 0).filter(new DataFilterFactory().filter(ExprType.EQ, o));
+        }
+    } 
 
     /**
      * Iterate predicate from named
@@ -225,7 +270,6 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
             else if (last != null && ! different(last, ent.getEdge())){
                 continue;
             }
-            
             if (filter != null && ! filter.eval(ent)) {
                 // filter process from() clause
                 if (filter.fail()) {

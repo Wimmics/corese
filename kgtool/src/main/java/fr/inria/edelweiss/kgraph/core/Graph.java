@@ -2176,7 +2176,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         if (s == null && o != null){
            return getEdges(np, no, null, 1); 
         }
-        return getEdges(np, ns, no, 0);
+        Iterable<Entity> it = getEdges(np, ns, no, 0);
+        if (it == null) {
+            return EMPTY;
+        }
+        return it;
     }
 
     public Iterable<Entity> getEdges(Node predicate) {

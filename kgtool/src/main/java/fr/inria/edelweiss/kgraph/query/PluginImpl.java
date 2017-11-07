@@ -44,6 +44,7 @@ import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
+import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -646,7 +647,8 @@ public class PluginImpl
        return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, obj));        
     }
     
-    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
+    @Deprecated
+    Loopable getLoop2(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
        Loopable loop = new Loopable(){
            @Override
            public Iterable getLoop() {
@@ -657,10 +659,20 @@ public class PluginImpl
        return loop;
     } 
     
+    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
+       Loopable loop = new Loopable(){
+           @Override
+           public Iterable getLoop() {
+               return new DataProducer(getGraph(p)).iterate(value(subj), value(pred), value(obj));
+           }          
+       };
+       return loop;
+    } 
+    
     IDatatype value(IDatatype dt){
-        if (dt == null || dt.isBlank()){
-            return null;
-        }
+//        if (dt == null || dt.isBlank()){
+//            return null;
+//        }
         return dt;
     }
     

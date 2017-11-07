@@ -6,7 +6,6 @@
 package fr.inria.corese.rdftograph.driver;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.corese.rdftograph.RdfToGraph;
 import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
@@ -16,9 +15,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.*;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
-import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 
 import java.io.IOException;
@@ -76,7 +73,10 @@ public class Neo4jDriver extends GdbDriver {
         super.createDatabase(databasePath);
         try {
             g = Neo4jGraph.open(databasePath);
+//            getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s, %s, %s, %s)", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
+            getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_S));
             getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_P));
+            getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_O));
             getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_G));
             getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
             g.tx().commit();
@@ -100,60 +100,6 @@ public class Neo4jDriver extends GdbDriver {
         }
     }
 
-    protected boolean nodeEquals(Node endNode, Value object) {
-        boolean result = true;
-        result &= endNode.getProperty(KIND).equals(RdfToGraph.getKind(object));
-        if (result) {
-            switch (RdfToGraph.getKind(object)) {
-                case BNODE:
-                case IRI:
-                    result &= endNode.getProperty(EDGE_P).equals(object.stringValue());
-                    break;
-                case LITERAL:
-                    Literal l = (Literal) object;
-                    result &= endNode.getProperty(EDGE_P).equals(l.getLabel());
-                    result &= endNode.getProperty(TYPE).equals(l.getDatatype().stringValue());
-                    if (l.getLanguage().isPresent()) {
-                        result &= endNode.hasProperty(LANG) && endNode.getProperty(LANG).equals(l.getLanguage().get());
-                    } else {
-                        result &= !endNode.hasProperty(LANG);
-                    }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns a unique id to store as the key for alreadySeen, to prevent
-     * creation of duplicates.
-     *
-     * @param v
-     * @return
-     */
-    String nodeId(Value v) {
-        StringBuilder result = new StringBuilder();
-        String kind = RdfToGraph.getKind(v);
-        switch (kind) {
-            case IRI:
-            case BNODE:
-                result.append("label=" + v.stringValue() + ";");
-                result.append("value=" + v.stringValue() + ";");
-                result.append("kind=" + kind);
-                break;
-            case LITERAL:
-                Literal l = (Literal) v;
-                result.append("label=" + l.getLabel() + ";");
-                result.append("value=" + l.getLabel() + ";");
-                result.append("type=" + l.getDatatype().toString() + ";");
-                result.append("kind=" + kind);
-                if (l.getLanguage().isPresent()) {
-                    result.append("lang=" + l.getLanguage().get() + ";");
-                }
-                break;
-        }
-        return result.toString();
-    }
-
     @Override
     public boolean isGraphNode(String label) {
         return g.traversal().V().hasLabel(RDF_EDGE_LABEL).has(EDGE_G, label).hasNext();
@@ -170,14 +116,11 @@ public class Neo4jDriver extends GdbDriver {
 //              __.as("e").outE("object").inV().hasLabel("rdf_vertex").has("v_value","http://www.inria.fr/2007/04/17/humans.rdfs#Person"))
 //          .select("e").valueMap()
 
-        GraphTraversal<Vertex, Vertex> traversal = g.traversal().V().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, predicate);
+        GraphTraversal<Vertex, Vertex> traversal = g.traversal().V().has(RDF_EDGE_LABEL, EDGE_S, makeSafeValue(sourceId.stringValue())).has(EDGE_P, predicate).has(EDGE_O, makeSafeValue(objectId.stringValue()));
         for (String s : properties.keySet()) {
             traversal = traversal.has(s, properties.get(s));
         }
-        traversal.match(
-                as("e").outE(SUBJECT_EDGE).inV().hasId(vSource.id()),
-                as("e").outE(OBJECT_EDGE).inV().hasId(vObject.id())
-        ).select("e");
+
         if (traversal.hasNext()) {
             result = traversal.next().id();
         } else {
@@ -187,8 +130,12 @@ public class Neo4jDriver extends GdbDriver {
                 p.add(key);
                 p.add(properties.get(key));
             });
+            p.add(EDGE_S);
+            p.add(makeSafeValue(sourceId.stringValue()));
             p.add(EDGE_P);
             p.add(predicate);
+            p.add(EDGE_O);
+            p.add(makeSafeValue(objectId.stringValue()));
             p.add(T.label);
             p.add(RDF_EDGE_LABEL);
 
@@ -200,74 +147,17 @@ public class Neo4jDriver extends GdbDriver {
         return result;
     }
 
+    private String makeSafeValue(String value) {
+        if (value.length() >= MAX_INDEXABLE_LENGTH) {
+            return Integer.toString(value.hashCode());
+        } else {
+            return value;
+        }
+    }
+
     @Override
     public void commit() {
         g.tx().commit();
-    }
-
-    /**
-     * Returns a new node if v does not exist yet.
-     *
-     * @param v
-     * @return
-     */
-    public Vertex createOrGetNodeIntern(Value v) {
-        GraphTraversal<Vertex, Vertex> it;
-        Vertex result = null;
-        switch (RdfToGraph.getKind(v)) {
-            case IRI:
-            case BNODE: {
-                it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, v.stringValue()).has(KIND, RdfToGraph.getKind(v));
-                if (it.hasNext()) {
-                    result = it.next();
-                } else {
-                    result = g.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, v.stringValue());
-                    result.property(KIND, RdfToGraph.getKind(v));
-                }
-                break;
-            }
-            case LITERAL: {
-                Literal l = (Literal) v;
-                it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, l.getLabel()).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v));
-                if (l.getLanguage().isPresent()) {
-                    it = it.has(LANG, l.getLanguage().get());
-                }
-                if (it.hasNext()) {
-                    result = it.next();
-                } else {
-                    result = g.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, l.getLabel());
-                    result.property(TYPE, l.getDatatype().toString());
-                    result.property(KIND, RdfToGraph.getKind(v));
-                    if (l.getLanguage().isPresent()) {
-                        result.property(LANG, l.getLanguage().get());
-                    }
-                }
-                break;
-            }
-            case LARGE_LITERAL: {
-                Literal l = (Literal) v;
-                it = g.traversal().V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode())).has(TYPE, l.getDatatype().toString()).has(KIND, RdfToGraph.getKind(v)).has(VERTEX_LARGE_VALUE, l.getLabel());
-                if (l.getLanguage().isPresent()) {
-                    it = it.has(LANG, l.getLanguage().get());
-                }
-                if (it.hasNext()) {
-                    result = it.next();
-                } else {
-                    result = g.addVertex(RDF_VERTEX_LABEL);
-                    result.property(VERTEX_VALUE, Integer.toString(l.getLabel().hashCode()));
-                    result.property(VERTEX_LARGE_VALUE, l.getLabel());
-                    result.property(TYPE, l.getDatatype().toString());
-                    result.property(KIND, RdfToGraph.getKind(v));
-                    if (l.getLanguage().isPresent()) {
-                        result.property(LANG, l.getLanguage().get());
-                    }
-                }
-                break;
-            }
-        }
-        return result;
     }
 
     @Override
@@ -757,7 +647,11 @@ public class Neo4jDriver extends GdbDriver {
         }
     }
 
-    private static enum RelTypes implements RelationshipType {
+    public Neo4jGraph getNeo4jGraph() {
+        return (Neo4jGraph) g;
+    }
+
+    private enum RelTypes implements RelationshipType {
         CONTEXT
     }
 
@@ -824,9 +718,5 @@ public class Neo4jDriver extends GdbDriver {
             }
         }
 
-    }
-
-    public Neo4jGraph getNeo4jGraph() {
-        return (Neo4jGraph)g;
     }
 }

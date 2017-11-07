@@ -55,7 +55,7 @@ public class QualitativeTest implements ITest {
     /**
      * Test only that the results are equal using the Database or memory.
      */
-    @Test(dataProvider = "SparqlSemanticTests", groups = "", enabled = true)
+    @Test(dataProvider = "SparqlSemanticTests", groups = "", enabled = false)
     public void testResults(TestDescription test) throws ClassNotFoundException, IOException, InstantiationException, LoadException, IllegalAccessException {
         test.setWarmupCycles(0);
         test.setMeasuredCycles(1);
@@ -72,7 +72,6 @@ public class QualitativeTest implements ITest {
         boolean result;
         try {
             result = test.computeTestResult(timerDb.getMapping(), timerMemory.getMapping());
-//            result = timerDb.getMapping().size() == timerMemory.getMapping().size();
         } catch (Exception ex) {
             ex.printStackTrace();
             result = false;
@@ -83,8 +82,8 @@ public class QualitativeTest implements ITest {
         assertTrue(result, test.getId());
     }
 
-    @Test(dataProvider = "SparqlSemanticTests", groups = "", enabled = false)
-    public void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    @Test(dataProvider = "quantitative", groups = "", enabled = true)
+    public void testBasic(TestDescription test) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, LoadException {
         Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
         java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
         java.util.logging.Logger.getGlobal().setUseParentHandlers(false);
@@ -92,14 +91,14 @@ public class QualitativeTest implements ITest {
         newHandler.setLevel(Level.FINEST);
         java.util.logging.Logger.getGlobal().addHandler(newHandler);
 
-        CoreseTimer timerMemory = null;
-        CoreseTimer timerDb = null;
+        CoreseTimer timerMemory = test.getTestSuite().getMemoryTimer(test);
+        CoreseTimer timerDb = test.getTestSuite().getDatabaseTimer(test);
         try {
             setCacheForDb(test);
             System.gc();
-            timerDb = CoreseTimer.build(test).setMode(CoreseTimer.Profile.DB).init().run();
+            timerDb = timerDb.run();
             System.gc();
-            timerMemory = CoreseTimer.build(test).setMode(CoreseTimer.Profile.MEMORY).init().run();
+            timerMemory = timerMemory.run();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -188,11 +187,11 @@ public class QualitativeTest implements ITest {
     @DataProvider(name = "quantitative", parallel = false)
     public Iterator<Object[]> buildTests() throws Exception {
         String[] inputFiles = {
-                "btc-2010-chunk-000.nq.gz:1",
-                "btc-2010-chunk-000.nq.gz:3",
-                "btc-2010-chunk-000.nq.gz:10",
-                "btc-2010-chunk-000.nq.gz:31",
-                "btc-2010-chunk-000.nq.gz:100",
+//                "btc-2010-chunk-000.nq.gz:1",
+//                "btc-2010-chunk-000.nq.gz:3",
+//                "btc-2010-chunk-000.nq.gz:10",
+//                "btc-2010-chunk-000.nq.gz:31",
+//                "btc-2010-chunk-000.nq.gz:100",
 //                "btc-2010-chunk-000.nq.gz:316",
 //                "btc-2010-chunk-000.nq.gz:1000",
 //                "btc-2010-chunk-000.nq.gz:3162",
@@ -202,22 +201,25 @@ public class QualitativeTest implements ITest {
 //                "btc-2010-chunk-000.nq.gz:316227",
 //                "btc-2010-chunk-000.nq.gz:1000000",
 //                "btc-2010-chunk-000.nq.gz:3162277",
-//                "btc-2010-chunk-000.nq.gz:10000000",
+                "btc-2010-chunk-000.nq.gz:10000000",
 //                "btc-2010-chunk-00(0|1|2|3).nq.gz",
 //                "btc-2010-chunk-00\\d.nq.gz",
 //                "btc-2010-chunk-0\\d.nq.gz",
 //                "btc-2010-chunk-0(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9).nq.gz"
         };
-        ArrayList<String> requests = new ArrayList<String>();
-        requests.add("select ?s ?t where { ?s rdf:type ?t} limit 1");
-        requests.add("select ?s ?p ?o ?q where { ?s ?p ?o . ?o ?q ?s}");
-//        requests.addAll(makeAllRequests("select ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24>"));
+        ArrayList<String> requests = new ArrayList<>();
+        requests.add("<AT_DB>\nselect ?s ?t where { ?s rdf:type ?t} limit 1");
+//        requests.add("<AT_DB>\nselect ?s ?p ?o ?q where { ?s ?p ?o . ?o ?q ?s}");
+        requests.addAll(makeAllRequests("<AT_DB>\nselect ?s ?p ?o where { ?s ?p ?o }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24>"));
 //		// À décommenter seulement une fois implémentés les appels G*** (sinon on tombe dans le cas par défaut : énumération exhaustive du graphe)
 ////		requests.addAll(makeAllRequests("select ?s ?p ?o ?g where { graph ?g { ?s ?p ?o } }", "<http://www.janhaeussler.com/?sioc_type=user&sioc_id=1> <http://webns.net/mvcb/generatorAgent> <http://rdfs.org/sioc/wp-sioc.php?version=1.24> <http://www.janhaeussler.com/?sioc_type=user&sioc_id=1>"));
-//		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
-//		requests.add("select ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
+        requests.add("<AT_DB>\nselect ?s ?p ?o where { ?s ?p ?o FILTER regex(?s, \"kaufkauf\") }");
+        requests.add("<AT_DB>\nselect ?s ?p ?o where { ?s ?p ?o FILTER regex(?o, \"weather\", \"i\") }");
 
-        return new FileAndRequestIterator(inputFiles, requests).setInputRoot(inputRoot).setOutputRoot(outputRoot);
+        return new FileAndRequestIterator(inputFiles, requests).
+                setInputRoot(inputRoot).
+                setOutputRoot(outputRoot).
+                setCreationMode(TestSuite.DatabaseCreation.IF_NOT_EXIST);
     }
 
     @DataProvider(name = "SparqlSemanticTests", parallel = false)

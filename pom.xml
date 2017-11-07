@@ -162,7 +162,7 @@
 		<module>kgtool</module>
 		<module>kgserver</module>
 		<!--<module>kgserver-stubs</module>-->
-		<module>kg-dqp</module>
+        <!-- <module>kg-dqp</module> -->
 		<module>kgimport</module>
 		<module>sparql</module>
 		<module>rif</module>
@@ -418,7 +418,12 @@
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.2</version>
-			</dependency>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tinkerpop</groupId>
+                <artifactId>gremlin-core</artifactId>
+                <version>3.2.4</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
     

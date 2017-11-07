@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgenv.parser;
 
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.acacia.corese.cg.datatype.DatatypeHierarchy;
 import fr.inria.corese.kgenv.federate.ServiceVisitor;
 import java.util.ArrayList;

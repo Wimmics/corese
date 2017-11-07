@@ -241,7 +241,7 @@ public class Metadata extends ASTObject
             return map.keySet().iterator();
     }
     
-    int type(String name){
+    public int type(String name){
         Integer i = annotation.get(name);
         if (i == null){
             i = UNDEFINED;

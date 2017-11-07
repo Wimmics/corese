@@ -17,9 +17,7 @@ public interface Computer {
     Computer getComputer(Environment env, Producer p, Expr function); 
     Environment getEnvironment();  
     
-    //IDatatype method(String name, IDatatype type, IDatatype[] args, Environment env, Producer p);    
     IDatatype function(Expr exp, Environment env, Producer p);
-    IDatatype aggregate(Expr exp, Environment env, Producer p);
     IDatatype exist(Expr exp, Environment env, Producer p);
         
     Expr getDefine(Expr exp, Environment env);  

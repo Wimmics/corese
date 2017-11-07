@@ -194,5 +194,15 @@ public class SPARQLProcess extends  WorkflowProcess {
     public void setQuery(String query) {
         this.query = query;
     }
+    
+    @Override
+    public boolean isQuery() {
+        return true;
+    }
+    
+    @Override
+    public SPARQLProcess getQueryProcess(){
+        return this;
+    }
         
 }

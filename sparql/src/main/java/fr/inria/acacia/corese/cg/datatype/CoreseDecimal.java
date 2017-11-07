@@ -18,6 +18,8 @@ import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 public  class CoreseDecimal extends CoreseDouble {
 	static final CoreseURI datatype=new CoreseURI(RDF.xsddecimal);
 	static final int code = DECIMAL;
+        
+        CoreseDecimal() {}
 	
 	public CoreseDecimal(String value) throws  CoreseDatatypeException {
 		super(value);
@@ -29,6 +31,12 @@ public  class CoreseDecimal extends CoreseDouble {
 	
 	public CoreseDecimal(double value) {
 		super(value);
+	}
+        
+        public static CoreseDecimal create(double value) {
+            CoreseDecimal dt = new CoreseDecimal();
+            dt.setValue(value);
+            return dt;
 	}
 	
 	

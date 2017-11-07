@@ -2,27 +2,25 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Aug 24 11:53:21 CEST 2017
+Thu Oct 26 16:48:59 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:equals1 (?shape, ?sh, ?vis, ?s, ?p){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
-  bind (java:path(?shape, ?s, ?p) as ?l)
+  bind (sh:path(?shape, ?s, ?p) as ?l)
 
   bind (xt:member(?s, ?l) as ?suc) 
   
-  bind (java:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -32,20 +30,18 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:disjoint (?shape, ?sh, ?vis, ?s, ?p){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
-  bind (java:path(?shape, ?s, ?p) as ?l)
+  bind (sh:path(?shape, ?s, ?p) as ?l)
   
   bind (! xt:member(?s, ?l) as ?suc) 
   
-  bind (java:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -55,22 +51,20 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:equals2 (?shape, ?sh, ?vis, ?s, ?p){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
 
-  bind (java:path(?shape, ?s, ?p) as ?l)
+  bind (sh:path(?shape, ?s, ?p) as ?l)
   
   values ?m { unnest(?l) }
   
   bind (?s = ?m as ?suc)
   
-  bind (java:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis) as ?b)
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -80,9 +74,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:pattern (?shape, ?sh, ?vis, ?s, ?exp) {
   sh:safe(?shape, ?sh, ?suc)
@@ -99,7 +91,7 @@ where {
         false) 
   as ?suc )
 
-  bind (java:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 
 ]]>
@@ -109,9 +101,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:equals (?shape, ?sh, ?vis, ?s, ?p){
      st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p)
@@ -128,9 +118,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:class (?shape, ?sh, ?vis, ?s, ?c){
   sh:safe(?shape, ?sh, ?suc)
@@ -138,7 +126,7 @@ template sh:class (?shape, ?sh, ?vis, ?s, ?c){
 where {
 
   bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
-  bind (java:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?s, ?suc, ?vis) as ?b)
 }
 
 ]]>
@@ -153,9 +141,7 @@ where {
 # Evaluate SPARQL query with pre-bind of variable $this with focus nodes
 # SPARQL query returns solutions that fail the Constraint
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 template sh:sparql (?shape, ?sh, ?vis, ?s, ?cst) {
    sh:safe(?shape, ?sh, ?suc)
 }
@@ -184,7 +170,7 @@ where {
     # SPARQL query returns solutions that fail
     bind (false as ?suc)
     
-    bind (java:report(sh:sparql, ?cst, ?shape, ?s, ?path, ?value, ?suc, ?vis) as ?b)
+    bind (st:report(sh:sparql, ?cst, ?shape, ?s, ?path, ?value, ?suc, ?vis) as ?b)
     
 }
 
@@ -196,9 +182,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template st:profile {}
 where {}
@@ -232,18 +216,16 @@ function st:optimize(?shape, ?sh){
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:datatype (?shape, ?sh, ?vis, ?s, ?d){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
   
-  bind (java:datatype(?s, ?d)  as ?suc)
+  bind (sh:datatype(?s, ?d)  as ?suc)
   
-  bind (java:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 ]]>
 </body>
@@ -252,9 +234,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
     st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
@@ -276,9 +256,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -294,10 +272,10 @@ where {
   }
   
   values ?s { unnest(?ls) }
+    
+  bind (coalesce(sh:functioncall(?q, ?shape, ?s, ?m), false) as ?suc )
   
-  bind (coalesce(java:functioncall(?q, ?shape, ?s, ?m), false) as ?suc )
-  
-  bind (java:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 
 ]]>

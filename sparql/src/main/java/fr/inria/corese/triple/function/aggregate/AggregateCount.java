@@ -20,6 +20,7 @@ public class AggregateCount extends Aggregate {
     
     public AggregateCount(String name) {
         super(name);
+        setArity(0);
         start();
     }
     

@@ -18,11 +18,12 @@ public class ListUnary extends TermEval {
 
     public ListUnary(String name){
         super(name);
+        setArity(1);
     }
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype list = getArg(0).eval(eval, b, env, p);       
+        IDatatype list = getBasicArg(0).eval(eval, b, env, p);       
         if (list == null) {
             return null;
         }

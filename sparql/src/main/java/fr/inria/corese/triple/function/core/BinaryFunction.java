@@ -3,11 +3,15 @@ package fr.inria.corese.triple.function.core;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,15 +19,59 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  *
  */
 public class BinaryFunction extends TermEval {
-       
+    
+    private Expression e1, e2;
+          
     public BinaryFunction(String name){
         super(name);
+        setArity(2);
+    }
+    
+    public BinaryFunction(String name, Expression e1, Expression e2){
+        super(name, e1, e2);
+        setArity(2);
+    } 
+    
+    public Expression getExp1() {
+        return e1;
+    }
+    
+    public Expression getExp2() {
+        return e2;
+    }      
+      
+    @Override
+    public void add(Expression exp) {
+        // do not move this (because it tests arity)
+       set(getArgs().size(), exp);
+       super.add(exp);
+    }
+    
+    @Override
+    public void setArg(int i, Expression exp){
+        set(i, exp);
+        super.setArg(i, exp);
+    }
+    
+    @Override
+    public void setArgs(ArrayList<Expression> list) {
+        super.setArgs(list);
+        for (int i = 0; i<list.size(); i++){
+            set(i, getArg(i));
+        }
+    }
+    
+    void set(int i, Expression exp){
+        switch (i) {
+            case 0: e1 = exp; break;
+            case 1: e2 = exp; break;
+        }
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt1 = getArg(0).eval(eval, b, env, p);
-        IDatatype dt2 = getArg(1).eval(eval, b, env, p);
+        IDatatype dt1 = e1.eval(eval, b, env, p);
+        IDatatype dt2 = e2.eval(eval, b, env, p);
         if (dt1 == null || dt2 == null) return null;
         
         switch (oper()){
@@ -57,6 +105,11 @@ public class BinaryFunction extends TermEval {
             return value(l1.toLowerCase().equals(l2.toLowerCase()));
         }
         return value(l1.regionMatches(true, 0, l2, 0, 2));
+    }
+    
+    @Override
+    public void tailRecursion(Function fun){
+        e2.tailRecursion(fun);
     }
  
 }

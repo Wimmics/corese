@@ -2,6 +2,7 @@ package fr.inria.corese.triple.function.core;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.CoreseDouble;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
@@ -23,7 +24,7 @@ public class ZeroaryFunction extends TermEval {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         switch (oper()){
-            case ExprType.RANDOM:   return DatatypeMap.newInstance(Math.random());
+            case ExprType.RANDOM:   return CoreseDouble.create(Math.random());
             case ExprType.NOW:      return DatatypeMap.newDate();
         } 
         return null;

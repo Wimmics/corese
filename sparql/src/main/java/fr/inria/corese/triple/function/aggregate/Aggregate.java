@@ -35,6 +35,7 @@ public class Aggregate extends TermEval {
     
     public Aggregate(String name) {
         super(name);
+        setArity(1);
     } 
     
     Aggregate duplicate() {
@@ -49,23 +50,7 @@ public class Aggregate extends TermEval {
         }
         return this;
     }
-    
-    void fill(Term agg){
-        agg.setOper(oper());
-        agg.setType(type());
-        agg.setModality(getModality());
-        agg.setArg(getArg());
-        agg.setName(getName());
-        agg.setLongName(getLongName());
-        agg.setArgs(getArgs());
-        agg.setExpList(getExpList());
-    }
-    
-     //@Override
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
-        return eval.aggregate(this, env, p);
-    }
-    
+             
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         if (isRunning){
@@ -83,13 +68,14 @@ public class Aggregate extends TermEval {
         for (Mapping map : env.getAggregate()) {
             env.aggregate(map, n++);
             if (map.getBind() == null) {
-                map.setBind(Binding.create());
+                //map.setBind(Binding.create());
+                map.setBind(b);
             }
             // TODO: should we inherit Binding b for aggregate eval ?
             // (let (x = exp) { sum(z + x) } as ?sum)
             Binding bind = (Binding) map.getBind();
             // eval aggregate exp
-            dt = getArg(0).eval(eval, bind, map, p);
+            dt = getBasicArg(0).eval(eval, bind, map, p);
             
             if (dt != null) {
                 switch (oper()){
@@ -142,7 +128,7 @@ public class Aggregate extends TermEval {
     }
 
     public IDatatype result() {
-        return TRUE;
+        return null;
     }
 
     public boolean accept(IDatatype dt) {

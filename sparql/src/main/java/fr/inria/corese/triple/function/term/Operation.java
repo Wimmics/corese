@@ -4,6 +4,7 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.corese.triple.function.core.BinaryFunction;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -13,8 +14,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Operation extends TermEval {
-    
+public class Operation extends BinaryFunction {
+        
     public Operation(String name){
         super(name);
     }
@@ -22,11 +23,11 @@ public class Operation extends TermEval {
     public Operation(String name, Expression e1, Expression e2){
         super(name, e1, e2);
     }
-    
+         
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt1 = getArg(0).eval(eval, b, env, p);
-        IDatatype dt2 = getArg(1).eval(eval, b, env, p);
+        IDatatype dt1 = getExp1().eval(eval, b, env, p);
+        IDatatype dt2 = getExp2().eval(eval, b, env, p);
         if (dt1 == null || dt2 == null) {
             return null;
         }
@@ -36,30 +37,15 @@ public class Operation extends TermEval {
             case ExprType.DIV:      return dt1.div(dt2);
             case ExprType.MINUS:    return dt1.minus(dt2);
             case ExprType.POWER:    return DatatypeMap.newInstance(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
+            
+            case ExprType.EQ:       return dt1.eq(dt2);
+            case ExprType.NEQ:      return dt1.neq(dt2);
+            case ExprType.LE:       return dt1.le(dt2);
+            case ExprType.LT:       return dt1.lt(dt2);
+            case ExprType.GT:       return dt1.gt(dt2);
+            case ExprType.GE:       return dt1.ge(dt2);
         }
         return null;
     }
-    
-    @Override
-    public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param) {
-        IDatatype dt1 = getArg(0).eval(eval, env, p, param);
-        IDatatype dt2 = getArg(1).eval(eval, env, p, param);
-        if (dt1 == null || dt2 == null) {
-            return null;
-        }
-        switch (oper()) {
-            case ExprType.PLUS:
-                return dt1.plus(dt2);
-            case ExprType.MULT:
-                return dt1.mult(dt2);
-            case ExprType.DIV:
-                return dt1.div(dt2);
-            case ExprType.MINUS:
-                return dt1.minus(dt2);
-            case ExprType.POWER:
-                return DatatypeMap.newInstance(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
-        }
-        return null;
-    }
-
+      
 }

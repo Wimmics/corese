@@ -26,10 +26,8 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
         this.start = start;
         this.end = end;
         this.step = step;
-        res  = new CoreseInteger(0);
-        res.setLabel(null);
-        next = new CoreseInteger(0);
-        next.setLabel(null);
+        res  = CoreseInteger.create(0);
+        next = CoreseInteger.create(0);
     }
     
     @Override

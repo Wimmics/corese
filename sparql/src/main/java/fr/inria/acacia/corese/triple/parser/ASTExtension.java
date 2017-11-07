@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import java.util.ArrayList;

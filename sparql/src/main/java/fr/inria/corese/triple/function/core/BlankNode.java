@@ -8,6 +8,7 @@ import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import java.util.Map;
 
 /**
  *
@@ -24,6 +25,9 @@ public class BlankNode extends TermEval {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        if (arity() == 1){
+            return bnode(eval, b, env, p);
+        }
         switch (oper()){
             case ExprType.PATHNODE: return DatatypeMap.createBlank(name + count());
             default: return DatatypeMap.createBlank();                   
@@ -32,6 +36,18 @@ public class BlankNode extends TermEval {
     
     synchronized long count(){
         return count++;
+    }
+    
+    IDatatype bnode(Computer eval, Binding b, Environment env, Producer p) {
+        IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
+        if (dt == null) return null;
+        Map map = env.getMap();
+        IDatatype bn = (IDatatype) map.get(dt.getLabel());
+        if (bn == null) {
+            bn = DatatypeMap.createBlank();
+            map.put(dt.getLabel(), bn);
+        }
+        return bn;
     }
    
 }

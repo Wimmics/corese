@@ -552,5 +552,13 @@ public class WorkflowProcess implements AbstractProcess {
     public void setTime(long time) {
         this.time = time;
     }
+    
+    public boolean isQuery() {
+        return false;
+    }
+    
+    public SPARQLProcess getQueryProcess(){
+        return null;
+    }
 
 }

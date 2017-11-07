@@ -2,8 +2,7 @@ package fr.inria.corese.triple.function.aggregate;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.Function;
-import fr.inria.corese.triple.function.script.Extension;
+import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -22,12 +21,7 @@ public class AggregateTemplate extends Aggregate {
     public AggregateTemplate(String name) {
         super(name);
     }
-          
-    //@Override
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {  
-        return eval.aggregate(this, env, p);
-    }
-    
+              
     /**
      * template st:aggregate(?out)
      * Two cases:

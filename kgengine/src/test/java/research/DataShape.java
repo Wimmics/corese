@@ -119,7 +119,7 @@ public class DataShape {
     }
 
     public static void main() throws LoadException, EngineException, IOException {
-        //new DataShape().test();
+        new DataShape().testSimple();
     }
     
       @Test
@@ -219,7 +219,7 @@ public class DataShape {
 
     void file(String file) throws EngineException, LoadException {
 
-//        if (! file.contains("uniqueLang")){
+//        if ( file.contains("shacl-shacl")){
 //            return;
 //        }
 

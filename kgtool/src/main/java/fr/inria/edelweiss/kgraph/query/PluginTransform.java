@@ -612,6 +612,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * Transformer what is default behavior set st:process() to it's default
      * behavior the default behavior is st:turtle
      */
+    @Deprecated
     public IDatatype processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
         Extension ext = env.getQuery().getExtension();
         if (ext != null && ext.isDefined(exp)) {

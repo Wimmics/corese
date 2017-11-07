@@ -6,9 +6,7 @@
 # compute subList of values of path ?s ?p that match qualifiedValueShape ?qsh
 # subList size must match min and max
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:qualifiedValueShape (?shape, ?sh, ?vis, ?s, ?p, ?qsh, ?value) {
   sh:safe(?shape, ?sh, ?suc1 && ?suc2)
@@ -35,8 +33,8 @@ where {
   bind (xt:size(?qlist) >= coalesce(?min, 0) as ?suc1) 
   bind (xt:size(?qlist) <= coalesce(?max, xt:size(?qlist)) as ?suc2) 
 
-  bind (java:report(sh:qualifiedMinCount, ?sh, ?shape, ?s, ?p, ?s, ?suc1, ?vis) as ?b1)
-  bind (java:report(sh:qualifiedMaxCount, ?sh, ?shape, ?s, ?p, ?s, ?suc2, ?vis) as ?b2)
+  bind (st:report(sh:qualifiedMinCount, ?sh, ?shape, ?s, ?p, ?s, ?suc1, ?vis) as ?b1)
+  bind (st:report(sh:qualifiedMaxCount, ?sh, ?shape, ?s, ?p, ?s, ?suc2, ?vis) as ?b2)
 }
 
 #
@@ -56,7 +54,7 @@ function sh:disjoint(?o, ?shape, ?qsh, ?s){
 # Return the list of value nodes that match qualified shape ?sh 
 #
 function sh:qualified(?shape, ?sh, ?s, ?p){
-     let (?list = java:path(?shape, ?s, ?p)) {
+     let (?list = sh:path(?shape, ?s, ?p)) {
         mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?sh)
      }
 }

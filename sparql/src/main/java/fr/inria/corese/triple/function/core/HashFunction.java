@@ -22,12 +22,13 @@ public class HashFunction extends TermEval {
 
     public HashFunction(String name) {
         super(name);
+        setArity(1);
     }
     
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt = getArg(0).eval(eval, b, env, p);
+        IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
         if (dt == null) {
             return null;
         }

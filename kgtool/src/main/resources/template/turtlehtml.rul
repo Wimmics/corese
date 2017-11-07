@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Aug 24 11:53:21 CEST 2017
+Thu Oct 26 16:48:59 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -45,8 +45,9 @@ where {
 template st:start {
     if (st:get(st:number, true), 
         st:format("# %s%s", st:number(), st:nl()), "")
-    
+        
     st:apply-templates(?x)
+    
     ; separator = "\n\n"
 }
 where {
@@ -54,7 +55,7 @@ where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
     bind (st:get(st:uri) as ?uri)
-    bind (bound(?uri) as ?sort)
+    bind (bound(?uri) as ?sort)    
     ?x ?p ?y     
     filter ( 
       isURI(?x) 

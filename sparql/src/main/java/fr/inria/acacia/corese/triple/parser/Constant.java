@@ -444,7 +444,7 @@ public class Constant extends Atom {
     }
 
     @Override
-    void visit(ExpressionVisitor v) {
+    public void visit(ExpressionVisitor v) {
         v.visit(this);
     }
 
@@ -469,7 +469,7 @@ public class Constant extends Atom {
     
     @Override
      public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
-        return getDatatypeValue();
+        return dt;
     }
      @Override
      public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param){

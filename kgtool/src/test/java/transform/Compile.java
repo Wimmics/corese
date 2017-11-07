@@ -43,13 +43,13 @@ public class Compile {
     public void pplib() {
         String lib = srclib;
             
-        if (false) {
-            translate(root + "datashape/main",     lib + "dsmain.rul");
-            translate(root + "datashape/core",     lib + "dscore.rul");
-            translate(root + "datashape/path",     lib + "dspath.rul");
-            translate(root + "datashape/constraint",  lib + "dsconstraint.rul");
-            translate(root + "datashape/pprint",  lib + "dspprint.rul");
-            translate(root + "datashape/result",   lib + "dsresult.rul");
+        if (true) {
+            translate(root + "datashape/main",      lib + "dsmain.rul");
+            translate(root + "datashape/core",      lib + "dscore.rul");
+            translate(root + "datashape/path",      lib + "dspath.rul");
+            translate(root + "datashape/constraint",lib + "dsconstraint.rul");
+            translate(root + "datashape/pprint",    lib + "dspprint.rul");
+            translate(root + "datashape/result",    lib + "dsresult.rul");
         }
 
         translate(root + "list", lib + "list.rul");

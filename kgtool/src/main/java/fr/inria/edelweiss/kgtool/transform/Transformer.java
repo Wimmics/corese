@@ -1025,6 +1025,7 @@ public class Transformer  {
     IDatatype result(Query q, List<Node> list){
         Query tq =  (q != null && contains(q)) ? q : qe.getTemplate();        
         Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
+        exec.getEvaluator().init(mem);
         mem.init(tq);
         Node out = tq.getExtNode(OUT, true);
         Mappings map = Mappings.create(tq);

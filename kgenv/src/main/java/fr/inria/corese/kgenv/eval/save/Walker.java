@@ -1,4 +1,4 @@
-package fr.inria.corese.kgenv.eval;
+package fr.inria.corese.kgenv.eval.save;
 
 import java.util.Comparator;
 import java.util.List;

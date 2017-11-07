@@ -16,15 +16,16 @@ public class SetFunction extends TermEval {
     
     public SetFunction(String name){
         super(name);
+        setArity(2);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype val = getArg(1).eval(eval, b, env, p);
+        IDatatype val = getBasicArg(1).eval(eval, b, env, p);
         if (val == null) {
             return null;
         }
-        b.bind(this, getArg(0), val);
+        b.bind(this, getBasicArg(0), val);
         return val;
     }   
    

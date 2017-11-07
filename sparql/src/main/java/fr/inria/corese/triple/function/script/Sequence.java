@@ -2,7 +2,6 @@ package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
@@ -25,13 +24,18 @@ public class Sequence extends TermEval {
         IDatatype res = TRUE;
         for (Expression exp : getArgs()) {
             res = exp.eval(eval, b, env, p);
-            if (isReturn(res)) {
+                if (b.isResult()) { //if (isReturn(res)) {
                 return res;
             }
         }
         return res;
     }
     
-    
+    @Override
+    public void tailRecursion(Function fun){
+        if (getArity() > 0){
+            getArg(getArity() - 1).tailRecursion(fun);
+        }
+    }
    
 }

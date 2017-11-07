@@ -1,6 +1,4 @@
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
   if (bound(?o), 
@@ -15,8 +13,8 @@ where {
       sh:qualifiedValueShape sh:sparql
     }
     ?sh ?oper ?b  
-    # uniqueLang test case requires boolean true and skip boolean "1"^^xsd:boolean !!!
     filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
+
   }
   
   values ?s { unnest(?ls) }

@@ -4,7 +4,6 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
@@ -21,11 +20,12 @@ public class Funcall extends TermEval {
 
     public Funcall(String name) {
         super(name);
+        setArity(1);
     }
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype name = getArg(0).eval(eval, b, env, p);
+        IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
             return null;
@@ -60,6 +60,6 @@ public class Funcall extends TermEval {
         if (dt == null) {
             return null;
         }
-        return DatatypeMap.getResultValue(dt);
+        return b.resultValue(dt);
     }
 }

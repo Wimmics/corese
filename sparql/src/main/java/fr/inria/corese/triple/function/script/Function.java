@@ -1,10 +1,19 @@
-package fr.inria.acacia.corese.triple.parser;
+package fr.inria.corese.triple.function.script;
 
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
+import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.triple.function.term.Binding;
+import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 import java.util.ArrayList;
@@ -27,13 +36,16 @@ public class Function extends Statement {
     private boolean visited = false;
     
     private IDatatype dt;
-    
+    Term signature;
+    Expression body;
     Metadata annot;
     private HashMap<String, Constant> table;
        
 
-    Function(Term fun, Expression body) {
+    public Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
+        this.signature = fun;
+        this.body = body;
         fun.setExpression(this);
         body.setExpression(this);
         table = new HashMap<>();
@@ -45,7 +57,12 @@ public class Function extends Statement {
     }
     
     public Term getSignature(){
-        return getArg(0).getTerm();
+        return signature; //getArg(0).getTerm();
+    }
+    
+    @Override
+    public Expression getBody() {
+        return body; //getArg(1);
     }
     
     @Override
@@ -53,19 +70,14 @@ public class Function extends Statement {
         if (dt != null){
             return dt;
         }
-        return getFunction().getCName().getDatatypeValue();
+        return getSignature().getCName().getDatatypeValue();
     }
     
     @Override
-    public IDatatype eval(Computer eval, fr.inria.corese.triple.function.term.Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         return getDatatypeValue();
     }
-
-    @Override
-    public Expression getBody() {
-        return getArg(1);
-    }
-    
+   
     public Constant getType(Variable var){
         return getTable().get(var.getLabel());
     }
@@ -81,7 +93,6 @@ public class Function extends Statement {
     @Override
     public Expression compile(ASTQuery ast){
          Expression exp = super.compile(ast);
-         typecheck(ast);
          if (isTrace()){
              System.out.println(this);
          }
@@ -110,11 +121,11 @@ public class Function extends Statement {
     }
     
     
-    Metadata getMetadata(){
+    public Metadata getMetadata(){
         return annot;
     }
     
-    boolean hasMetadata(){
+    public boolean hasMetadata(){
         return annot != null;
     }
     
@@ -128,7 +139,7 @@ public class Function extends Statement {
         return getMetadata().getValues(name);
     }
     
-    void annotate(Metadata m){
+    public void annotate(Metadata m){
         if (m == null){
             return;
         }
@@ -252,7 +263,7 @@ public class Function extends Statement {
         return lambda;
     }
     
-    void defineLambda(){
+    public void defineLambda(){
         setLambda(true);;
         dt = DatatypeMap.createObject(getDatatypeValue().stringValue(), this);
     }
@@ -281,11 +292,12 @@ public class Function extends Statement {
     }
     
     @Override
-    void visit(ExpressionVisitor v) {
+    public void visit(ExpressionVisitor v) {
         v.visit(this);
     }
     
-    boolean typecheck(ASTQuery ast){
+    @Override
+    public boolean typecheck(ASTQuery ast){
         Term t = getSignature();
         List<Variable> list = new ArrayList<Variable>();
         int i = 1;
@@ -299,7 +311,19 @@ public class Function extends Statement {
                 list.add(var.getVariable());
             }
         }
+        tailRecursion();
         return true;
     }   
+    
+    /**
+     * Last statement is recursive call 
+     */
+    public void tailRecursion(){
+        getBody().tailRecursion(this);
+    }
+
+    private Expression lastStatement() {
+        return this;
+    }
 
 }

@@ -34,6 +34,8 @@ public class CoreseInteger extends CoreseNumber {
     static final int code = INTEGER;
     long lvalue;
 
+    CoreseInteger() {}
+    
     public CoreseInteger(String value) {
         setLabel(value);
         lvalue = new Integer(value).intValue();
@@ -44,9 +46,23 @@ public class CoreseInteger extends CoreseNumber {
         setLabel(Integer.toString(value));
     }
     
-     public CoreseInteger(long value) {
+    public CoreseInteger(long value) {
         lvalue = value;
         setLabel(Long.toString(value));
+    }
+    
+    // for computing, without stored string label
+    public static CoreseInteger create(long value) {
+        CoreseInteger i = new CoreseInteger();
+        i.setValue(value);
+        return i;
+    }
+    
+    // for computing, without stored string label
+    public static CoreseInteger create(int value) {
+        CoreseInteger i = new CoreseInteger();
+        i.setValue(value);
+        return i;
     }
 
     @Override
@@ -80,6 +96,10 @@ public class CoreseInteger extends CoreseNumber {
     }
     
     void setValue(int n){
+        lvalue = n;
+    }
+    
+    void setValue(long n){
         lvalue = n;
     }
 
@@ -152,7 +172,7 @@ public class CoreseInteger extends CoreseNumber {
                 throw failure();
         }
     }
-
+      
     @Override
     public boolean greater(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
@@ -200,6 +220,141 @@ public class CoreseInteger extends CoreseNumber {
             default:
                 throw failure();
         }
+    }
+    
+     @Override 
+     public IDatatype eq(IDatatype dt) {  
+        switch (dt.getCode()) {
+            case INTEGER:
+                return (lvalue == dt.longValue()) ? TRUE : FALSE;
+
+            case FLOAT:
+            case DECIMAL:
+            case DOUBLE:
+                return (doubleValue() == dt.doubleValue()) ? TRUE : FALSE ;
+                
+            case URI:
+            case BLANK:
+                return FALSE;
+                    
+            default:
+                return null;
+        }
+    }
+     
+     @Override 
+     public IDatatype neq(IDatatype dt) {  
+        switch (dt.getCode()) {
+            case INTEGER:
+                return (lvalue == dt.longValue()) ? FALSE : TRUE;
+
+            case FLOAT:
+            case DECIMAL:
+            case DOUBLE:
+                return (doubleValue() == dt.doubleValue()) ? FALSE : TRUE ;
+                
+            case URI:
+            case BLANK:
+                return TRUE;
+                    
+            default:
+                return null;
+        }
+    }
+    
+     @Override
+    public IDatatype lt(IDatatype dt) {  
+        switch (dt.getCode()){
+            case INTEGER:
+                return (lvalue < dt.longValue()) ? TRUE : FALSE;
+            case DECIMAL:
+            case FLOAT:
+            case DOUBLE:
+                return (doubleValue() < dt.doubleValue()) ? TRUE : FALSE;    
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype le(IDatatype dt) {  
+        switch (dt.getCode()){
+            case INTEGER:
+                return (lvalue <= dt.longValue()) ? TRUE : FALSE;
+            case DECIMAL:
+            case FLOAT:
+            case DOUBLE:
+                return (doubleValue() <= dt.doubleValue()) ? TRUE : FALSE;    
+        }
+        return null;
+    }
+     
+    @Override
+    public IDatatype gt(IDatatype dt) {  
+        switch (dt.getCode()){
+            case INTEGER:
+                return (lvalue > dt.longValue()) ? TRUE : FALSE;
+            case DECIMAL:
+            case FLOAT:
+            case DOUBLE:
+                return (doubleValue() > dt.doubleValue()) ? TRUE : FALSE;    
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype ge(IDatatype dt) {
+        switch (dt.getCode()) {
+            case INTEGER:
+                return (lvalue >= dt.longValue()) ? TRUE : FALSE;
+            case DECIMAL:
+            case FLOAT:
+            case DOUBLE:
+                return (doubleValue() >= dt.doubleValue()) ? TRUE : FALSE;
+        }
+        return null;
+    }
+    
+    @Override    
+    public IDatatype plus(IDatatype dt) {
+        switch (dt.getCode()) {
+            case DOUBLE:
+                return CoreseDouble.create(doubleValue() + dt.doubleValue());
+            case FLOAT:
+                return CoreseFloat.create(floatValue() + dt.floatValue());
+            case DECIMAL:
+                return CoreseDecimal.create(doubleValue() + dt.doubleValue());
+            case INTEGER:
+                try {
+                    return CoreseInteger.create(Math.addExact(longValue(), dt.longValue()));
+                } catch (ArithmeticException e) {
+                    return null;
+                }
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype minus(IDatatype dt) {
+        switch (dt.getCode()) {
+            case DOUBLE:
+                return CoreseDouble.create(doubleValue() - dt.doubleValue());
+            case FLOAT:
+                return new CoreseFloat(floatValue() - dt.floatValue());
+            case DECIMAL:
+                return CoreseDecimal.create(doubleValue() - dt.doubleValue());
+            case INTEGER:
+                try {
+                    return CoreseInteger.create(Math.subtractExact(longValue(), dt.longValue()));
+                } catch (ArithmeticException e) {
+                    return null;
+                }
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype minus(long val) {
+        return CoreseInteger.create(longValue() - val);
     }
 
     @Override

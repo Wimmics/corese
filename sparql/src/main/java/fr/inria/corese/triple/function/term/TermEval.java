@@ -10,7 +10,6 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Function;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
@@ -55,13 +54,26 @@ public class TermEval extends Term {
             return false;
         }
     }
-    
+      
     public IDatatype value(boolean value){
         return (value) ? DatatypeMap.TRUE : DatatypeMap.FALSE;
     }
     
     public IDatatype value(int value){
         return DatatypeMap.newInstance(value);
+    }
+    
+    public void fill(Term term){
+        term.setCName(getCName());
+        term.setOper(oper());
+        term.setType(type());
+        term.setModality(getModality());
+        term.setArg(getArg());
+        term.setName(getName());
+        term.setLongName(getLongName());
+        term.setArgs(getArgs());
+        term.setExpList(getExpList());
+        term.setFunction(isFunction());
     }
        
     /**
@@ -105,50 +117,17 @@ public class TermEval extends Term {
     
 
     public IDatatype[] evalArguments(Computer eval, Binding b, Environment env, Producer p, int start) {
-        IDatatype[] args = new IDatatype[arity() - start];
+        IDatatype[] param = new IDatatype[args.size() - start];
         int i = 0;
-        for (int j = start; j < arity(); j++) {
-            args[i] = getArg(j).eval(eval, b, env, p);
-            if (args[i] == null) {                
+        for (int j = start; j < args.size(); j++) {
+            param[i] = args.get(j).eval(eval, b, env, p);
+            if (param[i] == null) {                
                 return null;
             }
             i++;
         }
-        return args;
+        return param;
     }
     
-    /**
-     * This is an Extension function call    
-     */
-    public boolean evalPushArguments(Function function, Computer eval, Binding b, Environment env, Producer p, int start) {
-        int i = 0;
-        for (int j = start; j < arity(); j++) {
-            IDatatype dt = getArg(j).eval(eval, b, env, p);
-            if (dt == null) {   
-                return false;
-            }
-            else {
-                b.set(function.getSignature().getArg(i++), dt);
-            }           
-        }
-        return true;
-    }
-    
-     public IDatatype[] evalArguments(Computer eval, Environment env, Producer p, IDatatype[] param, int size, int start) {
-        IDatatype[] args = new IDatatype[size];
-        int i = 0;
-        for (int j = start; j < arity(); j++) {
-            args[i] = getArg(j).eval(eval, env, p, param);
-            if (args[i] == null) {                
-                return null;
-            }
-            i++;
-        }
-        return args;
-    }
-    
-     public boolean isReturn(IDatatype dt){
-        return dt == null || DatatypeMap.isResult(dt);
-    }
     
 }

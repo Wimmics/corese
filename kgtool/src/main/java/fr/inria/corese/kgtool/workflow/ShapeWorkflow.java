@@ -18,14 +18,14 @@ import java.util.logging.Logger;
  *
  */
 public class ShapeWorkflow extends SemanticWorkflow {
-    public static final String SHAPE_NAME  = NSManager.STL + "shape";
-    public static final String SHAPE_TRANS_TEST = "/user/corby/home/AAData/sttl/datashape/main";
-    public static final String SHAPE_TRANS_TEST_LDS = "/user/corby/home/AAData/sttl/datashapelds/main";
-    public static final String SHAPE_SHAPE      = "/data/shape4shape.ttl";
-    public static final String SHAPE_TRANS = Transformer.DATASHAPE;
-    public static final String FORMAT = Transformer.TURTLE;
-    public static final String FORMAT_HTML = Transformer.TURTLE_HTML;
-    private static final String NL = System.getProperty("line.separator");
+    public static final String SHAPE_NAME           = NSManager.STL + "shape";
+    public static final String SHAPE_TRANS_TEST     = "/user/corby/home/AAData/sttl/datashape/main";
+    public static final String SHAPE_TRANS_TEST_LDS = "/user/corby/home/AAData/sttl/datashape/main";
+    public static final String SHAPE_SHAPE          = "/data/shape4shape.ttl";
+    public static final String SHAPE_TRANS          = Transformer.DATASHAPE;
+    public static final String FORMAT               = Transformer.TURTLE;
+    public static final String FORMAT_HTML          = Transformer.TURTLE_HTML;
+    private static final String NL                  = System.getProperty("line.separator");
     
     private String resultFormat = FORMAT;
     private String shape ;

@@ -2,16 +2,14 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Aug 24 11:53:21 CEST 2017
+Thu Oct 26 16:48:59 CEST 2017
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -19,9 +17,9 @@ template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
 where {
 
     values ?s { unnest(?ls) }
-    bind (! java:testShapeCore(?shape, ?cst, ?s) as ?suc)
+    bind (! sh:testShapeCore(?shape, ?cst, ?s) as ?suc)
     
-    bind (java:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -31,9 +29,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:or (?shape, ?sh, ?or, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -41,11 +37,11 @@ template sh:or (?shape, ?sh, ?or, ?vis, ?ls) {
 where {
     values ?s { unnest(?ls) }
 
-    bind (java:or(?or, ?s, ?shape) as ?count)  
+    bind (sh:or(?or, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (java:report(sh:or, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+    bind (st:report(sh:or, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -57,9 +53,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -67,11 +61,11 @@ template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
 where {
     values ?s { unnest(?ls) }
 
-    bind (java:xone(?or, ?s, ?shape) as ?count)  
+    bind (sh:xone(?or, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (java:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+    bind (st:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -83,9 +77,7 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:and (?shape, ?sh, ?and, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -93,11 +85,11 @@ template sh:and (?shape, ?sh, ?and, ?vis, ?ls) {
 where {
     values ?s { unnest(?ls) }
  
-    bind (java:and(?and, ?s, ?shape) as ?count)  
+    bind (sh:and(?and, ?s, ?shape) as ?count)  
 	bind (! bound(?count) AS ?failure) .
 	bind (IF (?failure, false, ?count)  as ?suc)
 	
-    bind (java:report(sh:and, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+    bind (st:report(sh:and, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
   
 }
 
@@ -118,7 +110,7 @@ function st:aggregate(?out) {
 }
 
 function us:merge(?list) {
-    apply(rq:and, ?list)
+    reduce(rq:and, ?list)
 }
 
 function st:default(?term){
@@ -144,9 +136,7 @@ function st:optimize(?shape, ?sh){
 # evaluate sh:property sh:path of shape ?sh
 # ?list is the list of target nodes of shape ?sh
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?list) {
    sh:safe(?shape, ?sh, ?suc)
@@ -160,7 +150,7 @@ where {
         # filter not exists { ?sh sh:path ?pp }
     }
     
-    bind (java:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
+    bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
 }
 
 
@@ -175,9 +165,7 @@ where {
 # evaluate sh:path of shape ?sh
 # ?list is the list of target nodes of shape ?sh
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?list) {
    sh:safe(?shape, ?sh, ?suc)
@@ -188,7 +176,7 @@ where {
         filter not exists { ?sh sh:deactivated true}
     }
     
-    bind (java:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
+    bind (sh:path(?shape, ?sh, ?vis, ?list, ?p) as ?suc)
 }
 
 
@@ -203,9 +191,7 @@ where {
 #  ?ls is the list of target nodes of shape ?sh
 #  evaluate sh:constraint
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -213,7 +199,7 @@ template (?shape, ?sh, ?vis, ?ls) {
 where {
     graph ?shape { filter not exists { ?sh sh:path ?ppp } }
     
-    bind (java:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
+    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }
 
@@ -229,9 +215,7 @@ where {
 #  ?ls is the list of target nodes of shape ?sh
 #  evaluate  sh:and sh:or sh:not
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template  (?shape, ?sh, ?vis, ?ls) {
    st:call-template(?bool, ?shape, ?sh, ?cst, ?vis, ?ls)
@@ -254,9 +238,7 @@ where {
 #  ?ls is the list of target nodes of shape ?sh
 #  evaluate closed sh:constraint
 #
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
    sh:safe(?shape, ?sh, ?suc)
@@ -278,7 +260,7 @@ where {
     
    as ?suc)
    
-   bind (java:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+   bind (st:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
     
 }
 ]]>

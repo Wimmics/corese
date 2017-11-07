@@ -1,6 +1,4 @@
-prefix sh:  <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <function://fr.inria.corese.extension.DataShape>  
+prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
@@ -8,8 +6,8 @@ template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
 where {
 
     values ?s { unnest(?ls) }
-    bind (! java:testShapeCore(?shape, ?cst, ?s) as ?suc)
+    bind (! sh:testShapeCore(?shape, ?cst, ?s) as ?suc)
     
-    bind (java:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
+    bind (st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
   
 }

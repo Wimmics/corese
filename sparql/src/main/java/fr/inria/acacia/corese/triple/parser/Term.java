@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import fr.inria.corese.triple.function.extension.Display;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
@@ -220,6 +221,7 @@ public class Term extends Expression {
             case ExprType.DISPLAY:
             case ExprType.XT_DISPLAY:
             case ExprType.XT_PRINT:
+            case ExprType.XT_PRETTY:
                 return new Display(name);
             case ExprType.EXTERNAL:
                 return new Extern(name);

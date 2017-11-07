@@ -28,7 +28,6 @@ public class MapAnyEvery extends Funcall {
         if (name == null || param == null) {
             return null;
         }
-        //return eval.mapanyevery(name, args, this, env, p);
 
         Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
         if (function == null) {
@@ -73,7 +72,8 @@ public class MapAnyEvery extends Funcall {
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
-        boolean error = false;
+        boolean error = false, ok = true;
+        
         for (int i = 0; (isList) ? i < list.size() : loop.hasNext(); i++) {
 
             for (int j = 0; j < value.length; j++) {
@@ -84,6 +84,10 @@ public class MapAnyEvery extends Funcall {
                     if (loop.hasNext()) {
                         // TODO:  track the case with several dt loop
                         value[j] = loop.next(); 
+                        if (value[j] == null){
+                            // some iterators (DataProducer) return null when there is no more element
+                            ok = false;
+                        }
                     } else {
                         return null;
                     }
@@ -92,23 +96,26 @@ public class MapAnyEvery extends Funcall {
                 }
             }
 
-            IDatatype res = call(eval, b, env, p, function, value);  
-            
-            if (res == null) {
-                error = true;
-            } else {
-                if (every) {
-                    if (!res.booleanValue()) {
-                        return FALSE;
-                    }
-                } else if (any) {
-                    // any
-                    if (res.booleanValue()) {
-                        return TRUE;
+            if (ok) {
+                IDatatype res = call(eval, b, env, p, function, value);
+
+                if (res == null) {
+                    error = true;
+                } else {
+                    if (every) {
+                        if (!res.booleanValue()) {
+                            return FALSE;
+                        }
+                    } else if (any) {
+                        // any
+                        if (res.booleanValue()) {
+                            return TRUE;
+                        }
                     }
                 }
             }
         }
+        
         if (error) {
             return null;
         }

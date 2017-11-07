@@ -335,6 +335,7 @@ public interface ExprType {
         public static int XT_ITERATE     = 446;
         public static int XT_SWAP        = 447;
         public static int XT_TRACE       = 448;
+        public static int XT_PRETTY      = 449;
      
         public static int SLICE       = 450;
         public static int EDGE_LEVEL  = 451;

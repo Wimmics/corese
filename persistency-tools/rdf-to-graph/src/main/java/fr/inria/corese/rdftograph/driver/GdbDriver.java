@@ -47,7 +47,7 @@ public abstract class GdbDriver {
     private Cache<Value, Vertex> cache;
     private long maximumByteSize = 1_000_000_000;
     private int concurrencyLevel = 1;
-    private int cacheTimeMS = 0;
+    private int cacheTime = 1;
 
     /**
      * Default constructor. Set up a cache for Value -> Vertex.
@@ -56,14 +56,9 @@ public abstract class GdbDriver {
         CacheBuilder<Value, Vertex> cachebuilder = CacheBuilder.newBuilder()
                 .maximumWeight(maximumByteSize)
                 .concurrencyLevel(concurrencyLevel)
-                .initialCapacity(1000)
-                .expireAfterWrite(cacheTimeMS, TimeUnit.MILLISECONDS)
-                .weigher(new Weigher<Value, Vertex>() {
-                    @Override
-                    public int weigh(Value value, Vertex vertex) {
-                        return 1;
-                    }
-                });
+                .initialCapacity(100_000)
+                .expireAfterWrite(cacheTime, TimeUnit.DAYS)
+                .weigher((Value value, Vertex vertex) -> 1);
 
         cache = cachebuilder.build();
     }
@@ -156,6 +151,7 @@ public abstract class GdbDriver {
     public Vertex getNode(Value v) {
         GraphTraversal<Vertex, Vertex> it = null;
         Vertex result = cache.getIfPresent(v);
+
         if (result != null) {
             return result;
         }

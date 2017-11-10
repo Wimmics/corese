@@ -37,7 +37,7 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 public class RdfToGraph {
 
     private static final Map<DbDriver, String> DRIVER_TO_CLASS;
-    final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;
+    final static private int CHUNK_SIZE = 2*10_000; //Integer.MAX_VALUE;
     private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
 
     static {

@@ -79,6 +79,8 @@ public class Neo4jDriver extends GdbDriver {
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_O));
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_G));
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
+			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, KIND));
+			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, TYPE));
 			g.tx().commit();
 			return g;
 		} catch (Exception e) {

@@ -1244,15 +1244,17 @@ public class Transformer  {
      * force = true: if no prefix generate prefix
      */
     public IDatatype turtle(IDatatype dt, boolean force) {
-
+        String label = dt.getLabel();
         if (dt.isURI()) {
             nsm.setRecord(true);
-            String uri = nsm.toPrefixURI(dt.getLabel(), ! force);
+            String uri = nsm.toPrefixURI(label, ! force);
             dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {
-            if ((dt.getCode() == IDatatype.INTEGER && dt.getDatatypeURI().equals(XSD.xsdinteger)) 
-             || (dt.getCode() == IDatatype.BOOLEAN && (dt.getLabel().equals("true") || dt.getLabel().equals("false")))) {
-                // print as is
+            if ((dt.getCode() == IDatatype.INTEGER 
+                    && dt.getDatatypeURI().equals(XSD.xsdinteger) 
+                    && (! (label.startsWith("0") && label.length() > 1))) 
+             || (dt.getCode() == IDatatype.BOOLEAN && (label.equals("true") || label.equals("false")))) {
+                // print string value as is
             } else {
                 // add quotes around string, add lang tag if any
                 dt = DatatypeMap.newStringBuilder(dt.toString());

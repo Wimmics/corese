@@ -200,7 +200,11 @@ public class PluginImpl
                 return ext.describe(p, exp, env); 
                 
              case XT_EDGE:
-                 return edge(exp, env, p, null, null, null);    
+                 return edge(exp, env, p, null, null, null);
+                 
+             case XT_EXISTS:
+                 return exists(p, null, null, null);
+                 
              case APP_SIM:
                  return pas.eval(exp, env, p);
                  
@@ -302,6 +306,9 @@ public class PluginImpl
              case XT_EDGE:
                  return edge(exp, env, p, null, dt, null);
                  
+             case XT_EXISTS:
+                 return exists(p, null, dt, null);    
+                 
 //             case XT_TUNE:
 //                 return tune(exp, env, p, dt);
                  
@@ -363,7 +370,10 @@ public class PluginImpl
                  return value(exp, env, p, dt1, dt2);
                  
               case XT_EDGE:
-                 return edge(exp, env, p, dt1, dt2, null);  
+                 return edge(exp, env, p, dt1, dt2, null); 
+                 
+              case XT_EXISTS:
+                 return exists(p, dt1, dt2, null);   
                   
               case XT_TUNE:
                  return tune(exp, env, p, dt1, dt2);     
@@ -401,6 +411,9 @@ public class PluginImpl
                                
             case XT_EDGE:
                 return edge(exp, env, p, param[0], param[1], param[2]);
+                
+            case XT_EXISTS:
+                return exists(p, param[0], param[1], param[2]);    
                 
              case XT_TRIPLE:
                 return triple(exp, env, p, param[0], param[1], param[2]); 
@@ -632,6 +645,13 @@ public class PluginImpl
         return DatatypeMap.createObject(g);
     }
     
+    private IDatatype exists(Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+        for (Entity ent : new DataProducer(getGraph(p)).iterate(subj, pred, obj)) {
+            return (ent == null) ? FALSE :TRUE;
+        }
+        return FALSE;
+    }
+    
     /*
      * Return Loopable with edges
      */
@@ -646,8 +666,18 @@ public class PluginImpl
     public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) {   
        return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, obj));        
     }
+          
+    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
+       Loopable loop = new Loopable(){
+           @Override
+           public Iterable getLoop() {
+               return new DataProducer(getGraph(p)).iterate(subj, pred, obj);
+           }          
+       };
+       return loop;
+    } 
     
-    @Deprecated
+     @Deprecated
     Loopable getLoop2(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
        Loopable loop = new Loopable(){
            @Override
@@ -659,20 +689,10 @@ public class PluginImpl
        return loop;
     } 
     
-    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
-       Loopable loop = new Loopable(){
-           @Override
-           public Iterable getLoop() {
-               return new DataProducer(getGraph(p)).iterate(value(subj), value(pred), value(obj));
-           }          
-       };
-       return loop;
-    } 
-    
     IDatatype value(IDatatype dt){
-//        if (dt == null || dt.isBlank()){
-//            return null;
-//        }
+        if (dt == null || dt.isBlank()){
+            return null;
+        }
         return dt;
     }
     

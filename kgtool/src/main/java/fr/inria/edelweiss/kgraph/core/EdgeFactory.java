@@ -60,11 +60,11 @@ public class EdgeFactory {
             // rule edge must store an index
             case Graph.RULE_INDEX: return ent;
             case Graph.DEFAULT_INDEX:
-                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));
+                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
             case Graph.ENTAIL_INDEX:
-                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));    
+                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));    
             default: 
-                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getNode(), ent.getNode(1));
+                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
         }
     }
     

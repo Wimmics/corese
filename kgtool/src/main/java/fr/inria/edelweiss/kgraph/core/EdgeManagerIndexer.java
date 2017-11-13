@@ -49,10 +49,12 @@ public class EdgeManagerIndexer
     List<Node> sortedProperties;
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
+    NodeManager nodeManager;
 
     EdgeManagerIndexer(Graph g, boolean bi, int n) {
         init(g, bi, n);
         table = new HashMap();
+        nodeManager = new NodeManager(g);
     }
 
     void init(Graph g, boolean bi, int n) {
@@ -67,6 +69,11 @@ public class EdgeManagerIndexer
                 other = 0;
                 break;
         }
+    }
+    
+    @Override
+    public NodeManager getNodeManager() {
+        return nodeManager;
     }
 
     @Override
@@ -135,6 +142,11 @@ public class EdgeManagerIndexer
         }
         return sortedProperties;
     }
+    
+    @Override
+    public int nbProperties() {
+        return table.size();
+    }
 
     synchronized void sortProperties() {
         sortedProperties = new ArrayList<Node>();
@@ -196,11 +208,13 @@ public class EdgeManagerIndexer
         sb.open("kg:Index");
         sb.appendPNL("kg:index ", index);
         int total = 0;
+        int count = 0;
         for (Node pred : getSortedProperties()) {
             int i = get(pred).size();
             if (i > 0) {
                 total += i;
                 sb.append("kg:item [ ");
+                sb.appendP("kg:num ", count++);
                 sb.appendP("rdf:predicate ", pred);
                 sb.append("rdf:value ", i);
                 sb.appendNL("] ;");
@@ -238,6 +252,7 @@ public class EdgeManagerIndexer
             logClear();
         }
         table.clear();
+        nodeManager.clear();
     }
 
     @Override
@@ -410,38 +425,61 @@ public class EdgeManagerIndexer
         index(true);
     }
 
-    public void index(boolean reduce) {
+    void index(boolean reduce) {
         for (Node pred : getProperties()) {
-            index(pred);
+            basicIndex(pred);
         }
         if (reduce && index == 0) {
             reduce();
         }
     }
-          
+    
+    /**
+     * To be called after reduce is done
+     */
     @Override
-    public void compact(){
-        if (test){
-            for (Node pred : getProperties()) {
-                EdgeManager el = get(pred);
-                el.compact();
-            }
+    public void indexNodeProperty() {
+        nodeManager.activate();
+        for (Node pred : getProperties()) {
+            get(pred).indexNodeProperty(nodeManager);
         }
     }
-
+    
+    /**
+     * called on every Index
+     * Desactivate nodeManager because we add triples 
+     * hence subjects may have new properties 
+     * hence nodeManager content is obsolete
+     */
     @Override
-    public void index(Node pred, boolean reduce) {
-        index(pred);
-        if (reduce) {
+    public void index(Node pred) {
+        nodeManager.desactivate();
+        basicIndex(pred);
+    }
+
+    void basicIndex(Node pred) {
+        get(pred).sort();
+    }
+
+ 
+    /**
+     * eliminate duplicate edges
+     */
+    private void reduce() {
+        nodeManager.clear();
+        for (Node pred : getProperties()) {
             reduce(pred);
         }
     }
 
-    public void index(Node pred) {
+    private void reduce(Node pred) {
         EdgeManager el = get(pred);
-        el.sort();
+        int rem = el.reduce(nodeManager);
+        if (rem > 0) {
+            graph.setSize(graph.size() - rem);
+        }
     }
-
+    
     @Override
     public void indexNode() {
         for (Node pred : getProperties()) {
@@ -451,20 +489,13 @@ public class EdgeManagerIndexer
         }
     }
 
-    /**
-     * eliminate duplicate edges
-     */
-    private void reduce() {
-        for (Node pred : getProperties()) {
-            reduce(pred);
-        }
-    }
-
-    private void reduce(Node pred) {
-        EdgeManager el = get(pred);
-        int rem = el.reduce();
-        if (rem > 0) {
-            graph.setSize(graph.size() - rem);
+   @Override
+    public void compact(){
+        if (test){
+            for (Node pred : getProperties()) {
+                EdgeManager el = get(pred);
+                el.compact();
+            }
         }
     }
 

@@ -28,15 +28,19 @@ public interface Index {
         
         void compact();
                 
-        void index(Node pred, boolean reduce);
+        void index(Node pred);
 
 	void indexNode();
+
+        void indexNodeProperty();       
         
         void setByIndex(boolean b);
 
 	Iterable<Node> getProperties();
 	
 	Iterable<Node> getSortedProperties();
+        
+        int nbProperties();
 	        
         boolean same(Node n1, Node n2);
 
@@ -69,6 +73,8 @@ public interface Index {
 	Iterable<Entity> getEdges(Node pred, Node node);
 
 	Iterable<Entity> getEdges(Node pred, Node node, Node node2);
+        
+        NodeManager getNodeManager();
 	
 	// ************** Update
 	

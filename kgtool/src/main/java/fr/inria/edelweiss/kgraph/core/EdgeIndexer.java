@@ -27,7 +27,8 @@ import java.util.HashMap;
  */
 @Deprecated
 public class EdgeIndexer 
-        implements Index {
+        implements Index 
+{
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -133,6 +134,11 @@ public class EdgeIndexer
             isUpdate = false;
         }
         return sortedProperties;
+    }
+    
+    @Override
+    public int nbProperties() {
+        return table.size();
     }
 
     synchronized void sortProperties() {
@@ -411,7 +417,7 @@ public class EdgeIndexer
 
     public void index(boolean reduce) {
         for (Node pred : getProperties()) {
-            index(pred);
+            basicIndex(pred);
         }
         if (reduce && index == 0) {
             reduce();
@@ -429,14 +435,14 @@ public class EdgeIndexer
     }
 
     @Override
-    public void index(Node pred, boolean reduce) {
-        index(pred);
-        if (reduce) {
-            reduce(pred);
-        }
+    public void index(Node pred) {
+        basicIndex(pred);
+//        if (reduce) {
+//            reduce(pred);
+//        }
     }
 
-    public void index(Node pred) {
+    public void basicIndex(Node pred) {
         EdgeList el = get(pred);
         el.sort();
     }
@@ -776,5 +782,15 @@ public class EdgeIndexer
 
     @Override
     public void delete(Node pred) {
+    }
+
+    @Override
+    public NodeManager getNodeManager() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void indexNodeProperty() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

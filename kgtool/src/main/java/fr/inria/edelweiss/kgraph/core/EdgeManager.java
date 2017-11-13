@@ -38,6 +38,7 @@ public class EdgeManager implements Iterable<Entity> {
     ArrayList<Entity> list;
     Comparator<Entity> comp;
     int index = 0, other = 0, next = IGRAPH;
+    boolean indexedByNode = false;
 
     EdgeManager(Graph g, Node p, int i) {
         graph = g;
@@ -75,15 +76,19 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Remove duplicate edges
      */
-    int reduce() {
+    int reduce(NodeManager mgr) {
         ArrayList<Entity> l = new ArrayList<Entity>();
         Entity pred = null;
         int count = 0;
         for (Entity ent : list) {
             if (pred == null) {
                 l.add(ent);
+                mgr.add(ent.getNode(index), predicate);
             } else if (comp.compare(ent, pred) != 0) {
                 l.add(ent);
+                if (ent.getNode(index) != pred.getNode(index)) {
+                   mgr.add(ent.getNode(index), predicate); 
+                }
             } else {
                 count++;
             }
@@ -91,6 +96,18 @@ public class EdgeManager implements Iterable<Entity> {
         }
         list = l;
         return count;
+    }
+    
+    void indexNodeProperty(NodeManager mgr) {
+        Entity pred = null;
+        for (Entity ent : list) {
+            if (pred == null) {
+                mgr.add(ent.getNode(index), predicate);
+            } else if (ent.getNode(index) != pred.getNode(index)) {
+                mgr.add(ent.getNode(index), predicate);
+            }
+            pred = ent;
+        }
     }
     
     /**

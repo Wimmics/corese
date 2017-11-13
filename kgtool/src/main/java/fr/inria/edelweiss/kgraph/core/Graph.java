@@ -887,6 +887,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         sb.appendPNL("kg:uri      ", individual.size());
         sb.appendPNL("kg:bnode    ", blank.size());
         sb.appendPNL("kg:literal  ", literal.size());
+        sb.appendPNL("kg:nodeManager  ", getNodeManager().isActive());
+        if (getNodeManager().isActive()) {
+            sb.appendPNL("kg:nbSubject  ", getNodeManager().size());
+            sb.appendPNL("kg:nbProperty  ", getNodeManager().count());
+        }
         sb.appendPNL("kg:date     ", DatatypeMap.newDate());
 
         sb.close();
@@ -898,6 +903,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
 
         return sb.toString();
+    }
+    
+    public NodeManager getNodeManager() {
+        return getIndex().getNodeManager();
     }
 
     /**
@@ -1013,11 +1022,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * automatically run, use re.process()
      */
     public synchronized void init() {
+        boolean indexNodeManager = true;
         if (isIndex) {
             if (isDebug) {
                 logger.info("Graph index");
-            }
-            index();
+            }            
+            index(); 
+            // use case: load()
+            indexNodeManager = false;
         }
 
         if (isUpdate) {
@@ -1025,6 +1037,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             // clean meta properties 
             // redefine meta properties
             update();
+            if (indexNodeManager) {
+                table.indexNodeProperty();
+            }
         }
 
         if (isEntail) {
@@ -1042,11 +1057,19 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         // node index
         clearIndex();
         clearDistance();
-
         if (isDelete) {
             manager.onDelete();
             isDelete = false;
         }
+    }
+    
+    /**
+     * An Update query is starting
+     * nodeManager would not be updated
+     *  
+     */
+    public void startUpdate(){
+        getIndex().getNodeManager().desactivate();
     }
 
     public void clean() {
@@ -1111,6 +1134,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     public Index getIndex() {
         return table;
+    }
+    
+    public void indexNodeProperty() {
+        prepare();
+        table.indexNodeProperty();
     }
 
     /**
@@ -1315,9 +1343,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         setIndex(true);
         for (Index ei : getIndexList()) {
             ei.add(p, list);
-            ei.index(p, false);
+            ei.index(p);
         }
         setIndex(false);
+        setUpdate(true);
         size += list.size();
     }
 
@@ -1340,7 +1369,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
         for (Node pred : t.values()) {
             for (Index ei : getIndexList()) {
-                ei.index(pred, false);
+                ei.index(pred);
             }
         }
         setIndex(false);
@@ -2116,7 +2145,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Iterable<Entity> getSortedEdges(Node node, int n) {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
 
-        for (Node pred : getSortedProperties()) {
+        for (Node pred : getSortedProperties(node, n)) {
             Iterable<Entity> it = getIndex(n).getEdges(pred, node);
             if (it != null) {
                 meta.next(it);
@@ -2126,6 +2155,13 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             return new ArrayList<Entity>();
         }
         return meta;
+    }
+    
+    Iterable<Node> getSortedProperties(Node node, int n) {
+        if (n == 0 && node != null) {                                
+            return getIndex().getNodeManager().getPredicates(node);
+        }
+        return getSortedProperties();
     }
 
     public Iterable<Entity> getEdges(String p) {

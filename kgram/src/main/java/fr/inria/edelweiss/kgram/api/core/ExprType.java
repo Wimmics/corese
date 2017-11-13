@@ -336,10 +336,11 @@ public interface ExprType {
         public static int XT_SWAP        = 447;
         public static int XT_TRACE       = 448;
         public static int XT_PRETTY      = 449;
+        public static int XT_EXISTS      = 450;
      
-        public static int SLICE       = 450;
-        public static int EDGE_LEVEL  = 451;
-        public static int DB          = 452;
+        public static int SLICE       = 500;
+        public static int EDGE_LEVEL  = 501;
+        public static int DB          = 502;
         
 
 }

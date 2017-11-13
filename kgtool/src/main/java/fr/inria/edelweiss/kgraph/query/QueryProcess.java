@@ -712,6 +712,7 @@ public class QueryProcess extends QuerySolver {
      *
      */
     Mappings update(Query query, Dataset ds) throws EngineException {
+        getGraph().startUpdate();
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);

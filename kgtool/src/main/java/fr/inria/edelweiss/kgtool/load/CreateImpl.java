@@ -14,6 +14,7 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.core.Graph;
+import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +39,7 @@ public class CreateImpl implements Creator {
     private String resource;
     private Node node;
     Load load;
+    int count = 1;
 	
 	class Stack extends ArrayList<Node> {
 		
@@ -96,9 +98,13 @@ public class CreateImpl implements Creator {
 	
     @Override
 	public boolean accept(Atom subject, Atom property, Atom object){
-//		if (graph.size() / 10000 == graph.size()/ 10000.0){
-//			System.out.println(graph.size());
-//		}
+                if (count > 100000) {
+                    System.out.println("Loading: " + new Date() + " " + graph.size());
+                    count = 2;
+                }
+                else {
+                    count++;
+                }
 		if (graph.size() < limit){
 			return true;
 		}

@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-11-01";
+    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-11-11";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -90,7 +90,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadRDF;
     private JMenuItem loadRDFs;
     private JMenuItem loadQuery;
-    private JMenuItem execWorkflow, loadWorkflow;
+    private JMenuItem execWorkflow, loadWorkflow, loadRunWorkflow;
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
     private JMenuItem cpTransform;
@@ -366,7 +366,7 @@ public class MainFrame extends JFrame implements ActionListener {
     /**
      * Crée un onglet Query *
      */
-    public void newQuery() {
+    public MyJPanelQuery newQuery() {
         nbTabs++;
         //supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la suite
         conteneurOnglets.remove(plus);
@@ -405,6 +405,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         //sélectionne l'onglet fraichement créé
         conteneurOnglets.setSelectedIndex(conteneurOnglets.getComponentCount() - 3);
+        return temp;
     }
 
     //Barre du menu
@@ -423,11 +424,14 @@ public class MainFrame extends JFrame implements ActionListener {
         loadRDF.addActionListener(this);
         loadRDF.setToolTipText("Step 3 : Load RDF file");
 
-        execWorkflow = new JMenuItem("Run Workflow");
+        execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
         
         loadWorkflow = new JMenuItem("Load Workflow");
         loadWorkflow.addActionListener(this);
+        
+        loadRunWorkflow = new JMenuItem("Load & Run Workflow");
+        loadRunWorkflow.addActionListener(this);
 
         loadQuery = new JMenuItem("Load Query");
         loadQuery.addActionListener(this);
@@ -566,6 +570,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadRDF);
         fileMenu.add(loadQuery);
         fileMenu.add(loadWorkflow);
+        fileMenu.add(loadRunWorkflow);
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(saveQuery);
@@ -870,7 +875,9 @@ public class MainFrame extends JFrame implements ActionListener {
         } else if (e.getSource() == execWorkflow) {
             execWorkflow();
         } else if (e.getSource() == loadWorkflow) {
-            loadWorkflow();
+            loadWorkflow(false);
+        } else if (e.getSource() == loadRunWorkflow) {
+            loadWorkflow(true);
         } 
         else if (e.getSource() == cpTransform) {
             compile();
@@ -1213,21 +1220,26 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void execWorkflow() {
         Filter FilterRDF = new Filter(new String[]{"ttl", "sw"}, "Workflow files (*.ttl, *.sw)");
-        load(FilterRDF, true, true);
+        load(FilterRDF, true, true, false);
     }
     
-    public void loadWorkflow() {
+    public void loadWorkflow(boolean run) {
         Filter FilterRDF = new Filter(new String[]{"ttl", "sw"}, "Workflow files (*.ttl, *.sw)");
-        load(FilterRDF, true, false);
+        load(FilterRDF, true, false, run);
     }
     /**
      * Charge un fichier dans CORESE
      */
     public void load(Filter filter) {
-        load(filter, false, false);
+        load(filter, false, false, false);
     }
 
-    public void load(Filter filter, boolean wf, boolean exec) {
+    /**
+     * wf: load a Workflow
+     * exec: run Workflow using std Worklow engine
+     * run: set the queries in query panels an run the queries in the GUI
+     */
+    public void load(Filter filter, boolean wf, boolean exec, boolean run) {
         controler(LOAD);
         lPath = null;
         JFileChooser fileChooser = new JFileChooser(lCurrentPath);
@@ -1255,7 +1267,7 @@ public class MainFrame extends JFrame implements ActionListener {
                        execWF(lPath);
                    }
                    else {
-                       loadWF(lPath);
+                       loadWF(lPath, run);
                    }
                 } 
                 else {
@@ -1288,25 +1300,25 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    void loadWF(String path) {      
+    void loadWF(String path, boolean run) {      
         WorkflowParser parser = new WorkflowParser();
         try {
             parser.parse(path);
             SemanticWorkflow wp = parser.getWorkflowProcess();
-            defQuery(wp);
+            defQuery(wp, run);
         } catch (LoadException ex) {
             LOGGER.error(ex);
             appendMsg(ex.toString());
         }
     }
     
-    void defQuery(WorkflowProcess wp) {
+    void defQuery(WorkflowProcess wp, boolean run) {
         if (wp.getProcessList() != null) {
             for (WorkflowProcess wf : wp.getProcessList()) {
                 if (wf.isQuery()) {
-                    defQuery(wf.getQueryProcess().getQuery());
+                    defQuery(wf.getQueryProcess().getQuery(), run);
                 } else {
-                    defQuery(wf);
+                    defQuery(wf, run);
                 }
             }
         }
@@ -1426,9 +1438,12 @@ public class MainFrame extends JFrame implements ActionListener {
         newQuery();
     }
     
-    void defQuery(String text){
+    void defQuery(String text, boolean run){
         textQuery = text;
-        newQuery();
+        MyJPanelQuery panel = newQuery();
+        if (run){
+            panel.exec(this, text);
+        }
     }
 
     public void loadPipe() {

@@ -54,8 +54,10 @@ public class Exec extends Thread {
 	/**
 	 * run the thread in //
 	 */
+        @Override
 	public void run(){
 		Mappings res;
+                MyJPanelQuery panel = frame.getPanel();
                 if (isValidate()){
                     res = validate();
                 }
@@ -63,7 +65,8 @@ public class Exec extends Thread {
                     res = query();
                 }
 		frame.setBuffer(null);
-		frame.getPanel().display(res,frame);
+                panel.display(res, frame);
+		//frame.getPanel().display(res,frame);
 	}
 	
 	

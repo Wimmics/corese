@@ -740,6 +740,7 @@ public final class MyJPanelQuery extends JPanel {
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
         return new ActionListener() {            
+            @Override
             public void actionPerformed(ActionEvent ev) {
                 textAreaXMLResult.setText("");
                 Mappings l_Results = null;
@@ -770,7 +771,7 @@ public final class MyJPanelQuery extends JPanel {
                         if (l_Results != null) {
                             display(l_Results, coreseFrame);
                         }
-                    } else {
+                    } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate) {
                         // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);
                         exec.setValidate(ev.getSource() == buttonValidate);
@@ -794,6 +795,11 @@ public final class MyJPanelQuery extends JPanel {
             }
         };
 
+    }
+    
+    public void exec(MainFrame frame, String query) {
+        Exec exec = new Exec(frame, query, false);      
+        exec.process();
     }
 
     //getteurs et setteurs utiles

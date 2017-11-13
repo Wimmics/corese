@@ -29,6 +29,7 @@ PARSER_BEGIN(SparqlCorese)
 	import java.util.Vector;
   	import fr.inria.acacia.corese.triple.cst.RDFS;
   	import fr.inria.acacia.corese.triple.parser.*;
+  	import fr.inria.corese.triple.function.script.*;
   	import fr.inria.acacia.corese.triple.update.*;
   	import fr.inria.acacia.corese.triple.api.Creator;
   	import fr.inria.acacia.corese.api.IDatatype;
@@ -129,7 +130,17 @@ PARSER_BEGIN(SparqlCorese)
         }
     }  
     
-    
+    Exp createTriples(Exp stack, Expression e1, Atom p, ExpressionList list, int n) 
+    throws ParseException {
+        for (Expression e2 : list) {
+            Exp e = createTriple(e1, p, e2);
+            if (e != null){
+                stack.add(n++, e);
+            }      
+	}
+        return stack;
+    }
+
      Triple createTriple(Expression s, Atom p, Expression o) throws ParseException {
  	    if (create != null){
  	    	if (! create.accept(s.getAtom(), p, o.getAtom())){
@@ -1728,30 +1739,34 @@ Exp PropertyList(Expression expression1, Exp stack) : {}
   { return stack; }
 }
 
-Exp PropertyListNotEmpty( Expression expression1, Exp stack) : 
-{ ExpressionList v; Atom atom; Expression expression2; Exp e1; Triple triple; int n;}
+Exp PropertyListNotEmpty(Expression e1, Exp stack) : 
+{ ExpressionList list; Atom p;  Triple triple; int n;}
 { 
-  atom = Verb2() 
+  stack = PropertyListNotEmptyElem(e1, stack)
+
+  ( LOOKAHEAD(2) <SEMICOLON> 
+
+   stack = PropertyListNotEmptyElem(e1, stack)
+
+  ) *
+
+  ( LOOKAHEAD(2) <SEMICOLON> ) ?
+
+  { return stack; }
+}
+
+Exp PropertyListNotEmptyElem( Expression e1, Exp stack) : 
+{ ExpressionList list; Atom p;  Triple triple; int n;}
+{
+    p = Verb() 
   { n = stack.size(); }  
   // ObjectList() may fill the stack beyond n in case of [prop ?val] 
   // hence we store the index n to add the triple at n	
-  v = ObjectList(stack)
-  {
-  	for (int i=0;i<v.size();i++) {
-      	expression2 = v.get(i);
-        e1 = createTriple(expression1, atom, expression2);
-        if (e1 != null){
-        	// add triple at place n (see above for definition of n)
-        	stack.add(n++, e1);
-        }      
-	}
-  }
-  (
-  	<SEMICOLON> 
-  	{ stack = PropertyList(expression1, stack); }
-  ) ?
-  { return stack; }
+  list = ObjectList(stack)
+  { stack = createTriples(stack, e1, p, list, n);  
+    return stack ; }
 }
+
 
 Atom Verb2(): { Atom atom; String[] s; Token t; }
 {

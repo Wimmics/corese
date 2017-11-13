@@ -100,9 +100,12 @@ public class CoreseDatatype
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
         String value = getLabel();
-        if (getCode() == INTEGER && !xsd && getDatatypeURI().equals(XSD.xsdinteger)) {
+        if (getCode() == INTEGER && !xsd && getDatatypeURI().equals(XSD.xsdinteger)
+                && (! (value.startsWith("0") && value.length() > 1))) {
+            // display integer value as is (without datatype)
         } 
-        else if (getCode() == BOOLEAN && !xsd && (getLabel().equals(CoreseBoolean.STRUE) || getLabel().equals(CoreseBoolean.SFALSE))) {
+        else if (getCode() == BOOLEAN && !xsd && 
+                (getLabel().equals(CoreseBoolean.STRUE) || getLabel().equals(CoreseBoolean.SFALSE))) {
         } 
         else if (getCode() == STRING || (getCode() == LITERAL && !hasLang())) {
             value = protect(value);

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.*;
+import fr.inria.corese.triple.function.script.*;
 import fr.inria.acacia.corese.triple.update.*;
 import fr.inria.acacia.corese.triple.api.Creator;
 import fr.inria.acacia.corese.api.IDatatype;

@@ -2373,7 +2373,7 @@ Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, e
   { return term; }
 }
 
-Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; }
+Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; Exp sub; }
 {	
 	// distance namespace isMulti sqrt depth cardinality isuri occurence
   ((
@@ -2387,9 +2387,26 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   | term = Let(stack)
   | term = Set(stack)
   | term = For(stack)
+  | term = Lambda()
+  | term = QueryExp()
   )
 
   { return term; }
+}
+
+Term QueryExp () : {Expression exp = null; Exp stack; Term term; Exp sub;}
+{
+   <QUERY> <LPAREN>    
+    (
+    sub = SubQueryExp() 
+    |
+    sub = SubConstruct() { sub = BasicGraphPattern.create(sub); }
+    )
+    (  <COMMA>
+        { stack = BasicGraphPattern.create(); }
+        exp = Expression(stack) 
+    )?
+    <RPAREN> { return astq.term(sub, exp); }
 }
 
 
@@ -2417,11 +2434,11 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 
 
 Term For (Exp stack) : 
-{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var; ExpressionList arg, el = null; }
+{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var = null; ExpressionList arg, el = null; }
 {
     (<FOR> | <LOOP> {isLoop = true;})
     <LPAREN> 
-
+    (
         ( var = Var() 
         | 
 
@@ -2432,11 +2449,16 @@ Term For (Exp stack) :
         )
 
         <IN> 
-    (
+        (
         exp = Expression(stack) 
         |
         exp = LetForExp()
-    )
+        )
+
+        |
+
+        sub = SubQueryExp()  { el = new ExpressionList(); exp = astq.term(sub); }
+     )
     <RPAREN>   
     body = Body(stack)
     
@@ -2447,11 +2469,11 @@ Term For (Exp stack) :
 Expression LetForExp() : {Exp sub; Expression exp;}
 {
 (
-    sub = SubQueryExp() { exp = astq.toExist(sub); }
+    sub = SubQueryExp() { exp = astq.term(sub); }
     |
-    sub = ServiceExp()  { exp = astq.toExist(sub); }
+    sub = ServiceExp()  { exp = astq.term(sub); }
     |
-    sub = SubConstruct() { exp = astq.toExist(BasicGraphPattern.create(sub)); }
+    sub = SubConstruct() { exp = astq.term(BasicGraphPattern.create(sub)); }
     | 
     <AT> exp = CstList() 
 
@@ -2491,12 +2513,14 @@ IDatatype ListTerm() : { String s; Token t1;  Atom a; }
 
 
 Term Let (Exp stack) : 
-{ Expression exp ; Expression arg; ExpressionList list; }
+{Expression exp ; Expression arg; ExpressionList list; }
 {
         <LET>
-        <LPAREN> { list = new ExpressionList(); }
-               arg = LetDef(stack) { list.add(arg); }
-               ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*
+        <LPAREN> 
+               { list = new ExpressionList(); }
+               (
+                arg = LetDef(stack) { list.add(arg); }   ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*                
+               )
         <RPAREN>
         exp = Body(stack)
     
@@ -2517,16 +2541,12 @@ Term Set (Exp stack) : { Expression exp ; Variable var;}
 
 
 Expression LetDef(Exp stack) : 
-{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub;}
+{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub; Constant type = null; }
 {
-  
-  ( var = Var() 
-    | 
-    	       
-    <LPAREN> { el = new ExpressionList();  }
-	var = Var()  { el.add(var); } 
-	( <COMMA> var = Var()  { el.add(var); } ) *					
-    <RPAREN>	    					     
+( 
+  ( (type = IRIrefConst())? var = Var() 
+    |    	       
+    el = LetArgList()    
   )
   <EQ>
   (  
@@ -2534,8 +2554,12 @@ Expression LetDef(Exp stack) :
     |
     exp = LetForExp()
   )
-			
-   { return (el == null) ? astq.defLet(var, exp) : astq.defLet(el, exp);  }
+
+ |
+  // let (select where)
+  sub = SubQueryExp() { el = new ExpressionList(); exp = astq.term(sub); }
+)			
+   { return (el == null) ? astq.defLet(var, type, exp) : astq.defLet(el, exp);  }
  
 }
 
@@ -2572,12 +2596,13 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
   { return expression; } 
 }
 
+
 Function Function(Metadata la) : 
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
   <FUNCTION> cst = IRIrefConst() 
   { stack = BasicGraphPattern.create(); }
-  v = ArgList(stack)
+  v = FunArgList()
   body = Body(stack)
 
   { 
@@ -2586,12 +2611,90 @@ Function Function(Metadata la) :
   { return term; }
 }
 
+Function Lambda () : 
+{Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
+{
+  <LAMBDA> 
+  { stack = BasicGraphPattern.create(); }
+//  v = FunArgList()
+  v = LambdaArgList()
+  body = Body(stack)
+
+  { 
+  	term = gast.defineLambda(v, body, null);        
+  }
+  { return term; }
+}
+
+
+ExpressionList FunArgList() : { ExpressionList list;  Variable var; Constant type; }
+{  { list = new ExpressionList(); }          	 
+  <LPAREN>   		  	 	  	
+     (
+	          { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); }		              
+        ( <COMMA> { type = null; } (type = IRIrefConst()) ? var = Var() { list.add(var); list.defType(var, type); } )*
+		    
+    ) ?	  
+  <RPAREN>    
+  
+  { return list; }
+}
+
+
+ExpressionList LambdaArgList() : { ExpressionList glist, list;  Variable var; Constant type; }
+{
+   <LPAREN> 		  	 	  	
+    (                           
+                  <LPAREN>  { glist = new ExpressionList(); } 
+                            list = LambdaVarList()  { glist.add(list); } <RPAREN>
+        ( <COMMA> <LPAREN>  list = LambdaVarList()  { glist.add(list); } <RPAREN> )*
+        { list = glist; }
+
+    | list = LambdaVarList() 
+    )
+   <RPAREN>
+
+  { return list; }
+}
+
+ExpressionList LambdaVarList() : { ExpressionList list;  Variable var; }
+{
+    { list = new ExpressionList(); }  
+    ( var = Var() { list.add(var);  }	 ( <COMMA>  var = Var() { list.add(var); } )*  ) ?
+    { return list; }
+}
+
+ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Constant type; }
+{
+   <LPAREN> 		  	 	  	
+    ( 
+                            list = VarList() 
+    |  
+                  <LPAREN>  { glist = new ExpressionList(); } 
+                            list = VarList()  { glist.add(list); } <RPAREN>
+        ( <COMMA> <LPAREN>  list = VarList()  { glist.add(list); } <RPAREN> )*
+        { list = glist; }
+    )
+   <RPAREN>
+
+  { return list; }
+}
+
+
+
+ExpressionList VarList() : { ExpressionList list;  Variable var; }
+{
+    { list = new ExpressionList(); }  
+    var = Var() { list.add(var);  }	 ( <COMMA>  var = Var() { list.add(var); } )* 
+    { return list; }
+}
+
 
 Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
 {
     ( { s = null; }
 
-      (t = <LANGTAG>  
+      (( t = <LANGTAG> | t = <ATPATH> )
             {if (list == null) { list = new Metadata(); } ; list.add(t.image); }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
@@ -2603,45 +2706,6 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
  
     { return list; }
 }
-
-
-
-
-
-Metadata Annotate2() : {Token t; Metadata list = null; Constant s; }
-{
-    ( { s = null; }
-
-      (
-        ((t = <ATEXPORT> | t = <ATPUBLIC> | t = <ATTRACE> | t = <ATDEBUG> 
-        | t = <ATMORE>   | t = <ATIMPORT> )
-
-        { if (list == null) { list = new Metadata();}
-           list.add(t.image);
-        })
-        |
-         ((t = <ATRELAX> | t = <ATTEST>) 
-            {if (list == null) { list = new Metadata(); } ; list.add(t.image); }
-            (  
-                (<STAR> { list.add(t.image, "*");}) 
-                | 
-                ((s = IRIrefConst() { list.add(t.image, s); } ) *)   
-            )
-         )
-        |
-        ((t = <ATSERVICE> | t = <ATDISPLAY> | t = <ATBIND> | t = <ATTYPE> | t = <ATCOMPILE> )
-         s = IRIrefConst() 
-            { if (list == null) { list = new Metadata();}
-               list.add(t.image, s);
-            }
-        )
-      )
-    )*
- 
-    { return list; }
-}
-
-
 
 Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expression exp = null;}
 {
@@ -2891,19 +2955,6 @@ TOKEN:
 | <APREFIX:  "@prefix">
 | <ATLIST:   "@list" >
 | <ATPATH:   "@path" >
-| <ATEXPORT: "@export">
-| <ATPUBLIC: "@public">
-| <ATTRACE:  "@trace">
-| <ATDEBUG:  "@debug">
-| <ATMORE:   "@more">
-| <ATRELAX:  "@relax">
-| <ATTEST:   "@test">
-| <ATSERVICE:"@service">
-| <ATBIND:   "@bind">
-| <ATTYPE:   "@type">
-| <ATDISPLAY:"@display">
-| <ATIMPORT: "@import">
-| <ATCOMPILE: "@compile">
 | <LANGTAG: <AT> (<A2Z>)+("-" (<A2ZN>)+)* >	
 | <#A2Z: ["a"-"z","A"-"Z"]>
 | <#A2ZN: ["a"-"z","A"-"Z","0"-"9"]>
@@ -3071,6 +3122,8 @@ TOKEN [IGNORE_CASE] :
 | <TUPLE: "tuple">
 | <XPATH: "xpath">
 | <FUNCTION: "function">
+| <LAMBDA: "lambda">
+| <QUERY: "query">
 | <EXPORT: "export">
 | <PACKAGE: "package">
 }

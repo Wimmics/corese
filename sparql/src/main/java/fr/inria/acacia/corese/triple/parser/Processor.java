@@ -135,6 +135,7 @@ public class Processor {
         private static final String XT_KIND     = EXT + "kind";
         private static final String XT_METHOD   = "method";
         private static final String XT_METHOD_TYPE= EXT + "method";
+        private static final String XT_EXISTS   = EXT + "exists";
        
 
 	private static final String PLENGTH = "pathLength";
@@ -678,6 +679,7 @@ public class Processor {
 		defoper(XT_KIND,         ExprType.XT_KIND);
 		defoper(XT_METHOD,       ExprType.XT_METHOD);
 		defoper(XT_METHOD_TYPE,  ExprType.XT_METHOD_TYPE);
+		defoper(XT_EXISTS,       ExprType.XT_EXISTS);
                 
 		defoper(XT_FROM,         ExprType.XT_FROM);
 		defoper(XT_NAMED,        ExprType.XT_NAMED);

@@ -412,6 +412,7 @@ public class Term extends Expression {
             case ExprType.APPROXIMATE:
             case ExprType.DEPTH:
             case ExprType.XT_EDGE:
+            case ExprType.XT_EXISTS:
             case ExprType.SIM:
             case ExprType.LOAD:
             case ExprType.WRITE:

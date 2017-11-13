@@ -212,14 +212,17 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 		index = n;
 	}
 
+        @Override
 	public Edge getEdge() {
 		return this;
 	}
 
+        @Override
 	public Node getGraph() {
 		return null;
 	}
 
+        @Override
 	public Node getNode() {
             if (mySelf == null){
                 mySelf = DatatypeMap.createObject(this.toString(), this);

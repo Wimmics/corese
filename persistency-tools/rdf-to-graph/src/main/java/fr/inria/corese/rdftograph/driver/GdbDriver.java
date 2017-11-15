@@ -56,8 +56,8 @@ public abstract class GdbDriver {
 	public GdbDriver() {
 		CacheBuilder<Value, Vertex> cachebuilder = CacheBuilder.newBuilder()
 			.initialCapacity(100_000)
-			.maximumSize(1_000_000)
-			.expireAfterAccess(1, TimeUnit.HOURS)
+			.maximumSize(100_000_000)
+			.expireAfterAccess(0, TimeUnit.HOURS)
 			.removalListener((RemovalNotification<Value, Vertex> notification) -> {
 				LOGGER.log(Level.WARNING, "Removal of {0}", notification.toString());
 			});

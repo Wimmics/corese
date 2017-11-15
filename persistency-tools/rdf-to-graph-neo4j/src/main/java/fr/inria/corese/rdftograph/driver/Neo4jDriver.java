@@ -27,6 +27,8 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import java.util.StringJoiner;
+import java.util.logging.Level;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.as;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outE;
 
@@ -74,13 +76,32 @@ public class Neo4jDriver extends GdbDriver {
 		try {
 			g = Neo4jGraph.open(databasePath);
 //            getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s, %s, %s, %s)", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_S));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_P));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_O));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_EDGE_LABEL, EDGE_G));
+			String[] edges = {EDGE_S, EDGE_P, EDGE_O, EDGE_G};
+			for (int i = 1; i < ((1 << edges.length) - 1); i++) {
+				StringJoiner joiner = new StringJoiner(",");
+				StringBuilder indexCreation = new StringBuilder("CREATE INDEX ON :").append(RDF_EDGE_LABEL).append("(");
+				int nbEdges = 0;
+				for (int e = 0; e < edges.length; e++) {
+					if ((i & (1 << e)) != 0) {
+						nbEdges++;
+						joiner.add(edges[e]);
+					}
+				}
+				indexCreation.append(joiner.toString());
+				indexCreation.append(")");
+				if (nbEdges <= 2) {
+					Logger.getGlobal().log(Level.INFO, "Cypher: {0}", indexCreation.toString());
+					getNeo4jGraph().cypher(indexCreation.toString());
+				}
+			}
+			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :edge(%s)", EDGE_P));
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, KIND));
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, TYPE));
+//			for (String edge : edges) {
+//				getNeo4jGraph().cypher(String.format("CREATE CONSTRAINT ON (e:%s) ASSERT exists(e.%s)", RDF_VERTEX_LABEL, edge));
+//			}
+//			getNeo4jGraph().cypher(String.format("CREATE CONSTRAINT ON (n:%s) ASSERT (n.%s, n.%s, n.%s, n.%s) IS NODE KEY", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
 			g.tx().commit();
 			return g;
 		} catch (Exception e) {
@@ -94,6 +115,8 @@ public class Neo4jDriver extends GdbDriver {
 	public void closeDatabase() throws Exception {
 		LOGGER.entering(getClass().getName(), "closeDatabase");
 		try {
+
+			g.tx().commit();
 			while (g.tx().isOpen()) {
 				g.tx().commit();
 			}
@@ -107,6 +130,7 @@ public class Neo4jDriver extends GdbDriver {
 		return g.traversal().V().hasLabel(RDF_EDGE_LABEL).has(EDGE_G, label).hasNext();
 	}
 
+	@Override
 	public Object createRelationship(Value sourceId, Value objectId, String predicate, Map<String, Object> properties) {
 		Object result;
 
@@ -130,6 +154,8 @@ public class Neo4jDriver extends GdbDriver {
 		Vertex e = g.addVertex(p.toArray());
 		e.addEdge(SUBJECT_EDGE, vSource);
 		e.addEdge(OBJECT_EDGE, vObject);
+
+		vSource.addEdge("edge", vObject, EDGE_P, predicate, EDGE_G, properties.getOrDefault(EDGE_G, ""));
 		result = e.id();
 		return result;
 	}
@@ -156,29 +182,32 @@ public class Neo4jDriver extends GdbDriver {
 	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(Exp exp, String key, String s, String p, String o, String g) {
 		Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter;
 		switch (key) {
-			case "?g?sPO":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE(OBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-				break;
-			case "?g?sP?o":
-				filter = t -> t.V().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
-				break;
-			case "?g?s?pO":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o).inE(OBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL);
-				break;
-			case "?gSPO":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).where(outE(OBJECT_EDGE).inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
-				break;
-			case "?gSP?o":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p);
+			case "GSPO":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_G, g).has(EDGE_S, s).has(EDGE_P, p).has(EDGE_O, o);
 				break;
 			case "GSP?o":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_G, g);
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_G, g).has(EDGE_S, s).has(EDGE_P, p);
+				break;
+			case "?g?sPO":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_O, o).has(EDGE_P, p);
+				break;
+			case "?g?sP?o":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_P, p);
+				break;
+			case "?g?s?pO":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_O, o);
+				break;
+			case "?gSPO":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s).has(EDGE_P, p).has(EDGE_O, o);
+				break;
+			case "?gSP?o":
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s).has(EDGE_P, p);
 				break;
 			case "?gS?pO":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV().where(outE(OBJECT_EDGE).inV().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, o));
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s).has(EDGE_O, o);
 				break;
 			case "?gS?p?o":
-				filter = t -> t.V().hasLabel(RDF_VERTEX_LABEL).has(VERTEX_VALUE, s).inE(SUBJECT_EDGE).outV();
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s);
 				break;
 			case "G?sP?o":
 				filter = t -> t.V().hasLabel(RDF_EDGE_LABEL).has(EDGE_P, p).has(EDGE_G, g);

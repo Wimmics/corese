@@ -37,7 +37,7 @@ import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
 public class RdfToGraph {
 
     private static final Map<DbDriver, String> DRIVER_TO_CLASS;
-    final static private int CHUNK_SIZE = 2*10_000; //Integer.MAX_VALUE;
+    final static private int CHUNK_SIZE = 10_000; //Integer.MAX_VALUE;
     private static Logger LOGGER = Logger.getLogger(RdfToGraph.class.getName());
 
     static {
@@ -46,6 +46,7 @@ public class RdfToGraph {
         DRIVER_TO_CLASS.put(DbDriver.ORIENTDB, "fr.inria.corese.rdftograph.driver.OrientDbDriver");
         DRIVER_TO_CLASS.put(DbDriver.TITANDB, "fr.inria.corese.rdftograph.driver.TitanDriver");
         DRIVER_TO_CLASS.put(DbDriver.NULLDRIVER, "fr.inria.wimmics.rdf.to.graph.nulldriver.NullDriver");
+        DRIVER_TO_CLASS.put(DbDriver.STATS, "fr.inria.wimmics.rdf.to.graph.stats.StatsDriver");
     }
 
     protected Model model;
@@ -257,7 +258,7 @@ public class RdfToGraph {
     }
 
     public enum DbDriver {
-        NEO4J, ORIENTDB, TITANDB, NULLDRIVER
+        NEO4J, ORIENTDB, TITANDB, NULLDRIVER, STATS
     }
 
     private class EdgesBuilder extends AbstractRDFHandler {

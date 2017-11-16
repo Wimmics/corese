@@ -27,7 +27,7 @@ public class NodeManager {
     // in some case content is obsolete
     private boolean active = true;
     // safety to switch off 
-    private boolean available = false;
+    private boolean available = true;
     int count = 0;
     
     NodeManager(Graph g) {

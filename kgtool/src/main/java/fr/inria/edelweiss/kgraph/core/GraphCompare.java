@@ -24,12 +24,8 @@ public class GraphCompare {
     
     
        public boolean compare(boolean isGraph, boolean detail, boolean isDebug) {
-        if (g1.isIndex()) {
-            g1.index();
-        }
-        if (g2.isIndex()) {
-            g2.index();
-        }
+        g1.prepare();
+        g2.prepare();
 
         boolean ok = true;
         

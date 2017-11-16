@@ -6,11 +6,11 @@ import java.util.List;
 import fr.inria.edelweiss.kgram.api.core.Edge;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.edelweiss.kgraph.logic.Entailment;
 
 /**
  * 
- *	Manage a set of inference engines
+ *  Manage a set of inference engines
  *  Loop until no inference is performed
  *  It is automatically called when isUpdate==true to perform inference and restore consistency
  *
@@ -19,7 +19,8 @@ public class Workflow implements Engine {
 	
 	Graph graph;
 	ArrayList<Engine> engines;
-	
+        // RDFS entailment
+	private Entailment inference;
 	boolean 
 	isDebug = false,
 	isIdle = true,
@@ -239,5 +240,44 @@ public class Workflow implements Engine {
 			}
 		}
 	}
-	
+
+    /**
+     * @return the inference
+     */
+    public Entailment getEntailment() {
+        return inference;
+    }
+
+    /**
+     * @param inference the inference to set
+     */
+    public void setEntailment(Entailment inference) {
+        this.inference = inference;
+    }
+    
+    public void setEntailment() {
+        Entailment i = Entailment.create(graph);
+        setEntailment(i);
+        addEngine(i);
+    }
+    
+    public void setRDFSEntailment(boolean b) {
+        pragmaRDFSentailment(b);
+        if (! b) {
+            getEntailment().remove();
+        }
+    }
+    
+    public void pragmaRDFSentailment(boolean b) {
+        if (b) {
+            if (getEntailment() == null) {
+                setEntailment();
+            } else {
+                getEntailment().setActivate(true);
+            }
+        } else if (getEntailment() != null) {
+            getEntailment().setActivate(false);
+        }
+    }
+
 }

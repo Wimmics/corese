@@ -329,7 +329,10 @@ public class EdgeManagerIndexer
     }
 
     /**
-     * PRAGMA: All Edge in list have p as predicate Use case: Rule Engine
+     * PRAGMA: 
+     * This is already reduced() ie there is no duplicates in this manager
+     * All Edge in list have p as predicate 
+     * Use case: Rule Engine
      */
     @Override
     public void add(Node p, List<Entity> list) {
@@ -337,6 +340,7 @@ public class EdgeManagerIndexer
         if (index == 0 || l.size() > 0) {
             l.add(list);
         }
+        index(p);
         if (index == 0) {
             isUpdate = true;
         }

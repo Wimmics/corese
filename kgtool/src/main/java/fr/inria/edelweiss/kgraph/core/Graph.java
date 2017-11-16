@@ -154,8 +154,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     Log log;
     List<GraphListener> listen;
     Workflow manager;
+    EventManager eventManager;
     Tagger tag;
-    Entailment inference, proxy;
+    Entailment proxy;
     EdgeFactory fac;
     private Context context;
     private Distance classDistance, propertyDistance;
@@ -240,10 +241,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public boolean typeCheck() {
-        if (inference == null) {
+        if (getEntailment() == null) {
             return true;
         }
-        return inference.typeCheck();
+        return getEntailment().typeCheck();
     }
 
     /**
@@ -549,6 +550,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         key = hashCode() + ".";
         initSystem();
         dataStore = new DataStore(this);
+        eventManager = new EventManager(this);
     }
     
     /**
@@ -785,67 +787,52 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     void clearDistance() {
         setClassDistance(null);
         setPropertyDistance(null);
-    }
-
-    public Entailment getEntailment() {
-        return inference;
-    }
+    } 
 
     /**
      * b=true require entailments to be performed before next query
      */
-    public void setEntail(boolean b) {
+    void setEntail(boolean b) {
         isEntail = b;
     }
 
-    public boolean isEntail() {
+    boolean isEntail() {
         return isEntail;
     }
-
-    public void setEntailment(Entailment i) {
-        inference = i;
-        manager.addEngine(i);
+    
+    public Entailment getEntailment() {
+        return getWorkflow().getEntailment();
     }
 
     /**
      * Set RDFS entailment
      */
     public void setEntailment() {
-        Entailment entail = Entailment.create(this);
-        setEntailment(entail);
-    }
-
-    /**
-     * (des)activate RDFS entailment
-     */
-    public void setEntailment(boolean b) {
-        if (inference != null) {
-            inference.setActivate(b);
-        }
+        getWorkflow().setEntailment();
     }
 
     /**
      * Use Case: GUI Remove or perform RDFS Entailment
      */
     synchronized public void setRDFSEntailment(boolean b) {
-        if (b) {
-            if (inference == null) {
-                setEntailment();
-            } else {
-                setEntailment(true);
-            }
+        getWorkflow().setRDFSEntailment(b);
+        if (b) {           
             setEntail(true);
             init();
-        } else if (inference != null) {
-            setEntailment(false);
-            inference.remove();
-        }
+        } 
+    }
+    
+    public void pragmaRDFSentailment(boolean b) {
+        getWorkflow().pragmaRDFSentailment(b);
+        if (b) {           
+            setEntail(true);
+        } 
     }
 
     public void set(String property, boolean value) {
         localSet(property, value);
-        if (inference != null) {
-            inference.set(property, value);
+        if (getEntailment() != null) {
+            getEntailment().set(property, value);
         }
     }
 
@@ -854,12 +841,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             for (Index t : tables) {
                 t.setDuplicateEntailment(value);
             }
-        }
-    }
-
-    public void entail() {
-        if (inference != null) {
-            inference.process();
         }
     }
 
@@ -983,7 +964,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     public Entailment getProxy() {
         if (proxy == null) {
-            proxy = inference;
+            proxy = getEntailment();
             if (proxy == null) {
                 proxy = Entailment.create(this);
             }
@@ -1014,6 +995,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      *
      *************************************************************
      */
+    
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+   
     /**
      * send e.g. by kgram eval() before every query execution restore
      * consistency if updates have been done, perform entailment when delete is
@@ -1038,6 +1024,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             // redefine meta properties
             update();
             if (indexNodeManager) {
+               // System.out.println("G: index node manager");
                 table.indexNodeProperty();
             }
         }
@@ -1066,9 +1053,12 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * An Update query is starting
      * nodeManager would not be updated
-     *  
+     * Use case: if we interact with the graph with the API after Update
+     * nodeManager would not be updated wrt prepare() 
+     * TODO: prepare() take care of nodeManager
      */
-    public void startUpdate(){
+    void startUpdate(){
+        //System.out.println("G: desactivate node manager");
         getIndex().getNodeManager().desactivate();
     }
 
@@ -1097,14 +1087,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return isUpdate;
     }
 
-    private void setDelete(boolean b) {
+   void setDelete(boolean b) {
         setUpdate(b);
         isDelete = b;
         isDeletion = true;
     }
 
     public boolean hasEntailment() {
-        return inference != null && inference.isActivate();
+        return getEntailment() != null && getEntailment().isActivate();
     }
 
     // true when index must be sorted 
@@ -1166,22 +1156,27 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
  
-
     public void prepare() {
+        getEventManager().start(Event.Process);
+    }
+
+    void doIndex() {
         if (isIndex) {
             index();
         }
     }
     
+    
+    
     /**
      * Draft (transitivity is missing ...)
      */
-    public void sameas(){
-        for (Entity ent : getEdges(OWL.SAMEAS)){
-            ent.getNode(1).setIndex(ent.getNode(0).getIndex());
-        }
-        index();
-    }
+//    public void sameas(){
+//        for (Entity ent : getEdges(OWL.SAMEAS)){
+//            ent.getNode(1).setIndex(ent.getNode(0).getIndex());
+//        }
+//        index();
+//    }
 
     void clearIndex() {
         gindex.clear();
@@ -1294,12 +1289,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Entity addEdge(Entity edge, boolean duplicate) {
         Entity ent = add(edge, duplicate);
         if (ent != null) {
-            setUpdate(true);
-            //OC:
+            //setUpdate(true);
+            getEventManager().process(Event.Insert);
             manager.onInsert(ent.getGraph(), edge.getEdge());
-//			if (inference!=null){
-//				inference.onInsert(ent.getGraph(), edge);
-//			}
         }
         return ent;
     }
@@ -1340,13 +1332,11 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 	 * ensureCapacity on Index list
      */
     void add(Node p, List<Entity> list) {
-        setIndex(true);
         for (Index ei : getIndexList()) {
             ei.add(p, list);
-            ei.index(p);
         }
-        setIndex(false);
-        setUpdate(true);
+        getEventManager().process(Event.Insert);
+        //setUpdate(true);
         size += list.size();
     }
 
@@ -2314,8 +2304,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Node addLiteral(String pred, String label, String datatype, String lang) {
         String range = null;
         if (lang == null
-                && inference != null && inference.isDatatypeInference()) {
-            range = inference.getRange(pred);
+                && getEntailment() != null && getEntailment().isDatatypeInference()) {
+            range = getEntailment().getRange(pred);
             if (range != null
                     && !range.startsWith(Entailment.XSD)) {
                 range = null;
@@ -2475,15 +2465,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public boolean compare(Graph g2, boolean isGraph, boolean detail, boolean isDebug) {
-        if (isIndex()) {
-            index();
-        }
-        if (g2.isIndex()) {
-            g2.index();
-        }
-        
+        prepare();
+        g2.prepare();       
         return new GraphCompare(this, g2).compare(isGraph, detail, isDebug);
-		}
+    }
 
 
     /**
@@ -2596,7 +2581,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                         res = new ArrayList<Entity>();
                     }
                     res.add(ent);
-                    setDelete(true);
+                    //setDelete(true);
+                    getEventManager().process(Event.Delete);
                 }
             }
         }
@@ -2620,7 +2606,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                 logger.debug("delete: " + ie.getIndex() + " " + ent);
             }
             if (ent != null) {
-                setDelete(true);
+                //setDelete(true);
+                getEventManager().process(Event.Delete);
                 res = ent;
             }
         }
@@ -2641,7 +2628,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                     res = new ArrayList<Entity>();
                 }
                 res.add(ent);
-                setDelete(true);
+                //setDelete(true);
+                getEventManager().process(Event.Delete);
             }
         }
 
@@ -2673,10 +2661,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             t.clear();
         }
         manager.onClear();
-        //OC:
-//		if (inference!=null){
-//			inference.onClear();
-//		}
         clearDistance();
         isIndex = true;
         isUpdate = false;
@@ -2721,7 +2705,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                 logger.debug("** clear: " + gg);
             }
             if (gg != null) {
-                setDelete(true);
+                //setDelete(true);
+                getEventManager().process(Event.Delete);
                 getIndex(IGRAPH).clear(gg);
             }
         }
@@ -2736,8 +2721,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         if (g1 == null) {
             return false;
         }
-        setUpdate(true);
-
+        //setUpdate(true);
+        getEventManager().process(Event.Insert);
         if (g2 == null) {
             g2 = addGraph(target);
         }
@@ -3139,8 +3124,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public void setDebug(boolean b) {
         isDebug = b;
         manager.setDebug(b);
-        if (inference != null) {
-            inference.setDebug(b);
+        if (getEntailment() != null) {
+            getEntailment().setDebug(b);
         }
     }
 

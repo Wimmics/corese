@@ -61,7 +61,7 @@ public class ProducerDefault implements Producer {
 
 	
 	@Override
-	public void init(int nbNodes, int nbEdges) {
+	public void init(Query q) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -176,4 +176,14 @@ public class ProducerDefault implements Producer {
 
     @Override
 	public void close(){};
+
+    @Override
+    public void start(Query q) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void finish(Query q) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

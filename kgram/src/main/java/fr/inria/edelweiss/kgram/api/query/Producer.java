@@ -26,13 +26,12 @@ public interface Producer {
 	
 	/**
 	 * KGRAM calls this method before executing a query.
-	 * It enables to initialize the Producer.
-	 * 
-	 * @param nbNodes Number of query nodes 
-	 * @param nbEdges Number of query edges
+	 * It enables to initialize the Producer
 	 * 
 	 */
-	void init(int nbNodes, int nbEdges);
+	void init(Query q);
+	void start(Query q);
+	void finish(Query q);
 	
 	/**
 	 * A hook to tune Producer

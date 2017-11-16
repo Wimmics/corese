@@ -181,9 +181,11 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             send(Event.BEGIN, q);
         }
+        producer.start(q);
 
         Mappings map = eval(null, q, m);
 
+        producer.finish(q);
         if (hasEvent) {
             send(Event.END, q, map);
         }
@@ -205,9 +207,9 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    Mappings eval(Query q) {
-        return eval(null, q, null);
-    }
+//    Mappings eval(Query q) {
+//        return eval(null, q, null);
+//    }
 
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
@@ -626,7 +628,7 @@ public class Eval implements ExpType, Plugin {
             if (hasEvent) {
                 memory.setEventManager(manager);
             }
-            producer.init(q.nbNodes(), q.nbEdges());
+            producer.init(q);
             evaluator.start(memory);
             debug = q.isDebug();
             if (q.isAlgebra()){

@@ -31,6 +31,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		lProducer = new ArrayList<Producer>();
 	}
 	
+        @Override
 	public void setMode(int n){
             producer.setMode(n);
 	}
@@ -40,6 +41,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
             return producer.getMode();
         }
 	
+        @Override
 	public Iterator<Producer> iterator(){
 		return getProducerList().iterator();
 	}
@@ -77,12 +79,24 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return getProducerList();
 	}
 	
-	public void init(int nbNode, int nbEdge){
-		for (Producer p : getProducerList()){
-			p.init(nbNode, nbEdge);
-		}
+        @Override
+	public void init(Query q){
+		for (Producer p : getProducerList()) {
+                    p.init(q);
+                }
 	}
-	
+        
+        @Override
+	public void start(Query q){
+		producer.start(q);
+	}
+        
+	@Override
+	public void finish(Query q){
+		producer.start(q);
+	}
+          
+        @Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,  Environment env){
 		MetaIterator<Entity> meta = null;
 		for (Producer p : getProducerList()){
@@ -98,6 +112,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return meta;
 	}
 	
+        @Override
 	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node node,  Environment env){
 		MetaIterator<Entity> meta = null;
 		for (Producer p : getProducerList()){
@@ -106,6 +121,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return meta;
 	}
 	
+        @Override
 	public boolean isGraphNode(Node gNode, List<Node> from, Environment env){
 		for (Producer p : getProducerList()){
 			if (p.isGraphNode(gNode, from, env)){
@@ -115,6 +131,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 		return false;
 	}
 	
+        @Override
 	public Iterable<Node> getGraphNodes(Node gNode, List<Node> from, Environment env){
 		MetaIterator<Node> meta = null;
 		for (Producer p : getProducerList()){
@@ -131,6 +148,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	 * PATH
 	 */
 	
+        @Override
 	public void initPath(Edge edge, int index){
 		for (Producer p : getProducerList()){
 			p.initPath(edge, index);
@@ -139,6 +157,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 
 	
 	
+        @Override
 	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
 			Regex exp, Node src, Node start, int index){
 		MetaIterator<Entity> meta = null;
@@ -161,14 +180,17 @@ public class MetaProducer implements Producer, Iterable<Producer> {
 	}
 	
 
+        @Override
 	public Node getNode(Object value) {
 		return producer.getNode(value);
 	}
 
+        @Override
 	public Mappings map(List<Node> lNodes, Object object) {
 		return producer.map(lNodes, object);
 	}
 
+        @Override
 	public List<Node> toNodeList(Object value) {
 		return producer.toNodeList(value);
 	}

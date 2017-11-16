@@ -8,6 +8,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDF;
@@ -76,7 +77,8 @@ public class JSONLDFormat {
         this(((ASTQuery) q.getAST()).getNSM());
         if (g != null) {
             graph = g;
-            graph.prepare();
+            //graph.prepare();
+            graph.getEventManager().start(Event.Format);
         }
         ast = getAST(q);
         query = q;
@@ -86,8 +88,9 @@ public class JSONLDFormat {
         this(n);
         if (g != null) {
             graph = g;
-            graph.prepare();
-        }
+            //graph.prepare();
+            graph.getEventManager().start(Event.Format);
+       }
     }
 
     public static JSONLDFormat create(Graph g, NSManager n) {

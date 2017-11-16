@@ -7,6 +7,7 @@ import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 
 /**
@@ -92,12 +93,14 @@ public class BuildImpl implements Build {
 	
         @Override
 	public void start(){
-		graph.setUpdate(true);
+		//graph.setUpdate(true);
+                graph.getEventManager().start(Event.LoadAPI);
 		blank.clear();
 	}
         
         @Override
         public void finish(){
+                graph.getEventManager().finish(Event.LoadAPI);
             
         }
 	

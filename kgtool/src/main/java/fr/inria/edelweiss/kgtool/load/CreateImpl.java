@@ -13,6 +13,7 @@ import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.Date;
 import org.apache.logging.log4j.LogManager;
@@ -66,11 +67,13 @@ public class CreateImpl implements Creator {
         
     @Override
         public void start(){
-            graph.setUpdate(true);
+            graph.getEventManager().start(Event.LoadAPI);
+            //graph.setUpdate(true);
         }
         
     @Override
         public void finish(){
+            graph.getEventManager().finish(Event.LoadAPI);
         }
 	
     @Override

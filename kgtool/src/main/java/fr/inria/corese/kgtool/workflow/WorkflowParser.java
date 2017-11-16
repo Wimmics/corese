@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.RDF;
 import fr.inria.edelweiss.kgtool.load.Load;
@@ -170,7 +171,8 @@ public class WorkflowParser {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(path, getFormat(ld, path));
-        g.init();
+        //g.init();
+        g.getEventManager().start(Event.Workflow);
         SemanticWorkflow w = parse(g);
         w.setPath(path);
         return w;
@@ -185,7 +187,8 @@ public class WorkflowParser {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(stream, path, path, path, getFormat(ld, path));
-        g.init();
+        //g.init();
+        g.getEventManager().start(Event.Workflow);
         SemanticWorkflow w = parse(g);
         w.setPath(path);
         return w;

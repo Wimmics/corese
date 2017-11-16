@@ -31,6 +31,7 @@ import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
 import fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import fr.inria.edelweiss.kgraph.core.Index;
@@ -734,11 +735,20 @@ public class ProducerImpl implements Producer, IProducerQP {
 	}
 
 	@Override
-	public void init(int nbNodes, int nbEdges) {
-		// TODO Auto-generated method stub
-		graph.init();
-		cache.clear();
+	public void init(Query q) {          
+            cache.clear();
 	}
+        
+        @Override
+	public void start(Query q) {
+            //graph.init();
+            graph.getEventManager().send(Event.Start, Event.Query, q.getAST());
+        }
+        
+        @Override
+	public void finish(Query q) {
+            graph.getEventManager().send(Event.Finish, Event.Query, q.getAST());           
+        }
 
 	@Override
 	public void initPath(Edge edge, int index) {

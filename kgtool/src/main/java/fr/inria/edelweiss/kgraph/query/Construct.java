@@ -20,7 +20,7 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgtool.util.Duplicate;
 
 /**
@@ -163,8 +163,12 @@ public class Construct
         construct(map, null);
     }
          
+    Event event() {
+        return (isDelete) ? Event.Delete : (isInsert) ? Event.Insert : Event.Construct ;
+    }
+    
     public void construct(Mappings map, Environment env) {  
-        graph.start();
+        graph.start(event());
         Exp exp = query.getConstruct();
         if (isDelete) {
             exp = query.getDelete();
@@ -214,7 +218,7 @@ public class Construct
             }
         }
 
-        graph.finish();
+        graph.finish(event());
         
     }
 

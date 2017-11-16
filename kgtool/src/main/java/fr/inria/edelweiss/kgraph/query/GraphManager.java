@@ -9,6 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.Workflow;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -126,15 +127,16 @@ public class GraphManager {
     /**
      * Before construct/insert/delete starts
      */
-    void start(){
-        
+    void start(Event e){
+        graph.getEventManager().start(e);        
     }
     /**
      * After construct/insert/delete completes 
      * Tell the graph to recompile its Index
      */
-    void finish() {
-        graph.prepare();
+    void finish(Event e) {
+        //graph.prepare();
+        graph.getEventManager().finish(e);
     }
 
     /**
@@ -313,9 +315,11 @@ public class GraphManager {
                 graph.logFinish(q);
                 return ope.isSilent();
             } finally {
-                if (graph.isIndex()) {
-                    graph.index();
-                }
+//                if (graph.isIndex()) {
+//                    graph.index();
+//                }
+                   //graph.prepare();
+                   graph.getEventManager().finish(Event.LoadUpdate);
             }
         }
 
@@ -327,7 +331,8 @@ public class GraphManager {
             // (des)activate
             // pragma {kg:kgram kg:rule true/false}
             graph.addEngine(load.getRuleEngine());
-            graph.setEntail(true);
+            //graph.setEntail(true);
+            graph.getEventManager().start(Event.ActivateEntailment);
         }
 
         return true;
@@ -360,9 +365,11 @@ public class GraphManager {
             case Update.CLEAR:
 
                 if (isEntailment(uri)) {
-                    graph.setEntailment(false);
+                    //graph.setEntailment(false);
+                    graph.getEventManager().finish(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
-                    wf.setActivate(Engine.RULE_ENGINE, false);
+                   // wf.setActivate(Engine.RULE_ENGINE, false);
+                    graph.getEventManager().finish(Event.ActivateRuleEngine);
                 }
                 break;
 
@@ -370,11 +377,13 @@ public class GraphManager {
             case Update.CREATE:
 
                 if (isEntailment(uri)) {
-                    graph.setEntailment(true);
-                    graph.setEntail(true);
+                    //graph.setEntailment(true);
+                    //graph.setEntail(true);
+                    graph.getEventManager().start(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
-                    wf.setActivate(Engine.RULE_ENGINE, true);
-                    graph.setEntail(true);
+//                    wf.setActivate(Engine.RULE_ENGINE, true);
+//                    graph.setEntail(true);
+                    graph.getEventManager().start(Event.ActivateRuleEngine);
                 }
                 break;
         }

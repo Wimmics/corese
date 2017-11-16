@@ -27,6 +27,8 @@ import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
 import fr.inria.edelweiss.kgraph.api.Log;
 import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
+import fr.inria.edelweiss.kgraph.core.Event;
+import fr.inria.edelweiss.kgraph.core.EventManager;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.rule.RuleEngine;
@@ -698,6 +700,10 @@ public class QueryProcess extends QuerySolver {
         getGraph().process(re);
         return Mappings.create(q);
     }
+    
+    EventManager getEventManager() {
+        return getGraph().getEventManager();
+    }
 
     /**
 	 * from and named (if any) specify the Dataset over which update take
@@ -712,7 +718,7 @@ public class QueryProcess extends QuerySolver {
      *
      */
     Mappings update(Query query, Dataset ds) throws EngineException {
-        getGraph().startUpdate();
+        getEventManager().send(Event.Start, Event.Update, query.getAST());
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
@@ -720,7 +726,7 @@ public class QueryProcess extends QuerySolver {
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query);
-        //map.setGraph(getGraph());
+        getEventManager().send(Event.Finish, Event.Update, query.getAST());
         return map;
     }
 

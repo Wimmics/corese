@@ -14,6 +14,7 @@ import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.api.Log;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.logic.Distance;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
 import fr.inria.edelweiss.kgraph.logic.RDFS;
@@ -152,27 +153,17 @@ public class PragmaImpl extends Pragma {
 	private void rule(boolean value) {
 		graph.getWorkflow().setActivate(Engine.RULE_ENGINE, value);	
 		if (value){
-			graph.setEntail(true);
+                    //graph.setEntail(true);
+                    graph.getEventManager().start(Event.ActivateEntailment);
 		}
 	}
 	
 
 	private void rdfsentail(boolean value) {
-		if (value){
-			graph.setEntail(true);
-			if (graph.getEntailment() == null){
-				graph.setEntailment();
-			}
-			else {
-				graph.getEntailment().setActivate(true);
-			}
-		}
-		else if (graph.getEntailment() != null){
-			graph.getEntailment().setActivate(false);
-		}
+		graph.pragmaRDFSentailment(value);
 	}
-	
-
+       
+        	
 	boolean isListen(String label){
 		return label.equals(LISTEN) || label.equals(INSERT) || label.equals(DELETE);
 	}

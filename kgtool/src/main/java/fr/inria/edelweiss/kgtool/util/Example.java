@@ -6,6 +6,7 @@ import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -121,8 +122,8 @@ public class Example {
 			qe.addQuery(q5);
 			
 			g.addEngine(qe);
-			g.setEntail(true);
-			
+			//g.setEntail(true);
+			g.getEventManager().start(Event.ActivateEntailment);
 			String q6 = 
 					"select * where {?y rdfs:superClassOf ?x}";
 			

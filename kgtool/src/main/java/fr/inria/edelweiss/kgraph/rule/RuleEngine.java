@@ -23,6 +23,7 @@ import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgraph.api.Engine;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -488,7 +489,8 @@ public class RuleEngine implements Engine, Graphable {
         boolean go = true;
 
         // Entailment 
-        graph.init();
+        //graph.init();
+        graph.getEventManager().start(Event.RuleEngine);
 
         Record nt = null;
         stable = new STable();

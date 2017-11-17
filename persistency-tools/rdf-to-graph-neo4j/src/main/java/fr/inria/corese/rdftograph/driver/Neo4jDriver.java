@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import java.io.FileWriter;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.as;
@@ -37,6 +38,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outE;
  */
 public class Neo4jDriver extends GdbDriver {
 
+	private final FileWriter fw;
 	private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
 	private static final String VAR_CST = "?_bgpv_";
 	private static final String VAR_PRED = "?_bgpe_";
@@ -57,9 +59,10 @@ public class Neo4jDriver extends GdbDriver {
 	SPARQL2Tinkerpop sp2t;
 	Map<String, Object> alreadySeen = new HashMap<>();
 
-	public Neo4jDriver() {
+	public Neo4jDriver() throws IOException {
 		super();
 		sp2t = new SPARQL2Tinkerpop();
+		fw = new FileWriter("/Users/edemairy/tmp/script");
 	}
 
 	@Override
@@ -75,29 +78,30 @@ public class Neo4jDriver extends GdbDriver {
 		super.createDatabase(databasePath);
 		try {
 			g = Neo4jGraph.open(databasePath);
-//            getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s, %s, %s, %s)", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
-			String[] edges = {EDGE_S, EDGE_P, EDGE_O, EDGE_G};
-			for (int i = 1; i < ((1 << edges.length) - 1); i++) {
-				StringJoiner joiner = new StringJoiner(",");
-				StringBuilder indexCreation = new StringBuilder("CREATE INDEX ON :").append(RDF_EDGE_LABEL).append("(");
-				int nbEdges = 0;
-				for (int e = 0; e < edges.length; e++) {
-					if ((i & (1 << e)) != 0) {
-						nbEdges++;
-						joiner.add(edges[e]);
-					}
-				}
-				indexCreation.append(joiner.toString());
-				indexCreation.append(")");
-				if (nbEdges <= 2) {
-					Logger.getGlobal().log(Level.INFO, "Cypher: {0}", indexCreation.toString());
-					getNeo4jGraph().cypher(indexCreation.toString());
-				}
-			}
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :edge(%s)", EDGE_P));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, KIND));
-			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, TYPE));
+//           getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s, %s, %s, %s)", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
+//			String[] edges = {EDGE_S, EDGE_P, EDGE_O, EDGE_G};
+//			for (int i = 1; i < ((1 << edges.length) - 1); i++) {
+//				StringJoiner joiner = new StringJoiner(",");
+//				StringBuilder indexCreation = new StringBuilder("CREATE INDEX ON :").append(RDF_EDGE_LABEL).append("(");
+//				int nbEdges = 0;
+//				for (int e = 0; e < edges.length; e++) {
+//					if ((i & (1 << e)) != 0) {
+//						nbEdges++;
+//						joiner.add(edges[e]);
+//					}
+//				}
+//				indexCreation.append(joiner.toString());
+//				indexCreation.append(")");
+//				if (nbEdges <= 2) {
+//					Logger.getGlobal().log(Level.INFO, "Cypher: {0}", indexCreation.toString());
+//					getNeo4jGraph().cypher(indexCreation.toString());
+//				}
+//			}
+//			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :edge_value_p(value)"));	
+//			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :edge(%s)", EDGE_P));
+//			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, VERTEX_VALUE));
+//			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, KIND));
+//			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s)", RDF_VERTEX_LABEL, TYPE));
 //			for (String edge : edges) {
 //				getNeo4jGraph().cypher(String.format("CREATE CONSTRAINT ON (e:%s) ASSERT exists(e.%s)", RDF_VERTEX_LABEL, edge));
 //			}
@@ -157,6 +161,8 @@ public class Neo4jDriver extends GdbDriver {
 
 		vSource.addEdge("edge", vObject, EDGE_P, predicate, EDGE_G, properties.getOrDefault(EDGE_G, ""));
 		result = e.id();
+//		getNeo4jGraph().cypher(String.format("merge (ed:edge_value_p{value:\"%s\"});", predicate));//CREATE INDEX ON :edge(%s)", EDGE_P));
+//		getNeo4jGraph().cypher(String.format("match (ed:edge_value_p{value:\"%s\"}),(e:rdf_edge{s_value:\"%s\",p_value:\"%s\",o_value:\"%s\",g_value:\"%s\"}) create (ed)-[:linked]->(e);", predicate, sourceId.stringValue(), predicate, objectId.stringValue(), properties.getOrDefault(EDGE_G, "")));
 		return result;
 	}
 

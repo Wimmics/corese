@@ -27,9 +27,6 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
-import java.io.FileWriter;
-import java.util.StringJoiner;
-import java.util.logging.Level;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.as;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outE;
 
@@ -38,7 +35,6 @@ import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.outE;
  */
 public class Neo4jDriver extends GdbDriver {
 
-	private final FileWriter fw;
 	private static final Logger LOGGER = Logger.getLogger(Neo4jDriver.class.getName());
 	private static final String VAR_CST = "?_bgpv_";
 	private static final String VAR_PRED = "?_bgpe_";
@@ -62,7 +58,6 @@ public class Neo4jDriver extends GdbDriver {
 	public Neo4jDriver() throws IOException {
 		super();
 		sp2t = new SPARQL2Tinkerpop();
-		fw = new FileWriter("/Users/edemairy/tmp/script");
 	}
 
 	@Override

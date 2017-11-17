@@ -46,9 +46,6 @@ public abstract class GdbDriver {
 	protected Graph g;
 	// Fields related with cache management.
 	private Cache<Value, Vertex> cache;
-	private long maximumByteSize = 1_000_000_000;
-	private int concurrencyLevel = 1;
-	private int cacheTime = 1;
 
 	/**
 	 * Default constructor. Set up a cache for Value -> Vertex.
@@ -57,7 +54,6 @@ public abstract class GdbDriver {
 		CacheBuilder<Value, Vertex> cachebuilder = CacheBuilder.newBuilder()
 			.initialCapacity(100_000)
 			.maximumSize(100_000_000)
-			.expireAfterAccess(0, TimeUnit.HOURS)
 			.removalListener((RemovalNotification<Value, Vertex> notification) -> {
 				LOGGER.log(Level.WARNING, "Removal of {0}", notification.toString());
 			});
@@ -157,7 +153,6 @@ public abstract class GdbDriver {
 	 * @todo Does not handle duplicate nodes.
 	 */
 	public Vertex getNode(Value v) {
-		GraphTraversal<Vertex, Vertex> it = null;
 		Vertex result = cache.getIfPresent(v);
 		if (result != null) {
 			return result;
@@ -249,6 +244,7 @@ public abstract class GdbDriver {
 					break;
 				}
 			}
+			cache.put(v, newVertex);
 			return newVertex;
 		} catch (Exception ex) {
 			LOGGER.log(Level.INFO, "ignoring a new occurence of vertex {0} for reason:", v);

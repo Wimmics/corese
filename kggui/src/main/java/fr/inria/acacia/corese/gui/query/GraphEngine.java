@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.acacia.corese.gui.core.Command;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.engine.core.Engine;
 import fr.inria.edelweiss.engine.model.api.Bind;
@@ -60,6 +61,24 @@ public class GraphEngine  {
 		bengine = Engine.create(QueryProcess.create(graph, true));
 		exec = QueryProcess.create(graph, true);
 	}
+        
+        public void setOption(Command cmd) {
+            for (String key : cmd.keySet()) {
+                System.out.println("Command: " + key);
+                switch (key) {
+                    case Command.VERBOSE:
+                        graph.setVerbose(true);
+                        break;
+                    case Command.DEBUG:
+                        graph.setDebugMode(true);
+                        break;
+                    case Command.MAX_LOAD:
+                        int max = Integer.valueOf(cmd.get(key));
+                        Load.setLimitDefault(max);
+                        break;
+                }
+            }
+        }
 	
 	public static GraphEngine create(){
 		return new GraphEngine(true);
@@ -156,7 +175,8 @@ public class GraphEngine  {
                 owlEngine.setProfile((lite)? RuleEngine.OWL_RL_LITE: RuleEngine.OWL_RL);
                 owlEngine.setTrace(trace);
                 Date d1 = new Date();
-                owlEngine.process();
+                // disconnect RDFS entailment during OWL processing
+                owlEngine.processWithoutWorkflow();
                 Date d2 = new Date();
                 System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
             }           

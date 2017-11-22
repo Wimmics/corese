@@ -102,7 +102,7 @@ public class CreateImpl implements Creator {
     @Override
 	public boolean accept(Atom subject, Atom property, Atom object){
                 if (count > 100000) {
-                    System.out.println("Loading: " + new Date() + " " + graph.size());
+                    graph.getEventManager().process(Event.LoadStep);
                     count = 2;
                 }
                 else {

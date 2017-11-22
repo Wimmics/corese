@@ -790,7 +790,7 @@ public class EdgeIndexer
     }
 
     @Override
-    public void indexNodeProperty() {
+    public void indexNodeManager() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

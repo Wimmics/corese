@@ -24,6 +24,7 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import fr.inria.edelweiss.kgraph.core.Event;
+import fr.inria.edelweiss.kgraph.core.EventManager;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.logic.Closure;
 import fr.inria.edelweiss.kgraph.logic.Entailment;
@@ -186,8 +187,14 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void cleanOWL() throws IOException, EngineException{
         Cleaner cl = new Cleaner(graph);
+        getEventManager().start(Event.CleanOntology);
         cl.clean(Cleaner.OWL);
         graph.getIndex(1).clean();
+        getEventManager().finish(Event.CleanOntology);
+    }
+    
+    EventManager getEventManager() {
+        return graph.getEventManager();
     }
        
     public int getProfile(){
@@ -282,7 +289,9 @@ public class RuleEngine implements Engine, Graphable {
         return Graph.create();
     }
 
+    @Override
     public boolean process() {
+        graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
         if (graph == null) {
             set(Graph.create());
         }
@@ -290,7 +299,21 @@ public class RuleEngine implements Engine, Graphable {
         //synEntail();
         int size = graph.size();
         entail();
+        graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
         return graph.size() > size;
+    }
+    
+    /**
+     * Process Rule engine without interfering with Graph Workflow if any, 
+     * in particular with RDFS entailment when cleaning the Ontology
+     * @return 
+     */
+    public boolean processWithoutWorkflow() {
+        boolean status = graph.getWorkflow().isActivate();
+        graph.getWorkflow().setActivate(false);
+        boolean b = process();
+        graph.getWorkflow().setActivate(status);
+        return b;
     }
 
     public int process(Graph g) {
@@ -503,6 +526,7 @@ public class RuleEngine implements Engine, Graphable {
         }
 
         while (go) {
+            getEventManager().start(Event.InferenceCycle);
             skip = 0;
             nbrule = 0;
             tnbres = 0;
@@ -577,7 +601,7 @@ public class RuleEngine implements Engine, Graphable {
 
                 if (trace) {
                     stable.record(rule, nbres);
-                }
+                }               
             }
 
 
@@ -602,7 +626,9 @@ public class RuleEngine implements Engine, Graphable {
             } 
             else {
                 go = false;
-            }            
+            } 
+            
+            getEventManager().finish(Event.InferenceCycle);
         }        
         
         if (debug) {
@@ -676,10 +702,12 @@ public class RuleEngine implements Engine, Graphable {
      * Process one rule 
      */
     int process(Rule rule, Record nt,  int loop, int loopIndex,  int nbr) {
+        
         if (trace){
            System.out.println(loop + " : " + nbr + " : " + rule.getIndex() + " " + ((rw!=null)?rw.isNew():""));
            System.out.println(rule.getAST());
         }
+        getEventManager().start(Event.Rule);
         
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
@@ -736,6 +764,8 @@ public class RuleEngine implements Engine, Graphable {
             System.out.println("Size: " + graph.size());
 
         }
+        
+        getEventManager().finish(Event.Rule);
 
         return graph.size() - start;
     }

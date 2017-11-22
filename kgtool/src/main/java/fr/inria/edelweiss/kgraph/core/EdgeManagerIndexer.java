@@ -19,7 +19,10 @@ import java.util.HashMap;
  * Sorted by getNode(index), getNode(other) 
  * At the beginning, only table of
  * index 0 is fed with edges 
- * Other index are built at runtime only if needed 
+ * Other index are built at runtime on demand: 
+ * ?x p ?y . ?z q ?y 
+ * Index(1) of q is built for 2nd triple pattern
+ * Hence Index(1) may be partial (not for all properties)
  * Nodes are sorted by Node index 
  * Nodes with same node index which are not sameTerm are kept in the list:
  * s p 01, 1, 1.0, '1'^^xsd:long, 1e1
@@ -51,10 +54,10 @@ public class EdgeManagerIndexer
     HashMap<Node, EdgeManager> table;
     NodeManager nodeManager;
 
-    EdgeManagerIndexer(Graph g, boolean bi, int n) {
-        init(g, bi, n);
+    EdgeManagerIndexer(Graph g, boolean bi, int index) {
+        init(g, bi, index);
         table = new HashMap();
-        nodeManager = new NodeManager(g);
+        nodeManager = new NodeManager(g, index);
     }
 
     void init(Graph g, boolean bi, int n) {
@@ -258,7 +261,7 @@ public class EdgeManagerIndexer
     @Override
     public void clearIndex(Node pred) {
         EdgeManager l = get(pred);
-        if (l != null && l.size() > 0) {
+        if (l != null) { // && l.size() > 0) {            
             l.clear();
         }
     }
@@ -393,7 +396,7 @@ public class EdgeManagerIndexer
         EdgeManager list = define(edge.getEdge().getEdgeNode());
         if (list.size() > 0) {
             add(edge, duplicate);
-        }
+        }      
     }
 
     /**
@@ -442,11 +445,13 @@ public class EdgeManagerIndexer
      * To be called after reduce is done
      */
     @Override
-    public void indexNodeProperty() {
+    public void indexNodeManager() {
+        graph.getEventManager().start(Event.IndexNodeManager);
         nodeManager.activate();
         for (Node pred : getProperties()) {
-            get(pred).indexNodeProperty(nodeManager);
+            checkGet(pred).indexNodeManager(nodeManager);
         }
+        graph.getEventManager().finish(Event.IndexNodeManager);
     }
     
     /**
@@ -454,6 +459,7 @@ public class EdgeManagerIndexer
      * Desactivate nodeManager because we add triples 
      * hence subjects may have new properties 
      * hence nodeManager content is obsolete
+     * PRAGMA: it does not reduce
      */
     @Override
     public void index(Node pred) {
@@ -468,12 +474,15 @@ public class EdgeManagerIndexer
  
     /**
      * eliminate duplicate edges
+     * index NodeManager
      */
     private void reduce() {
-        nodeManager.clear();
+        nodeManager.activate();
+        graph.getEventManager().start(Event.IndexNodeManagerReduce);
         for (Node pred : getProperties()) {
             reduce(pred);
         }
+        graph.getEventManager().finish(Event.IndexNodeManagerReduce);
     }
 
     private void reduce(Node pred) {

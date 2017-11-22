@@ -20,7 +20,6 @@ import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.load.LoadFormat;
 import fr.inria.edelweiss.kgtool.load.QueryLoad;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.HashMap;
 import org.apache.logging.log4j.Logger;

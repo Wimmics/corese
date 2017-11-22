@@ -98,7 +98,10 @@ public class EdgeManager implements Iterable<Entity> {
         return count;
     }
     
-    void indexNodeProperty(NodeManager mgr) {
+    /**
+     * 
+     */
+    void indexNodeManager(NodeManager mgr) {
         Entity pred = null;
         for (Entity ent : list) {
             if (pred == null) {

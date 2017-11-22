@@ -12,6 +12,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgraph.api.Engine;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -227,6 +228,7 @@ public class Entailment implements Engine {
      * rdfs:range rr use case: add Entailment on existing graph use case:
      * redefine after delete
      */
+    @Override
     public void init() {
         define();
     }
@@ -250,9 +252,15 @@ public class Entailment implements Engine {
         }
     }
 
+    @Override
     public boolean process() {
+        if (graph.size() == 0) {
+            return false;
+        }
+        graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
         int size = graph.size();
         entail();
+        graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
         return graph.size() > size;
     }
 
@@ -729,6 +737,7 @@ public class Entailment implements Engine {
     }
 
     void inference(List<Entity> list) {
+        graph.getEventManager().start(Event.InferenceCycle);
         if (isDebug) {
             logger.info("Entail list: " + list.size());
         }
@@ -752,6 +761,7 @@ public class Entailment implements Engine {
                 defProperty(ent.getEdge().getEdgeNode());
             }
         }
+        graph.getEventManager().finish(Event.InferenceCycle);
     }
 
     /**

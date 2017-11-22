@@ -162,13 +162,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     private Distance classDistance, propertyDistance;
     private boolean isSkolem = false;
     // true when graph is modified and need index()
-    boolean isUpdate = false,
-            isDelete = false,
-            // any delete occurred ?
-            isDeletion = false,
+//    boolean isUpdate = false,
+//            isDelete = false,
+//            // any delete occurred ?
+//            isDeletion = false;
+    boolean 
             isIndex = true,
             // automatic entailment when init()
-            isEntail = true,
+            //isEntail = true,
             isDebug = !true,
             hasDefault = !true;
     private boolean isListNode = !true;
@@ -792,13 +793,13 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * b=true require entailments to be performed before next query
      */
-    void setEntail(boolean b) {
-        isEntail = b;
-    }
-
-    boolean isEntail() {
-        return isEntail;
-    }
+//    void setEntail(boolean b) {
+//        isEntail = b;
+//    }
+//
+//    boolean isEntail() {
+//        return isEntail;
+//    }
     
     public Entailment getEntailment() {
         return getWorkflow().getEntailment();
@@ -817,7 +818,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     synchronized public void setRDFSEntailment(boolean b) {
         getWorkflow().setRDFSEntailment(b);
         if (b) {           
-            setEntail(true);
+            //setEntail(true);
+            getEventManager().start(Event.ActivateEntailment);
             init();
         } 
     }
@@ -825,7 +827,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public void pragmaRDFSentailment(boolean b) {
         getWorkflow().pragmaRDFSentailment(b);
         if (b) {           
-            setEntail(true);
+            //setEntail(true);
+            getEventManager().start(Event.ActivateEntailment);
         } 
     }
 
@@ -868,8 +871,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         sb.appendPNL("kg:uri      ", individual.size());
         sb.appendPNL("kg:bnode    ", blank.size());
         sb.appendPNL("kg:literal  ", literal.size());
-        sb.appendPNL("kg:nodeManager  ", getNodeManager().isActive());
-        if (getNodeManager().isActive()) {
+        sb.appendPNL("kg:nodeManager  ", getNodeManager().isEffective());
+        if (getNodeManager().isEffective()) {
             sb.appendPNL("kg:nbSubject  ", getNodeManager().size());
             sb.appendPNL("kg:nbProperty  ", getNodeManager().count());
         }
@@ -999,6 +1002,15 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public EventManager getEventManager() {
         return eventManager;
     }
+    
+    public void setVerbose(boolean b) {
+        if (b) {
+            getEventManager().setDebug(true);
+            // hide to logger
+            getEventManager().hide(Event.Insert);
+            getEventManager().hide(Event.Construct);
+        }
+    }
    
     /**
      * send e.g. by kgram eval() before every query execution restore
@@ -1008,58 +1020,47 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
      * automatically run, use re.process()
      */
     public synchronized void init() {
-        boolean indexNodeManager = true;
-        if (isIndex) {
-            if (isDebug) {
-                logger.info("Graph index");
-            }            
-            index(); 
-            // use case: load()
-            indexNodeManager = false;
+        getEventManager().start(Event.InitGraph);
+        if (isIndex()) {                    
+            index();            
         }
 
-        if (isUpdate) {
+        if (getEventManager().isUpdate()) {
             // use case: previously load or sparql update
             // clean meta properties 
             // redefine meta properties
             update();
-            if (indexNodeManager) {
-               // System.out.println("G: index node manager");
-                table.indexNodeProperty();
-            }
+            performIndexNodeManager();
         }
 
-        if (isEntail) {
-            if (isDebug) {
-                logger.info("Graph entailment");
-            }
+        if (getEventManager().isEntail() && getWorkflow().isAvailable()) {
             process();
-            isEntail = false;
+            getEventManager().setEntail(false);
+            if (isDebug && getEventManager().isUpdate()) {
+                logger.info("Graph modified after entailment");
+            }
         }
 
+        performIndexNodeManager();
+        
+        getEventManager().finish(Event.InitGraph);
     }
 
     private void update() {
-        isUpdate = false;
+        getEventManager().setUpdate(false);
         // node index
         clearIndex();
         clearDistance();
-        if (isDelete) {
+        if (getEventManager().isDelete()) {
             manager.onDelete();
-            isDelete = false;
+            getEventManager().setDelete(false);           
         }
     }
     
     /**
-     * An Update query is starting
-     * nodeManager would not be updated
-     * Use case: if we interact with the graph with the API after Update
-     * nodeManager would not be updated wrt prepare() 
-     * TODO: prepare() take care of nodeManager
      */
     void startUpdate(){
-        //System.out.println("G: desactivate node manager");
-        getIndex().getNodeManager().desactivate();
+
     }
 
     public void clean() {
@@ -1074,23 +1075,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         for (Entity ent : getEdges()) {
             ent.getEdge().setIndex(-1);
         }
-    }
-
-    public void setUpdate(boolean b) {
-        isUpdate = b;
-        if (isUpdate) {
-            setEntail(true);
-        }
-    }
-
-    public boolean isUpdate() {
-        return isUpdate;
-    }
-
-   void setDelete(boolean b) {
-        setUpdate(b);
-        isDelete = b;
-        isDeletion = true;
     }
 
     public boolean hasEntailment() {
@@ -1126,19 +1110,42 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return table;
     }
     
-    public void indexNodeProperty() {
-        prepare();
-        table.indexNodeProperty();
+    /**
+     * Graph updated, nodeManager content is obsolete
+     */
+    void eventUpdate() {
+        clearNodeManager();
+    }
+ 
+    
+    /**
+     * Pragma: graph must be indexed first
+     */
+    public void indexNodeManager() {
+        getIndex().indexNodeManager();
+    }
+    
+   
+    void clearNodeManager() {
+        //getNodeManager().desactivate();
+        for (Index id : getIndexList()) {
+            id.getNodeManager().desactivate();
+        }
     }
 
     /**
      * When load is finished, sort edges
+     * Side effect: index NodeManager
      */
     public void index() {
-        for (Index ei : getIndexList()) {
-            ei.index();
+        if (size() > 0) {
+            getEventManager().start(Event.IndexGraph);
+            for (Index ei : getIndexList()) {
+                ei.index();
+            }
+            getEventManager().finish(Event.IndexGraph);
+            setIndex(false);
         }
-        isIndex = false;
     }
     
     public void compact(){
@@ -1156,17 +1163,26 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
  
+    /**
+     * Prepare the graph in order to perform eg a Query
+     * In practice it generates the Index properly.
+     */
     public void prepare() {
         getEventManager().start(Event.Process);
     }
 
-    void doIndex() {
-        if (isIndex) {
+    void indexGraph() {
+        if (isIndex()) {
             index();
         }
+        performIndexNodeManager();
     }
     
-    
+    void performIndexNodeManager() {
+       if (! getNodeManager().isActive()) {
+            indexNodeManager();
+        } 
+    }
     
     /**
      * Draft (transitivity is missing ...)
@@ -1221,16 +1237,18 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             }
             addGraphNode(edge.getGraph());
             addPropertyNode(edge.getEdge().getEdgeNode());
-
-            for (Index ei : getIndexList()) {
-                if (ei.getIndex() != 0) {
-                    ei.declare(edge, duplicate);
-                }
-            }
-            //tlist.declare(edge);
+            declare(edge, duplicate);
             size++;
         }
         return ent;
+    }
+    
+    void declare(Entity edge, boolean duplicate) {
+        for (Index ei : getIndexList()) {
+            if (ei.getIndex() != 0) {
+                ei.declare(edge, duplicate);
+            }
+        }
     }
 
     public boolean exist(Entity edge) {
@@ -1340,6 +1358,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         size += list.size();
     }
 
+    /**
+     * Use cas: RuleEngine
+     * PRAGMA: edges in list do not exists in graph (no duplicate)
+     */
     public void addOpt(List<Entity> list) {
         if (list.isEmpty()) {
             return;
@@ -1359,11 +1381,44 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
         for (Node pred : t.values()) {
             for (Index ei : getIndexList()) {
+                // sort but does not reduce:
                 ei.index(pred);
             }
         }
         setIndex(false);
     }
+    
+ 
+    /**
+     * Use case: Entailment
+     * PRAGMA: edges in list may exist in graph
+     */
+    public List<Entity> copy(List<Entity> list) {
+        for (Index id : tables) {
+            if (id.getIndex() != 0) {
+                id.clearCache();
+            }
+        }
+
+        if (isDebug) {
+            logger.info("Copy: " + list.size());
+        }
+
+        // fake Index not sorted to add edges at the end of the Index
+        setIndex(true);
+        for (Entity ent : list) {
+            Entity e = add(ent);
+            if (e != null) {
+                getEventManager().process(Event.Insert);
+            }
+        }
+        setIndex(false);
+        // sort and reduce
+        table.index();
+
+        return list;
+    }
+    
 
     public Entity create(Node source, Node subject, Node predicate, Node value) {
         return fac.create(source, subject, predicate, value);
@@ -1385,6 +1440,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return null;
     }
 
+    @Override
     public int size() {
         return size;
     }
@@ -2148,8 +2204,13 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
     
     Iterable<Node> getSortedProperties(Node node, int n) {
-        if (n == 0 && node != null) {                                
-            return getIndex().getNodeManager().getPredicates(node);
+        if (node != null) {
+            switch (n) {
+                case 0:
+                    // draft
+                //default:
+                    return getIndex(n).getNodeManager().getPredicates(node);
+            }
         }
         return getSortedProperties();
     }
@@ -2263,7 +2324,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public Iterable<Entity> getAllNodes() {
-        if (isDeletion) {
+        if (getEventManager().isDeletion()) {
             // recompute existing nodes (only if it has not been already recomputed)
             return getAllNodesIndex();
         } else {
@@ -2285,8 +2346,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     /**
-     * Prepare an index of nodes for each graph, enumerate all nodes TODO: there
-     * are duplicates (same node in several graphs)
+     * Prepare an index of nodes for each graph, enumerate all nodes 
+     * TODO: there are duplicates (same node in several graphs)
      */
     public Iterable<Entity> getAllNodesIndex() {
         indexNode();
@@ -2662,9 +2723,12 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         manager.onClear();
         clearDistance();
+        
         isIndex = true;
-        isUpdate = false;
-        isDelete = false;
+//        isUpdate = false;
+//        isDelete = false;
+        getEventManager().initStatus();
+        
         size = 0;
         if (storageMgr != null) {
             storageMgr.clean();
@@ -2836,85 +2900,60 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         Entity res = add(e);
         return res;
-    }
+    }   
 
-    /**
-     * Copy g into this
-     */
-    public List<Entity> copy(List<Entity> list) {
-        for (Index id : tables) {
-            if (id.getIndex() != 0) {
-                id.clearCache();
-            }
-        }
+//    @Deprecated
+//    public List<Entity> copy(Graph g, boolean b) {
+//        ArrayList<Entity> list = new ArrayList<Entity>();
+//
+//        for (Index id : tables) {
+//            if (id.getIndex() != 0) {
+//                id.clearCache();
+//            }
+//        }
+//
+//        for (Node pred : g.getProperties()) {
+//            if (isDebug) {
+//                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
+//            }
+//
+//            for (Entity ent : g.getEdges(pred)) {
+//
+//                if (!exist(ent)) {
+//                    list.add(ent);
+//                }
+//            }
+//
+//            setIndex(true);
+//            for (Entity ent : list) {
+//                add(ent);
+//            }
+//            setIndex(false);
+//        }
+//
+//        table.index();
+//
+//        return list;
+//    }
 
-        if (isDebug) {
-            logger.info("Copy: " + list.size());
-        }
-
-        isIndex = true;
-        for (Entity ent : list) {
-            add(ent);
-        }
-        isIndex = false;
-
-        table.index();
-
-        return list;
-    }
-
-    @Deprecated
-    public List<Entity> copy(Graph g, boolean b) {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-
-        for (Index id : tables) {
-            if (id.getIndex() != 0) {
-                id.clearCache();
-            }
-        }
-
-        for (Node pred : g.getProperties()) {
-            if (isDebug) {
-                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
-            }
-
-            for (Entity ent : g.getEdges(pred)) {
-
-                if (!exist(ent)) {
-                    list.add(ent);
-                }
-            }
-
-            isIndex = true;
-            for (Entity ent : list) {
-                add(ent);
-            }
-            isIndex = false;
-        }
-
-        table.index();
-
-        return list;
-    }
-
-    public List<Entity> copy2(Graph g, boolean b) {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-
-        for (Node pred : g.getProperties()) {
-            if (isDebug) {
-                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
-            }
-
-            for (Entity ent : g.getEdges(pred)) {
-                Entity ee = add(ent);
-                if (ee != null) {
-                    list.add(ee);
-                }
-            }
-        }
-
-        return list;
-    }
+//    public List<Entity> copy2(Graph g, boolean b) {
+//        ArrayList<Entity> list = new ArrayList<Entity>();
+//
+//        for (Node pred : g.getProperties()) {
+//            if (isDebug) {
+//                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
+//            }
+//
+//            for (Entity ent : g.getEdges(pred)) {
+//                Entity ee = add(ent);
+//                if (ee != null) {
+//                    list.add(ee);
+//                }
+//            }
+//        }
+//
+//        return list;
+//    }
 
     public void copy(Graph g) {
         copyNode(g);
@@ -3123,7 +3162,14 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     public void setDebug(boolean b) {
         isDebug = b;
+    }
+    
+    public void setDebugMode(boolean b) {
+        setDebug(b);
         manager.setDebug(b);
+        for (Index id : getIndexList()) {
+            id.getNodeManager().setDebug(b);
+        }
         if (getEntailment() != null) {
             getEntailment().setDebug(b);
         }

@@ -42,6 +42,8 @@ import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.path.Path;
 import fr.inria.edelweiss.kgraph.api.Loader;
+import fr.inria.edelweiss.kgraph.core.Event;
+import fr.inria.edelweiss.kgraph.core.EventManager;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeQuad;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
@@ -82,6 +84,10 @@ public class PluginImpl
     public static final String LISTEN = EXT+"listen";
     public static final String SILENT = EXT+"silent";
     public static final String DEBUG  = EXT+"debug";
+    public static final String EVENT  = EXT+"event";
+    public static final String EVENT_LOW  = EXT+"eventLow";
+    public static final String SHOW  = EXT+"show";
+    public static final String HIDE  = EXT+"hide";
     private static final String QM = "?";
     
     String PPRINTER = DEF_PPRINTER;
@@ -812,8 +818,36 @@ public class PluginImpl
         else if (dt1.getLabel().equals(DEBUG)){
             getEvaluator().setDebug(dt2.booleanValue());
         }
+        else if (dt1.getLabel().equals(EVENT)) {
+            getEventManager(p).setDebug(dt2.booleanValue());
+            getGraph(p).setDebugMode(dt2.booleanValue());
+        }
+        else if (dt1.getLabel().equals(EVENT_LOW)) {
+            getEventManager(p).setDebug(dt2.booleanValue());
+            getEventManager(p).hide(Event.Insert);
+            getEventManager(p).hide(Event.Construct);
+            getGraph(p).setDebugMode(dt2.booleanValue());
+        }
+        else if (dt1.getLabel().equals(SHOW)) { 
+            getEventManager(p).setDebug(true);
+            Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
+            if (e != null) {
+                getEventManager(p).show(e);
+            }            
+        }
+        else if (dt1.getLabel().equals(HIDE)) {           
+            getEventManager(p).setDebug(true);
+            Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
+            if (e != null) {
+                getEventManager(p).hide(e);
+            }             
+        }
         return TRUE;
      }
+    
+    EventManager getEventManager(Producer p) {
+        return getGraph(p).getEventManager();
+    }
     
     /**
      * @deprecated

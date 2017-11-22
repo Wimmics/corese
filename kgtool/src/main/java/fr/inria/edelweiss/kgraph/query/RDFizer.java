@@ -64,6 +64,7 @@ public class RDFizer {
         } catch (LoadException ex) {
             LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
         } 
+        g.prepare();
         return g;
      }
      
@@ -77,7 +78,8 @@ public class RDFizer {
                 SPINProcess sp = SPINProcess.create();
                 g = sp.toSpinGraph(ast);
                 q.setGraph(g);
-            }           
+            } 
+            g.prepare();
             return g;
         } catch (EngineException ex) {
         }

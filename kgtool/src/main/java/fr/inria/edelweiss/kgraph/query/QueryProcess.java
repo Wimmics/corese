@@ -718,7 +718,7 @@ public class QueryProcess extends QuerySolver {
      *
      */
     Mappings update(Query query, Dataset ds) throws EngineException {
-        getEventManager().send(Event.Start, Event.Update, query.getAST());
+        getEventManager().start(Event.Update, query.getAST());
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
@@ -726,7 +726,7 @@ public class QueryProcess extends QuerySolver {
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query);
-        getEventManager().send(Event.Finish, Event.Update, query.getAST());
+        getEventManager().finish(Event.Update, query.getAST());
         return map;
     }
 

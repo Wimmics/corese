@@ -277,11 +277,12 @@ public class GraphManager {
         String uri = ope.getURI();
         String src = ope.getTarget();
         graph.logStart(q);
-        if (graph.size() == 0) {
-            // graph is empty, optimize loading as if the graph is to be indexed
-            // because edges are added directly
-            graph.setIndex(true);
-        }
+//        if (graph.size() == 0) {
+//            // graph is empty, optimize loading as if the graph is to be indexed
+//            // because edges are added directly
+//            graph.setIndex(true);
+//        }
+        graph.getEventManager().start(Event.LoadUpdate);
         if (ope.isSilent()) {
             try {
                 load.parse(uri, src);

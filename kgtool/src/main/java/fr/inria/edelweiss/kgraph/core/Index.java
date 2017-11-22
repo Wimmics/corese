@@ -32,7 +32,7 @@ public interface Index {
 
 	void indexNode();
 
-        void indexNodeProperty();       
+        void indexNodeManager();       
         
         void setByIndex(boolean b);
 

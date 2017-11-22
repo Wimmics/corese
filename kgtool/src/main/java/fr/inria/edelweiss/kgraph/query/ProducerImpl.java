@@ -742,12 +742,12 @@ public class ProducerImpl implements Producer, IProducerQP {
         @Override
 	public void start(Query q) {
             //graph.init();
-            graph.getEventManager().send(Event.Start, Event.Query, q.getAST());
+            graph.getEventManager().start(Event.Query, q.getAST());
         }
         
         @Override
 	public void finish(Query q) {
-            graph.getEventManager().send(Event.Finish, Event.Query, q.getAST());           
+            graph.getEventManager().finish(Event.Query, q.getAST());           
         }
 
 	@Override

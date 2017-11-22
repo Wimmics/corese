@@ -73,7 +73,7 @@ public class Load
     // true:  load files into kg:default graph when no named graph is given
     // false: load files into named graphs (name = URI of file) 
     private static boolean DEFAULT_GRAPH = false;
-
+    private static int LIMIT_DEFAULT = Integer.MAX_VALUE;
     
     int maxFile = Integer.MAX_VALUE;
     Graph graph;
@@ -90,7 +90,7 @@ public class Load
     private boolean renameBlankNode = true;
     private boolean defaultGraph = DEFAULT_GRAPH;
     int nb = 0;
-    private int limit = Integer.MAX_VALUE;
+    private int limit = LIMIT_DEFAULT;
     
     /**
      * true means load in default graph when no named graph is given
@@ -123,6 +123,10 @@ public class Load
         set((Graph) o);
     }
 
+    public static void setLimitDefault(int max) {
+        LIMIT_DEFAULT = max;
+    }
+    
     public void setLimit(int max) {
         limit = max;
         if (build != null) {

@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-11-11";
+    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-11-22";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -183,6 +183,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String URI_CORESE = "http://wimmics.inria.fr/corese";
     private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
     int nbTabs = 0;
+    
+    Command cmd;
 
     static {
         // false: load files into named graphs
@@ -196,8 +198,9 @@ public class MainFrame extends JFrame implements ActionListener {
      * @param aCapturer
      * @param pPropertyPath
      */
-    public MainFrame(CaptureOutput aCapturer, String pPropertyPath) {
-        super();
+    public MainFrame(CaptureOutput aCapturer, String[] args) {
+        super();  
+        cmd = new Command(args);
         this.setTitle(TITLE);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(900, 700);
@@ -1528,6 +1531,7 @@ public class MainFrame extends JFrame implements ActionListener {
         // Index the graph using int index instead of IDatatype values
         //Graph.setCompareIndex(true);
         myCorese = GraphEngine.create(rdfs);
+        myCorese.setOption(cmd);
     }
 
     void setRDFSEntailment(boolean b) {
@@ -1649,24 +1653,11 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     public static void main(String[] p_args) {
-
         CaptureOutput aCapturer = new CaptureOutput();
-
         LoggerContext context = (LoggerContext) LogManager.getContext();
         Configuration config = context.getConfiguration();
-
         PatternLayout layout = PatternLayout.createLayout("%m%n", null, config, null, Charset.defaultCharset(), false, false, null, null);
-//		Appender appender = ConsoleAppender.createAppender(layout, null, null, "CONSOLE_APPENDER", null, null);
-//		Appender appender = WriterAppender.createAppender(layout, null, aCapturer, "WRITER_APPENDER", false, true);
-//		appender.start();
-//		config.addAppender(appender);
-//		LoggerConfig loggerConfig = LogManager.getLogger("fr.inria.acacia.corese");
-        MainFrame coreseFrame = null;
-        if (p_args.length > 0) {
-            coreseFrame = new MainFrame(aCapturer, p_args[0]);
-        } else {
-            coreseFrame = new MainFrame(aCapturer, null);
-        }
+        MainFrame coreseFrame = new MainFrame(aCapturer, p_args);       
         coreseFrame.setStyleSheet();
         coreseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyJPanelListener.listLoadedFiles.setCellRenderer(new MyCellRenderer());

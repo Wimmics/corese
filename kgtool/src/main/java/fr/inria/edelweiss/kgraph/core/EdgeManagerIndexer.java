@@ -451,7 +451,7 @@ public class EdgeManagerIndexer
         for (Node pred : getProperties()) {
             checkGet(pred).indexNodeManager(nodeManager);
         }
-        graph.getEventManager().finish(Event.IndexNodeManager);
+        graph.getEventManager().finish(Event.IndexNodeManager, nodeManager);
     }
     
     /**

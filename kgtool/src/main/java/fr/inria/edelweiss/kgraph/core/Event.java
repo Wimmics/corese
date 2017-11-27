@@ -22,7 +22,12 @@ public enum Event {
     LoadUpdate, // SPARQL Update load
     DeleteInsert, DeleteData, InsertData, 
     Delete, Insert,
-    RuleEngine, Workflow, Format,
+    
+    WorkflowParser, 
+    WorkflowQuery, WorkflowTransformation,
+    
+    Format, Transformation,
+    RuleEngine,
     WorkflowEngine, // rule and entailment
     InferenceEngine, InferenceCycle, // rule and entailment
     CleanOntology, // OWL RL clean OWL ontology before processing

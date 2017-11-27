@@ -21,7 +21,7 @@ public class EventManager {
 
     private static Logger logger = LogManager.getLogger(EventManager.class);
     Graph graph;
-    private boolean debug    = !true;
+    private boolean verbose    = !true;
     private boolean isEntail = true;
     private boolean isUpdate = false;
     private boolean isDelete = false;
@@ -34,13 +34,17 @@ public class EventManager {
     }
     
     public void show(Event e) {
-        getLog().show(e);
+        getLog().show(e, true);
     }
-    
+    public void show(Event e, boolean status) {
+        getLog().show(e, status);
+    }
     public void hide(Event e) {
-        getLog().hide(e);
+        getLog().hide(e, true);
     }
-    
+    public void hide(Event e, boolean status) {
+        getLog().hide(e, status);
+    }
     public void focus() {
        getLog().focus();
     }
@@ -86,7 +90,7 @@ public class EventManager {
         switch (e) {
             case Query:
             case RuleEngine:
-            case Workflow:
+            case WorkflowParser:
                 graph.init();
                 break;
                 
@@ -247,7 +251,7 @@ public class EventManager {
     }
 
     void trace(Event type, Event e, Object o) {
-        if (debug) {
+        if (verbose) {
             getLog().trace(type, e, o);
         }
     }
@@ -262,14 +266,14 @@ public class EventManager {
     /**
      * @return the debug
      */
-    public boolean isDebug() {
-        return debug;
+    public boolean isVerbose() {
+        return verbose;
     }
 
     /**
      * @param debug the debug to set
      */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
+    public void setVerbose(boolean debug) {
+        this.verbose = debug;
     }
 }

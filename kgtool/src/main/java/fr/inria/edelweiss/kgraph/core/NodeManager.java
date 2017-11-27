@@ -36,6 +36,7 @@ public class NodeManager {
         graph = g;
         table = new HashMap<>();
         this.index = index;
+        //setAvailable(index > 0);
     }
 
     int size() {
@@ -49,6 +50,10 @@ public class NodeManager {
     void clear() {
         table.clear();
         count = 0;
+    }
+    
+    public int getIndex() {
+        return index;
     }
 
     void desactivate() {
@@ -75,23 +80,25 @@ public class NodeManager {
 
     Iterable<Node> getPredicates(Node node) {
         if (isEffective()) {
-            if (debug) {
-                System.out.println("NM true: " + index + " " + node + " " + getPredicateList(node));
-            }
+//            if (debug) {
+//                System.out.println("NM exist: " + index + " " + node + " " + getPredicateList(node));
+//            }
             return getPredicateList(node);
         } 
         // draft: 
-//        else if (index != 0 && ! graph.isIndex()) {
-//            graph.getIndex(index).indexNodeManager();
-//            if (debug) {
-//                System.out.println("NM true: " + index + " " + node + " " + getPredicateList(node));
-//            }
-//            return getPredicateList(node);
-//        } 
-        else {
-            if (debug) {
-                System.out.println("NM false: " + index + " " + node + " " + graph.getSortedProperties());
+        else if (isAvailable() && ! graph.isIndex()) {
+            synchronized (graph) {
+                graph.getIndex(index).indexNodeManager();
             }
+            if (debug) {
+                System.out.println("NM create: " + index + " " + node + " " + getPredicateList(node));
+            }
+            return getPredicateList(node);
+        } 
+        else {
+//            if (debug) {
+//                System.out.println("NM false: " + index + " " + node + " " + graph.getSortedProperties());
+//            }
             return graph.getSortedProperties();
         }
     }

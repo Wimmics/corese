@@ -20,14 +20,23 @@ public class EventLogger {
         mgr = ev;
     }
     
-    public void show(Event e) {
-        show().put(e, e);
+    public void show(Event e, boolean b) {
+        if (b) {
+            show().put(e, e);
+        }
+        else {
+            show().remove(e);
+        }
     }
     
-    public void hide(Event e) {
-        hide().put(e, e);
+    public void hide(Event e, boolean b) {
+        if (b) {
+            hide().put(e, e);
+        } else {
+            hide().remove(e);
+        }
     }
-    
+
     public void focus() {
        show().clear();
        hide().clear();
@@ -68,10 +77,10 @@ public class EventLogger {
                 logger.info(type + " " + e);
                 break;
         }
-        log(type, e);
+        log(type, e, o);
     }
 
-    void log(Event type, Event e) {
+    void log(Event type, Event e, Object o) {
         switch (type) {
             case Start:
                 break;
@@ -83,7 +92,7 @@ public class EventLogger {
                     
                     case IndexNodeManager: 
                     case IndexNodeManagerReduce: 
-                        logNodeManager();
+                        logNodeManager((o == null) ? getNodeMgr() : (NodeManager) o);
                     break;
                 }
                 break;
@@ -114,10 +123,9 @@ public class EventLogger {
         }
     }
     
-    void logNodeManager() {
-        logger.info(String.format("subject: %s ; predicate: %s : ratio: %s ; graph: %s" , 
-        getNodeMgr().size() , getNodeMgr().count(), 
-        (getNodeMgr().size() > 0) ? ((float) getNodeMgr().count()) /  getNodeMgr().size() : 0, 
+    void logNodeManager(NodeManager nm) {
+        logger.info(String.format("index: %s ; subject: %s ; predicate: %s ; ratio: %s ; graph: %s" , 
+        nm.getIndex(), nm.size() , nm.count(), (nm.size() > 0) ? ((float) nm.count()) /  nm.size() : 0, 
         mgr.getGraph().size()));
     }
     

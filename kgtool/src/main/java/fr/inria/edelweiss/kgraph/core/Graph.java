@@ -1005,11 +1005,15 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     public void setVerbose(boolean b) {
         if (b) {
-            getEventManager().setDebug(true);
+            getEventManager().setVerbose(true);
             // hide to logger
             getEventManager().hide(Event.Insert);
             getEventManager().hide(Event.Construct);
         }
+    }
+    
+    public boolean isVerbose() {
+        return getEventManager().isVerbose(); 
     }
    
     /**
@@ -1127,9 +1131,28 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
    
     void clearNodeManager() {
-        //getNodeManager().desactivate();
         for (Index id : getIndexList()) {
             id.getNodeManager().desactivate();
+        }
+    }
+    
+    /**
+     * Pragma: to be called after reduce (after index()))
+     * @param b 
+     */
+    public void tuneNodeManager(boolean b) {
+        for (Index id : getIndexList()) {
+            if (b) {
+                id.getNodeManager().setAvailable(b); 
+                if (id.getIndex() == 0){
+                    id.indexNodeManager();
+                }
+            }
+            else {
+               id.getNodeManager().desactivate();
+               id.getNodeManager().setAvailable(b); 
+            }
+            
         }
     }
 
@@ -2204,6 +2227,15 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
     
     Iterable<Node> getSortedProperties(Node node, int n) {
+        if (node == null) {
+            return getSortedProperties();  
+        }
+        else {
+            return getIndex(n).getNodeManager().getPredicates(node);
+        }       
+    }
+    
+    Iterable<Node> getSortedProperties2(Node node, int n) {
         if (node != null) {
             switch (n) {
                 case 0:

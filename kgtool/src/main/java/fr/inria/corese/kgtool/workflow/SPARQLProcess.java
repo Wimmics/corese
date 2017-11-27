@@ -9,6 +9,7 @@ import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -46,6 +47,7 @@ public class SPARQLProcess extends  WorkflowProcess {
             System.out.println(getWorkflow().getPath());
             System.out.println("Query: " + getQuery());
         }
+        data.getEventManager().start(Event.WorkflowQuery);
     }
     
      @Override
@@ -58,6 +60,7 @@ public class SPARQLProcess extends  WorkflowProcess {
                 System.out.println(data.getMappings());
             }
         }
+        data.getEventManager().finish(Event.WorkflowQuery);
     }
     
     
@@ -82,14 +85,14 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (getPath() != null){
             exec.setDefaultBase(getPath());
         }
-        log1(c);    
+        log1(g, c);    
         Date d1 = new Date();
         Mappings map = exec.query(getQuery(), data.dataset(c, ds)); 
-        log2(d1, new Date());  
+        log2(g, d1, new Date());  
         return map;
     }
     
-    void log1(Context c){
+    void log1(Graph g, Context c){
         if (isLog() || pgetWorkflow().isLog()){
             //logger.info(NL + getQuery());
             if (c != null){ 
@@ -101,7 +104,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         }
     }
     
-    void log2(Date d1, Date d2){
+    void log2(Graph g, Date d1, Date d2){
         if (isLog() || pgetWorkflow().isLog()){
             logger.info("Time: " + (d2.getTime() - d1.getTime()) / 1000.0);
         }
@@ -157,18 +160,25 @@ public class SPARQLProcess extends  WorkflowProcess {
             return data.getGraph();
         } else if (map.getGraph() != null) {
             // construct
-            return (Graph) map.getGraph();
+            return inherit((Graph) map.getGraph(), data.getGraph());
         } 
         else if (isGraphResult()){
             // select : return Mappings as RDF graph
             // -- default server mode for query =
             MappingsGraph m = MappingsGraph.create(map);
-            return m.getGraph();
+            return inherit(m.getGraph(), data.getGraph());
         }
         else {
             // select : return input graph (and Mappings)
             return data.getGraph();
         }
+    }
+    
+    Graph inherit(Graph output, Graph input) {
+       if (input.isVerbose()) {
+            output.setVerbose(true); 
+       }
+       return output;
     }
 
     @Override

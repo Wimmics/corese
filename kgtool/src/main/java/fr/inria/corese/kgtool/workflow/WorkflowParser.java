@@ -172,7 +172,7 @@ public class WorkflowParser {
         Load ld = Load.create(g);
         ld.parse(path, getFormat(ld, path));
         //g.init();
-        g.getEventManager().start(Event.Workflow);
+        g.getEventManager().start(Event.WorkflowParser);
         SemanticWorkflow w = parse(g);
         w.setPath(path);
         return w;
@@ -188,7 +188,7 @@ public class WorkflowParser {
         Load ld = Load.create(g);
         ld.parse(stream, path, path, path, getFormat(ld, path));
         //g.init();
-        g.getEventManager().start(Event.Workflow);
+        g.getEventManager().start(Event.WorkflowParser);
         SemanticWorkflow w = parse(g);
         w.setPath(path);
         return w;

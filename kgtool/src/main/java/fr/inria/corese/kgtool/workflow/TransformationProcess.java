@@ -3,6 +3,7 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
 
 /**
@@ -33,12 +34,17 @@ public class TransformationProcess extends  WorkflowProcess {
      void start(Data data){
         if (isDebug()){
             System.out.println("Transformer: " + getPath());
-        }       
+        }  
+        data.getEventManager().start(Event.WorkflowTransformation, getPath());
+        // focus this event only
+        data.getEventManager().show(Event.WorkflowTransformation);
      }
      
      @Override
      void finish(Data data){
          collect(data);
+         data.getEventManager().finish(Event.WorkflowTransformation, getPath());
+         data.getEventManager().show(Event.WorkflowTransformation, false);
      }  
      
     @Override

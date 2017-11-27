@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgraph.core.EventManager;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
 import java.util.ArrayList;
@@ -136,6 +137,13 @@ public class Data {
      */
     public void setGraph(Graph graph) {
         this.graph = graph;
+    }
+    
+    public EventManager getEventManager() {
+        if (getGraph() == null) {
+            return null;
+        }
+        return getGraph().getEventManager();
     }
 
     /**

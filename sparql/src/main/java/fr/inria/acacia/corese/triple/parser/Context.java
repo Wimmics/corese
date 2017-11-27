@@ -105,22 +105,22 @@ public class Context extends ASTObject {
     }
     
     public String trace() {
-        String str = "";
+        StringBuilder sb = new StringBuilder();
         if (get(STL_URI) != null) {
-            str = "URI: " + get(STL_URI).getLabel() + "  Date: " + new Date();
+            sb.append(String.format("URI: %s Date: %s", get(STL_URI).getLabel(), new Date()));
         }
         if (getService() != null) {
-            str += "  Service: " + getService();
+            sb.append("  Service: ").append(getService());
         }
         if (getProfile() != null) {
-            str += "  Profile: " + getNSM().toPrefix(getProfile());
+            sb.append("  Profile: ").append(getNSM().toPrefix(getProfile()));
         }
         if (get(STL_REMOTE_HOST) != null) {
-            str += "  Host: " + get(STL_REMOTE_HOST).getLabel();
+            sb.append("  Host: ").append(get(STL_REMOTE_HOST).getLabel());
         }
-        return str;
+        return sb.toString();
     }
-    
+        
     public Collection<String> keys(){
         return table.keySet();
     }

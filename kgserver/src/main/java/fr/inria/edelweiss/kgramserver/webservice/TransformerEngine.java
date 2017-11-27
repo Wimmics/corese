@@ -35,6 +35,8 @@ public class TransformerEngine {
     private Context context;
     // Web service parameters
     Param param;
+    
+    private boolean debug = false;
 
     /**
      * 
@@ -64,6 +66,11 @@ public class TransformerEngine {
     public Data process() throws EngineException, LoadException {
         Dataset ds = createDataset(param.getFrom(), param.getNamed());
         SemanticWorkflow sw = workflow(getContext(), ds, profile, param.getQuery());
+        //sw.setDebug(isDebug());
+        if (isDebug()) {
+            logger.info("Run workwlow");
+            graph.setVerbose(true);
+        }
         Data data = sw.process(new Data(graph));
         return data;
     }
@@ -86,6 +93,9 @@ public class TransformerEngine {
             // there is a workflow
             if (query != null) {
                 logger.warn("Workflow skip query: " + query);
+            }
+            if (isDebug()) {
+                logger.info("Parse workflow");
             }
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.parse(profile.getNode(swdt));
@@ -173,6 +183,20 @@ public class TransformerEngine {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+    
+     /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
 }

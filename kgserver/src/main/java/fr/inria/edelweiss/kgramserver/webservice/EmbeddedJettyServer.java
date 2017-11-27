@@ -77,6 +77,7 @@ public class EmbeddedJettyServer {
 	public static URI resourceURI;
 	public static String HOME_PAGE = null;
         private static boolean isLocalHost;
+        private static boolean debug = false;
 
 	public static void main(String args[]) throws Exception {
 
@@ -105,6 +106,7 @@ public class EmbeddedJettyServer {
 		Option locProfileOpt = new Option("pp", "profile", true, "local profile");
 		Option versionOpt = new Option("v", "version", false, "print the version information and exit");
 		Option localhost = new Option("lh", "localhost", false, "set server name as localhost");
+		Option optDebug = new Option("debug", "debug", false, "set server mode as debug");
 
 		Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
 		Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -120,6 +122,7 @@ public class EmbeddedJettyServer {
 		options.addOption(helpOpt);
 		options.addOption(versionOpt);
 		options.addOption(localhost);
+		options.addOption(optDebug);
 
 		options.addOption(sslOpt);
 		options.addOption(portSslOpt);
@@ -188,6 +191,11 @@ public class EmbeddedJettyServer {
 				isLocalHost = true;
 				System.out.println("localhost" );
 			}
+                        if (cmd.hasOption("debug")) {
+				System.out.println("debug" );
+                                setDebug(true);
+			}
+                        
 			Server server = new Server(port);
 
 			ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
@@ -290,4 +298,18 @@ public class EmbeddedJettyServer {
 		resourceURI = localDir.getURL().toURI();
 		return resourceURI;
 	}
+
+    /**
+     * @return the debug
+     */
+    public static boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param aDebug the debug to set
+     */
+    public static void setDebug(boolean aDebug) {
+        debug = aDebug;
+    }
 }

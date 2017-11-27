@@ -3,19 +3,11 @@ package fr.inria.edelweiss.kgramserver.webservice;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.workflow.Data;
-import fr.inria.corese.kgtool.workflow.ResultProcess;
-import fr.inria.corese.kgtool.workflow.WorkflowParser;
-import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
-import fr.inria.edelweiss.kgtool.load.LoadException;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -162,7 +154,7 @@ public class Transformer {
             par.setAjax(SPARQLRestAPI.isAjax);
             
             TransformerEngine engine = new TransformerEngine(store.getGraph(), Profile.getProfile().getProfileGraph(), par);
-            
+            engine.setDebug(EmbeddedJettyServer.isDebug());
             context = engine.getContext();
                        
             if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {

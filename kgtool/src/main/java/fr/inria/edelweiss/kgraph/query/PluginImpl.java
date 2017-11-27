@@ -88,6 +88,7 @@ public class PluginImpl
     public static final String EVENT_LOW  = EXT+"eventLow";
     public static final String SHOW  = EXT+"show";
     public static final String HIDE  = EXT+"hide";
+    public static final String NODE_MGR  = EXT+"nodeManager";
     private static final String QM = "?";
     
     String PPRINTER = DEF_PPRINTER;
@@ -819,28 +820,31 @@ public class PluginImpl
             getEvaluator().setDebug(dt2.booleanValue());
         }
         else if (dt1.getLabel().equals(EVENT)) {
-            getEventManager(p).setDebug(dt2.booleanValue());
+            getEventManager(p).setVerbose(dt2.booleanValue());
             getGraph(p).setDebugMode(dt2.booleanValue());
         }
         else if (dt1.getLabel().equals(EVENT_LOW)) {
-            getEventManager(p).setDebug(dt2.booleanValue());
+            getEventManager(p).setVerbose(dt2.booleanValue());
             getEventManager(p).hide(Event.Insert);
             getEventManager(p).hide(Event.Construct);
             getGraph(p).setDebugMode(dt2.booleanValue());
         }
         else if (dt1.getLabel().equals(SHOW)) { 
-            getEventManager(p).setDebug(true);
+            getEventManager(p).setVerbose(true);
             Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).show(e);
             }            
         }
         else if (dt1.getLabel().equals(HIDE)) {           
-            getEventManager(p).setDebug(true);
+            getEventManager(p).setVerbose(true);
             Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).hide(e);
             }             
+        }
+        else if (dt1.getLabel().equals(NODE_MGR)) {     
+            getGraph(p).tuneNodeManager(dt2.booleanValue());
         }
         return TRUE;
      }

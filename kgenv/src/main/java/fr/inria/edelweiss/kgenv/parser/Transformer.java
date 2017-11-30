@@ -1312,7 +1312,9 @@ public class Transformer implements ExpType {
                     exp = bindings(val);
                     if (exp == null) {
                         // TODO:
-                        logger.error("** Value Bindings: #values != #variables");
+                        //logger.error("** Value Bindings: #values != #variables");
+                        ast.setFail(true);
+                        ast.addError("Value Bindings: ", "#values != #variables");
                         return null;
                     }
                 }

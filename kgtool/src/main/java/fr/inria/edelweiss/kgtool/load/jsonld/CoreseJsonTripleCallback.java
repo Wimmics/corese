@@ -20,7 +20,7 @@ public class CoreseJsonTripleCallback implements JSONLDTripleCallback {
     private AddTripleHelper helper;
     private Graph graph;
     private Node graphSource, defaultGraphSource;
-    private final static String JSONLD_DEFALUT_GRAPH = "@default";
+    private final static String JSONLD_DEFAULT_GRAPH = "@default";
     private final static String JSONLD_BNODE_PREFIX = ":_";
 
     public CoreseJsonTripleCallback(Graph graph, String source) {
@@ -38,7 +38,7 @@ public class CoreseJsonTripleCallback implements JSONLDTripleCallback {
         for (String graphName : dataset.graphNames()) {
 
             //add graphs
-            if (JSONLD_DEFALUT_GRAPH.equals(graphName)) {
+            if (JSONLD_DEFAULT_GRAPH.equals(graphName)) {
                 graphSource = defaultGraphSource;
             } else if (graphName.startsWith(JSONLD_BNODE_PREFIX)) {
                 graphSource = graph.addBlank(helper.getID(graphName));

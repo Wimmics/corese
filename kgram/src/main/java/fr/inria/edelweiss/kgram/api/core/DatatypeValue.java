@@ -34,4 +34,6 @@ public interface DatatypeValue {
     boolean isBlank();
     
     boolean isLiteral();
+    
+    boolean isNumber();
 }

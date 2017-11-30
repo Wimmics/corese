@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.corese.kgraph.index.NodeManager;
 import java.util.Date;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;

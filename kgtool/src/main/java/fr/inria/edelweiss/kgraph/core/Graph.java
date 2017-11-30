@@ -1,5 +1,8 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.corese.kgraph.index.PredicateList;
+import fr.inria.corese.kgraph.index.NodeManager;
+import fr.inria.corese.kgraph.index.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +61,7 @@ import java.util.Map;
  *
  */
 public class Graph extends GraphObject implements Graphable, TripleStore {
+  
     static {
 	    Corese.init();
     }
@@ -76,10 +80,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public static final int DEFAULT = 0;
     public static final int EXTENSION = 1;
 
-    static final int COPY = 0;
-    static final int MOVE = 1;
-    static final int ADD = 2;
-    static final int CLEAR = 3;
+    public static final int COPY = 0;
+    public static final int MOVE = 1;
+    public static final int ADD = 2;
+    public static final int CLEAR = 3;
     static long blankid = 0;
     static final String BLANK = "_:b";
     static final String SKOLEM = ExpType.SKOLEM;
@@ -193,6 +197,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
    private ArrayList<Node> systemNode, defaultGraphList;
    DataStore dataStore;
+   
+   private boolean testPosition = true;
 
     private IStorage storageMgr;
 
@@ -1234,7 +1240,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
 
-    void define(Entity ent) {
+   public  void define(Entity ent) {
         gindex.add(ent);
     }
 
@@ -1244,6 +1250,10 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     public Iterable<Node> getSortedProperties() {
         return table.getSortedProperties();
+    }
+    
+    public PredicateList getSortedPredicates() {
+        return table.getSortedPredicates();
     }
 
     public Entity add(Entity edge) {
@@ -1492,7 +1502,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return literal.size();
     }
     
-    void setSize(int n) {
+    public void setSize(int n) {
         size = n;
     }
 
@@ -2208,13 +2218,22 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
 
     public Iterable<Entity> getEdges(Node node, int n) {
-        return getSortedEdges(node, n);
+        if (node == null){
+            // without NodeManager
+            return getSortedEdgesBasic(node, n);
+        }
+        else {
+            // with NodeManager
+            return getIndex(n).getSortedEdges(node, n);
+        }
     }
-
-    public Iterable<Entity> getSortedEdges(Node node, int n) {
+       
+    
+    // without NodeManager
+    public Iterable<Entity> getSortedEdgesBasic(Node node, int n) {
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
 
-        for (Node pred : getSortedProperties(node, n)) {
+        for (Node pred : getSortedProperties()) {
             Iterable<Entity> it = getIndex(n).getEdges(pred, node);
             if (it != null) {
                 meta.next(it);
@@ -2225,28 +2244,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         return meta;
     }
+            
     
-    Iterable<Node> getSortedProperties(Node node, int n) {
-        if (node == null) {
-            return getSortedProperties();  
-        }
-        else {
-            return getIndex(n).getNodeManager().getPredicates(node);
-        }       
-    }
-    
-    Iterable<Node> getSortedProperties2(Node node, int n) {
-        if (node != null) {
-            switch (n) {
-                case 0:
-                    // draft
-                //default:
-                    return getIndex(n).getNodeManager().getPredicates(node);
-            }
-        }
-        return getSortedProperties();
-    }
-
     public Iterable<Entity> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
@@ -2921,7 +2920,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * TODO: setUpdate(true)
      */
-    Entity copy(Node gNode, Node pred, Entity ent) {
+    public Entity copy(Node gNode, Node pred, Entity ent) {
         Entity e = fac.copy(gNode, pred, ent);
         //fac.setGraph(e, gNode);
 
@@ -2933,59 +2932,6 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Entity res = add(e);
         return res;
     }   
-
-//    @Deprecated
-//    public List<Entity> copy(Graph g, boolean b) {
-//        ArrayList<Entity> list = new ArrayList<Entity>();
-//
-//        for (Index id : tables) {
-//            if (id.getIndex() != 0) {
-//                id.clearCache();
-//            }
-//        }
-//
-//        for (Node pred : g.getProperties()) {
-//            if (isDebug) {
-//                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
-//            }
-//
-//            for (Entity ent : g.getEdges(pred)) {
-//
-//                if (!exist(ent)) {
-//                    list.add(ent);
-//                }
-//            }
-//
-//            setIndex(true);
-//            for (Entity ent : list) {
-//                add(ent);
-//            }
-//            setIndex(false);
-//        }
-//
-//        table.index();
-//
-//        return list;
-//    }
-
-//    public List<Entity> copy2(Graph g, boolean b) {
-//        ArrayList<Entity> list = new ArrayList<Entity>();
-//
-//        for (Node pred : g.getProperties()) {
-//            if (isDebug) {
-//                logger.info("Copy: " + pred + " from " + g.size(pred) + " to " + size(pred));
-//            }
-//
-//            for (Entity ent : g.getEdges(pred)) {
-//                Entity ee = add(ent);
-//                if (ee != null) {
-//                    list.add(ee);
-//                }
-//            }
-//        }
-//
-//        return list;
-//    }
 
     public void copy(Graph g) {
         copyNode(g);
@@ -3220,7 +3166,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return tag;
     }
 
-    void tag(Entity ent) {
+    public void tag(Entity ent) {
         fac.tag(ent);
     }
 
@@ -3252,7 +3198,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     /**
      * This log would be used to broadcast deletion to peers
      */
-    void logDelete(Entity ent) {
+    public void logDelete(Entity ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 gl.delete(this, ent);
@@ -3260,7 +3206,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
 
-    void logInsert(Entity ent) {
+    public void logInsert(Entity ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 gl.insert(this, ent);
@@ -3296,7 +3242,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
     }
 
-    boolean onInsert(Entity ent) {
+    public boolean onInsert(Entity ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 if (!gl.onInsert(this, ent)) {
@@ -3403,4 +3349,5 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         return ds;
     }
+        
 }

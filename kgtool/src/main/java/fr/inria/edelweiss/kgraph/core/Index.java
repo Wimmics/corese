@@ -2,6 +2,8 @@ package fr.inria.edelweiss.kgraph.core;
 
 
 
+import fr.inria.corese.kgraph.index.NodeManager;
+import fr.inria.corese.kgraph.index.PredicateList;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import java.util.List;
@@ -39,6 +41,7 @@ public interface Index {
 	Iterable<Node> getProperties();
 	
 	Iterable<Node> getSortedProperties();
+	PredicateList  getSortedPredicates();
         
         int nbProperties();
 	        
@@ -65,12 +68,16 @@ public interface Index {
          void declare(Entity edge, boolean duplicate);        
 	
 	int size(Node pred);
+        
+        Iterable<Entity> getSortedEdges(Node node, int n);
 
 	Iterable<Entity> getEdges();
         
         Iterable<Entity> get(Node pred);
 
 	Iterable<Entity> getEdges(Node pred, Node node);
+        
+        Iterable<Entity> getEdges(Node pred, Node node, int position);
 
 	Iterable<Entity> getEdges(Node pred, Node node, Node node2);
         

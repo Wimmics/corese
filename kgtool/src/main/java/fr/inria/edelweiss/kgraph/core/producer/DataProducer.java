@@ -9,7 +9,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer;
+import fr.inria.corese.kgraph.index.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
 import java.util.ArrayList;

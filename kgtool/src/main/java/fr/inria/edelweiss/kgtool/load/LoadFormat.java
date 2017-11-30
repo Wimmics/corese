@@ -60,13 +60,15 @@ public class LoadFormat {
         define(SWF,     Loader.WORKFLOW_FORMAT);
         
         utable = new HashMap<String, Integer>();
-        udefine("text/html", Loader.RDFA_FORMAT);
-        udefine("text/turtle", Loader.TURTLE_FORMAT);
-        udefine("text/n3", Loader.NT_FORMAT);
-        udefine("text/trig", Loader.TRIG_FORMAT);
-        udefine("text/n-quads", Loader.NQUADS_FORMAT);
+        udefine("text/html",        Loader.RDFA_FORMAT);
+        udefine("text/turtle",      Loader.TURTLE_FORMAT);
+        udefine("text/n3",          Loader.NT_FORMAT);
+        udefine("text/trig",        Loader.TRIG_FORMAT);
+        udefine("text/n-quads",     Loader.NQUADS_FORMAT);
         udefine("application/rdf+xml", Loader.RDFXML_FORMAT);
-        udefine("application/json", Loader.JSONLD_FORMAT);
+        udefine("application/json",    Loader.JSONLD_FORMAT);
+        udefine("application/ld+json", Loader.JSONLD_FORMAT);
+        
         
         dtable = new HashMap<String, Integer>();
         ddefine(Transformer.TURTLE, Loader.TURTLE_FORMAT);

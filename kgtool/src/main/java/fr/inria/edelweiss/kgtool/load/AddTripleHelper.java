@@ -163,6 +163,14 @@ public class AddTripleHelper implements ILoadSerialization {
      * @return
      */
     public Node getGraphSource(Graph graph, String source) {
+        if (source == null) {
+            return graph.addDefaultGraphNode();
+        } else {
+            return graph.addGraph(source);
+        }
+    }
+
+    public Node getGraphSource2(Graph graph, String source) {
         Node defaultGraphSource;
 
         if (!hasGraphsOrDefault(this.graph)) {

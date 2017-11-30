@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgtool.load;
 
-import com.github.jsonldjava.core.JSONLDTripleCallback;
 import com.github.jsonldjava.core.JsonLdError;
 import fr.inria.edelweiss.kgtool.load.rdfa.RDFaLoader;
 import java.io.File;
@@ -692,15 +691,13 @@ public class Load
     // load JSON-LD
     void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
 
-        JSONLDTripleCallback callback = new CoreseJsonTripleCallback(graph, null);
-        ((CoreseJsonTripleCallback) callback).setHelper(renameBlankNode, limit);
+        CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(graph, name);
+        callback.setHelper(renameBlankNode, limit);
 
         JsonldLoader loader = JsonldLoader.create(stream, base);
         try {
             loader.load(callback);
-        } catch (IOException ex) {
-            throw LoadException.create(ex, path);
-        } catch (JsonLdError ex) {
+        } catch (IOException | JsonLdError ex) {
             throw LoadException.create(ex, path);
         }
     }

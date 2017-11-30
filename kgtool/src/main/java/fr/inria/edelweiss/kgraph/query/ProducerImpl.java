@@ -30,7 +30,7 @@ import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
 import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
 import fr.inria.edelweiss.kgram.tool.EntityImpl;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.EdgeManagerIndexer;
+import fr.inria.corese.kgraph.index.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;

@@ -44,6 +44,7 @@ public class CompoundUndoManager extends UndoManager
 	**  Add a DocumentLister before the undo is done so we can position
 	**  the Caret correctly as each edit is undone.
 	*/
+        @Override
 	public void undo()
 	{
 		editor.getDocument().addDocumentListener( this );
@@ -55,6 +56,7 @@ public class CompoundUndoManager extends UndoManager
 	**  Add a DocumentLister before the redo is done so we can position
 	**  the Caret correctly as each edit is redone.
 	*/
+        @Override
 	public void redo()
 	{
 		editor.getStyledDocument().addDocumentListener( this );
@@ -66,6 +68,7 @@ public class CompoundUndoManager extends UndoManager
 	**  Whenever an UndoableEdit happens the edit will either be absorbed
 	**  by the current compound edit or a new compound edit will be started
 	*/
+        @Override
 	public void undoableEditHappened(UndoableEditEvent e)
 	{
 		//  Start a new compound edit
@@ -77,13 +80,18 @@ public class CompoundUndoManager extends UndoManager
 			return;
 		}
  
-		//  Check for an attribute change
- 
-		AbstractDocument.DefaultDocumentEvent event =
-			(AbstractDocument.DefaultDocumentEvent)e.getEdit();
- 
-		if  (event.getType().equals(DocumentEvent.EventType.CHANGE))
-		{
+               // genuine code:
+//		AbstractDocument.DefaultDocumentEvent event =
+//			(AbstractDocument.DefaultDocumentEvent) e.getEdit();
+               // with interface:
+               // DocumentEvent event = (DocumentEvent) e.getEdit();
+               
+               // But in Java 9: AbstractDocument$DefaultDocumentEventUndoableWrapper
+            
+               	//if  (event.getType().equals(DocumentEvent.EventType.CHANGE))
+                // hack for Java 9
+		if  (e.getEdit().getPresentationName().contains("change")) 
+		{   
 			compoundEdit.addEdit( e.getEdit() );
 			return;
 		}
@@ -138,6 +146,7 @@ public class CompoundUndoManager extends UndoManager
 	// 	Updates to the Document as a result of Undo/Redo will cause the
 	//  Caret to be repositioned
  
+        @Override
 	public void insertUpdate(final DocumentEvent e)
 	{
 		SwingUtilities.invokeLater(new Runnable()
@@ -151,11 +160,13 @@ public class CompoundUndoManager extends UndoManager
 		});
 	}
  
+        @Override
 	public void removeUpdate(DocumentEvent e)
 	{
 		editor.setCaretPosition(e.getOffset());
 	}
  
+        @Override
 	public void changedUpdate(DocumentEvent e) 	{}
  
  
@@ -166,6 +177,7 @@ public class CompoundUndoManager extends UndoManager
 		 */
 		private static final long serialVersionUID = 1L;
 
+                @Override
 		public boolean isInProgress()
 		{
 			//  in order for the canUndo() and canRedo() methods to work
@@ -174,6 +186,7 @@ public class CompoundUndoManager extends UndoManager
 			return false;
 		}
  
+                @Override
 		public void undo()
 		{
 			//  End the edit so future edits don't get absorbed by this edit

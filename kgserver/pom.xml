@@ -21,11 +21,11 @@
 			<artifactId>kgengine</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgdqp</artifactId>
 			<version>${project.parent.version}</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>

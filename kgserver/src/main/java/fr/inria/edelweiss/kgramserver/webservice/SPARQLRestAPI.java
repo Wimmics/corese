@@ -456,7 +456,7 @@ public class SPARQLRestAPI {
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	@Path("/update")
-	public Response updateTriplesEncoded(@FormParam("update") String query, @FormParam("default-graph-uri") List<String> defaultGraphUris, @FormParam("named-graph-uri") List<String> namedGraphUris) {
+	public Response updateTriplesEncoded(@FormParam("update") String query, @FormParam("using-graph-uri") List<String> defaultGraphUris, @FormParam("using-named-graph-uri") List<String> namedGraphUris) {
 		try {
 			logger.info(query);
 			if (query != null) {
@@ -477,7 +477,7 @@ public class SPARQLRestAPI {
 	@POST
 	@Consumes("application/sparql-update")
 	@Path("/update")
-	public Response updateTriplesDirect(String message, @QueryParam("default-graph-uri") List<String> defaultGraphUris, @QueryParam("named-graph-uri") List<String> namedGraphUris) {
+	public Response updateTriplesDirect(String message, @QueryParam("using-graph-uri") List<String> defaultGraphUris, @QueryParam("using-named-graph-uri") List<String> namedGraphUris) {
 		try {
 			logger.info(message);
 			if (message != null) {

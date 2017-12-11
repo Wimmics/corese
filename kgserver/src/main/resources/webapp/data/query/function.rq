@@ -50,8 +50,8 @@ function st:link123(?uri) {
 function st:link(?uri, ?profile) {
     concat(st:get(st:service),
       "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:qname(?profile),
-      st:include()
+      "&profile=", st:qname(?profile)
+      ,st:include()
    )
 }
 
@@ -71,9 +71,24 @@ function st:qname(?uri){
 # st:param [ st:include (("mode" st:mode)) ]
 # "&mode=" st:get(st:mode)
 #
+
 function st:include(){
   coalesce(
-    loop ((?name, ?val) in st:get(st:include)){
+    reduce(rq:concat, maplist(
+    lambda((?name, ?val)) { 
+        coalesce(let (?value = st:get(?val)) {
+            concat("&", ?name, "=", 
+                if (isURI(?value), st:qname(?value), ?value)) 
+        }, "")
+    }, 
+    st:get(st:include))),
+  "")
+}
+  
+
+function st:include2(){
+  coalesce(
+    loop ((?name, ?val) in coalesce(st:get(st:include), xt:list())) {
         coalesce(
             let (?value = st:get(?val)) {
                 concat("&", ?name, "=", 

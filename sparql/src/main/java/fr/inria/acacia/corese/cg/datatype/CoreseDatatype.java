@@ -572,6 +572,8 @@ public class CoreseDatatype
         return false;
     }
     
+    
+    
     @Override
     public boolean isDecimalInteger(){
         switch (getCode()){
@@ -751,9 +753,9 @@ public class CoreseDatatype
                 if (code == UNDEF) {
                     int res = getDatatypeURI().compareTo(d2.getDatatypeURI());
                     if (res == 0) {
-                        return getLabel().compareTo(d2.getLabel());
+                        return number(getLabel().compareTo(d2.getLabel()));
                     } else {
-                        return res;
+                        return number(res);
                     }
                 }
 
@@ -857,6 +859,12 @@ public class CoreseDatatype
         } else {
             return GREATER;
         }
+    }
+    
+    int number(int val) {
+        if (val == 0) return 0;
+        if (val < 0) return -1;
+        return 1;
     }
     
     /**

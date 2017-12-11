@@ -38,12 +38,12 @@ public class CoreseInteger extends CoreseNumber {
     
     public CoreseInteger(String value) {
         setLabel(value);
-        lvalue = new Integer(value).intValue();
+        lvalue = new Long(value).longValue();
     }
 
     public CoreseInteger(int value) {
         lvalue = value;
-        setLabel(Integer.toString(value));
+        setLabel(Long.toString(value));
     }
     
     public CoreseInteger(long value) {

@@ -1,0 +1,33 @@
+#
+# 
+#
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc:   <http://purl.org/dc/terms/>
+@bind kg:filter
+construct {
+    ?uri ?p ?y . ?x ?q ?uri .
+    ?y ?pname ?label . ?x ?pname ?label .
+    ?y ?q ?z . ?t ?q ?x
+}
+where {
+    bind (st:get(st:uri) as ?uri)
+    
+    service <https://data.archives-ouvertes.fr/sparql> {
+    select * where {
+        { ?uri ?p ?y  
+            optional { ?y foaf:name|skos:prefLabel|skos:altLabel|dc:title ?label ; ?pname ?label }
+            optional { filter isBlank(?y) ?y ?q ?z }
+        } 
+        union 
+        { ?x ?q ?uri  
+            optional { ?x foaf:name|skos:prefLabel|skos:altLabel ?label ; ?pname ?label } 
+            optional { filter isBlank(?x)  ?t ?q ?x  filter isURI(?t) }
+        }
+    } 
+    #limit 1000
+    }
+}
+
+#pragma { kg:kgram kg:detail true }
+

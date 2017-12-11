@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-//import fr.inria.wimmics.sparql.soap.client.SparqlResult;
-//import fr.inria.wimmics.sparql.soap.client.SparqlSoapClient;
 /**
  * Implements service expression There may be local QueryProcess for some URI
  * (use case: W3C test case) Send query to sparql endpoint using HTTP POST query
@@ -77,9 +75,9 @@ public class ProviderImpl implements Provider {
         this.version.put(uri, version);
     }
 
-    // everybody is 1.0 except localhost
     @Override
     public boolean isSparql0(Node serv) {
+        //if (true) return false;
         if (serv.getLabel().startsWith(LOCALHOST)) {
             return false;
         }
@@ -119,7 +117,11 @@ public class ProviderImpl implements Provider {
         Exp body = exp.rest();
         Query q = body.getQuery();
 
-        QueryProcess exec = table.get(serv.getLabel());
+        QueryProcess exec = null ;
+        
+        if (serv != null) {
+            exec = table.get(serv.getLabel());
+        }
 
         if (exec == null) {
             
@@ -146,7 +148,7 @@ public class ProviderImpl implements Provider {
     }
 
     /**
-     * Cut into pieces when to many Mappings
+     * Take Mappings into account when sending service to remote endpoint
      */
     Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Environment env) {
         CompileService compiler = new CompileService(this);
@@ -161,14 +163,12 @@ public class ProviderImpl implements Provider {
         Mappings res = null;
 
         if (map == null || slice == 0 || hasValues) {
-            // if query has its own values {}, do not slice
+            // if query has its own values {}, do not include Mappings
             return basicSend(compiler, serv, q, exp, map, env, 0, 0);
         }         
-        else if (map.size() > slice) {           
+        else {          
             res = sliceSend(compiler, serv, q, exp, map, env, slice);            
-        } else {
-            res = basicSend(compiler, serv, q, exp, map, env, 0, map.size());
-        }
+        } 
 
         if (!hasValues) {
             ast.setValues(null);
@@ -178,32 +178,40 @@ public class ProviderImpl implements Provider {
     }
     
     /**
-     * Execute service with Mappings map
+     * Generalized service clause with possibly several service URIs
+     * If service is unbound variable, retrieve service URI in Mappings 
+     * Take Mappings variable binding into account when sending service
      * Split Mappings into buckets with size = slice
      * Iterate service on each bucket
      */
-    Mappings sliceSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings map, Environment env, int slice) {
-
-        List<Node> list = new ArrayList<Node>();
-        if (exp.getNodeSet() == null) {
-            list.add(serv);
-        } else {
-            list = exp.getNodeSet();
+    Mappings sliceSend(CompileService compiler, Node service, Query q, Exp exp, Mappings map, Environment env, int slice) {
+        if (env.getQuery().isDebug() && map != null) {
+            logger.debug("Input Mappings:\n" + map);
         }
         
+        List<Node> list = getServerList(exp, map, env);
+        
+        if (list.isEmpty()) {
+            logger.error("Undefined service: " + exp.getServiceNode());
+        }
         Mappings res = null;
         
-        for (Node s : list) {
-            if (env.getQuery().isDebug()){
-                logger.debug("Service: " + s);
+        for (Node serv : list) {
+            if (env.getQuery().isDebug()) {
+                logger.debug("Service: " + serv);
             }
+            // select appropriate subset of Mappings with service URI 
+            Mappings mappings = getMappings(exp.getServiceNode(), serv, map, env);
             int size = 0;
-            while (size < map.size()) {
-                Mappings mm = send(compiler, s, q, map, env, size, size + slice);
+            while (size < mappings.size()) {
+                // consider subset of Mappings of size slice
+                Mappings sol = send(compiler, serv, q, mappings, env, size, size + slice);
+                // join (serviceNode = serviceURI)
+                complete(exp.getServiceNode(), serv, sol,  env);
                 if (res == null) {
-                    res = mm;
-                } else if (mm != null) {
-                    res.add(mm);
+                    res = sol;
+                } else if (sol != null) {
+                    res.add(sol);
                 }
                 size += slice;
             }
@@ -216,21 +224,87 @@ public class ProviderImpl implements Provider {
 
         return res;
     }
-
-    Mappings basicSend(CompileService compiler, Node serv, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
+    
+    /**
+     * service ?s { BGP }
+     * When ?s is unbound, join (?s = URI) to Mappings, reject those that are incompatible 
+     */
+    void complete(Node serviceNode, Node serviceURI, Mappings map, Environment env){
+        if (map != null && serviceNode.isVariable() && ! env.isBound(serviceNode)) {
+            map.join(serviceNode, serviceURI);
+        }
+    }
+    
+    /**
+     * Select subset of Mappings where serviceNode = serviceURI
+     */
+    Mappings getMappings(Node serviceNode, Node serviceURI, Mappings map, Environment env) {
+        if (serviceNode.isVariable() && ! env.isBound(serviceNode)) {
+           return map.getMappings(serviceNode, serviceURI);
+        }
+        return map;
+    }
+    
+    /**
+     * 
+     * Determine service URIs
+     */
+    List<Node> getServerList(Exp exp, Mappings map, Environment env) {
         if (exp.getNodeSet() == null) {
-            return send(compiler, serv, q, map, env, min, max);
+            Node serviceNode = exp.getServiceNode();
+            List<Node> list = new ArrayList<>();
+            if (serviceNode.isVariable()) {
+                Node value = env.getNode(serviceNode);
+                if (value == null){
+                    return getServerList(serviceNode, map);
+                }
+                else {
+                    list.add(value);
+                }
+            }
+            else {
+                list.add(serviceNode);
+            }
+            return list;
+        } else {
+            // service <uri1> <uri2> {}
+            return exp.getNodeSet();
+        }
+    }
+    
+    /**
+     * service ?s { }
+     * Retrieve service URIs for ?s in Mappings
+     */
+    List<Node> getServerList(Node serviceNode, Mappings map) {
+        if (map == null) {
+            logger.error("Unbound variable: " + serviceNode);
+            return new ArrayList<>();
+        }
+        return map.aggregate(serviceNode);
+    }
+    
+   
+
+    Mappings basicSend(CompileService compiler, Node service, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
+        List<Node> list = getServerList(exp, map, env);
+        if (env.getQuery().isDebug()) {
+            logger.debug("Service: " + list);
+        }
+        if (list.size() == 1) { //(exp.getNodeSet() == null) {
+            return send(compiler, list.get(0), q, map, env, min, max);
         } else {
             Mappings res = null;
-            for (Node s : exp.getNodeSet()) {
+            for (Node serv : list) {
                 if (env.getQuery().isDebug()){
-                    logger.debug("Service: " + s);
+                    logger.debug("Service: " + serv);
                 }
-                Mappings mm = send(compiler, s, q, map, env, min, max);
+                Mappings sol = send(compiler, serv, q, map, env, min, max);
+                complete(exp.getServiceNode(), service, sol, env);
                 if (res == null) {
-                    res = mm;
-                } else if (mm != null) {
-                    res.add(mm);
+                    res = sol;
+                } else if (sol != null) {
+                    res.add(sol);
                 }
             }
             if (res != null){            
@@ -255,24 +329,6 @@ public class ProviderImpl implements Provider {
             }
             Mappings res = eval(q, serv, env);
             
-//            ASTQuery ast = (ASTQuery) q.getAST();
-//
-//            String query = ast.toString();
-//
-//            if (gq.isDebug()) {
-//                logger.info("** Provider query: \n" + query);
-//            }
-//
-//            //logger.info("** Provider: \n" + query);
-//
-//            InputStream stream = doPost(serv.getLabel(), query, getTimeout(q));
-//
-//            if (gq.isDebug()) {
-//                //logger.info("** Provider result: \n" + sb);
-//            }
-//
-//            Mappings res = parse(stream);
-
             if (gq.isDebug()) {
                 logger.info("** Provider result: \n" + res.size());
                 if (gq.isDetail()) {

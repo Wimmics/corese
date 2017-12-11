@@ -868,6 +868,10 @@ public class Exp extends PointerObject
     public Node getGraphName() {
         return first().first().getNode();
     }
+    
+    public Node getServiceNode() {
+        return first().getNode();
+    }
 
     public Node getGraphNode() {
         return node;

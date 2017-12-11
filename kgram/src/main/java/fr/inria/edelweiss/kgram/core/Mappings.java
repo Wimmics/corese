@@ -58,6 +58,8 @@ public class Mappings extends PointerObject
     private int nbInsert = 0;
     private Node templateResult;
     private boolean isFake = false;
+    private Mapping sm1;
+    private Mapping sm2;
 
     public Mappings() {
         list = new ArrayList<Mapping>();
@@ -517,6 +519,8 @@ public class Mappings extends PointerObject
 
     @Override
     public int compare(Mapping m1, Mapping m2) {
+        sm1 = m1;
+        sm2 = m2;
         Node[] order1 = m1.getOrderBy();
         Node[] order2 = m2.getOrderBy();
 
@@ -1190,6 +1194,50 @@ public class Mappings extends PointerObject
 
         return res;
     }
+    
+    /**
+     * Join (var = val) to each Mapping, remove those where var = something else
+     * Use case: service ?s { BGP }
+     */
+    public void join (Node var, Node val) {
+        for (int i = 0; i<size(); ) {
+            Mapping m = list.get(i);
+            Node node = m.getNode(var);
+            if (node == null){
+                m.addNode(var, val);
+                i++;
+            }
+            else if (node.equals(val)) {
+                i++;
+            }
+            else {
+                list.remove(m);
+            }         
+        }
+    }
+    
+    public List<Node> aggregate(Node var) {
+        List<Node> list = new ArrayList<>();       
+        for (Mapping m : this) {
+            Node val = m.getNode(var);
+            if (val != null && !list.contains(val)) {
+                list.add(val);
+            }
+        }
+        return list;
+    }
+    
+    public Mappings getMappings(Node var, Node val) {
+        Mappings map = create(getQuery());
+        for (Mapping m : this) {
+            Node node = m.getNode(var);
+            if (node != null && node.equals(val)) {
+                map.add(m);
+            }
+        }
+        return map;
+    }
+    
 
     /**
      * Assign select nodes to all Mapping

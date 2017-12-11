@@ -393,7 +393,7 @@ public class QuerySorter implements ExpType {
      * It is a service and it has an URI (not a variable)
      */
     boolean isService(Exp exp) {
-        return exp.type() == Exp.SERVICE && !exp.first().getNode().isVariable();
+        return exp.type() == Exp.SERVICE ; //&& !exp.first().getNode().isVariable();
     }
 
     /**

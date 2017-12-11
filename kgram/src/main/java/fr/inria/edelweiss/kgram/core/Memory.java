@@ -60,7 +60,7 @@ public class Memory implements Environment {
     Query query;
     Node gNode;
     // to evaluate aggregates such as count(?x)
-    Mappings results, group;
+    Mappings results, group, join;
     // true when processing aggregate at the end 
     boolean isAggregate = false;
     private boolean isFake = false,
@@ -1133,6 +1133,14 @@ public class Memory implements Environment {
     @Override
     public Mappings getMappings() {
         return current();
+    }
+    
+    Mappings getJoinMappings() {
+        return join;
+    }
+    
+    void setJoinMappings(Mappings m) {
+        join = m;
     }
     
     /**

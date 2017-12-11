@@ -1323,6 +1323,7 @@ public class Eval implements ExpType, Plugin {
         bind(mem, exp, main, m, bind);
         if (main != null && main.type() == Exp.JOIN) {
             service(exp, mem);
+            mem.setJoinMappings(exp.getMappings());
         }
         Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
         return lMap;
@@ -1475,6 +1476,7 @@ public class Eval implements ExpType, Plugin {
         Memory env = memory;
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);
         if (map1.size() == 0) {
+            exp.rest().setMappings(null);
             return backtrack;
         }
         
@@ -1827,17 +1829,18 @@ public class Eval implements ExpType, Plugin {
 
         if (serv.isVariable()) {
             node = env.getNode(serv);
-            if (node == null) {
-                logger.error("Service variable unbound: " + serv);
-                return backtrack;
-            }
+//            if (node == null) {
+//                logger.error("Service variable unbound: " + serv);
+//                return backtrack;
+//            }
         }
 
         if (provider != null) {
 //            StopWatch sw = new StopWatch();
 //            sw.start();
             // service delegated to provider
-            Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
+            // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
+            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env);
 
             if (hasService) {
                 callService(node, exp, lMap);

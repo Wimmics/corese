@@ -109,7 +109,9 @@ public class EdgeFactory {
              case Graph.SUBCLASS_INDEX: 
                 sub++;
                 return EdgeBinarySubclass.create(source, subject, predicate, value);
-             case Graph.FIRST_INDEX:
+            case Graph.LABEL_INDEX: 
+                return EdgeBinaryLabel.create(source, subject, predicate, value);
+            case Graph.FIRST_INDEX:
                 fst++;
                 return EdgeBinaryFirst.create(source, subject, predicate, value); 
              case Graph.REST_INDEX:

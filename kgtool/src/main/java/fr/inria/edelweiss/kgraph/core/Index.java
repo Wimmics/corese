@@ -69,7 +69,7 @@ public interface Index {
 	
 	int size(Node pred);
         
-        Iterable<Entity> getSortedEdges(Node node, int n);
+        Iterable<Entity> getSortedEdges(Node node);
 
 	Iterable<Entity> getEdges();
         

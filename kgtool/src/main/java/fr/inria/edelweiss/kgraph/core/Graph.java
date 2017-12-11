@@ -1,6 +1,5 @@
 package fr.inria.edelweiss.kgraph.core;
 
-import fr.inria.corese.kgraph.index.PredicateList;
 import fr.inria.corese.kgraph.index.NodeManager;
 import fr.inria.corese.kgraph.index.EdgeManagerIndexer;
 import fr.inria.edelweiss.kgraph.core.producer.DataProducer;
@@ -93,17 +92,20 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     
     private static final String[] PREDEFINED = {
         Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
-        RDFS.SUBCLASSOF, RDF.TYPE,  RDF.FIRST, RDF.REST
+        RDFS.SUBCLASSOF, RDFS.LABEL, 
+        RDF.TYPE, RDF.FIRST, RDF.REST
     }; 
     
-    public static final int DEFAULT_INDEX = 0;
-    public static final int ENTAIL_INDEX = 1;
-    public static final int RULE_INDEX = 2;
+    public static final int DEFAULT_INDEX   = 0;
+    public static final int ENTAIL_INDEX    = 1;
+    public static final int RULE_INDEX      = 2;
     
-    public static final int SUBCLASS_INDEX = 3;
-    public static final int TYPE_INDEX = 4;
-    public static final int FIRST_INDEX = 5;
-    public static final int REST_INDEX = 6;
+    public static final int SUBCLASS_INDEX  = 3;
+    public static final int LABEL_INDEX     = 4;
+    
+    public static final int TYPE_INDEX      = 5;
+    public static final int FIRST_INDEX     = 6;
+    public static final int REST_INDEX      = 7;
    
     public static final int DEFAULT_UNION = 0;
     public static final int DEFAULT_GRAPH = 1;
@@ -1251,11 +1253,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Iterable<Node> getSortedProperties() {
         return table.getSortedProperties();
     }
-    
-    public PredicateList getSortedPredicates() {
-        return table.getSortedPredicates();
-    }
-
+       
     public Entity add(Entity edge) {
         return add(edge, true);
     }
@@ -2224,7 +2222,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         else {
             // with NodeManager
-            return getIndex(n).getSortedEdges(node, n);
+            return getIndex(n).getSortedEdges(node);
         }
     }
        

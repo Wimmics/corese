@@ -35,14 +35,16 @@ import java.util.List;
  */
 public class EdgeManager implements Iterable<Entity> {
     Graph graph;
+    EdgeManagerIndexer indexer;
     private Node predicate;
     ArrayList<Entity> list;
     Comparator<Entity> comp;
     int index = 0, other = 0, next = IGRAPH;
     boolean indexedByNode = false;
 
-    EdgeManager(Graph g, Node p, int i) {
-        graph = g;
+    EdgeManager(EdgeManagerIndexer indexer, Node p, int i) {
+        graph = indexer.getGraph();
+        this.indexer = indexer;        
         predicate = p;
         list = new ArrayList<Entity>();
         index = i;
@@ -289,24 +291,40 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Iterate edges with index node node1
      */
-    Iterable<Entity> getEdges(Node node) {
+     Iterable<Entity> getEdges(Node node) {
         // node is bound, enumerate edges where node = edge.getNode(index)
-        int n = findNodeIndex(node, 0, list.size());
+        int n = findNodeIndex(node);
         if (n >= 0 && n < list.size()) {
-            int i = getNodeIndex(n, index);
-            if (i == node.getIndex()) {
-                if (EdgeManagerIndexer.test) {
-                    // draft
-                    return new EdgeManagerIterate(this, n);
+            if (EdgeManagerIndexer.test) {
+                // draft
+                return new EdgeManagerIterate(this, n);
 
-                } else {
-                    // format
-                    return new Iterate(this, n);
-                }
+            } else {
+                // format
+                return new Iterate(this, n);
             }
         }
         return null;
     }
+     
+//    Iterable<Entity> getEdges(Node node) {
+//        // node is bound, enumerate edges where node = edge.getNode(index)
+//        int n = findNodeIndex(node);
+//        if (n >= 0 && n < list.size()) {
+//            int i = getNodeIndex(n, index);
+//            if (i == node.getIndex()) {
+//                if (EdgeManagerIndexer.test) {
+//                    // draft
+//                    return new EdgeManagerIterate(this, n);
+//
+//                } else {
+//                    // format
+//                    return new Iterate(this, n);
+//                }
+//            }
+//        }
+//        return null;
+//    }
     
     Iterable<Entity> getEdges(Node node, int n) {
         return new EdgeManagerIterate(this, n);
@@ -329,9 +347,58 @@ public class EdgeManager implements Iterable<Entity> {
         }
     }
     
+    int findNodeIndex(Node node) {
+        return getNodeIndex(node);
+    }
+    
+    int getNodeIndex(Node n) {
+        if (indexer.getNodeManager().isConsultable() 
+                && ! n.getDatatypeValue().isNumber()
+                && ! n.getDatatypeValue().isBoolean()){
+            return  indexer.getNodeManager().getPosition(n, predicate);
+        }
+        return findNodeIndexBasic(n);
+    }
+    
+    int findNodeIndexBasic(Node node) {
+        int n = findNodeIndex(node, 0, list.size());
+        if (n >= 0 && n < list.size()) {
+            int i = getNodeIndex(n, index);
+            if (i == node.getIndex()) {
+                return n;
+            }
+        }
+        return -1;
+    }
+
+    
+    
     /**
      * return index of edge where edge.getNode(index).index() =  node.index()
      */
+    int debugNodeIndex(Node n) {
+        if (indexer.getNodeManager().isConsultable() 
+                && ! n.getDatatypeValue().isNumber()
+                && ! n.getDatatypeValue().isBoolean()){
+            int i = indexer.getNodeManager().getPosition(n, predicate);
+            int i2 = findNodeIndexBasic(n);
+            if ((i < 0 && i2 >= 0)
+                    || (i >= 0 && i2 < 0)
+                    || (i >= 0 && i2 >= 0 && i != i2)) {
+                System.out.println("**************** EM: " + n + " " + predicate + " " + list.size());
+                System.out.println("**************** EM: " + i + " " + i2 + " " + n + " " + indexer.getNodeManager().size());
+                System.out.println(indexer.getNodeManager().display());
+                System.out.println(index + " : " + list);
+            }
+            else {
+                return i;
+            }
+        }
+   
+        return findNodeIndexBasic(n);
+    }
+    
+ 
     int findNodeIndex(Node n, int first, int last) {
         if (first >= last) {
             return first;

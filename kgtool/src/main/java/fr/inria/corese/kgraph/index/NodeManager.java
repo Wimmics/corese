@@ -1,6 +1,7 @@
 package fr.inria.corese.kgraph.index;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import java.util.HashMap;
 
@@ -32,6 +33,8 @@ public class NodeManager {
     private boolean debug = false;
     // record position of node in edge list
     boolean isPosition = true;
+    private int i;
+    private static final String NL = System.getProperty("line.separator");
     
     NodeManager(Graph g, int index) {
         graph = g;
@@ -67,6 +70,17 @@ public class NodeManager {
         setActive(true);
     }
     
+    // start indexing
+    public void start() {
+        activate();
+        graph.getEventManager().start(Event.IndexNodeManager);
+    }
+    
+    // finish indexing
+    public void finish() {
+        graph.getEventManager().finish(Event.IndexNodeManager, this);
+    }
+    
     void add(Node node, Node predicate, int n) {
         if (isEffective()) {
             PredicateList list = ptable.get(node);
@@ -93,7 +107,7 @@ public class NodeManager {
             return getPredicateList(node);
         } 
         else {
-            return graph.getSortedPredicates();
+            return graph.getIndex().getSortedPredicates();
         }
     }
 
@@ -106,6 +120,13 @@ public class NodeManager {
         return list;
     }
     
+    int getPosition(Node node, Node predicate) {
+        PredicateList list = ptable.get(node);
+        if (list == null) {
+            return -2;
+        }
+        return list.getPosition(predicate);
+    } 
 
     public boolean isEffective() {
         return active && available;
@@ -116,6 +137,10 @@ public class NodeManager {
      */
     public boolean isActive() {
         return active ;
+    }
+    
+     public boolean isConsultable() {
+        return active && size()>0;
     }
 
     /**
@@ -152,6 +177,22 @@ public class NodeManager {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+    
+    public String display() {
+        StringBuilder sb = new StringBuilder();
+        
+        for (Node n : ptable.keySet()) {
+            sb.append(n).append(" :");
+            PredicateList l = getPredicateList(n);
+            int i = 0;
+            for (Node p : l) {
+                sb.append(" ").append(p).append(" ").append(l.getPosition(i++)).append("; ");
+            }
+            sb.append(NL);
+        }
+        
+        return sb.toString();
     }
 
 }

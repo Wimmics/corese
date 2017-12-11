@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.Index;
 import fr.inria.edelweiss.kgraph.core.Serializer;
@@ -83,6 +82,10 @@ public class EdgeManagerIndexer
     @Override
     public NodeManager getNodeManager() {
         return nodeManager;
+    }
+    
+    Graph getGraph() {
+        return graph;
     }
 
     @Override
@@ -418,7 +421,7 @@ public class EdgeManagerIndexer
     private EdgeManager define(Node predicate) {
         EdgeManager list = get(predicate);
         if (list == null) {
-            list = new EdgeManager(graph, predicate, index);
+            list = new EdgeManager(this, predicate, index);
             setComparator(list);
             put(predicate, list);
         }
@@ -459,12 +462,11 @@ public class EdgeManagerIndexer
      */
     @Override
     public void indexNodeManager() {
-        graph.getEventManager().start(Event.IndexNodeManager);
-        nodeManager.activate();
-        for (Node pred : getProperties()) {
+        nodeManager.start();
+        for (Node pred : getSortedProperties()) {
             checkGet(pred).indexNodeManager(nodeManager);
         }
-        graph.getEventManager().finish(Event.IndexNodeManager, nodeManager);
+        nodeManager.finish();
     }
     
     /**
@@ -490,12 +492,11 @@ public class EdgeManagerIndexer
      * index NodeManager
      */
     private void reduce() {
-        nodeManager.activate();
-        graph.getEventManager().start(Event.IndexNodeManagerReduce);
-        for (Node pred : getProperties()) {
+        nodeManager.start();
+        for (Node pred : getSortedProperties()) {
             reduce(pred);
         }
-        graph.getEventManager().finish(Event.IndexNodeManagerReduce);
+        nodeManager.finish();
     }
 
     private void reduce(Node pred) {
@@ -562,8 +563,8 @@ public class EdgeManagerIndexer
     
     
     @Override
-    public Iterable<Entity> getSortedEdges(Node node, int n) {
-        PredicateList list = getSortedPredicates(node, n);
+    public Iterable<Entity> getSortedEdges(Node node) {
+        PredicateList list = getNodeManager().getPredicates(node);
         MetaIterator<Entity> meta = new MetaIterator<Entity>();
         int i = 0;
         for (Node pred : list) {
@@ -576,10 +577,6 @@ public class EdgeManagerIndexer
             return new ArrayList<Entity>();
         }
         return meta;
-    }
-    
-    PredicateList getSortedPredicates(Node node, int n) {
-        return getNodeManager().getPredicates(node);     
     }
 
     /**

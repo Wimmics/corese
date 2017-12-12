@@ -22,16 +22,18 @@ import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgtool.transform.Transformer;
+import java.util.List;
 
 public class CompileService {
     public static final String VALUES = NSManager.KGRAM + "values";
     public static final String FILTER = NSManager.KGRAM + "filter";
 
     Provider provider;
-    Group group;
+    List<List<Term>> termList;
 
     public CompileService(Provider p) {
         provider = p;
+        termList = new ArrayList<>();
     }
 
     public CompileService() {
@@ -243,35 +245,12 @@ public class CompileService {
     public void filter(Query q, Mappings map, int start, int limit) {
 
         ASTQuery ast = (ASTQuery) q.getAST();
-        ArrayList<Term> lt;
         Term filter = null;
 
         for (int j = start; j < map.size() && j < limit; j++) {
+            Term f = getFilter(q, map.get(j));
 
-            Mapping m = map.get(j);
-
-            lt = new ArrayList<Term>();
-
-            for (Node qv : q.getSelect()) {
-                String var = qv.getLabel();
-                Node val = m.getNode(var);
-                if (val != null) {
-                    Variable v = Variable.create(var);
-                    IDatatype dt = (IDatatype) val.getValue();
-                    Constant cst = Constant.create(dt);
-                    Term t = Term.create(Term.SEQ, v, cst);
-                    lt.add(t);
-                }
-            }
-
-
-            if (lt.size() > 0) {
-                Term f = lt.get(0);
-
-                for (int i = 1; i < lt.size(); i++) {
-                    f = Term.create(Term.SEAND, f, lt.get(i));
-                }
-
+            if (f != null) {                
                 if (filter == null) {
                     filter = f;
                 } else {
@@ -282,6 +261,63 @@ public class CompileService {
 
         setFilter(ast, filter);
     }
+    
+    Term getFilter(Query q, Mapping m) {
+        ArrayList<Term> lt = new ArrayList<Term>();
+
+        for (Node varNode : q.getSelect()) {
+            String varName = varNode.getLabel();
+            Node valNode = m.getNode(varName);
+            if (valNode != null) {
+                // wish: select Mapping with unique(varNode, valNode)
+                Variable var = Variable.create(varName);
+                Constant val = Constant.create((IDatatype) valNode.getDatatypeValue());
+                Term t       = Term.create(Term.SEQ, var, val);
+                lt.add(t);
+            }
+        }
+        
+        if (lt.size() > 0 && accept(lt)) {
+            submit(lt);
+            Term f = lt.get(0);
+
+            for (int i = 1; i < lt.size(); i++) {
+                f = Term.create(Term.SEAND, f, lt.get(i));
+            }
+            return f;
+        }
+        return null;
+    }
+    
+    /**
+     * Check that two successive filter lists are different
+     */
+    boolean accept(List<Term> lt) {
+        if (termList.isEmpty()) {
+            return true;
+        }
+        return ! equal(lt, termList.get(termList.size() - 1));
+    }
+    
+    boolean equal(List<Term> l1, List<Term> l2) {
+        if (l1.size() != l2.size()) {return false;}
+        for (int i = 0; i<l1.size(); i++) {
+            if (! equal(l1.get(i), l2.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    boolean equal(Term t1, Term t2) {
+        return t1.getArg(0).getLabel().equals(t2.getArg(0).getLabel())
+            && t1.getArg(1).getDatatypeValue().equals(t2.getArg(1).getDatatypeValue()) ;
+    }
+    
+    void submit(List<Term> lt) {
+        termList.add(lt);
+    }
+    
 
     void setFilter(ASTQuery ast, Term f) {
         if (ast.getSaveBody() == null) {

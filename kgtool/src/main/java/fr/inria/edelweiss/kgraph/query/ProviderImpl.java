@@ -202,6 +202,9 @@ public class ProviderImpl implements Provider {
             }
             // select appropriate subset of Mappings with service URI 
             Mappings mappings = getMappings(exp.getServiceNode(), serv, map, env);
+            if (env.getQuery().isDebug() && map != null && mappings.size() != map.size()) {
+                logger.debug("Service Mappings:\n" + mappings);
+            }
             int size = 0;
             while (size < mappings.size()) {
                 // consider subset of Mappings of size slice

@@ -628,6 +628,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         in.setProducer(p);
         Eval eval = Eval.create(p, in, kgram.getMatcher());
         eval.setSPARQLEngine(kgram.getSPARQLEngine());
+        eval.set(kgram.getProvider());
         eval.init(q);
         eval.getMemory().setBind(env.getBind());
         return in;

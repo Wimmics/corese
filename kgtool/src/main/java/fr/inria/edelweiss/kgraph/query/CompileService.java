@@ -37,6 +37,7 @@ public class CompileService {
     }
 
     public CompileService() {
+        termList = new ArrayList<>();
     }
 
     /**

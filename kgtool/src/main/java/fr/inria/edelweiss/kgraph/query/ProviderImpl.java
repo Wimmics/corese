@@ -22,11 +22,13 @@ import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgtool.load.SPARQLResult;
 import java.util.ArrayList;
@@ -111,9 +113,13 @@ public class ProviderImpl implements Provider {
     public Mappings service(Node serv, Exp exp, Environment env) {
         return service(serv, exp, null, env);
     }
+    
+    @Override    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
+        return service(serv, exp, lmap, env, null);
+    }
 
     @Override
-    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
+    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env, Producer p) {
         Exp body = exp.rest();
         Query q = body.getQuery();
 
@@ -125,7 +131,7 @@ public class ProviderImpl implements Provider {
 
         if (exec == null) {
             
-            Mappings map = globalSend(serv, q, exp, lmap, env);
+            Mappings map = globalSend(serv, q, exp, lmap, env, getGraph(p));
             if (map != null) {
                 return map;
             }
@@ -146,11 +152,15 @@ public class ProviderImpl implements Provider {
 
         return map;
     }
+    
+    Graph getGraph(Producer p) {
+        return (Graph) p.getGraph();
+    }
 
     /**
      * Take Mappings into account when sending service to remote endpoint
      */
-    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Environment env) {
+    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Environment env, Graph g) {
         CompileService compiler = new CompileService(this);
 
         // share prefix
@@ -164,10 +174,10 @@ public class ProviderImpl implements Provider {
 
         if (map == null || slice == 0 || hasValues) {
             // if query has its own values {}, do not include Mappings
-            return basicSend(compiler, serv, q, exp, map, env, 0, 0);
+            return basicSend(g, compiler, serv, q, exp, map, env, 0, 0);
         }         
         else {          
-            res = sliceSend(compiler, serv, q, exp, map, env, slice);            
+            res = sliceSend(g, compiler, serv, q, exp, map, env, slice);            
         } 
 
         if (!hasValues) {
@@ -184,10 +194,8 @@ public class ProviderImpl implements Provider {
      * Split Mappings into buckets with size = slice
      * Iterate service on each bucket
      */
-    Mappings sliceSend(CompileService compiler, Node service, Query q, Exp exp, Mappings map, Environment env, int slice) {
-        if (env.getQuery().isDebug() && map != null) {
-            logger.debug("Input Mappings:\n" + map);
-        }
+    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Environment env, int slice) {
+        g.getEventManager().start(Event.Service, (map == null) ? null : map.toString(true));
         
         List<Node> list = getServerList(exp, map, env);
         
@@ -196,21 +204,20 @@ public class ProviderImpl implements Provider {
         }
         Mappings res = null;
         
-        for (Node serv : list) {
-            if (env.getQuery().isDebug()) {
-                logger.debug("Service: " + serv);
-            }
-            // select appropriate subset of Mappings with service URI 
-            Mappings mappings = getMappings(exp.getServiceNode(), serv, map, env);
-            if (env.getQuery().isDebug() && map != null && mappings.size() != map.size()) {
-                logger.debug("Service Mappings:\n" + mappings);
+        for (Node service : list) {
+            g.getEventManager().process(Event.Service, service);
+
+            // select appropriate subset of distinct Mappings with service URI 
+            Mappings mappings = getMappings(exp.getServiceNode(), service, map, env);
+            if (mappings != null && mappings.size() > 0) {
+                g.getEventManager().process(Event.Service, mappings.toString(true));
             }
             int size = 0;
             while (size < mappings.size()) {
                 // consider subset of Mappings of size slice
-                Mappings sol = send(compiler, serv, q, mappings, env, size, size + slice);
+                Mappings sol = send(compiler, service, q, mappings, env, size, size + slice);
                 // join (serviceNode = serviceURI)
-                complete(exp.getServiceNode(), serv, sol,  env);
+                complete(exp.getServiceNode(), service, sol,  env);
                 if (res == null) {
                     res = sol;
                 } else if (sol != null) {
@@ -221,10 +228,10 @@ public class ProviderImpl implements Provider {
         }
         
         if (res != null && list.size() > 1){  
-            // Eliminate duplicates when several service URI (federated query) 
+            // Eliminate duplicates when several service URI (federated query)
             res = res.distinct();
         }
-
+        g.getEventManager().finish(Event.Service);
         return res;
     }
     
@@ -239,7 +246,7 @@ public class ProviderImpl implements Provider {
     }
     
     /**
-     * Select subset of Mappings where serviceNode = serviceURI
+     * Select subset of distinct Mappings where serviceNode = serviceURI
      */
     Mappings getMappings(Node serviceNode, Node serviceURI, Mappings map, Environment env) {
         if (serviceNode.isVariable() && ! env.isBound(serviceNode)) {
@@ -289,21 +296,19 @@ public class ProviderImpl implements Provider {
     
    
 
-    Mappings basicSend(CompileService compiler, Node service, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
+    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
         List<Node> list = getServerList(exp, map, env);
-        if (env.getQuery().isDebug()) {
-            logger.debug("Service: " + list);
-        }
+        g.getEventManager().start(Event.Service, list);
         if (list.size() == 1) { //(exp.getNodeSet() == null) {
-            return send(compiler, list.get(0), q, map, env, min, max);
+            Mappings res = send(compiler, list.get(0), q, map, env, min, max);
+            g.getEventManager().finish(Event.Service);
+            return res;
         } else {
             Mappings res = null;
-            for (Node serv : list) {
-                if (env.getQuery().isDebug()){
-                    logger.debug("Service: " + serv);
-                }
-                Mappings sol = send(compiler, serv, q, map, env, min, max);
-                complete(exp.getServiceNode(), service, sol, env);
+            for (Node service : list) {
+                g.getEventManager().process(Event.Service, service);
+                Mappings sol = send(compiler, service, q, map, env, min, max);
+                complete(exp.getServiceNode(), serviceNode, sol, env);
                 if (res == null) {
                     res = sol;
                 } else if (sol != null) {
@@ -314,6 +319,7 @@ public class ProviderImpl implements Provider {
                 // Eliminate duplicates when several service URI (federated query) 
                 res = res.distinct();
             }
+            g.getEventManager().finish(Event.Service);
             return res;
         }
     }
@@ -333,9 +339,11 @@ public class ProviderImpl implements Provider {
             Mappings res = eval(q, serv, env);
             
             if (gq.isDebug()) {
-                logger.info("** Provider result: \n" + res.size());
-                if (gq.isDetail()) {
+                if (res.size() <= 100 || gq.isDetail()) {
                     logger.info("** Provider result: \n" + res.toString(true));
+                }
+                else {
+                   logger.info("** Provider result: \n" + res.size()); 
                 }
             }
             return res;

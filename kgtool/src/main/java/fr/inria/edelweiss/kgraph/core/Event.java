@@ -17,6 +17,7 @@ public enum Event {
     IndexGraph,
     
     Query, Construct, Rule, 
+    Service,
     LoadAPI, LoadStep, // load()
     Update,
     LoadUpdate, // SPARQL Update load

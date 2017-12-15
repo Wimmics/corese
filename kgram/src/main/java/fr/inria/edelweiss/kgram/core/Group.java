@@ -164,6 +164,10 @@ public class Group implements Comparator<Mappings>{
 		}
 		table = new TreeMapping(nodes);
 	}
+        
+        public List<Node> getNodeList() {
+            return nodes;
+        }
 	
 	public void setDistinct(boolean b){
 		isDistinct = b;

@@ -598,6 +598,10 @@ public class Eval implements ExpType, Plugin {
     public Producer getProducer() {
         return producer;
     }
+    
+    public Provider getProvider() {
+        return provider;
+    }
 
     public Environment getEnvironment() {
         return memory;
@@ -1820,8 +1824,7 @@ public class Eval implements ExpType, Plugin {
     }
 
 
-    private int service(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-
+    private int service(Producer p, Node gNode, Exp exp, Stack stack, int n) {      
         int backtrack = n - 1;
         Memory env = memory;
         Node serv = exp.first().getNode();
@@ -1840,7 +1843,7 @@ public class Eval implements ExpType, Plugin {
 //            sw.start();
             // service delegated to provider
             // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
-            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env);
+            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env, p);
 
             if (hasService) {
                 callService(node, exp, lMap);

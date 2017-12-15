@@ -530,7 +530,7 @@ public class Mapping
         for (Node qNode : list) {
             Node node = getNode(qNode);
             array[i++] = node;
-        }
+        }      
     }
 
     /**

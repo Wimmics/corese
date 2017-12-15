@@ -103,12 +103,38 @@ public class Mappings extends PointerObject
         initiate(q, !subEval && q.isDistinct());
     }
     
-    public void initiate(Query q,  boolean b){
+    void initiate(Query q,  boolean b){
+        initiate(q, b, false);
+    }
+    
+    void initiate(Query q,  boolean b, boolean all){
         this.query = q;
         isDistinct = b;
         isListGroup = q.isListGroup();
         setSelect(q.getSelect());
-
+        if (isDistinct) {
+            if (all) {
+                List<Node> list = q.getSelectNodes();
+                if (list.isEmpty()){
+                    distinct = group(q.getSelectFun()); 
+                }
+                else {
+                   distinct = group(q.toExp(list)); 
+                }
+            }
+            else {
+                distinct = group(q.getSelectFun());
+            }
+            distinct.setDistinct(true);
+            distinct.setDuplicate(q.isDistribute());
+        }
+    }
+    
+    void initiate2(Query q,  boolean b, boolean all){
+        this.query = q;
+        isDistinct = b;
+        isListGroup = q.isListGroup();
+        setSelect(q.getSelect());        
         if (isDistinct) {
             distinct = group(q.getSelectFun());
             distinct.setDistinct(true);
@@ -118,7 +144,7 @@ public class Mappings extends PointerObject
     
     public Mappings distinct() {
         Mappings res = new Mappings();
-        res.initiate(getQuery(), true);
+        res.initiate(getQuery(), true, true);
         for (Mapping m : this) {
             res.submit(m);
         }
@@ -1235,7 +1261,7 @@ public class Mappings extends PointerObject
                 map.add(m);
             }
         }
-        return map;
+        return map.distinct();
     }
     
 

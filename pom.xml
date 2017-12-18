@@ -162,7 +162,7 @@
 		<module>kgtool</module>
 		<module>kgserver</module>
 		<!--<module>kgserver-stubs</module>-->
-        <!-- <module>kg-dqp</module> -->
+                <module>kg-dqp</module> 
 		<module>kgimport</module>
 		<module>sparql</module>
 		<module>rif</module>

@@ -71,9 +71,6 @@ public class RemoteProducerWSImpl implements Producer {
         this.provEnabled = provEnabled;
     }
 
-    @Override
-    public void init(int nbNodes, int nbEdges) {
-    }
 
     @Override
     /**

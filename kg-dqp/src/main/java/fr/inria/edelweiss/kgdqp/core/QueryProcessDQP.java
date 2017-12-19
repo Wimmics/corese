@@ -8,7 +8,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.core.BgpGenerator;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
+import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.MatcherImpl;

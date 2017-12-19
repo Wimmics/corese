@@ -72,10 +72,6 @@ public class RemoteProducerWSImpl implements Producer {
     }
 
     @Override
-    public void init(int nbNodes, int nbEdges) {
-    }
-
-    @Override
     /**
      * propagate to the server ? nothing
      */

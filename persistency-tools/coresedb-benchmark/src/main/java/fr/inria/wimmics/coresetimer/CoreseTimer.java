@@ -41,7 +41,6 @@ public class CoreseTimer {
     private final static Logger LOGGER = Logger.getLogger(CoreseTimer.class.getName());
     private static String outputRoot;
     private CoreseAdapter adapter;
-    private String adapterName;
     private Mappings mappings;
 
     private Profile mode = Profile.MEMORY;
@@ -51,7 +50,6 @@ public class CoreseTimer {
     private TestDescription test;
 
     private CoreseTimer(TestDescription test) {
-        this.adapterName = CoreseAdapter.class.getCanonicalName();
         initialized = false;
         this.test = test;
     }
@@ -80,7 +78,7 @@ public class CoreseTimer {
         // Loading the nq data in corese, then applying several times the query.
         LOGGER.log(Level.INFO, "beginning with input #{0}", test.getInput());
         // require to have a brand new adapter for each new input set.
-        adapter = (CoreseAdapter) Class.forName(adapterName).newInstance();
+        adapter = new CoreseAdapter();
 
         String inputFileName = "";
         switch (mode) {

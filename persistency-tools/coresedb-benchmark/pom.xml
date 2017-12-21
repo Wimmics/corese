@@ -92,6 +92,11 @@
             <artifactId>rdf-to-graph-neo4j</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>fr.inria.corese</groupId>
+            <artifactId>w3c-tests</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

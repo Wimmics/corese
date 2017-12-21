@@ -1,6 +1,7 @@
 reset
 
-set terminal pdf
+set terminal gif
+#  set terminal pdf
 set output "<OUTPUT_FILE>"
 
 set title "<TITLE>" font "sans, 8"

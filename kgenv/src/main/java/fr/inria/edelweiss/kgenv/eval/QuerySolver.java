@@ -18,6 +18,7 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
@@ -34,7 +35,6 @@ import fr.inria.edelweiss.kgram.core.Sorter;
 import fr.inria.edelweiss.kgram.event.EventListener;
 import fr.inria.edelweiss.kgram.event.EventManager;
 import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.edelweiss.kgram.tool.MetaProducer;
 
 
@@ -386,6 +386,13 @@ public class QuerySolver  implements SPARQLEngine {
 	
 	public Evaluator getEvaluator(){
 		return evaluator;
+	}
+        
+        public Interpreter getInterpreter(){
+		if (evaluator instanceof Interpreter) {
+                    return (Interpreter) evaluator;
+                }
+                return null;
 	}
 	
 	public ASTQuery getAST(Query q){

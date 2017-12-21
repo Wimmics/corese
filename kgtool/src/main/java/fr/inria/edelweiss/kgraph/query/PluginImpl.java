@@ -86,6 +86,7 @@ public class PluginImpl
     public static final String SILENT = EXT+"silent";
     public static final String DEBUG  = EXT+"debug";
     public static final String EVENT  = EXT+"event";
+    public static final String METHOD = EXT+"method";
     public static final String EVENT_LOW  = EXT+"eventLow";
     public static final String SHOW  = EXT+"show";
     public static final String HIDE  = EXT+"hide";
@@ -830,6 +831,9 @@ public class PluginImpl
             getEventManager(p).hide(Event.Insert);
             getEventManager(p).hide(Event.Construct);
             getGraph(p).setDebugMode(dt2.booleanValue());
+        }
+        else if (dt1.getLabel().equals(METHOD)) {
+            getEventManager(p).setMethod(dt2.booleanValue());
         }
         else if (dt1.getLabel().equals(SHOW)) { 
             getEventManager(p).setVerbose(true);

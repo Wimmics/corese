@@ -430,23 +430,27 @@ public class QueryProcess extends QuerySolver {
      * Logger
      * xt:method(us:start, us:Event, event, obj)
      */
-    public void event(Event type, Event e, Object o) throws EngineException {
-        EventManager mgr = getGraph().getEventManager();
-        boolean b = mgr.isVerbose();
-        mgr.setVerbose(false);
+    public void event(Event name, Event e, Object o) throws EngineException {
         IDatatype[] param = new IDatatype[2];
         param[0] = DatatypeMap.createObject(e);
         param[1] = DatatypeMap.createObject((o == null) ? "null" : o);
-        Function function = getFunction(type, e, param);
+        method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);        
+    }
+    
+    public void method(String name, String type, IDatatype[] param) throws EngineException {
+        EventManager mgr = getGraph().getEventManager();
+        boolean b = mgr.isVerbose();
+        mgr.setVerbose(false);
+        Function function = getFunction(name, type, param);
         if (function != null) {
             Eval eval = getEval();
-            new Funcall(EVENT).call((Interpreter) eval.getEvaluator(), 
-                    (Binding) eval.getMemory().getBind(), 
+            new Funcall(EVENT).call((Interpreter) eval.getEvaluator(),
+                    (Binding) eval.getMemory().getBind(),
                     eval.getMemory(), eval.getProducer(), function, param);
         }
         mgr.setVerbose(b);
     }
-    
+
     Eval getEval() throws EngineException {
         if (eval == null){
             eval = createEval("select where {}  ", null);
@@ -458,10 +462,9 @@ public class QueryProcess extends QuerySolver {
      * Search a method 
      * @public @type us:Event us:start(?e, ?o)
      */
-    Function getFunction(Event type, Event e, IDatatype[] param) {
+    Function getFunction(String name, String type, IDatatype[] param) {
         return (Function) Interpreter.getExtension().getMethod(
-                NSManager.USER + type.toString().toLowerCase(), 
-                DatatypeMap.newResource(NSManager.USER + e.toString()), 
+                name, DatatypeMap.newResource(type), 
                 param);
     }
     

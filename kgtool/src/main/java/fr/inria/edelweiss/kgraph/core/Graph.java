@@ -2794,9 +2794,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public boolean clear(String uri, boolean isSilent) {
         if (uri != null) {
             Node gg = getGraphNode(uri);
-            if (isDebug) {
-                logger.debug("** clear: " + gg);
-            }
+//            if (isDebug) {
+//                logger.debug("** clear: " + gg);
+//            }
             if (gg != null) {
                 //setDelete(true);
                 getEventManager().process(Event.Delete);

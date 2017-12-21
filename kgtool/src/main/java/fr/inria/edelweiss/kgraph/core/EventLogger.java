@@ -66,7 +66,12 @@ public class EventLogger {
     
     void trace(Event type, Event e, Object o) {
         if (accept(e)) {
-            message(type, e, o);
+            if (isMethod()){
+                method(type, e, o);
+            }
+            else {
+                message(type, e, o);
+            }
         }
     }
        
@@ -84,16 +89,13 @@ public class EventLogger {
                 break;
         }
         log(type, e, o);
-        method(type, e, o);
     }
     
     void method(Event type, Event e, Object o) {
-        if (isMethod()) {
-            try {
-                getQueryProcess().event(type, e, o);
-            } catch (EngineException ex) {
-                java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            getQueryProcess().event(type, e, o);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

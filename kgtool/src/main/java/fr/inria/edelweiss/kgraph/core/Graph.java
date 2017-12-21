@@ -1339,7 +1339,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         Entity ent = add(edge, duplicate);
         if (ent != null) {
             //setUpdate(true);
-            getEventManager().process(Event.Insert);
+            getEventManager().process(Event.Insert, ent);
             manager.onInsert(ent.getGraph(), edge.getEdge());
         }
         return ent;
@@ -1440,7 +1440,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         for (Entity ent : list) {
             Entity e = add(ent);
             if (e != null) {
-                getEventManager().process(Event.Insert);
+                getEventManager().process(Event.Insert, e);
             }
         }
         setIndex(false);

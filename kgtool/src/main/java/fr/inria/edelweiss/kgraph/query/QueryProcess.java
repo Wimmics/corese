@@ -63,6 +63,7 @@ public class QueryProcess extends QuerySolver {
 
     private static Logger logger = LogManager.getLogger(QueryProcess.class);
     private static ProducerImpl p;
+    private static final String EVENT = "event";
     static final String DB_FACTORY  = "fr.inria.corese.tinkerpop.Factory";
     static final String DB_INPUT    = "fr.inria.corese.tinkerpop.dbinput";
 
@@ -430,20 +431,20 @@ public class QueryProcess extends QuerySolver {
      * xt:method(us:start, us:Event, event, obj)
      */
     public void event(Event type, Event e, Object o) throws EngineException {
-        Graph graph = getGraph();
-        boolean b = graph.isVerbose();
-        graph.setVerbose(false);
+        EventManager mgr = getGraph().getEventManager();
+        boolean b = mgr.isVerbose();
+        mgr.setVerbose(false);
         IDatatype[] param = new IDatatype[2];
         param[0] = DatatypeMap.createObject(e);
         param[1] = DatatypeMap.createObject((o == null) ? "null" : o);
         Function function = getFunction(type, e, param);
         if (function != null) {
             Eval eval = getEval();
-            new Funcall("event").call((Interpreter) eval.getEvaluator(), 
+            new Funcall(EVENT).call((Interpreter) eval.getEvaluator(), 
                     (Binding) eval.getMemory().getBind(), 
                     eval.getMemory(), eval.getProducer(), function, param);
         }
-        graph.setVerbose(b);
+        mgr.setVerbose(b);
     }
     
     Eval getEval() throws EngineException {
@@ -453,6 +454,10 @@ public class QueryProcess extends QuerySolver {
         return eval;
     }
 
+    /**
+     * Search a method 
+     * @public @type us:Event us:start(?e, ?o)
+     */
     Function getFunction(Event type, Event e, IDatatype[] param) {
         return (Function) Interpreter.getExtension().getMethod(
                 NSManager.USER + type.toString().toLowerCase(), 

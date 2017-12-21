@@ -71,7 +71,6 @@ public class EventLogger {
     }
        
     void message(Event type, Event e, Object o) {
-        method(type, e, o);
         switch (type) {
             case Start:
             case Process:
@@ -85,6 +84,7 @@ public class EventLogger {
                 break;
         }
         log(type, e, o);
+        method(type, e, o);
     }
     
     void method(Event type, Event e, Object o) {

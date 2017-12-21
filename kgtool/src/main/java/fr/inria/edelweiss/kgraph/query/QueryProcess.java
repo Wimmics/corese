@@ -1,5 +1,7 @@
 package fr.inria.edelweiss.kgraph.query;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.acacia.corese.exceptions.EngineException;
@@ -7,6 +9,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Option;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
@@ -22,6 +25,9 @@ import fr.inria.edelweiss.kgram.core.Query;
 //import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.eval.ProxyInterpreter;
+import fr.inria.corese.triple.function.script.Funcall;
+import fr.inria.corese.triple.function.script.Function;
+import fr.inria.corese.triple.function.term.Binding;
 //import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
 import fr.inria.edelweiss.kgraph.api.GraphListener;
 import fr.inria.edelweiss.kgraph.api.Loader;
@@ -67,6 +73,7 @@ public class QueryProcess extends QuerySolver {
     private Manager updateManager;
     private GraphManager graphManager;
     Loader load;
+    Eval eval;
     ReentrantReadWriteLock lock;
     // Producer may perform match locally
     boolean isMatch = false;
@@ -268,7 +275,7 @@ public class QueryProcess extends QuerySolver {
         }
         add(p);
         return p;
-    }
+    } 
 
     public static QueryProcess create(Producer p) {
         Matcher match;
@@ -416,6 +423,41 @@ public class QueryProcess extends QuerySolver {
             return create(p).qquery(query, m, null);
         }
         return qquery(query, m, null);
+    }
+    
+    /**
+     * Logger
+     * xt:method(us:start, us:Event, event, obj)
+     */
+    public void event(Event type, Event e, Object o) throws EngineException {
+        Graph graph = getGraph();
+        boolean b = graph.isVerbose();
+        graph.setVerbose(false);
+        IDatatype[] param = new IDatatype[2];
+        param[0] = DatatypeMap.createObject(e);
+        param[1] = DatatypeMap.createObject((o == null) ? "null" : o);
+        Function function = getFunction(type, e, param);
+        if (function != null) {
+            Eval eval = getEval();
+            new Funcall("event").call((Interpreter) eval.getEvaluator(), 
+                    (Binding) eval.getMemory().getBind(), 
+                    eval.getMemory(), eval.getProducer(), function, param);
+        }
+        graph.setVerbose(b);
+    }
+    
+    Eval getEval() throws EngineException {
+        if (eval == null){
+            eval = createEval("select where {}  ", null);
+        }
+        return eval;
+    }
+
+    Function getFunction(Event type, Event e, IDatatype[] param) {
+        return (Function) Interpreter.getExtension().getMethod(
+                NSManager.USER + type.toString().toLowerCase(), 
+                DatatypeMap.newResource(NSManager.USER + e.toString()), 
+                param);
     }
     
     @Override

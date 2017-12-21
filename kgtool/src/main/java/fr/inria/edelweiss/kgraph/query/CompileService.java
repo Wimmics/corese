@@ -43,7 +43,7 @@ public class CompileService {
     /**
      * Generate bindings for the service, if any
      */
-    public void compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
+    public boolean compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
         Query out = q.getOuterQuery();
         if (lmap == null || (lmap.size() == 1 && lmap.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
@@ -55,12 +55,13 @@ public class CompileService {
             } else {
                 bindings(q, env);
             }
+            return true;
         } else if (isValues(out)) {
-            bindings(q, lmap, start, limit);
+            return bindings(q, lmap, start, limit);
         } else if (isFilter(out) || provider.isSparql0(serv)) {
-            filter(q, lmap, start, limit);
+            return filter(q, lmap, start, limit);
         } else {
-            bindings(q, lmap, start, limit);
+            return bindings(q, lmap, start, limit);
         }
     }
 
@@ -145,7 +146,7 @@ public class CompileService {
     /**
      * Generate bindings as bindings from Mappings
      */
-    public void bindings(Query q, Mappings map, int start, int limit) {
+    public boolean bindings(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
         ast.clearBindings();
         ArrayList<Variable> lvar = new ArrayList<Variable>();
@@ -188,16 +189,20 @@ public class CompileService {
         }
 
        setValues(ast, values);
-
+       return success(values);
     }
         
+    boolean success(Values values) {
+        return values.getVariables().size() > 0 && 
+            values.getValues().size() > 0;
+    }
+    
     void setValues(ASTQuery ast, Values values) {
         if (ast.getSaveBody() == null) {
             ast.setSaveBody(ast.getBody());
         }
         BasicGraphPattern body = BasicGraphPattern.create();
-        if (values.getVariables().size() > 0 && 
-            values.getValues().size() > 0) {
+        if (success(values)) {
             body.add(values);
         }
         for (Exp e : ast.getSaveBody()) {
@@ -237,13 +242,12 @@ public class CompileService {
         }
 
         setFilter(ast, filter);
-
     }
 
     /**
      * Generate bindings from Mappings as filter
      */
-    public void filter(Query q, Mappings map, int start, int limit) {
+    public boolean filter(Query q, Mappings map, int start, int limit) {
 
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
@@ -261,6 +265,7 @@ public class CompileService {
         }
 
         setFilter(ast, filter);
+        return (filter != null);
     }
     
     Term getFilter(Query q, Mapping m) {

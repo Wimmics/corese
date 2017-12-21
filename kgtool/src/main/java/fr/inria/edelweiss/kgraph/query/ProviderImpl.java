@@ -195,10 +195,10 @@ public class ProviderImpl implements Provider {
      * Iterate service on each bucket
      */
     Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Environment env, int slice) {
-        g.getEventManager().start(Event.Service, (map == null) ? null : map.toString(true));
         
         List<Node> list = getServerList(exp, map, env);
-        
+        g.getEventManager().start(Event.Service, list);
+       
         if (list.isEmpty()) {
             logger.error("Undefined service: " + exp.getServiceNode());
         }
@@ -215,6 +215,7 @@ public class ProviderImpl implements Provider {
             int size = 0;
             while (size < mappings.size()) {
                 // consider subset of Mappings of size slice
+                // it may produce bindings for target service
                 Mappings sol = send(compiler, service, q, mappings, env, size, size + slice);
                 // join (serviceNode = serviceURI)
                 complete(exp.getServiceNode(), service, sol,  env);
@@ -331,8 +332,15 @@ public class ProviderImpl implements Provider {
         Query gq = q.getGlobalQuery();
         try {
 
-            // generate bindings from env if any
-            compiler.compile(serv, q, map, env, start, limit);
+            // generate bindings from map/env if any
+            boolean hasBind = compiler.compile(serv, q, map, env, start, limit);
+            
+            if (! hasBind && start > 0){
+                // this is not the first slice and there is no bindings: skip it
+                if (gq.isDebug()) {logger.info("Skip slice for absence of relevant binding");}
+                return Mappings.create(q);
+            }
+            
             if (gq.isDebug()) {
                 logger.info("** Provider query: \n" + q.getAST());
             }

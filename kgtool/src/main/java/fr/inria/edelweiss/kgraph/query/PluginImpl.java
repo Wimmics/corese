@@ -20,6 +20,7 @@ import fr.inria.corese.triple.function.script.Function;
 import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.eval.ProxyInterpreter;
 import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgenv.api.ProxyPlugin;
@@ -175,7 +176,8 @@ public class PluginImpl
             if (env.getQuery().getGlobalQuery().isDebug()){
                 ch.setDebug(true);
             }
-            ext.setHierarchy(ch);           
+            ext.setHierarchy(ch);  
+            Interpreter.getExtension().setHierarchy(ch);
         }
     }
     

@@ -46,7 +46,7 @@ public class Funcall extends TermEval {
         return call(eval, b, env, p, function, param);
     }
 
-    IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype[] param) {
+    public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype[] param) {
         Expression fun = function.getSignature();
         b.set(function, fun.getExpList(), param);
         IDatatype dt = null;

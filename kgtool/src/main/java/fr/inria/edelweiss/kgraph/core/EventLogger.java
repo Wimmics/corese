@@ -1,8 +1,11 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.corese.kgraph.index.NodeManager;
+import fr.inria.edelweiss.kgraph.query.QueryProcess;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,10 +18,12 @@ public class EventLogger {
 
     private static Logger logger = LogManager.getLogger(EventLogger.class);
     EventManager mgr;
+    QueryProcess exec;
     HashMap<Event, Event> show, hide;
+    private boolean method = false;
 
     EventLogger(EventManager ev) {
-        mgr = ev;
+        mgr = ev;       
     }
     
     public void show(Event e, boolean b) {
@@ -64,8 +69,9 @@ public class EventLogger {
             message(type, e, o);
         }
     }
-    
+       
     void message(Event type, Event e, Object o) {
+        method(type, e, o);
         switch (type) {
             case Start:
             case Process:
@@ -79,6 +85,23 @@ public class EventLogger {
                 break;
         }
         log(type, e, o);
+    }
+    
+    void method(Event type, Event e, Object o) {
+        if (isMethod()) {
+            try {
+                getQueryProcess().event(type, e, o);
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    QueryProcess getQueryProcess() {
+        if (exec == null){
+            exec = QueryProcess.create(getEventManager().getGraph());
+        }
+        return exec;
     }
 
     void log(Event type, Event e, Object o) {
@@ -134,8 +157,26 @@ public class EventLogger {
         return mgr.getGraph().getNodeManager();
     }
     
+    EventManager getEventManager() {
+        return mgr;
+    }
+    
     void logRule(Event e) {
         logger.info("Graph size after rule: "  + mgr.getGraph().size());
+    }
+
+    /**
+     * @return the method
+     */
+    public boolean isMethod() {
+        return method;
+    }
+
+    /**
+     * @param method the method to set
+     */
+    public void setMethod(boolean method) {
+        this.method = method;
     }
 
 }

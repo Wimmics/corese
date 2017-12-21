@@ -1012,8 +1012,8 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     }
     
     public void setVerbose(boolean b) {
-        if (b) {
-            getEventManager().setVerbose(true);
+       getEventManager().setVerbose(b);
+       if (b) {
             // hide to logger
             getEventManager().hide(Event.Insert);
             getEventManager().hide(Event.Construct);

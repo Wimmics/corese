@@ -33,6 +33,10 @@ public class EventManager {
         graph = g;
     }
     
+    public void setMethod(boolean b){
+        getLog().setMethod(b);
+    }
+    
     public void show(Event e) {
         getLog().show(e, true);
     }

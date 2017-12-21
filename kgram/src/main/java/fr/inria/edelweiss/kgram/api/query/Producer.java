@@ -29,9 +29,9 @@ public interface Producer {
 	 * It enables to initialize the Producer
 	 * 
 	 */
-	void init(Query q);
-	void start(Query q);
-	void finish(Query q);
+	default void init(Query q) {};
+	default void start(Query q) {};
+	default void finish(Query q) {};
 	
 	/**
 	 * A hook to tune Producer

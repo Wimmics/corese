@@ -27,7 +27,7 @@ public interface Provider {
 	 * @see #service(fr.inria.edelweiss.kgram.api.core.Node, fr.inria.edelweiss.kgram.core.Exp, fr.inria.edelweiss.kgram.api.query.Environment) 
 	 */
 	Mappings service(Node serv, Exp exp, Mappings map, Environment env);
-	Mappings service(Node serv, Exp exp, Mappings map, Environment env, Producer p);
+	default Mappings service(Node serv, Exp exp, Mappings map, Environment env, Producer p) { return null; };
 
 	void set(String uri, double version);
 

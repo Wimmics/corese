@@ -1,5 +1,6 @@
 package fr.inria.edelweiss.kgraph.core;
 
+import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.edelweiss.kgraph.api.Engine;
 import static fr.inria.edelweiss.kgraph.core.Event.Finish;
 import static fr.inria.edelweiss.kgraph.core.Event.Process;
@@ -201,7 +202,18 @@ public class EventManager {
         trace(Process, e, o);        
         switch(e) {
             case Insert: setUpdate(true); break;
-            case Delete: setDelete(true); break;                           
+            case Delete: setDelete(true); break;
+            case Finish: finish(); break;
+        }
+    }
+    
+    /**
+     * GUI reset Corese
+     * Clean old environment
+     */
+    public void finish() {
+        if (Interpreter.getExtension() != null) {
+            Interpreter.getExtension().setHierarchy(null);
         }
     }
         

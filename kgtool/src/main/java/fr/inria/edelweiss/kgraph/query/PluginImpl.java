@@ -153,9 +153,7 @@ public class PluginImpl
        
     @Override
     public void start(Producer p, Environment env){
-        if (env.getQuery().getGlobalQuery().isTest()){
-            test(p, env);
-        }
+        setMethodHandler(p, env);
     }
     
     @Override
@@ -170,14 +168,18 @@ public class PluginImpl
      * Search method name in type hierarchy 
      * @test select where 
      */
-    void test(Producer p, Environment env){
+    void setMethodHandler(Producer p, Environment env){
         Extension ext = env.getQuery().getActualExtension();
-        if (ext != null){
+        if (ext != null && ext.isMethod()){
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
             if (env.getQuery().getGlobalQuery().isDebug()){
                 ch.setDebug(true);
             }
-            ext.setHierarchy(ch);  
+            ext.setHierarchy(ch);
+            // WARNING: draft test below
+            // store current graph in the Interpreter 
+            // hence it does not scale with several graph
+            // e.g. in server mode
             Interpreter.getExtension().setHierarchy(ch);
         }
     }

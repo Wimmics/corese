@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-12-01";
+    private static final String TITLE = "Corese 3.2 - Wimmics INRIA I3S - 2017-12-25";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -1528,8 +1528,9 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     void setMyCoreseNewInstance(boolean rdfs) {
-        // Index the graph using int index instead of IDatatype values
-        //Graph.setCompareIndex(true);
+        if (myCorese != null) {
+            myCorese.finish();
+        }
         myCorese = GraphEngine.create(rdfs);
         myCorese.setOption(cmd);
     }
@@ -1543,12 +1544,6 @@ public class MainFrame extends JFrame implements ActionListener {
         return LOGGER;
     }
 
-//    String readStyleSheet2(String name){
-//        String path  = getClass().getResource(STYLE).getPath();
-//        QueryLoad ql = QueryLoad.create();
-//        String style = ql.read(path + name);
-//        return style;
-//    }
     String read(String name) throws LoadException, IOException {
         InputStream stream = getClass().getResourceAsStream(name);
         if (stream == null) {

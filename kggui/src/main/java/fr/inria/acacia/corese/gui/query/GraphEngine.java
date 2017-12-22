@@ -19,6 +19,7 @@ import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.edelweiss.kgraph.core.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.core.GraphStore;
 import fr.inria.edelweiss.kgraph.query.QueryEngine;
@@ -61,6 +62,13 @@ public class GraphEngine  {
 		bengine = Engine.create(QueryProcess.create(graph, true));
 		exec = QueryProcess.create(graph, true);
 	}
+        
+        /**
+         * Before creating a new Corese, tell the old one to finish
+         */
+        public void finish() {
+            graph.getEventManager().process(Event.Finish);
+        }
         
         public void setOption(Command cmd) {
             for (String key : cmd.keySet()) {

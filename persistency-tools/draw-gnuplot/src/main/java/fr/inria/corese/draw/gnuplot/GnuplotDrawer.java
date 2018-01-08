@@ -190,7 +190,7 @@ public class GnuplotDrawer {
         title = String.format("Logarithmic gdurationraph of memory consumption by sample size\\\\n%s\\\\n%s", request, getGitVersion(repoPath));
         scriptVariables.put(ScriptVariables.DATA_FILENAME.name(), resultMemory.getAbsolutePath());
         scriptVariables.put(ScriptVariables.TITLE.name(), title);
-        outputPdf = outputPdf.replace(".pdf", "_memory.pdf");
+        outputPdf = outputPdf.replace(".emf", "_memory.emf");
         scriptVariables.put(ScriptVariables.OUTPUT_FILE.name(), outputPdf);
         gnuplotScript = writeFileWithValues(scriptVariables);
         generatePdf(gnuplotScript, outputPdf, gnuplotPath);

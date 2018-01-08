@@ -1,0 +1,4 @@
+@db </Users/edemairy/tmp/v3/dbpedia.ttl_db> 
+select * where {
+   ?x rdfs:label "Paris"@fr  
+}

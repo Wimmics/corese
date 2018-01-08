@@ -5,6 +5,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import java.util.HashMap;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -35,27 +36,27 @@ public class W3CMappingsValidator {
     public boolean validate(Mappings kgram, Mappings w3c) {
         boolean result;
         boolean printed = true;
-        result = isIncludedIn(kgram, w3c, printed) && isIncludedIn(w3c, kgram, printed) && w3c.size() == kgram.size();
+        result = isIncludedIn(kgram, w3c, printed, w3c);// && isIncludedIn(w3c, kgram, printed, w3c) && w3c.size() == kgram.size();
         return result;
     }
 
-    boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed) {
+    boolean isIncludedIn(Mappings kgram, Mappings w3c, boolean printed, Mappings referenceMapping) {
         boolean result = true;
         if (1L * kgram.size() * w3c.size() > 1000000) {
             throw new IllegalArgumentException("Too much results > 10^6");
         }
-        Hashtable<Mapping, Mapping> table = new Hashtable<Mapping, Mapping>();
+        HashMap<Mapping, Mapping> table = new HashMap<>();
         for (Mapping w3cres : w3c) {
             // for each w3c result
             boolean ok = false;
 
             for (Mapping kres : kgram) {
                 // find a new kgram result that is equal to w3c
-                if (table.contains(kres)) {
+                if (table.containsKey(kres)) {
                     continue;
                 }
-
-                ok = mappingWellFormed(kres) && mappingWellFormed(w3cres) && compare(kres, w3cres, w3cres.getQueryNodes());
+		Node[] nodesToCheck = (kgram==referenceMapping) ? kres.getQueryNodes() : w3cres.getQueryNodes();
+                ok = mappingWellFormed(kres) && mappingWellFormed(w3cres) && compare(kres, w3cres, nodesToCheck);
 
                 if (ok) {
                     //if (kgram.getSelect().size() != w3cres.size()) ok = false;

@@ -19,6 +19,7 @@
         <module>coresedb-benchmark</module>
         <module>rdf-to-graph-nulldriver</module>
         <module>draw-gnuplot</module>
+        <module>rdf-to-graph-stats</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

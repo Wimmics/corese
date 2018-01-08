@@ -101,11 +101,15 @@ public class Extension {
         return getMethod().get(type);
     }
     
-    HashMap<String, Extension> getMethod(){
+    public HashMap<String, Extension> getMethod(){
         if (method == null){
             method = new HashMap<>();
         }
         return method;
+    }
+    
+    public boolean isMethod() {
+        return getMethod().size() > 0;
     }
     
     public void add(Extension ext){

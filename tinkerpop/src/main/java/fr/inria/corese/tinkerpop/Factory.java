@@ -20,7 +20,8 @@ public class Factory {
 
 	public static final String DB_PATH_PROPERTY = "fr.inria.corese.tinkerpop.dbinput";
 	public static final String DB_DRIVER_PROPERTY = "fr.inria.corese.tinkerpop.driver";
-	public static String DEFAULT_DRIVER = "fr.inria.corese.rdftograph.driver.Neo4jDriver";
+//	public static String DEFAULT_DRIVER = "fr.inria.corese.rdftograph.driver.Neo4jDriver";
+	public static String DEFAULT_DRIVER = "fr.inria.wimmics.rdf.to.graph.cypher.CypherDriver";
 //	public static String DRIVER = "org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph";
 //	public static String DRIVER = "com.thinkaurelius.titan.core.TitanFactory";
 	private static final Logger LOGGER = LogManager.getLogger(Factory.class.getName());

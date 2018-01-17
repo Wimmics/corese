@@ -87,7 +87,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node object = qEdge.getNode(1);
 		Node predicate = getPredicate(qEdge);
 
-		Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter;
+		Function<GraphTraversalSource, Iterator<? extends Element>> filter;
 
 		DatatypeValue s = updateVariable(exp, Exp.SUBJECT, subject, env, isDebug);
 		DatatypeValue p = updateVariable(exp, Exp.PREDICATE, predicate, env, isDebug);
@@ -239,7 +239,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		DatatypeValue s = (n == 0) ? focusNode.getDatatypeValue() : null;
 		DatatypeValue o = (n == 1) ? focusNode.getDatatypeValue() : null;
 
-		Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter;
+		Function<GraphTraversalSource, Iterator<? extends Element>> filter;
 		filter = databaseDriver.getFilter(null, s, predicate.getDatatypeValue(), o, null);
 		Iterable<Entity> result = graph.getEdges(filter);
 		return result;
@@ -267,7 +267,7 @@ public class TinkerpopProducer extends ProducerImpl {
 		Node object = qEdge.getNode(1);
 		Node predicate = getPredicate(qEdge);
 
-		Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
+		Function<GraphTraversalSource, Iterator<? extends org.apache.tinkerpop.gremlin.structure.Element>> filter;
 		StringBuilder key = new StringBuilder();
 
 		String g = (gNode == null) ? "" : gNode.getLabel();

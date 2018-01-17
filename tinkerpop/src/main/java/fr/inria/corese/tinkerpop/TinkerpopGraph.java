@@ -115,10 +115,10 @@ public class TinkerpopGraph extends fr.inria.edelweiss.kgraph.core.Graph {
 		return Optional.of(result);
 	}
 
-	public Iterable<Entity> getEdges(Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter) {
+	public Iterable<Entity> getEdges(Function<GraphTraversalSource, Iterator<? extends Element>> filter) {
 		try {
 			GraphTraversalSource traversal = tGraph.traversal();
-			GraphTraversal<? extends Element, ? extends Element> edges = filter.apply(traversal);
+			Iterator<? extends Element> edges = filter.apply(traversal);
 			return new GremlinIterable(edges);
 		} catch (Exception ex) {
 			LOGGER.error("An error occurred: {}", ex.toString());

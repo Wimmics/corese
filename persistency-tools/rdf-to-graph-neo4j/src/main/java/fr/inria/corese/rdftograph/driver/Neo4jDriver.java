@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import java.util.Iterator;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.as;
@@ -74,7 +75,6 @@ public class Neo4jDriver extends GdbDriver {
 		LOGGER.entering(getClass().getName(), "createDatabase");
 		super.createDatabase(databasePath);
 		try {
-			g = Neo4jGraph.open(databasePath);
 			getNeo4jGraph().cypher(String.format("CREATE INDEX ON :%s(%s, %s, %s, %s)", RDF_EDGE_LABEL, EDGE_S, EDGE_P, EDGE_O, EDGE_G));
 			String[] edges = {EDGE_S, EDGE_P, EDGE_O, EDGE_G};
 			for (int i = 1; i < ((1 << edges.length) - 1); i++) {
@@ -163,7 +163,7 @@ public class Neo4jDriver extends GdbDriver {
 		return result;
 	}
 
-	private String makeSafeValue(String value) {
+	public String makeSafeValue(String value) {
 		if (value.length() >= MAX_INDEXABLE_LENGTH) {
 			return Integer.toString(value.hashCode());
 		} else {
@@ -177,22 +177,22 @@ public class Neo4jDriver extends GdbDriver {
 	}
 
 	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(String key, String s, String p, String o, String g) {
+	public Function<GraphTraversalSource, Iterator<? extends Element>> getFilter(String key, String s, String p, String o, String g) {
 		return getFilter(null, key, s, p, o, g);
 	}
 
 	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> getFilter(Exp exp, String key, String s, String p, String o, String g) {
-		Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter;
+	public Function<GraphTraversalSource, Iterator<? extends Element>> getFilter(Exp exp, String key, String s, String p, String o, String g) {
+		Function<GraphTraversalSource, Iterator<? extends Element>> filter;
 		switch (key) {
 			case "GSPO":
-				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_G, g).has(EDGE_S, s).has(EDGE_P, p).has(EDGE_O, o);
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s).has(EDGE_P, p).has(EDGE_O, o).has(EDGE_G, g);
 				break;
 			case "GSP?o":
-				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_G, g).has(EDGE_S, s).has(EDGE_P, p);
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_S, s).has(EDGE_P, p).has(EDGE_G, g);
 				break;
 			case "?g?sPO":
-				filter = t -> t.V().has(RDF_VERTEX_LABEL, EDGE_O, o).has(EDGE_P, p);
+				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_P, p).has(EDGE_O, o);
 				break;
 			case "?g?sP?o":
 				filter = t -> t.V().has(RDF_EDGE_LABEL, EDGE_P, p);
@@ -409,9 +409,9 @@ public class Neo4jDriver extends GdbDriver {
 		varList.select(o);
 		varList.select(p);
 
-		GraphTraversal ps = getPredicate(exp, Exp.SUBJECT);
-		GraphTraversal po = getPredicate(exp, Exp.OBJECT);
-		GraphTraversal pp = getEdgePredicateOpt(sp2t.getPredicate(exp, Exp.PREDICATE), getValue(np));
+		GraphTraversal<? extends Element, ? extends Element> ps = getPredicate(exp, Exp.SUBJECT);
+		GraphTraversal<? extends Element, ? extends Element>  po = getPredicate(exp, Exp.OBJECT);
+		GraphTraversal<? extends Element, ? extends Element>  pp = getEdgePredicateOpt(sp2t.getPredicate(exp, Exp.PREDICATE), getValue(np));
 
 		int kind = getKind(ps, pp, po);
 
@@ -558,9 +558,9 @@ public class Neo4jDriver extends GdbDriver {
 	 * Exploir relevant filters for edge exp = Exp(EDGE)
 	 */
 	@Override
-	public Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>>
+	public Function<GraphTraversalSource, Iterator<? extends Element>>
 		getFilter(Exp exp, DatatypeValue dts, DatatypeValue dtp, DatatypeValue dto, DatatypeValue dtg) {
-		Function<GraphTraversalSource, GraphTraversal<? extends Element, ? extends Element>> filter;
+		Function<GraphTraversalSource, Iterator<? extends Element>> filter;
 
 		String s = (dts == null) ? "?s" : dts.stringValue();
 		String p = (dtp == null) ? "?p" : dtp.stringValue();
@@ -617,6 +617,7 @@ public class Neo4jDriver extends GdbDriver {
 		return filter;
 	}
 
+
 	private final EdgeQuad edgeSingleton = new EdgeQuad();
 	@Override
 	public EdgeQuad buildEdge(Element e) {
@@ -625,12 +626,6 @@ public class Neo4jDriver extends GdbDriver {
 		edgeSingleton.setGraph(DatatypeMap.createResource(nodeEdge.value(EDGE_G)));
 		edgeSingleton.setNode(0, buildNode(nodeEdge.edges(Direction.OUT, SUBJECT_EDGE).next().inVertex()));
 		edgeSingleton.setNode(1, buildNode(nodeEdge.edges(Direction.OUT, OBJECT_EDGE).next().inVertex()));
-//		EdgeQuad result = EdgeQuad.create(
-//			DatatypeMap.createResource(nodeEdge.value(EDGE_G)),
-//			buildNode(nodeEdge.edges(Direction.OUT, SUBJECT_EDGE).next().inVertex()),
-//			DatatypeMap.createResource(nodeEdge.value(EDGE_P)),
-//			buildNode(nodeEdge.edges(Direction.OUT, OBJECT_EDGE).next().inVertex())
-//		);
 		return edgeSingleton;
 	}
 

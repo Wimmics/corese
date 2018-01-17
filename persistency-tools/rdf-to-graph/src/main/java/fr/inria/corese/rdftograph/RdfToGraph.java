@@ -42,6 +42,7 @@ public class RdfToGraph {
 
     static {
         DRIVER_TO_CLASS = new HashMap<>();
+        DRIVER_TO_CLASS.put(DbDriver.CYPHER, "fr.inria.wimmics.rdf.to.graph.cypher.CypherDriver");
         DRIVER_TO_CLASS.put(DbDriver.NEO4J, "fr.inria.corese.rdftograph.driver.Neo4jDriver");
         DRIVER_TO_CLASS.put(DbDriver.ORIENTDB, "fr.inria.corese.rdftograph.driver.OrientDbDriver");
         DRIVER_TO_CLASS.put(DbDriver.TITANDB, "fr.inria.corese.rdftograph.driver.TitanDriver");
@@ -258,7 +259,7 @@ public class RdfToGraph {
     }
 
     public enum DbDriver {
-        NEO4J, ORIENTDB, TITANDB, NULLDRIVER, STATS
+        CYPHER, NEO4J, ORIENTDB, TITANDB, NULLDRIVER, STATS
     }
 
     private class EdgesBuilder extends AbstractRDFHandler {

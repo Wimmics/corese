@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static fr.inria.wimmics.rdf_to_bd_map.RdfToBdMap.*;
+import java.util.Iterator;
 
 /**
  * Interface for a Graph Database driver.
@@ -53,7 +54,7 @@ public abstract class GdbDriver {
 			.initialCapacity(100_000)
 			.maximumSize(100_000_000)
 			.removalListener((RemovalNotification<Value, Vertex> notification) -> {
-				LOGGER.log(Level.WARNING, "Removal of {0}", notification.toString());
+				LOGGER.log(Level.WARNING, "Removal of {0} in the GdbDriver cache.", notification.toString());
 			});
 
 		cache = cachebuilder.build();
@@ -123,6 +124,7 @@ public abstract class GdbDriver {
 		if (Files.exists(Paths.get(dbPath))) {
 			wipeDirectory(dbPath);
 		}
+		openDatabase(dbPath);
 		return null;
 	}
 
@@ -270,14 +272,14 @@ public abstract class GdbDriver {
 	 * @param g
 	 * @return
 	 */
-	public abstract Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>> getFilter(String key, String s, String p, String o, String g);
+	public abstract Function<GraphTraversalSource, Iterator<? extends Element>> getFilter(String key, String s, String p, String o, String g);
 
-	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>>
+	public Function<GraphTraversalSource, Iterator<? extends Element>>
 		getFilter(Exp exp, String key, String s, String p, String o, String g) {
 		return getFilter(key, s, p, o, g);
 	}
 
-	public Function<GraphTraversalSource, GraphTraversal<? extends org.apache.tinkerpop.gremlin.structure.Element, ? extends org.apache.tinkerpop.gremlin.structure.Element>>
+	public Function<GraphTraversalSource, Iterator<? extends org.apache.tinkerpop.gremlin.structure.Element>>
 		getFilter(Exp exp, DatatypeValue s, DatatypeValue p, DatatypeValue o, DatatypeValue g) {
 		return null;
 	}

@@ -98,14 +98,11 @@
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>sparql</artifactId>
-            <version>3.2.1p-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>3.2.4</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>

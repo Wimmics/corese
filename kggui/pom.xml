@@ -117,6 +117,12 @@
 		 <artifactId>rdf-to-graph-neo4j</artifactId>
 		 <version>${project.version}</version>
 		</dependency>-->
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>rdf-to-graph-cypher</artifactId>
+	  <version>${project.version}</version>
+	  <scope>runtime</scope>
+	 </dependency>
 	</dependencies>
 
 	<build>

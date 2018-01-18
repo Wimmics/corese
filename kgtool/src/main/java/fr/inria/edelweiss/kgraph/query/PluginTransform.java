@@ -48,6 +48,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     PluginImpl plugin;
     private int index = 0;
 
+    public PluginTransform() {}
+    
     PluginTransform(PluginImpl p) {
         plugin = p;
     }
@@ -725,7 +727,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return plugin.getValue(b);
     }
     
-    Context getContext(){
+    public Context getContext(){
         return getContext(getEnvironment(), getProducer());
     }
     

@@ -17,6 +17,8 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class JavaCompiler {
-
+  
     private static Logger logger = LogManager.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
     String path =
@@ -53,10 +55,13 @@ public class JavaCompiler {
     Header head;
     Datatype dtc;
     ASTQuery ast;
+    // current function processing
+    private Function function;
     // stack of bound variables (function parameter, let)
     Stack stack;
     
     HashMap<String, Boolean> skip;
+    HashMap<String, String> functionName;
     
 
     public JavaCompiler() {
@@ -65,6 +70,7 @@ public class JavaCompiler {
         stack = new Stack();
         head = new Header(this);
         skip = new HashMap<String, Boolean>();
+        functionName = new HashMap<>();
         init();
     }
     
@@ -96,6 +102,26 @@ public class JavaCompiler {
         skip.put(NSManager.SHAPE + "class", true);
         skip.put(NSManager.STL + "default", true);
         skip.put(NSManager.STL + "aggregate", true);
+        
+        functionName.put("isURI",       "isURINode");
+        functionName.put("isBlank",     "isBlankNode");
+        functionName.put("isLiteral",   "isLiteralNode");
+        
+        functionName.put(Processor.XT_GEN_GET,     "GetGen.gget");
+        functionName.put(Processor.XT_GET,         "Get.get");
+        
+        functionName.put(Processor.XT_LIST,         "DatatypeMap.newList");
+        functionName.put(Processor.XT_SIZE,         "DatatypeMap.size");
+        functionName.put(Processor.XT_MEMBER,       "DatatypeMap.member");
+        functionName.put(Processor.XT_FIRST,        "DatatypeMap.first");
+        functionName.put(Processor.XT_REST,         "DatatypeMap.rest");
+        functionName.put(Processor.XT_ADD,          "DatatypeMap.add");
+        functionName.put(Processor.XT_CONS,         "DatatypeMap.cons");
+        functionName.put(Processor.XT_REVERSE,      "DatatypeMap.reverse");
+        functionName.put(Processor.XT_MERGE,        "DatatypeMap.merge");
+       
+        functionName.put(Processor.STRLEN,           "DatatypeMap.strlen");
+        functionName.put(Processor.STRDT,           "DatatypeMap.newInstance");
     }
     
     boolean skip(String name){
@@ -228,7 +254,7 @@ public class JavaCompiler {
   
     
     void functionDeclaration(Function fun) {
-        Term term = fun.getFunction();
+        Term term = fun.getSignature();
         append("public").append(SPACE).append(IDATATYPE).append(SPACE);
         append(name(fun)).append("(");
         int i = 0;
@@ -322,10 +348,11 @@ public class JavaCompiler {
     }
 
     void let(Let term) {
-        append(IDATATYPE).append(SPACE);
+        if (! stack.isBound(term.getVariable())){
+            append(IDATATYPE).append(SPACE);
+        }
         toJava(term.getVariable());
         append(" = ");
-        System.out.println("JC: " + term.getDefinition());
         toJava(term.getDefinition());
         pv();
         nl();
@@ -482,7 +509,7 @@ public class JavaCompiler {
      */
     void map(Term term){
         if (term.oper() == ExprType.MAPMERGE){
-            append("merge").append("(");
+            append(getFunctionName(Processor.XT_MERGE)).append("(");
         }
         
         append(mapName(term)).append("(");
@@ -560,11 +587,38 @@ public class JavaCompiler {
     }
 
     void call(Term term) {
-        if (term.getLongName().startsWith(NSManager.STL)){
+        if (isDatatypeMethod(term)) {
+            method(term);
+            return;
+        }
+        else if (term.getLongName().startsWith(NSManager.STL)){
             // st:get() -> pt.get()
             append("getPluginTransform().");
         }
         funcall(term);
+    }
+    
+    boolean isDatatypeMethod(Term term){
+        return getMethod(term) != null;
+    }
+    
+    Method getMethod(Term term) {
+        if (term.getArgs().isEmpty()){
+            return null;
+        }
+        try {
+            Class[] sig = new Class[term.getArgs().size()-1];
+            Arrays.fill(sig, IDatatype.class);
+            Method meth = IDatatype.class.getMethod(term.getName(), sig);
+            return meth;
+        } catch (NoSuchMethodException | SecurityException ex) {
+        }
+        return null;
+    }
+    
+    boolean isBooleanMethod(Term term) {
+        Method met = getMethod(term);
+        return met != null && met.getReturnType() == boolean.class;
     }
     
     /*
@@ -589,7 +643,8 @@ public class JavaCompiler {
     }
     
     void funcall(Term term){
-        append(term.javaName()); 
+        //append(term.javaName());
+        append(getMethodName(term));
         append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
@@ -600,11 +655,44 @@ public class JavaCompiler {
         }
         append(")");
     }
+    
+    void method(Term term) {
+        toJava(term.getArg(0));
+        append(".");
+        append(getMethodName(term));
+        append("(");
+        int i = 0;
+        for (Expression exp : term.getArgs()) {
+            if (i > 0) {
+                toJava(exp);
+                if (i++ < term.arity() - 1) {
+                    append(", ");
+                }
+            }
+            else {
+                i++;
+            }
+        }
+        append(")");
+    }
+    
+    String getMethodName(Term term) {
+        String name = getFunctionName(term.getLabel());
+        if (name == null) {
+            return term.javaName();
+        }
+        return name;
+    }
+    
+    String getFunctionName(String name) {
+        return functionName.get(name);
+    }
 
     void ifthenelse(Term term) {
         append("if (");
         toJava(term.getArg(0));
-        append(".booleanValue()) {");
+        append(".booleanValue()");
+        append(") {");
         incrnl();
         toStatement(term.getArg(1));
         pv(term.getArg(1));
@@ -640,5 +728,19 @@ public class JavaCompiler {
             pv(exp);
             nl();
         }
+    }
+    
+     /**
+     * @return the function
+     */
+    public Function getFunction() {
+        return function;
+    }
+
+    /**
+     * @param function the function to set
+     */
+    public void setFunction(Function function) {
+        this.function = function;
     }
 }

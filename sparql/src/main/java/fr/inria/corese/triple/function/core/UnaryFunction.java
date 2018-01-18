@@ -28,10 +28,10 @@ public class UnaryFunction extends TermEval {
             return null;
         }
         switch (oper()){
-            case ExprType.ISBLANK:      return value(dt.isBlank());
-            case ExprType.ISURI:        return value(dt.isURI());
-            case ExprType.ISLITERAL:    return value(dt.isLiteral());
-            case ExprType.ISWELLFORMED: return value(DatatypeMap.isWellFormed(dt));
+            case ExprType.ISBLANK:      return dt.isBlankNode();
+            case ExprType.ISURI:        return dt.isURINode();
+            case ExprType.ISLITERAL:    return dt.isLiteralNode();
+            case ExprType.ISWELLFORMED: return dt.isWellFormed();
             case ExprType.ISNUMERIC:    return value(dt.isNumber());
                 
             case ExprType.CEILING:      return ceil(dt);
@@ -39,12 +39,12 @@ public class UnaryFunction extends TermEval {
             case ExprType.ROUND:        return round(dt);
             case ExprType.FLOOR:        return floor(dt);
                 
-            case ExprType.DATATYPE:     return dt.getDatatype();
+            case ExprType.DATATYPE:     return dt.datatype();
             case ExprType.LANG:         return dt.getDataLang();
             case ExprType.STR:          return DatatypeMap.newLiteral(dt.getLabel());
             case ExprType.XSDSTRING:    return DatatypeMap.newInstance(dt.getLabel());
             case ExprType.CAST:         return dt.cast(getLabel());
-            case ExprType.STRLEN:       return value(dt.getLabel().length());
+            case ExprType.STRLEN:       return DatatypeMap.strlen(dt);
             case ExprType.UCASE:        return result(dt, dt.getLabel().toUpperCase());
             case ExprType.LCASE:        return result(dt, dt.getLabel().toLowerCase());
             case ExprType.ENCODE:       return DatatypeMap.encode_for_uri(dt);

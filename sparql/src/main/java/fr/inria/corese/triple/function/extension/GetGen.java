@@ -45,7 +45,11 @@ public class GetGen extends TermEval {
      * embedding let will let the variable unbound, see getConstantValue()
      * it can be catched with bound(var) or coalesce(var)
      */
-    IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){
+    public static IDatatype gget(IDatatype dt, IDatatype var){
+        return gget(dt, var, DatatypeMap.ZERO);
+    }
+        
+    public static IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){
         if (dt.isList()) {
             return getResult(DatatypeMap.get(dt, ind));           
         }
@@ -59,7 +63,7 @@ public class GetGen extends TermEval {
         return getResult(dt.get(ind.intValue()));
     }
     
-    IDatatype getResult(IDatatype dt){
+    static IDatatype getResult(IDatatype dt){
         if (dt == null){
             return UNDEF;
         }

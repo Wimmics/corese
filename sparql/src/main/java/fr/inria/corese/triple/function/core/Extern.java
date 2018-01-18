@@ -29,6 +29,11 @@ public class Extern extends TermEval {
         } 
         Processor proc = getProcessor();
         proc.compile();
+        if (proc instanceof FunctionEvaluator){
+            FunctionEvaluator fe = (FunctionEvaluator) proc;
+            fe.setProducer(p);
+            fe.setEnvironment(env);
+        }
         String name = proc.getMethod().getName();
         try {
             return (IDatatype) proc.getMethod().invoke(proc.getProcessor(), param);

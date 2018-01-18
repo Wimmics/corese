@@ -57,7 +57,7 @@ public class Processor {
 	private static final String ISURI = "isURI";
 	private static final String ISIRI = "isIRI";
 	private static final String ISUNDEF = "isUndefined";
-	private static final String ISWELLFORMED = "isWellFormed";
+	public static final String ISWELLFORMED = "isWellFormed";
 	private static final String ISBLANK = "isBlank";
 	private static final String ISLITERAL = "isLiteral";
 	private static final String ISLIST = "isList";
@@ -68,7 +68,7 @@ public class Processor {
         private static final String APP_SIM = "sim";
 	public static  final String MATCH = "match";
 	private static final String LANGMATCH = "langMatches";
-	private static final String STRDT = "strdt";
+	public static final String STRDT = "strdt";
 	private static final String STRLANG = "strlang";
 	public static final String IF = "if";
 	public static final String COALESCE = "coalesce";
@@ -96,18 +96,18 @@ public class Processor {
 	static final String REDUCE  = "reduce";
         
         private static final String XT_SELF     = EXT + "self";
-        private static final String XT_FIRST    = EXT + "first";
-        private static final String XT_REST     = EXT + "rest";
-        private static final String XT_GET      = EXT + "get";
-        private static final String XT_GEN_GET  = EXT + "gget";
+        public static final String XT_FIRST    = EXT + "first";
+        public static final String XT_REST     = EXT + "rest";
+        public static final String XT_GET      = EXT + "get";
+        public static final String XT_GEN_GET  = EXT + "gget";
         static final String FUN_XT_GGET         = EXT_PREF + "gget";
         static final String FUN_XT_GET          = EXT_PREF + "get";
         private static final String XT_SET      = EXT + "set";
-        private static final String XT_CONS     = EXT + "cons";        
-        private static final String XT_ADD      = EXT + "add";
+        public static final String XT_CONS     = EXT + "cons";        
+        public static final String XT_ADD      = EXT + "add";
         private static final String XT_SWAP     = EXT + "swap";
         private static final String XT_MAPPING  = EXT + "mapping";
-        private static final String XT_SIZE     = EXT + "size";      
+        public static final String XT_SIZE     = EXT + "size";      
         private static final String XT_FOCUS    = EXT + "focus";
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
@@ -306,7 +306,7 @@ public class Processor {
 	static final String DB          = KGRAM + "db";
 
 	static final String EXIST 	= Term.EXIST;
-	static final String STRLEN 	= "strlen";
+	public static final String STRLEN 	= "strlen";
 	static final String SUBSTR 	= "substr";
 	static final String UCASE 	= "ucase";
 	static final String LCASE 	= "lcase";

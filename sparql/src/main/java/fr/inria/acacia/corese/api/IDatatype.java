@@ -74,12 +74,7 @@ public interface IDatatype
     public static final String NSM_DATATYPE      = ExpType.DT + "nsmanager";
     public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
     public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
-   
-    /**
-     * @return true if we have a blanknode
-     */
-    boolean isBlank();
-
+      
     boolean isSkolem();
 
     boolean isXMLLiteral();
@@ -95,17 +90,22 @@ public interface IDatatype
     List<IDatatype> getValues();
     List<IDatatype> getValueList();
     IDatatype toList();
+    IDatatypeList getList();    
     
     Iterable getLoop();
 
     IDatatype get(int n);
 
     int size();
-
-    /**
-     * @return true if we have a literal
-     */
-    boolean isLiteral();
+         
+    @Override boolean isBlank();
+    @Override boolean isLiteral();
+    @Override boolean isURI();
+    IDatatype isWellFormed();
+    
+    IDatatype isBlankNode();
+    IDatatype isLiteralNode();
+    IDatatype isURINode();
     
     boolean isFuture();
     
@@ -149,11 +149,6 @@ public interface IDatatype
     String toSparql(boolean prefix);
 
     String toSparql(boolean prefix, boolean xsd);
-    
-    /**
-     * @return true if we have an URI
-     */
-    boolean isURI();
 
     // Used by XMLLiteral to store a XML DOM 
     void setObject(Object obj);
@@ -278,6 +273,7 @@ public interface IDatatype
     /**
      * @return the datatype of this
      */
+    IDatatype datatype();
     IDatatype getDatatype();
 
     // same as getDatatype but URI return rdfs:Resource

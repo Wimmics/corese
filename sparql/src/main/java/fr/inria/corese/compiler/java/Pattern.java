@@ -120,7 +120,7 @@ public class Pattern {
         StringBuilder args = getStackBinding();
             
         String str = 
-           String.format("gget(kgram(%s%s), %s)", query, args, dtc.string(var));
+           String.format("GetGen.gget(kgram(%s%s), %s)", query, args, dtc.string(var));
          
         append(str);
     }

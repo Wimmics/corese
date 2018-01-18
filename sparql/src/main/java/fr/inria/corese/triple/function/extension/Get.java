@@ -28,13 +28,9 @@ public class Get extends BinaryFunction {
         if (dt == null || dtind == null) {
             return null;
         }
-        
-        if (dt.isList()) {
-            return dt.get(dtind.intValue());
-        }
-        return gget(dt, null, dtind);
+               
+        return get(dt, dtind);
     }
-    
        
     /**
      * Generic get with variable name and index
@@ -42,9 +38,12 @@ public class Get extends BinaryFunction {
      * embedding let will let the variable unbound, see getConstantValue()
      * it can be catched with bound(var) or coalesce(var)
      */
-    IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){       
+    public static IDatatype get(IDatatype dt,  IDatatype ind){  
+        if (dt.isList()) {
+            return dt.get(ind.intValue());
+        }
         if (dt.isPointer()){
-            Object res = dt.getPointerObject().getValue((var == null) ? null : var.getLabel(), ind.intValue());
+            Object res = dt.getPointerObject().getValue(null, ind.intValue());
             if (res == null) {                
                 return UNDEF;
             }                 
@@ -53,7 +52,7 @@ public class Get extends BinaryFunction {
         return getResult(dt.get(ind.intValue()));
     }
     
-    IDatatype getResult(IDatatype dt){
+    static IDatatype getResult(IDatatype dt){
         if (dt == null){
             return UNDEF;
         }

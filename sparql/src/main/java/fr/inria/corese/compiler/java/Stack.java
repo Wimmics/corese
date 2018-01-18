@@ -74,5 +74,9 @@ public class Stack {
     List<Variable> getVariables() {
         return varList;
     }
+    
+    boolean isBound(Variable var) {
+        return getVariables().contains(var);
+    }
 
 }

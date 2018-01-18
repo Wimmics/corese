@@ -6,8 +6,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.acacia.corese.api.IDatatypeList;
 import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeInteger;
 import static fr.inria.acacia.corese.cg.datatype.Cst.jTypeGenericInteger;
+import static fr.inria.acacia.corese.cg.datatype.RDF.RDF_HTML;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.triple.cst.RDFS;
@@ -337,12 +339,13 @@ public class CoreseDatatype
         return null;
     }
     
+    public IDatatypeList getList() {
+        return null;
+    }
+    
     @Override
     public List<IDatatype> getValueList() {   
-        if (isList()){
-             return getValues();
-        }
-        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        ArrayList<IDatatype> list = new ArrayList();
         if (isLoop()){
             for (IDatatype dt : this){
                 if (dt != null){
@@ -355,20 +358,12 @@ public class CoreseDatatype
     
     @Override
     public IDatatype toList(){
-        if (isList()){
-            return this;
-        }
-        else {
-            return DatatypeMap.newInstance(getValueList());
-        }
+        return DatatypeMap.newInstance(getValueList());
     }
     
     @Override
     public Iterator<IDatatype> iterator() {
-        if (isList()){
-            return getValues().iterator();
-        }
-        else if (isLoop()){
+        if (isLoop()){
             return loopIterator();
         }
         else {
@@ -420,6 +415,11 @@ public class CoreseDatatype
     public boolean isBlank() {
         return false;
     }
+    
+    @Override
+    public IDatatype isBlankNode() {
+        return getValue(isBlank());
+    }
 
     @Override
     public boolean isSkolem() {
@@ -442,6 +442,23 @@ public class CoreseDatatype
     @Override
     public boolean isLiteral() {
         return true;
+    }
+    
+    @Override
+    public IDatatype isLiteralNode() {
+        return getValue(isLiteral());
+    }
+    
+    @Override
+    public IDatatype isWellFormed() {
+        if (isLiteral() && isUndefined()) {
+            if (getDatatypeURI().startsWith(XSD.XSD)) {
+                return FALSE;
+            } else if (getDatatypeURI().startsWith(RDF.RDF) && !getDatatypeURI().equals(RDF_HTML)) {
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
 
     @Override
@@ -480,6 +497,11 @@ public class CoreseDatatype
     public boolean isURI() {
         return false;
     }
+    
+    @Override
+    public IDatatype isURINode() {
+        return getValue(isURI());
+    }
 
     @Override
     public void setLang(String str) {
@@ -502,6 +524,11 @@ public class CoreseDatatype
     @Override
     public IDatatype getDatatype() {
         return datatype;
+    }
+    
+    @Override
+    public IDatatype datatype() {
+        return getDatatype();
     }
 
     @Deprecated

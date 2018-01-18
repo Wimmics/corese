@@ -40,6 +40,20 @@ import org.apache.logging.log4j.LogManager;
  * 
  */
 public class GraphEngine  {
+
+    /**
+     * @return the linkedFunction
+     */
+    public boolean isLinkedFunction() {
+        return linkedFunction;
+    }
+
+    /**
+     * @param linkedFunction the linkedFunction to set
+     */
+    public void setLinkedFunction(boolean linkedFunction) {
+        this.linkedFunction = linkedFunction;
+    }
     private static Logger logger = LogManager.getLogger(GraphEngine.class);
 	static final String BRUL = "brul";
 	
@@ -52,7 +66,7 @@ public class GraphEngine  {
 	Build build;
 	
 	private boolean isListGroup = false,
-	isDebug = false;
+	isDebug = false, linkedFunction = false;
 	
 	GraphEngine (boolean b){
 		DatatypeMap.setLiteralAsString(false);
@@ -77,6 +91,9 @@ public class GraphEngine  {
                     case Command.VERBOSE:
                         graph.setVerbose(true);
                         break;
+                    case Command.LINKED_FUNCTION:
+                        setLinkedFunction(true);
+                        break;    
                     case Command.DEBUG:
                         graph.setDebugMode(true);
                         break;
@@ -118,6 +135,9 @@ public class GraphEngine  {
 		qp.setLoader(loader());
 		qp.setListGroup(isListGroup);
 		qp.setDebug(isDebug);
+                if (isLinkedFunction()) {
+                    qp.setLinkedFunction(true);
+                }
 		return qp;
 	}
 

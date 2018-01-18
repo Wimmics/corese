@@ -1,49 +1,128 @@
 #
-# Method m:surface defined on us:Figure classes
-# Olivier Corby - Wimmics Inria I3S - 2015
+# Method definition and method call
 #
-prefix m: <http://ns.inria.fr/sparql-extension/method#>
-select * (m:method(us:surface, ?x) as ?m) (m:surface(?x) as ?s)
+@test 
+select * 
+(method(us:area, ?x) as ?a) 
+(method(us:perimeter, ?x) as ?p) 
 where {
-  ?x a us:Figure
+    ?x a ?t 
+    filter strstarts(?t, us:)
 }
 
-function m:surface(?x){
-  m:funcall(us:surface, ?x)
+
+
+@type dt:literal 
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
 }
 
-function m:funcall(?m, ?x){
-  funcall (m:method(?m, ?x), ?x)
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
 }
 
-function m:method(?m, ?x){
-  let ((?fun) = 
-    select * where { 
-    ?x rdf:type/rdfs:subClassOf* ?t . 
-    ?fun a xt:Method ; xt:name ?m ; xt:input(?t)})
-  { ?fun }
+function us:perimeter(?x) {
+    xt:display("perimeter: ", ?x) ;
+    return (0)
 }
 
-function m:surfaceRectangle(?x){
-  let ((?w, ?l) = select * where { ?x us:width ?w ; us:length ?l }){
-    ?w * ?l
-  }
+
+
+
+@type us:Composite 
+function us:area(?x) {
+    method(us:compose, ?x, us:area)
 }
 
-function m:surfaceSquare(?x){
-  let ((?l) = select * where { ?x  us:side ?l }){
-    ?l * ?l
-  }
+@type us:Composite 
+function us:perimeter(?x) {
+    method(us:compose, ?x, us:perimeter)
 }
 
-function m:surfaceTriangle(?x){
-  let ((?h, ?b) = select * where { ?x us:height ?h ; us:base ?b }){
-    (?h * ?b) / 2
-  }
+@type us:Composite 
+function us:compose(?x, ?fun) {
+    let (select * (sum(method(?fun, ?e)) as ?sum) 
+         where { ?x us:member/rdf:rest*/rdf:first ?e }) {
+        ?sum
+    }
 }
 
-function m:surfaceCircle(?x){
-  let ((?r) = select * where { ?x us:radius ?r }){
-     3.14159 * power(?r, 2) 
-  }
+
+
+
+
+@type us:Rectangle 
+function us:area(?x) {
+    method(us:compose, ?x, lambda(?w, ?l) { ?w * ?l })
 }
+
+@type us:Rectangle 
+function us:perimeter(?x) {
+    method(us:compose, ?x, lambda(?w, ?l) { 2 * (?w + ?l) })
+
+}
+
+@type us:Rectangle 
+function us:compose(?x, ?fun) {
+    let (select * where { ?x us:width ?w ; us:length ?l }) {
+        funcall(?fun, ?w, ?l)
+    }
+}
+
+
+
+
+@type us:Square 
+function us:area(?x) {
+    method(us:compose, ?x, us:size, lambda(?s) { ?s * ?s })
+}
+
+
+@type us:Square 
+function us:perimeter(?x) {
+    method(us:compose, ?x, us:size, lambda(?s) { 4 * ?s })
+}
+
+
+@type us:Circle
+function us:area(?x) {
+     method(us:compose, ?x, us:radius, lambda(?r) { 3.1416 * ?r * ?r })
+}
+
+@type us:Circle
+function us:perimeter(?x) {
+     method(us:compose, ?x, us:radius, lambda(?r) { 2 * 3.1416 * ?r})
+}
+
+
+
+
+@type us:Figure
+function us:compose(?x, ?p, ?fun) {
+   let (select * where { ?x ?p ?s }) {
+        funcall(?fun, ?s)
+    }
+}
+
+
+function us:graph() {
+let (?g = construct {
+    us:square a us:Square ;  us:size 5 .
+    us:rect a us:Rectangle ; us:width 3 ; us:length 4 .
+    us:circ a us:Circle ;    us:radius 3 .                    
+    us:comp1 a us:Composite ; us:member (us:square us:rect us:circ) .
+    us:comp2 a us:Composite ; us:member (us:comp1) .
+
+    us:Rectangle     rdfs:subClassOf us:Figure .                     
+    us:SquareCircle  rdfs:subClassOf us:Figure .                    
+    us:Square        rdfs:subClassOf us:SquareCircle .
+    us:Circle        rdfs:subClassOf us:SquareCircle .
+    } where {} ) {
+        ?g
+    }
+}
+
+
+

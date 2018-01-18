@@ -429,7 +429,7 @@ public class QuerySolver  implements SPARQLEngine {
         }
         
         void setParameter(Transformer transformer){
-            transformer.setLoadFunction(isLoadFunction());
+            transformer.setLinkedFunction(isLinkedFunction());
             transformer.setGenerateMain(isGenerateMain());
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
@@ -761,14 +761,14 @@ public class QuerySolver  implements SPARQLEngine {
     /**
      * @return the loadFunction
      */
-    public boolean isLoadFunction() {
+    public boolean isLinkedFunction() {
         return loadFunction;
     }
 
     /**
      * @param loadFunction the loadFunction to set
      */
-    public void setLoadFunction(boolean loadFunction) {
+    public void setLinkedFunction(boolean loadFunction) {
         this.loadFunction = loadFunction;
     }
 

@@ -1879,14 +1879,14 @@ public class Transformer implements ExpType {
     /**
      * @return the LoadFunction
      */
-    public boolean isLoadFunction() {
+    public boolean isLinkedFunction() {
         return isLoadFunction;
     }
 
     /**
      * @param LoadFunction the LoadFunction to set
      */
-    public void setLoadFunction(boolean LoadFunction) {
+    public void setLinkedFunction(boolean LoadFunction) {
         this.isLoadFunction = LoadFunction;
     }
 

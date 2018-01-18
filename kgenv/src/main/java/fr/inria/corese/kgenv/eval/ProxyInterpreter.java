@@ -41,7 +41,6 @@ import fr.inria.edelweiss.kgram.filter.Proxy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -1826,15 +1825,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     }
     
     public IDatatype isWellFormed(IDatatype dt){
-        if (dt.isLiteral() && dt.isUndefined()){
-            if (dt.getDatatypeURI().startsWith(RDF.XSD)){ 
-                return FALSE;
-            }
-            else if (dt.getDatatypeURI().startsWith(RDF.RDF) && ! dt.getDatatypeURI().equals(RDF.RDF_HTML)){
-                return FALSE;
-            }
-        }
-        return TRUE;
+        return dt.isWellFormed();
     }
               
     public IDatatype isList(IDatatype dt){

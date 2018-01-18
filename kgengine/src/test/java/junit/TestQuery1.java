@@ -163,6 +163,36 @@ public class TestQuery1 {
 
     }
     
+    
+    @Test
+    public void testService2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "select * where {"
+                
+                + "values (?s ?l) { "
+                + "(<http://dbpedia.org/sparql>     'Antibes'@en  )"
+                + "(<http://fr.dbpedia.org/sparql>  'Antibes'@fr  )"
+                + "} "
+                
+                + " { ?x rdfs:label ?l } union "
+                + "{ "
+                + "service ?s {"
+                + "select * where {?x rdfs:label ?l} limit 1 "
+                + "}"
+                + "} "
+                + "}";
+
+        Mappings map = exec.query(q);
+        //System.out.println(map);
+        assertEquals(2, map.size());
+        Node s1 = map.get(0).getNode("?s");
+        assertEquals("http://dbpedia.org/sparql", s1.getLabel());
+        Node s2 = map.get(1).getNode("?s");
+        assertEquals("http://fr.dbpedia.org/sparql", s2.getLabel());    
+    }
+    
+    
       @Test
      public void testfocus() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -1771,7 +1801,7 @@ public class TestQuery1 {
                    + "}";
                          
            exec.query(init);
-                    
+           g.init();       
            ArrayList<Node> list = new ArrayList<Node>();
            ArrayList<Node> list2 = new ArrayList<Node>();
            
@@ -2739,7 +2769,7 @@ public class TestQuery1 {
                 + "(ex:sigma(xt:iota(5)) as ?s)"
                 + ""
                 + "where {}";
-        exec.setLoadFunction(true);
+        exec.setLinkedFunction(true);
         Mappings map = exec.query(q);
         IDatatype dm = (IDatatype) map.getValue("?m");
         IDatatype ds = (IDatatype) map.getValue("?s");
@@ -4548,7 +4578,7 @@ public class TestQuery1 {
 
         map = exec.query(t2);
 
-        assertEquals(9434, map.getTemplateResult().getLabel().length());
+        assertEquals(9436, map.getTemplateResult().getLabel().length());
 
     }
 
@@ -5022,8 +5052,8 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         String init = "prefix foaf:    <http://xmlns.com/foaf/0.1/> "
                 + "insert data {"
-                + "<John> foaf:name 'John' ; foaf:age 18 "
-                + "<Jim> foaf:name 'Jim' ; foaf:knows <John>"
+                + "<John> foaf:name 'John' ; foaf:age 18 ."
+                + "<Jim> foaf:name 'Jim' ; foaf:knows <John> ."
                 + "}";
 
         String query = "prefix sp: <http://spinrdf.org/sp#>"

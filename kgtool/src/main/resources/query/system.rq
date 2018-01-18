@@ -8,11 +8,11 @@ function xt:mod(?a, ?b) {  xsd:integer(?a - (?b * xt:div(?a, ?b))) }
 
 function xt:compare(?x, ?y) { 
   if (?x < ?y, -1, 
-  if (?x = ?y, 0, 1)) }
+  if (?x > ?y, 1, 0)) }
 
 function kg:compare(?x, ?y) { 
   if (?x < ?y, -1, 
-  if (?x = ?y, 0, 1)) }
+  if (?x > ?y, 1, 0)) }
 
 function xt:prime(?x) { 
     if (?x = 1, false,

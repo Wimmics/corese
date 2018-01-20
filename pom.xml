@@ -170,7 +170,7 @@
 		<!--<module>kgendpoint</module>-->
 		<module>tinkerpop</module>
 		<module>kggui</module>
-		<!--<module>persistency-tools</module>-->
+		<module>persistency-tools</module>
 		<module>corese-shell</module>
 	</modules>
     

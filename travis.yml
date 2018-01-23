@@ -11,10 +11,12 @@ services:
     on_failure: always # default: always
    
 before_install:
-  - docker pull Ahmedko/corese
-  - docker build -t corese2 .
+
+  - docker build -t corese .
 
 script:
 
   -   git clone --recursive https://github.com/Ahmedko/corese.gi
   -   cd corese/
+  
+  - run -p 49160:8080 -d corese

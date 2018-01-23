@@ -19,4 +19,6 @@ script:
   -   git clone --recursive https://github.com/Ahmedko/corese.gi
   -   cd corese/
   
-  - run -p 49160:8080 -d corese
+  - Docker run -p 49160:8080 -d corese
+  - EXPOSE 8080
+  - ENTRYPOINT java -jar ./kgserver/target/corese-server-3.2.1p-SNAPSHOT-jar-with-dependencies.jar

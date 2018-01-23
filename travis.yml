@@ -1,21 +1,18 @@
-sudo: required
+
+sudo: required #is required to use docker service in travis
+
+language: php #can be any language, just php for example
 
 services:
-  - docker
-  
-  notifications:
-  email:
-    recipients:
-      - Ahmedkounasso@gmail.com
-    on_success: always # default: change (other : never)
-    on_failure: never # default: always
-   
+  - docker # required, but travis uses older version of docker :(
+
+install:
+  - echo "Instal!" # put your normal pre-testing installs here
+
 script:
- 
-  - export REPO=Ahmedko/corese.git
+  - echo " tests!" # put your normal testing scripts here
+
+after_success:
+  - docker --version  # document the version travis is using
   - docker build -t corese .
-  - cd corese/
-  - docker tag $REPO:$COMMIT $REPO:$TAG
-  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO
-  - docker run -p 49160:8080 -d corese
+  - docker push Ahmedko/corese

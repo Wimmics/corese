@@ -1,1 +1,20 @@
+sudo: required
 
+services:
+  - docker
+  
+  notifications:
+  email:
+    recipients:
+      - Ahmedkounasso@gmail.com
+    on_success: always # default: change (other : never)
+    on_failure: always # default: always
+   
+before_install:
+  - docker pull Ahmedko/corese
+  - docker build -t corese2 .
+
+script:
+
+  -   git clone --recursive https://github.com/Ahmedko/corese.gi
+  -   cd corese/

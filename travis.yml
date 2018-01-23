@@ -1,18 +1,23 @@
+travis encrypt DOCKER_USER=username --add
+travis encrypt DOCKER_PASS=password --add
 
-sudo: required #is required to use docker service in travis
-
-language: php #can be any language, just php for example
-
-services:
-  - docker # required, but travis uses older version of docker :(
-
-install:
-  - echo "Instal!" # put your normal pre-testing installs here
-
+env:
+  global:
+  - COMMIT=${TRAVIS_COMMIT::8}
+  - REPO=Ahmedko/corese
+  - CGO_ENABLED=0
+  - GOOS=linux
+  - GOARCH=amd64  
+  
 script:
-  - echo " tests!" # put your normal testing scripts here
+ - export TAG=`if [[ $TRAVIS_PULL_REQUEST == "false" ]] && [[ $TRAVIS_BRANCH == "master" ]]; then echo "latest"; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
+ - export REPO=bhavikk/level-three-rest
+ - docker build -t $REPO:$TAG -f Dockerfile .
 
 after_success:
-  - docker --version  # document the version travis is using
-  - docker build -t corese .
-  - docker push Ahmedko/corese
+ - docker login -u $DOCKER_USER -p $DOCKER_PASS
+ - if [[ $TRAVIS_PULL_REQUEST == "false" ]] && [[ $TRAVIS_BRANCH == "master" ]]; then
+   docker tag $REPO:$TAG $REPO:$TRAVIS_BUILD_NUMBER;
+   docker push $REPO:$TRAVIS_BUILD_NUMBER;
+   fi 
+ - docker push $REPO:$TAG

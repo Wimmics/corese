@@ -7,9 +7,9 @@ services:
 
 before_install:
   - docker build -t corese .
-  - docker run -d -p 192.168.99.100:80:4567 corese /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
+  - docker run -d -p 192.168.99.100:80:4567 corese /bin/sh -c "cd corese; bundle exec foreman start;"
   - docker ps -a
-  - docker run corese /bin/sh -c "cd /root/sinatra; bundle exec rake test"
+  - docker run corese /bin/sh -c "cd corese; bundle exec rake test"
 
 script:
   - bundle exec rake test

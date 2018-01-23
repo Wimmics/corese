@@ -22,8 +22,11 @@ services:
   - docker
 
 before_install:
-  - docker build -t coreseTravis .
-#  - docker pull bordercloud/tft-jena-fuseki
+  - docker pull Ahmedko/corese
+  - docker build -t corese .
+
 
 script:
-  - docker run -p 49160:8080 -d coreseTravis
+  
+  - docker run -p 49160:8080 -d corese
+  - docker push Ahmedko/corese

@@ -8,17 +8,17 @@ services:
     recipients:
       - Ahmedkounasso@gmail.com
     on_success: always # default: change (other : never)
-    on_failure: always # default: always
+    on_failure: never # default: always
    
-before_install:
-
-  - docker build -t corese .
-
 script:
-
-  -   git clone --recursive https://github.com/Ahmedko/corese.gi
-  -   cd corese/
-  
-  - Docker run -p 49160:8080 -d corese
-  - EXPOSE 8080
-  - ENTRYPOINT java -jar ./kgserver/target/corese-server-3.2.1p-SNAPSHOT-jar-with-dependencies.jar
+ 
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=Ahmedko/corese.git
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -t corese .
+  - git clone --recursive https://github.com/Ahmedko/corese.git
+  - cd corese/
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
+  - docker run -p 49160:8080 -d corese

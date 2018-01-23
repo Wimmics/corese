@@ -22,11 +22,10 @@ services:
   - docker
 
 before_install:
-  - docker pull Ahmedko/corese
   - docker build -t corese .
 
 
 script:
   
-  - docker run -p 49160:8080 -d corese
-  - docker push Ahmedko/corese
+  - docker run -p 127.0.0.1:8080:49160  -d corese
+  - bundle exec rake test

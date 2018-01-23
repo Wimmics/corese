@@ -1,31 +1,15 @@
 sudo: required
 
-language: php
-php:
-  - '7.1'
-
-notifications:
-  email:
-    recipients:
-      - Ahmedkounasso@gmail.com
-    on_success: always # default: change (other : never)
-    on_failure: never # default: always
-
-env:
-  global:
-    - NAME="Corese"
-    - SOFTWARE_DESCRIBE="Corese"
-    - VERSION="3.6.0"
-#    - SPARQLSCORE_DATABASE="172.17.0.6" #local
+language: ruby
 
 services:
   - docker
 
 before_install:
   - docker build -t corese .
-
+  - docker run -d -p 192.168.99.100:80:4567 corese /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
+  - docker ps -a
+  - docker run corese /bin/sh -c "cd /root/sinatra; bundle exec rake test"
 
 script:
-  
-  - docker run -p 127.0.0.1:8080:49160  -d corese
   - bundle exec rake test

@@ -26,10 +26,7 @@ before_install:
 #  - docker pull bordercloud/tft-jena-fuseki
 
 script:
-
-  -   git clone --recursive https://github.com/Ahmedko/corese.git
-  -   cd corese
-  -   composer install --dev
+  - docker run -p 49160:8080 -d corese
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then

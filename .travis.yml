@@ -1,0 +1,30 @@
+sudo: required
+
+language: php
+php:
+  - '7.1'
+
+notifications:
+  email:
+    recipients:
+      - Ahmedkounasso@gmail.com
+    on_success: always # default: change (other : never)
+    on_failure: never # default: always
+
+env:
+  global:
+    - NAME="Corese"
+    - SOFTWARE_DESCRIBE="Corese"
+    - VERSION="3.6.0"
+#    - SPARQLSCORE_DATABASE="172.17.0.6" #local
+
+services:
+  - docker
+
+before_install:
+  - docker build -t corese .
+
+
+script:
+  
+  - docker run -p 127.0.0.1:49160:8080  -d corese

@@ -31,6 +31,20 @@ import org.apache.logging.log4j.LogManager;
 public class Query extends Exp implements Graphable {
 
     /**
+     * @return the validate
+     */
+    public boolean isValidate() {
+        return validate;
+    }
+
+    /**
+     * @param validate the validate to set
+     */
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
+
+    /**
      * @return the algebra
      */
     public boolean isAlgebra() {
@@ -164,6 +178,7 @@ public class Query extends Exp implements Graphable {
             isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
             // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
             isListPath = false;
+    private boolean validate = false;
     private boolean isFun = false;
     private boolean isPathType = false;
     // store the list of edges of the path
@@ -2160,6 +2175,7 @@ public class Query extends Exp implements Graphable {
         this.isBind = isBind;
     }
 
+    @Override
     public boolean isBind() {
         return isBind;
     }
@@ -2168,7 +2184,8 @@ public class Query extends Exp implements Graphable {
         this.isService = isService;
     }
 
-    boolean isService() {
+    @Override
+    public boolean isService() {
         return isService;
     }
     

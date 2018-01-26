@@ -213,6 +213,10 @@ public class Eval implements ExpType, Plugin {
 
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
+        if (q.isValidate()){
+            // just compile and complete query
+            return results;
+        }
         if (hasStart && !q.isSubQuery()) {
             Object res = eval(getExpression(q, FUN_START), 
                     toArray(producer.getNode(q)));
@@ -472,7 +476,8 @@ public class Eval implements ExpType, Plugin {
                 }
                 Message.log();
             } else {
-                Message.log(Message.FAIL_AT, maxExp);
+                Message.log(Message.FAIL_AT);
+                Message.log(maxExp);
             }
         }
     }
@@ -1324,11 +1329,7 @@ public class Eval implements ExpType, Plugin {
         mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
-        bind(mem, exp, main, m, bind);
-        if (main != null && main.type() == Exp.JOIN) {
-            service(exp, mem);
-            mem.setJoinMappings(exp.getMappings());
-        }
+        bind(mem, exp, main, m, bind);        
         Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
         return lMap;
     }
@@ -1337,30 +1338,51 @@ public class Eval implements ExpType, Plugin {
      * fresh memory mem inherits data from current memory to evaluate exp (in main)
      * 
      */
-    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind ) { 
-        if (main != null && memory.hasBind()) {
-            switch (main.type()) {
-                default:
-                   // mem.setBind(memory.getBind());
-            }
-        }
-        
+    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind) {
         if (m != null) {
             mem.push(m, -1);
         }
         if (main == null) {
-        } 
-        else if ((bind  || main.isOptional() || main.isJoin()) && exp.getNodeList() != null) {
-            // A optional B
-            // bind variables of A from environment
-            for (Node qnode : exp.getNodeList()) {
-                Node node = memory.getNode(qnode);
-                if (node != null) {
-                    mem.push(qnode, node, -1);
-                }
-            }           
+            // do nothing
+        } else {
+            if ((bind || main.isOptional() || main.isJoin()) && exp.getNodeList() != null) {
+                // A optional B
+                // bind variables of A from environment
+                bindExpNodeList(mem, exp);
+            }
+            joinMappings(mem, exp, main);
         }
     }
+       
+    /**
+     * Use case: federated query
+     * Give Mappings evaluation context to exp
+     */
+    void joinMappings(Memory mem, Exp exp, Exp main) {
+         switch (main.type()) {
+                case Exp.JOIN:
+                    service(exp, mem);
+                    mem.setJoinMappings(exp.getMappings());
+                    break;
+                case Exp.MINUS:
+                    // draft test
+                    mem.setJoinMappings(exp.getMappings());
+                    break;
+            }
+    }
+    
+    void bindExpNodeList(Memory mem, Exp exp) {
+        for (Node qnode : exp.getNodeList()) {
+            // Node node = memory.getNode(qnode);
+            // getOuterNodeSelf use case: join(subquery, exp)  -- federated query use case
+            // qnode in subquery is not the same as qnode in memory
+            Node node = memory.getNode(memory.getQuery().getOuterNodeSelf(qnode));
+            if (node != null) {
+                mem.push(qnode, node, -1);
+            }
+        }
+    }
+
 
     /**
      * JOIN(service ?s {}, exp) if ?s is bound, bind it for subeval ...
@@ -1438,16 +1460,14 @@ public class Eval implements ExpType, Plugin {
             node1 = qNode;
             node2 = exp.getGraphNode();
         }
-        Mappings lMap1 = subEval(p, gNode, node1, exp.first(), exp);
-        Mappings lMap2 = subEval(p, gNode, node2, exp.rest(), exp);
-
-        if (hasMinus) {
-
-        }
-
-        for (Mapping map : lMap1) {
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+        // draft for federated query
+        exp.rest().setMappings(map1);
+        Mappings map2 = subEval(p, gNode, node2, exp.rest(), exp);
+        
+        for (Mapping map : map1) {
             boolean ok = true;
-            for (Mapping minus : lMap2) {
+            for (Mapping minus : map2) {
                 if (map.compatible(minus)) {
                     ok = false;
                     break;
@@ -1509,26 +1529,33 @@ public class Eval implements ExpType, Plugin {
                 // Do the mappings bind  variables ?x and ?y respectively ?
                 if ((map1.get(0).getNode(qn1) != null && map2.get(0).getNode(qn2) != null)) {
                     // ok do nothing
+                    break;
                 } else if ((map1.get(0).getNode(qn2) != null && map2.get(0).getNode(qn1) != null)) {
                     // ok switch variables: qn1 for map1 etc.
                     Node tmp = qn2;
                     qn2 = qn1;
                     qn1 = tmp;
+                    break;
                 } else {
                     // Mappings do not bind variables
                     qn2 = null;
                 }
 
-                if (qn2 != null) {
-                    // sort map2 Mappings according to value of ?y
-                    // in order to perform dichotomy with ?x = ?y
-                    // ?x in map1, ?y in map2
-                    map2.sort(this, qn2);
-                }
+//                if (qn2 != null) {
+//                    // sort map2 Mappings according to value of ?y
+//                    // in order to perform dichotomy with ?x = ?y
+//                    // ?x in map1, ?y in map2
+//                    map2.sort(this, qn2);
+//                }
             }
         }
 
         if (qn1 != null && qn2 != null) {
+            // sort map2 Mappings according to value of ?y
+            // in order to perform dichotomy with ?x = ?y
+            // ?x in map1, ?y in map2
+            map2.sort(this, qn2);
+
             // exploit dichotomy for ?x = ?y
             for (Mapping m1 : map1) {
 
@@ -1563,7 +1590,7 @@ public class Eval implements ExpType, Plugin {
 
                         env.pop(m1);
                     } else {
-                        System.out.println("fail push");
+                        //System.out.println("fail push");
                     }
                 }
             }
@@ -1639,7 +1666,7 @@ public class Eval implements ExpType, Plugin {
                             }
                         }
 
-                        // second try : n2 != null
+                        // second, try : n2 != null
                         int nn = map2.find(n1, q);
 
                         if (nn >= 0 && nn < map2.size()) {
@@ -1691,28 +1718,6 @@ public class Eval implements ExpType, Plugin {
                 env.pop(m1);
             }
         }
-        return backtrack;
-    }
-
-    @Deprecated
-    private int oldJoin(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
-        Memory env = memory;
-        Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);
-
-        if (map1.size() == 0) {
-            return backtrack;
-        }
-
-        exp.rest().setMappings(map1);
-        Mappings map2 = subEval(p, gNode, gNode, exp.rest(), exp);
-
-        if (map2.size() == 0) {
-            return backtrack;
-        }
-
-        backtrack = join(p, gNode, stack, env, map1, map2, n);
-
         return backtrack;
     }
 
@@ -2529,7 +2534,8 @@ public class Eval implements ExpType, Plugin {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
             Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery);
-
+            // draft federated query
+            ev.getMemory().setJoinMappings(memory.getJoinMappings());
             Node subNode = null;
 
             if (gNode != null) {
@@ -2628,7 +2634,7 @@ public class Eval implements ExpType, Plugin {
 
         for (Mapping r1 : map1) {
 
-            boolean success = false;
+            boolean success = false, fail = false;
 
             Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1, false);
             int nbsuc = 0;
@@ -2642,10 +2648,10 @@ public class Eval implements ExpType, Plugin {
                     for (Exp f : exp.getPostpone()) {
                         r2.setQuery(query);
                         r2.setMap(memory.getMap());
-                        // draft: only for Interpreter.testNewEval
-                        // r2.setBind(evaluator.getBinder());
+                        r2.setBind(memory.getBind());
                         success = evaluator.test(f.getFilter(), r2);
                         if (!success) {
+                            fail = true;
                             break;
                         }
                     }
@@ -2666,8 +2672,9 @@ public class Eval implements ExpType, Plugin {
                 }
             }
 
-            if (nbsuc == 0) {
-                // all r2 fail
+            if (nbsuc == 0 || fail) {
+                // all r2 fail or filter has failed on merge(r1, r2)
+                // { μ1 | μ1 in Ω1, ∃ μ2 in Ω2, μ1 and μ2 are compatible and expr(merge(μ1, μ2)) is false. }
                 if (env.push(r1, n)) {
                     if (hasGraph) {
                         env.pop(qNode);
@@ -2684,59 +2691,59 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    private int optional2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
-        boolean hasGraph = gNode != null;
-        Node qNode = query.getGraphNode();
-        Memory env = memory;
-
-        Node node1 = null;
-        if (hasGraph) {
-            node1 = qNode;
-        }
-
-        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
-        Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp);
-
-        for (Mapping r1 : map1) {
-
-            boolean success = false;
-
-            for (Mapping r2 : map2) {
-
-                if (r1.compatible(r2, true)) {
-                    success = true;
-
-                    if (env.push(r1, n)) {
-                        if (hasGraph) {
-                            env.pop(qNode);
-                        }
-                        if (env.push(r2, n)) {
-                            if (hasGraph) {
-                                env.pop(qNode);
-                            }
-                            eval(p, gNode, stack, n + 1);
-                            env.pop(r2);
-                        }
-                        env.pop(r1);
-                    }
-                }
-            }
-
-            if (!success) {
-                // all r2 fail
-                if (env.push(r1, n)) {
-                    if (hasGraph) {
-                        env.pop(qNode);
-                    }
-                    eval(p, gNode, stack, n + 1);
-                    env.pop(r1);
-                }
-            }
-        }
-
-        return backtrack;
-    }
+//    private int optional2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+//        int backtrack = n - 1;
+//        boolean hasGraph = gNode != null;
+//        Node qNode = query.getGraphNode();
+//        Memory env = memory;
+//
+//        Node node1 = null;
+//        if (hasGraph) {
+//            node1 = qNode;
+//        }
+//
+//        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+//        Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp);
+//
+//        for (Mapping r1 : map1) {
+//
+//            boolean success = false;
+//
+//            for (Mapping r2 : map2) {
+//
+//                if (r1.compatible(r2, true)) {
+//                    success = true;
+//
+//                    if (env.push(r1, n)) {
+//                        if (hasGraph) {
+//                            env.pop(qNode);
+//                        }
+//                        if (env.push(r2, n)) {
+//                            if (hasGraph) {
+//                                env.pop(qNode);
+//                            }
+//                            eval(p, gNode, stack, n + 1);
+//                            env.pop(r2);
+//                        }
+//                        env.pop(r1);
+//                    }
+//                }
+//            }
+//
+//            if (!success) {
+//                // all r2 fail
+//                if (env.push(r1, n)) {
+//                    if (hasGraph) {
+//                        env.pop(qNode);
+//                    }
+//                    eval(p, gNode, stack, n + 1);
+//                    env.pop(r1);
+//                }
+//            }
+//        }
+//
+//        return backtrack;
+//    }
 
     /**
      * In case of backjump Some node must differ between previous and current A

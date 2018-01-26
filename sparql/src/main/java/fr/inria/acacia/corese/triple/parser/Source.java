@@ -57,6 +57,10 @@ public class Source extends And {
 	  return asource;
   }
   
+  public Exp getBodyExp() {
+      return get(0);
+  }
+  
   public void setState(boolean s){
 	  state = s;
   }

@@ -488,17 +488,24 @@ public class Exp extends PointerObject
         toString(sb);
         return sb.toString();
     }
+    
+    public StringBuilder toString(StringBuilder sb) {
+        return toString(sb, 0);
+    }
        
-     public StringBuilder toString(StringBuilder sb) {
-        if (isOptional() || isMinus() || isGraph()){
-             sb.append(NL);
-        }
+    StringBuilder toString(StringBuilder sb, int n) {
+//        if (isValues() || isOptional() || isMinus() || isGraph() || isUnion() || isService() || isQuery()){
+//             nl(sb, n);
+//        }
         sb.append(title()).append(SP);
 
         if (type() == VALUES) {
             sb.append(getNodeList());
+            sb.append(SP);
         }
+        
         sb.append("{");
+        
         if (edge != null) {
             sb.append(edge);
             if (size() > 0) {
@@ -521,26 +528,45 @@ public class Exp extends PointerObject
             }
         }
 
-        if (type == VALUES) {
+        if (type() == VALUES) {
+            nl(sb, 0);
             sb.append(getMappings());
-        } else if (type == WATCH || type == CONTINUE || type == BACKJUMP) {
+        } else if (type() == WATCH || type() == CONTINUE || type() == BACKJUMP) {
             // skip because loop
         } else {
             if (isOptional() && isPostpone()){
                 sb.append("POSTPONE ");
-                getPostpone().toString(sb).append(NL);
+                getPostpone().toString(sb);
+                nl(sb, n);
             }
             int i = 0;
             for (Exp e : this) {
-                e.toString(sb).append(SP);
-                if (type() == JOIN && i == 0) {
-                    sb.append(NL);
-                }
+                nl(sb, n);
+                e.toString(sb, n+1).append(SP);
+//                if (type() == JOIN && i == 0) {
+//                    nl(sb, n);
+//                }
                 i++;
             }
         }
+        
+        if (type() == VALUES){
+            indent(sb, n);
+        }
         sb.append("}");
         return sb;
+    }
+     
+     StringBuilder nl(StringBuilder sb, int n) {
+         sb.append(NL);
+         indent(sb, n);
+         return sb;
+     }
+     
+    void indent(StringBuilder sb, int n) {
+        for (int i = 0; i < n; i++) {
+            sb.append(SP).append(SP);
+        }
     }
         
     String title() {
@@ -681,6 +707,10 @@ public class Exp extends PointerObject
 
     public boolean isQuery() {
         return type == QUERY;
+    }
+    
+    public boolean isService() {
+        return type == SERVICE;
     }
 
     public boolean isAtomic() {
@@ -1424,39 +1454,44 @@ public class Exp extends PointerObject
     }
 
     public List<Node> getNodes(boolean exist, boolean blank) {
-        List<Node> lNode = new ArrayList<Node>();
-        List<Node> lSelNode = new ArrayList<Node>();
-        List<Node> lExistNode = new ArrayList<Node>();
+        List<Node> nodeList        = new ArrayList<Node>();
+        List<Node> selectNodeList  = new ArrayList<Node>();
+        List<Node> existNodeList   = new ArrayList<Node>();
 
-        getNodes(lNode, lSelNode, lExistNode, blank);
+        getNodes(nodeList, selectNodeList, existNodeList, blank);
 
         // add select nodes that are not in lNode
-        for (Node qNode : lSelNode) {
-            if (!lNode.contains(qNode)) {
-                if (lExistNode.contains(qNode)) {
-                    /**
-                     * use case: select * where { {select * where {?x rdf:rest*
-                     * /rdf:first ?y}} filter(! exists{?x rdf:first ?y}) } lNode
-                     * = {} lSelNode = {?x, ?y} lExistNode = {?x, ?y} The result
-                     * of sub query is bound to exists nodes in order to join
-                     */
-                    Node node = get(lExistNode, qNode);
-                    lNode.add(node);
-                } else {
-                    lNode.add(qNode);
-                }
+        for (Node selectNode : selectNodeList) {
+            if (!nodeList.contains(selectNode)) {                                                 
+                nodeList.add(overloadSelectNodeByExistNode(existNodeList, selectNode));
             }
         }
 
         if (exist) {
             // collect exists {} nodes
-            for (Node qNode : lExistNode) {
-                if (!lNode.contains(qNode)) {
-                    lNode.add(qNode);
+            for (Node existNode : existNodeList) {
+                if (!nodeList.contains(existNode)) {
+                    nodeList.add(existNode);
                 }
             }
         }
-        return lNode;
+        return nodeList;
+    }
+    
+    /**
+    * use case: 
+    * select * where { 
+    * {select * where {?x rdf:rest * / rdf:first ?y}} 
+    * filter(! exists {?x rdf:first ?y}) } 
+    * lNode = {} lSelNode = {?x, ?y} lExistNode = {?x, ?y} 
+    * select nodes of subquery are overloaded by exists nodes
+    */    
+    Node overloadSelectNodeByExistNode(List<Node> list, Node node) {
+        if (list.contains(node)) {            
+            return get(list, node);
+        } else {
+            return node;
+        }
     }
 
     void add(List<Node> lNode, Node node) {
@@ -1865,6 +1900,7 @@ public class Exp extends PointerObject
     /**
      * Nodes that may be bound by previous clause or by environment except
      * minus, etc.
+     * use case: optional, join
      */
     void bindNodes() {
         for (Exp exp : getExpList()) {
@@ -1928,18 +1964,19 @@ public class Exp extends PointerObject
     /**
      * {?x ex:p ?y} optional {?y ex:q ?z  filter(?z != ?x) optional {?z ?p ?x}}
      * filter ?x is not bound in optional ...
-     * this filter must be processed at the end of optional after join occurred
+     * this postponed filter must be processed at the end of optional after join occurred
      */
     public void optional() {
         Exp p = Exp.create(BGP);
         Exp rest = rest();
-        for (Exp exp : rest) {
+        for (Exp exp : rest) {            
             if (exp.isFilter() && ! rest.simpleBind(exp.getFilter())) {
                 p.add(exp);
                 exp.setPostpone(true);
-            } else if (exp.isOptional() || exp.isMinus()) {
-                Exp first = exp.first();
-                for (Exp e : first) {
+            } 
+            else if (exp.isOptional() || exp.isMinus()) {
+                Exp first = exp.first();                
+                for (Exp e : first) {                    
                     if (e.isFilter() && ! first.simpleBind(e.getFilter())) {
                         p.add(e);
                         e.setPostpone(true);
@@ -1957,15 +1994,67 @@ public class Exp extends PointerObject
      * Filter variables of f are bound by triple, path, values or bind, locally in this Exp
      */
     boolean simpleBind(Filter f){
-//        List<String> list = f.getVariables();
-//        
-//        for (Exp exp : this){
-//            if (exp.isEdge() || exp.isPath() || exp.isValues() || exp.isBind()){
-//                
-//            }
-//        }
+        List<String> varList = f.getVariables();
+        List<String> nodeList = getNodeVariables();
+        
+        for (String var : varList) {
+            if (! nodeList.contains(var)){
+                return false;
+            }
+        }
         
         return true;
+    }
+    
+    /**
+     * Node variables of edge, path, bind, values
+     */
+    List<String> getNodeVariables() {
+        List<String> list = new ArrayList<>();
+        for (Exp exp : this) {
+            switch (exp.type()) {
+                case EDGE:
+                case PATH:
+                    exp.getEdgeVariables(list);
+                    break;
+                case BIND: 
+                    getBindVariables(list);
+                    break;
+                case VALUES:
+                    getValuesVariables(list);
+                    break;
+            }
+        }
+        return list;
+    }
+
+    void getBindVariables(List<String> list) {
+        if (getNodeList() == null) {
+            addVariable(list, getNode());
+        }
+        else {
+            getValuesVariables(list);
+        }
+    }
+    
+    void getValuesVariables(List<String> list) {
+        for (Node node : getNodeList()) {
+            addVariable(list, node);
+        }
+    }
+
+    void getEdgeVariables(List<String> list) {
+        addVariable(list, getEdge().getNode(0));
+        addVariable(list, getEdge().getNode(1));
+        if (! isPath()) {
+            addVariable(list, getEdge().getPredicate());
+        }
+    }
+    
+    void addVariable(List<String> list, Node node) {
+        if (node.isVariable() && ! list.contains(node.getLabel())) {
+            list.add(node.getLabel());
+        }
     }
     
     // optional postponed filters

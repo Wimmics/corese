@@ -81,6 +81,11 @@ public class EventLogger {
             case Process:
                 switch (e) {
                     case LoadStep: logLoadStep(); break;
+                    
+                    case Service: 
+                        logger.info(type + " " + e + serviceSeparator(o) + o);
+                        break;
+                    
                     default: logger.info(type + " " + e + pretty(o));
                 }
                 break;
@@ -89,6 +94,10 @@ public class EventLogger {
                 break;
         }
         log(type, e, o);
+    }
+    
+    String serviceSeparator(Object o) {
+        return (o instanceof String) ? "\n" : " ";
     }
     
     void method(Event type, Event e, Object o) {
@@ -137,7 +146,7 @@ public class EventLogger {
     String pretty(Object o) {
         return (o == null) ? "" : " " + o;
     }
-    
+         
     void logLoadStep() {
         logger.info(String.format("Loading: %s : %s", new Date(), mgr.getGraph().size()));
     }

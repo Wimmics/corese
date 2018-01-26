@@ -31,6 +31,7 @@ import fr.inria.edelweiss.kgram.filter.Extension;
 import fr.inria.edelweiss.kgram.filter.Extension.FunMap;
 //import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.corese.kgenv.eval.Interpreter;
+import fr.inria.corese.kgenv.federate.FederateVisitor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -311,7 +312,8 @@ public class Transformer implements ExpType {
         }
         if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
             ast.defService(null);
-            add(new ServiceVisitor());
+            //add(new ServiceVisitor());
+            add(new FederateVisitor());
         }
     }
 
@@ -741,7 +743,9 @@ public class Transformer implements ExpType {
             // service body is a pattern
             aa = ast.subCreate();
             aa.setSelectAll(true);
-            aa.setBody(BasicGraphPattern.create(body));
+            // PRAGMA: body must be a BGP
+            aa.setBody(body);
+            //aa.setBody(BasicGraphPattern.create(body));
         }
         //collect select * nodes
         aa.validate();

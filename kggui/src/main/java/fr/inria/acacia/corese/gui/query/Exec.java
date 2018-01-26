@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.gui.event.MyEvalListener;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgraph.core.Graph;
 import fr.inria.edelweiss.kgraph.query.QueryProcess;
@@ -56,10 +57,16 @@ public class Exec extends Thread {
 	 */
         @Override
 	public void run(){
-		Mappings res;
+		Mappings res = null;
                 MyJPanelQuery panel = frame.getPanel();
                 if (isValidate()){
-                    res = validate();
+                    //res = validate();
+                    res = compile();
+                    if (res != null) {
+                        if (res.getQuery().isDebug()) {
+                            logger.info("\n" + res.getQuery());
+                        }
+                    }
                 }
                 else {
                     res = query();
@@ -79,6 +86,25 @@ public class Exec extends Thread {
 			Date d2 = new Date();
                         System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
 			return l_Results;
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			frame.getPanel().getTextArea().setText(e.toString());
+		} 
+		return null;
+	}
+        
+        Mappings compile(){
+		QueryExec exec =  QueryExec.create(frame.getMyCorese());
+		if (debug) debug(exec);
+		Date d1 = new Date();
+		try {
+			Query q = exec.compile(query);
+                        q.setValidate(true);
+                        Mappings map = exec.SPARQLQuery(q);
+                        Date d2 = new Date();
+                        System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
+			return map;
 		} catch (EngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

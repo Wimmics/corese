@@ -260,6 +260,9 @@ public class QuerySorter implements ExpType {
     void compile(Expr exp, VString lVar, boolean opt) {
         if (exp.oper() == ExprType.EXIST) {
             compile(query.getPattern(exp), lVar, opt);
+            if (query.isValidate()) {
+                System.out.println("QuerySorter exists: \n" + query.getPattern(exp));
+            }
         } else {
             for (Expr ee : exp.getExpList()) {
                 compile(ee, lVar, opt);
@@ -393,8 +396,26 @@ public class QuerySorter implements ExpType {
      * It is a service and it has an URI (not a variable)
      */
     boolean isService(Exp exp) {
-        return exp.type() == Exp.SERVICE ; //&& !exp.first().getNode().isVariable();
+        switch (exp.type()) {
+            case Exp.SERVICE: return true;
+            case Exp.UNION:  return unionService(exp);
+        }
+        return false;
     }
+    
+    boolean unionService(Exp exp) {
+        return bgpService(exp.get(0)) || bgpService(exp.get(1));
+    }
+    
+     boolean bgpService(Exp exp) {
+        for (Exp e : exp) {
+            if (isService(e)) {
+                return true;
+            }                 
+        }
+        return false;
+     }
+    
 
     /**
      * Draft: for each service in exp replace pattern . service by join(pattern,
@@ -404,7 +425,6 @@ public class QuerySorter implements ExpType {
 
         if (nbs < 1 || (nbs == 1 && isService(exp.get(0)))) {
             // nothing to do
-//            System.out.println("Service nbs " + exp.toString());
             return;
         }
 
@@ -420,17 +440,14 @@ public class QuerySorter implements ExpType {
                 // find next service
                 and.add(exp.get(i));
                 exp.remove(i);
-//                System.out.println("Service while1 " + exp.toString());
             }
 
             // exp.get(i) is a service
             count++;
 
             if (and.size() == 0) {
-//                System.out.println("Service if " + exp.toString());
                 and.add(exp.get(i));
             } else {
-//                System.out.println("Service esle " + exp.toString());
                 Exp join = Exp.create(Exp.JOIN, and, exp.get(i));
                 and = Exp.create(Exp.AND);
                 and.add(join);
@@ -444,10 +461,13 @@ public class QuerySorter implements ExpType {
             // no more service
             and.add(exp.get(0));
             exp.remove(0);
-//            System.out.println("Service while2 " + exp.toString());
         }
 
-        exp.add(and);
+        //exp.add(and);
+        
+        for (Exp e : and) {
+            exp.add(e);
+        }
 
     }
 

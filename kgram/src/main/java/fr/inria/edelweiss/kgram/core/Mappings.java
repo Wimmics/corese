@@ -283,7 +283,8 @@ public class Mappings extends PointerObject
     void print(Mapping map, Node qNode, StringBuffer sb, boolean ptr) {
         Node node = map.getNode(qNode);
         if (node != null) {
-            sb.append(qNode).append(" = ").append(node);
+            sb.append(qNode).append("[").append(qNode.getIndex()).append("]"); 
+            sb.append(" = ").append(node);
             Object obj = node.getObject();
             if (ptr && obj != null
                     && obj != this

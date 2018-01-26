@@ -460,7 +460,8 @@ public class Mapping
         String str = "";
         int i = 0;
         for (Node e : nodes) {
-            str += qNodes[i] + " = " + e + "\n";
+            str += qNodes[i] + "[" + qNodes[i].getIndex() + "]";
+            str += " = " + e + "\n";
             if (isPath(qNodes[i])) {
                 str += qNodes[i] + " : " + lPath[i] + "\n";
 

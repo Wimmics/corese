@@ -17,7 +17,6 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Provider;
-import fr.inria.edelweiss.kgram.core.Group;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
@@ -41,11 +40,17 @@ public class CompileService {
     }
 
     /**
-     * Generate bindings for the service, if any
+     * Mappings map is result of preceding query pattern
+     * Take map into account to evaluate service clause on remote endpoint
+     * Generate relevant bindings for the service:
+     * 
+     * for each Mapping m in map : 
+     * for each var in select clause of service : 
+     * generate filter (var = m.value(var))
      */
-    public boolean compile(Node serv, Query q, Mappings lmap, Environment env, int start, int limit) {
+    public boolean compile(Node serv, Query q, Mappings map, Environment env, int start, int limit) {
         Query out = q.getOuterQuery();
-        if (lmap == null || (lmap.size() == 1 && lmap.get(0).size() == 0)) {
+        if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
             if (isValues(out)) {
@@ -57,11 +62,11 @@ public class CompileService {
             }
             return true;
         } else if (isValues(out)) {
-            return bindings(q, lmap, start, limit);
+            return bindings(q, map, start, limit);
         } else if (isFilter(out) || provider.isSparql0(serv)) {
-            return filter(q, lmap, start, limit);
+            return filter(q, map, start, limit);
         } else {
-            return bindings(q, lmap, start, limit);
+            return bindings(q, map, start, limit);
         }
     }
 
@@ -248,7 +253,6 @@ public class CompileService {
      * Generate bindings from Mappings as filter
      */
     public boolean filter(Query q, Mappings map, int start, int limit) {
-
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
 
@@ -283,7 +287,7 @@ public class CompileService {
             }
         }
         
-        if (lt.size() > 0 && accept(lt)) {
+        if (lt.size() > 0) { // && accept(lt)) {
             submit(lt);
             Term f = lt.get(0);
 

@@ -4,7 +4,6 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
 

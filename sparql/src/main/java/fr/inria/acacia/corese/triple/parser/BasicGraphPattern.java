@@ -55,6 +55,14 @@ public class BasicGraphPattern extends And {
     	add(Triple.create(e));
     }
     
+    public BasicGraphPattern duplicate() {
+        BasicGraphPattern bgp = new BasicGraphPattern();
+        for (Exp exp : this) {
+            bgp.add(exp);
+        }  
+        return bgp;
+    }
+    
         @Override
     public boolean isBGP(){
 		return true;

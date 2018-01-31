@@ -1,0 +1,164 @@
+#
+# Query definitions for a SPARQL tutorial based on a transformation
+# To be used with /tutorial/rdf?profile=st:web
+#
+# Olivier Corby - Wimmics Inria I3S - 2017
+#
+
+
+# recall the dataset for the Transformation
+st:tutorial a st:Dataset ;
+  st:data     [ st:uri "/data/tutorial/human1.rdf"  ; st:name st:data1 ] ,
+  st:context  [ st:uri "/data/tutorial/workflowhal.ttl"  ; st:name st:context ] .
+
+  
+us:hal a sw:Workflow ;
+
+sw:display true;
+sw:debug true;
+sw:collect true;
+
+sw:body (
+
+[ a sw:Query ;
+st:name st:intro ;
+rdfs:label "Introduction" ;
+rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. 'Dataset' donne accès au graphe RDF."""@fr ;
+
+rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Solution' displays the solution, 'Template' displays the query template. 'Submit' submits the SPARQL query to the server. 'Dataset' shows the RDF dataset of the tutorial."""@en ;
+
+st:query ""
+]
+
+[ a sw:Query ;
+st:name st:begin ;
+rdfs:label "Coauthors" ;
+rdfs:comment "Coauteurs."@fr ;
+rdfs:comment "Coauthors"@en ;
+
+st:query 
+"""prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc:   <http://purl.org/dc/terms/>
+
+@service <https://data.archives-ouvertes.fr/sparql>
+
+construct {
+    ?x foaf:name ?n .
+    ?x foaf:publications ?doc .
+    ?y foaf:publications ?doc .
+    ?y foaf:name ?name .
+    ?doc dc:title ?t
+}
+where {
+    ?x foaf:name ?n 
+    filter regex(?n, "Olivier") 
+    ?x foaf:publications ?doc .
+    ?y foaf:publications ?doc .
+    ?y foaf:name ?name 
+    optional { ?doc dc:title ?t }
+    filter (?x != ?y)
+}
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:org ;
+rdfs:label "Organizations" ;
+rdfs:comment "Organisations."@fr ;
+rdfs:comment "Organizations"@en ;
+
+st:query 
+"""prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc: <http://purl.org/dc/terms/>
+prefix w3: <http://www.w3.org/ns/org#>
+@service <https://data.archives-ouvertes.fr/sparql>
+
+construct {
+  ?x   a w3:Organization ;
+  ?p ?y
+}
+where {
+    select * where {
+        ?x a w3:Organization ;
+        ?p ?y
+        filter exists { ?z foaf:member ?x }
+    }
+    limit 1000
+}
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:doc ;
+rdfs:label "Document" ;
+rdfs:comment "Document."@fr ;
+rdfs:comment "Document"@en ;
+
+st:query 
+"""prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc: <http://purl.org/dc/terms/>
+prefix de: <http://purl.org/dc/elements/1.1/> 
+prefix w3: <http://www.w3.org/ns/org#>
+@service <https://data.archives-ouvertes.fr/sparql>
+
+construct {
+  ?x ?p ?y .
+  ?y ?q ?z
+}
+where {
+    select * where {
+        ?x dc:title ?t ; ?p ?y 
+        filter regex(?t, "Semantic")
+        optional { filter isBlank(?y) ?y ?q ?z }
+    }
+    limit 1000
+}
+""" 
+]
+
+
+
+[ a sw:Query ;
+st:name st:subject ;
+rdfs:label "Document Subject" ;
+rdfs:comment "Document."@fr ;
+rdfs:comment "Document"@en ;
+
+st:query 
+"""prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc: <http://purl.org/dc/terms/>
+prefix de: <http://purl.org/dc/elements/1.1/> 
+prefix w3: <http://www.w3.org/ns/org#>
+@service <https://data.archives-ouvertes.fr/sparql>
+
+construct {
+  ?x ?p ?y .
+  ?y ?q ?z
+}
+where {
+    select * where {
+        ?x de:subject ?s ; ?p ?y 
+        filter regex(?s, "semantic")
+        optional { filter isBlank(?y) ?y ?q ?z }
+    }
+    limit 2000
+}
+""" 
+]
+
+
+
+
+
+
+
+
+
+
+
+
+)
+.

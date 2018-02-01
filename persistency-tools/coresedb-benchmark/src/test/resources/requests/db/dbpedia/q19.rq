@@ -1,7 +1,0 @@
-<AT_DB>
-@test
-select debug  * where {
-    ?x ?p ?l 
-filter isBlank(?l)
-}
-limit 1

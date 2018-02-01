@@ -1,8 +1,0 @@
-prefix p: <http://fr.dbpedia.org/property/>
-<AT_DB>
-select debug * where {
-    ?x p:latitude ?lat 
-    filter (?lat = "43.580834"^^xsd:double) 
-    ?x rdfs:label  ?l
-}
-

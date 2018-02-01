@@ -1,5 +1,0 @@
-@db </home/corby/soft/db/fma_db>
-select * where {
-  ?x rdfs:label ?y
-}
-limit 10

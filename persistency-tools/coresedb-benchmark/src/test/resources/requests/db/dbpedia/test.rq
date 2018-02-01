@@ -1,6 +1,0 @@
-<AT_DB>
-@test
-select * where {
-    ?x rdfs:label  ?y
-}
-

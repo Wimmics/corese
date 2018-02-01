@@ -1,7 +1,0 @@
-<AT_DB>
-@test
-select debug * where {
-    ?x rdfs:label ?l 
-filter (?l in ("Antibes"@fr, "Nice"@fr , "Venise"@fr))
-}
-limit 3

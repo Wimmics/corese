@@ -1,8 +1,0 @@
-prefix ex: <http://example.org/>
-@db </home/corby/soft/db/test_db>
-@dbfactory <fr.inria.corese.tinkerpop.Factory>
-@test
-select debug * where {
-?x ?p ?y
-filter regex(?y, "http://.*org")
-}

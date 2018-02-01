@@ -1,8 +1,0 @@
-<AT_DB>
-@test
-select  debug * where {
-    ?x rdfs:label ?l 
-filter regex(?l, "^Paris")
-}
-limit 50
-

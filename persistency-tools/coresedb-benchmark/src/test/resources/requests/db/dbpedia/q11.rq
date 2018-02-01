@@ -1,6 +1,0 @@
-<AT_DB>
-select * where {
-    ?x rdfs:label ?l 
-filter (?l = "Antibes"@fr )
-}
-

@@ -1,6 +1,0 @@
-@db </home/corby/soft/db/fma_db>
-select *  where {
-?x rdfs:label "Structural gene"@en 
-?x rdfs:subClassOf* ?y 
-?y rdfs:label ?l
-}

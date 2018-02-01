@@ -1,8 +1,0 @@
-<http://www.inria.fr/subject1> <http://www.inria.fr/property1> <http://www.inria.fr/subject2> <http://www.inria.fr/graph1> .
-<http://www.inria.fr/subject1> <http://www.inria.fr/property2> "name" <http://www.inria.fr/graph1> .
-<http://www.inria.fr/subject1> <http://www.inria.fr/property2> "name"@en <http://www.inria.fr/graph1> .
-<http://www.inria.fr/subject1> <http://www.inria.fr/property2> "name"@fr <http://www.inria.fr/graph1> .
-<http://www.inria.fr/subject1> <http://www.inria.fr/property1> <http://www.inria.fr/subject2> <http://www.inria.fr/graph2> .
-_:bnode1 <http://www.inria.fr/property2> <http://www.inria.fr/subject2> .
-_:bnode2 <http://www.inria.fr/property2> _:bnode1 .
-

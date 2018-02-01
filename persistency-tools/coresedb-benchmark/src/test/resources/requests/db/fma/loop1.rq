@@ -1,7 +1,0 @@
-@db </home/corby/soft/db/fma_db>
-@test
-@bgp
-select *  where {
-?x ?p ?x
-}
-limit 1

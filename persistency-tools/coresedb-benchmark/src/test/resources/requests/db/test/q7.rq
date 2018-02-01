@@ -1,9 +1,0 @@
-prefix ex: <http://example.org/>
-@db </home/corby/soft/db/test_db>
-@test
-@bgp
-select debug * where {
-?x ?p ?y
-?y ?q ?z
-?z ?r ?x
-}

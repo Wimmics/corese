@@ -1,6 +1,0 @@
-<AT_DB>
-#@test
-select (count(*) as ?c) where {
-    ?x rdfs:label  ?y
-}
-

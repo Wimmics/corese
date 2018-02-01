@@ -1,8 +1,0 @@
-select debug *  where {
-?a ?p ?b
-service <db:/home/corby/soft/db/fma_db> {
-?x rdfs:label "Structural gene"@en 
-?x ?p ?y
-}
-}
-pragma {kg:kgram kg:detail true}

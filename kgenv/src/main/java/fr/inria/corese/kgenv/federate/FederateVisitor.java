@@ -78,6 +78,12 @@ public class FederateVisitor implements QueryVisitor {
         }
     }
     
+    
+    @Override
+    public void visit(fr.inria.edelweiss.kgram.core.Query query) {
+        query.setFederate(true);
+    }
+    
     void option(){
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.DISTRIBUTE_NAMED)){
            distributeNamed = true; 
@@ -359,7 +365,5 @@ public class FederateVisitor implements QueryVisitor {
         }
     }
 
-    @Override
-    public void visit(fr.inria.edelweiss.kgram.core.Query query) {
-    }
+    
 }

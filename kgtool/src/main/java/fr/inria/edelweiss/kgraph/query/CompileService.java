@@ -127,7 +127,8 @@ public class CompileService {
         ArrayList<Variable> lvar = new ArrayList<Variable>();
         ArrayList<Constant> lval = new ArrayList<Constant>();
 
-        for (Node qv : q.getSelect()) {
+        //for (Node qv : q.getSelect()) {
+        for (Node qv : q.getBody().getRecordInScopeNodes()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
@@ -158,7 +159,8 @@ public class CompileService {
         ArrayList<Constant> lval;
         Values values = Values.create();
 
-        for (Node qv : q.getSelect()) {
+        //for (Node qv : q.getSelect()) {
+        for (Node qv : q.getBody().getRecordInScopeNodes()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
@@ -175,7 +177,7 @@ public class CompileService {
             boolean ok = false;
             lval = new ArrayList<Constant>();
 
-            for (Node qnode : q.getSelect()) {
+            for (Node qnode : q.getBody().getRecordInScopeNodes()) {
                 Node val = m.getNode(qnode);
                 
                 if (val != null) {
@@ -225,7 +227,8 @@ public class CompileService {
         ASTQuery ast = (ASTQuery) q.getAST();
         ArrayList<Term> lt = new ArrayList<Term>();
 
-        for (Node qv : q.getSelect()) {
+        //for (Node qv : q.getSelect()) {
+        for (Node qv : q.getBody().getRecordInScopeNodes()) {
             String var = qv.getLabel();
             Node val = env.getNode(var);
 
@@ -275,7 +278,10 @@ public class CompileService {
     Term getFilter(Query q, Mapping m) {
         ArrayList<Term> lt = new ArrayList<Term>();
 
-        for (Node varNode : q.getSelect()) {
+        //for (Node varNode : q.getSelect()) {
+        for (Node varNode : q.getBody().getRecordInScopeNodes()) {
+            // varNode should be in q.getBody().getSimpleNodes() instead of q.getSelect()
+            // to eliminate var that are only in right arg of optional
             String varName = varNode.getLabel();
             Node valNode = m.getNode(varName);
             if (valNode != null) {

@@ -26,6 +26,20 @@ public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
 
     /**
+     * @return the simpleNodeList
+     */
+    public List<Node> getInScopeNodeList() {
+        return simpleNodeList;
+    }
+
+    /**
+     * @param simpleNodeList the simpleNodeList to set
+     */
+    public void setInScopeNodeList(List<Node> simpleNodeList) {
+        this.simpleNodeList = simpleNodeList;
+    }
+
+    /**
      * @return the externQuery
      */
     public Query getExternQuery() {
@@ -73,7 +87,9 @@ public class Exp extends PointerObject
     private Node arg;
     List<Node> lNodes;
     //  service with several URI:
-    private List<Node> nodeSet;
+    private List<Node> nodeSet, 
+            // in-scope variables except those that are only in right arg of optional
+            simpleNodeList;
     Filter filter;
     List<Filter> lFilter;
     // min(?l, expGroupBy(?x, ?y))
@@ -316,6 +332,22 @@ public class Exp extends PointerObject
     public static Exp create(int t, Filter e) {
         Exp exp = create(t);
         exp.setFilter(e);
+        return exp;
+    }
+    
+    // draft for BGP
+    public Exp duplicate() {
+        Exp exp = Exp.create(type());
+        for (Exp e : this) {
+            exp.add(e);
+        }
+        return exp;
+    }
+    
+    public static Exp createValues(List<Node> list, Mappings map){
+        Exp exp = create(VALUES);
+        exp.setNodeList(list);
+        exp.setMappings(map);
         return exp;
     }
 
@@ -801,29 +833,14 @@ public class Exp extends PointerObject
     public void setMappings(Mappings m) {
         map = m;
     }
-
-    public Mappings getTemplateMappings() {
-        return templateMap;
-    }
-
+    
     public Mappings getActualMappings() {
-        if (map != null) {
-            return map;
+        if (getValues() == null){
+            return null;
         }
-        return templateMap;
+        return getValues().getMappings();
     }
-
-    public void setTemplateMappings(Mappings m) {
-        templateMap = m;
-    }
-
-    public Mappings getAnyMappings() {
-        if (templateMap != null) {
-            return templateMap;
-        }
-        return map;
-    }
-
+   
     public Filter getFilter() {
         return filter;
     }
@@ -1346,19 +1363,22 @@ public class Exp extends PointerObject
      * Return variable nodes of this exp use case: find the variables for select
      * * PRAGMA: subquery : return only the nodes of the select return only
      * variables (no cst, no blanks) minus: return only nodes of first argument
+     * leftOptional = true : collect only nodes of left of optional, at first level
+     * optional = true :  we are inside an optional
      */
-    void getNodes(List<Node> lNode, List<Node> lSelNode, List<Node> lExistNode, boolean blank) {
+    void getNodes(List<Node> nodeList, List<Node> selectList, List<Node> existList, 
+            boolean leftOptional, boolean optional, boolean blank) {
 
         switch (type()) {
 
             case FILTER:
                 // get exists {} nodes
                 // draft
-                getExistNodes(getFilter().getExp(), lExistNode);
+                getExistNodes(getFilter().getExp(), existList);
                 break;
 
             case NODE:
-                add(lNode, getNode(), blank);
+                add(nodeList, getNode(), blank);
                 break;
 
             case EDGE:
@@ -1367,47 +1387,79 @@ public class Exp extends PointerObject
             case EVAL:
                 for (int i = 0; i < nbNode(); i++) {
                     Node node = getNode(i);
-                    add(lNode, node, blank);
+                    add(nodeList, node, blank);
                 }
                 break;
 
             case ACCEPT:
                 //use case: join() check connection, need all variables
-                add(lNode, getNode());
+                add(nodeList, getNode());
                 break;
 
             case VALUES:
                 for (Node var : getNodeList()) {
-                    add(lNode, var);
+                    add(nodeList, var);
                 }
                 break;
 
             case MINUS:
                 // second argument does not bind anything: skip it
                 if (first() != null) {
-                    first().getNodes(lNode, lSelNode, lExistNode, blank);
+                    first().getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
                 }
                 break;
-
+                
+            case OPTIONAL:
+                if (leftOptional){
+                    if (! optional) {
+                        first().getNodes(nodeList, selectList, existList, leftOptional, true, blank);
+                    }
+                }
+                else {
+                    first().getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
+                     rest().getNodes(nodeList, selectList, existList, leftOptional, true, blank);   
+                }
+                break;
+                
             case BIND:
-                add(lSelNode, getNode());
-                break;
-
-            case QUERY:
-
-                // use case: select * where { {select ?y fun() as ?var where {}} }
-                // we want ?y & ?var for select *			
-                for (Exp ee : getQuery().getSelectFun()) {
-                    add(lSelNode, ee.getNode());
+                //add(selectNodeList, getNode());
+                if (getNodeList() == null) {
+                    add(nodeList, getNode());
                 }
+                else for (Node node : getNodeList()) {
+                        add(nodeList, node);
+                    }
+                
                 break;
 
+            case QUERY: 
+                queryNodeList(selectList, leftOptional);
+                break;
+               
             default:
                 for (Exp ee : this) {
-                    ee.getNodes(lNode, lSelNode, lExistNode, blank);
+                    ee.getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
                 }
         }
 
+    }
+    
+    void queryNodeList(List<Node> selectList, boolean leftOptional) {
+        List<Node> subSelectList = getQuery().getSelectNodeList();
+        if (leftOptional) {
+            // focus on left optional in query body 
+            // because otherwise select * includes right optional
+            List<Node> scopeList = getQuery().getBody().getInScopeNodes();
+            for (Node node : scopeList) {
+                if (subSelectList.contains(node)) {
+                    add(selectList, node);
+                }
+            }
+        } else {
+            for (Node node : subSelectList) {
+                add(selectList, node);
+            }
+        }
     }
 
     /**
@@ -1425,7 +1477,7 @@ public class Exp extends PointerObject
 
             case ExprType.EXIST:
                 Exp pat = getPattern(exp);
-                List<Node> lNode = pat.getNodes(true, false);
+                List<Node> lNode = pat.getNodes(true, false, false);
                 for (Node node : lNode) {
                     add(lExistNode, node);
                 }
@@ -1444,21 +1496,45 @@ public class Exp extends PointerObject
      * minus nodes
      */
     public List<Node> getNodes() {
-        List<Node> list = getNodes(false, false);
+        List<Node> list = getNodes(false, false, false);
+        return list;
+    }
+    
+    public List<Node> getRecordInScopeNodes() {
+        if (getInScopeNodeList() == null) {
+            setInScopeNodeList(getInScopeNodes());
+        }
+        return getInScopeNodeList();
+    }
+
+    
+    /**
+     * in-scope nodes minus nodes in right optional (as well as in subquery right optional)
+     * @return 
+     */
+    public List<Node> getInScopeNodes() {
+        List<Node> list = getNodes(false, true, false);
         return list;
     }
 
     public List<Node> getAllNodes() {
-        List<Node> list = getNodes(false, true);
+        List<Node> list = getNodes(false, false, true);
         return list;
     }
 
-    public List<Node> getNodes(boolean exist, boolean blank) {
-        List<Node> nodeList        = new ArrayList<Node>();
-        List<Node> selectNodeList  = new ArrayList<Node>();
-        List<Node> existNodeList   = new ArrayList<Node>();
+    /**
+     * 
+     * @param exist
+     * @param leftOptional: in optional, keep variables of left argument only
+     * @param blank
+     * @return 
+     */
+    public List<Node> getNodes(boolean exist, boolean leftOptional, boolean blank) {
+        List<Node> nodeList         = new ArrayList<Node>();
+        List<Node> selectNodeList   = new ArrayList<Node>();
+        List<Node> existNodeList    = new ArrayList<Node>();
 
-        getNodes(nodeList, selectNodeList, existNodeList, blank);
+        getNodes(nodeList, selectNodeList, existNodeList, leftOptional, false, blank);
 
         // add select nodes that are not in lNode
         for (Node selectNode : selectNodeList) {
@@ -1475,6 +1551,7 @@ public class Exp extends PointerObject
                 }
             }
         }
+        
         return nodeList;
     }
     
@@ -1900,11 +1977,12 @@ public class Exp extends PointerObject
     /**
      * Nodes that may be bound by previous clause or by environment except
      * minus, etc.
-     * use case: optional, join
+     * use case:  join
      */
     void bindNodes() {
         for (Exp exp : getExpList()) {
-            exp.setNodeList(exp.getNodes());
+            //exp.setNodeList(exp.getNodes());
+            exp.setNodeList(exp.getInScopeNodes());
         }
     }
 

@@ -822,21 +822,52 @@ public class Mapping
     public boolean compatible(Mapping minus) {
         return compatible(minus, false);
     }
-
-    boolean compatible(Mapping minus, boolean defValue) {
-        boolean sameVarValue = defValue;
-        for (Node qNode : minus.getSelectQueryNodes()) {
-            if (qNode.isVariable()) {
-                Node qqNode = getSelectQueryNode(qNode.getLabel());
-                if (qqNode != null) {
-                    Node n1 = getNodeValue(qqNode);
-                    Node n2 = minus.getNodeValue(qNode);
-                    if (n1 == null || n2 == null) {
+    
+    boolean compatible(Mapping map, boolean defaultValue) {
+        if (map.getSelect() == null){
+            return compatible1(map, defaultValue);
+        }
+        else {
+            return compatible2(map, defaultValue);            
+        }
+    }
+        
+        
+    boolean compatible1(Mapping map, boolean defaultValue) {
+        boolean sameVarValue = defaultValue;
+        for (Node node : getSelectQueryNodes()) {
+            if (node.isVariable()) {
+                Node val1 = getNodeValue(node);
+                Node val2 = map.getNodeValue(node);
+                if (val1 == null || val2 == null) {
+                    // do nothing as if variable were not in Mapping
+                    // use case: select count(*) as ?c
+                    // ?c is in QueryNodes but has no value
+                    // use case: minus {option{}}
+                } else if (!val1.match(val2)) { // was same
+                    return false;
+                } else {
+                    sameVarValue = true;
+                }
+            }
+        }
+        return sameVarValue;
+    }
+    
+    boolean compatible2(Mapping map, boolean defaultValue) {
+        boolean sameVarValue = defaultValue;
+        for (Node node1 : getSelectQueryNodes()) {
+            if (node1.isVariable()) {
+                Node node2 = map.getSelectQueryNode(node1.getLabel());
+                if (node2 != null) {
+                    Node val1 = getNodeValue(node1);
+                    Node val2 = map.getNodeValue(node2);
+                    if (val1 == null || val2 == null) {
                         // do nothing as if variable were not in Mapping
                         // use case: select count(*) as ?c
                         // ?c is in QueryNodes but has no value
                         // use case: minus {option{}}
-                    } else if (!n1.match(n2)) { // was same
+                    } else if (!val1.match(val2)) { // was same
                         return false;
                     } else {
                         sameVarValue = true;
@@ -846,6 +877,30 @@ public class Mapping
         }
         return sameVarValue;
     }
+    
+//    boolean compatible2(Mapping map, boolean defaultValue) {
+//        boolean sameVarValue = defaultValue;
+//        for (Node node2 : map.getSelectQueryNodes()) {
+//            if (node2.isVariable()) {
+//                Node node1 = getSelectQueryNode(node2.getLabel());
+//                if (node1 != null) {
+//                    Node val1 = getNodeValue(node1);
+//                    Node val2 = map.getNodeValue(node2);
+//                    if (val1 == null || val2 == null) {
+//                        // do nothing as if variable were not in Mapping
+//                        // use case: select count(*) as ?c
+//                        // ?c is in QueryNodes but has no value
+//                        // use case: minus {option{}}
+//                    } else if (!val1.match(val2)) { // was same
+//                        return false;
+//                    } else {
+//                        sameVarValue = true;
+//                    }
+//                }
+//            }
+//        }
+//        return sameVarValue;
+//    }
 
     /**
      * Environment
@@ -884,6 +939,20 @@ public class Mapping
         for (Node qNode : qNodes) {
             if (qNode.getLabel().equals(label)) {
                 return qNode;
+            }
+        }
+        return null;
+    }
+    
+    Node getQueryNode(Node node) {
+        return getQueryNode(node.getLabel());
+    }
+    
+    Node getCommonNode(Mapping m) {
+        for (Node q1 : getQueryNodes()) {
+            Node q2 = m.getQueryNode(q1);
+            if (q2 != null) {
+                return q2;
             }
         }
         return null;

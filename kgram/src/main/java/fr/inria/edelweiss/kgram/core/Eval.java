@@ -20,6 +20,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.api.query.Results;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
+import fr.inria.edelweiss.kgram.core.Mappings.VariableSorter;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;
@@ -266,17 +267,20 @@ public class Eval implements ExpType, Plugin {
     }
 
     int query(Node gNode, Query q) {
-        if (q.getMappings() != null && ! q.isAlgebra()) {
-            for (Mapping m : q.getMappings()) {
-                if (binding(m)) {
-                    eval(gNode, q);
-                    free(m);
+        if (q.getValues() != null) {
+            Exp values = q.getValues();
+            if (! values.isPostpone() && !q.isAlgebra()) {
+                for (Mapping m : values.getMappings()) {
+                    if (binding(values.getNodeList(), m)) {
+                        eval(gNode, q);
+                        free(values.getNodeList(), m);
+                    }
                 }
+                return 0;
             }
-            return 0;
-        } else {
-            return eval(gNode, q);
-        }
+        } 
+        
+        return eval(gNode, q);
     }
 
     public Mappings filter(Mappings map, Query q) {
@@ -349,51 +353,7 @@ public class Eval implements ExpType, Plugin {
     void process(Node gNode, Producer p, Exp exp){        
         results = evalSparql.eval(gNode, p, exp);        
     }
-
-    /**
-     * values var { val }
-     */
-    boolean binding(Mapping map) {
-        return binding(map, -1);
-    }
-    
-    boolean binding(Mapping map, int n) {
-        int i = 0;
-        for (Node qNode : map.getQueryNodes()) {
-
-            Node node = map.getNode(qNode);
-            if (node != null) {
-                Node value = producer.getNode(node.getValue());
-                boolean suc = memory.push(qNode, value, n);
-
-                if (!suc) {
-                    int j = 0;
-                    for (Node qq : map.getQueryNodes()) {
-
-                        Node nn = map.getNode(qq);
-                        if (nn != null) {
-                            if (j >= i) {
-                                return false;
-                            } else {
-                                j++;
-                            }
-                            memory.pop(qq);
-                        }
-
-                    }
-                }
-            }
-            i++;
-        }
-        return true;
-    }
-
-    void free(Mapping map) {
-        for (Node qNode : map.getQueryNodes()) {
-            memory.pop(qNode);
-        }
-    }
-
+   
     /**
      * Subquery processed by a function call that return Mappings Producer may
      * cast the result into Mappings use case: {select xpath(?x, '/book/title')
@@ -1449,6 +1409,7 @@ public class Eval implements ExpType, Plugin {
      * {?x c:name ?name} minus {?x c:name 'John'} TODO: optimize it, cache
      * results in exp (like subquery)
      */
+    
     private int minus(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
@@ -1461,10 +1422,36 @@ public class Eval implements ExpType, Plugin {
             node2 = exp.getGraphNode();
         }
         Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
-        // draft for federated query
-        exp.rest().setMappings(map1);
-        Mappings map2 = subEval(p, gNode, node2, exp.rest(), exp);
         
+        if (map1.isEmpty()) {
+            return backtrack;
+        }
+        
+        Exp rest = exp.rest();
+        
+        if (memory.getQuery().isFederate()) {
+            // service clause in rest may take Mappings into account
+            exp.rest().setMappings(map1);
+        } 
+        else {
+            // draft test: inject Mappings in right arg of minus
+            // in the form of a values clause
+            // getRecordInScopeNodes() : in-scope variables in rest
+            // except those that are only in right arg of optional 
+            Exp values = Exp.createValues(exp.rest().getRecordInScopeNodes(), map1);
+            if (! values.getNodeList().isEmpty()) {
+                // tricky: variables in common are in right arg of optional only !!!
+                // w3c test !!!
+                rest = exp.rest().duplicate();
+                rest.getExpList().add(0, values);
+            }
+        }
+              
+        Mappings map2 = subEval(p, gNode, node2, rest, exp);
+        
+//        List<String> varList = map1.getCommonVariables(map2);
+//        map2.sort(varList);
+                
         for (Mapping map : map1) {
             boolean ok = true;
             for (Mapping minus : map2) {
@@ -1602,22 +1589,8 @@ public class Eval implements ExpType, Plugin {
 
     int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) {
         int backtrack = n - 1;
-        Mapping ma1 = map1.get(0);
-        Mapping ma2 = map2.get(0);
-        Node q = null;
-
-        // look if map1 and map2 share a variable q
-        for (Node q1 : ma1.getQueryNodes()) {
-            for (Node q2 : ma2.getQueryNodes()) {
-                if (q1.equals(q2)) {
-                    q = q1;
-                    break;
-                }
-            }
-            if (q != null) {
-                break;
-            }
-        }
+       
+        Node q = map1.getCommonNode(map2);
 
         if (q == null) {
             // no variable in common : simple cartesian product
@@ -2198,46 +2171,73 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-     private int values(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int values(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
 
         for (Mapping map : exp.getMappings()) {
 
-            //System.out.println("** E: " + map);
-            if (binding(map, n)) {
+            if (binding(exp.getNodeList(), map, n)) {
                 backtrack = eval(p, gNode, stack, n + 1);
-                free(map);
+                free(exp.getNodeList(), map);
 
                 if (backtrack < n) {
                     return backtrack;
                 }
-            }
+            }           
         }
 
         return backtrack;
 
+    }
+     
+    /**
+     * values var { val }
+     */
+    boolean binding(List<Node> varList, Mapping map) {
+        return binding(varList, map, -1);
     }
     
-    private int values2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
+    boolean binding(List<Node> varList, Mapping map, int n) {
+        int i = 0;
+        for (Node qNode : varList){ //map.getQueryNodes()) {
 
-        for (Mapping map : exp.getMappings()) {
-
-            //System.out.println("** E: " + map);
-            if (memory.push(map, n)) {
-                backtrack = eval(p, gNode, stack, n + 1);
-                memory.pop(map);
-
-                if (backtrack < n) {
-                    return backtrack;
+            Node node = map.getNode(qNode);
+            if (node != null) {
+                Node value = producer.getNode(node.getValue());
+                boolean suc = memory.push(qNode, value, n);
+                if (!suc) {
+                    popBinding(varList, map, i);
+                    return false;
                 }
             }
+            i++;
         }
-
-        return backtrack;
-
+        return true;
+    }
+    
+    boolean popBinding(List<Node> varList, Mapping map, int i) {
+        int j = 0;
+        for (Node qq : varList){ //map.getQueryNodes()) {
+            Node nn = map.getNode(qq);
+            if (nn != null) {
+                if (j >= i) {
+                    return false;
+                } else {
+                    j++;
+                }
+                memory.pop(qq);
+            }
+        }
+        return false;
     }
 
+    void free(List<Node> varList, Mapping map) {
+        for (Node qNode : varList) {
+            memory.pop(qNode);
+        }
+    }
+ 
+    
     /**
      * Enumerate candidate edges
      *

@@ -19,6 +19,9 @@ public class Message {
 	public static final int LOOP = 8;
 	public static final int UNDEF_FUN 	= 9;
 	public static final int AGG 	= 10;
+        
+        public static final String NL = System.getProperty("line.separator");
+
 
 	static Hashtable<Integer, String> table; 
 	

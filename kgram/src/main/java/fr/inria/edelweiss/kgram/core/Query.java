@@ -31,6 +31,20 @@ import org.apache.logging.log4j.LogManager;
 public class Query extends Exp implements Graphable {
 
     /**
+     * @return the federate
+     */
+    public boolean isFederate() {
+        return federate;
+    }
+
+    /**
+     * @param federate the federate to set
+     */
+    public void setFederate(boolean federate) {
+        this.federate = federate;
+    }
+
+    /**
      * @return the validate
      */
     public boolean isValidate() {
@@ -179,6 +193,7 @@ public class Query extends Exp implements Graphable {
             // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
             isListPath = false;
     private boolean validate = false;
+    private boolean federate = false;
     private boolean isFun = false;
     private boolean isPathType = false;
     // store the list of edges of the path
@@ -314,12 +329,13 @@ public class Query extends Exp implements Graphable {
             sb.append("having ");
             sb.append(getHaving());
         }
-        if (getMappings() != null && getMappings().size() > 0) {
+        Exp val = getValues();
+        if (val != null && val.getMappings().size() > 0) {
             sb.append("\n");
             sb.append("values");
-            sb.append(getBindingNodes());
+            sb.append(val.getNodeList());
             sb.append("{");
-            sb.append(getMappings());
+            sb.append(val.getMappings());
             sb.append("}");
         }
         
@@ -507,7 +523,7 @@ public class Query extends Exp implements Graphable {
         return isSelect()
                 && getSelectFun().isEmpty()
                 && getBody().size() == 0
-                && getMappings() == null;            
+                && getValues().getMappings() == null;            
     }
     
     public boolean isSelectExpression(){
@@ -641,13 +657,12 @@ public class Query extends Exp implements Graphable {
     }
 
     public List<Node> getBindingNodes() {
-        return bindingNodes;
+        if (getValues() == null) {
+            return bindingNodes;
+        }
+        return getValues().getNodeList();
     }
-
-    public void setBindingNodes(List<Node> l) {
-        bindingNodes = l;
-    }
-
+  
     /**
      * use case: select * list of nodes that are exposed as select *
      */
@@ -892,6 +907,14 @@ public class Query extends Exp implements Graphable {
 
     public List<Exp> getSelectFun() {
         return selectExp;
+    }
+    
+    public List<Node> getSelectNodeList() {
+        List<Node> list = new ArrayList<Node>();
+        for (Exp ee : getQuery().getSelectFun()) {
+            add(list, ee.getNode());
+        }
+        return list;
     }
 
     public List<Exp> getSelectWithExp() {

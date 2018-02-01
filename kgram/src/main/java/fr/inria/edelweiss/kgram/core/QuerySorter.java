@@ -212,7 +212,9 @@ public class QuerySorter implements ExpType {
     }
     
     void optional(Exp exp){
-        exp.first().setNodeList(exp.first().getNodes());
+        //exp.first().setNodeList(exp.first().getNodes());
+        // for historical reasons it is stored by setNodeList()
+        exp.first().setNodeList(exp.getInScopeNodes());
         exp.optional();
     }
     

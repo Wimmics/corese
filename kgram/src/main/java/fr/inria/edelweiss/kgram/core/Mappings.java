@@ -16,6 +16,7 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventManager;
+import java.util.HashMap;
 
 /*
  * Manage list of Mapping, result of a query
@@ -202,6 +203,10 @@ public class Mappings extends PointerObject
     @Override
     public int size() {
         return list.size();
+    }
+    
+    public boolean isEmpty() {
+        return size() == 0;
     }
 
     public Mapping get(int n) {
@@ -480,6 +485,35 @@ public class Mappings extends PointerObject
     
     }
     
+    public void sort(List<String> varList) {
+        Collections.sort(list, new VariableSorter(varList));
+    }
+    
+    VariableSorter getVariableSorter(List<String> varList) {
+        return new VariableSorter(varList);
+    }
+    
+    class VariableSorter implements Comparator<Mapping> {
+        
+        List<String> varList;
+        
+        VariableSorter(List<String> list) {
+            this.varList = list;
+        }
+            
+        @Override
+        public int compare(Mapping m1, Mapping m2){
+            int res = 0;
+            for (int i = 0; i < varList.size() && res == 0; i++) {
+                Node n1 = m1.getNodeValue(varList.get(i));
+                Node n2 = m2.getNodeValue(varList.get(i));
+                res = genCompare(n1, n2);
+            }
+            return res;
+        }
+    
+    }
+    
 
     /**
      *
@@ -513,6 +547,22 @@ public class Mappings extends PointerObject
             }
         }
     }
+    
+     int find(Mapping m, VariableSorter vs, int first, int last) {
+        if (first >= last) {
+            return first;
+        } else {
+            int mid = (first + last) / 2;
+            Mapping mm = get(mid);
+            int res = vs.compare(mm, m);
+            if (res >= 0) {
+                return find(m, vs, first, mid);
+            } else {
+                return find(m, vs, mid + 1, last);
+            }
+        }
+    }
+    
 
     int compare(Node n1, Node n2) {
         int res = 0;
@@ -1069,6 +1119,54 @@ public class Mappings extends PointerObject
      *
      ********************************************************************
      */
+    
+    Node getCommonNode(Mappings map) {
+        if (isEmpty() || map.isEmpty()) {
+            return null;
+        }
+        return get(0).getCommonNode(map.get(0));       
+    }
+    
+    List<String> getCommonVariables(Mappings map) {
+        HashMap<String, String> t1 = new HashMap<>();
+        HashMap<String, String> t2 = new HashMap<>();
+        getVariables(t1);
+        map.getVariables(t2);        
+        return intersection(t1, t2);
+    }
+    
+    List<String> intersection(HashMap<String, String> t1, HashMap<String, String> t2) {
+        ArrayList<String> varList = new ArrayList<>();
+        for (String var : t1.keySet()) {
+            if (t2.containsKey(var)) {
+                varList.add(var);
+            }
+        }
+        return varList;
+    }
+    
+    void getVariables(HashMap<String, String> table) { 
+       for (Mapping m : this) {
+            for (String var : m.getVariableNames()) {
+                table.put(var, var);
+            }
+        } 
+    }
+    
+    /**
+     * Is there a Mapping compatible with m
+     * @param m
+     * @return 
+     */
+    boolean compatible(Mapping m, List<String> list) {
+        int n = find(m, getVariableSorter(list), 0, size()-1);
+        if (n >= 0 && n < size()) {
+            Mapping mm = get(n);
+            return m.compatible(mm);
+        }
+        return false;
+    }
+    
     public Mappings union(Mappings lm) {
         Mappings res = (getQuery() == lm.getQuery()) ? Mappings.create(getQuery()) : new Mappings();
         for (Mapping m : this) {

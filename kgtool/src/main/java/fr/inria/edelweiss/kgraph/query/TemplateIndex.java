@@ -100,7 +100,7 @@ class TemplateIndex extends HashMap<String, List<Query>> {
     }
 
     Mappings anyMappings(Query q, Exp exp) {
-        Mappings map = q.getAnyMappings();
+        Mappings map = q.getActualMappings();
         if (map != null) {
             return map;
         }

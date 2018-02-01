@@ -520,7 +520,7 @@ public class RuleEngine implements Engine, Graphable {
 
         if (isOptimize) {
             // consider only rules that match newly entailed edge predicates
-            // consider solutions that contain at leat one newly entailed edge           
+            // consider solutions that contain at least one newly entailed edge           
             start();
             initOptimize();
         }
@@ -570,7 +570,7 @@ public class RuleEngine implements Engine, Graphable {
                         int save = graph.size();
                         nt = record(rule, loopIndex, loop);
                         Record ot = rule.getRecord();
-
+                        
                         if (nt.accept(ot)) {
                             
                             if (trace){

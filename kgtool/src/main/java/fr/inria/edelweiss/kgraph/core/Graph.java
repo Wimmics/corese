@@ -3280,9 +3280,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                             if (getNode(value) == null) {
                                 return false;
                             }
-                        } else if (q.getBindingNodes().contains(value) && q.getMappings() != null) {
+                        } else if (q.getBindingNodes().contains(value) && q.getValues().getMappings() != null) {
                             // ?c a ?t with bindings
-                            for (Mapping map : q.getMappings()) {
+                            for (Mapping map : q.getValues().getMappings()) {
 
                                 Node node = map.getNode(value);
                                 if (node != null && getNode(node) != null) {
@@ -3293,9 +3293,9 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
                             return false;
                         }
                     }
-                } else if (q.getBindingNodes().contains(var) && q.getMappings() != null) {
+                } else if (q.getBindingNodes().contains(var) && q.getValues().getMappings() != null) {
                     // property variable with bindings: check the bindings
-                    for (Mapping map : q.getMappings()) {
+                    for (Mapping map : q.getValues().getMappings()) {
 
                         Node node = map.getNode(var);
                         if (node != null && getPropertyNode(node) != null) {

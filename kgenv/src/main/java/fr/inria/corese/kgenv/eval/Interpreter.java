@@ -156,6 +156,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         switch (exp.oper()) {
 
             case UNNEST:
+                if (hasListener) {
+                    listener.listen(exp);
+                }
                 // unnest(sql()) as ()
                 exp = exp.getExp(0);
 

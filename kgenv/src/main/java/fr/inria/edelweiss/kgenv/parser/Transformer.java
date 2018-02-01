@@ -827,11 +827,13 @@ public class Transformer implements ExpType {
         } else {
             q.setValues(bind);
             if (ast.getValues().isMoved()) {
-                q.setTemplateMappings(bind.getMappings());
-            } else {
-                q.setMappings(bind.getMappings());
-                q.setBindingNodes(bind.getNodeList());
-            }
+                //q.setTemplateMappings(bind.getMappings());
+                q.getValues().setPostpone(true);
+            } 
+//            else {
+//                q.setMappings(bind.getMappings());
+//                q.setBindingNodes(bind.getNodeList());
+//            }
         }
     }
 

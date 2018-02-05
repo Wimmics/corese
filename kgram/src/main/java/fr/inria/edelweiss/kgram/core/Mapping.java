@@ -691,7 +691,12 @@ public class Mapping
     }
 
     public void setNodeValue(String q, Node t) {
-        values.put(q, t);
+        if (t == null) {
+            values.remove(q);
+        }
+        else {
+            values.put(q, t);
+        }
     }
 
     public Set<String> getVariableNames() {
@@ -814,6 +819,33 @@ public class Mapping
     Edge getQueryEdge(int n) {
         return qEdges[n];
     }
+    
+     /**
+     * minus compatible
+     * varList is the list of common variables between Mappings map1 and map2
+     * Focus on varList but we are not sure that they are bound in these particular Mapping
+     * If all common variables have same values : compatible = true
+     * If no common variable : compatible = false
+     * else compatible = false
+     * */
+    boolean compatible(Mapping map, List<String> varList) {
+        boolean sameVarValue = false;
+        for (String var : varList) {
+            Node val1 = getNodeValue(var);
+            Node val2 = map.getNodeValue(var);
+            if (val1 == null || val2 == null) {
+                // do nothing as if variable were not in Mapping
+                // use case: select count(*) as ?c
+                // ?c is in QueryNodes but has no value
+                // use case: minus {option{}}
+            } else if (val1.match(val2)) { 
+                sameVarValue = true;
+            } else {
+                return false;
+            }
+        }
+        return sameVarValue;
+    }
 
     /**
      * Compatible imply remove minus if all shared variables have same value
@@ -877,6 +909,8 @@ public class Mapping
         }
         return sameVarValue;
     }
+   
+     
     
 //    boolean compatible2(Mapping map, boolean defaultValue) {
 //        boolean sameVarValue = defaultValue;

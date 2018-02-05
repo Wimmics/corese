@@ -1128,14 +1128,12 @@ public class Mappings extends PointerObject
     }
     
     List<String> getCommonVariables(Mappings map) {
-        HashMap<String, String> t1 = new HashMap<>();
-        HashMap<String, String> t2 = new HashMap<>();
-        getVariables(t1);
-        map.getVariables(t2);        
-        return intersection(t1, t2);
+        HashMap<String, String> t1 = unionVariable();
+        HashMap<String, String> t2 = map.unionVariable();
+        return intersectionVariable(t1, t2);
     }
     
-    List<String> intersection(HashMap<String, String> t1, HashMap<String, String> t2) {
+    List<String> intersectionVariable(HashMap<String, String> t1, HashMap<String, String> t2) {
         ArrayList<String> varList = new ArrayList<>();
         for (String var : t1.keySet()) {
             if (t2.containsKey(var)) {
@@ -1145,12 +1143,14 @@ public class Mappings extends PointerObject
         return varList;
     }
     
-    void getVariables(HashMap<String, String> table) { 
+    HashMap<String, String> unionVariable() { 
+       HashMap<String, String> union = new HashMap<>();
        for (Mapping m : this) {
             for (String var : m.getVariableNames()) {
-                table.put(var, var);
+                union.put(var, var);
             }
         } 
+       return union;
     }
     
     /**
@@ -1162,7 +1162,7 @@ public class Mappings extends PointerObject
         int n = find(m, getVariableSorter(list), 0, size()-1);
         if (n >= 0 && n < size()) {
             Mapping mm = get(n);
-            return m.compatible(mm);
+            return m.compatible(mm,list);
         }
         return false;
     }

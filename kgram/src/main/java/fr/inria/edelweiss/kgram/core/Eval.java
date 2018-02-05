@@ -1405,12 +1405,18 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    /**
-     * {?x c:name ?name} minus {?x c:name 'John'} TODO: optimize it, cache
-     * results in exp (like subquery)
-     */
-    
     private int minus(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        if (query.isTest()) {
+            // old
+            return minus2(p, gNode, exp, stack, n);
+        }
+        else {
+            // new
+            return minus1(p, gNode, exp, stack, n);        
+        }
+    }
+    
+    private int minus1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = memory;
@@ -1448,10 +1454,92 @@ public class Eval implements ExpType, Plugin {
         }
               
         Mappings map2 = subEval(p, gNode, node2, rest, exp);
-        
-//        List<String> varList = map1.getCommonVariables(map2);
-//        map2.sort(varList);
+               
+        MappingSet set1 = new MappingSet(map1);
+        MappingSet set2 = new MappingSet(map2);
+        // variables in common in map1 and map2
+        List<String> varList = set1.intersectionOfUnion(set2);
+        // common variables are always bound in map1 and in map2 ?
+        boolean isBound = set1.inIntersection(varList) && set2.inIntersection(varList);
                 
+        if (isBound) {
+            map2.sort(varList);
+        }
+        
+        for (Mapping map : map1) {
+            boolean ok = true;
+            if (! varList.isEmpty()) {  
+                if (isBound) {
+                    // check map compatible by dichotomy in map2
+                    ok = ! map2.compatible(map, varList);
+                }
+                else {
+                    for (Mapping minus : map2) {
+                        // enumerate map2
+                        if (map.compatible(minus, varList)) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (ok) {
+                if (env.push(map, n)) {
+                    // query fake graph node must not be bound
+                    // for further minus ...
+                    if (hasGraph) {
+                        env.pop(qNode);
+                    }
+                    backtrack = eval(p, gNode, stack, n + 1);
+                    env.pop(map);
+                    if (backtrack < n) {
+                        return backtrack;
+                    }
+                }
+            }
+        }
+        return backtrack;
+    }
+    
+    private int minus2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n - 1;
+        boolean hasGraph = gNode != null;
+        Memory env = memory;
+        Node qNode = query.getGraphNode();
+
+        Node node1 = null, node2 = null;
+        if (hasGraph) {
+            node1 = qNode;
+            node2 = exp.getGraphNode();
+        }
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+        
+        if (map1.isEmpty()) {
+            return backtrack;
+        }
+        
+        Exp rest = exp.rest();
+        
+        if (memory.getQuery().isFederate()) {
+            // service clause in rest may take Mappings into account
+            exp.rest().setMappings(map1);
+        } 
+        else {
+            // draft test: inject Mappings in right arg of minus
+            // in the form of a values clause
+            // getRecordInScopeNodes() : in-scope variables in rest
+            // except those that are only in right arg of optional 
+            Exp values = Exp.createValues(exp.rest().getRecordInScopeNodes(), map1);
+            if (! values.getNodeList().isEmpty()) {
+                // tricky: variables in common are in right arg of optional only !!!
+                // w3c test !!!
+                rest = exp.rest().duplicate();
+                rest.getExpList().add(0, values);
+            }
+        }
+              
+        Mappings map2 = subEval(p, gNode, node2, rest, exp);
+                        
         for (Mapping map : map1) {
             boolean ok = true;
             for (Mapping minus : map2) {

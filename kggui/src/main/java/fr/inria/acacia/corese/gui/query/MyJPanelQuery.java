@@ -48,6 +48,7 @@ import fr.inria.edelweiss.kgtool.load.Load;
 import fr.inria.edelweiss.kgtool.load.LoadException;
 import fr.inria.edelweiss.kgtool.print.ResultFormat;
 import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.edelweiss.kgtool.transform.Transformer;
 import fr.inria.edelweiss.kgtool.util.SPINProcess;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -296,7 +297,7 @@ public final class MyJPanelQuery extends JPanel {
         textAreaXMLResult.setEditable(false);
         textAreaXMLResult.setText(resultXML.toString());
         scrollPaneXMLResult.setViewportView(textAreaXMLResult);
-        tabbedPaneResults.addTab("XML", scrollPaneXMLResult);
+        tabbedPaneResults.addTab("XML/RDF", scrollPaneXMLResult);
 
         //results in table
         tableResults.setPreferredScrollableViewportSize(tableResults.getPreferredSize());
@@ -475,18 +476,28 @@ public final class MyJPanelQuery extends JPanel {
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) map.getQuery().getAST();
         if (ast.isSPARQLQuery()) {
-            // RDF or XML
-            ResultFormat rf = ResultFormat.create(map);
-            rf.setNbResult(maxres);
-            String str = rf.toString();
-            if (str == "" && ast.getErrors() != null){
-                return ast.getErrorString();
+            if (map.getGraph() != null) {
+                return graphToString(map);
+            } else {
+                // RDF or XML
+                ResultFormat rf = ResultFormat.create(map);
+                rf.setNbResult(maxres);
+                String str = rf.toString();
+                if (str == "" && ast.getErrors() != null) {
+                    return ast.getErrorString();
+                }
+                return str;
             }
-            return str;
         } else {
             // XML bindings only (do not display the whole graph)
             return XMLFormat.create(map).toString();
         }
+    }
+    
+    String graphToString(Mappings map) {
+        Graph g = (Graph) map.getGraph();
+        Transformer t = Transformer.create(g, Transformer.TURTLE);
+        return t.transform();
     }
 
     void fillTable(Mappings map) {
@@ -622,7 +633,9 @@ public final class MyJPanelQuery extends JPanel {
         Viewer sgv = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD);
         sgv.enableAutoLayout(lLayout);
         View sgr = sgv.addDefaultView(false);
-        //View 	sgr = sgv.addView("test", GraphRenderer renderer) 
+        
+        //View myView = graph.display().getDefaultView();
+        
         sgr.getCamera().setAutoFitView(true);
 
         //Dégrise le bouton et ajoute le texte dans le textPane

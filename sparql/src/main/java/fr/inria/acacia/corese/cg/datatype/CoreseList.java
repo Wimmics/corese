@@ -297,6 +297,17 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
         list.set(n.intValue(), val);
         return val;
     }
+    
+    // modify
+    @Override
+    public IDatatype remove(IDatatype n) {
+        if (n.intValue() >= list.size()) {
+            return null;
+        }
+        list.remove(n.intValue());
+        return this;
+    }
+    
 
     @Override
     public IDatatype reverse() {

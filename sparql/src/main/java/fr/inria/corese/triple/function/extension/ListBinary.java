@@ -34,6 +34,8 @@ public class ListBinary extends BinaryFunction {
                 return DatatypeMap.cons(dt1, dt2);
             case ExprType.XT_APPEND:
                 return DatatypeMap.append(dt1, dt2);
+            case ExprType.XT_REMOVE:
+                return DatatypeMap.remove(dt1, dt2);
         }
         return null;
     }

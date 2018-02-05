@@ -362,6 +362,7 @@ public class Term extends Expression {
             case ExprType.XT_APPEND:
             case ExprType.XT_CONS:
             case ExprType.XT_MEMBER:
+            case ExprType.XT_REMOVE:   
                 return new ListBinary(name);
             case ExprType.XT_SET:
             case ExprType.XT_ADD:

@@ -1018,7 +1018,15 @@ public class DatatypeMap implements Cst, RDF {
         list.getList().set(n, val);
         return val;
     }
-
+    
+    public static IDatatype remove(IDatatype list, IDatatype n) {
+        if (!list.isList()) {
+            return null;
+        }
+        list.getList().remove(n);
+        return list;
+    }
+    
     public static IDatatype list(IDatatype[] args) {
         ArrayList<IDatatype> val = new ArrayList<IDatatype>(args.length);
         val.addAll(Arrays.asList(args));

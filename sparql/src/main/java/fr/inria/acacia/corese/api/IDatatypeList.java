@@ -21,6 +21,8 @@ public interface IDatatypeList {
 
     IDatatype set(IDatatype ind, IDatatype val);
 
+    IDatatype remove(IDatatype ind);
+
     IDatatype member(IDatatype elem);
 
     IDatatype cons(IDatatype elem);

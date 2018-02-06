@@ -131,18 +131,6 @@ public class Mappings extends PointerObject
         }
     }
     
-    void initiate2(Query q,  boolean b, boolean all){
-        this.query = q;
-        isDistinct = b;
-        isListGroup = q.isListGroup();
-        setSelect(q.getSelect());        
-        if (isDistinct) {
-            distinct = group(q.getSelectFun());
-            distinct.setDistinct(true);
-            distinct.setDuplicate(q.isDistribute());
-        }
-    }
-    
     public Mappings distinct() {
         Mappings res = new Mappings();
         res.initiate(getQuery(), true, true);
@@ -150,6 +138,19 @@ public class Mappings extends PointerObject
             res.submit(m);
         }
         return res;
+    }
+    
+    public Mappings distinct(List<Node> list) {
+        Mappings map = new Mappings(query);
+        map.setSelect(query.getSelect());
+        Group group = Group.create(list);
+        group.setDistinct(true);
+        for (Mapping m : this) {
+            if (group.isDistinct(m)) {
+                map.add(m);
+            }
+        }
+        return map;
     }
     
     public boolean isDistinct(){
@@ -1039,7 +1040,7 @@ public class Mappings extends PointerObject
     }
 
     Group createGroup(List<Exp> list, boolean extend) {
-        Group gp = new Group(list);
+        Group gp =  Group.createFromExp(list);
         gp.setDuplicate(query.isDistribute());
         gp.setExtend(extend);
         gp.setFake(isFake());
@@ -1054,7 +1055,7 @@ public class Mappings extends PointerObject
      * for select distinct
      */
     Group group(List<Exp> list) {
-        Group group = new Group(list);
+        Group group =  Group.createFromExp(list);
         return group;
     }
 

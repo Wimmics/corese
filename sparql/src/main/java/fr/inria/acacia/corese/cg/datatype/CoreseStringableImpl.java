@@ -154,40 +154,40 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 	}
 
 
-        @Override
-	public IDatatype plus(IDatatype iod) {
-		String str = getLabel() + iod.getLabel();
-		
-		if (this instanceof CoreseURI || iod instanceof CoreseURI) {
-			return new CoreseURI(str);
-		}
-		else {
-			return new CoreseString(str);
-		}
-	}
+//        @Override
+//	public IDatatype plus(IDatatype iod) {
+//		String str = getLabel() + iod.getLabel();
+//		
+//		if (this instanceof CoreseURI || iod instanceof CoreseURI) {
+//			return new CoreseURI(str);
+//		}
+//		else {
+//			return new CoreseString(str);
+//		}
+//	}
 
-        @Override
-	public IDatatype minus(IDatatype iod) {
-		int index = getLabel().indexOf(iod.getLabel());
-		String str=null;
-		
-		if (index == 0){
-			str = getLabel().substring(iod.getLabel().length());
-		}
-		else if (index > 0){
-			str = getLabel().substring(0, index - 1);
-		}
-		
-		if (str != null){
-			if (this instanceof CoreseURI || iod instanceof CoreseURI){
-				return new CoreseURI(str);
-			}
-			else {
-				return new CoreseString(str);
-			}
-		}
-		else
-			return iod;
-	}
+//        @Override
+//	public IDatatype minus(IDatatype iod) {
+//		int index = getLabel().indexOf(iod.getLabel());
+//		String str=null;
+//		
+//		if (index == 0){
+//			str = getLabel().substring(iod.getLabel().length());
+//		}
+//		else if (index > 0){
+//			str = getLabel().substring(0, index - 1);
+//		}
+//		
+//		if (str != null){
+//			if (this instanceof CoreseURI || iod instanceof CoreseURI){
+//				return new CoreseURI(str);
+//			}
+//			else {
+//				return new CoreseString(str);
+//			}
+//		}
+//		else
+//			return iod;
+//	}
 
 }

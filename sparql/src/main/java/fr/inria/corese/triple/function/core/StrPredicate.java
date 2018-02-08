@@ -36,10 +36,10 @@ public class StrPredicate extends BinaryFunction {
             case ExprType.CONTAINS:
                 return value(dt1.getLabel().contains(dt2.getLabel()));
             case ExprType.STRBEFORE:
-                if (eval.isCompliant() && !isStringLiteral(dt1)) return null;
+                if (eval.isCompliant() &&  ! (isStringLiteral(dt1) && isStringLiteral(dt2))) return null;
                 return strbefore(dt1, dt2);
             case ExprType.STRAFTER:
-                 if (eval.isCompliant() && !isStringLiteral(dt2)) return null;
+                 if (eval.isCompliant() && ! (isStringLiteral(dt1) && isStringLiteral(dt2))) return null;
                return strafter(dt1, dt2);    
         }
         return null;

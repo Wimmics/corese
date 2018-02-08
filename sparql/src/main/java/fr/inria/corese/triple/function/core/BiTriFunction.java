@@ -39,9 +39,15 @@ public class BiTriFunction extends TermEval {
                 return value(res);
                 
             case ExprType.SUBSTR:
+                if (eval.isCompliant() && ! isStringLiteral(dt1)) {
+                     return null;
+                }
                 return substr(dt1, dt2, dt3);
                 
              case ExprType.STRREPLACE:
+                 if (eval.isCompliant() && ! isStringLiteral(dt1)) {
+                     return null;
+                 }
                  if (dt3 == null) return null;
                  if (arity() == 4){
                      dt4 = getBasicArg(3).eval(eval, b, env, p);

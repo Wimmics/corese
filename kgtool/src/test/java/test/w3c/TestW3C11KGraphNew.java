@@ -241,7 +241,7 @@ public class TestW3C11KGraphNew {
             test(root0 + "expr-builtin");
             test(root0 + "construct");
         } else {
-            test(root0 + "algebra");
+            test(root0 + "optional-filter");
         }
 
     }
@@ -508,7 +508,7 @@ public class TestW3C11KGraphNew {
 
             Mappings res = exec.query(qman);
             System.out.println("** NB test: " + res.size());
-            //System.out.println(res2);
+            //System.out.println(res);
             nbtest += res.size();
 
             int ok = 0, ko = 0;
@@ -620,7 +620,7 @@ public class TestW3C11KGraphNew {
 
         // here
 
-      //  if (! fquery.contains("combo-2") ) return true;
+        //if (! fquery.contains("expr-5") ) return true;
 
         if (trace && fquery != null) {
             System.out.println(pp(fquery));
@@ -772,7 +772,7 @@ public class TestW3C11KGraphNew {
                         LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
-                gres.index();
+                gres.prepare();
             } else {
                 // SPARQL 1.0 RDF Result Format
                 w3RDFResult = parseRDFResult(ttl2rdf(fresult));
@@ -952,6 +952,7 @@ public class TestW3C11KGraphNew {
                 //System.out.println(query);
                 res = exec.sparql(query, ds, entail);
             }
+            //System.out.println("Test: " + res);
 
             //Mappings res = exec.sparql(query, ds, entail);
 //            System.out.println(res.getQuery().getAST());
@@ -1064,7 +1065,6 @@ public class TestW3C11KGraphNew {
             } else if (w3RDFResult != null) {
                 // old rdf result format
                 result = validate(res, w3RDFResult);
-
             } else {
                 // XML Result Format
 //				System.out.println("** kgram: \n" + res);
@@ -1202,7 +1202,7 @@ public class TestW3C11KGraphNew {
                     continue;
                 }
 
-                ok = compare(w3c, kres, w3cres);
+                ok = compare(kgram, w3c, kres, w3cres);
 
                 if (ok) {
 //                    if (kgram.getSelect().size() != w3cres.size()) ok = false;
@@ -1245,31 +1245,47 @@ public class TestW3C11KGraphNew {
     }
 
     // compare two results
-    boolean compare(Mappings map, Mapping kres, Mapping w3cres) {
+    boolean compare(Mappings kgmap, Mappings w3map, Mapping kgres, Mapping w3res) {
         TBN tbn = new TBN();
         boolean ok = true;
 
-        for (Node var : w3cres.getQueryNodes()){ //map.getSelect()){ //w3cres.getQueryNodes()) {
+        for (Node var : w3res.getQueryNodes()){ //map.getSelect()){ //w3cres.getQueryNodes()) {
             if (!ok) {
                 break;
             }
 
             // for each w3c variable/value
-            IDatatype w3cval = datatype(w3cres.getNode(var));
+            IDatatype w3val = datatype(w3res.getNode(var));
             // find same value in kgram
-            if (w3cval != null) {
+            if (w3val != null) {
                 String cvar = var.getLabel();
-                Node kNode = kres.getNode(var);
+                Node kNode = kgres.getNode(var);
                 if (kNode == null) {
                     ok = false;
                 } else {
                     IDatatype kdt = datatype(kNode);
-                    IDatatype wdt = w3cval;
+                    IDatatype wdt = w3val;
                     ok = compare(kdt, wdt, tbn);
                 }
             }
         }
-
+        
+        if (ok && kgmap.getSelect() != null) {
+            // kgram result has additional data
+            for (Node node : kgmap.getSelect()) {
+                if (kgres.getNodeValue(node) != null && w3res.getNode(node) == null) {
+                    ok = false;
+//                    if (w3res.getQueryNodes().length > 0) {
+//                        System.out.println("kg: "+ node + " = " + kgres.getNodeValue(node));
+//                        System.out.println();
+//                        System.out.println("w3c: " + w3res);
+//                        System.out.println("kgr: " + kgres);
+//                    }
+                    break;
+                }
+            }
+        }
+       
         return ok;
     }
 
@@ -1501,7 +1517,6 @@ public class TestW3C11KGraphNew {
             Mapping m = translate(map);
             res.add(m);
         }
-
         return res;
     }
 

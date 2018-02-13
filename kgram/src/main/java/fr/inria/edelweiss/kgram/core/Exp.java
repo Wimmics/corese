@@ -562,7 +562,7 @@ public class Exp extends PointerObject
 
         if (type() == VALUES) {
             nl(sb, 0);
-            sb.append(getMappings());
+            sb.append(getMappings().toString(true));
         } else if (type() == WATCH || type() == CONTINUE || type() == BACKJUMP) {
             // skip because loop
         } else {

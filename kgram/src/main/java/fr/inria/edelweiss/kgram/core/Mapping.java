@@ -441,7 +441,7 @@ public class Mapping
     }
 
     boolean isPath(Node qNode) {
-        return isPath(getIndex(qNode));
+        return lPath != null && isPath(getIndex(qNode));
     }
 
     void setPath(int n, Path p) {
@@ -824,12 +824,20 @@ public class Mapping
      * minus compatible
      * varList is the list of common variables between Mappings map1 and map2
      * Focus on varList but we are not sure that they are bound in these particular Mapping
-     * If all common variables have same values : compatible = true
      * If no common variable : compatible = false
+     * If all common variables have same values : compatible = true
      * else compatible = false
      * */
-    boolean compatible(Mapping map, List<String> varList) {
-        boolean sameVarValue = false;
+    boolean minusCompatible(Mapping map, List<String> varList) {
+        return compatible(map, varList, false);
+    }
+    
+    boolean optionalCompatible(Mapping map, List<String> varList) {
+        return compatible(map, varList, true);
+    }
+    
+    boolean compatible(Mapping map, List<String> varList, boolean compatibleWithoutCommonVariable) {
+        boolean success = compatibleWithoutCommonVariable;
         for (String var : varList) {
             Node val1 = getNodeValue(var);
             Node val2 = map.getNodeValue(var);
@@ -839,12 +847,12 @@ public class Mapping
                 // ?c is in QueryNodes but has no value
                 // use case: minus {option{}}
             } else if (val1.match(val2)) { 
-                sameVarValue = true;
+                success = true;
             } else {
                 return false;
             }
         }
-        return sameVarValue;
+        return success;
     }
 
     /**
@@ -862,6 +870,18 @@ public class Mapping
         else {
             return compatible2(map, defaultValue);            
         }
+    }
+    
+        // common variables have compatible values
+    boolean isMergeAble(Mapping m) {
+        for (String var : getVariableNames()) {
+            Node v1 = getNodeValue(var);
+            Node v2 = m.getNodeValue(var);
+            if (v2 != null && !v2.match(v1)) { // was equal
+                return false;
+            }
+        }
+        return true;
     }
         
         
@@ -1034,16 +1054,16 @@ public class Mapping
             return getQueryNodes();
         }
     }
-
+    
     Mapping join(Mapping m) {
         List<Node> qNodes = new ArrayList<Node>();
         List<Node> tNodes = new ArrayList<Node>();
 
         for (Node q1 : getSelectQueryNodes()) {
-            Node n1 = getNode(q1);
+            Node n1 = getNodeValue(q1);
             Node q2 = m.getSelectQueryNode(q1.getLabel());
             if (q2 != null) {
-                Node n2 = m.getNode(q2);
+                Node n2 = m.getNodeValue(q2);
                 if (! n1.match(n2)) { // was same
                     return null;
                 }
@@ -1066,20 +1086,9 @@ public class Mapping
         return map;
     }
 
-    // common variables have compatible values
-    boolean isJoinable(Mapping m) {
-        for (String var : getVariableNames()) {
-            Node v1 = getNodeValue(var);
-            Node v2 = m.getNodeValue(var);
-            if (v2 != null && !v2.match(v1)) { // was equal
-                return false;
-            }
-        }
-        return true;
-    }
 
-    Mapping joiner(Mapping m) {
-        if (!isJoinable(m)) {
+    Mapping merge(Mapping m) {
+        if (!isMergeAble(m)) { // ! compatible(m, true);
             return null;
         }
 

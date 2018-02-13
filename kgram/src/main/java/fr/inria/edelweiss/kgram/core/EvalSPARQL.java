@@ -112,7 +112,7 @@ public class EvalSPARQL {
              int nbsuc = 0;
              for (Mapping mb : m2){
                  boolean success = false;
-                 Mapping m = ma.joiner(mb);
+                 Mapping m = ma.merge(mb);
                  if (m != null){
                      success = true;
                      if (exp.isPostpone()){

@@ -1325,9 +1325,11 @@ public class Eval implements ExpType, Plugin {
                     mem.setJoinMappings(exp.getMappings());
                     break;
                 case Exp.MINUS:
+                case Exp.OPTIONAL:
                     // draft test
                     mem.setJoinMappings(exp.getMappings());
                     break;
+                    
             }
     }
     
@@ -1408,15 +1410,15 @@ public class Eval implements ExpType, Plugin {
     private int minus(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         if (query.isTest()) {
             // old
-            return minus2(p, gNode, exp, stack, n);
+            return minus1(p, gNode, exp, stack, n);
         }
         else {
             // new
-            return minus1(p, gNode, exp, stack, n);        
+            return minus2(p, gNode, exp, stack, n);        
         }
     }
     
-    private int minus1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int minus2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = memory;
@@ -1433,71 +1435,15 @@ public class Eval implements ExpType, Plugin {
             return backtrack;
         }
         
-        Exp rest = exp.rest();       
-        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();
-        
-        if (memory.getQuery().isFederate()) {
-            // service clause in rest may take Mappings into account
-            if (!nodeListInScope.isEmpty()) {
-                // select distinct map1 wrt map2 inscope nodes  
-                Mappings map1dist = map1.distinct(nodeListInScope);
-                exp.rest().setMappings(map1dist);
-            }
-        }
-        else {
-            // draft test: inject Mappings in right arg of minus
-            // in the form of a values clause
-            // getRecordInScopeNodes() : in-scope variables in rest
-            // except those that are only in right arg of optional 
-            if (! nodeListInScope.isEmpty()) {
-                // select distinct map1 wrt map2 inscope nodes 
-                Mappings map1dist = map1.distinct(nodeListInScope);
-                if (query.isDebug()){
-                    System.out.println("Ev in scope: " + nodeListInScope);
-                    System.out.println("Ev map1: \n" + map1);
-                    System.out.println("Ev distinct map1: \n" + map1dist);
-                }
-                Exp values = Exp.createValues(nodeListInScope, map1dist);               
-                rest = exp.rest().duplicate();
-                rest.getExpList().add(0, values);
-            }
-        }
-              
-        Mappings map2 = subEval(p, gNode, node2, rest, exp);
-                       
         MappingSet set1 = new MappingSet(map1);
-        MappingSet set2 = new MappingSet(map2);
-        // variables in common in map1 and map2
-        List<String> varList = set1.intersectionOfUnion(set2);
-        // common variables are always bound in map1 and in map2 ?
-        boolean isBound = set1.inIntersection(varList) && set2.inIntersection(varList);
+        Exp rest = prepareRest(exp, set1);              
+        Mappings map2 = subEval(p, gNode, node2, rest, exp);                       
+        MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
+        set.setDebug(query.isDebug());
+        set.start();
         
-        if (query.isDebug()) {
-            System.out.println("Ev union: " + set1.getUnion().keySet() + " " + set2.getUnion().keySet());
-            System.out.println("Ev minus: " + varList + " " +isBound + " " + map1.size() + " " +map2.size());
-        }
-                
-        if (isBound) {
-            map2.sort(varList);
-        }
-        
-        for (Mapping map : map1) {
-            boolean ok = true;
-            if (! varList.isEmpty()) {  
-                if (isBound) {
-                    // check map compatible by dichotomy in map2
-                    ok = ! map2.compatible(map, varList);
-                }
-                else {
-                    for (Mapping minus : map2) {
-                        // enumerate map2
-                        if (map.compatible(minus, varList)) {
-                            ok = false;
-                            break;
-                        }
-                    }
-                }
-            }
+        for (Mapping map : map1) {            
+            boolean ok = ! set.minusCompatible(map);
             if (ok) {
                 if (env.push(map, n)) {
                     // query fake graph node must not be bound
@@ -1516,7 +1462,38 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
     
-    private int minus2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    /**
+     * exp a Minus or Optional
+     */
+    Exp prepareRest(Exp exp, MappingSet set1) {
+        Exp rest = exp.rest();
+        // in-scope variables in rest
+        // except those that are only in right arg of an optional in rest
+        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();
+        if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
+            // generate values when at least one variable in-subscope is always 
+            // bound in map1, otherwise it would generate duplicates in map2
+            Mappings map1dist = set1.getMappings().distinct(nodeListInScope);
+            if (memory.getQuery().isFederate()) {
+                // service clause in rest may take Mappings into account
+                // select distinct map1 wrt map2 inscope nodes  
+                exp.rest().setMappings(map1dist);
+            } else {
+                // inject Mappings in right arg of minus as a values clause            
+                // select distinct map1 wrt map2 inscope nodes 
+                Exp values = Exp.createValues(nodeListInScope, map1dist);
+                if (query.isDebug()) {
+                    System.out.println(exp.title());
+                    System.out.println(values);
+                }
+                rest = exp.rest().duplicate();
+                rest.getExpList().add(0, values);
+            }
+        }
+        return rest;
+    }
+    
+    private int minus1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = memory;
@@ -2709,6 +2686,117 @@ public class Eval implements ExpType, Plugin {
      *
      */
     private int optional(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        if (query.isTest()) {
+            return optional1(p, gNode, exp, stack, n);
+        }
+        else {
+            return optional2(p, gNode, exp, stack, n);
+        }
+    }
+    
+    /**
+     * Draft test
+     * 
+     * A optional B Filter F
+     * map1 = eval(A) ; map2 = eval(values Vb { distinct(map1/Vb) }  B)
+     * Vb = variables in-subscope in B, ie in-scope except in right arg of an optional in B
+     * for m1 in map1: for m2 in map2:
+     * if m1.compatible(m2): merge = m1.merge(m2)
+     * if eval(F(merge)) result += merge ...
+     */
+    private int optional2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n - 1;
+        boolean hasGraph = gNode != null;
+        Node qNode = query.getGraphNode();
+        Memory env = memory;
+
+        Node node1 = null;
+        if (hasGraph) {
+            node1 = qNode;
+        }
+
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+        if (map1.isEmpty()) {
+            return backtrack;
+        }
+        
+        MappingSet set1 = new MappingSet(map1);
+        Exp rest = prepareRest(exp, set1); 
+        /**
+         * Push bindings from map1 into rest
+         * when there is at least one variable in-subscope of rest
+         * that is always bound in map1
+         * ?x p ?y optional { ?y q ?z } -> values ?y { y1  yn }
+         * {?x p ?y optional { ?y q ?z }} optional { ?z r ?t } -> 
+         * if ?z is not bound in every map1, generate no values.
+         */
+        Mappings map2 = subEval(p, gNode, node1, rest, exp);
+                       
+        MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
+        set.setDebug(query.isDebug());
+        set.start();
+               
+        for (Mapping m1 : map1) {
+            boolean success = false;
+            int nbsuc = 0;
+            for (Mapping m2 : set.getCandidateMappings(m1)) {  
+                Mapping merge = m1.merge(m2);
+                if (merge != null) {
+                    success = filter(merge, exp);
+                    if (success) {
+                        nbsuc++;
+                        if (env.push(merge, n)) {
+                            if (hasGraph) {
+                                env.pop(qNode);
+                            }
+                            backtrack = eval(p, gNode, stack, n + 1);
+                            env.pop(merge);
+                            if (backtrack < n) {
+                                return backtrack;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (nbsuc == 0) { 
+                if (env.push(m1, n)) {
+                    if (hasGraph) {
+                        env.pop(qNode);
+                    }
+                    backtrack = eval(p, gNode, stack, n + 1);
+                    env.pop(m1);
+                    if (backtrack < n) {
+                        return backtrack;
+                    }
+                }
+            }
+        }
+
+        return backtrack;
+    }
+    
+    
+    
+    boolean filter(Mapping map, Exp exp) {
+        if (exp.isPostpone()) {
+            // A optional B
+            // filters of B must be evaluated now
+            for (Exp f : exp.getPostpone()) {
+                map.setQuery(query);
+                map.setMap(memory.getMap());
+                map.setBind(memory.getBind());
+                if (! evaluator.test(f.getFilter(), map)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    
+    
+    private int optional1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Node qNode = query.getGraphNode();
@@ -2722,30 +2810,13 @@ public class Eval implements ExpType, Plugin {
         Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
 
         for (Mapping r1 : map1) {
-
-            boolean success = false, fail = false;
+            boolean success = false;
 
             Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1, false);
             int nbsuc = 0;
+            
             for (Mapping r2 : map2) {
-
-                success = true;
-                
-                if (exp.isPostpone()){
-                    // A optional B
-                    // filters of B must be evaluated now
-                    for (Exp f : exp.getPostpone()) {
-                        r2.setQuery(query);
-                        r2.setMap(memory.getMap());
-                        r2.setBind(memory.getBind());
-                        success = evaluator.test(f.getFilter(), r2);
-                        if (!success) {
-                            fail = true;
-                            break;
-                        }
-                    }
-                }
-
+                success = filter(r2, exp);
                 if (success){
                     nbsuc++;
                     if (env.push(r2, n)) {
@@ -2761,9 +2832,7 @@ public class Eval implements ExpType, Plugin {
                 }
             }
 
-            if (nbsuc == 0 || fail) {
-                // all r2 fail or filter has failed on merge(r1, r2)
-                // { μ1 | μ1 in Ω1, ∃ μ2 in Ω2, μ1 and μ2 are compatible and expr(merge(μ1, μ2)) is false. }
+            if (nbsuc == 0) { // || fail) {
                 if (env.push(r1, n)) {
                     if (hasGraph) {
                         env.pop(qNode);

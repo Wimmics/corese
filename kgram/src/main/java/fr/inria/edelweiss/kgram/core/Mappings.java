@@ -1159,11 +1159,16 @@ public class Mappings extends PointerObject
      * @param m
      * @return 
      */
-    boolean compatible(Mapping m, List<String> list) {
+    
+    int  find(Mapping m, List<String> list) {
+        return find(m, getVariableSorter(list), 0, size()-1);
+    }
+    
+    boolean minusCompatible(Mapping m, List<String> list) {
         int n = find(m, getVariableSorter(list), 0, size()-1);
         if (n >= 0 && n < size()) {
             Mapping mm = get(n);
-            return m.compatible(mm,list);
+            return m.minusCompatible(mm,list);
         }
         return false;
     }
@@ -1201,7 +1206,7 @@ public class Mappings extends PointerObject
         Mappings res =  Mappings.create(getQuery());
         for (Mapping m1 : this) {
             for (Mapping m2 : lm) {
-                Mapping map = m1.joiner(m2);
+                Mapping map = m1.merge(m2);
                 if (map != null) {
                     res.add(map);
                 }
@@ -1220,7 +1225,7 @@ public class Mappings extends PointerObject
             if (val == null){
                 // common unbound in m1
                 for (Mapping m2 : map2){
-                    Mapping m = m1.joiner(m2);
+                    Mapping m = m1.merge(m2);
                     if (m != null){
                         res.add(m);
                     }
@@ -1231,7 +1236,7 @@ public class Mappings extends PointerObject
                     Node val2 = m2.getNodeValue(cmn);
                     if (val2 == null){
                         // common unbound in m2
-                         Mapping m = m1.joiner(m2);
+                         Mapping m = m1.merge(m2);
                          if (m != null){
                              res.add(m);
                          }                         
@@ -1255,7 +1260,7 @@ public class Mappings extends PointerObject
                         if (n2 == null || !val.match(n2)) { // was equal
                             break;
                         }
-                        Mapping m = m1.joiner(m2);
+                        Mapping m = m1.merge(m2);
                         if (m != null){
                              res.add(m);
                          }   

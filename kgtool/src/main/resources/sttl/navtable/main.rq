@@ -2,12 +2,15 @@ prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
 prefix o:   <http://dbpedia.org/ontology/>
 
 template st:main {
+
     format {
         ft:frame.html
         coalesce(?label, us:display(?uri)) 
-        coalesce(st:format("<img src='%s' />", ?icon), "")
+        coalesce(st:format('<img src="%s" />', ?icon), "")
         st:apply-templates(?uri)
     }
+    
+    st:call-template(st:glocate, ?uri)
 }
 where {
     bind (st:focus() as ?uri)

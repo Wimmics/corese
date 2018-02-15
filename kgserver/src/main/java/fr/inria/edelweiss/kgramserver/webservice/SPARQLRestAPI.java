@@ -354,26 +354,7 @@ public class SPARQLRestAPI {
 	// SPARQL QUERY - SELECT and ASK with HTTP POST
 	// ----------------------------------------------------
 
-	@POST
-	@Produces({"application/sparql-results+xml", "application/xml", "text/plain"})
-	@Consumes("application/x-www-form-urlencoded")
-	public Response getTriplesXMLForPost(@DefaultValue("") @FormParam("query") String query, @FormParam("default-graph-uri") List<String> defaultGraphUris,
-			@FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
-		try {
-			if (logger.isDebugEnabled())
-				logger.debug("Rest Post SPARQL Result XML/plain: " + query);
-			if (query.equals(""))
-				query = message;
-			if (logger.isDebugEnabled())
-				logger.debug("Rest Post SPARQL Result XML/plain: " + query);
-
-			Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
-			return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
-		} catch (Exception ex) {
-			logger.error("Error while querying the remote KGRAM engine", ex);
-			return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
-		}
-	}
+	
 
 	@POST
 	@Produces({"application/sparql-results+xml", "application/xml", "text/plain"})
@@ -395,6 +376,30 @@ public class SPARQLRestAPI {
 			return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
 		}
 	}
+        
+        
+        @POST
+	@Produces({"application/sparql-results+xml", "application/xml", "text/plain"})
+	@Consumes("application/x-www-form-urlencoded")
+	public Response getTriplesXMLForPost(@DefaultValue("") @FormParam("query") String query, @FormParam("default-graph-uri") List<String> defaultGraphUris,
+			@FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
+		try {
+			if (logger.isDebugEnabled())
+				logger.debug("Rest Post SPARQL Result XML/plain: " + query);
+			if (query.equals(""))
+				query = message;
+			if (logger.isDebugEnabled())
+				logger.debug("Rest Post SPARQL Result XML/plain: " + query);
+
+			Mappings map = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
+			return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
+		} catch (Exception ex) {
+			logger.error("Error while querying the remote KGRAM engine", ex);
+			return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+		}
+	}
+        
+        
 
 	@POST
 	@Produces("application/sparql-results+json")

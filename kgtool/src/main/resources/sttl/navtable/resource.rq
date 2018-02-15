@@ -1,0 +1,15 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+
+template {
+    format {
+        ft:triple.html
+        us:display(?p)
+        if (isLiteral(?y), ?y, 
+            st:format(ft:link.html, st:pplink(?y), us:display(?y)))
+    }
+}
+where {
+    ?in ?p ?y
+}
+order by ?in us:sort(?p, ?y) ?p ?y
+

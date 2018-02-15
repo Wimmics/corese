@@ -1,0 +1,17 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+prefix o:   <http://dbpedia.org/ontology/>
+
+template st:main {
+    format {
+        ft:frame.html
+        coalesce(?label, us:display(?uri)) 
+        coalesce(st:format("<img src='%s' />", ?icon), "")
+        st:apply-templates(?uri)
+    }
+}
+where {
+    bind (st:focus() as ?uri)
+    optional { ?uri o:thumbnail ?icon }
+    optional { ?uri rdfs:label ?label }
+}
+limit 1

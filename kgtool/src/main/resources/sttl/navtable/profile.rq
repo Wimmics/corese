@@ -1,0 +1,18 @@
+template st:profile {}
+where {}
+
+function us:clean(?str) {
+    replace(?str, "<", "&lt;")
+}
+
+function us:sort(?p, ?v) {
+    if (?p = rdf:type,          0,
+    if (strstarts(?p, rdfs:),   1, 
+    if (strstarts(?p, rdf:),    2, 
+    if (isLiteral(?v),          3, 4))))
+}
+
+
+function us:display(?t) {
+    us:clean(st:turtle(?t))
+}

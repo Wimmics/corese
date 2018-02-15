@@ -2,10 +2,35 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Feb 14 18:32:17 CET 2018
+Thu Feb 15 09:55:14 CET 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:glocate {
+
+  st:call-template-with(st:navlab, st:gmap, ?in, ?lat, ?lon, xt:list())
+  
+}
+where {
+ 
+    ?in p:longitude ?lon ;
+        p:latitude  ?lat 
+       
+}
+limit 1
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -13,12 +38,15 @@ prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
 prefix o:   <http://dbpedia.org/ontology/>
 
 template st:main {
+
     format {
         ft:frame.html
         coalesce(?label, us:display(?uri)) 
-        coalesce(st:format("<img src='%s' />", ?icon), "")
+        coalesce(st:format('<img src="%s" />', ?icon), "")
         st:apply-templates(?uri)
     }
+    
+    st:call-template(st:glocate, ?uri)
 }
 where {
     bind (st:focus() as ?uri)
@@ -62,10 +90,10 @@ function us:clean(?str) {
 }
 
 function us:sort(?p, ?v) {
-    if (?p = rdf:type, 0,
-    if (strstarts(?p, rdfs:), 1, 
-    if (strstarts(?p, rdf:), 2, 
-    if (isLiteral(?v), 3, 4))))
+    if (?p = rdf:type,          0,
+    if (strstarts(?p, rdfs:),   1, 
+    if (strstarts(?p, rdf:),    2, 
+    if (isLiteral(?v),          3, 4))))
 }
 
 

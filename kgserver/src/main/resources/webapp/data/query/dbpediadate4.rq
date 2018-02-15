@@ -17,6 +17,7 @@ where {
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x ?p ?d ?start ?end ?l where {  
+          values (?start ?end) { (UNDEF UNDEF) }
     
           ?x a o:MilitaryConflict 
           ?x ?p ?d ; rdfs:label ?l 

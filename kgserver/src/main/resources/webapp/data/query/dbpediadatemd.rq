@@ -18,6 +18,7 @@ where {
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x  ?d ?month ?day ?l where {  
+          values (?month ?day) { (UNDEF UNDEF) }
           ?x o:birthDate ?d  
           filter (datatype(?d) = xsd:date)         
           filter (month(?d) = ?month && day(?d) = ?day) 

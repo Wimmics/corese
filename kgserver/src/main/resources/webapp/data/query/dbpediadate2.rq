@@ -14,6 +14,7 @@ where {
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x ?d ?start ?end ?l where {  
+          values (?start ?end) { (UNDEF UNDEF) }
           ?x o:deathDate ?d  
           filter (datatype(?d) = xsd:date)         
           filter (?d >= ?start && ?d <= ?end) 

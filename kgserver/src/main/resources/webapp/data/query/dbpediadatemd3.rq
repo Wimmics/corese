@@ -20,11 +20,12 @@ where {
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x  ?d1 ?d2 ?month ?day ?l where {  
+          values (?month ?day) { (UNDEF UNDEF) }
           ?x o:birthDate ?d1  
           ?x o:deathDate ?d2  
           filter (datatype(?d1) = xsd:date)         
           filter (month(?d1) = ?month && day(?d1) = ?day) 
-	  filter (datatype(?d2) = xsd:date)         
+          filter (datatype(?d2) = xsd:date)         
           filter (month(?d2) = ?month && day(?d2) = ?day)           
           ?x rdfs:label ?l
           filter langMatches(lang(?l), "fr")

@@ -15,6 +15,7 @@ where {
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x ?p ?d ?start ?end ?l where {  
+          values (?start ?end) { (UNDEF UNDEF) }
           ?x ?p ?d 
           filter (?p in (o:startDate, o:endDate))
           filter(?d >= ?start && ?d <= ?end)      

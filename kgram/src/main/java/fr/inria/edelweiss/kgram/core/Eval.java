@@ -20,7 +20,6 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.api.query.Provider;
 import fr.inria.edelweiss.kgram.api.query.Results;
 import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
-import fr.inria.edelweiss.kgram.core.Mappings.VariableSorter;
 import fr.inria.edelweiss.kgram.event.Event;
 import fr.inria.edelweiss.kgram.event.EventImpl;
 import fr.inria.edelweiss.kgram.event.EventListener;

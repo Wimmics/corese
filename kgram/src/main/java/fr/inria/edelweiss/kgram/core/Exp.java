@@ -1410,14 +1410,9 @@ public class Exp extends PointerObject
                 break;
                 
             case OPTIONAL:
-                if (leftOptional){
-                    if (! optional) {
-                        first().getNodes(nodeList, selectList, existList, leftOptional, true, blank);
-                    }
-                }
-                else {
-                    first().getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
-                     rest().getNodes(nodeList, selectList, existList, leftOptional, true, blank);   
+                first().getNodes(nodeList, selectList, existList, leftOptional, true, blank);
+                if (! leftOptional){               
+                    rest().getNodes(nodeList, selectList, existList, leftOptional, true, blank);   
                 }
                 break;
                 

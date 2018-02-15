@@ -280,8 +280,6 @@ public class CompileService {
 
         //for (Node varNode : q.getSelect()) {
         for (Node varNode : q.getBody().getRecordInScopeNodes()) {
-            // varNode should be in q.getBody().getSimpleNodes() instead of q.getSelect()
-            // to eliminate var that are only in right arg of optional
             String varName = varNode.getLabel();
             Node valNode = m.getNode(varName);
             if (valNode != null) {

@@ -8,13 +8,15 @@ template st:date(?date) {
   
 }
 where {
-
-bind (
-      exists { ?x ?p ?dd 
-	filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
-	filter (year(?dd) = year(?date) 
-	    && month(?dd) = month(?date) 
-	      && day(?dd) = day(?date)) } 
+  values ?date { UNDEF }
+  bind (
+      exists {   
+        values ?date { UNDEF }
+        ?x ?p ?dd 
+        filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
+        filter (year(?dd) = year(?date) 
+            && month(?dd) = month(?date) 
+            && day(?dd) = day(?date)) } 
     as ?b)
    
 }

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Wed Feb 14 18:32:17 CET 2018
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+prefix o:   <http://dbpedia.org/ontology/>
+
+template st:main {
+    format {
+        ft:frame.html
+        coalesce(?label, us:display(?uri)) 
+        coalesce(st:format("<img src='%s' />", ?icon), "")
+        st:apply-templates(?uri)
+    }
+}
+where {
+    bind (st:focus() as ?uri)
+    optional { ?uri o:thumbnail ?icon }
+    optional { ?uri rdfs:label ?label }
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Open Data
+# such as dbpedia
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+template st:start {
+
+  st:call-template(st:main)
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+function us:clean(?str) {
+    replace(?str, "<", "&lt;")
+}
+
+function us:sort(?p, ?v) {
+    if (?p = rdf:type, 0,
+    if (strstarts(?p, rdfs:), 1, 
+    if (strstarts(?p, rdf:), 2, 
+    if (isLiteral(?v), 3, 4))))
+}
+
+
+function us:display(?t) {
+    us:clean(st:turtle(?t))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+
+template {
+    format {
+        ft:triple.html
+        us:display(?p)
+        if (isLiteral(?y), ?y, 
+            st:format(ft:link.html, st:pplink(?y), us:display(?y)))
+    }
+}
+where {
+    ?in ?p ?y
+}
+order by ?in us:sort(?p, ?y) ?p ?y
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

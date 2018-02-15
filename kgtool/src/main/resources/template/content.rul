@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 26 16:48:59 CEST 2017
+Thu Feb 15 09:55:14 CET 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -42,13 +42,15 @@ template st:date(?date) {
   
 }
 where {
-
-bind (
-      exists { ?x ?p ?dd 
-	filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
-	filter (year(?dd) = year(?date) 
-	    && month(?dd) = month(?date) 
-	      && day(?dd) = day(?date)) } 
+  values ?date { UNDEF }
+  bind (
+      exists {   
+        values ?date { UNDEF }
+        ?x ?p ?dd 
+        filter (datatype (?dd) in (xsd:date, xsd:dateTime)) 
+        filter (year(?dd) = year(?date) 
+            && month(?dd) = month(?date) 
+            && day(?dd) = day(?date)) } 
     as ?b)
    
 }

@@ -329,8 +329,8 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonValidate);
         hSeq2.addComponent(buttonToSPIN);
         hSeq2.addComponent(buttonToSPARQL);
-        hSeq2.addComponent(buttonProve);
-        hSeq2.addComponent(buttonTKgram);
+//        hSeq2.addComponent(buttonProve);
+//        hSeq2.addComponent(buttonTKgram);
         hSeq2.addComponent(buttonSearch);
         hSeq2.addGap(30, 30, 30);
         hSeq2.addComponent(buttonRefreshStyle);
@@ -361,8 +361,8 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonToSPIN);
         vParallel2.addComponent(buttonToSPARQL);
 
-        vParallel2.addComponent(buttonProve);
-        vParallel2.addComponent(buttonTKgram);
+//        vParallel2.addComponent(buttonProve);
+//        vParallel2.addComponent(buttonTKgram);
 
         vParallel2.addComponent(buttonSearch);
         vParallel2.addComponent(buttonRefreshStyle);
@@ -440,10 +440,10 @@ public final class MyJPanelQuery extends JPanel {
         buttonToSPIN.addActionListener(l_RunListener);
         buttonToSPARQL.addActionListener(l_RunListener);
 
-        buttonProve.addActionListener(l_RunListener);
+//        buttonProve.addActionListener(l_RunListener);
 
-        ActionListener kt_RunListener = createListener(coreseFrame, true);
-        buttonTKgram.addActionListener(kt_RunListener);
+//        ActionListener kt_RunListener = createListener(coreseFrame, true);
+//        buttonTKgram.addActionListener(kt_RunListener);
     }
 
     public void setQuery(final String newRequest) {

@@ -61,6 +61,7 @@ public class Compile {
         translate(root + "rdfxml", lib + "rdfxml.rul");
         translate(root + "rdfxmlhtml", lib + "hrdfxml.rul");
         translate(root + "turtle", lib + "turtle.rul");
+        translate(root + "turtle2", lib + "turtle2.rul");
         translate(root + "json", lib + "json.rul");
         translate(root + "jsonterm", lib + "jsonterm.rul");
 
@@ -90,6 +91,7 @@ public class Compile {
 
         translate(root + "mix", lib + "mix.rul");
 
+        translate(root + "navtable", lib + "navtable.rul");
         translate(root + "navlab", lib + "navlab.rul");
         translate(root + "dbedit", lib + "dbedit.rul");
 

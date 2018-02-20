@@ -1,36 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
-        <version>3.2.1p-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>..</relativePath>
     </parent>
+
     <artifactId>engine</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgram</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>	
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgenv</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>	
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>	
 		
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.12</version>
-            <scope>compile</scope>
             <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         
         <dependency>
@@ -106,8 +110,28 @@
                 <version>2.3.1</version>
                 <configuration>
                     <xmlOutput>true</xmlOutput>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-<profiles> <profile> <id>jenkins</id> <activation> <property> <name>env.BUILD_NUMBER</name> </property> </activation> <build> <plugins> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>cobertura-maven-plugin</artifactId> </plugin> </plugins> </build> </profile> </profiles> </project>
+	    </configuration>
+    </plugin>
+	</plugins>
+</build>
+
+    <profiles> 
+	<profile> 
+		<id>jenkins</id>
+		<activation> 
+			<property> 
+				<name>env.BUILD_NUMBER</name> 
+</property>
+ </activation>
+ 
+ 
+ <build> 
+	 <plugins>
+		 <plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>cobertura-maven-plugin</artifactId>
+</plugin> </plugins> 
+</build> 
+</profile>
+ </profiles>
+</project>

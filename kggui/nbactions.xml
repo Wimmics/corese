@@ -7,7 +7,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xmx10g -Xms10g -classpath %classpath ${packageClassName}</exec.args>
+                <exec.args>-Xmx10g -Xms10g -classpath %classpath fr.inria.acacia.corese.gui.core.MainFrame</exec.args>
                 <exec.executable>java</exec.executable>
                 
                 

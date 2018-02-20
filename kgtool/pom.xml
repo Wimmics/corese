@@ -1,22 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
-        <version>3.2.1p-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>corese-core</artifactId>
 
-    <repositories>
-        <repository>
-            <id>local-repo</id>
-            <url>file://${project.basedir}/src/main/resources/repo/</url>
-        </repository>
-    </repositories>
+    <name>corese-core</name>
+
     <dependencies>
         <dependency>
             <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
@@ -26,17 +23,17 @@
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgenv</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>kgram</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>sparql</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -55,7 +52,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-	    <scope>test</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>xml-apis</groupId>
@@ -170,8 +167,8 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<scope>test</scope>
 			<version>6.8.21</version>
+			<scope>test</scope>
 		</dependency>
         
         <!--estimate the size of objects in memeory in bytes-->
@@ -190,7 +187,14 @@
         </dependency>
     </dependencies>
 
-	<build>
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/src/main/resources/repo/</url>
+        </repository>
+    </repositories>
+
+    <build>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -261,7 +265,8 @@
 
 		</plugins>
 	</build>
-	<profiles> 
+
+    <profiles> 
 		<profile> 
 			<id>jenkins</id> 
 			<activation> 
@@ -271,13 +276,12 @@
 			</activation> 
 			<build> 
 				<plugins> 
-					<plugin> 
-						<groupId>org.codehaus.mojo</groupId> 
-						<artifactId>cobertura-maven-plugin</artifactId> 
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>cobertura-maven-plugin</artifactId>
 					</plugin> 
 				</plugins> 
 			</build> 
 		</profile> 
 	</profiles>
-	<name>corese-core</name>
 </project>

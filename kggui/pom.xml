@@ -1,18 +1,23 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>fr.inria.wimmics</groupId>
 		<artifactId>corese-parent</artifactId>
-		<version>3.2.1p-SNAPSHOT</version>
+		<version>${revision}</version>
 		<relativePath>..</relativePath>
 	</parent>
+
 	<groupId>${project.parent.groupId}</groupId>
 	<artifactId>kggui</artifactId>
-	<version>${project.parent.version}</version>
+	<version>${revision}</version>
+
+	<name>corese-gui</name>
+
 	<!--    <properties>
-	    <corese-version>3.0.7</corese-version>
+	    <revision>3.0.7</revision>
 	</properties>-->
-    
 	<dependencies>            
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -102,8 +107,7 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<!--<finalName>corese-${corese-version}</finalName>-->
+	<build><!--<finalName>corese-${revision}</finalName>-->
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -209,6 +213,7 @@
             
 		</plugins>
 	</build>
+
 	<profiles> 
 		<profile> 
 			<id>jenkins</id> 
@@ -219,13 +224,12 @@
 			</activation> 
 			<build> 
 				<plugins> 
-					<plugin> 
-						<groupId>org.codehaus.mojo</groupId> 
-						<artifactId>cobertura-maven-plugin</artifactId> 
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>cobertura-maven-plugin</artifactId>
 					</plugin> 
 				</plugins> 
 			</build> 
 		</profile> 
 	</profiles>
-	<name>corese-gui</name>
 </project>

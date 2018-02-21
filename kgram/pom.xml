@@ -11,6 +11,7 @@
 
 	<groupId>fr.inria.wimmics</groupId>
 	<artifactId>kgram</artifactId>
+	<name>kgram</name>
 
 	<dependencies>
 		<dependency>

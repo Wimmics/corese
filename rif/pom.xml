@@ -11,6 +11,7 @@
 	</parent>
 
 	<artifactId>rif</artifactId>
+	<name>rif</name>
 
 	<dependencies>
 		<dependency>

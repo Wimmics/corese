@@ -12,6 +12,7 @@
 
     <groupId>fr.inria.wimmics</groupId>
     <artifactId>kgdqp</artifactId>
+    <name>kgdqp</name>
 
     <!--    <properties>
 	    <build.version>${project.version}-r${buildNumber}</build.version>

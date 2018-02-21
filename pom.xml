@@ -98,7 +98,7 @@
 
 	<properties>
 		 <!-- Unique entry point for version number management --> 
-		 <revision>3.3.2</revision>
+		 <revision>3.3.3</revision>
 		 <!-- To ignore errors in javadoc usage. -->
 		 <additionalparam>-Xdoclint:none</additionalparam>
 		 <!-- Sonar -->

@@ -12,6 +12,7 @@
 
 	<groupId>fr.inria.wimmics</groupId>
 	<artifactId>corese-server</artifactId>
+	<name>corese-server</name>
 
 	<dependencies>
 		<dependency>

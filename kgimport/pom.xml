@@ -12,6 +12,7 @@
 
     <groupId>${parent.groupId}</groupId>
     <artifactId>kgimport</artifactId>
+    <name>kgimport</name>
     <version>${parent.version}</version>
 
     <dependencies>

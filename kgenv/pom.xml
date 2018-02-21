@@ -11,6 +11,7 @@
 	</parent>
 
 	<artifactId>kgenv</artifactId>
+	<name>kgenv</name>
 
 	<dependencies>
 		<dependency>

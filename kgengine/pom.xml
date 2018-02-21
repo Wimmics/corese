@@ -12,6 +12,7 @@
 
 	<groupId>fr.inria.wimmics</groupId>
 	<artifactId>kgengine</artifactId>
+	<name>kgendine</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

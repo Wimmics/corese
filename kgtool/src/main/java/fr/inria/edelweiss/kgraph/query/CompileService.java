@@ -136,7 +136,7 @@ public class CompileService {
             }
             Node val = env.getNode(qv); //var.getProxyOrSelf());
 
-            if (val != null) {
+            if (val != null && ! val.isBlank()) {
                 lvar.add(var);
                 IDatatype dt = (IDatatype) val.getValue();
                 Constant cst = Constant.create(dt);
@@ -180,7 +180,7 @@ public class CompileService {
             for (Node qnode : q.getBody().getRecordInScopeNodes()) {
                 Node val = m.getNode(qnode);
                 
-                if (val != null) {
+                if (val != null && ! val.isBlank()) {
                     IDatatype dt = (IDatatype) val.getValue();
                     Constant cst = Constant.create(dt);
                     lval.add(cst);
@@ -232,7 +232,7 @@ public class CompileService {
             String var = qv.getLabel();
             Node val = env.getNode(var);
 
-            if (val != null) {
+            if (val != null && ! val.isBlank()) {
                 Variable v = Variable.create(var);
                 IDatatype dt = (IDatatype) val.getValue();
                 Constant cst = Constant.create(dt);
@@ -282,7 +282,10 @@ public class CompileService {
         for (Node varNode : q.getBody().getRecordInScopeNodes()) {
             String varName = varNode.getLabel();
             Node valNode = m.getNode(varName);
-            if (valNode != null) {
+            if (valNode != null && ! valNode.isBlank()) {
+                // do not send bnode because it will raise a syntax error
+                // and it will not be available on another server because 
+                // bnode are local
                 // wish: select Mapping with unique(varNode, valNode)
                 Variable var = Variable.create(varName);
                 Constant val = Constant.create((IDatatype) valNode.getDatatypeValue());

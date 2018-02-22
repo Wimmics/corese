@@ -15,7 +15,9 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,16 +47,27 @@ public class FederateVisitor implements QueryVisitor {
     // false: evaluate named graph pattern as a whole on each server 
     // true:  evaluate the triples of the named graph pattern on the merge of 
     // the named graphs of the servers
-    boolean distributeNamed = false;
+    boolean distributeNamed = true;
     boolean rewriteNamed = false;
     // same in case of select from where
     boolean distributeDefault = false;
+    // service selection for triples
+    boolean select = true;
+    // group triples with same service into one service s { BGP }
+    boolean group = true;
+    // factorize unique service in optional/minus/union
+    boolean simplify  = true;
 
     ASTQuery ast;
     Stack stack;
+    Selector selector;
+    QuerySolver exec;
+    Rewrite rew;
     
-    public FederateVisitor(){
+    public FederateVisitor(QuerySolver e){
         stack = new Stack();
+        exec = e;
+        rew = new Rewrite(this);
     }
     
     /**
@@ -84,15 +97,22 @@ public class FederateVisitor implements QueryVisitor {
         query.setFederate(true);
     }
     
-    void option(){
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.DISTRIBUTE_NAMED)){
-           distributeNamed = true; 
+    void option() {
+        if (ast.hasMetadataValue(Metadata.SKIP, Metadata.DISTRIBUTE_NAMED)) {
+            distributeNamed = false;
         }
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.REWRITE_NAMED)){
-           rewriteNamed = true; 
+        if (ast.hasMetadataValue(Metadata.SKIP, Metadata.SELECT)) {
+            select = false;
         }
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.DISTRIBUTE_DEFAULT)){
-           distributeDefault = true; 
+        if (ast.hasMetadataValue(Metadata.SKIP, Metadata.GROUP)) {
+            group = false;
+        }
+        if (ast.hasMetadataValue(Metadata.SKIP, Metadata.SIMPLIFY)) {
+            simplify = false;
+        }
+        if (select) {
+            selector = new Selector(exec, ast);
+            selector.process();
         }
     }
 
@@ -130,7 +150,13 @@ public class FederateVisitor implements QueryVisitor {
      * local)
      */
     Exp rewrite(Atom name, Exp body) {
-        ArrayList<Exp> expandList = new ArrayList<Exp> ();
+        ArrayList<Exp> filterList = new ArrayList<>();
+        
+        if (group && body.isBGP()) {
+            rew.prepare(name, body, filterList);
+        }
+        
+        ArrayList<Exp> expandList = new ArrayList<> ();
         
         for (int i = 0; i < body.size(); i++) {
             Exp exp = body.get(i);
@@ -145,7 +171,8 @@ public class FederateVisitor implements QueryVisitor {
                 rewrite(name, exp.getFilter());
             } else if (exp.isTriple()) {
                 // triple t -> service <Si> { t }
-                Exp res = rewrite(name, exp.getTriple(), body);
+                // copy relevant filters in service
+                Exp res = rewrite(name, exp.getTriple(), body, filterList);
                 body.set(i, res);
             } else if (exp.isGraph()) {
                 Exp res = rewrite(exp.getNamedGraph());
@@ -153,19 +180,35 @@ public class FederateVisitor implements QueryVisitor {
                     expandList.add(res);
                 } 
                 body.set(i, res);
-            }                       
+            }  
+            else if (exp.isMinus() || exp.isOptional() || exp.isUnion()) {
+                exp = rewrite(name, exp);
+                if (simplify) {
+                    Exp simple = rew.simplify(exp);
+                    body.set(i, simple);
+                } else {
+                    body.set(i, exp);
+                }
+            }
             else {
-                // rewrite BGP, union, optional, mminus
+                // BGP
                 rewrite(name, exp);
             }
+        }
+        
+        // remove filters that have been copied into services
+        for (Exp filter : filterList) {
+            body.getBody().remove(filter);
         }
         
         if (!expandList.isEmpty()) {
             expand(body, expandList);
         }
-
+        
         return body;
     }
+    
+     
     
    
     Exp rewrite(Source exp) {
@@ -202,7 +245,7 @@ public class FederateVisitor implements QueryVisitor {
     }
     
    /**
-     * from named G = {g1 .. gn}  -- remote dataset
+    * from named G = {g1 .. gn}  -- remote dataset
     * graph ?g { tj } -> rewrite as:
     * union(g in G) { 
     * values ?g { g }
@@ -218,23 +261,14 @@ public class FederateVisitor implements QueryVisitor {
         
         for (Constant namedGraph : ast.getNamed()) {
             Values values = Values.create(var, namedGraph);
-            Exp res = rewrite(namedGraph, copy(body));
+            Exp res = rewrite(namedGraph, body.copy());
             res.add(values);
             list.add(res);
         }
         
         return union(list, 0);
     }
-    
-    Exp copy(Exp body) {
-        BasicGraphPattern bgp = new BasicGraphPattern();
-        for (Exp exp : body) {
-            bgp.add(exp);
-        }  
-        return bgp;
-    }
-    
-        
+                 
     Exp union(List<Exp> list, int n) {
         if (n == list.size() - 1){
             return list.get(n);
@@ -282,14 +316,18 @@ public class FederateVisitor implements QueryVisitor {
      * service <Si> { select * from g { t }} -- name == g
      * Add filters of body bound by t in the BGP, except exists filters.
      */
-    Exp rewrite(Atom name, Triple t, Exp body) {
+    Exp rewrite(Atom name, Triple t, Exp body, List <Exp> list) {
         BasicGraphPattern bgp = BasicGraphPattern.create();
         bgp.add(t);
-        filter(body, t, bgp);  
+        filter(body, t, bgp, list);        
+        return rewrite(name, bgp, getServiceList(t));
+    }    
+        
+    Exp rewrite(Atom name, BasicGraphPattern bgp, List<Atom> list) { 
         if (name == null) {
             // std triple
             Exp exp = from(name, bgp);
-            Service s = Service.create(ast.getServiceList(), exp, false);
+            Service s = Service.create(list, exp, false);
             return s;
         }
         else {
@@ -297,10 +335,32 @@ public class FederateVisitor implements QueryVisitor {
             Query q = query(bgp);
             q.getAST().getDataset().addFrom(name.getConstant());
             Exp exp = BasicGraphPattern.create(q);
-            Service s = Service.create(ast.getServiceList(), exp, false);
+            Service s = Service.create(list, exp, false);
             return s;
         }
     }
+          
+    List<Atom> getServiceList(Triple t) {
+        return getServiceList(t.getPredicate());
+    }
+    
+    List<Atom> getServiceList(Atom p) {
+        if (p.isVariable()) {
+            return ast.getServiceList();
+        }
+        return getServiceList(p.getConstant());
+    }
+    
+    List<Atom> getServiceList(Constant p) {
+        if (select) {
+            List<Atom> list = selector.getPredicateService(p);
+            if (! list.isEmpty()) {
+                return list;
+            }
+        }
+        return ast.getServiceList();
+    }
+    
           
     Exp from(Atom name, Exp exp) {
         if (ast.getDataset().hasFrom()) {
@@ -312,7 +372,8 @@ public class FederateVisitor implements QueryVisitor {
     }
     
     Query query(Exp exp){
-         ASTQuery as = ASTQuery.create(exp);
+         ASTQuery as = ast.subCreate();
+         as.setBody(exp);
          as.setSelectAll(true);
          return Query.create(as);
     }
@@ -352,17 +413,24 @@ public class FederateVisitor implements QueryVisitor {
     /**
      * Find filters bound by t in body, except exists {} Add them to bgp
      */
-    void filter(Exp body, Triple t, Exp bgp) {
+    void filter(Exp body, Triple t, Exp bgp, List<Exp> list) {
         for (Exp exp : body) {
             if (exp.isFilter()) {
-                Expression f = exp.getFilter();
-                if (!(f.isTerm() && f.getTerm().isTermExistRec())) {
-                    if (t.bind(f)) {
+                if (! isExist(exp)) {
+                    Expression f = exp.getFilter();
+                    if (t.bind(f) && ! bgp.getBody().contains(exp)) {
                         bgp.add(exp);
+                        if (! list.contains(exp)) {
+                            list.add(exp);
+                        }
                     }
                 }
             }
         }
+    }
+    
+    boolean isExist(Exp f) {
+        return f.getFilter().isTerm() && f.getFilter().getTerm().isTermExistRec() ;
     }
 
     

@@ -10,6 +10,7 @@ import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * <p>Title: Corese</p>
@@ -90,6 +91,24 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	public List<Exp> getBody(){
 		return body;
 	}
+                 
+        public List<Variable> getVariables() {
+            ArrayList<Variable> list = new ArrayList<>();
+            getVariables(list);
+            return list;
+        }
+        
+        void add(Variable var, List<Variable> list) {
+            if (! list.contains(var)) {
+                list.add(var);
+            }
+        }
+        
+        void getVariables(List<Variable> list) {
+            for (Exp exp : this) {
+                exp.getVariables(list);
+            }
+        }
 	
 	public ASTQuery getQuery(){
 		return null;
@@ -157,8 +176,17 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	
 	
-	Exp copy(){
-		return this;
+	public Exp copy(){
+            try {
+                Exp exp = getClass().newInstance();
+                for (Exp ee : getBody()){
+                    exp.add(ee.copy());
+                }
+                return exp;
+            } catch (InstantiationException | IllegalAccessException ex) {
+                java.util.logging.Logger.getLogger(Exp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return this;
 	}
 	
 
@@ -239,6 +267,11 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         public Minus getMinus(){
             return null;
         }
+        
+        public Service getService(){
+            return null;
+        }
+        
 				
 	public boolean isAnd(){
 		return false;

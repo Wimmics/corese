@@ -50,7 +50,19 @@ public class Or extends Exp {
 		return true;
 	}
 	
-
+    @Override
+    void getVariables(List<Variable> list) {
+        if (size() > 1) {
+            List<Variable> left  = get(0).getVariables();
+            List<Variable> right = get(1).getVariables();
+            
+            for (Variable var : left) {
+                if (right.contains(var)) {
+                    add(var, list);
+                }
+            }
+        }
+    }
 	
 	String getOper() {
 		return Keyword.SEOR;

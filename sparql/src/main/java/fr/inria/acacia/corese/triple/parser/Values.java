@@ -34,6 +34,22 @@ public class Values extends Exp {
 		return vv;
 	}
         
+        public static Values create(Variable var, List<Constant> val){
+		Values vv = new Values();
+                
+                ArrayList<Variable> varList = new ArrayList<>();
+                varList.add(var);
+		vv.setVariables(varList);
+                
+                for (Constant cst : val){
+                    ArrayList<Constant> list = new ArrayList<>();
+                    list.add(cst);
+                    vv.addValues(list);
+                }
+                
+		return vv;
+	}
+        
         public static Values create(Variable var, Constant val){
 		Values vv = new Values();
                 ArrayList<Variable> lvar = new ArrayList<>();
@@ -48,6 +64,11 @@ public class Values extends Exp {
 	public static Values create(){
 		return new Values();
 	}
+        
+        @Override
+        public Values copy() {
+            return this;
+        }
 	
         @Override
 	public StringBuffer toString(StringBuffer sb){
@@ -88,6 +109,13 @@ public class Values extends Exp {
 		sb.append(NL);
 		return sb;
 	}
+        
+        @Override
+        void getVariables(List<Variable> list) {
+            for (Variable var : getVariables()) {
+                add(var, list);
+            }
+        }
 	
         @Override
 	public boolean isValues(){

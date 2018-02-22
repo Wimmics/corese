@@ -44,6 +44,14 @@ public class Minus extends And {
 		
 		return b1 && b2;
 	}
+        
+        
+        @Override
+        void getVariables(List<Variable> list) {
+            if (size()>0) {
+                get(0).getVariables();
+            }
+        }
 	
 	
 }

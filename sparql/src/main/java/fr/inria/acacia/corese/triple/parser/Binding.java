@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.acacia.corese.triple.parser;
 
 import java.util.List;
@@ -25,7 +20,11 @@ public class Binding extends Exp {
         return new Binding(exp, var);
     }
     
-    
+    @Override
+    public Binding copy() {
+        return this;
+    }
+        
     @Override
     public StringBuffer toString(StringBuffer sb) {
         sb.append("bind(");
@@ -86,5 +85,9 @@ public class Binding extends Exp {
         return b;
     }
 
+    @Override
+    void getVariables(List<Variable> list) {
+        add(getVariable(), list);
+    }
 
 }

@@ -43,9 +43,7 @@ public class And extends Exp {
 	public boolean isAnd(){
 		return true;
 	}
-	
-
-	
+	      	
 	boolean validateNegation() {
 		Triple triple;
 		boolean negation=false;

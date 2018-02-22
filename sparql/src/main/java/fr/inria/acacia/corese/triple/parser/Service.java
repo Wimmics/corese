@@ -1,5 +1,6 @@
 package fr.inria.acacia.corese.triple.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +21,11 @@ public class Service extends And {
     }
 
     public static Service create(Atom serv, Exp body, boolean b) {
-        return new Service(serv, body, b);
+        Service s = new Service(serv, body, b);
+        ArrayList<Atom> list = new ArrayList<>();
+        list.add(serv);
+        s.setServiceList(list);
+        return s;
     }
 
     public static Service create(List<Atom> list, Exp body, boolean b) {
@@ -30,7 +35,27 @@ public class Service extends And {
     }
 
     public static Service create(Atom serv, Exp body) {
-        return new Service(serv, body, false);
+        return create(serv, body, false);
+    }
+    
+    @Override
+    public Service copy() {
+        Service exp = super.copy().getService();
+        exp.uri = this.uri;
+        exp.silent = this.silent;
+        exp.serviceList = this.serviceList;
+        return exp;
+    }
+    
+    @Override
+    public Service getService(){
+            return this;
+    }
+    
+    @Override
+    void getVariables(List<Variable> list) {
+        super.getVariables(list);
+        getServiceName().getVariables(list);
     }
 
     @Override
@@ -53,7 +78,7 @@ public class Service extends And {
         return true;
     }
 
-    public Atom getService() {
+    public Atom getServiceName() {
         return uri;
     }
 

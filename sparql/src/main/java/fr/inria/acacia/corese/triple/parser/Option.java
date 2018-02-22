@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.exceptions.QuerySemanticException;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import java.util.List;
 
 
 /**
@@ -80,7 +81,6 @@ public class Option extends Exp {
         @Override
 	public StringBuffer toString(StringBuffer sb) {
             if (isOptional()){
-                //sb.append(eget(0).toString());
                 toString(eget(0), sb);
  		sb.append(KeywordPP.SPACE + KeywordPP.OPTIONAL + KeywordPP.SPACE);
                 sb.append(eget(1).toString());
@@ -93,6 +93,13 @@ public class Option extends Exp {
             }
             return sb;
 	}
+        
+        @Override
+        void getVariables(List<Variable> list) {
+            if (size()>0) {
+                get(0).getVariables();
+            }
+        }
         
         void toString(Exp exp, StringBuffer sb){
             if (exp.isBGP()){

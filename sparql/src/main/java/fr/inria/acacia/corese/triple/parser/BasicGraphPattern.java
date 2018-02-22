@@ -111,6 +111,7 @@ public class BasicGraphPattern extends And {
      * return variables bound by this BGP 
      */
  
+        @Override
     Bind validate(Bind env, int n) throws QuerySemanticException {
     	check();
     	// var bound by this BGP (including sub BGP)

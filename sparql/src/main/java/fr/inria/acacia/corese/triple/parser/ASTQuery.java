@@ -262,6 +262,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     private final Map<String, List<String>> approximateSearchOptions = new HashMap<String, List<String>>();
     private String service;
     private List<Atom> serviceList;
+    private List<Constant> predicateList;
 
     /**
      * @return the defaultDataset
@@ -412,6 +413,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         define = new ASTExtension();
         lambdaDefine = new ASTExtension();
         undefined = new HashMap();
+        predicateList = new ArrayList<>();
     }
 
     ASTQuery(String query) {
@@ -1856,11 +1858,37 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         Variable var = predicate.getIntVariable();
         Triple t;
         if (exp == null) {
-            t = Triple.create(subject, predicate, object);
+            t = triple(subject, predicate, object);
         } else {
             t = createPath(subject, predicate, object, exp);
         }
         return t;
+    }
+    
+    
+    /**
+     * THE function to use to create triples 
+     */
+    public Triple triple(Expression subject, Atom predicate, Expression object) {
+        Triple t = Triple.create(subject, predicate, object);
+        getGlobalAST().submit(t);
+        return t;
+    }
+    
+    void submit(Triple t) {
+        if (t.getPredicate().isConstant()) {
+            submit(t.getPredicate().getConstant());
+        }
+    }
+    
+    void submit(Constant p){
+        if (! predicateList.contains(p)) {
+            predicateList.add(p);
+        }
+    }
+    
+    public List<Constant> getPredicateList() {
+        return predicateList;
     }
 
     public Triple createPath(Expression subject, Expression exp, Expression object) {
@@ -2083,13 +2111,13 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      */
     public Exp generateFirst(Expression expression1, Expression expression2) {
         Atom atom = createQName(RDFS.qrdfFirst);
-        Triple triple = Triple.create(expression1, atom, expression2);
+        Triple triple = triple(expression1, atom, expression2);
         return triple;
     }
 
     public Exp generateRest(Expression expression1, Expression expression2) {
         Atom atom = createQName(RDFS.qrdfRest);
-        Triple triple = Triple.create(expression1, atom, expression2);
+        Triple triple = triple(expression1, atom, expression2);
         return triple;
     }
 

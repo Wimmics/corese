@@ -82,6 +82,12 @@ public class Expression extends TopExp
         return null;
     }
     
+    // Exp getVariables()
+    // overloaded by Variable
+    void getVariables(List<Variable> list) {
+        
+    }
+    
 
     /**
      * Every filter/select/bind exp is compiled
@@ -524,6 +530,23 @@ public class Expression extends TopExp
     }
 
     public void getVariables(List<String> list, boolean excludeLocal) {
+    }
+    
+    public boolean isBound(List<Variable> varList) {
+        List<String> list = getVariables();
+        for (String name : list){
+            boolean bound = false;
+            for (Variable var : varList) {
+                if (name.equals(var.getLabel())) {
+                    bound = true;
+                    break;
+                }
+            }
+            if (! bound) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<Constant> getConstants() {

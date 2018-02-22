@@ -2,6 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
+import java.util.List;
 
 
 
@@ -22,7 +23,7 @@ public class Source extends And {
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
 	
-	String source;
+	//String source;
 	Atom asource;
 	boolean state = false;
 	boolean leaf = false;
@@ -36,7 +37,7 @@ public class Source extends And {
    */
   public Source(Atom src, Exp exp) {
     super(exp);
-    source = src.getName();
+    //source = src.getName();
     asource = src;
   }
   
@@ -48,6 +49,13 @@ public class Source extends And {
 	  return s;
   }
   
+        @Override
+  public Source copy() {
+      Source exp = super.copy().getNamedGraph();
+      exp.asource = asource;
+      return exp;
+  }
+  
   @Override
   public Source getNamedGraph(){
       return this;
@@ -55,6 +63,12 @@ public class Source extends And {
   
   public Atom getSource(){
 	  return asource;
+  }
+  
+  @Override
+  void getVariables(List<Variable> list) {
+      super.getVariables(list);
+      getSource().getVariables(list);
   }
   
   public Exp getBodyExp() {
@@ -88,15 +102,15 @@ public class Source extends And {
   }
   
  
-  Exp duplicate(){
-    Source exp = new Source();
-    exp.asource = asource;
-    exp.source = source;
-    exp.state = state;
-    exp.leaf = leaf;
-    exp.isRec = isRec;
-    return exp;
-  }
+//  Exp duplicate(){
+//    Source exp = new Source();
+//    exp.asource = asource;
+//    exp.source = source;
+//    exp.state = state;
+//    exp.leaf = leaf;
+//    exp.isRec = isRec;
+//    return exp;
+//  }
 
 
         @Override

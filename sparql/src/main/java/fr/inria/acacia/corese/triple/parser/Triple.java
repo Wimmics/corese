@@ -146,6 +146,11 @@ public class Triple extends Exp {
 	public static Triple createNS(Constant type, Constant prefix, Constant uri){
 		return create(type, prefix, uri);
 	}
+        
+        @Override
+        public Triple copy() {
+            return this;
+        }
 	
 	private void setTriple(Atom exp1, Atom atom, Atom exp2) {
 		setOne(atom.isIsone());
@@ -154,6 +159,7 @@ public class Triple extends Exp {
 	    
 	}
 	
+        @Override
 	public Triple getTriple(){
 		return this;
 	}
@@ -163,9 +169,23 @@ public class Triple extends Exp {
 		id = nextID();
 	}
 	
+        @Override
 	public boolean isTriple(){
 		return true;
 	}
+        
+        public boolean connected(Triple t){
+            for (int i = 0; i<3; i++) {
+                for (int j = 0; j<3; j++){
+                    if (getTerm(i).equals(t.getTerm(j))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        
 	
 	synchronized static int nextID(){
 		// nb max de variables systemes differentes ds une requete
@@ -286,6 +306,13 @@ public class Triple extends Exp {
 		default: return getExp(i);
 		}
 	}
+        
+        public Atom getTerm(int i) {
+            switch (i) {
+                case 2 : return getPredicate();
+                default: return getArg(i);
+            }
+        }
 	
 
 	
@@ -522,6 +549,17 @@ public class Triple extends Exp {
                 return bind(var.getName());
         }
         
+        @Override
+     public void getVariables(List<Variable> list) {
+        if (! isFilter()) {
+            getSubject().getVariables(list);
+            getObject().getVariables(list);
+            if (!isPath()) {
+                getPredicate().getVariables(list);
+            }
+        }
+    }
+
         public boolean bind(String name){                
 		for (int i=0; i<getArity(); i++){
 			Expression arg = getExp(i);
@@ -559,23 +597,7 @@ public class Triple extends Exp {
 	public boolean isOption() {
 		return isoption;
 	}
-	
-//	public void setLastOptionID(int num) {
-//		lastOptionID = num;
-//	}
-//	
-//	public int getLastOptionID() {
-//		return lastOptionID;
-//	}
-//	
-//	public void setFirstOptionID(int num) {
-//		firstOptionID = num;
-//	}
-//	
-//	public int getFirstOptionID() {
-//		return firstOptionID;
-//	}
-	
+		
 	public int getID() {
 		return id;
 	}
@@ -586,40 +608,12 @@ public class Triple extends Exp {
 	
 	public void setTOption(boolean b) {
 		isoption = b;
-//		isFirst = b;
-//		isLast = b;
-//		firstOptionID = id;
-//		lastOptionID = id;
 	}
 	
         @Override
 	public void setOption(boolean b) {
 		isoption = b;
 	}
-	
-//	public void setFake(boolean b) {
-//		fake = b;
-//	}
-//	
-//	public boolean isFake() {
-//		return fake;
-//	}
-	
-//	public void setFirst(boolean b) {
-//		isFirst = b;
-//	}
-//	
-//	public void setLast(boolean b) {
-//		isLast = b;
-//	}
-//	
-//	public boolean isFirst() {
-//		return isFirst;
-//	}
-//	
-//	public boolean isLast() {
-//		return isLast;
-//	}
 	
 	public void setVariable(String var) {
 		variable = new Variable(var);

@@ -80,6 +80,13 @@ public class Variable extends Atom {
 		return false;
 	}
         
+        @Override
+        void getVariables(List<Variable> list) {
+            if (! list.contains(this)) {
+                list.add(this);
+            }
+        }
+        
         public String getSimpleName(){
             return getName().substring(1);
         }

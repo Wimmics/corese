@@ -818,7 +818,7 @@ public class SPIN implements ASTVisitor {
             sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
         }
         sb.append(tab() + "sp:serviceURI" + SPACE);
-        visit(service.getService());
+        visit(service.getServiceName());
         sb.append(PT_COMMA);
         sb.append(tab() + SPELEMENTS + SPACE +  NL);
         counter++;

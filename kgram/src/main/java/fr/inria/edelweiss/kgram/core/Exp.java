@@ -1363,11 +1363,11 @@ public class Exp extends PointerObject
      * Return variable nodes of this exp use case: find the variables for select
      * * PRAGMA: subquery : return only the nodes of the select return only
      * variables (no cst, no blanks) minus: return only nodes of first argument
-     * leftOptional = true : collect only nodes of left of optional, at first level
+     * inSubScope = true : collect nodes of left of optional and surely bound by union
      * optional = true :  we are inside an optional
      */
     void getNodes(List<Node> nodeList, List<Node> selectList, List<Node> existList, 
-            boolean leftOptional, boolean optional, boolean blank) {
+            boolean inSubScope, boolean optional, boolean blank) {
 
         switch (type()) {
 
@@ -1405,14 +1405,33 @@ public class Exp extends PointerObject
             case MINUS:
                 // second argument does not bind anything: skip it
                 if (first() != null) {
-                    first().getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
+                    first().getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
                 }
                 break;
                 
             case OPTIONAL:
-                first().getNodes(nodeList, selectList, existList, leftOptional, true, blank);
-                if (! leftOptional){               
-                    rest().getNodes(nodeList, selectList, existList, leftOptional, true, blank);   
+                first().getNodes(nodeList, selectList, existList, inSubScope, true, blank);
+                if (! inSubScope){               
+                    rest().getNodes(nodeList, selectList, existList, inSubScope, true, blank);   
+                }
+                break;
+                
+            case UNION:
+                if (inSubScope) {
+                    // in-subscope record nodes that are surely bound
+                    // record nodes that are bound in both branches of union
+                    List<Node> left  = first().getInScopeNodes();
+                    List<Node> right = rest().getInScopeNodes();
+                    for (Node node : left) {
+                        if (right.contains(node)) {
+                            add(nodeList, node);
+                        }
+                    }
+                }
+                else {
+                   for (Exp ee : this) {
+                       ee.getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                   }
                 }
                 break;
                 
@@ -1426,22 +1445,27 @@ public class Exp extends PointerObject
                     }
                 
                 break;
-
+                           
             case QUERY: 
-                queryNodeList(selectList, leftOptional);
+                queryNodeList(selectList, inSubScope);
                 break;
                
             default:
+                // BGP, service, union, named graph pattern
                 for (Exp ee : this) {
-                    ee.getNodes(nodeList, selectList, existList, leftOptional, optional, blank);
+                    ee.getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                    if (inSubScope && (ee.isMinus() || ee.isOptional() || ee.isUnion())) {
+                        // skip statements after optional/minus/union for in-subscope nodes
+                        break;
+                    }                    
                 }
         }
 
     }
     
-    void queryNodeList(List<Node> selectList, boolean leftOptional) {
+    void queryNodeList(List<Node> selectList, boolean inSubScope) {
         List<Node> subSelectList = getQuery().getSelectNodeList();
-        if (leftOptional) {
+        if (inSubScope) {
             // focus on left optional in query body 
             // because otherwise select * includes right optional
             List<Node> scopeList = getQuery().getBody().getInScopeNodes();
@@ -1520,16 +1544,16 @@ public class Exp extends PointerObject
     /**
      * 
      * @param exist
-     * @param leftOptional: in optional, keep variables of left argument only
+     * @param inSubScope: in optional, keep variables of left argument only
      * @param blank
      * @return 
      */
-    public List<Node> getNodes(boolean exist, boolean leftOptional, boolean blank) {
+    public List<Node> getNodes(boolean exist, boolean inSubScope, boolean blank) {
         List<Node> nodeList         = new ArrayList<Node>();
         List<Node> selectNodeList   = new ArrayList<Node>();
         List<Node> existNodeList    = new ArrayList<Node>();
 
-        getNodes(nodeList, selectNodeList, existNodeList, leftOptional, false, blank);
+        getNodes(nodeList, selectNodeList, existNodeList, inSubScope, false, blank);
 
         // add select nodes that are not in lNode
         for (Node selectNode : selectNodeList) {

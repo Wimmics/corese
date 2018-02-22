@@ -230,7 +230,7 @@ public class ProviderImpl implements Provider {
         
         if (res != null && list.size() > 1){  
             // Eliminate duplicates when several service URI (federated query)
-            res = res.distinct();
+            //res = res.distinct();
         }
         g.getEventManager().finish(Event.Service);
         return res;
@@ -318,7 +318,7 @@ public class ProviderImpl implements Provider {
             }
             if (res != null){            
                 // Eliminate duplicates when several service URI (federated query) 
-                res = res.distinct();
+                //res = res.distinct();
             }
             g.getEventManager().finish(Event.Service);
             return res;

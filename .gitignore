@@ -1,3 +1,4 @@
+.flattened-pom.xml
 *.class
 target/
 log/

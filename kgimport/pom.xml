@@ -1,37 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>fr.inria.wimmics</groupId>
         <artifactId>corese-parent</artifactId>
-        <version>3.2.1p-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>..</relativePath>
     </parent>
-    
+
     <groupId>${parent.groupId}</groupId>
     <artifactId>kgimport</artifactId>
+    <name>kgimport</name>
     <version>${parent.version}</version>
 
     <dependencies>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgram</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>kgengine</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>fr.inria.wimmics</groupId>
             <artifactId>corese-core</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
-            <version>${global.version}</version>
+            <version>${revision}</version>
         </dependency>
         
 	<dependency>
@@ -138,7 +141,7 @@
 		</dependency>
 	</dependencies>
 
-	<build>
+    <build>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -166,7 +169,7 @@
 				</configuration>
 			</plugin>
                         
-			<plugin>    
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptorRefs>
@@ -211,7 +214,8 @@
 
 		</plugins>
 	</build>
-	<profiles> 
+
+    <profiles> 
 		<profile> 
 			<id>jenkins</id> 
 			<activation> 
@@ -221,12 +225,12 @@
 			</activation> 
 			<build> 
 				<plugins> 
-					<plugin> 
-						<groupId>org.codehaus.mojo</groupId> 
-						<artifactId>cobertura-maven-plugin</artifactId> 
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>cobertura-maven-plugin</artifactId>
 					</plugin> 
 				</plugins> 
 			</build> 
 		</profile> 
-	</profiles> 
+	</profiles>
 </project>

@@ -1,17 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-	
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>fr.inria.wimmics</groupId>
 		<artifactId>corese-parent</artifactId>
-		<version>3.2.1p-SNAPSHOT</version>
+		<version>${revision}</version>
 		<relativePath>..</relativePath>
-	</parent> 
- 
-    <groupId>fr.inria.wimmics</groupId>
+	</parent>
+
+	<groupId>fr.inria.wimmics</groupId>
 	<artifactId>kgram</artifactId>
-	
+	<name>kgram</name>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -91,6 +92,7 @@
 
 		</plugins>
 	</build>
+
 	<profiles> 
 		<profile> 
 			<id>jenkins</id> 
@@ -101,12 +103,12 @@
 			</activation> 
 			<build> 
 				<plugins> 
-					<plugin> 
-						<groupId>org.codehaus.mojo</groupId> 
-						<artifactId>cobertura-maven-plugin</artifactId> 
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>cobertura-maven-plugin</artifactId>
 					</plugin> 
 				</plugins> 
 			</build> 
 		</profile> 
-	</profiles> 
+	</profiles>
 </project>

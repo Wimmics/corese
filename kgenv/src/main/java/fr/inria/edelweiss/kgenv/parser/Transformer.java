@@ -32,6 +32,7 @@ import fr.inria.edelweiss.kgram.filter.Extension.FunMap;
 //import fr.inria.edelweiss.kgram.filter.Interpreter;
 import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.federate.FederateVisitor;
+import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -88,7 +89,7 @@ public class Transformer implements ExpType {
     int count = 0;
     CompilerFactory fac;
     Compiler compiler;
-    private SPARQLEngine sparql;
+    private QuerySolver sparql;
     List<QueryVisitor> visit;
     private List<Atom> serviceList;
     Sorter sort;
@@ -313,7 +314,7 @@ public class Transformer implements ExpType {
         if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
             ast.defService(null);
             //add(new ServiceVisitor());
-            add(new FederateVisitor());
+            add(new FederateVisitor(getSPARQLEngine()));
         }
     }
 
@@ -730,7 +731,7 @@ public class Transformer implements ExpType {
      * already is one
      */
     Exp compileService(Service service) {
-        Node src = compile(service.getService());
+        Node src = compile(service.getServiceName());
         Exp node = Exp.create(NODE, src);
               
         fr.inria.acacia.corese.triple.parser.Exp body = service.get(0);
@@ -1871,14 +1872,14 @@ public class Transformer implements ExpType {
     /**
      * @return the sparql
      */
-    public SPARQLEngine getSPARQLEngine() {
+    public QuerySolver getSPARQLEngine() {
         return sparql;
     }
 
     /**
      * @param sparql the sparql to set
      */
-    public void setSPARQLEngine(SPARQLEngine sparql) {
+    public void setSPARQLEngine(QuerySolver sparql) {
         this.sparql = sparql;
     }
 

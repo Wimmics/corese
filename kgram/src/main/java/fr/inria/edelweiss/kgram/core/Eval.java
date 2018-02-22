@@ -1326,7 +1326,18 @@ public class Eval implements ExpType, Plugin {
                 case Exp.MINUS:
                 case Exp.OPTIONAL:
                     // draft test
-                    mem.setJoinMappings(exp.getMappings());
+                    if (memory.getJoinMappings() != null && exp == main.first()){
+                        // use case:
+                        // join (and(service(s, exp)), and(optional(e1, e2)))
+                        // optional in rest of join inherits Mappings of first of join
+                        mem.setJoinMappings(memory.getJoinMappings());
+                        // clean for statements after this main
+                        memory.setJoinMappings(null);
+                    }
+                    else {
+                        // pragma: exp == main.rest()
+                        mem.setJoinMappings(exp.getMappings());
+                    }
                     break;
                     
             }
@@ -1468,12 +1479,13 @@ public class Eval implements ExpType, Plugin {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();
+        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();      
         if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
+            // or impose irrelevant bindings 
             Mappings map1dist = set1.getMappings().distinct(nodeListInScope);
-            if (memory.getQuery().isFederate()) {
+            if (exp.isJoin() || memory.getQuery().isFederate()) {
                 // service clause in rest may take Mappings into account
                 // select distinct map1 wrt map2 inscope nodes  
                 exp.rest().setMappings(map1dist);
@@ -1550,14 +1562,23 @@ public class Eval implements ExpType, Plugin {
     private int join(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
+        
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);
         if (map1.size() == 0) {
             exp.rest().setMappings(null);
             return backtrack;
         }
         
-        exp.rest().setMappings(map1);
-        Mappings map2 = subEval(p, gNode, gNode, exp.rest(), exp);
+//        Mappings map = map1;        
+//        List<Node> nodeList = exp.rest().getRecordInScopeNodes();
+//        if (! nodeList.isEmpty()) {
+//            map = map1.distinct(nodeList);
+//        }
+//        exp.rest().setMappings(map);
+        
+        Exp rest = prepareRest(exp, new MappingSet(map1));
+        
+        Mappings map2 = subEval(p, gNode, gNode, rest, exp);
 
         if (map2.size() == 0) {
             return backtrack;

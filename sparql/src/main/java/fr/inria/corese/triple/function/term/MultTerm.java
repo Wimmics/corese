@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class MultTerm extends BinaryFunction {
         
+    public MultTerm(){
+    }
+    
     public MultTerm(String name){
         super(name);
     }

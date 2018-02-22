@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Coalesce extends TermEval {
 
+    public Coalesce(){}
+
     public Coalesce(String name) {
         super(name);
     }

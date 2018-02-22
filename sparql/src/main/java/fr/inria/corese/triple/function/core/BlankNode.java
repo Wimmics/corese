@@ -19,6 +19,8 @@ public class BlankNode extends TermEval {
     static final String name = "_:_bnode_";
     long count = 0;
     
+    public BlankNode(){}
+    
     public BlankNode(String name){
         super(name);
     }

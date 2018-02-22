@@ -829,7 +829,11 @@ public class Expression extends TopExp
     public Expression copy(Variable o, Variable n) {
         return this;
     }
-
+    
+    public Expression copy() {
+        return this;
+    }
+    
     public void visit(ExpressionVisitor v) {
     }
 

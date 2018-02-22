@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class GT extends BinaryFunction {
         
+    public GT(){
+    }
+    
     public GT(String name){
         super(name);
     }

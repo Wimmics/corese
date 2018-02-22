@@ -14,6 +14,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Return extends TermEval {  
     
+    public Return(){}
+    
     public Return(String name){
         super(name);
         setArity(1);

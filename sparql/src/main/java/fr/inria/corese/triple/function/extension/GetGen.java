@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 public class GetGen extends TermEval {
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
 
+    public GetGen(){}
+    
     public GetGen(String name){
         super(name);
         setArity(2);

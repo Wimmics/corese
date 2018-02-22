@@ -13,19 +13,15 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  *
  */
 public class MinusTerm extends BinaryFunction {
-    long val;
-    boolean isConstant = false; 
-        
+           
+    public MinusTerm(){}
+
     public MinusTerm(String name){
         super(name);
     }
     
     public MinusTerm(String name, Expression e1, Expression e2) {
-        super(name, e1, e2);
-        if (e2.isConstant() && e2.getDatatypeValue().getCode() == IDatatype.INTEGER){
-            val = e2.getDatatypeValue().longValue();
-            isConstant = true;
-        }
+        super(name, e1, e2);       
     }
     
     public static MinusTerm create(String name, Expression e1, Expression e2) {        
@@ -38,16 +34,11 @@ public class MinusTerm extends BinaryFunction {
         if (dt1 == null) {
             return null;
         }
-        if (isConstant) {
-            return dt1.minus(val);
+        IDatatype dt2 = getExp2().eval(eval, b, env, p);
+        if (dt2 == null) {
+            return null;
         }
-        else {
-            IDatatype dt2 = getExp2().eval(eval, b, env, p);
-            if (dt2 == null) {
-                return null;
-            }
-            return dt1.minus(dt2);
-        }
+        return dt1.minus(dt2);
     }
       
 }

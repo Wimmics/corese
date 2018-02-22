@@ -16,6 +16,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Operation extends BinaryFunction {
         
+    public Operation(){
+    }
+    
     public Operation(String name){
         super(name);
     }

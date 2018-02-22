@@ -15,7 +15,7 @@ import fr.inria.corese.triple.function.term.TermEval;
 public class Statement  extends TermEval {
     int nbVariable = 0;
     
-    Statement(){}
+    public Statement(){}
     
     Statement(String name, Expression fun, Expression body){
         super(name, fun, body);

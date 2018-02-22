@@ -20,6 +20,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class HashFunction extends TermEval {
 
+    public HashFunction() {}
+    
     public HashFunction(String name) {
         super(name);
         setArity(1);

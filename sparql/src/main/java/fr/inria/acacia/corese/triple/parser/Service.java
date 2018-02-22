@@ -14,6 +14,8 @@ public class Service extends And {
     private List<Atom> serviceList;
     boolean silent;
 
+    Service() {}
+    
     Service(Atom serv, Exp exp, boolean b) {
         super(exp);
         uri = serv;

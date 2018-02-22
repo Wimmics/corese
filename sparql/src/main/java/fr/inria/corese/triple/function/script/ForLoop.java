@@ -20,7 +20,9 @@ public class ForLoop extends Statement {
     
     static final IDatatype TRUE = DatatypeMap.TRUE;
 
-    public ForLoop(Expression var, Expression exp, Expression body) {
+    public ForLoop() {}
+
+        public ForLoop(Expression var, Expression exp, Expression body) {
         super(Processor.FOR, var, exp);
         add(body);
     }

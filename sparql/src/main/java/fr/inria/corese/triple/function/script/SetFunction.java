@@ -14,6 +14,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class SetFunction extends TermEval {  
     
+    public SetFunction(){}
+    
     public SetFunction(String name){
         super(name);
         setArity(2);

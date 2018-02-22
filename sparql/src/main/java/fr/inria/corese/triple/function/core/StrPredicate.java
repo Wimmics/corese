@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class StrPredicate extends BinaryFunction {
     
+    public StrPredicate() {        
+    }
+    
     public StrPredicate(String name) {
         super(name);
     }

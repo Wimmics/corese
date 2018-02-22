@@ -333,7 +333,7 @@ public class Constant extends Atom {
         return cst;
     }
     
-     public Constant copy() {
+     public Constant duplicate() {
         Constant cst;
         if (isLiteral()) {
             cst = create(getName(), getDatatype(), getLang());
@@ -452,7 +452,7 @@ public class Constant extends Atom {
     public Expression transform(boolean isReverse) {
         Constant cst = this;
         if (isReverse) {
-            cst = copy();
+            cst = duplicate();
             cst.setReverse(isReverse);
             cst.setWeight(getWeight());
         }

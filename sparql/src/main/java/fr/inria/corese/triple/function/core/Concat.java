@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class Concat extends TermEval {
 
+    public Concat() {}
+
     public Concat(String name) {
         super(name);
     }

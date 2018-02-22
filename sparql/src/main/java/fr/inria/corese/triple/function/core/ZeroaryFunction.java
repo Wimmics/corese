@@ -17,6 +17,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ZeroaryFunction extends TermEval {
      
+    public ZeroaryFunction(){}
+    
     public ZeroaryFunction(String name){
         super(name);
     }

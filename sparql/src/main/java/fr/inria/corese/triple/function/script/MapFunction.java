@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class MapFunction extends Funcall {  
     
+    public MapFunction(){}
+    
     public MapFunction(String name){
         super(name);
         setArity(2);

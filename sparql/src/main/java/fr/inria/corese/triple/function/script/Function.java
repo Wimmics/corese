@@ -42,6 +42,8 @@ public class Function extends Statement {
     private HashMap<String, Constant> table;
        
 
+    public Function() {}
+    
     public Function(Term fun, Expression body) {
         super(Processor.FUNCTION, fun, body);
         this.signature = fun;

@@ -13,6 +13,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class MethodTypeCall extends Funcall {  
     
+    public MethodTypeCall(){}
+    
     public MethodTypeCall(String name){
         super(name);
         setArity(2);

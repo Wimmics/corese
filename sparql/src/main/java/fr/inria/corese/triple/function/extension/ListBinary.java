@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ListBinary extends BinaryFunction {
 
+    public ListBinary(){}
+    
     public ListBinary(String name){
         super(name);
     }

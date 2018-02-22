@@ -8,7 +8,6 @@ import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.edelweiss.kgram.api.query.Environment;
@@ -64,16 +63,10 @@ public class TermEval extends Term {
     }
     
     public void fill(Term term){
-        term.setCName(getCName());
-        term.setOper(oper());
-        term.setType(type());
-        term.setModality(getModality());
+        basicFill(term);
         term.setArg(getArg());
-        term.setName(getName());
-        term.setLongName(getLongName());
         term.setArgs(getArgs());
         term.setExpList(getExpList());
-        term.setFunction(isFunction());
     }
        
     /**

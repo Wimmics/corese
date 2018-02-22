@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ListNary extends TermEval {
 
+    public ListNary(){}
+    
     public ListNary(String name){
         super(name);
     }

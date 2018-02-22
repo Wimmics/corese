@@ -149,6 +149,10 @@ public class Triple extends Exp {
         
         @Override
         public Triple copy() {
+            if (isFilter()){
+                Expression exp = getFilter().copy();               
+                return create(exp);
+            }
             return this;
         }
 	

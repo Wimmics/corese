@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Bound extends TermEval {  
     
+    public Bound(){}
+
     public Bound(String name){
         super(name);
         setArity(1);

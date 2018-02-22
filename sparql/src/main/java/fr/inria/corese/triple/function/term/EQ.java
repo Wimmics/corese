@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class EQ extends BinaryFunction {
         
+    public EQ(){
+    }
+ 
     public EQ(String name){
         super(name);
     }

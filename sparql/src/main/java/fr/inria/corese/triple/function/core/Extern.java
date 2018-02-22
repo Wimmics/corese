@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class Extern extends TermEval {
 
+    public Extern() {}
+
     public Extern(String name) {
         super(name);
     }

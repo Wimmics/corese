@@ -21,6 +21,9 @@ import java.util.ArrayList;
 public class BinaryFunction extends TermEval {
     
     private Expression e1, e2;
+    
+    public BinaryFunction(){      
+    }    
           
     public BinaryFunction(String name){
         super(name);

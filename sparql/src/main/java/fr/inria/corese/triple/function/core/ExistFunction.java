@@ -14,6 +14,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ExistFunction extends TermEval {  
     
+    public ExistFunction() {}
+    
     public ExistFunction(String name){
         super(name);
     }

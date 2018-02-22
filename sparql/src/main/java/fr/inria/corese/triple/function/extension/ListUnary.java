@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ListUnary extends TermEval {
 
+    public ListUnary(){}
+    
     public ListUnary(String name){
         super(name);
         setArity(1);

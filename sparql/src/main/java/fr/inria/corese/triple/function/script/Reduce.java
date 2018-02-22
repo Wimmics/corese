@@ -27,6 +27,8 @@ import java.util.List;
  */
 public class Reduce extends Funcall {  
     
+    public Reduce(){}
+    
     public Reduce(String name){
         super(name);
         setArity(1);

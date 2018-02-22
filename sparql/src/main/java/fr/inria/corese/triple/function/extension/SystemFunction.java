@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class SystemFunction extends TermEval {
 
+     public SystemFunction(){}
+     
      public SystemFunction(String name){
         super(name);
     }

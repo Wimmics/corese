@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class DateFunction extends TermEval {
 
+    public DateFunction() {}
+
     public DateFunction(String name) {
         super(name);
         setArity(1);

@@ -18,6 +18,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Funcall extends TermEval {
 
+    public Funcall() {}
+    
     public Funcall(String name) {
         super(name);
         setArity(1);

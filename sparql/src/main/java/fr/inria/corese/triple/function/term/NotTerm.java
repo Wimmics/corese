@@ -13,6 +13,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class NotTerm extends TermEval {
 
+    public NotTerm() {       
+    }
+
     public NotTerm(String name) {
         super(name);
         setArity(1);

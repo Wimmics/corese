@@ -12,7 +12,10 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  *
  */
 public class AndTerm extends TermEval {
-
+    
+    public AndTerm() {
+    }
+    
     public AndTerm(String name) {
         super(name);
     }

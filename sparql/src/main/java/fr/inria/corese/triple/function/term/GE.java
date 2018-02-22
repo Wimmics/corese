@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class GE extends BinaryFunction {
         
+    public GE(){
+    }
+   
     public GE(String name){
         super(name);
     }

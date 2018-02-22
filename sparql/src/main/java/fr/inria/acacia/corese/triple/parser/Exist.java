@@ -2,7 +2,8 @@ package fr.inria.acacia.corese.triple.parser;
 
 public class Exist extends BasicGraphPattern {
 	
-
+        public Exist() {}
+    
 	Exist(Exp e){
 		super(e);
 	}
@@ -15,6 +16,10 @@ public class Exist extends BasicGraphPattern {
 	public boolean isExist(){
 		return true;
 	}
+        
+        public Exist getExist() {
+            return this;
+        }
 	
         @Override
 	public StringBuffer toString(StringBuffer sb){

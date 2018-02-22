@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class BiTriFunction extends TermEval {
        
+    public BiTriFunction(){}
+    
     public BiTriFunction(String name){
         super(name);
         setArity(2);

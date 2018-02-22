@@ -18,6 +18,8 @@ import java.util.UUID;
 public class UUIDFunction extends TermEval {  
     private static final String URN_UUID = "urn:uuid:";
     
+    public UUIDFunction(){}
+    
     public UUIDFunction(String name){
         super(name);
     }

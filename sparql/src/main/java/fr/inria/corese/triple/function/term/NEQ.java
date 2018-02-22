@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class NEQ extends BinaryFunction {
         
+    public NEQ(){
+    }
+    
     public NEQ(String name){
         super(name);
     }

@@ -13,6 +13,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class OrTerm extends TermEval {
     
+    public OrTerm() {
+    }
+
     public OrTerm(String name) {
         super(name);
     }

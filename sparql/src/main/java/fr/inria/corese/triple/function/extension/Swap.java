@@ -15,6 +15,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Swap extends TermEval {
 
+    public Swap(){}
+    
     public Swap(String name){
         super(name);
         setArity(3);

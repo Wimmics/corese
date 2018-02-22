@@ -23,6 +23,8 @@ import fr.inria.edelweiss.kgram.api.core.Expr;
 import fr.inria.edelweiss.kgram.api.core.ExprType;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.api.query.Producer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Title: Corese</p>
@@ -885,6 +887,59 @@ public class Term extends Expression {
         setShort(t.isShort());
         setDistinct(t.isDistinct());
     }
+    
+    /**
+     * Copy as is except exists where BGP is copied
+     * TODO: check all subclasses of TermEval with special data to be copied
+     */
+    @Override
+    public Term copy() {
+        if (isRecExist()) {
+            return copyExist();
+        }
+        else {
+            return this;
+        }
+    }
+    
+    Term copyExist() {
+        try {
+            Term t = getClass().newInstance();
+            for (Expression exp : getArgs()) {
+                Expression ee = exp.copy();
+                t.add(ee);
+            }            
+            complete(t);          
+            return t;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(Term.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
+    }
+    
+    public void basicFill(Term t){
+        t.setName(getName());
+        t.setCName(getCName());
+        t.setLongName(getLongName());
+        t.setArity(defineArity());
+        t.setType(type());
+        t.setOper(oper());
+        t.setFunction(isFunction());
+        t.setModality(getModality());
+        t.setDistinct(isDistinct());
+    }
+    
+    public void complete(Term t) {
+        basicFill(t);
+        
+        t.setProcessor(getProcessor());
+        t.setArg(getArg());
+        t.setArguments();
+        if (isExist()) {
+            t.setExist(getExist().copy().getExist());
+        }
+    }
+    
 
     /**
      * ^(p/q) -> ^q/^p
@@ -1317,11 +1372,6 @@ public class Term extends Expression {
             lExp.add(i, e);
         }
     }
-//        
-//        @Override
-//        public void addExp(int i, Expr e){
-//            lExp.add(i, e);
-//        }
 
     void setArguments() {
         if (lExp == null) {

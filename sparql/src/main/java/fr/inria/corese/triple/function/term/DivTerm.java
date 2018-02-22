@@ -14,6 +14,9 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class DivTerm extends BinaryFunction {
         
+    public DivTerm(){
+    }
+  
     public DivTerm(String name){
         super(name);
     }

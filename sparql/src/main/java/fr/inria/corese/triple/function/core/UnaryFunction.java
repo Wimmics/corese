@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class UnaryFunction extends TermEval {
     
+    public UnaryFunction(){}
+
     public UnaryFunction(String name){
         super(name);
         setArity(1);

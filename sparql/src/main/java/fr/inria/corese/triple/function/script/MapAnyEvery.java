@@ -16,6 +16,8 @@ import java.util.Iterator;
  */
 public class MapAnyEvery extends Funcall {
 
+    public MapAnyEvery() {}
+    
     public MapAnyEvery(String name) {
         super(name);
         setArity(2);

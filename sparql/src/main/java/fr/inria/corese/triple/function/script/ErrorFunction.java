@@ -14,6 +14,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class ErrorFunction extends TermEval {  
     
+    public ErrorFunction(){}
+    
     public ErrorFunction(String name){
         super(name);
     }

@@ -31,6 +31,8 @@ public class Extension extends TermEval {
     List<Expr> arguments;
     Computer cc;
 
+    public Extension() {}
+    
     public Extension(String name) {
         super(name);
     }

@@ -16,6 +16,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 public class Get extends BinaryFunction {
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
 
+    public Get(){}
+    
     public Get(String name){
         super(name);
     }

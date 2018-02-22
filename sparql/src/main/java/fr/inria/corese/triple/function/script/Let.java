@@ -18,6 +18,8 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
  */
 public class Let extends Statement {
 
+    public Let() {}
+    
     public Let(Expression def, Expression body) {
         super(Processor.LET, def, body);
     }

@@ -129,16 +129,16 @@ public class FederateVisitor implements QueryVisitor {
      */
     void rewrite(Atom name, ASTQuery ast) {
         for (Expression exp : ast.getSelectFunctions().values()) {
-            rewrite(name, exp);
+            rewriteFilter(name, exp);
         }
         for (Expression exp : ast.getGroupBy()) {
-            rewrite(name, exp);
+            rewriteFilter(name, exp);
         }
         for (Expression exp : ast.getOrderBy()) {
-            rewrite(name, exp);
+            rewriteFilter(name, exp);
         }
         if (ast.getHaving() != null) {
-            rewrite(name, ast.getHaving());
+            rewriteFilter(name, ast.getHaving());
         }
 
         rewrite(name, ast.getBody());
@@ -168,7 +168,7 @@ public class FederateVisitor implements QueryVisitor {
                 // keep it
             } else if (exp.isFilter() || exp.isBind()) {
                 // rewrite exists { }
-                rewrite(name, exp.getFilter());
+                rewriteFilter(name, exp.getFilter());
             } else if (exp.isTriple()) {
                 // triple t -> service <Si> { t }
                 // copy relevant filters in service
@@ -380,15 +380,15 @@ public class FederateVisitor implements QueryVisitor {
     
 
    
-    boolean rewrite(Atom name, Expression exp) {
+    boolean rewriteFilter(Atom name, Expression exp) {
         boolean exist = false;
         if (exp.isTerm()) {
             if (exp.getTerm().isTermExist()) {
                 exist = true;
-                process(name, exp);
+                rewriteExist(name, exp);
             } else {
                 for (Expression arg : exp.getArgs()) {
-                    if (rewrite(name, arg)) {
+                    if (rewriteFilter(name, arg)) {
                         exist = true;
                     }
                 }
@@ -405,7 +405,7 @@ public class FederateVisitor implements QueryVisitor {
      * it could return only one. However, in the general case: 
      * exists { t1 t2 } it must return all Mappings.
      */
-    void process(Atom name, Expression exp) {
+    void rewriteExist(Atom name, Expression exp) {
         rewrite(name, exp.getTerm().getExist().get(0));
     }
     

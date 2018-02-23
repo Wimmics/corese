@@ -3,11 +3,14 @@ package fr.inria.corese.kgenv.federate;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
+import fr.inria.acacia.corese.triple.parser.Exist;
 import fr.inria.acacia.corese.triple.parser.Exp;
+import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Query;
 import fr.inria.acacia.corese.triple.parser.Service;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,7 +52,6 @@ public class Rewrite {
      * into one service URI
      * modify the body (replace triples by BGPs)
      * filterList: list to be filled with filters that are copied into service
-     * TODO: filter exists
      */
     void prepare(Atom name, Exp body, List<Exp> filterList) {
         ServiceBGP map = new ServiceBGP();
@@ -68,7 +70,7 @@ public class Rewrite {
         }
                
         HashMap<Triple, BasicGraphPattern>  table = new HashMap<>();
-        HashMap<BasicGraphPattern, Boolean> done = new HashMap<>();
+        HashMap<BasicGraphPattern, Service> done = new HashMap<>();
         
         // record triples that are member of created BGPs
         for (BasicGraphPattern bgp : map.getMap().values()) {
@@ -87,13 +89,13 @@ public class Rewrite {
                 Triple t = body.get(i).getTriple();
                 if (table.containsKey(t)){
                     BasicGraphPattern bgp = table.get(t);
-                    if (done.get(bgp) == null ) {
-                        // do it once for first triple of this BGP
-                        done.put(bgp, true);
+                    if (done.get(bgp) == null ) {                       
                         // service s { bgp }
-                        Exp exp = visitor.rewrite(name, bgp, visitor.getServiceList(t));
+                        Service serv = visitor.rewrite(name, bgp, visitor.getServiceList(t));
+                        // do it once for first triple of this BGP
+                        done.put(bgp, serv);
                         // replace first triple of BGP by service BGP
-                        body.set(i, exp);
+                        body.set(i, serv);
                     } 
                 }
             }
@@ -104,22 +106,75 @@ public class Rewrite {
             body.getBody().remove(t);
         }
         
-        // copy filters from body into BGP who bind all filter variables
-        for (Exp exp : body) {
-            if (exp.isFilter() && ! visitor.isExist(exp)) {
-                for (BasicGraphPattern bgp : done.keySet()) {
-                   List<Variable> varList = bgp.getVariables();
-                   if (exp.getFilter().isBound(varList)) {
-                       bgp.add(exp);
-                       if (! filterList.contains(exp)) {
-                           filterList.add(exp);
-                       }
-                   }
-                }
-            }
-        }                      
+        filter(name, body, done, filterList);
     }
     
+    
+    void filter(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList) {
+        // copy filters from body into BGP who bind all filter variables
+        for (Exp exp : body) {
+            if (exp.isFilter()) {
+                if (visitor.isRecExist(exp)) {
+                    if (visitor.isExist() && visitor.isExist(exp)) {
+                        // draft for testing
+                        filterExist(name, body, bgpList, filterList, exp);                       
+                    }
+                }
+                else {
+                    for (BasicGraphPattern bgp : bgpList.keySet()) {
+                        List<Variable> varList = bgp.getVariables();
+                        if (exp.getFilter().isBound(varList)) {
+                            bgp.add(exp);
+                            if (!filterList.contains(exp)) {
+                                filterList.add(exp);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Draft for testing
+     * TODO: test conditions to move exists clause into service
+     * 
+     * body = 
+     * service URI { BGP }  filter exists { EXP } 
+     * ->
+     * service URI { BGP }  filter exists { service URI { EXP } }
+     * ->
+     * service URI { BGP  filter exists { EXP } } 
+     */
+    void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList, Exp filterExist) {
+        Expression filter = filterExist.getFilter();
+        List<String> list = filter.getVariables();
+
+        visitor.rewriteFilter(name, filter);
+        Exist exist = filter.getTerm().getExistPattern();
+        Exp bgpExist = exist.get(0);
+
+        if (bgpExist.size() == 1 && bgpExist.get(0).isService()) {
+            Service servExist = bgpExist.get(0).getService();
+            if (servExist.getServiceList().size() == 1) {
+
+                for (BasicGraphPattern bgp : bgpList.keySet()) {
+                    Service servBGP = bgpList.get(bgp);
+                    if (servExist.getServiceName().equals(servBGP.getServiceName())) {
+                        // remove the exist service clause, 
+                        exist.set(0, servExist.get(0));
+                        // move the exist BGP into the outer service BGP
+                        bgp.add(filterExist);
+                        System.out.println("R: " + servBGP);
+                        if (!filterList.contains(filterExist)) {
+                            filterList.add(filterExist);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     
      /**
      * service s {e1} optional { service s {e2}}

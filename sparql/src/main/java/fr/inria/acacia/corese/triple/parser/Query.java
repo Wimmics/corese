@@ -1,6 +1,7 @@
 package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
+import java.util.List;
 
 public class Query extends Exp {
 	
@@ -30,6 +31,18 @@ public class Query extends Exp {
 	public ASTQuery getQuery(){
 		return ast;
 	}
+        
+        @Override
+        // TODO: complete this
+        public Query copy() {
+            return this;
+        }
+        
+        @Override
+        // TODO: complete this
+        public void getVariables(List<Variable> list) {
+            
+        }
         
         @Override
         public ASTQuery getAST(){

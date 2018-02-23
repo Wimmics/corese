@@ -930,11 +930,10 @@ public class Term extends Expression {
     }
     
     public void complete(Term t) {
-        basicFill(t);
-        
-        t.setProcessor(getProcessor());
+        basicFill(t);       
+        // t.setProcessor(getProcessor());
+        //t.setArguments();
         t.setArg(getArg());
-        t.setArguments();
         if (isExist()) {
             t.setExist(getExist().copy().getExist());
         }
@@ -1335,8 +1334,16 @@ public class Term extends Expression {
         for (Expression ee : getArgs()) {
             ee.getVariables(list, excludeLocal);
         }
-        if (oper() == ExprType.EXIST) {
+        if (oper() == ExprType.EXIST && getPattern() != null) {
             getPattern().getVariables(list, excludeLocal);
+        }
+        else if (getExist() != null) {
+            // when used before compiling
+            // use case: visitor
+            List<Variable> varList = getExist().getVariables();
+            for (Variable var : varList) {
+                var.getVariables(list, excludeLocal);
+            }
         }
     }
 

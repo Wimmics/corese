@@ -25,6 +25,9 @@ public class ExistFunction extends TermEval {
         return eval.exist(this, env, p);
     }
     
-    
+    @Override
+    public boolean isTermExist() {
+        return true;
+    }
    
 }

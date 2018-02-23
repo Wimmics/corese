@@ -97,7 +97,7 @@ public class Option extends Exp {
         @Override
         void getVariables(List<Variable> list) {
             if (size()>0) {
-                get(0).getVariables();
+                get(0).getVariables(list);
             }
         }
         

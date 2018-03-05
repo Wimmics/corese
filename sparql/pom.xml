@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>fr.inria.wimmics</groupId>
+		<groupId>fr.inria.corese</groupId>
 		<artifactId>corese-parent</artifactId>
 		<version>${revision}</version>
 		<relativePath>..</relativePath>
@@ -26,7 +26,7 @@
 		</dependency>-->
 
 	<dependency>
-		<groupId>fr.inria.wimmics</groupId>
+		<groupId>${project.parent.groupId}</groupId>
 		<artifactId>kgram</artifactId>
 		<version>${revision}</version>
 	</dependency>
@@ -42,10 +42,6 @@
 	<dependency>
 		<groupId>org.apache.logging.log4j</groupId>
 		<artifactId>log4j-core</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>junit</groupId>
-		<artifactId>junit</artifactId>
 	</dependency>
 </dependencies>
 

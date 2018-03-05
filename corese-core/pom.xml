@@ -1,92 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>fr.inria.wimmics</groupId>
-        <artifactId>corese-parent</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+	<parent>
+		<groupId>fr.inria.corese</groupId>
+		<artifactId>corese-parent</artifactId>
+		<version>${revision}</version>
+		<relativePath>..</relativePath>
+	</parent>
 
-    <artifactId>corese-core</artifactId>
+	<artifactId>corese-core</artifactId>
 
-    <name>corese-core</name>
+	<name>corese-core</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
-            <artifactId>arp</artifactId>
-            <version>2.2.b</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgenv</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>kgram</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>sparql</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.8.0</version>
-        </dependency> 
-        <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-        </dependency>	
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
+			<artifactId>arp</artifactId>
+			<version>2.2.b</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>kgenv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>kgram</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>sparql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.8.0</version>
+		</dependency> 
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
     
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-        </dependency>
-          <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-        </dependency>
-	<dependency>
-		<groupId>org.semarglproject</groupId>
-		<artifactId>semargl-core</artifactId>
-		<version>0.6.1</version>
-	</dependency>
-	<dependency>
-		<groupId>org.openrdf.sesame</groupId>
-		<artifactId>sesame-rio-api</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.openrdf.sesame</groupId>
-		<artifactId>sesame-rio-nquads</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.openrdf.sesame</groupId>
-		<artifactId>sesame-model</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.openrdf.sesame</groupId>
-		<artifactId>sesame-util</artifactId>
-	</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-bundle</artifactId>
+		</dependency>        
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.semarglproject</groupId>
+			<artifactId>semargl-core</artifactId>
+			<version>0.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-nquads</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-util</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
 			<artifactId>arp</artifactId>
@@ -171,30 +168,30 @@
 			<scope>test</scope>
 		</dependency>
         
-        <!--estimate the size of objects in memeory in bytes-->
-        <!--
-        <dependency>
-            <groupId>com.javamex.classmexer</groupId>
-            <artifactId>classmexer</artifactId>
-            <version>0.3</version>  
-        </dependency> 
-        --> 
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>2.10.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<!--estimate the size of objects in memeory in bytes-->
+		<!--
+		<dependency>
+		    <groupId>com.javamex.classmexer</groupId>
+		    <artifactId>classmexer</artifactId>
+		    <version>0.3</version>  
+		</dependency> 
+		--> 
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
+			<version>2.10.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <repositories>
-        <repository>
-            <id>local-repo</id>
-            <url>file://${project.basedir}/src/main/resources/repo/</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>local-repo</id>
+			<url>file://${project.basedir}/src/main/resources/repo/</url>
+		</repository>
+	</repositories>
 
-    <build>
+	<build>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -266,7 +263,7 @@
 		</plugins>
 	</build>
 
-    <profiles> 
+	<profiles> 
 		<profile> 
 			<id>jenkins</id> 
 			<activation> 

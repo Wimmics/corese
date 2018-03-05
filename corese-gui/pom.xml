@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>fr.inria.wimmics</groupId>
+		<groupId>fr.inria.corese</groupId>
 		<artifactId>corese-parent</artifactId>
 		<version>${revision}</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<groupId>${project.parent.groupId}</groupId>
-	<artifactId>kggui</artifactId>
+	<artifactId>corese-gui</artifactId>
 	<version>${revision}</version>
 
 	<name>corese-gui</name>
@@ -65,36 +65,6 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.21</version>
 		</dependency>
-		<!--<dependency>-->
-		<!--<groupId>${project.groupId}</groupId>-->
-		<!--<artifactId>tinkerpop</artifactId>-->
-		<!--<version>3.2.1p-SNAPSHOT</version>-->
-		<!--<scope>runtime</scope>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.openrdf.sesame</groupId>-->
-		<!--<artifactId>sesame-rio-nquads</artifactId>-->
-		<!--<version>2.8.0-beta2</version>-->
-		<!--<scope>runtime</scope>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--<groupId>org.openrdf.sesame</groupId>-->
-		<!--<artifactId>sesame-rio-api</artifactId>-->
-		<!--<version>2.8.0-beta2</version>-->
-		<!--<scope>runtime</scope>-->
-		<!--</dependency>-->
-
-		<!--	 <dependency>
-		  <artifactId>slf4j-api</artifactId>
-		  <version>1.7.21</version>
-		</dependency> -->
-
-		<!--	 <dependency>
-		 <groupId>${project.groupId}</groupId>
-		 <artifactId>tinkerpop</artifactId>
-		 <version>3.2.1p-SNAPSHOT</version>
-		 <scope>runtime</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-nquads</artifactId>

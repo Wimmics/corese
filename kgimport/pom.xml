@@ -1,90 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>fr.inria.wimmics</groupId>
-        <artifactId>corese-parent</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+	<parent>
+		<groupId>fr.inria.corese</groupId>
+		<artifactId>corese-parent</artifactId>
+		<version>${revision}</version>
+		<relativePath>..</relativePath>
+	</parent>
 
-    <groupId>${parent.groupId}</groupId>
-    <artifactId>kgimport</artifactId>
-    <name>kgimport</name>
-    <version>${parent.version}</version>
+	<groupId>${parent.groupId}</groupId>
+	<artifactId>kgimport</artifactId>
+	<name>kgimport</name>
+	<version>${parent.version}</version>
 
-    <dependencies>
-        <dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>kgram</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>kgengine</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.wimmics</groupId>
-            <artifactId>corese-core</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>${parent.groupId}</groupId>
-            <artifactId>sparql</artifactId>
-            <version>${revision}</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>${parent.groupId}</groupId>
+			<artifactId>kgram</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${parent.groupId}</groupId>
+			<artifactId>kgengine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${parent.groupId}</groupId>
+			<artifactId>corese-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>sparql</artifactId>
+		</dependency>
         
-	<dependency>
-		<groupId>org.apache.jena</groupId>
-		<artifactId>jena-arq</artifactId>
-		<version>2.11.1</version>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-sdb</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-tdb</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+        
+		<!--        <dependency> 
+	    <groupId>thewebsemantic</groupId> 
+	    <artifactId>jenabean</artifactId> 
+	    <version>1.0.6</version> 
+	    <exclusions>
+		<exclusion>
+		    <artifactId>jena</artifactId>
+		    <groupId>com.hp.hpl.jena</groupId>
+		</exclusion>
+		<exclusion>
+		    <artifactId>xercesImpl</artifactId>
+		    <groupId>xerces</groupId>
+		</exclusion>
+	    </exclusions>
 	</dependency>
-	<dependency>
-		<groupId>org.apache.jena</groupId>
-		<artifactId>jena-core</artifactId>
-		<version>2.11.1</version>
-	</dependency>
-        <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-sdb</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-tdb</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        
-<!--        <dependency> 
-            <groupId>thewebsemantic</groupId> 
-            <artifactId>jenabean</artifactId> 
-            <version>1.0.6</version> 
-            <exclusions>
-                <exclusion>
-                    <artifactId>jena</artifactId>
-                    <groupId>com.hp.hpl.jena</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>xercesImpl</artifactId>
-                    <groupId>xerces</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
+	
 		<dependency> 
 		    <groupId>thewebsemantic</groupId> 
 		    <artifactId>jpa4jena</artifactId> 
@@ -141,7 +136,7 @@
 		</dependency>
 	</dependencies>
 
-    <build>
+	<build>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -215,7 +210,7 @@
 		</plugins>
 	</build>
 
-    <profiles> 
+	<profiles> 
 		<profile> 
 			<id>jenkins</id> 
 			<activation> 

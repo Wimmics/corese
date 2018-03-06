@@ -3,9 +3,8 @@ package kgraph;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
 
 public class TestThread extends Thread {
 	

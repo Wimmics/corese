@@ -7,9 +7,9 @@ import fr.inria.edelweiss.kgenv.parser.NodeImpl;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.api.QueryGraphVisitor;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.api.QueryGraphVisitor;
+import fr.inria.corese.kgraph.core.edge.EdgeImpl;
+import fr.inria.corese.kgraph.core.Graph;
 
 /**
  * Example of Query Graph Visitor that replace blank nodes by variables

@@ -3,9 +3,9 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.GraphStore;
+import fr.inria.corese.kgtool.load.LoadException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 

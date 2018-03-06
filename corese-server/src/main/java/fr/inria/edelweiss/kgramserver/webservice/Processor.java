@@ -2,13 +2,11 @@ package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import fr.inria.corese.kgraph.core.GraphStore;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.QueryLoad;
+import fr.inria.corese.kgtool.util.SPINProcess;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;

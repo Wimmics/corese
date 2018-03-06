@@ -29,12 +29,12 @@ import fr.inria.edelweiss.kgram.core.Exp;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.CompileService;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.SPARQLResult;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.CompileService;
+import fr.inria.corese.kgraph.query.ProducerImpl;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.SPARQLResult;
 import java.util.Hashtable;
 import java.util.Iterator;
 

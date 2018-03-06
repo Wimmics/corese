@@ -8,8 +8,6 @@ import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Eval;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Memory;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
 
 public class PluginImpl extends ProxyImpl {
 	

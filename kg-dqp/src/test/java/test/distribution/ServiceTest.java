@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import org.apache.commons.lang.time.StopWatch;

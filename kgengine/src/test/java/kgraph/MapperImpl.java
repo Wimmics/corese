@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgraph.query.MapperSQL;
+import fr.inria.corese.kgraph.query.MapperSQL;
 
 
 public class MapperImpl extends MapperSQL {

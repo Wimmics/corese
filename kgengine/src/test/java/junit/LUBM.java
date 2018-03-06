@@ -8,12 +8,11 @@ package junit;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryEngine;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryEngine;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.rule.RuleEngine;
+import fr.inria.corese.kgtool.load.Load;
 import java.util.Date;
 import org.junit.Test;
 

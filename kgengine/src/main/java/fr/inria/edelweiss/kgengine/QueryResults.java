@@ -12,10 +12,10 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.print.JSONFormat;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.print.JSONFormat;
+import fr.inria.corese.kgtool.print.RDFFormat;
+import fr.inria.corese.kgtool.print.XMLFormat;
 
 public class QueryResults implements IResults
 {

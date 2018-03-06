@@ -1,7 +1,7 @@
 package fr.inria.corese.kgraph.index;
 
 import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeGeneric;
+import fr.inria.corese.kgraph.core.edge.EdgeGeneric;
 import java.util.Iterator;
 
 /**

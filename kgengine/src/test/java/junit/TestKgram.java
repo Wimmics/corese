@@ -16,15 +16,13 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgraph.core.EdgeFactory;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.core.EdgeFactory;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 public class TestKgram extends TestSuite
 {

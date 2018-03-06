@@ -15,17 +15,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>kgram</artifactId>
             <version>${revision}</version>
         </dependency>	
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>kgenv</artifactId>
             <version>${revision}</version>
         </dependency>	
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
             <version>${revision}</version>
         </dependency>	

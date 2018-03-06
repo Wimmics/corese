@@ -7,16 +7,15 @@
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.print.ResultFormat;
+import fr.inria.corese.kgtool.print.TripleFormat;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import org.testng.annotations.Test;
 
 /**
  *

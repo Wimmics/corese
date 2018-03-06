@@ -4,15 +4,14 @@ import java.util.Date;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.print.XMLFormat;
 
 public class ALU {
 	

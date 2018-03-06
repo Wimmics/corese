@@ -14,15 +14,15 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.filter.Interpreter;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryEngine;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.TSVFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryEngine;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.QueryLoad;
+import fr.inria.corese.kgtool.print.RDFFormat;
+import fr.inria.corese.kgtool.print.TSVFormat;
+import fr.inria.corese.kgtool.print.XMLFormat;
 
 public class Test2 {
 	

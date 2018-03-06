@@ -15,7 +15,7 @@ import fr.inria.edelweiss.kgram.api.core.Filter;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.api.query.Environment;
 import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
+import fr.inria.corese.kgraph.core.edge.EdgeImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;

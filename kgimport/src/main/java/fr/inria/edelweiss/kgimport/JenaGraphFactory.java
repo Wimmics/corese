@@ -21,7 +21,7 @@ import fr.inria.edelweiss.kgram.api.core.Entity;
 //import fr.inria.acacia.corese.api.IEngine;
 //import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

@@ -3,7 +3,7 @@ package fr.inria.corese.kgraph.index;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 import static fr.inria.corese.kgraph.index.EdgeManagerIndexer.IGRAPH;
 import static fr.inria.corese.kgraph.index.EdgeManagerIndexer.ILIST;
 import java.util.ArrayList;

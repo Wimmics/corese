@@ -4,9 +4,9 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.corese.kgraph.api.Loader;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.transform.Transformer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

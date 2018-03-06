@@ -13,7 +13,7 @@ import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgengine.QueryResults;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.EventListener;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.query.QueryProcess;
 
 
 

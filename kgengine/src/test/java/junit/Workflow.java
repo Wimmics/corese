@@ -2,11 +2,11 @@ package junit;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.rule.RuleEngine;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.util.SPINProcess;
 
 /*
  * To change this template, choose Tools | Templates

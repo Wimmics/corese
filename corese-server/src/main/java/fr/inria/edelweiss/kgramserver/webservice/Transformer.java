@@ -6,7 +6,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import static fr.inria.edelweiss.kgramserver.webservice.Utility.toStringList;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.workflow.Data;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +51,9 @@ public class Transformer {
     static void init() {
         nsm = NSManager.create();
         contentType = new HashMap<String, String>();
-        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
-        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
-        contentType.put(fr.inria.edelweiss.kgtool.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
+        contentType.put(fr.inria.corese.kgtool.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
+        contentType.put(fr.inria.corese.kgtool.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
+        contentType.put(fr.inria.corese.kgtool.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
     }
     
 
@@ -222,8 +222,8 @@ public class Transformer {
      * hence it is protected wrt img ...
      */
     String protect(Param p, String ft){
-        fr.inria.edelweiss.kgtool.transform.Transformer t = 
-            fr.inria.edelweiss.kgtool.transform.Transformer.create(RESULT);
+        fr.inria.corese.kgtool.transform.Transformer t = 
+            fr.inria.corese.kgtool.transform.Transformer.create(RESULT);
         Context c = t.getContext();
         c.set(RESULT, ft);
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());

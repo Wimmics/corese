@@ -2,12 +2,12 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.rule.Rule;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.api.Loader;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.rule.Rule;
+import fr.inria.corese.kgraph.rule.RuleEngine;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
 
 /**
  *

@@ -8,15 +8,12 @@ import java.util.List;
 import org.junit.Test;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.CoreseFloat;
-import fr.inria.acacia.corese.cg.datatype.CoreseInteger;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Exp;
@@ -30,11 +27,11 @@ import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.rule.RuleEngine;
+import fr.inria.corese.kgtool.print.RDFFormat;
+import fr.inria.corese.kgtool.print.ResultFormat;
 
 /**
  * 

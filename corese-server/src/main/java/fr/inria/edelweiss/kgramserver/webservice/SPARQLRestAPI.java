@@ -25,16 +25,16 @@ import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.CSVFormat;
-import fr.inria.edelweiss.kgtool.print.JSOND3Format;
-import fr.inria.edelweiss.kgtool.print.JSONFormat;
-import fr.inria.edelweiss.kgtool.print.JSONLDFormat;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TSVFormat;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.print.CSVFormat;
+import fr.inria.corese.kgtool.print.JSOND3Format;
+import fr.inria.corese.kgtool.print.JSONFormat;
+import fr.inria.corese.kgtool.print.JSONLDFormat;
+import fr.inria.corese.kgtool.print.ResultFormat;
+import fr.inria.corese.kgtool.print.TSVFormat;
+import fr.inria.corese.kgtool.print.TripleFormat;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.

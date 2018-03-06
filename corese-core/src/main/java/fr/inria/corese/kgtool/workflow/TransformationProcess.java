@@ -3,8 +3,8 @@ package fr.inria.corese.kgtool.workflow;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.edelweiss.kgraph.core.Event;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.corese.kgraph.core.Event;
+import fr.inria.corese.kgtool.transform.Transformer;
 
 /**
  *

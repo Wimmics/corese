@@ -43,13 +43,13 @@ import fr.inria.edelweiss.kgram.api.core.ExpType;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
-import fr.inria.edelweiss.kgtool.util.SPINProcess;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.print.ResultFormat;
+import fr.inria.corese.kgtool.print.XMLFormat;
+import fr.inria.corese.kgtool.transform.Transformer;
+import fr.inria.corese.kgtool.util.SPINProcess;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -607,7 +607,7 @@ public final class MyJPanelQuery extends JPanel {
     void display(Mappings map, NSManager nsm) {
         fr.inria.edelweiss.kgram.api.core.Node res = map.getTemplateResult();
         if (res != null) {
-            fr.inria.edelweiss.kgraph.core.Graph g = fr.inria.edelweiss.kgraph.core.Graph.create();
+            fr.inria.corese.kgraph.core.Graph g = fr.inria.corese.kgraph.core.Graph.create();
             Load ld = Load.create(g);
             String str = res.getLabel();
             try {
@@ -619,7 +619,7 @@ public final class MyJPanelQuery extends JPanel {
         }
     }
 
-    void displayGraph(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm) {
+    void displayGraph(fr.inria.corese.kgraph.core.Graph g, NSManager nsm) {
         graph = create(g, nsm);
         graph.addAttribute("ui.stylesheet", stylesheet);
         graph.addAttribute("ui.antialias");
@@ -662,7 +662,7 @@ public final class MyJPanelQuery extends JPanel {
 
     
     
-    MultiGraph create(fr.inria.edelweiss.kgraph.core.Graph g, NSManager nsm){
+    MultiGraph create(fr.inria.corese.kgraph.core.Graph g, NSManager nsm){
         //            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
         //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
         //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");

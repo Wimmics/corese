@@ -7,7 +7,7 @@ package fr.inria.corese.kgtool.workflow;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.corese.kgtool.print.ResultFormat;
 
 /**
  *

@@ -7,7 +7,7 @@ package test.distribution;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.CentralizedInferrencingNoSpin;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.LoadException;
 import java.io.IOException;
 import org.apache.logging.log4j.Level;
 

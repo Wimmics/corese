@@ -1,8 +1,8 @@
 
 package transform;
 
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.transform.TemplatePrinter;
 import java.io.IOException;
 import org.junit.Test;
 

@@ -4,27 +4,20 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
 import fr.inria.edelweiss.kgram.api.query.Evaluator;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.load.SPARQLResult;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
-import fr.inria.edelweiss.kgtool.util.MappingComparator;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.QueryLoad;
+import fr.inria.corese.kgtool.load.SPARQLResult;
 
 public class W3C {
 	

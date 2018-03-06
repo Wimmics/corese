@@ -44,7 +44,7 @@ public class SparqlEndpoint {
 
         ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
         jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
+        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
         jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
         jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
         Context servletCtx = new Context(server, "/", Context.SESSIONS);

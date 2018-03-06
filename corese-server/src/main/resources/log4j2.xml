@@ -28,7 +28,7 @@
       <AppenderRef ref="FILE"/>
     </Root>
 
-    <Logger name="fr.inria.edelweiss.kgramserver.webservice" level="info"/>
+    <Logger name="fr.inria.corese.server.webservice" level="info"/>
     <Logger name="com.hp.hpl.jena" level="warn"/>
     <Logger name="org.openjena" level="warn"/>
     <Logger name="org.eclipse.jetty" level="warn"/>

@@ -7,11 +7,11 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgraph.api.GraphListener;
-import fr.inria.edelweiss.kgraph.api.Tagger;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.api.GraphListener;
+import fr.inria.corese.kgraph.api.Tagger;
+import fr.inria.corese.kgraph.core.edge.EdgeImpl;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
 
 /**
  * Implement GraphListener to listen to edge insert and delete

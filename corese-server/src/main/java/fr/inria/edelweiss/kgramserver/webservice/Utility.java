@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.corese.kgtool.load.QueryLoad;
 import java.io.IOException;
 //import java.nio.charset.StandardCharsets;
 //import java.nio.file.Files;

@@ -6,12 +6,12 @@ import org.junit.Test;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.edge.EdgeImpl;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.query.QueryEngine;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.corese.kgraph.core.edge.EdgeImpl;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.ProducerImpl;
+import fr.inria.corese.kgraph.query.QueryEngine;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.print.XMLFormat;
 import org.junit.Ignore;
 
 @Ignore

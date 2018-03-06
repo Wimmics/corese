@@ -1,12 +1,7 @@
 package kgraph;
 
-import java.util.List;
-
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Query;
 import fr.inria.edelweiss.kgram.core.Sorter;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 
 /**
  * Sort KGRAM edges in connected order before query process

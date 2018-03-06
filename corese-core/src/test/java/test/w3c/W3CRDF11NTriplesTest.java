@@ -1,7 +1,5 @@
 package test.w3c;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.Graph;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.annotations.AfterClass;

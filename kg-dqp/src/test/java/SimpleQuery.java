@@ -1,7 +1,7 @@
 
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

@@ -1,18 +1,11 @@
 package kgraph;
 
-import java.util.Date;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgpipe.Pipe;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.api.Loader;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.corese.kgpipe.Pipe;
+import fr.inria.corese.kgraph.api.Loader;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.Load;
 
 
 

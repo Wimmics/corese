@@ -17,7 +17,6 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import fr.inria.acacia.corese.api.*;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
@@ -26,13 +25,13 @@ import fr.inria.acacia.corese.triple.javacc1.ParseException;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgram.event.StatListener;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.RDF;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.logic.Entailment;
+import fr.inria.corese.kgraph.logic.RDF;
+import fr.inria.corese.kgraph.logic.RDFS;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
 import org.apache.logging.log4j.Level;
 import org.junit.Ignore;
 

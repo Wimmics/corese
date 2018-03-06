@@ -5,9 +5,9 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.EventManager;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.transform.TemplateVisitor;
+import fr.inria.corese.kgraph.core.EventManager;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.transform.TemplateVisitor;
 import java.util.ArrayList;
 import java.util.List;
 

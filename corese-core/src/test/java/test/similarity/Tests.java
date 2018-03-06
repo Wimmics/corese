@@ -1,11 +1,10 @@
 package test.similarity;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.kgraph.approximate.ext.ASTRewriter;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.tool.ApproximateSearchEnv;
-import fr.inria.edelweiss.kgraph.approximate.ext.ASTRewriter;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
 
 /**
  * Tests.java

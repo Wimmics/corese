@@ -48,10 +48,10 @@ import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowProcess;
 import fr.inria.edelweiss.kgram.event.Event;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.transform.TemplatePrinter;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.transform.TemplatePrinter;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -942,10 +942,7 @@ public class MainFrame extends JFrame implements ActionListener {
                             if (b) {
                                 appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
                             }
-                        } catch (EngineException e1) {
-                            LOGGER.error(e1);
-                            appendMsg(e1.toString());
-                        } catch (LoadException e1) {
+                        } catch (EngineException | LoadException e1) {
                             LOGGER.error(e1);
                             appendMsg(e1.toString());
                         }
@@ -1385,10 +1382,7 @@ public class MainFrame extends JFrame implements ActionListener {
         try {
             myCorese.load(fichier);
             appendMsg(myCapturer.getContent());
-        } catch (EngineException e) {
-            appendMsg(e.toString());
-            e.printStackTrace();
-        } catch (LoadException e) {
+        } catch (EngineException |LoadException e) {
             appendMsg(e.toString());
             e.printStackTrace();
         }
@@ -1476,10 +1470,7 @@ public class MainFrame extends JFrame implements ActionListener {
         try {
             myCorese.load(fichier);
             appendMsg(myCapturer.getContent() + "\ndone.\n\n");
-        } catch (EngineException e) {
-            appendMsg(e.toString());
-            e.printStackTrace();
-        } catch (LoadException e) {
+        } catch (EngineException |LoadException e) {
             appendMsg(e.toString());
             e.printStackTrace();
         }

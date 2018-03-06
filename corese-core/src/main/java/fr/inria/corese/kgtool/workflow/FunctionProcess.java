@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.query.QueryProcess;
 
 /**
  *

@@ -1,7 +1,7 @@
 package junit;
 
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.QueryLoad;
 import java.net.URISyntaxException;
 import java.util.Date;
 import org.apache.logging.log4j.Level;

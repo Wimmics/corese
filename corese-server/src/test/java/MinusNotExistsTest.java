@@ -14,7 +14,7 @@ import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgram.core.Mappings;
 import fr.inria.edelweiss.kgramserver.webservice.EmbeddedJettyServer;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Graph;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;

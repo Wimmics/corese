@@ -2,8 +2,8 @@ package kgraph;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.BuildImpl;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.BuildImpl;
 
 public class BuildPlugin extends BuildImpl {
 

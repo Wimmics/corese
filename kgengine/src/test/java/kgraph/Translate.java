@@ -1,14 +1,13 @@
 package kgraph;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.TripleFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.print.TripleFormat;
 
 
 

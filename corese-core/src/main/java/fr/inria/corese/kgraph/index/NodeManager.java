@@ -1,8 +1,8 @@
 package fr.inria.corese.kgraph.index;
 
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgraph.core.Event;
-import fr.inria.edelweiss.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Event;
+import fr.inria.corese.kgraph.core.Graph;
 import java.util.HashMap;
 
 /**

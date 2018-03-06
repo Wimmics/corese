@@ -3,9 +3,9 @@ package test;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.Service;
-import static fr.inria.edelweiss.kgtool.load.Service.QUERY;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.Service;
+import static fr.inria.corese.kgtool.load.Service.QUERY;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

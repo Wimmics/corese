@@ -1,6 +1,5 @@
 package junit;
 
-import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
@@ -13,12 +12,11 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.GraphStore;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.print.ResultFormat;
 import static org.junit.Assert.assertEquals;
 
 public class TestQueryDBPedia {

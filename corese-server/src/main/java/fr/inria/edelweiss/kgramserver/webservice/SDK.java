@@ -1,8 +1,8 @@
 package fr.inria.edelweiss.kgramserver.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.core.GraphStore;
+import fr.inria.corese.kgtool.load.LoadException;
 import java.io.IOException;
 import org.apache.logging.log4j.Level;
 

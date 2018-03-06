@@ -15,8 +15,8 @@ import static fr.inria.corese.kgtool.workflow.WorkflowParser.MODE;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.NAME;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.COLLECT;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgtool.transform.Transformer;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgtool.transform.Transformer;
 import java.util.Date;
 import java.util.List;
 

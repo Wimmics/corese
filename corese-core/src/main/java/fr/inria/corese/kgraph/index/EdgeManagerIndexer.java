@@ -11,9 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
 import fr.inria.edelweiss.kgram.tool.MetaIterator;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.Index;
-import fr.inria.edelweiss.kgraph.core.Serializer;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.Index;
+import fr.inria.corese.kgraph.core.Serializer;
 import java.util.HashMap;
 
 /**

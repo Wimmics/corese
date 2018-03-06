@@ -4,28 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
 import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
 import fr.inria.edelweiss.kgram.core.Mapping;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.event.EvalListener;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.NodeImpl;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.NodeImpl;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.QueryLoad;
 
 public class SDK {
 	List<Node> lVar = new ArrayList<Node>();

@@ -5,18 +5,13 @@ import java.util.Date;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgram.api.query.Producer;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.logic.RDFS;
-import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-import fr.inria.edelweiss.kgraph.rule.RuleProducer;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.RuleLoad;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.logic.RDFS;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgraph.rule.RuleEngine;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.RuleLoad;
 
 public class EWok {
 

@@ -9,9 +9,9 @@ import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.ResultProcess;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.core.GraphStore;
-import fr.inria.edelweiss.kgtool.load.LoadException;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.core.GraphStore;
+import fr.inria.corese.kgtool.load.LoadException;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,7 +122,7 @@ public class TransformerEngine {
         boolean isDefault = false;
         if (transform == null && !wp.hasTransformation()) {
             isDefault = true;
-            transform = fr.inria.edelweiss.kgtool.transform.Transformer.SPARQL;
+            transform = fr.inria.corese.kgtool.transform.Transformer.SPARQL;
         }
         if (transform != null) {
             wp.addTemplate(transform, isDefault);

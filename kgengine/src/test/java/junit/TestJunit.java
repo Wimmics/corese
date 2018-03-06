@@ -15,16 +15,16 @@ import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.print.CSVFormat;
-import fr.inria.edelweiss.kgtool.print.JSONFormat;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
-import fr.inria.edelweiss.kgtool.print.TSVFormat;
-import fr.inria.edelweiss.kgtool.print.XMLFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.logic.Entailment;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.print.CSVFormat;
+import fr.inria.corese.kgtool.print.JSONFormat;
+import fr.inria.corese.kgtool.print.RDFFormat;
+import fr.inria.corese.kgtool.print.TSVFormat;
+import fr.inria.corese.kgtool.print.XMLFormat;
 
 import static org.junit.Assert.assertEquals;
 

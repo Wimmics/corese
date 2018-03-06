@@ -1,7 +1,7 @@
 package fr.inria.corese.extension;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.edelweiss.kgraph.query.PluginImpl;
+import fr.inria.corese.kgraph.query.PluginImpl;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 
 

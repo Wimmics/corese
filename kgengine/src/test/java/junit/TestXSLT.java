@@ -3,9 +3,9 @@ import javax.xml.transform.stream.*;
 import javax.xml.transform.*;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.print.XSLTQuery;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.print.XSLTQuery;
 
 class TestXSLT {
 

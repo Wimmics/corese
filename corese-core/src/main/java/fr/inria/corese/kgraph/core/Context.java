@@ -2,9 +2,9 @@ package fr.inria.corese.kgraph.core;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Graphable;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Graphable;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.query.RDFizer;
 import fr.inria.corese.kgraph.rule.RuleEngine;
 import fr.inria.corese.kgtool.load.QueryLoad;

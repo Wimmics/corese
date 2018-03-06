@@ -7,8 +7,8 @@ import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.logic.Entailment;
 
 /**

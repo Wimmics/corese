@@ -13,7 +13,7 @@ import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 import static fr.inria.corese.kgraph.approximate.algorithm.Utils.msg;
 import fr.inria.corese.kgraph.approximate.algorithm.Parameters;
 import static fr.inria.corese.kgraph.approximate.ext.ASTRewriter.S;

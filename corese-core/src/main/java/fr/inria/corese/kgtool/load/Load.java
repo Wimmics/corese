@@ -32,7 +32,7 @@ import fr.inria.acacia.corese.triple.parser.LoadTurtle;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.api.Loader;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.api.Log;

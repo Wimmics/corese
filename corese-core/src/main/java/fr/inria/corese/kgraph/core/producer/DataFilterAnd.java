@@ -5,7 +5,7 @@
 
 package fr.inria.corese.kgraph.core.producer;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Entity;
 
 /**
  *

@@ -22,20 +22,20 @@ import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.api.query.Provider;
-import fr.inria.edelweiss.kgram.api.query.SPARQLEngine;
-import fr.inria.edelweiss.kgram.core.Eval;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.core.Sorter;
-import fr.inria.edelweiss.kgram.event.EventListener;
-import fr.inria.edelweiss.kgram.event.EventManager;
-import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Matcher;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.query.Provider;
+import fr.inria.corese.kgram.api.query.SPARQLEngine;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.core.Sorter;
+import fr.inria.corese.kgram.event.EventListener;
+import fr.inria.corese.kgram.event.EventManager;
+import fr.inria.corese.kgram.event.ResultListener;
+import fr.inria.corese.kgram.tool.MetaProducer;
 
 
 

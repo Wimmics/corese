@@ -6,8 +6,8 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.api.query.Provider;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.query.Provider;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

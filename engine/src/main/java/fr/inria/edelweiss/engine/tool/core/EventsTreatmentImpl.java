@@ -24,13 +24,13 @@ import fr.inria.edelweiss.engine.model.api.Query;
 import fr.inria.edelweiss.engine.model.core.ExpFilterImpl;
 import fr.inria.edelweiss.engine.model.core.LBindImpl;
 import fr.inria.edelweiss.engine.tool.api.EventsTreatment;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.tool.EnvironmentImpl;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
 
 

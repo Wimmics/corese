@@ -2,17 +2,17 @@ package fr.inria.edelweiss.kgenv.parser;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.PATH;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.QUERY;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
+import static fr.inria.corese.kgram.api.core.ExpType.BIND;
+import static fr.inria.corese.kgram.api.core.ExpType.EDGE;
+import static fr.inria.corese.kgram.api.core.ExpType.FILTER;
+import static fr.inria.corese.kgram.api.core.ExpType.PATH;
+import static fr.inria.corese.kgram.api.core.ExpType.QUERY;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Query;
 import java.util.ArrayList;
 import java.util.List;
 

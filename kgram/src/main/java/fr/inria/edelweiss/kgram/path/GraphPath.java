@@ -1,8 +1,8 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
 
 /**
  * Draft to compute path in the graph

@@ -411,6 +411,6 @@ public class ServiceVisitor implements QueryVisitor {
     }
 
     @Override
-    public void visit(fr.inria.edelweiss.kgram.core.Query query) {
+    public void visit(fr.inria.corese.kgram.core.Query query) {
     }
 }

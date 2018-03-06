@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.tool;
+package fr.inria.corese.kgram.tool;
 
 import java.util.Iterator;
 

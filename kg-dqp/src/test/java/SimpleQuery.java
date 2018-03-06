@@ -1,6 +1,6 @@
 
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 
 /*

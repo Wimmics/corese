@@ -6,9 +6,9 @@ import java.util.List;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.event.EventListener;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgraph.query.QueryProcess;
 
 /**

@@ -2,7 +2,7 @@ package fr.inria.corese.triple.function.aggregate;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.MIN;
+import static fr.inria.corese.kgram.api.core.ExprType.MIN;
 
 /**
  *

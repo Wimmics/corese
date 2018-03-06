@@ -2,10 +2,10 @@ package fr.inria.corese.kgraph.core;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.TripleStore;
 import java.util.Objects;
 
 /**

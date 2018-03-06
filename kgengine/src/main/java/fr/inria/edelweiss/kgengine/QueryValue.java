@@ -3,7 +3,7 @@ package fr.inria.edelweiss.kgengine;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.api.IPath;
 import fr.inria.acacia.corese.api.IResultValue;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 
 public class QueryValue implements IResultValue {
 	

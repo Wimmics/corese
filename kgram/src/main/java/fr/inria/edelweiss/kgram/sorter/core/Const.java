@@ -1,11 +1,11 @@
-package fr.inria.edelweiss.kgram.sorter.core;
+package fr.inria.corese.kgram.sorter.core;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.OPTIONAL;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
+import static fr.inria.corese.kgram.api.core.ExpType.BIND;
+import static fr.inria.corese.kgram.api.core.ExpType.EDGE;
+import static fr.inria.corese.kgram.api.core.ExpType.FILTER;
+import static fr.inria.corese.kgram.api.core.ExpType.GRAPH;
+import static fr.inria.corese.kgram.api.core.ExpType.OPTIONAL;
+import static fr.inria.corese.kgram.api.core.ExpType.VALUES;
 
 /**
  * Constants

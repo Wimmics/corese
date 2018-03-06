@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.filter;
+package fr.inria.corese.kgram.filter;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Expr;
 import org.apache.logging.log4j.LogManager;
 
 

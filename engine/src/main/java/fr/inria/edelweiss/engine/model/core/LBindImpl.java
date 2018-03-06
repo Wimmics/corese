@@ -9,7 +9,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.engine.model.api.Bind;
 import fr.inria.edelweiss.engine.model.api.Clause;
 import fr.inria.edelweiss.engine.model.api.LBind;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 
 public class LBindImpl implements LBind {
 

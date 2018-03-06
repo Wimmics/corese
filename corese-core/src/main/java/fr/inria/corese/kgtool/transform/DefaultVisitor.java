@@ -4,7 +4,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.RDF;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.index;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import java.util.ArrayList;
 import java.util.List;
 

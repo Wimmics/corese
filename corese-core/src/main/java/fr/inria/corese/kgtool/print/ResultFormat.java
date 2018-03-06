@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.util.MappingsGraph;
 import java.util.HashMap;

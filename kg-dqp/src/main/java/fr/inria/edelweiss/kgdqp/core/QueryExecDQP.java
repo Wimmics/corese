@@ -2,8 +2,8 @@ package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.edelweiss.kgram.event.EventListener;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
+import fr.inria.corese.kgram.event.EventListener;
+import fr.inria.corese.kgramenv.util.QueryExec;
 import java.net.URL;
 
 /**

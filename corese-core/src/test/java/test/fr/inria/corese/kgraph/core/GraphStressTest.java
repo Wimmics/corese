@@ -5,7 +5,7 @@
  */
 package test.fr.inria.corese.kgraph.core;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.core.Graph;
 import java.text.NumberFormat;

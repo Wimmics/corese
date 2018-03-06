@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.sorter.core;
+package fr.inria.corese.kgram.sorter.core;
 
 import java.util.List;
 

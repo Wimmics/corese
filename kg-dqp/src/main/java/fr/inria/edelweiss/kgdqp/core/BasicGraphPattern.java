@@ -1,6 +1,6 @@
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
 
 /**

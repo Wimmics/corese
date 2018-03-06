@@ -1,15 +1,15 @@
-package fr.inria.edelweiss.kgram.filter;
+package fr.inria.corese.kgram.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * Filter Exp Compiler for Optimizations

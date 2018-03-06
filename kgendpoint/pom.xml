@@ -8,9 +8,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>${parent.groupId}</groupId>
+    <groupId>${project.parent.groupId}</groupId>
     <artifactId>kgendpoint</artifactId>
-    <version>${parent.version}</version>
+    <version>${project.parent.version}</version>
     <packaging>war</packaging>
 
     <name>kgendpoint</name>
@@ -30,17 +30,17 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>kgengine</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>
-             <groupId>${parent.groupId}</groupId>
+             <groupId>${project.parent.groupId}</groupId>
             <artifactId>kgimport</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>corese-server</artifactId>
             <version>${project.version}</version>
         </dependency>

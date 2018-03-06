@@ -14,7 +14,7 @@
 //import fr.inria.acacia.corese.triple.cst.RDFS;
 //
 //import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-//import fr.inria.edelweiss.kgram.api.core.Edge;
+//import fr.inria.corese.kgram.api.core.Edge;
 //import fr.inria.edelweiss.kgraph.core.Graph;
 //import fr.inria.edelweiss.kgtool.load.Load;
 //import junit.textui.TestRunner;
@@ -339,7 +339,7 @@
 //suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 33));
 //
 //query =
-//	"prefix fun: <function://fr.inria.edelweiss.kgramenv.util.QueryExec>" +
+//	"prefix fun: <function://fr.inria.corese.kgramenv.util.QueryExec>" +
 //	"select * where {" +
 //	"{select (unnest(fun:kgram('select * where {graph ?g {?p ?p ?x}} ')) " +
 //		"as (?g, ?p, ?x)) where {} }" +
@@ -348,7 +348,7 @@
 ////suite.addTest(new CoreseTest2(true, "testQuery", corese, query, 4));
 //
 //query =
-//	"prefix fun: <function://fr.inria.edelweiss.kgramenv.parser.ProxyImpl>" +
+//	"prefix fun: <function://fr.inria.corese.kgramenv.parser.ProxyImpl>" +
 //	"select *  (fun:self(?x) as ?self) where {" +
 //	"?x ?p ?y " +
 //	"} limit 1";

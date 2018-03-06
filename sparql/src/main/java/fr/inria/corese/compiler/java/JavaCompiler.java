@@ -14,7 +14,7 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.corese.triple.function.script.Statement;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.ExprType;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;

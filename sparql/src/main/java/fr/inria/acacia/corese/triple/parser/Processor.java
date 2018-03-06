@@ -17,9 +17,9 @@ import fr.inria.acacia.corese.cg.datatype.function.VariableResolver;
 import fr.inria.acacia.corese.cg.datatype.function.XPathFun;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
-import fr.inria.edelweiss.kgram.api.core.ExpPattern;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.ExpPattern;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
 import java.util.HashMap;
 
 public class Processor {

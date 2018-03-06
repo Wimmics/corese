@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgramenv.util;
+package fr.inria.corese.kgramenv.util;
 
 
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.edelweiss.kgengine.QueryResults;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.event.EventListener;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgraph.query.QueryProcess;
 
 

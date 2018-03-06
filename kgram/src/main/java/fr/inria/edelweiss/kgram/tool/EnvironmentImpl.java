@@ -1,23 +1,23 @@
-package fr.inria.edelweiss.kgram.tool;
+package fr.inria.corese.kgram.tool;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Entity;
 import java.util.Map;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Binder;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Bind;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.event.EventManager;
-import fr.inria.edelweiss.kgram.filter.Extension;
-import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Bind;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.event.EventManager;
+import fr.inria.corese.kgram.filter.Extension;
+import fr.inria.corese.kgram.path.Path;
 import java.util.List;
 
 public class EnvironmentImpl implements Environment {

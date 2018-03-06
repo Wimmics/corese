@@ -1,7 +1,7 @@
-package fr.inria.edelweiss.kgram.sorter.core;
+package fr.inria.corese.kgram.sorter.core;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EMPTY;
-import fr.inria.edelweiss.kgram.core.Exp;
+import static fr.inria.corese.kgram.api.core.ExpType.EMPTY;
+import fr.inria.corese.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

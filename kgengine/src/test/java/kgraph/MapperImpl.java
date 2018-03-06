@@ -3,8 +3,8 @@ package kgraph;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgraph.query.MapperSQL;
 
 

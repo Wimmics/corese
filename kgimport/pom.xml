@@ -10,22 +10,22 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>${parent.groupId}</groupId>
+	<groupId>${project.parent.groupId}</groupId>
 	<artifactId>kgimport</artifactId>
 	<name>kgimport</name>
-	<version>${parent.version}</version>
+	<version>${project.parent.version}</version>
 
 	<dependencies>
 		<dependency>
-			<groupId>${parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgengine</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-core</artifactId>
 		</dependency>
 		<dependency>

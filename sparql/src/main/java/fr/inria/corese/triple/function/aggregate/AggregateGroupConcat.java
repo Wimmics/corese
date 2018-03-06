@@ -6,8 +6,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import static fr.inria.corese.triple.function.aggregate.Aggregate.NL;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 
 /**
  *

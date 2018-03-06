@@ -10,12 +10,12 @@ import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.corese.triple.function.term.Binding;
 import fr.inria.corese.triple.function.term.TermEval;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.CONCAT;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.STL_CONCAT;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.STL_NUMBER;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.Expr;
+import static fr.inria.corese.kgram.api.core.ExprType.CONCAT;
+import static fr.inria.corese.kgram.api.core.ExprType.STL_CONCAT;
+import static fr.inria.corese.kgram.api.core.ExprType.STL_NUMBER;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -3,13 +3,13 @@ package fr.inria.corese.kgraph.rule;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.printer.SPIN;
-import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Closure;
 import fr.inria.corese.kgraph.query.QueryProcess;

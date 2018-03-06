@@ -6,10 +6,10 @@ package fr.inria.corese.triple.function.term;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.corese.triple.function.script.Function;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Binder;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +40,7 @@ public class Binding implements Binder {
 
     private boolean debug = false;
 
-    private static Logger logger = LogManager.getLogger(fr.inria.edelweiss.kgram.core.Bind.class);
+    private static Logger logger = LogManager.getLogger(fr.inria.corese.kgram.core.Bind.class);
     private boolean result;
 
     Binding() {

@@ -1,9 +1,9 @@
 package fr.inria.edelweiss.kgenv.parser;
 
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * Detect Query Pattern, that may be optimized

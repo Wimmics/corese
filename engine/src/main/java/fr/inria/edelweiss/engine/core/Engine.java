@@ -24,7 +24,7 @@ import fr.inria.edelweiss.engine.tool.api.EventsTreatment;
 import fr.inria.edelweiss.engine.tool.core.EventsTreatmentImpl;
 import fr.inria.edelweiss.engine.tool.core.RulesTreatmentImpl;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-//import fr.inria.edelweiss.kgramenv.util.QueryExec;
+//import fr.inria.corese.kgramenv.util.QueryExec;
 
 public class Engine 
 //implements IBRuleEngine 

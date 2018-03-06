@@ -1,7 +1,7 @@
 package fr.inria.corese.kgraph.core;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.logging.log4j.Logger;

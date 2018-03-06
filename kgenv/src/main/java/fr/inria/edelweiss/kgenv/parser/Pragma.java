@@ -13,13 +13,13 @@ import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.core.Eval;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.event.EvalListener;
-import fr.inria.edelweiss.kgram.event.EventListener;
-import fr.inria.edelweiss.kgram.tool.Message;
+import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.query.Matcher;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.event.EvalListener;
+import fr.inria.corese.kgram.event.EventListener;
+import fr.inria.corese.kgram.tool.Message;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -334,7 +334,7 @@ public class Pragma  {
 				query.setMode(mode);
 			}
 			else if (property.equals(RDFS.RDFTYPE)){
-				// kg:match rdf:type <fr.inria.edelweiss.kgramenv.util.MatcherImpl> 
+				// kg:match rdf:type <fr.inria.corese.kgramenv.util.MatcherImpl> 
 				Matcher match = (Matcher) create(object);
 				if (match != null){
 					kgram.setMatcher(match);
@@ -343,7 +343,7 @@ public class Pragma  {
 		}
 		else if (subject.equals(LISTEN)){
 			if (property.equals(RDFS.RDFTYPE)){
-				// kg:listen rdf:type <fr.inria.edelweiss.kgram.event.StatListener> 
+				// kg:listen rdf:type <fr.inria.corese.kgram.event.StatListener> 
 				EventListener el = (EventListener) create(object);
 				if (el != null){
 					kgram.addEventListener(el);

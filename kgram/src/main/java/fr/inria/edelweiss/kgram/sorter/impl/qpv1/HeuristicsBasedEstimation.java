@@ -1,14 +1,14 @@
-package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
+package fr.inria.corese.kgram.sorter.impl.qpv1;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.sorter.core.AbstractCostModel;
-import fr.inria.edelweiss.kgram.sorter.core.QPGEdge;
-import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
-import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
-import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
-import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
+import static fr.inria.corese.kgram.api.core.ExpType.EDGE;
+import static fr.inria.corese.kgram.api.core.ExpType.GRAPH;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.sorter.core.AbstractCostModel;
+import fr.inria.corese.kgram.sorter.core.QPGEdge;
+import fr.inria.corese.kgram.sorter.core.QPGNode;
+import fr.inria.corese.kgram.sorter.core.QPGraph;
+import fr.inria.corese.kgram.sorter.core.IEstimate;
+import fr.inria.corese.kgram.sorter.core.IProducerQP;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

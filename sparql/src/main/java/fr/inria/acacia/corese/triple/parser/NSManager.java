@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.ExpType;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;

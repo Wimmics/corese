@@ -25,7 +25,7 @@ public class KgEmbeddedServer {
 //        root.addServlet(new ServletHolder(new SPARQLEndpointServlet()), "/*");
 
         ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.edelweiss.kgramserver.webservice");
+        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.kgramserver.webservice");
         root.addServlet(jerseyServletHolder, "/kgram/*");
         
         server.start();

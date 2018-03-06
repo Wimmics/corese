@@ -1,17 +1,17 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.tool.EdgeInv;
-import fr.inria.edelweiss.kgram.tool.EntityImpl;
-import fr.inria.edelweiss.kgram.tool.ProducerDefault;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.tool.EdgeInv;
+import fr.inria.corese.kgram.tool.EntityImpl;
+import fr.inria.corese.kgram.tool.ProducerDefault;
 
 /**
  *

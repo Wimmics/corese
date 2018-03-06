@@ -2,11 +2,11 @@ package fr.inria.corese.kgraph.query;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.edelweiss.kgenv.parser.Transformer;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.api.QueryGraphVisitor;
 import fr.inria.corese.kgraph.core.EdgeFactory;
 import fr.inria.corese.kgraph.core.Graph;

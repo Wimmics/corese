@@ -2,10 +2,10 @@ package fr.inria.corese.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.kgraph.api.Log;
 import fr.inria.corese.kgraph.core.Graph;
 

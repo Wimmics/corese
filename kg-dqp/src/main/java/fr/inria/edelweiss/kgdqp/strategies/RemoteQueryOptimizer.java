@@ -6,10 +6,10 @@ package fr.inria.edelweiss.kgdqp.strategies;
 
 
 //import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.core.Exp;
 import java.util.List;
 
 /**

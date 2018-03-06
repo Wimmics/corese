@@ -1,11 +1,11 @@
 package fr.inria.corese.kgraph.query;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.event.EvalListener;
-import fr.inria.edelweiss.kgram.event.Event;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.event.EvalListener;
+import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Entailment;
 import fr.inria.corese.kgraph.logic.RDF;

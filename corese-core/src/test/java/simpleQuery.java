@@ -13,7 +13,7 @@ import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;
 import fr.inria.corese.kgtool.print.ResultFormat;
 import fr.inria.corese.kgtool.print.TripleFormat;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 

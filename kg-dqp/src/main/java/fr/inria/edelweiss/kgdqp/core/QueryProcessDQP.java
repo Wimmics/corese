@@ -1,15 +1,15 @@
 package fr.inria.edelweiss.kgdqp.core;
 
 import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
-import fr.inria.edelweiss.kgram.api.query.DQPFactory;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Matcher;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.api.query.Provider;
-import fr.inria.edelweiss.kgram.core.BgpGenerator;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.query.DQPFactory;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Matcher;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.query.Provider;
+import fr.inria.corese.kgram.core.BgpGenerator;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgenv.eval.Interpreter;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.MatcherImpl;
 import fr.inria.corese.kgraph.query.ProducerImpl;

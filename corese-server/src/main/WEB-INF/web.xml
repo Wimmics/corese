@@ -24,7 +24,7 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>fr.inria.edelweiss.kgramserver.webservice</param-value>
+            <param-value>fr.inria.corese.server.webservice</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

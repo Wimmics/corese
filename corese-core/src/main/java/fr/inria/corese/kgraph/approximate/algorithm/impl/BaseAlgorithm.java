@@ -3,7 +3,6 @@ package fr.inria.corese.kgraph.approximate.algorithm.impl;
 import fr.inria.corese.kgraph.approximate.strategy.AlgType;
 import fr.inria.corese.kgraph.approximate.algorithm.ISimAlgorithm;
 import fr.inria.corese.kgraph.approximate.algorithm.Utils;
-import static fr.inria.corese.kgraph.approximate.algorithm.Utils.empty;
 
 /**
  * Base Algorithm

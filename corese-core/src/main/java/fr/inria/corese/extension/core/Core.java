@@ -69,15 +69,7 @@ public class Core implements FunctionEvaluator {
             }
             Method m = this.getClass().getMethod(name, aclasses);
             return (IDatatype) m.invoke(this, ldt);
-        } catch (SecurityException e) {
-
-        } catch (NoSuchMethodException e) {
-            trace(e, "funcall", name, ldt);
-        } catch (IllegalArgumentException e) {
-            trace(e, "funcall", name, ldt);
-        } catch (IllegalAccessException e) {
-            trace(e, "funcall", name, ldt);
-        } catch (InvocationTargetException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             trace(e, "funcall", name, ldt);
         }
         return null;

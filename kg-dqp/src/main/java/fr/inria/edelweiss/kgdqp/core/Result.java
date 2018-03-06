@@ -5,8 +5,8 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.core.Mappings;
 import java.util.ArrayList;
 
 /**

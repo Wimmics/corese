@@ -1,9 +1,9 @@
-package fr.inria.edelweiss.kgram.filter;
+package fr.inria.corese.kgram.filter;
 
-import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.query.Hierarchy;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.query.Hierarchy;
 import java.util.HashMap;
 
 /**

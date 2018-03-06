@@ -1,12 +1,12 @@
-package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
+package fr.inria.corese.kgram.sorter.impl.qpv1;
 
-import static fr.inria.edelweiss.kgram.sorter.core.Const.BOUND;
-import static fr.inria.edelweiss.kgram.sorter.core.Const.NA;
-import static fr.inria.edelweiss.kgram.sorter.core.Const.OBJECT;
-import static fr.inria.edelweiss.kgram.sorter.core.Const.PREDICATE;
-import static fr.inria.edelweiss.kgram.sorter.core.Const.SUBJECT;
-import static fr.inria.edelweiss.kgram.sorter.core.Const.UNBOUND;
-import fr.inria.edelweiss.kgram.sorter.core.IProducerQP;
+import static fr.inria.corese.kgram.sorter.core.Const.BOUND;
+import static fr.inria.corese.kgram.sorter.core.Const.NA;
+import static fr.inria.corese.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.corese.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.corese.kgram.sorter.core.Const.SUBJECT;
+import static fr.inria.corese.kgram.sorter.core.Const.UNBOUND;
+import fr.inria.corese.kgram.sorter.core.IProducerQP;
 
 /**
  * Generate the basic patterns ordering by the selectivity acorrding to the size

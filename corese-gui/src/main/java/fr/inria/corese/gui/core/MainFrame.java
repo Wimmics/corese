@@ -47,7 +47,7 @@ import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.WorkflowParser;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;
 import fr.inria.corese.kgtool.workflow.WorkflowProcess;
-import fr.inria.edelweiss.kgram.event.Event;
+import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;

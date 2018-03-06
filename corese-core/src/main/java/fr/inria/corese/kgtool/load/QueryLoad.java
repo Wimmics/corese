@@ -13,7 +13,7 @@ import java.net.URL;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.query.QueryEngine;
 import java.io.InputStream;
 import java.net.MalformedURLException;

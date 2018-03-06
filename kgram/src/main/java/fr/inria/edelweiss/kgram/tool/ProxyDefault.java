@@ -1,12 +1,12 @@
-package fr.inria.edelweiss.kgram.tool;
+package fr.inria.corese.kgram.tool;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.filter.Proxy;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.filter.Proxy;
 import java.util.List;
 
 public class ProxyDefault implements Proxy, ExprType {

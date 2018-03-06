@@ -2,12 +2,12 @@ package kgraph;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Eval;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Memory;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Memory;
 
 public class PluginImpl extends ProxyImpl {
 	

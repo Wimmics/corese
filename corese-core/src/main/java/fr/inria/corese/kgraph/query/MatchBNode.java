@@ -5,10 +5,10 @@
 package fr.inria.corese.kgraph.query;
 
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.transform.Transformer;
 import java.util.Comparator;

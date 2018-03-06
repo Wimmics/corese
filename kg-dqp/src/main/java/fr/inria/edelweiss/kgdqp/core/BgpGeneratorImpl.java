@@ -1,16 +1,16 @@
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.AND;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.BGP;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.JOIN;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.UNION;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.BgpGenerator;
-import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.corese.kgram.api.core.Edge;
+import static fr.inria.corese.kgram.api.core.ExpType.AND;
+import static fr.inria.corese.kgram.api.core.ExpType.BGP;
+import static fr.inria.corese.kgram.api.core.ExpType.EDGE;
+import static fr.inria.corese.kgram.api.core.ExpType.JOIN;
+import static fr.inria.corese.kgram.api.core.ExpType.UNION;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.BgpGenerator;
+import fr.inria.corese.kgram.core.Exp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

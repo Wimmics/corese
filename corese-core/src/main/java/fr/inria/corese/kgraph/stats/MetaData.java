@@ -1,8 +1,8 @@
 package fr.inria.corese.kgraph.stats;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.stats.data.ReducedMap;
 import fr.inria.corese.kgraph.stats.data.HashBucket;
 import static fr.inria.corese.kgraph.stats.IStats.OBJECT;

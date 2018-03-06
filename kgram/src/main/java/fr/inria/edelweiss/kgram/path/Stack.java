@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 import java.util.ArrayList;
 import java.util.List;

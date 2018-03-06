@@ -1,9 +1,9 @@
 package fr.inria.corese.kgraph.logic;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Distinct;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Distinct;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.rule.Rule;
 import java.util.ArrayList;

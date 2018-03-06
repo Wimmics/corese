@@ -17,11 +17,11 @@
 //import fr.inria.acacia.corese.exceptions.EngineException;
 //import fr.inria.acacia.corese.triple.parser.NSManager;
 //import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-//import fr.inria.edelweiss.kgram.api.core.Node;
-//import fr.inria.edelweiss.kgram.api.query.Matcher;
-//import fr.inria.edelweiss.kgram.core.Mapping;
-//import fr.inria.edelweiss.kgram.core.Mappings;
-//import fr.inria.edelweiss.kgram.core.Query;
+//import fr.inria.corese.kgram.api.core.Node;
+//import fr.inria.corese.kgram.api.query.Matcher;
+//import fr.inria.corese.kgram.core.Mapping;
+//import fr.inria.corese.kgram.core.Mappings;
+//import fr.inria.corese.kgram.core.Query;
 //import fr.inria.edelweiss.kgraph.core.Graph;
 //import fr.inria.edelweiss.kgraph.logic.Entailment;
 //import fr.inria.edelweiss.kgraph.query.MatcherImpl;

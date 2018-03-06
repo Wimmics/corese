@@ -19,8 +19,8 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * Rewrite Property Path into BGP

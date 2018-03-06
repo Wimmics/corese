@@ -10,13 +10,13 @@ import fr.inria.edelweiss.kgdqp.core.RemoteProducerWSImpl;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
 import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.BgpGenerator;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.tool.MetaProducer;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.BgpGenerator;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.tool.MetaProducer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +57,7 @@ public class ServiceGrouper implements QueryVisitor {
         if (execDQP.getPlanProfile() == Query.QP_BGP) {
             logger.info("Building predicates indices for "+query.getBody());
             int i = 0;
-            for (fr.inria.edelweiss.kgram.core.Exp e : query.getExpList()) {
+            for (fr.inria.corese.kgram.core.Exp e : query.getExpList()) {
                 if (e.isBGPAnd()) {
                     buildGeneratedBGPIndices(query, e, i);
                     i++;
@@ -588,7 +588,7 @@ public class ServiceGrouper implements QueryVisitor {
      * @param query
      * @param exp
      */
-    private void buildGeneratedBGPIndices(Query query, fr.inria.edelweiss.kgram.core.Exp exp, int n) {
+    private void buildGeneratedBGPIndices(Query query, fr.inria.corese.kgram.core.Exp exp, int n) {
 
         List<Edge> tmpEdges = query.getQueryEdgeList();
         HashMap<Edge, ArrayList<Producer>> tmpEdgeProducers = query.getBgpGenerator().getIndexEdgeProducers();
@@ -599,7 +599,7 @@ public class ServiceGrouper implements QueryVisitor {
         HashMap<Filter, List<String>> tmpFilterVariables =  new HashMap<Filter, List<String>>();
         
         int i = 0;
-        for (fr.inria.edelweiss.kgram.core.Exp e : exp) {
+        for (fr.inria.corese.kgram.core.Exp e : exp) {
             //get Filters
             if(e.isFilter()){
                 tmpFilters.add(e.getFilter());

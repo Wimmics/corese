@@ -5,8 +5,8 @@ import java.util.Hashtable;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Event;
 import fr.inria.corese.kgraph.core.Graph;
 

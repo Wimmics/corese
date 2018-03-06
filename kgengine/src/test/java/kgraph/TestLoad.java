@@ -7,7 +7,7 @@ import fr.inria.acacia.corese.api.EngineFactory;
 import fr.inria.acacia.corese.api.IEngine;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Entailment;
 import fr.inria.corese.kgraph.query.QueryProcess;

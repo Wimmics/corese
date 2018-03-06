@@ -9,10 +9,10 @@ import fr.inria.acacia.corese.triple.api.ExpressionVisitor;
 import fr.inria.acacia.corese.triple.cst.KeywordPP;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 
 /**
  * <p>Title: Corese</p>

@@ -1,6 +1,6 @@
 package kgraph;
 
-import fr.inria.edelweiss.kgram.core.Sorter;
+import fr.inria.corese.kgram.core.Sorter;
 import fr.inria.corese.kgraph.core.Graph;
 
 /**

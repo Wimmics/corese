@@ -2,7 +2,7 @@ package fr.inria.corese.kgtool.load.jsonld;
 
 import com.github.jsonldjava.core.JSONLDTripleCallback;
 import com.github.jsonldjava.core.RDFDataset;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.AddTripleHelper;
 import fr.inria.corese.kgtool.load.ILoadSerialization;

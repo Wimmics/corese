@@ -1,13 +1,13 @@
 package kgraph;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.event.ResultListener;
+import fr.inria.corese.kgram.path.Path;
 
 public class ResultListenerImpl implements ResultListener {
 

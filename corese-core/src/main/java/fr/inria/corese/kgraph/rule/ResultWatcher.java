@@ -4,19 +4,19 @@
  */
 package fr.inria.corese.kgraph.rule;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Distinct;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.core.Distinct;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.event.ResultListener;
+import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgraph.api.GraphListener;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.RDFS;

@@ -4,7 +4,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.ExprType;
 
 /**
  *

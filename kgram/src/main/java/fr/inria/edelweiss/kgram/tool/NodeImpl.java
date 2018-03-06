@@ -1,7 +1,7 @@
-//package fr.inria.edelweiss.kgram.tool;
+//package fr.inria.corese.kgram.tool;
 //
 //
-//import fr.inria.edelweiss.kgram.api.core.Node;
+//import fr.inria.corese.kgram.api.core.Node;
 //
 ///**
 // * To implement from/named URI as Node

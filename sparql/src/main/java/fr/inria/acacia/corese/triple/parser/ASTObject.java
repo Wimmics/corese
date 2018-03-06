@@ -2,7 +2,7 @@ package fr.inria.acacia.corese.triple.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgram.core.PointerObject;
+import fr.inria.corese.kgram.core.PointerObject;
 
 /**
  *

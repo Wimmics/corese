@@ -5,11 +5,11 @@
  */
 package fr.inria.edelweiss.kgdqp.core;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Mappings;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang.time.StopWatch;

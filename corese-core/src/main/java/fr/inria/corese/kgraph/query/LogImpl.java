@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgram.core.Query;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.api.Log;
 
 

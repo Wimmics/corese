@@ -1,7 +1,7 @@
 package fr.inria.edelweiss.kgenv.parser;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * SPARQL Extension in Pragma

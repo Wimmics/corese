@@ -1,7 +1,7 @@
 package fr.inria.corese.kgtool.util;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Distinct;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Distinct;
 import java.util.HashMap;
 
 /**

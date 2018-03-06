@@ -4,7 +4,7 @@ import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.Context;
 import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.EventManager;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.transform.TemplateVisitor;

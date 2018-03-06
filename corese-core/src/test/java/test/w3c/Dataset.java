@@ -3,9 +3,9 @@ package test.w3c;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 
 
 public class Dataset {

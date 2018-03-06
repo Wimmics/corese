@@ -1,6 +1,6 @@
 package fr.inria.corese.kgtool.load.sesame;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.AddTripleHelper;
 import fr.inria.corese.kgtool.load.ILoadSerialization;

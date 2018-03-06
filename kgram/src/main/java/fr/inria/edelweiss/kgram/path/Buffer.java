@@ -1,8 +1,8 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 import java.util.Iterator;
 
-import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mapping;
 
 /**
  * Synchronized buffer to put/get path edges

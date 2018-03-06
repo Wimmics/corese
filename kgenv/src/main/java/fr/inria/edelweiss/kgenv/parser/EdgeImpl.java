@@ -8,12 +8,12 @@ import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
-import fr.inria.edelweiss.kgram.core.PointerObject;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.core.PointerObject;
 
 public class EdgeImpl extends PointerObject implements Edge, Entity {
 

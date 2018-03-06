@@ -5,8 +5,8 @@ import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.Atom;
 import fr.inria.acacia.corese.triple.parser.Constant;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.TripleStore;
 
 public class NodeImpl implements Node {
 

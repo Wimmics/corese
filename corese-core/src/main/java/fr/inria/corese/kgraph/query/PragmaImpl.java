@@ -6,7 +6,7 @@ import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.api.Engine;
 import fr.inria.corese.kgraph.core.Event;

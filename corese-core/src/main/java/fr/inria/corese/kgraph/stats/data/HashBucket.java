@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.stats.data;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.stats.Options;
 import java.util.HashMap;
 import java.util.Map;

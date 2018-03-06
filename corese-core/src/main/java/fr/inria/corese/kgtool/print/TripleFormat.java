@@ -4,11 +4,11 @@ package fr.inria.corese.kgtool.print;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 
 public class TripleFormat extends RDFFormat {

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.api.GraphListener;
 import fr.inria.corese.kgraph.api.Tagger;
 import fr.inria.corese.kgraph.core.edge.EdgeImpl;

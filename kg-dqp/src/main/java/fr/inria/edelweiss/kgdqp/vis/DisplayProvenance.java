@@ -6,9 +6,9 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.print.JSOND3Format;
@@ -120,7 +120,7 @@ public class DisplayProvenance {
 //        int num = 0;
 //        for (Entity ent : edges) {
 //
-//            fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
+//            fr.inria.corese.kgram.api.core.Edge edge = ent.getEdge();
 //            sujetUri = edge.getNode(0).getLabel();
 //            objetUri = edge.getNode(1).getLabel();
 //

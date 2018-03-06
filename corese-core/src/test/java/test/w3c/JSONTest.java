@@ -12,7 +12,7 @@ import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;
 import fr.inria.corese.kgtool.print.JSOND3Format;
 import fr.inria.corese.kgtool.print.JSONFormat;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import java.io.InputStream;
 import org.junit.After;
 import org.junit.AfterClass;

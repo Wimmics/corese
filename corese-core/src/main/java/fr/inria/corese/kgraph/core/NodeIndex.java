@@ -3,10 +3,10 @@ package fr.inria.corese.kgraph.core;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.tool.MetaIterator;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.tool.MetaIterator;
 
 /**
  * 

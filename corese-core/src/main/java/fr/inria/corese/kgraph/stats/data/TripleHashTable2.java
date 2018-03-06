@@ -1,7 +1,7 @@
 package fr.inria.corese.kgraph.stats.data;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgraph.stats.IStats.OBJECT;
 import static fr.inria.corese.kgraph.stats.IStats.PREDICATE;
 import static fr.inria.corese.kgraph.stats.IStats.SUBJECT;

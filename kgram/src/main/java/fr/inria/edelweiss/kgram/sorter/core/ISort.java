@@ -1,6 +1,6 @@
-package fr.inria.edelweiss.kgram.sorter.core;
+package fr.inria.corese.kgram.sorter.core;
 
-import fr.inria.edelweiss.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Exp;
 import java.util.List;
 
 /**

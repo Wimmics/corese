@@ -19,8 +19,8 @@ import fr.inria.corese.kgraph.core.edge.EdgeBinaryType;
 import fr.inria.corese.kgraph.core.edge.EdgeImpl;
 import fr.inria.corese.kgraph.core.edge.EdgeBinaryRest;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.logic.Entailment;
 import java.util.List;
 

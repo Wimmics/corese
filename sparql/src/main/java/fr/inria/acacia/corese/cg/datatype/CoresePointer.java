@@ -2,8 +2,8 @@ package fr.inria.acacia.corese.cg.datatype;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import static fr.inria.acacia.corese.cg.datatype.CoreseDatatype.getGenericDatatype;
-import fr.inria.edelweiss.kgram.api.core.Loopable;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.api.core.Loopable;
+import fr.inria.corese.kgram.api.core.Pointerable;
 
 /**
  *

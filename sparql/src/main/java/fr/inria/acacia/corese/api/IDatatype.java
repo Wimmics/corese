@@ -2,11 +2,11 @@ package fr.inria.acacia.corese.api;
 
 import fr.inria.acacia.corese.cg.datatype.ICoresePolymorphDatatype;
 import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import java.util.List;
 
 /**

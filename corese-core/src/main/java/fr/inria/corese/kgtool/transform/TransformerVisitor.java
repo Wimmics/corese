@@ -3,8 +3,8 @@ package fr.inria.corese.kgtool.transform;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * QueryVisitor for Transformation templates
@@ -67,7 +67,7 @@ public class TransformerVisitor implements QueryVisitor {
      */
     void optimize(Query query, String graph, String var) {
         if (query.getBody().size() > 0) {
-            fr.inria.edelweiss.kgram.core.Exp exp = query.getBody().get(0);
+            fr.inria.corese.kgram.core.Exp exp = query.getBody().get(0);
             if (exp.isGraph() && exp.getGraphName().getLabel().equals(graph)) {
                 Node n = query.getNode(var);
                 if (n != null) {

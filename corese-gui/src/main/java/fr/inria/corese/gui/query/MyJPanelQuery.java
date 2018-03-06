@@ -38,11 +38,11 @@ import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.ExpType;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;
@@ -462,7 +462,7 @@ public final class MyJPanelQuery extends JPanel {
     }
 
 
-    private String getLabel(NSManager nsm, fr.inria.edelweiss.kgram.api.core.Node n) {
+    private String getLabel(NSManager nsm, fr.inria.corese.kgram.api.core.Node n) {
         IDatatype dt = (IDatatype) n.getValue();
         if (dt.isURI()){
             return nsm.toPrefix(n.getLabel());
@@ -502,7 +502,7 @@ public final class MyJPanelQuery extends JPanel {
 
     void fillTable(Mappings map) {
         Query q = map.getQuery();
-        List<fr.inria.edelweiss.kgram.api.core.Node> vars = q.getSelect();
+        List<fr.inria.corese.kgram.api.core.Node> vars = q.getSelect();
         if (q.isUpdate() && map.size() > 0){            
            vars = map.get(0).getQueryNodeList();           
         }
@@ -516,7 +516,7 @@ public final class MyJPanelQuery extends JPanel {
         }
         model.addColumn("num", col);
         
-        for (fr.inria.edelweiss.kgram.api.core.Node var : vars) {
+        for (fr.inria.corese.kgram.api.core.Node var : vars) {
             String columnName = var.getLabel();
             //System.out.println(sv);
             String[] colmunData = new String[size];
@@ -527,7 +527,7 @@ public final class MyJPanelQuery extends JPanel {
                     break;
                 }
                 Mapping m = map.get(j);
-                fr.inria.edelweiss.kgram.api.core.Node value = m.getNode(columnName);
+                fr.inria.corese.kgram.api.core.Node value = m.getNode(columnName);
                 
                 if (value != null) {
                     IDatatype dt = (IDatatype) value.getValue();
@@ -605,7 +605,7 @@ public final class MyJPanelQuery extends JPanel {
      * template return turtle graph description display as graph
      */
     void display(Mappings map, NSManager nsm) {
-        fr.inria.edelweiss.kgram.api.core.Node res = map.getTemplateResult();
+        fr.inria.corese.kgram.api.core.Node res = map.getTemplateResult();
         if (res != null) {
             fr.inria.corese.kgraph.core.Graph g = fr.inria.corese.kgraph.core.Graph.create();
             Load ld = Load.create(g);
@@ -675,9 +675,9 @@ public final class MyJPanelQuery extends JPanel {
         MultiGraph graph = new MultiGraph(g.getName(), false, true);
 
         for (Entity ent : g.getEdges()) {
-            fr.inria.edelweiss.kgram.api.core.Edge edge = ent.getEdge();
-            fr.inria.edelweiss.kgram.api.core.Node n1 = edge.getNode(0);
-            fr.inria.edelweiss.kgram.api.core.Node n2 = edge.getNode(1);
+            fr.inria.corese.kgram.api.core.Edge edge = ent.getEdge();
+            fr.inria.corese.kgram.api.core.Node n1 = edge.getNode(0);
+            fr.inria.corese.kgram.api.core.Node n2 = edge.getNode(1);
 
             sujetUri = n1.getLabel();
             objetUri = n2.getLabel();
@@ -725,7 +725,7 @@ public final class MyJPanelQuery extends JPanel {
     }
 
 
-    private boolean isStyle(fr.inria.edelweiss.kgram.api.core.Edge edge) {
+    private boolean isStyle(fr.inria.corese.kgram.api.core.Edge edge) {
         return edge.getLabel().equals(KGSTYLE);
     }
 
@@ -738,8 +738,8 @@ public final class MyJPanelQuery extends JPanel {
             DefaultMutableTreeNode x = new DefaultMutableTreeNode("result " + i);
             // Pour chaque variable du résultat on ajoute une feuille contenant le nom de la variable et sa valeur
 
-            for (fr.inria.edelweiss.kgram.api.core.Node var : map.getSelect()) {
-                fr.inria.edelweiss.kgram.api.core.Node node = res.getNode(var);
+            for (fr.inria.corese.kgram.api.core.Node var : map.getSelect()) {
+                fr.inria.corese.kgram.api.core.Node node = res.getNode(var);
                 if (node != null) {
                     x.add(new DefaultMutableTreeNode(var.getLabel()));
                     x.add(new DefaultMutableTreeNode(node.getValue().toString()));

@@ -5,7 +5,7 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.ExpType;
 
 /**
  * 

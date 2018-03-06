@@ -3,10 +3,10 @@ package fr.inria.corese.triple.function.script;
 import fr.inria.acacia.corese.api.Computer;
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.corese.triple.function.term.Binding;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.MAPANY;
-import static fr.inria.edelweiss.kgram.api.core.ExprType.MAPEVERY;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import static fr.inria.corese.kgram.api.core.ExprType.MAPANY;
+import static fr.inria.corese.kgram.api.core.ExprType.MAPEVERY;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 import java.util.Iterator;
 
 /**

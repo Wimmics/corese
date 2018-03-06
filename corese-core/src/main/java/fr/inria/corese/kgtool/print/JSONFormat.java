@@ -8,8 +8,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.cg.datatype.RDF;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * SPARQL JSON Result Format for KGRAM Mappings

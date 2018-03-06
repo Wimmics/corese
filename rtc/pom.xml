@@ -8,9 +8,9 @@
         <version>${revision}</version>
     </parent>
 
-    <groupId>${parent.groupId}</groupId>
+    <groupId>${project.parent.groupId}</groupId>
     <artifactId>rtc</artifactId>
-    <version>${parent.version}</version>
+    <version>${project.parent.version}</version>
 
     <name>rtc</name>
 

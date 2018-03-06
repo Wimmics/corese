@@ -8,10 +8,10 @@ import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Result;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Result;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 
 public class QueryResult
 implements IResult {

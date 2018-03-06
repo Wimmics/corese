@@ -1,16 +1,16 @@
-package fr.inria.edelweiss.kgram.sorter.impl.qpv1;
+package fr.inria.corese.kgram.sorter.impl.qpv1;
 
-import static fr.inria.edelweiss.kgram.api.core.ExpType.BIND;
-import fr.inria.edelweiss.kgram.sorter.core.QPGraph;
-import fr.inria.edelweiss.kgram.sorter.core.QPGNode;
-import fr.inria.edelweiss.kgram.sorter.core.ISort;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.EDGE;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.FILTER;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.GRAPH;
-import static fr.inria.edelweiss.kgram.api.core.ExpType.VALUES;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.sorter.core.QPGEdge;
-import fr.inria.edelweiss.kgram.sorter.core.IEstimate;
+import static fr.inria.corese.kgram.api.core.ExpType.BIND;
+import fr.inria.corese.kgram.sorter.core.QPGraph;
+import fr.inria.corese.kgram.sorter.core.QPGNode;
+import fr.inria.corese.kgram.sorter.core.ISort;
+import static fr.inria.corese.kgram.api.core.ExpType.EDGE;
+import static fr.inria.corese.kgram.api.core.ExpType.FILTER;
+import static fr.inria.corese.kgram.api.core.ExpType.GRAPH;
+import static fr.inria.corese.kgram.api.core.ExpType.VALUES;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.sorter.core.QPGEdge;
+import fr.inria.corese.kgram.sorter.core.IEstimate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

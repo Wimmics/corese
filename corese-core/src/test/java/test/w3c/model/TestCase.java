@@ -1,6 +1,6 @@
 package test.w3c.model;
 
-import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mapping;
 
 /**
  * Encapsulate a basic single test case

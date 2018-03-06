@@ -2,7 +2,7 @@ package research;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import java.io.FileWriter;
 import java.io.IOException;
 

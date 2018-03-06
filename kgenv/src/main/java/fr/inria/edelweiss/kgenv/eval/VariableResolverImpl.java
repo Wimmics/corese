@@ -6,8 +6,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
 import fr.inria.acacia.corese.cg.datatype.function.VariableResolver;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
 
 /**
  * Variable resolver for XPath 

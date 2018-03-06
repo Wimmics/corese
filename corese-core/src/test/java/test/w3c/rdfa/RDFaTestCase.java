@@ -1,7 +1,7 @@
 package test.w3c.rdfa;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Mapping;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mapping;
 import test.w3c.model.TestCase;
 
 /**

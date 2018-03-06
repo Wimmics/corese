@@ -1,7 +1,7 @@
 package fr.inria.corese.kgtool.load.rdfa;
 
 import fr.inria.corese.kgtool.load.ILoadSerialization;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.AddTripleHelper;
 import org.semarglproject.rdf.ParseException;

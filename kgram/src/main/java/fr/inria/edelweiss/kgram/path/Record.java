@@ -1,9 +1,9 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 import java.util.ArrayList;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Regex;
 
 /**
  * Stack of Regex + Visit for loop check

@@ -1,10 +1,10 @@
-package fr.inria.edelweiss.kgram.filter;
+package fr.inria.corese.kgram.filter;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Producer;
 import java.util.List;
 
 public interface Proxy {

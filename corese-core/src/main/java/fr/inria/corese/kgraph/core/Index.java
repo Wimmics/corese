@@ -4,8 +4,8 @@ package fr.inria.corese.kgraph.core;
 
 import fr.inria.corese.kgraph.index.NodeManager;
 import fr.inria.corese.kgraph.index.PredicateList;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
 import java.util.List;
 
 /**

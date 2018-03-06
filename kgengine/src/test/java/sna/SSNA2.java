@@ -1,21 +1,21 @@
 package sna;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.core.Exp;
-import fr.inria.edelweiss.kgram.core.Memory;
-import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.path.Path;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.kgram.core.Memory;
+import fr.inria.corese.kgram.event.ResultListener;
+import fr.inria.corese.kgram.path.Path;
 
 /**
  * Process several Mappings, each one is result of a query where ?x is bound:

@@ -10,7 +10,7 @@ import fr.inria.acacia.corese.api.IResult;
 import fr.inria.acacia.corese.api.IResultValue;
 import fr.inria.acacia.corese.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgramenv.util.QueryExec;
+import fr.inria.corese.kgramenv.util.QueryExec;
 import java.util.Enumeration;
 import java.util.HashMap;
 import org.junit.After;

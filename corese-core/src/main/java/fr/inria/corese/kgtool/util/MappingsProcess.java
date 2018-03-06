@@ -5,7 +5,7 @@
 
 package fr.inria.corese.kgtool.util;
 
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;

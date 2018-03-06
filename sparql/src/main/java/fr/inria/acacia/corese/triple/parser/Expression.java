@@ -13,20 +13,19 @@ import fr.inria.acacia.corese.triple.cst.Keyword;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.corese.triple.function.script.Function;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.edelweiss.kgram.api.core.DatatypeValue;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
-import fr.inria.edelweiss.kgram.api.core.Regex;
-import fr.inria.edelweiss.kgram.api.core.TripleStore;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mapping;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * <p>Title: Corese</p>

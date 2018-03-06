@@ -20,10 +20,10 @@ import org.apache.logging.log4j.LogManager;
 //import fr.inria.acacia.corese.triple.javacc1.ParseException;
 //import fr.inria.acacia.corese.triple.parser.Model;
 //
-//import fr.inria.edelweiss.kgram.api.core.Node;
-//import fr.inria.edelweiss.kgram.core.Mappings;
-//import fr.inria.edelweiss.kgram.event.StatListener;
-//import fr.inria.edelweiss.kgram.filter.Interpreter;
+//import fr.inria.corese.kgram.api.core.Node;
+//import fr.inria.corese.kgram.core.Mappings;
+//import fr.inria.corese.kgram.event.StatListener;
+//import fr.inria.corese.kgram.filter.Interpreter;
 //import fr.inria.edelweiss.kgraph.core.Graph;
 //import fr.inria.edelweiss.kgraph.logic.Entailment;
 //import fr.inria.edelweiss.kgraph.query.MatcherImpl;

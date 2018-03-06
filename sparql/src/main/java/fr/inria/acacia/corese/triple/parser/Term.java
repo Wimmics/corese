@@ -18,11 +18,11 @@ import fr.inria.corese.triple.function.proxy.GraphFunction;
 import fr.inria.corese.triple.function.proxy.TemplateFunction;
 import fr.inria.corese.triple.function.proxy.TemplateProcess;
 import fr.inria.corese.triple.function.term.Binding;
-import fr.inria.edelweiss.kgram.api.core.ExpPattern;
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.ExprType;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.ExpPattern;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

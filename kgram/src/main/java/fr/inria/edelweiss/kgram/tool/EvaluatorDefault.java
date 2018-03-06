@@ -1,18 +1,18 @@
-package fr.inria.edelweiss.kgram.tool;
+package fr.inria.corese.kgram.tool;
 
 import java.util.List;
 
-import fr.inria.edelweiss.kgram.api.core.Expr;
-import fr.inria.edelweiss.kgram.api.core.Filter;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.query.Binder;
-import fr.inria.edelweiss.kgram.api.query.Environment;
-import fr.inria.edelweiss.kgram.api.query.Evaluator;
-import fr.inria.edelweiss.kgram.api.query.Producer;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.event.ResultListener;
-import fr.inria.edelweiss.kgram.filter.Extension;
-import fr.inria.edelweiss.kgram.filter.Proxy;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.event.ResultListener;
+import fr.inria.corese.kgram.filter.Extension;
+import fr.inria.corese.kgram.filter.Proxy;
 
 public class EvaluatorDefault implements Evaluator {
 

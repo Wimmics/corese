@@ -10,7 +10,7 @@ import fr.inria.edelweiss.kgdqp.core.QueryProcessDQP;
 import fr.inria.edelweiss.kgdqp.core.Util;
 import fr.inria.edelweiss.kgdqp.core.WSImplem;
 import fr.inria.edelweiss.kgdqp.strategies.ServiceGrouper;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import java.io.IOException;
 import java.net.MalformedURLException;

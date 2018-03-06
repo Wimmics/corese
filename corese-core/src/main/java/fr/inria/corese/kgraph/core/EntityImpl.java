@@ -1,9 +1,9 @@
 package fr.inria.corese.kgraph.core;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.PointerObject;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.PointerObject;
 
 public class EntityImpl extends PointerObject implements Entity {
 	Node graph, node;

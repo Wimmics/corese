@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Entailment;
 import fr.inria.corese.kgraph.query.QueryProcess;

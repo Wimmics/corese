@@ -8,7 +8,7 @@ import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 
 /**
  * Replace RDF List by Property Path rdf:rest* / rdf:first in SPARQL Query

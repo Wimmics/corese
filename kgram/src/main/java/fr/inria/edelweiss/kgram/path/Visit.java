@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgram.path;
+package fr.inria.corese.kgram.path;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,8 +7,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TreeMap;
 
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Regex;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Regex;
 
 /**
  * Record intermediate nodes that are visited by a loop path expression

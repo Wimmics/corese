@@ -22,9 +22,9 @@ import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;
 
 import fr.inria.acacia.corese.triple.javacc1.ParseException;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.event.StatListener;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Entailment;
 import fr.inria.corese.kgraph.logic.RDF;

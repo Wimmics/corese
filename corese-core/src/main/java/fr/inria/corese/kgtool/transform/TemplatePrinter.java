@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryEngine;
 import fr.inria.corese.kgtool.load.Load;

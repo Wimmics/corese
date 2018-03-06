@@ -12,8 +12,8 @@ import fr.inria.acacia.corese.cg.datatype.CoreseBoolean;
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.filter.Interpreter;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.filter.Interpreter;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryEngine;
 import fr.inria.corese.kgraph.query.QueryProcess;
@@ -500,7 +500,7 @@ query =
 query = 
 	"prefix c: <http://www.inria.fr/acacia/comma#> " +
 	"prefix fun: <function://fr.inria.edelweiss.kgraph.test.Test>" +
-	"prefix ext: <function://fr.inria.edelweiss.kgramenv.util.Extension>" +
+	"prefix ext: <function://fr.inria.corese.kgramenv.util.Extension>" +
 	"select debug * (ext:self(?x) as ?y )" +
 	"(ext:equalsIgnoreAccent('é', 'e') as ?bool )" +
 	"where {" +

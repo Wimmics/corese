@@ -16,8 +16,8 @@ import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Basic;
 import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
-import fr.inria.edelweiss.kgram.core.Mappings;
-import fr.inria.edelweiss.kgram.core.Query;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 
 
 /**

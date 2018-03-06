@@ -1,10 +1,10 @@
-package fr.inria.edelweiss.kgram.tool;
+package fr.inria.corese.kgram.tool;
 
-import fr.inria.edelweiss.kgram.api.core.Edge;
-import fr.inria.edelweiss.kgram.api.core.Entity;
-import fr.inria.edelweiss.kgram.api.core.Node;
-import fr.inria.edelweiss.kgram.api.core.Pointerable;
-import fr.inria.edelweiss.kgram.core.PointerObject;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.core.PointerObject;
 
 public class EdgeInv extends PointerObject implements Edge, Entity {
 

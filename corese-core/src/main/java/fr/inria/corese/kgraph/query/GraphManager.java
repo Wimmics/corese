@@ -17,6 +17,7 @@ import fr.inria.corese.kgtool.load.LoadException;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import fr.inria.corese.kgtool.load.Load;
 
 /**
  *
@@ -39,7 +40,7 @@ public class GraphManager {
 
     public GraphManager(Graph g) {
         graph = g;
-        load = getLoader(LOADER);
+        load = getLoader();
         load.init(graph);
     }
     
@@ -52,24 +53,9 @@ public class GraphManager {
     }
     
     static Loader getLoader() {
-        return getLoader(LOADER);
+        return new Load();
     }
 
-    static Loader getLoader(String name) {
-        try {
-            Class<Loader> loadClass = (Class<Loader>) Class.forName(name);
-            Loader ld = loadClass.newInstance();
-            return ld;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
     
     /***********************************************************
      * Construct Graph Manager

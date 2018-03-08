@@ -1,4 +1,4 @@
-package test;
+package fr.inria.corese.rif.javacc;
 
 import java.io.File;
 import java.io.StringReader;
@@ -6,8 +6,6 @@ import java.io.StringReader;
 import fr.inria.corese.rif.ast.RIFDocument;
 import fr.inria.corese.rif.ast.RIFPSDocument;
 import fr.inria.corese.rif.ast.RIFXMLDocument;
-import fr.inria.corese.rif.javacc.ParseException;
-import fr.inria.corese.rif.javacc.RIFPSParser;
 
 public class TestRIF {
 	

@@ -1,0 +1,425 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JAVA_UNICODE_ESCAPE = true ; // To make the parser escape \\uXXXX char sequences  
+  UNICODE_INPUT = false ; // To make the parser reject non-ASCII files
+  STATIC = false ;
+  JDK_VERSION = "1.6";
+  // DEBUG_LOOKAHEAD = true ; // To get verbose output for non-LALR(1) productions
+}
+PARSER_BEGIN(RIFPSParser)
+
+package fr.inria.corese.rif.javacc ;
+
+import fr.inria.corese.rif.api.* ;
+import fr.inria.corese.rif.ast.* ;
+
+import java.io.InputStream ;
+import java.util.Vector ;
+
+import org.apache.log4j.Logger ;
+
+/**
+ * Represents the RIF-BLD grammar for the Presentation Syntax (PS) and handles the abstract syntax tree building on the fly
+ * @author cfollenf */
+public class RIFPSParser {
+
+	/** The entity class in which the AST will be stored. It also includes several informations
+	 * related to the whole RIF document, like imported namespaces, etc. */
+	private RIFPSDocument rifdoc ;
+
+	/** Logger from log4j */
+	private static Logger logger = Logger.getLogger(RIFPSParser.class) ;
+
+	public void setRIFDocument(RIFPSDocument rifdoc) {
+		this.rifdoc = rifdoc ;
+	}
+
+	public RIFDocument parse() throws ParseException, TokenMgrError {
+		Group payload = Document() ;
+		if(payload == null) ; // there should be at least one import if there is no payload.
+		this.rifdoc.setPayload(payload) ;
+		return rifdoc ;
+	}
+
+}
+PARSER_END(RIFPSParser)
+
+/**** NONTERMINAL PRODUCTIONS ****/
+
+Group Document() :
+{ Group payload = null ; Annotation meta ; }
+{
+  	( meta = IRIMeta() { rifdoc.setMeta(meta) ; } )?
+  	< DOCUMENT > < OPENPAR >
+  	( Base() )?
+  	( Prefix() )*
+  	( Import() )*
+  	( payload = Group() )?
+  	< CLOSEPAR > < EOF > 
+  	{ return payload ; }
+}
+
+/* The three next productions are directives. Directives affect the whole RIF document,
+ * so they are not embedded in the AST */
+ 
+void Base() :
+{ String ns ; }
+{
+  	< BASE > < OPENPAR > ns = IRIRef() < CLOSEPAR >
+  	{ rifdoc.setBaseNamespace(ns) ; }
+}
+
+void Prefix() :
+{ Token p ; String ns ; }
+{
+  	< PREFIX > < OPENPAR > p = < PREFIX_NAME > ns = IRIRef() < CLOSEPAR >
+  	{ rifdoc.addPrefixedNamespace(p.image, ns) ; }
+}
+
+void Import() :
+{ String loc, profile = null ; }
+{
+  	< IMPORT > < OPENPAR > loc = IRIRef() (profile = IRIRef())? < CLOSEPAR >
+  	{ rifdoc.addImportedDocument(loc, profile) ; }
+}
+
+Group Group() :
+{ Annotation a = null ; Group group = Group.create() ; IRule rule ; Group nested ; }
+{
+  	( a = IRIMeta() { group.setMeta(a) ; } )?
+  	< GROUP > < OPENPAR >
+  	(
+  	    // Mandatory... we have to go beyond the meta to know if we're into a nested group or already in a rule (which can also have metadata)
+  	    LOOKAHEAD(( IRIMeta() )? < GROUP >)
+  	    nested = Group() { group.addNestedGroup(nested) ; }
+  	  | rule = Rule() { group.add(rule) ; }
+  	)*
+  	< CLOSEPAR > 
+  	{ return group ; }
+}
+
+IRule Rule() :
+{ IRule rule ; Annotation meta = null ; }
+{
+   // The annotation is attached to the largest Term / Formula, or skipped if non quantified clause
+  ( LOOKAHEAD(1) meta = IRIMeta() )?
+  (  	  { IClause c ; Var v ; Vector<Var> boundVars = new Vector<Var>() ; }
+  	  /* Universal rule */
+  	  < FORALL > ( v = Var() { boundVars.add(v) ; } )+ < OPENPAR > c = Clause() < CLOSEPAR >
+  	  { Forall forall = Forall.create(boundVars, c) ; forall.setMeta(meta) ; rule = forall ; }       | rule = Clause()  )
+  	{ return rule ; }
+}
+
+IClause Clause() :
+{ IClause c ; Atomic a ; Annotation meta = null ; Entailment et ; }
+{
+   ( LOOKAHEAD(1) meta = IRIMeta() )?
+   (
+       // This is an expensive lookahead.        LOOKAHEAD(Atomic() < IF > | < AND >)
+       et = Implies() { et.setMeta(meta) ; c = et ; } // Entailment
+     | a = Atomic() { a.setMeta(meta) ; c = a ; } // Fact
+   )
+   { return c ; }}
+Entailment Implies() :
+{ IConclusion conc ; IFormula cond ; }
+{  
+   (
+     { And<Atomic> and = And.create() ; Atomic a ; }
+     < AND > < OPENPAR > ( a = Atomic() { and.add(a) ; } )* < CLOSEPAR >
+     { conc = and ; }
+    |
+      conc = Atomic()
+   )
+   < IF >
+   cond = Formula()
+   { return Entailment.create(conc, cond) ;  }}
+
+IFormula Formula() :
+{ IFormula f ; Annotation a = null ; Atomic at ; Predicate p ; }{
+     ( LOOKAHEAD(1) a = IRIMeta() )?
+     (
+        { And<IFormula> and = And.create() ; IFormula conjFormula ; }
+        < AND > < OPENPAR > ( conjFormula = Formula() { and.add(conjFormula) ; } )* < CLOSEPAR >
+        { and.setMeta(a) ; f = and ; }
+       | 
+        { Or or = Or.create() ; IFormula disjFormula ; }
+        < OR > < OPENPAR > ( disjFormula = Formula() { or.add(disjFormula) ; } )* < CLOSEPAR >
+        { or.setMeta(a) ; f = or ; }
+       |
+        { Var v ; Vector<Var> boundVars = new Vector<Var>() ; IFormula existFormula ; }
+        < EXISTS > ( v = Var() { boundVars.add(v) ; } )+ < OPENPAR > existFormula = Formula() < CLOSEPAR >
+        { Exists exists = Exists.create(boundVars, existFormula) ; exists.setMeta(a) ; f = exists ; }
+       | LOOKAHEAD(Term() (< EQUAL > | < MEMBER > | < SUBCLASS > | < OPENBRACKET >) | Atom(false))
+        at = Atomic() { at.setMeta(a) ; f = at ; }
+       |
+        < EXTERNAL > < OPENPAR > p = Atom(true) < CLOSEPAR > { p.setMeta(a) ; f = p ; }     )
+     { return f ; }}
+
+Atomic Atomic() :
+{ Atomic a ; }
+{
+  (      
+      LOOKAHEAD(Term() < OPENBRACKET >)
+      a = Frame()
+    | LOOKAHEAD(Term() (< EQUAL > | < MEMBER > | < SUBCLASS >))
+      a = BinaryOp()
+    |     
+      a = Atom(false)  )
+  { return a ; }}
+
+Predicate Atom(boolean ext) :{ Predicate p = null ; Const c ; Term t ; }{
+  c = Const()
+  < OPENPAR >
+  (
+      LOOKAHEAD(QName() < ARROW >) // Named arguments
+      { p = NamedArgsPredicate.create(ext, c) ; String n ; }
+      ( n = QName() < ARROW > t = Term() { ((NamedArgsPredicate) p).addArgument(n, t) ; } )+
+   |  { p = PositionalPredicate.create(ext, c) ; } // Positional arguments
+      ( t = Term() { ((PositionalPredicate) p).addArgument(t) ; } )+  )?
+  < CLOSEPAR >
+  { return p == null ? Predicate.create(c) : p ; }}
+
+/** This production handles the three binary operators that can be found in RIF-BLD */
+BinaryOp BinaryOp() :
+{ BinaryOp op ; Term left, right ; Token t ; }{
+  left = Term()
+  (t = < EQUAL > | t = < MEMBER > | t = < SUBCLASS >)
+  right = Term()
+  {
+    switch(t.kind) {      case EQUAL   : return Equal.create(left, right) ;
+      case MEMBER  : return Member.create(left, right) ;
+      case SUBCLASS: return Subclass.create(left, right) ;
+    }  }}
+
+Term Term() :
+{ Term t ; Annotation a = null ; }{
+  ( a = IRIMeta() )?
+  (
+      < EXTERNAL > < OPENPAR > t = Expr(true) < CLOSEPAR >    | t = Var()
+    | LOOKAHEAD(Expr(false))
+      t = Expr(false)
+    | t = List()
+    | t = Const()
+  )
+  { t.setMeta(a) ; return t ; }}
+
+Function Expr(boolean ext) :
+{ Function f = null ; Const c ; Term t ; }
+{
+  c = Const()
+  < OPENPAR >
+  (
+      LOOKAHEAD(QName() < ARROW >)
+      { f = NamedArgsFunction.create(ext, c) ; String n ; }
+      ( n = QName() < ARROW > t = Term() { ((NamedArgsFunction) f).addArgument(n, t) ; } )+
+   |  { f = PositionalFunction.create(ext, c) ; }
+      ( t = Term() { ((PositionalFunction) f).addArgument(t) ; } )+
+  )?
+  < CLOSEPAR >
+  
+  { return f == null ? Function.create(c) : f ; }
+}
+
+List List() :
+{ List l ; Vector<Term> terms = new Vector<Term>() ; Term t, tail ; }{
+  < LIST > < OPENPAR >
+  (
+      LOOKAHEAD( ( Term() )+ < PIPE >)      ( ( t = Term() )+ < PIPE > tail = Term() { l = OpenList.create(terms, tail) ; } )
+    | ( ( t = Term() { terms.add(t) ; } )* { l = List.create(terms) ; } )  )
+  < CLOSEPAR >
+  { return l ; }}
+
+Var Var() :
+{ Token t ; }
+{
+   t = < VAR >
+   { return Var.create(t.image.substring(1, t.image.length())) ; }
+}
+
+Const Const() :
+{ Const c ; Token v ; String t ; }
+{  (
+      LOOKAHEAD(< STRING_LITERAL > < LEXSPACE >)
+      v = < STRING_LITERAL > < LEXSPACE > (t = IRIRef() | t = QName()) { c = Const.create(v.image.substring(1, v.image.length() - 1), t) ; }
+   |  c = Constshort()  )
+  { return c ; }
+}
+
+Const Constshort() :
+{ Const c ; Token t, l ; String s ; }{
+  (
+      c = IRIConstshort()
+    | c = NumericLiteral() // shortcut for "..."^^xs:integer,xs:decimal,xs:double
+    | t = < LOCALNAME > { c = Const.create(t.image.substring(1, t.image.length()), RIF.LOCAL) ; } // shortcut for "..."^^rif:local
+    | t = < STRING_LITERAL > // shortcut for "..."^^xs:string
+        { c = Const.create(EscapeUtils.unescape(t.image.substring(1, t.image.length() - 1)), RIF.xsdstring) ; }
+     (l = < LANGTAG > { c = Const.create(EscapeUtils.unescape(t.image.substring(1, t.image.length() - 1)) + l.image, RIF.RDF_PLAIN_LITERAL,
+                                                l.image.substring(1, l.image.length())) ; } )?  // shortcut for "..."rdf:PlainLiteral  )
+  { return c ; } 
+}
+
+Const IRIConstshort() :
+{ String s ; }
+{
+    s = IRIRef() { return Const.create(s, RIF.IRI) ; } // shortcut for "..."^^rif:iri
+  | s = QName() { return Const.create(s, RIF.IRI) ; } // shortcut for "..."^^rif:iri}
+
+Const NumericLiteral() :
+{ Token lit ; }
+{
+      lit = < INTEGER > { return Const.create(lit.image, RIF.xsdinteger) ;  }
+    | lit = < DECIMAL > { return Const.create(lit.image, RIF.xsddecimal) ;  }
+    | lit = < DOUBLE >  { return Const.create(lit.image, RIF.xsddouble) ;  }
+}
+
+/** There is a tricky workaround in this production, to handle the ambiguity.
+ *  We have to keep several choices in order to prevent upstream lookaheads from failing,
+ *  because they won't perform the local ones, hence failing when they run into the first
+ *  IRIConst they meet whithout checking if it belongs to a Frame object identifier.
+ *  This solution is for sure awkward, but... sigh */
+Annotation IRIMeta() :
+{ Annotation a = null ; Frame meta ; And<Frame> frameConj ; Const identifier = null ; }
+{   (  
+     LOOKAHEAD(< OPENMETA > < CLOSEMETA >)
+     < OPENMETA > < CLOSEMETA > { a = Annotation.create() ; }
+   | LOOKAHEAD(< OPENMETA > IRIConst() < CLOSEMETA >)
+     < OPENMETA > identifier = IRIConst() < CLOSEMETA > { a = Annotation.create(identifier) ; }
+   | LOOKAHEAD(< OPENMETA > IRIConst() (Term() < OPENBRACKET > | < AND >))
+     < OPENMETA > identifier = IRIConst() (
+         meta = Frame() { a = Annotation.create(identifier, meta) ; }
+       | { frameConj = And.create() ; Frame f ; }
+         < AND > < OPENPAR > ( f = Frame() { frameConj.add(f) ; } )* < CLOSEPAR > { a = Annotation.create(identifier, frameConj) ; }
+       ) < CLOSEMETA >
+   | LOOKAHEAD(< OPENMETA > (Term() < OPENBRACKET > | < AND >))
+     < OPENMETA > (
+         meta = Frame() { a = Annotation.create(meta) ; }
+       | { frameConj = And.create() ; Frame f ; }
+         < AND > < OPENPAR > ( f = Frame() { frameConj.add(f) ; } )* < CLOSEPAR > { a = Annotation.create(frameConj) ; }
+       ) < CLOSEMETA >
+   ) { return a ; }
+}
+
+Frame Frame() :
+{ Term objId, att, val ; Frame f ; }{
+    objId = Term()
+    { f = Frame.create(objId) ; }
+    < OPENBRACKET >
+    (
+      att = Term()
+      < ARROW >
+      val = Term()
+      { f.addAttValPair(att, val) ; }    )*
+    < CLOSEBRACKET >
+    { return f ; }}
+
+String IRIRef() :
+{ Token t ; }
+{
+   t = < ANGLEBRACKIRI >
+   { return t.image.substring(1, t.image.length() - 1) ; }}
+
+/** Weird production, because we have to check within the datatype
+ *  to ensure that it is a rif:iri constant */
+Const IRIConst() :
+{ String iri, dt ; Token t ; Const c ; }{
+  (     c = IRIConstshort()
+   | t = < STRING_LITERAL > < LEXSPACE > (dt = IRIRef() | dt = QName()) { c = Const.create(t.image.substring(1, t.image.length() - 1), dt) ; }
+  )
+  { return c ; }}
+
+/** This production should return the expanded URI, and throw an exception
+ *  when the prefix used was not declared in the present RIF document */
+String QName() :
+{ Token qName ; }
+{
+	( qName = < QNAME > | qName = < QNAME_NS > )
+	{ return qName.image ; }
+}
+
+/**** TERMINAL PRODUCTIONS (tokens) ****/
+
+// Maybe we should introduce some context, because RIF PS has to be space-senstivie sometimes (predicate names... etc.)
+SKIP : /* Ignored tokens (default context) */
+{
+ 	" " | "\r" | "\t" | "\n" | "\f"
+}
+
+TOKEN [IGNORE_CASE] : /* Keywords */
+{
+   < FORALL: "Forall" >
+ | < EXISTS: "Exists" >
+ | < AND: "And" >
+ | < OR: "Or" >
+ | < EXTERNAL: "External" >
+ | < IMPORT: "Import" >
+ | < PREFIX: "Prefix" >
+ | < BASE: "Base" >
+ | < GROUP: "Group" >
+ | < DOCUMENT: "Document" >
+ | < LIST: "List" >
+}
+
+TOKEN : /* Operator symbols */
+{
+   < IF: ":-" >
+ | < ARROW: "->" >
+ | < LEXSPACE: "^^" >
+ | < EQUAL: "=" >
+ | < MEMBER: "#" >
+ | < SUBCLASS: "##" >
+ | < OPENPAR: "(" >
+ | < CLOSEPAR: ")" >
+ | < OPENBRACKET: "[" >
+ | < CLOSEBRACKET: "]" >
+ | < OPENMETA: "(*" >
+ | < CLOSEMETA: "*)" >
+ | < PIPE: "|" >
+ | < #COLON: ":" >
+ | < #PLUS: "+" >
+ | < #MINUS: "-" >
+}
+
+TOKEN : /* IRIs, QNames and identifiers tokens. */
+{
+   < ANGLEBRACKIRI: "<" (~["<",">","'","{","}","|","^","`","\u0000"-"\u0020"])* ">" >
+ | < PREFIX_NAME: < NCNAME_PREFIX > >
+ | < VAR: "?" < VARNAME > >
+ | < QNAME_NS: ( < NCNAME_PREFIX > )? < COLON > >
+ | < QNAME: ( < NCNAME_PREFIX > )? < COLON > ( < NCNAME > )? >
+ | < INTEGER: ( < PLUS > | < MINUS > )? ( < DIGIT > )+ >
+ | < DECIMAL: ( < PLUS > | < MINUS > )? ( ( < DIGIT > )+ "."  ( < DIGIT > )* ) | ( "." ( < DIGIT > )+ ) >
+ | < DOUBLE: ( < PLUS > | < MINUS > )?
+             ( ( < DIGIT > )+ "."  ( < DIGIT > )* < EXPONENT > ) | ( "." ( < DIGIT > )+ < EXPONENT > ) | ( ( < DIGIT > )+ < EXPONENT > ) >
+ | < STRING_LITERAL: "\"" ( (~["\\","\n","\r","\""]) | <ECHAR> | <UCHAR> )* "\"" >
+ | < LOCALNAME: "_" < NCNAME > >
+ | < LANGTAG: "@" ( ["a"-"z","A"-"Z"] )+ ( "-" (["a"-"z","A"-"Z","0"-"9"])+ )* >
+}
+
+TOKEN : /* Messy unicode tokens and other escape stuff */
+{
+   < #DIGIT: ["0" - "9"] >
+ | < #A2Z: ["a" - "z", "A" - "Z"] >
+ | < #ALPHANUM: < A2Z > | < DIGIT > >
+ | < #NCCHAR1:
+          < A2Z > |
+          ["\u00C0"-"\u00D6"] | ["\u00D8"-"\u00F6"] | ["\u00F8"-"\u02FF"] |
+          ["\u0370"-"\u037D"] | ["\u037F"-"\u1FFF"] |
+          ["\u200C"-"\u200D"] | ["\u2070"-"\u218F"] | ["\u2C00"-"\u2FEF"] |
+          ["\u3001"-"\uD7FF"] | ["\uF900"-"\uFFFD"] >
+ | < #NCCHAR: < NCCHAR1 > | "_" | < DIGIT > >
+ | < #NCNAME_PREFIX: < NCCHAR1 > ( ( < NCCHAR > | "." )* < NCCHAR > )? >
+ | < #NCNAME: < NCCHAR1 > ( ( < NCCHAR > | "." | "-")* < NCCHAR > )? >
+ | < #VARNAME: < NCCHAR > ( < NCCHAR > | "\u00B7" | ["\u0300"-"\u036F"] | ["\u203F"-"\u2040"] )* >
+ | < #EXPONENT: ["E","e"] (["+", "-"])? ( < DIGIT > )+ >
+ | < #ECHAR: "\\" ["t","b","n","r","f","\\","'","\""] >
+ | < #UCHAR: "\\" ( "u" <HEX> <HEX> <HEX> <HEX> | "U" <HEX> <HEX> <HEX> <HEX> <HEX> <HEX> <HEX> <HEX> ) >
+ | < #HEX: < DIGIT > | ["a"-"f"] | ["A"-"F"] >
+}
+
+TOKEN : /* Sink. Keep it in last. Throws a parser exception rather than a token manager one. */
+{
+  < #UNKNOWN: (~[" ","\t","\n","\r","\f" ])+ >
+}

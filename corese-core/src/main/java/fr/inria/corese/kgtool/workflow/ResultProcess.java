@@ -5,7 +5,7 @@
 
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgtool.print.ResultFormat;
 

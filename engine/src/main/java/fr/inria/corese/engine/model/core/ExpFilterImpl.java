@@ -2,13 +2,13 @@ package fr.inria.corese.engine.model.core;
 
 import java.util.List;
 
-import fr.inria.acacia.corese.triple.api.ElementClause;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
 import fr.inria.corese.engine.model.api.ExpFilter;

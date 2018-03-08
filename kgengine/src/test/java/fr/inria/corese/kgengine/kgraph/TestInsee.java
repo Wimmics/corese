@@ -6,8 +6,8 @@ import java.util.Date;
 
 
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 

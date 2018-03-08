@@ -18,9 +18,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;

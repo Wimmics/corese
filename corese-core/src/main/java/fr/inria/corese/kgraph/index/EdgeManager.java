@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.index;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;

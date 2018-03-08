@@ -1,8 +1,8 @@
 package fr.inria.corese.kgraph.core.producer;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.kgram.api.core.Node;
 
 /**

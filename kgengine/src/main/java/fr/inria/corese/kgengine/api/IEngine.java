@@ -3,8 +3,8 @@ package fr.inria.corese.kgengine.api;
 import java.io.InputStream;
 
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 
 /**
  * This class encapsulate the Corese class, which manages the Corese RDF engine<br />

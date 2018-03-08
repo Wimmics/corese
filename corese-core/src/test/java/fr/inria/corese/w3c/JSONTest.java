@@ -5,7 +5,7 @@ package fr.inria.corese.w3c;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.load.Load;

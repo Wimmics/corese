@@ -2,7 +2,7 @@ package fr.inria.corese.kgengine.kgraph;
 
 import java.util.Date;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.engine.core.Engine;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.LBind;

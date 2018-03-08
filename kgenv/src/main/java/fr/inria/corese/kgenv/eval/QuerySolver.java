@@ -1,8 +1,8 @@
 package fr.inria.corese.kgenv.eval;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,14 +10,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Metadata;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.corese.kgenv.parser.Pragma;

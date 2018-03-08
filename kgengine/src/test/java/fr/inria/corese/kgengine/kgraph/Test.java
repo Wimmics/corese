@@ -2,9 +2,9 @@ package fr.inria.corese.kgengine.kgraph;
 
 import java.util.Date;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;

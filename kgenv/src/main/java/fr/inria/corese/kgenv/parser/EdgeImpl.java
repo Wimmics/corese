@@ -1,13 +1,13 @@
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import java.util.ArrayList;
 
-import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;

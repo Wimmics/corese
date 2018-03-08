@@ -6,8 +6,8 @@ import java.util.Iterator;
 
 import fr.inria.corese.kgengine.api.IResult;
 import fr.inria.corese.kgengine.api.IResults;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;

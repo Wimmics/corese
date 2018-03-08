@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.core;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgraph.api.ValueResolver;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -5,7 +5,7 @@
 package fr.inria.corese.kgdqp.strategies;
 
 
-//import fr.inria.acacia.corese.triple.parser.Exp;
+//import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;

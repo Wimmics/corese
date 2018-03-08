@@ -1,8 +1,8 @@
 package fr.inria.corese.kgdqp.vis;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.QueryProcessDQP;
 import fr.inria.corese.kgdqp.core.Util;
 import fr.inria.corese.kgdqp.core.WSImplem;

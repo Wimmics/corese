@@ -1,10 +1,10 @@
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
 

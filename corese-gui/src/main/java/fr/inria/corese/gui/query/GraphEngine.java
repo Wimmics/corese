@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.core.Command;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.engine.core.Engine;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.LBind;

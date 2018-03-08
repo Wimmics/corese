@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 
 
 
-import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.engine.tool.api.Parser;
 
 public class ParserImpl implements Parser {

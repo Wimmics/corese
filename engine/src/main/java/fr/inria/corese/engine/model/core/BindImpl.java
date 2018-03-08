@@ -3,12 +3,12 @@ package fr.inria.corese.engine.model.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-//import fr.inria.acacia.corese.api.IResult;
-//import fr.inria.acacia.corese.api.IResultValue;
-import fr.inria.acacia.corese.triple.api.ElementClause;
-import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+//import fr.inria.corese.sparql.api.IResult;
+//import fr.inria.corese.sparql.api.IResultValue;
+import fr.inria.corese.sparql.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
 

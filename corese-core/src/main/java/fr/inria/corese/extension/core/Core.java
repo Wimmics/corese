@@ -1,12 +1,12 @@
 package fr.inria.corese.extension.core;
 
-import fr.inria.acacia.corese.api.Computer;
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.corese.triple.function.core.FunctionEvaluator;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.corese.sparql.api.Computer;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
+import fr.inria.corese.kgenv.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;

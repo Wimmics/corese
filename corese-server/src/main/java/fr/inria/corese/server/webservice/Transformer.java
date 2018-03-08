@@ -2,9 +2,9 @@ package fr.inria.corese.server.webservice;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import static fr.inria.corese.server.webservice.Utility.toStringList;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.workflow.Data;

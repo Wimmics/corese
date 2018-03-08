@@ -1,7 +1,7 @@
 package fr.inria.corese.kgraph.approximate.strategy;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.kgenv.parser.Pragma;
 import static fr.inria.corese.kgraph.approximate.strategy.AlgType.ch;
 import static fr.inria.corese.kgraph.approximate.strategy.AlgType.eq;
 import static fr.inria.corese.kgraph.approximate.strategy.AlgType.jw;

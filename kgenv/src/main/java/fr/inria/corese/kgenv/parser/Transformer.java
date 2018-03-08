@@ -1,7 +1,7 @@
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.corese.triple.function.script.Function;
-import fr.inria.acacia.corese.cg.datatype.DatatypeHierarchy;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.cg.datatype.DatatypeHierarchy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,13 +10,13 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.cst.RDFS;
-import fr.inria.acacia.corese.triple.parser.*;
-import fr.inria.acacia.corese.triple.parser.ASTExtension.ASTFunMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.*;
+import fr.inria.corese.sparql.triple.parser.ASTExtension.ASTFunMap;
 import fr.inria.corese.kgenv.api.QueryVisitor;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.corese.compiler.java.JavaCompiler;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.*;
 import static fr.inria.corese.kgram.api.core.ExpType.NODE;
 import fr.inria.corese.kgram.core.Exp;
@@ -366,7 +366,7 @@ public class Transformer implements ExpType {
         if (!ast.isTemplate()) {
             return;
         }
-        fr.inria.acacia.corese.triple.parser.Exp body = ast.getBody();
+        fr.inria.corese.sparql.triple.parser.Exp body = ast.getBody();
         if (ast.getValues() != null
                 && body.size() > 0
                 && body instanceof BasicGraphPattern
@@ -711,7 +711,7 @@ public class Transformer implements ExpType {
     /**
      * Delete/Insert/Construct
      */
-    Exp compile(ASTQuery ast, fr.inria.acacia.corese.triple.parser.Exp exp) {
+    Exp compile(ASTQuery ast, fr.inria.corese.sparql.triple.parser.Exp exp) {
         Compiler save = compiler;
         compiler = fac.newInstance();
         compiler.setAST(ast);
@@ -731,7 +731,7 @@ public class Transformer implements ExpType {
         Node src = compile(service.getServiceName());
         Exp node = Exp.create(NODE, src);
               
-        fr.inria.acacia.corese.triple.parser.Exp body = service.get(0);
+        fr.inria.corese.sparql.triple.parser.Exp body = service.get(0);
         ASTQuery aa;
 
         if (body.isBGP() && body.size() == 1 && body.get(0).isQuery()) {
@@ -1272,11 +1272,11 @@ public class Transformer implements ExpType {
      * Compile AST statements into KGRAM statements Compile triple into Edge,
      * filter into Filter
      */
-    Exp compile(fr.inria.acacia.corese.triple.parser.Exp query, boolean opt) {
+    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt) {
         return compile(query, opt, 0);
     }
 
-    Exp compile(fr.inria.acacia.corese.triple.parser.Exp query, boolean opt, int level) {
+    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt, int level) {
 
         Exp exp = null;
         int type = getType(query);
@@ -1337,7 +1337,7 @@ public class Transformer implements ExpType {
 
                 boolean hasBind = false;
 
-                for (fr.inria.acacia.corese.triple.parser.Exp ee : query.getBody()) {
+                for (fr.inria.corese.sparql.triple.parser.Exp ee : query.getBody()) {
 
                     Exp cpl = compile(ee, opt, level + 1);
 
@@ -1438,7 +1438,7 @@ public class Transformer implements ExpType {
     /**
      * Complete compilation
      */
-    Exp complete(Exp exp, fr.inria.acacia.corese.triple.parser.Exp srcexp, boolean opt) {
+    Exp complete(Exp exp, fr.inria.corese.sparql.triple.parser.Exp srcexp, boolean opt) {
         // complete path (deprecated)
         path(exp);
 
@@ -1645,7 +1645,7 @@ public class Transformer implements ExpType {
         }
     }
 
-    int getType(fr.inria.acacia.corese.triple.parser.Exp query) {
+    int getType(fr.inria.corese.sparql.triple.parser.Exp query) {
         if (query.isFilter()) {
             return FILTER;
         } else if (query.isTriple()) {
@@ -1741,10 +1741,10 @@ public class Transformer implements ExpType {
     /**
      * check unbound variable in construct/insert/delete
      */
-    boolean validate(fr.inria.acacia.corese.triple.parser.Exp exp, ASTQuery ast) {
+    boolean validate(fr.inria.corese.sparql.triple.parser.Exp exp, ASTQuery ast) {
         boolean suc = true;
 
-        for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()) {
+        for (fr.inria.corese.sparql.triple.parser.Exp ee : exp.getBody()) {
             boolean b = true;
 
             if (ee.isTriple()) {
@@ -1764,7 +1764,7 @@ public class Transformer implements ExpType {
     boolean validate(Source exp, ASTQuery ast) {
         boolean suc = validate(exp.getSource(), ast);
 
-        for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()) {
+        for (fr.inria.corese.sparql.triple.parser.Exp ee : exp.getBody()) {
             suc = validate(ee, ast) && suc;
         }
 
@@ -1812,15 +1812,15 @@ public class Transformer implements ExpType {
     /**
      * Must exp ee be joined with preceding statements ?
      */
-    private boolean isJoinable(Exp exp, fr.inria.acacia.corese.triple.parser.Exp ee) {
+    private boolean isJoinable(Exp exp, fr.inria.corese.sparql.triple.parser.Exp ee) {
         return (isAlgebra()) ? isJoinableAlgebra(exp, ee) : isJoinableBasic(ee) ;        
     }
     
-    private boolean isJoinableBasic(fr.inria.acacia.corese.triple.parser.Exp ee) {
+    private boolean isJoinableBasic(fr.inria.corese.sparql.triple.parser.Exp ee) {
         return ee.isBGP() || ee.isUnion();
     }
     
-    private boolean isJoinableAlgebra(Exp exp, fr.inria.acacia.corese.triple.parser.Exp ee) {
+    private boolean isJoinableAlgebra(Exp exp, fr.inria.corese.sparql.triple.parser.Exp ee) {
         return ee.isBGP() || ee.isUnion();
     }
 

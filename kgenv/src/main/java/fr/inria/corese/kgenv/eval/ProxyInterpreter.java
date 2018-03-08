@@ -1,6 +1,6 @@
 package fr.inria.corese.kgenv.eval;
 
-import fr.inria.acacia.corese.api.ComputerProxy;
+import fr.inria.corese.sparql.api.ComputerProxy;
 import fr.inria.corese.kgenv.eval.*;
 import java.sql.ResultSet;
 import java.util.Map;
@@ -9,14 +9,14 @@ import java.util.UUID;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Processor;
-import fr.inria.acacia.corese.triple.parser.Term;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgenv.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;

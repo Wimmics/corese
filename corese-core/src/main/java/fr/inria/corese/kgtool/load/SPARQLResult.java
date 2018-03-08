@@ -1,8 +1,8 @@
 package fr.inria.corese.kgtool.load;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.kgenv.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;
 

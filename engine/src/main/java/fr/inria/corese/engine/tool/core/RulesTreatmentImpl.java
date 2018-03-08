@@ -2,9 +2,9 @@ package fr.inria.corese.engine.tool.core;
 
 import java.util.List;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.ParserSparql1;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ParserSparql1;
 import fr.inria.corese.engine.tool.core.ParserImpl;
 import fr.inria.corese.engine.tool.api.Parser;
 import fr.inria.corese.engine.model.api.Rule;

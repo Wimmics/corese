@@ -16,11 +16,11 @@ import org.apache.logging.log4j.LogManager;
 //
 //import junit.framework.TestCase;
 //
-//import fr.inria.acacia.corese.api.*;
-//import fr.inria.acacia.corese.exceptions.EngineException;
+//import fr.inria.corese.sparql.api.*;
+//import fr.inria.corese.sparql.exceptions.EngineException;
 //
-//import fr.inria.acacia.corese.triple.javacc1.ParseException;
-//import fr.inria.acacia.corese.triple.parser.Model;
+//import fr.inria.corese.sparql.triple.javacc1.ParseException;
+//import fr.inria.corese.sparql.triple.parser.Model;
 //
 //import fr.inria.corese.kgram.api.core.Node;
 //import fr.inria.corese.kgram.core.Mappings;

@@ -1,6 +1,6 @@
 package fr.inria.corese.kgenv.federate;
 
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

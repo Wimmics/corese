@@ -9,12 +9,12 @@ import java.io.FileNotFoundException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.inria.acacia.corese.exceptions.*;
-import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.corese.sparql.exceptions.*;
+import fr.inria.corese.sparql.storage.api.Parameters;
 
 import fr.inria.corese.engine.core.Engine;
 import fr.inria.corese.engine.model.api.LBind;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgpipe.Pipe;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;

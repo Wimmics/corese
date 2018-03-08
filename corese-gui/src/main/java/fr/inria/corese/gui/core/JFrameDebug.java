@@ -13,8 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
-//import fr.inria.acacia.corese.gui.event.MyLoadListener;
-//import fr.inria.acacia.corese.gui.event.MyQueryListener;
+//import fr.inria.corese.sparql.gui.event.MyLoadListener;
+//import fr.inria.corese.sparql.gui.event.MyQueryListener;
 import fr.inria.corese.kgram.event.Event;
 
 public class JFrameDebug extends JFrame{

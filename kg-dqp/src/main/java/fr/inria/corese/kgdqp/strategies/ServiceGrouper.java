@@ -4,12 +4,12 @@
  */
 package fr.inria.corese.kgdqp.strategies;
 
-import fr.inria.acacia.corese.triple.parser.*;
+import fr.inria.corese.sparql.triple.parser.*;
 import fr.inria.corese.kgdqp.core.QueryProcessDQP;
 import fr.inria.corese.kgdqp.core.RemoteProducerWSImpl;
 import fr.inria.corese.kgdqp.core.Util;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
+import fr.inria.corese.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.parser.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;

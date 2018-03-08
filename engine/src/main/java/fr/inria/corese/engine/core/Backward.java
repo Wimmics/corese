@@ -6,10 +6,10 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-//import fr.inria.acacia.corese.event.Event;
-//import fr.inria.acacia.corese.event.EventManager;
-//import fr.inria.acacia.corese.event.RuleEvent;
-import fr.inria.acacia.corese.triple.api.ElementClause;
+//import fr.inria.corese.sparql.event.Event;
+//import fr.inria.corese.sparql.event.EventManager;
+//import fr.inria.corese.sparql.event.RuleEvent;
+import fr.inria.corese.sparql.triple.api.ElementClause;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
 import fr.inria.corese.engine.model.api.ExpFilter;

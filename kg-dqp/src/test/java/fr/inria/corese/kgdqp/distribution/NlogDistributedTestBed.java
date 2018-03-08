@@ -8,7 +8,7 @@ import fr.inria.corese.kgengine.api.IResult;
 import fr.inria.corese.kgengine.api.EngineFactory;
 import fr.inria.corese.kgengine.api.IResultValue;
 import fr.inria.corese.kgengine.api.IResults;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgengine.GraphEngine;
 import fr.inria.corese.kgdqp.core.QueryExecDQP;
 import fr.inria.corese.kgdqp.core.WSImplem;

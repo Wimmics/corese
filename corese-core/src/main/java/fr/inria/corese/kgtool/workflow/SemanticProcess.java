@@ -1,7 +1,7 @@
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import java.util.List;
 
 

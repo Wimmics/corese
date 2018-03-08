@@ -3,11 +3,11 @@ package fr.inria.corese.kgtool.print;
 import java.text.NumberFormat;
 import java.util.Vector;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 

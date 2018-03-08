@@ -7,8 +7,8 @@ import com.ibm.icu.util.StringTokenizer;
 
 import fr.inria.corese.kgengine.GraphEngine;
 
-//import fr.inria.acacia.corese.Corese;
-//import fr.inria.acacia.corese.event.EventListener;
+//import fr.inria.corese.sparql.Corese;
+//import fr.inria.corese.sparql.event.EventListener;
 
 /**
  * This interface create an instance of Corese.<br />

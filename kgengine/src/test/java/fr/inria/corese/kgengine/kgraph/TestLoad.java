@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import fr.inria.corese.kgengine.api.EngineFactory;
 import fr.inria.corese.kgengine.api.IEngine;
 import fr.inria.corese.kgengine.api.IResults;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.logic.Entailment;

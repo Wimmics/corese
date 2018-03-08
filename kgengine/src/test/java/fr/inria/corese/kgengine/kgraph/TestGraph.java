@@ -1,6 +1,6 @@
 package fr.inria.corese.kgengine.kgraph;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.edge.EdgeImpl;

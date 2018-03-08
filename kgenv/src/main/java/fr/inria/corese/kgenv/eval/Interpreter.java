@@ -1,12 +1,12 @@
 package fr.inria.corese.kgenv.eval;
 
-import fr.inria.acacia.corese.api.Computer;
-import fr.inria.acacia.corese.api.ComputerProxy;
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.corese.triple.function.term.Binding;
+import fr.inria.corese.sparql.api.Computer;
+import fr.inria.corese.sparql.api.ComputerProxy;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;

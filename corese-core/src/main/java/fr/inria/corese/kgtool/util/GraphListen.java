@@ -4,8 +4,8 @@
  */
 package fr.inria.corese.kgtool.util;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Eval;

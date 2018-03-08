@@ -1,6 +1,6 @@
 package fr.inria.corese.kgengine.test.jsonld;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgengine.QueryResults;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;

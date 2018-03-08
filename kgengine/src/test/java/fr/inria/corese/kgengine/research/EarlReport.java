@@ -1,7 +1,7 @@
 package fr.inria.corese.kgengine.research;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import fr.inria.corese.kgram.core.Mappings;
 import java.io.FileWriter;
 import java.io.IOException;

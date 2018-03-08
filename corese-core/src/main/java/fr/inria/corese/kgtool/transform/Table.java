@@ -5,7 +5,7 @@
 package fr.inria.corese.kgtool.transform;
 
 import fr.inria.corese.kgtool.transform.Transformer;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.HashMap;
 
 /**

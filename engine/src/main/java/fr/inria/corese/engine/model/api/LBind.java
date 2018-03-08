@@ -3,9 +3,9 @@ package fr.inria.corese.engine.model.api;
 
 import java.util.List;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 
-//import fr.inria.acacia.corese.api.IResult;
+//import fr.inria.corese.sparql.api.IResult;
 
 
 public interface LBind extends Iterable<Bind> {

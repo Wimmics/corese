@@ -1,29 +1,29 @@
 package fr.inria.corese.kgraph.query;
 
-import fr.inria.acacia.corese.api.ComputerProxy;
+import fr.inria.corese.sparql.api.ComputerProxy;
 import fr.inria.corese.kgraph.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.util.StorageFactory;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.corese.triple.function.script.Function;
-import fr.inria.acacia.corese.triple.parser.Metadata;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Processor;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.util.StorageFactory;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.eval.ProxyInterpreter;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
-import fr.inria.edelweiss.kgenv.api.ProxyPlugin;
+import fr.inria.corese.kgenv.parser.NodeImpl;
+import fr.inria.corese.kgenv.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;

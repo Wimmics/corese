@@ -4,10 +4,10 @@ import fr.inria.corese.kgtool.transform.Transformer;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.kgenv.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;

@@ -23,12 +23,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.XSD;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.cg.datatype.XSD;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
@@ -39,9 +39,9 @@ import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.api.Parameters;
-import fr.inria.acacia.corese.storage.util.StorageFactory;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
+import fr.inria.corese.sparql.storage.util.StorageFactory;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.kgraph.api.Engine;
@@ -71,7 +71,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 
     private static Logger logger = LogManager.getLogger(Graph.class);
     public static final String TOPREL
-            = fr.inria.acacia.corese.triple.cst.RDFS.RootPropertyURI;
+            = fr.inria.corese.sparql.triple.cst.RDFS.RootPropertyURI;
     static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);
     public static boolean valueOut = !true;
     public static final int IGRAPH = -1;

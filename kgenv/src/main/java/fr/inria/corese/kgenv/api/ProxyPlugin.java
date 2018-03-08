@@ -1,6 +1,6 @@
 package fr.inria.corese.kgenv.api;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;

@@ -6,7 +6,7 @@
 package fr.inria.corese.bgp;
 
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.load.Load;

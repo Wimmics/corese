@@ -2,11 +2,11 @@ package fr.inria.corese.kgtool.util;
 
 import java.util.ArrayList;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.kgenv.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;

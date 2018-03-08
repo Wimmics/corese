@@ -2,10 +2,10 @@ package fr.inria.corese.kgenv.parser;
 
 import java.util.List;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;

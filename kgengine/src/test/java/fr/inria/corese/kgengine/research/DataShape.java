@@ -4,8 +4,8 @@
  */
 package fr.inria.corese.kgengine.research;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
 import fr.inria.corese.kgram.core.Mapping;

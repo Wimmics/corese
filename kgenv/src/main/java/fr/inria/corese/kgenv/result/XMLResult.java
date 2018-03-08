@@ -21,11 +21,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgenv.parser.CompilerFacKgram;
 import fr.inria.corese.kgram.api.core.Node;

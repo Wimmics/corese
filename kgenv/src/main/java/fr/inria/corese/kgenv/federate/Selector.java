@@ -1,15 +1,15 @@
 package fr.inria.corese.kgenv.federate;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Binding;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Service;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Values;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Binding;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Values;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;

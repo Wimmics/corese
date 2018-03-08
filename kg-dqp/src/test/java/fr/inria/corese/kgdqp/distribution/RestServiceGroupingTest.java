@@ -5,7 +5,7 @@ package fr.inria.corese.kgdqp.distribution;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.Messages;
 import fr.inria.corese.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.corese.kgdqp.core.QueryProcessDQP;

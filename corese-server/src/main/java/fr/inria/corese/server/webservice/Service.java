@@ -1,7 +1,7 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.List;
 

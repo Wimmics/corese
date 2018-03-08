@@ -11,7 +11,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.QueryProcessDQP;
 import fr.inria.corese.kgdqp.core.WSImplem;
 import fr.inria.corese.kgram.core.Mappings;

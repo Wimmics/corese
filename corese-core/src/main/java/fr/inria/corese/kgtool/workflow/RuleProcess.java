@@ -1,7 +1,7 @@
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgraph.api.Loader;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.rule.Rule;

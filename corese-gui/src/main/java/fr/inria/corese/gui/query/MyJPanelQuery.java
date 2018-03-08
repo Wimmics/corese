@@ -32,12 +32,12 @@ import javax.swing.tree.TreePath;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.core.MainFrame;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.kgenv.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;

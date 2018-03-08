@@ -5,9 +5,9 @@
 
 package fr.inria.corese.kgtool.transform;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.core.Exp;
@@ -187,7 +187,7 @@ public class Loader {
             
             if (qprofile.getExtension() != null){
                 // share profile function definitions in templates
-                fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
+                fr.inria.corese.kgenv.parser.Transformer tr = fr.inria.corese.kgenv.parser.Transformer.create();
                 tr.definePublic(qprofile.getExtension(), qprofile, false);
                 for (Query t : qe.getTemplates()) {             
                     t.addExtension(qprofile.getExtension());

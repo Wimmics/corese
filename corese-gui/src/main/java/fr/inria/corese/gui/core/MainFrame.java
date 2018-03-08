@@ -39,7 +39,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.event.MyEvalListener;
 import fr.inria.corese.gui.query.Buffer;
 import fr.inria.corese.gui.query.GraphEngine;

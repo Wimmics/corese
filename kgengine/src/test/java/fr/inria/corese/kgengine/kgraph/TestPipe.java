@@ -1,7 +1,7 @@
 package fr.inria.corese.kgengine.kgraph;
 
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import fr.inria.corese.kgpipe.Pipe;
 import fr.inria.corese.kgraph.api.Loader;
 import fr.inria.corese.kgraph.core.Graph;

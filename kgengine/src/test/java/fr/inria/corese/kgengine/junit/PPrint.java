@@ -5,10 +5,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;

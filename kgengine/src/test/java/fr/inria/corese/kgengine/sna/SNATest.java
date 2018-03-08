@@ -4,7 +4,7 @@ package fr.inria.corese.kgengine.sna;
 import java.util.Date;
 import java.util.List;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;

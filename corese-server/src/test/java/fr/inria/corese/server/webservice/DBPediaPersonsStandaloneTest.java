@@ -6,7 +6,7 @@ package fr.inria.corese.server.webservice;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.QueryExecDQP;
 import fr.inria.corese.kgengine.GraphEngine;
 import fr.inria.corese.kgengine.api.EngineFactory;

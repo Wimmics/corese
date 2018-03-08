@@ -4,7 +4,7 @@
  */
 package fr.inria.corese.kgraph.api;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  *

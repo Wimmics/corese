@@ -5,15 +5,15 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.inria.acacia.corese.api.EngineFactory;
+import fr.inria.corese.kgengine.api.EngineFactory;
 import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.api.IResultValue;
-import fr.inria.acacia.corese.api.IResults;
+import fr.inria.corese.kgengine.api.IEngine;
+import fr.inria.corese.kgengine.api.IResult;
+import fr.inria.corese.kgengine.api.IResultValue;
+import fr.inria.corese.kgengine.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgengine.GraphEngine;
-import fr.inria.corese.kgramenv.util.QueryExec;
+import fr.inria.corese.kgengine.GraphEngine;
+import fr.inria.corese.kgengine.kgramenv.util.QueryExec;
 import fr.inria.corese.kgraph.core.Graph;
 
 public class TestCoreseAPI {

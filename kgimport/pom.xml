@@ -172,7 +172,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>fr.inria.edelweiss.kgimport.RdfSplitter</mainClass>
+							<mainClass>fr.inria.corese.kgimport.RdfSplitter</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

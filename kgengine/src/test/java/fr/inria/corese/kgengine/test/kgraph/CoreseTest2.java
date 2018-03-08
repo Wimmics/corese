@@ -26,12 +26,12 @@ import org.apache.logging.log4j.LogManager;
 //import fr.inria.corese.kgram.core.Mappings;
 //import fr.inria.corese.kgram.event.StatListener;
 //import fr.inria.corese.kgram.filter.Interpreter;
-//import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgraph.logic.Entailment;
-//import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-//import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-//import fr.inria.edelweiss.kgraph.query.QueryProcess;
-//import fr.inria.edelweiss.kgtool.load.Load;
+//import fr.inria.corese.kgraph.core.Graph;
+//import fr.inria.corese.kgraph.logic.Entailment;
+//import fr.inria.corese.kgraph.query.MatcherImpl;
+//import fr.inria.corese.kgraph.query.ProducerImpl;
+//import fr.inria.corese.kgraph.query.QueryProcess;
+//import fr.inria.corese.kgtool.load.Load;
 //import junit.textui.TestRunner;
 //
 //public class CoreseTest2 extends TestCase {

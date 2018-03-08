@@ -14,12 +14,12 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Date;
 
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.logic.Entailment;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.load.LoadException;
-import fr.inria.edelweiss.kgtool.load.QueryLoad;
-import fr.inria.edelweiss.kgtool.print.RDFFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.logic.Entailment;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.kgtool.load.QueryLoad;
+import fr.inria.corese.kgtool.print.RDFFormat;
 
 public class Client {
 

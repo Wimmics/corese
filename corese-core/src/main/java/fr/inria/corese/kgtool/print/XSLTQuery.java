@@ -31,7 +31,7 @@ import fr.inria.corese.kgraph.core.Graph;
  * 
  * Add this in xslt header:
  *   xmlns:xalan="http://xml.apache.org/xalan"
- *   xmlns:server="xalan://fr.inria.edelweiss.kgtool.print.XSLTQuery"
+ *   xmlns:server="xalan://fr.inria.corese.kgtool.print.XSLTQuery"
  *   extension-element-prefixes="server"
  *   
  * Exec query using this code:

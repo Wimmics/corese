@@ -115,7 +115,7 @@
 				    <descriptorId>jar-with-dependencies</descriptorId>
 				    <archive>
 					<manifest>
-					    <mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
+					    <mainClass>fr.inria.corese.sparql.gui.core.MainFrame</mainClass>
 					    <addClasspath>false</addClasspath>
 					</manifest>
 				    </archive>
@@ -142,7 +142,7 @@
 							<shadedClassifierName>jar-with-dependencies</shadedClassifierName>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
+									<mainClass>fr.inria.corese.sparql.gui.core.MainFrame</mainClass>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 							</transformers>

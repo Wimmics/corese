@@ -10,15 +10,15 @@ package fr.inria.corese.kgengine.kgraph;
 //import fr.inria.corese.kgenv.eval.QuerySolver;
 //import fr.inria.corese.kgram.api.query.Matcher;
 //import fr.inria.corese.kgram.core.Mappings;
-//import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgraph.logic.RDF;
-//import fr.inria.edelweiss.kgraph.logic.RDFS;
-//import fr.inria.edelweiss.kgraph.query.MatcherImpl;
-//import fr.inria.edelweiss.kgraph.query.ProducerImpl;
-//import fr.inria.edelweiss.kgraph.query.QueryProcess;
-//import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-//import fr.inria.edelweiss.kgtool.load.Load;
-//import fr.inria.edelweiss.kgtool.load.RuleLoad;
+//import fr.inria.corese.kgraph.core.Graph;
+//import fr.inria.corese.kgraph.logic.RDF;
+//import fr.inria.corese.kgraph.logic.RDFS;
+//import fr.inria.corese.kgraph.query.MatcherImpl;
+//import fr.inria.corese.kgraph.query.ProducerImpl;
+//import fr.inria.corese.kgraph.query.QueryProcess;
+//import fr.inria.corese.kgraph.rule.RuleEngine;
+//import fr.inria.corese.kgtool.load.Load;
+//import fr.inria.corese.kgtool.load.RuleLoad;
 //
 //public class TestRule2 {
 //

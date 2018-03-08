@@ -26,10 +26,10 @@ public class Start {
 
     /**
      * Corese as command line take path and query as argument load the docs from
-     * path java -cp corese.jar fr.inria.edelweiss.kgtool.Start -load
+     * path java -cp corese.jar fr.inria.corese.kgtool.Start -load
      * dataset.rdf -query "select * where {?x ?p ?y}" java -cp
      * kggui-3.2.1-SNAPSHOT-jar-with-dependencies.jar
-     * fr.inria.edelweiss.kgtool.Start -load rdf: -sttl st:turtle st:rdfxml
+     * fr.inria.corese.kgtool.Start -load rdf: -sttl st:turtle st:rdfxml
      * st:json
      *
      */

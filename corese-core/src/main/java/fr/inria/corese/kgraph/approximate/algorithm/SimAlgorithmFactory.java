@@ -6,7 +6,7 @@ import fr.inria.corese.kgraph.approximate.algorithm.impl.CombinedAlgorithm;
 import fr.inria.corese.kgraph.approximate.algorithm.impl.Equality;
 import fr.inria.corese.kgraph.approximate.algorithm.impl.JaroWinkler;
 import fr.inria.corese.kgraph.approximate.algorithm.impl.NGram;
-//import fr.inria.edelweiss.kgraph.approximate.algorithm.impl.wn.TextSimilarity;
+//import fr.inria.corese.kgraph.approximate.algorithm.impl.wn.TextSimilarity;
 import fr.inria.corese.kgraph.approximate.strategy.Priority;
 import java.util.LinkedList;
 import java.util.List;

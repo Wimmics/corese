@@ -5,7 +5,7 @@
  xmlns:sparql="http://www.w3.org/2005/sparql-results#"
 
 xmlns:xalan="http://xml.apache.org/xalan"
-xmlns:server="xalan://fr.inria.edelweiss.kgtool.print.XSLTQuery"
+xmlns:server="xalan://fr.inria.corese.kgtool.print.XSLTQuery"
 
 extension-element-prefixes="server"
 >

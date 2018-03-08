@@ -85,7 +85,7 @@
                             <descriptorId>jar-with-dependencies</descriptorId>
                             <archive>
                                 <manifest>
-                                    <mainClass>fr.inria.acacia.corese.gui.core.MainFrame</mainClass>
+                                    <mainClass>fr.inria.corese.sparql.gui.core.MainFrame</mainClass>
                                     <addClasspath>false</addClasspath>
                                 </manifest>
                             </archive>

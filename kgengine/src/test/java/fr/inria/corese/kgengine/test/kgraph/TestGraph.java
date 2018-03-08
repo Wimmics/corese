@@ -6,10 +6,10 @@ package fr.inria.corese.kgengine.test.kgraph;
 //import fr.inria.corese.sparql.triple.cst.RDFS;
 //import fr.inria.corese.kgram.api.core.Node;
 //import fr.inria.corese.kgram.core.Mappings;
-//import fr.inria.edelweiss.kgraph.core.EdgeCore;
-//import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgraph.logic.Entailment;
-//import fr.inria.edelweiss.kgraph.query.QueryProcess;
+//import fr.inria.corese.kgraph.core.EdgeCore;
+//import fr.inria.corese.kgraph.core.Graph;
+//import fr.inria.corese.kgraph.logic.Entailment;
+//import fr.inria.corese.kgraph.query.QueryProcess;
 //
 //public class TestGraph {
 //	

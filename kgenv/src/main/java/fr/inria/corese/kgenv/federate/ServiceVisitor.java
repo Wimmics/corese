@@ -16,7 +16,7 @@ import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Term;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.api.QueryVisitor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;

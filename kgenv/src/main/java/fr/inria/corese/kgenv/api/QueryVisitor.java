@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.api;
+package fr.inria.corese.kgenv.api;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.core.Query;

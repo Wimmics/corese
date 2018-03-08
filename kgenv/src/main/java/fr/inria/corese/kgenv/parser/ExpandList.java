@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.Exp;
 import fr.inria.acacia.corese.triple.parser.RDFList;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.corese.kgram.core.Query;
 
 /**

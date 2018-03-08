@@ -10,7 +10,7 @@ import fr.inria.acacia.corese.triple.parser.Service;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.acacia.corese.triple.parser.Values;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import java.util.ArrayList;

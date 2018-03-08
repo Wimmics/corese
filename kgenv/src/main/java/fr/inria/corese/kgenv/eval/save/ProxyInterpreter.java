@@ -1,7 +1,12 @@
 package fr.inria.corese.kgenv.eval.save;
 
+import fr.inria.corese.kgenv.eval.Hash;
+import fr.inria.corese.kgenv.eval.SQLResult;
+import fr.inria.corese.kgenv.eval.StringHelper;
+import fr.inria.corese.kgenv.eval.VariableResolverImpl;
+import fr.inria.corese.kgenv.eval.Custom;
+import fr.inria.corese.kgenv.eval.SQLFun;
 import fr.inria.acacia.corese.api.ComputerProxy;
-import fr.inria.edelweiss.kgenv.eval.*;
 import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;
@@ -18,7 +23,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.edelweiss.kgenv.api.ProxyPlugin;
+import fr.inria.corese.kgenv.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;

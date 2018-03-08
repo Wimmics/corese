@@ -1,8 +1,7 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import fr.inria.corese.triple.function.script.Function;
 import fr.inria.acacia.corese.cg.datatype.DatatypeHierarchy;
-import fr.inria.corese.kgenv.federate.ServiceVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,12 +14,11 @@ import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.cst.RDFS;
 import fr.inria.acacia.corese.triple.parser.*;
 import fr.inria.acacia.corese.triple.parser.ASTExtension.ASTFunMap;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.corese.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.*;
 import static fr.inria.corese.kgram.api.core.ExpType.NODE;
-import fr.inria.corese.kgram.api.query.SPARQLEngine;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -32,10 +30,9 @@ import fr.inria.corese.kgram.filter.Extension.FunMap;
 //import fr.inria.corese.kgram.filter.Interpreter;
 import fr.inria.corese.kgenv.eval.Interpreter;
 import fr.inria.corese.kgenv.federate.FederateVisitor;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query Use Corese SPARQL parser Use an

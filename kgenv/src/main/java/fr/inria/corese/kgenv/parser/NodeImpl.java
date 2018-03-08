@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.acacia.corese.triple.cst.RDFS;

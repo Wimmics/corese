@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.result;
+package fr.inria.corese.kgenv.result;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -26,8 +26,8 @@ import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
 import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-import fr.inria.edelweiss.kgenv.parser.CompilerFacKgram;
+import fr.inria.corese.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.parser.CompilerFacKgram;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
@@ -46,7 +46,7 @@ public class XMLResult {
     // create target Node
     Producer producer;
     // create query Node
-    fr.inria.edelweiss.kgenv.parser.Compiler compiler;
+    	fr.inria.corese.kgenv.parser.Compiler compiler;
     HashMap<String, Integer> table;
     private static final int UNKNOWN = -1;
     private static final int RESULT = 1;

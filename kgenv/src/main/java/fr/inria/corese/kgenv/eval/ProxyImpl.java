@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
@@ -17,7 +17,7 @@ import fr.inria.acacia.corese.triple.parser.Dataset;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Processor;
 import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.edelweiss.kgenv.api.ProxyPlugin;
+import fr.inria.corese.kgenv.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;

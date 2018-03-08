@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
 /**
  * Extended functionalities on String objects like "containsIgnoreCase".

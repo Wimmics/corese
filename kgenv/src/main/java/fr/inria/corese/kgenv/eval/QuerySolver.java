@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
 
 import fr.inria.acacia.corese.api.IDatatype;
@@ -19,9 +19,9 @@ import fr.inria.acacia.corese.triple.parser.Metadata;
 import fr.inria.acacia.corese.triple.parser.NSManager;
 import fr.inria.acacia.corese.triple.parser.Triple;
 import fr.inria.corese.kgenv.eval.Interpreter;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgenv.parser.Transformer;
+import fr.inria.corese.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.parser.Pragma;
+import fr.inria.corese.kgenv.parser.Transformer;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;

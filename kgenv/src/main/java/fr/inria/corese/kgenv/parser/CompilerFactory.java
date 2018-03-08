@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 public interface CompilerFactory {
 

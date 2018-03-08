@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,7 +12,7 @@ import fr.inria.acacia.corese.triple.parser.Expression;
 import fr.inria.acacia.corese.triple.parser.RDFList;
 import fr.inria.acacia.corese.triple.parser.Source;
 import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.core.Eval;

@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.eval;
+package fr.inria.corese.kgenv.eval;
 
 import javax.xml.namespace.QName;
 

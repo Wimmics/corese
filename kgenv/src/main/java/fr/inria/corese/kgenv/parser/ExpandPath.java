@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import fr.inria.acacia.corese.triple.parser.Variable;
 import fr.inria.acacia.corese.triple.update.ASTUpdate;
 import fr.inria.acacia.corese.triple.update.Composite;
 import fr.inria.acacia.corese.triple.update.Update;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.core.Query;
 

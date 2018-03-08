@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.parser;
+package fr.inria.corese.kgenv.parser;
 
 import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
 import java.util.ArrayList;

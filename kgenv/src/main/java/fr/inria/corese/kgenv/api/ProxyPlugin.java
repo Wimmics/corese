@@ -1,4 +1,4 @@
-package fr.inria.edelweiss.kgenv.api;
+package fr.inria.corese.kgenv.api;
 
 import fr.inria.acacia.corese.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Expr;

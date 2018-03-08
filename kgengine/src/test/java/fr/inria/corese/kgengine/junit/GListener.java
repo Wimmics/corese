@@ -3,7 +3,7 @@ package fr.inria.corese.kgengine.junit;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;

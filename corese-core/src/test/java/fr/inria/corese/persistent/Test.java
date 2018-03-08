@@ -1,7 +1,7 @@
 package fr.inria.corese.persistent;
 
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.fs.StringManager;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.fs.StringManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package fr.inria.corese.kgraph.query;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeHierarchy;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeHierarchy;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.kgenv.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;

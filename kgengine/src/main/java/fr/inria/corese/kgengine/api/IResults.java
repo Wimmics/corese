@@ -2,7 +2,7 @@ package fr.inria.corese.kgengine.api;
 
 import java.util.Enumeration;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 
 /**
  * This interface wraps query results<br />

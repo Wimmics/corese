@@ -6,8 +6,8 @@ import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.kgenv.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;

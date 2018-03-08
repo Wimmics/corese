@@ -10,17 +10,17 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.api.Parameters;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Processor;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.kgenv.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -99,7 +99,7 @@ public class TestQuery1 {
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
-        //fr.inria.edelweiss.kgenv.parser.Transformer.ISBGP = !true;
+        //fr.inria.corese.kgenv.parser.Transformer.ISBGP = !true;
         QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
         
         QueryProcess.testAlgebra(!true);

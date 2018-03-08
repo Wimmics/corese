@@ -1,6 +1,6 @@
 package fr.inria.corese.kgtool.transform;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgraph.core.Graph;
 import java.util.Collection;
 

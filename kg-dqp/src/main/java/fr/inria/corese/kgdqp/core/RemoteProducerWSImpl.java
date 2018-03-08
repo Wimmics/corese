@@ -4,16 +4,16 @@
  */
 package fr.inria.corese.kgdqp.core;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgdqp.sparqlendpoint.SPARQLRestEndpointClient;
 import fr.inria.corese.kgdqp.sparqlendpoint.SparqlEndpointInterface;
 import fr.inria.corese.kgdqp.strategies.SourceSelectorWS;
 import fr.inria.corese.kgdqp.strategies.RemoteQueryOptimizer;
 import fr.inria.corese.kgdqp.strategies.RemoteQueryOptimizerFactory;
-import fr.inria.edelweiss.kgenv.parser.EdgeImpl;
+import fr.inria.corese.kgenv.parser.EdgeImpl;
 import fr.inria.corese.kgram.api.core.*;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;

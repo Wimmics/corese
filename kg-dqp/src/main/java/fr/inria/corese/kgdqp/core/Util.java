@@ -4,9 +4,9 @@
  */
 package fr.inria.corese.kgdqp.core;
 
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.query.Environment;
@@ -47,12 +47,12 @@ public class Util {
         return matchingFilters;
     }
 
-    public static List<fr.inria.acacia.corese.triple.parser.Exp> getApplicableFilter(List<fr.inria.acacia.corese.triple.parser.Exp> filters, BasicGraphPattern bgp) {
+    public static List<fr.inria.corese.sparql.triple.parser.Exp> getApplicableFilter(List<fr.inria.corese.sparql.triple.parser.Exp> filters, BasicGraphPattern bgp) {
         //TODO handle conjunctive/disjunctive filters
-        List<fr.inria.acacia.corese.triple.parser.Exp> matchingFilters = new ArrayList<fr.inria.acacia.corese.triple.parser.Exp>();
+        List<fr.inria.corese.sparql.triple.parser.Exp> matchingFilters = new ArrayList<fr.inria.corese.sparql.triple.parser.Exp>();
 
-        for (fr.inria.acacia.corese.triple.parser.Exp filter : filters) {
-            for (fr.inria.acacia.corese.triple.parser.Exp exp : bgp.getBody()) {
+        for (fr.inria.corese.sparql.triple.parser.Exp filter : filters) {
+            for (fr.inria.corese.sparql.triple.parser.Exp exp : bgp.getBody()) {
                 if (bound(exp, filter)) {
                     matchingFilters.add(filter);
                 }
@@ -88,7 +88,7 @@ public class Util {
         return true;
     }
 
-    public static boolean bound(fr.inria.acacia.corese.triple.parser.Exp triple, fr.inria.acacia.corese.triple.parser.Exp filter) {
+    public static boolean bound(fr.inria.corese.sparql.triple.parser.Exp triple, fr.inria.corese.sparql.triple.parser.Exp filter) {
         List<String> varsTriple = new ArrayList<String>();
         Triple t = triple.getTriple();
         if (t.getSubject().isVariable()) {

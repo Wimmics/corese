@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.cst.RDFS;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
@@ -88,7 +88,7 @@ public class SDK {
 	
 	
 	Node var(String var){
-		return fr.inria.edelweiss.kgenv.parser.NodeImpl.createVariable(var);
+		return fr.inria.corese.kgenv.parser.NodeImpl.createVariable(var);
 	}
 	
 	Node value(int n){

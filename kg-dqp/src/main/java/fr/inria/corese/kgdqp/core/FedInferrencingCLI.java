@@ -5,8 +5,8 @@
  */
 package fr.inria.corese.kgdqp.core;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import static fr.inria.corese.kgdqp.core.FedInferrencingCLI.logger;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;

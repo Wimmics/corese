@@ -1,7 +1,7 @@
 
 package fr.inria.corese.kgtool.util;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.Comparator;
 import java.util.TreeMap;
 

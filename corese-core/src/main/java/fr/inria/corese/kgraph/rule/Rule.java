@@ -1,8 +1,8 @@
 package fr.inria.corese.kgraph.rule;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.printer.SPIN;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.printer.SPIN;
 import fr.inria.corese.kgram.api.core.Edge;
 import java.util.List;
 

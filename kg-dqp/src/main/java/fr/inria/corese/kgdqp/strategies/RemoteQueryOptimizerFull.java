@@ -4,10 +4,10 @@
  */
 package fr.inria.corese.kgdqp.strategies;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Term;
-import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgdqp.core.Util;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
@@ -192,7 +192,7 @@ public class RemoteQueryOptimizerFull implements RemoteQueryOptimizer {
         for (Exp ee : exp.getExpList()) {
             //edges
             if (ee.isEdge()) {
-                fr.inria.edelweiss.kgenv.parser.EdgeImpl edge = (fr.inria.edelweiss.kgenv.parser.EdgeImpl) ee.getEdge();
+                fr.inria.corese.kgenv.parser.EdgeImpl edge = (fr.inria.corese.kgenv.parser.EdgeImpl) ee.getEdge();
                 Triple t = edge.getTriple();
                 sparqlQuery += "\t " + t.toString() + "\n ";
 

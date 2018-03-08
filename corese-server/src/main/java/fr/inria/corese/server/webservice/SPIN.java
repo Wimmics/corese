@@ -1,8 +1,8 @@
 package fr.inria.corese.server.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Context;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;

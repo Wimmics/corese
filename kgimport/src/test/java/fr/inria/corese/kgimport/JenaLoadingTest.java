@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgimport.JenaGraphFactory;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.print.RDFFormat;

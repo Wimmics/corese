@@ -5,7 +5,7 @@
  */
 package fr.inria.corese.kgdqp.distribution;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.CentralizedInferrencingNoSpin;
 import fr.inria.corese.kgtool.load.LoadException;
 import java.io.IOException;

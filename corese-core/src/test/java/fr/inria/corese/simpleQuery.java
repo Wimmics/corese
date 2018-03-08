@@ -6,9 +6,9 @@ package fr.inria.corese;
  * and open the template in the editor.
  */
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.load.Load;

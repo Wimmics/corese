@@ -18,7 +18,7 @@ import com.hp.hpl.jena.sdb.sql.SDBConnection;
 import com.hp.hpl.jena.sdb.store.DatabaseType;
 import com.hp.hpl.jena.sdb.store.LayoutType;
 import fr.inria.corese.kgram.api.core.Entity;
-//import fr.inria.acacia.corese.api.IEngine;
+//import fr.inria.corese.sparql.api.IEngine;
 //import fr.inria.edelweiss.kgengine.GraphEngine;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgraph.core.Graph;

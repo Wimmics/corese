@@ -5,8 +5,8 @@
 
 package fr.inria.corese.kgraph.query;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;

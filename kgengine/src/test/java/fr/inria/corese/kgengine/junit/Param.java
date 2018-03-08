@@ -1,7 +1,7 @@
 package fr.inria.corese.kgengine.junit;
 
 import fr.inria.corese.kgengine.api.IModel;
-import fr.inria.acacia.corese.triple.parser.*;
+import fr.inria.corese.sparql.triple.parser.*;
 import java.util.*;
 /**
  * <p>Title: Corese</p>

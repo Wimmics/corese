@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-//import fr.inria.acacia.corese.api.IResult;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+//import fr.inria.corese.sparql.api.IResult;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
 import fr.inria.corese.engine.model.api.LBind;

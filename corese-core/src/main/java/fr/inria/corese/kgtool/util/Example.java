@@ -2,8 +2,8 @@ package fr.inria.corese.kgtool.util;
 
 import java.io.IOException;
 
-import fr.inria.acacia.corese.cg.datatype.RDF;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Event;

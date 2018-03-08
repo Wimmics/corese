@@ -2,8 +2,8 @@ package fr.inria.corese.kgengine.junit;
 
 import java.util.HashMap;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.kgenv.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;

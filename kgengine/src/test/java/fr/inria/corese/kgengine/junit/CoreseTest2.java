@@ -1,6 +1,6 @@
 package fr.inria.corese.kgengine.junit;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgengine.api.IEngine;
 import fr.inria.corese.kgengine.api.IResults;
 import java.io.BufferedReader;
@@ -19,11 +19,11 @@ import org.apache.logging.log4j.LogManager;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.storage.api.IStorage;
-import fr.inria.acacia.corese.storage.api.Parameters;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
 
-import fr.inria.acacia.corese.triple.javacc1.ParseException;
+import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.StatListener;

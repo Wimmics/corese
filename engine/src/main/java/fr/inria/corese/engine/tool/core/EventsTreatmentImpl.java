@@ -1,19 +1,18 @@
 package fr.inria.corese.engine.tool.core;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 
-import fr.inria.acacia.corese.triple.api.ElementClause;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
@@ -30,7 +29,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.tool.EnvironmentImpl;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 
 
 /**

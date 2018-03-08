@@ -14,7 +14,7 @@ import fr.inria.corese.kgengine.api.IEngine;
 import fr.inria.corese.kgengine.api.IResult;
 import fr.inria.corese.kgengine.api.IResultValue;
 import fr.inria.corese.kgengine.api.IResults;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 
 
 

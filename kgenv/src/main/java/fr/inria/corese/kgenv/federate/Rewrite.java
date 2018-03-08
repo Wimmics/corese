@@ -1,15 +1,15 @@
 package fr.inria.corese.kgenv.federate;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.Exist;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Query;
-import fr.inria.acacia.corese.triple.parser.Service;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Exist;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Query;
+import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

@@ -4,7 +4,7 @@
  */
 package fr.inria.corese.kgdqp.distribution;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgdqp.core.ProviderImplCostMonitoring;
 import fr.inria.corese.kgdqp.core.QueryProcessDQP;
 import fr.inria.corese.kgdqp.core.Util;

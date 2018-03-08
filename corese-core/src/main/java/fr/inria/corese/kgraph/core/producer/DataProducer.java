@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.core.producer;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.Iterator;
 import java.util.List;
 

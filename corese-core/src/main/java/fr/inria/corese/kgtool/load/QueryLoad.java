@@ -11,8 +11,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.kgenv.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.query.QueryEngine;
 import java.io.InputStream;

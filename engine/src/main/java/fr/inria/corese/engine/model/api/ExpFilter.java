@@ -1,7 +1,7 @@
 package fr.inria.corese.engine.model.api;
 
-import fr.inria.acacia.corese.triple.parser.Expression;
-import fr.inria.acacia.corese.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Triple;
 
 public interface ExpFilter {
 	

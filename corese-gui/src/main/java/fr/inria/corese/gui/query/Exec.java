@@ -5,10 +5,10 @@ import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.event.MyEvalListener;
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.Event;

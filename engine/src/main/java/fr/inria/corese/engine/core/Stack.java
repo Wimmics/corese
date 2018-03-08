@@ -3,8 +3,8 @@ package fr.inria.corese.engine.core;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import fr.inria.acacia.corese.triple.api.ElementClause;
-import fr.inria.acacia.corese.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.Clause;
 import fr.inria.corese.engine.model.api.Rule;

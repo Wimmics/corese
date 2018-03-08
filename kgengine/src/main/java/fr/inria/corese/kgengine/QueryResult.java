@@ -3,10 +3,10 @@ package fr.inria.corese.kgengine;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgengine.api.IResult;
 import fr.inria.corese.kgengine.api.IResultValue;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Result;

@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.edelweiss.kgimport.JenaGraphFactory;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.edelweiss.kgraph.core.Graph;

@@ -8,12 +8,12 @@ package fr.inria.corese.kgengine.test.kgraph;
 //
 //
 //
-//import fr.inria.acacia.corese.api.IDatatype;
-//import fr.inria.acacia.corese.cg.datatype.CoreseBoolean;
-//import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-//import fr.inria.acacia.corese.exceptions.EngineException;
-//import fr.inria.edelweiss.kgenv.eval.QuerySolver;
-//import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+//import fr.inria.corese.sparql.api.IDatatype;
+//import fr.inria.corese.sparql.cg.datatype.CoreseBoolean;
+//import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+//import fr.inria.corese.sparql.exceptions.EngineException;
+//import fr.inria.corese.kgenv.eval.QuerySolver;
+//import fr.inria.corese.kgenv.parser.NodeImpl;
 //import fr.inria.corese.kgram.core.Mapping;
 //import fr.inria.corese.kgram.core.Mappings;
 //import fr.inria.edelweiss.kgraph.core.Graph;

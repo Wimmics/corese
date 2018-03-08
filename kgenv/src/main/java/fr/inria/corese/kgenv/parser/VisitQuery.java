@@ -1,7 +1,7 @@
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.kgram.api.core.Edge;
 import static fr.inria.corese.kgram.api.core.ExpType.BIND;
 import static fr.inria.corese.kgram.api.core.ExpType.EDGE;

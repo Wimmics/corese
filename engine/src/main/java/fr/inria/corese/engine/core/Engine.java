@@ -6,14 +6,12 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-//import fr.inria.acacia.corese.event.Event;
-//import fr.inria.acacia.corese.event.RuleEvent;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.ParserSparql1;
+//import fr.inria.corese.sparql.event.Event;
+//import fr.inria.corese.sparql.event.RuleEvent;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ParserSparql1;
 
-import fr.inria.corese.engine.core.Backward;
-import fr.inria.corese.engine.core.Engine;
 import fr.inria.corese.engine.model.api.Bind;
 import fr.inria.corese.engine.model.api.LBind;
 import fr.inria.corese.engine.model.api.RuleBase;
@@ -23,7 +21,7 @@ import fr.inria.corese.engine.model.core.QueryImpl;
 import fr.inria.corese.engine.tool.api.EventsTreatment;
 import fr.inria.corese.engine.tool.core.EventsTreatmentImpl;
 import fr.inria.corese.engine.tool.core.RulesTreatmentImpl;
-import fr.inria.edelweiss.kgenv.eval.QuerySolver;
+import fr.inria.corese.kgenv.eval.QuerySolver;
 //import fr.inria.corese.kgramenv.util.QueryExec;
 
 public class Engine 

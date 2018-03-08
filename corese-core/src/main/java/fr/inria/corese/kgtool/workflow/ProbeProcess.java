@@ -1,6 +1,6 @@
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgtool.transform.DefaultVisitor;
 import fr.inria.corese.kgtool.transform.TemplateVisitor;
 

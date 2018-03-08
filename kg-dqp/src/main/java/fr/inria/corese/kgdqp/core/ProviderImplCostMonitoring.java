@@ -1,6 +1,6 @@
 package fr.inria.corese.kgdqp.core;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +18,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Constant;
-import fr.inria.edelweiss.kgenv.parser.Pragma;
-import fr.inria.edelweiss.kgenv.result.XMLResult;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.kgenv.parser.Pragma;
+import fr.inria.corese.kgenv.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Provider;

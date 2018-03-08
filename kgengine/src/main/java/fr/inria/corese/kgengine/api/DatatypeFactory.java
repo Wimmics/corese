@@ -1,13 +1,13 @@
 package fr.inria.corese.kgengine.api;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.Date;
 import java.util.HashMap;
 
-import fr.inria.acacia.corese.cg.datatype.CoreseDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.cg.datatype.RDF;
-import fr.inria.acacia.corese.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.cg.datatype.CoreseDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
  * This interface create an instance of a CoreseDatatype<br>

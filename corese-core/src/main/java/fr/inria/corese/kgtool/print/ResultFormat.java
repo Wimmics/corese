@@ -1,11 +1,11 @@
 package fr.inria.corese.kgtool.print;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import fr.inria.edelweiss.kgenv.parser.Pragma;
+import fr.inria.corese.kgenv.parser.Pragma;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgraph.core.Graph;

@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.query;
 
-import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,10 +9,10 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Dataset;
-import fr.inria.edelweiss.kgenv.api.QueryVisitor;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Exp;
@@ -153,7 +153,7 @@ public class QueryEngine implements Engine {
 
             if (profile.getExtension() != null) {
                 // share profile function definitions in templates
-                fr.inria.edelweiss.kgenv.parser.Transformer tr = fr.inria.edelweiss.kgenv.parser.Transformer.create();
+                fr.inria.corese.kgenv.parser.Transformer tr = fr.inria.corese.kgenv.parser.Transformer.create();
                 tr.definePublic(profile.getExtension(), profile, false);
                 TransformerVisitor tv = new TransformerVisitor(profile.getExtension().get(Transformer.STL_OPTIMIZE) != null);
                 

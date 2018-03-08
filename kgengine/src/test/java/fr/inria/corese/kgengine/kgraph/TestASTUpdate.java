@@ -1,13 +1,13 @@
 package fr.inria.corese.kgengine.kgraph;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
-import fr.inria.acacia.corese.triple.update.ASTUpdate;
-import fr.inria.acacia.corese.triple.update.Composite;
-import fr.inria.acacia.corese.triple.update.Update;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.update.ASTUpdate;
+import fr.inria.corese.sparql.triple.update.Composite;
+import fr.inria.corese.sparql.triple.update.Update;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import fr.inria.corese.kgtool.print.RDFFormat;

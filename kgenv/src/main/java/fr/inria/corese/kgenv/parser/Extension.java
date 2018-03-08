@@ -1,6 +1,6 @@
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.core.Query;
 
 /**
@@ -19,12 +19,12 @@ public class Extension extends Pragma {
 		return new Extension(q, (ASTQuery) q.getAST());
 	}
 	
-	public void parse(fr.inria.acacia.corese.triple.parser.Exp exp){
+	public void parse(fr.inria.corese.sparql.triple.parser.Exp exp){
 		if (exp.isQuery()){
 			
 		}
 		else if (exp.isBGP()){
-			for (fr.inria.acacia.corese.triple.parser.Exp ee : exp.getBody()){
+			for (fr.inria.corese.sparql.triple.parser.Exp ee : exp.getBody()){
 				parse(ee);
 			}
 		}

@@ -22,13 +22,13 @@ import org.xml.sax.SAXException;
 import static org.junit.Assert.assertEquals;
 
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.NSManager;
-import fr.inria.acacia.corese.triple.printer.SPIN;
-import fr.inria.edelweiss.kgenv.parser.NodeImpl;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.printer.SPIN;
+import fr.inria.corese.kgenv.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -701,7 +701,7 @@ public class TestW3C11KGraph {
                 Producer p = ProducerImpl.create(Graph.create());
                 InputStream stream = getStream(fresult);
                 if (stream != null) {
-                    w3XMLResult = fr.inria.edelweiss.kgenv.result.XMLResult.create(p).parse(stream);
+                    w3XMLResult = fr.inria.corese.kgenv.result.XMLResult.create(p).parse(stream);
                 } else {
                     System.out.println("** Stream Error: " + fresult);
                     w3XMLResult = new Mappings();
@@ -828,7 +828,7 @@ public class TestW3C11KGraph {
          *
          **********************************************************
          */
-        fr.inria.acacia.corese.triple.parser.Dataset ds = fr.inria.acacia.corese.triple.parser.Dataset.create();
+        fr.inria.corese.sparql.triple.parser.Dataset ds = fr.inria.corese.sparql.triple.parser.Dataset.create();
         ds.setUpdate(isUpdate);
 
         if (!isRDF) {

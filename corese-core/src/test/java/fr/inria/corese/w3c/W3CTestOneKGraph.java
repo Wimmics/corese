@@ -1,8 +1,8 @@
 package fr.inria.corese.w3c;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.CoreseException;
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.CoreseException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgraph.core.Graph;

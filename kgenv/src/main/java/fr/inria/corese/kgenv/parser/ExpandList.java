@@ -4,9 +4,9 @@
  */
 package fr.inria.corese.kgenv.parser;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Exp;
-import fr.inria.acacia.corese.triple.parser.RDFList;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.RDFList;
 import fr.inria.corese.kgenv.api.QueryVisitor;
 import fr.inria.corese.kgram.core.Query;
 

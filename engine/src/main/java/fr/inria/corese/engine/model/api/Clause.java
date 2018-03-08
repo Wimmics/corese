@@ -2,8 +2,8 @@ package fr.inria.corese.engine.model.api;
 
 import java.util.Iterator;
 
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.api.ElementClause;
 
 public interface Clause extends Iterable<ElementClause> {
 

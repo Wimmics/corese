@@ -1,10 +1,10 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgtool.workflow.Data;
 import fr.inria.corese.kgtool.workflow.ResultProcess;
 import fr.inria.corese.kgtool.workflow.SemanticWorkflow;

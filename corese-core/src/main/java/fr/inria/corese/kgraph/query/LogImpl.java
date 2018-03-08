@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.api.Log;

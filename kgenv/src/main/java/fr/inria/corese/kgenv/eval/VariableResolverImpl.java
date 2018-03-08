@@ -5,7 +5,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
-import fr.inria.acacia.corese.cg.datatype.function.VariableResolver;
+import fr.inria.corese.sparql.cg.datatype.function.VariableResolver;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 

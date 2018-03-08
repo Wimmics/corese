@@ -6,9 +6,9 @@ import java.util.List;
 
 import fr.inria.corese.kgengine.api.IEngine;
 import fr.inria.corese.kgengine.api.IResults;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.ASTQuery;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgengine.GraphEngine;
 import fr.inria.corese.kgengine.QueryResults;
 import fr.inria.corese.kgram.core.Mappings;

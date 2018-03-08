@@ -1,6 +1,6 @@
 package fr.inria.corese.kgraph.core;
 
-import fr.inria.acacia.corese.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgraph.index.NodeManager;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import java.util.Date;

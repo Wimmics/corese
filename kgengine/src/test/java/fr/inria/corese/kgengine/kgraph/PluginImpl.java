@@ -1,7 +1,7 @@
 package fr.inria.corese.kgengine.kgraph;
 
-import fr.inria.acacia.corese.cg.datatype.DatatypeMap;
-import fr.inria.edelweiss.kgenv.eval.ProxyImpl;
+import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.kgenv.eval.ProxyImpl;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;

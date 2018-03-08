@@ -1,8 +1,8 @@
 package fr.inria.corese.kgraph.approximate.ext;
 
-import fr.inria.acacia.corese.triple.parser.Atom;
-import fr.inria.acacia.corese.triple.parser.Triple;
-import fr.inria.acacia.corese.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import static fr.inria.corese.kgraph.approximate.ext.ASTRewriter.O;
 import static fr.inria.corese.kgraph.approximate.ext.ASTRewriter.P;
 import static fr.inria.corese.kgraph.approximate.ext.ASTRewriter.S;

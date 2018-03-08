@@ -5,10 +5,10 @@
 
 package fr.inria.corese.kgtool.workflow;
 
-import fr.inria.acacia.corese.api.IDatatype;
-import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.acacia.corese.triple.parser.Context;
-import fr.inria.acacia.corese.triple.parser.Dataset;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.DEBUG;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.DISPLAY;
 import static fr.inria.corese.kgtool.workflow.WorkflowParser.MODE;

@@ -3,7 +3,7 @@ package fr.inria.corese.kgengine.kgraph;
 import java.io.File;
 import java.io.IOException;
 
-import fr.inria.acacia.corese.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgtool.load.Load;
 import fr.inria.corese.kgtool.load.LoadException;

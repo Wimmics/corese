@@ -1,5 +1,8 @@
 package junit;
 
+import fr.inria.acacia.corese.api.IDatatype;
+import fr.inria.corese.kgengine.api.IEngine;
+import fr.inria.corese.kgengine.api.IResults;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import fr.inria.acacia.corese.api.*;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.storage.api.IStorage;
 import fr.inria.acacia.corese.storage.api.Parameters;

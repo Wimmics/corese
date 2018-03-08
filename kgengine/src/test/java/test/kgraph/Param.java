@@ -1,6 +1,6 @@
 package test.kgraph;
 
-import fr.inria.acacia.corese.api.IModel;
+import fr.inria.corese.kgengine.api.IModel;
 import fr.inria.acacia.corese.triple.parser.*;
 import java.util.*;
 /**

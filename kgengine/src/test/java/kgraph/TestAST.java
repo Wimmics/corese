@@ -3,9 +3,9 @@ package kgraph;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
+import fr.inria.corese.kgengine.api.EngineFactory;
+import fr.inria.corese.kgengine.api.IEngine;
+import fr.inria.corese.kgengine.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.acacia.corese.triple.parser.ASTQuery;
 import fr.inria.acacia.corese.triple.parser.BasicGraphPattern;

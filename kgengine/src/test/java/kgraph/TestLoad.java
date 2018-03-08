@@ -3,9 +3,9 @@ package kgraph;
 import java.util.Date;
 import java.util.Hashtable;
 
-import fr.inria.acacia.corese.api.EngineFactory;
-import fr.inria.acacia.corese.api.IEngine;
-import fr.inria.acacia.corese.api.IResults;
+import fr.inria.corese.kgengine.api.EngineFactory;
+import fr.inria.corese.kgengine.api.IEngine;
+import fr.inria.corese.kgengine.api.IResults;
 import fr.inria.acacia.corese.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgraph.core.Graph;

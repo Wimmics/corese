@@ -4,6 +4,7 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import java.io.IOException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -55,37 +56,43 @@ public class RdfaParserTest {
     }
 
     //-------------run test----------
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForHtml4")
     public void runTestsHtml4(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);
     }
 
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForHtml5")
     public void runTestsHtml5(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);
     }
 
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForXhtml1")
     public void runTestsXhtml1(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);
     }
 
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForXhtml5")
     public void runTestsXhtml5(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);
     }
 
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForXml")
     public void runTestsXml(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);
     }
 
-    //@Test
+    @Ignore(value = "unknown reason")
+    @Test
     @UseDataProvider("getTestSuiteForSvg")
     public void runTestsSvg(String sourceFile, String sparql) throws IOException {
         helper.process(sourceFile, sparql);

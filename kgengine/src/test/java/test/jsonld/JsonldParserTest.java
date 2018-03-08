@@ -1,7 +1,7 @@
 package test.jsonld;
 
 import fr.inria.acacia.corese.exceptions.EngineException;
-import fr.inria.edelweiss.kgengine.QueryResults;
+import fr.inria.corese.kgengine.QueryResults;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;

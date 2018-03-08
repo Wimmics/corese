@@ -34,7 +34,7 @@ public class GraphManager {
 
     //static final String DEFAULT_GRAPH = Entailment.DEFAULT;
     // default loader, by meta protocol to preserve modularity
-    static final String LOADER = "fr.inria.edelweiss.kgtool.load.Load";
+    static final String LOADER = "fr.inria.corese.kgtool.load.Load";
     private Graph graph;
     Loader load;
 

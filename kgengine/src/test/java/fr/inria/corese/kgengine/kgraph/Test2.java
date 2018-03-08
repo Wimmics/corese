@@ -499,7 +499,7 @@ query =
 
 query = 
 	"prefix c: <http://www.inria.fr/acacia/comma#> " +
-	"prefix fun: <function://fr.inria.edelweiss.kgraph.test.Test>" +
+	"prefix fun: <function://fr.inria.corese.kgraph.test.Test>" +
 	"prefix ext: <function://fr.inria.corese.kgramenv.util.Extension>" +
 	"select debug * (ext:self(?x) as ?y )" +
 	"(ext:equalsIgnoreAccent('é', 'e') as ?bool )" +

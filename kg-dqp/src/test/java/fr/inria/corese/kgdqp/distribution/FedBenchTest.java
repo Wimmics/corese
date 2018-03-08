@@ -7,7 +7,7 @@ package fr.inria.corese.kgdqp.distribution;
 //import com.hp.hpl.jena.rdf.model.Model;
 //import com.hp.hpl.jena.rdf.model.ModelFactory;
 import fr.inria.corese.sparql.exceptions.EngineException;
-//import fr.inria.edelweiss.kgimport.JenaGraphFactory;
+//import fr.inria.corese.kgimport.JenaGraphFactory;
 import fr.inria.corese.kgraph.core.Graph;
 import fr.inria.corese.kgraph.query.QueryProcess;
 import java.io.*;

@@ -17,8 +17,8 @@ package fr.inria.corese.kgengine.test.kgraph;
 //
 //import fr.inria.corese.kgenv.eval.QuerySolver;
 //import fr.inria.corese.kgram.api.core.Edge;
-//import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgtool.load.Load;
+//import fr.inria.corese.kgraph.core.Graph;
+//import fr.inria.corese.kgtool.load.Load;
 //import junit.textui.TestRunner;
 //
 //public class KgraphTestSuite extends TestSuite

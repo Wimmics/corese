@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 
 
 public class BRuleEngineFactory {
-	public static String ENGINE = "fr.inria.edelweiss.engine.core.Engine";
+	public static String ENGINE = "fr.inria.corese.engine.core.Engine";
 	private static Logger logger = LogManager.getLogger(BRuleEngineFactory.class);
 
 	public static BRuleEngineFactory newInstance(){

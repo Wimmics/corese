@@ -17,12 +17,12 @@ import org.apache.logging.log4j.LogManager;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.edelweiss.kgimport.JenaGraphFactory;
+import fr.inria.corese.kgimport.JenaGraphFactory;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.edelweiss.kgraph.core.Graph;
-import fr.inria.edelweiss.kgraph.query.QueryProcess;
-import fr.inria.edelweiss.kgtool.load.Load;
-import fr.inria.edelweiss.kgtool.print.ResultFormat;
+import fr.inria.corese.kgraph.core.Graph;
+import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.kgtool.print.ResultFormat;
 import java.io.*;
 
 /**

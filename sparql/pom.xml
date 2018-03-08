@@ -82,7 +82,7 @@
 							<descriptorId>jar-with-dependencies</descriptorId>
 							<archive>
 								<manifest>
-									<mainClass>fr.inria.acacia.corese.triple.Main</mainClass>
+									<mainClass>fr.inria.corese.sparql.triple.Main</mainClass>
 									<addClasspath>false</addClasspath>
 								</manifest>
 							</archive>

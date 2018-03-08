@@ -15,7 +15,7 @@
 <cos:rule cos:debug='true2'>
     <cos:if>
       prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
-      prefix fun: &lt;function://fr.inria.acacia.corese.cg.query.FunMarker&gt;
+      prefix fun: &lt;function://fr.inria.corese.sparql.cg.query.FunMarker&gt;
 
     	{ ?x rdf:type c:Person 
 	optional {?x c:FirstName ?y}

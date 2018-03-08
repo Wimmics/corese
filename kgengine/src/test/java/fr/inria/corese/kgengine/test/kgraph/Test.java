@@ -16,16 +16,16 @@ package fr.inria.corese.kgengine.test.kgraph;
 //import fr.inria.corese.kgenv.parser.NodeImpl;
 //import fr.inria.corese.kgram.core.Mapping;
 //import fr.inria.corese.kgram.core.Mappings;
-//import fr.inria.edelweiss.kgraph.core.Graph;
-//import fr.inria.edelweiss.kgraph.logic.Entailment;
-//import fr.inria.edelweiss.kgraph.query.QueryProcess;
-//import fr.inria.edelweiss.kgraph.rule.RuleEngine;
-//import fr.inria.edelweiss.kgtool.load.Load;
-//import fr.inria.edelweiss.kgtool.load.RuleLoad;
-//import fr.inria.edelweiss.kgtool.print.JSONFormat;
-//import fr.inria.edelweiss.kgtool.print.RDFFormat;
-//import fr.inria.edelweiss.kgtool.print.XMLFormat;
-//import fr.inria.edelweiss.kgtool.print.XSLTQuery;
+//import fr.inria.corese.kgraph.core.Graph;
+//import fr.inria.corese.kgraph.logic.Entailment;
+//import fr.inria.corese.kgraph.query.QueryProcess;
+//import fr.inria.corese.kgraph.rule.RuleEngine;
+//import fr.inria.corese.kgtool.load.Load;
+//import fr.inria.corese.kgtool.load.RuleLoad;
+//import fr.inria.corese.kgtool.print.JSONFormat;
+//import fr.inria.corese.kgtool.print.RDFFormat;
+//import fr.inria.corese.kgtool.print.XMLFormat;
+//import fr.inria.corese.kgtool.print.XSLTQuery;
 //
 //public class Test {
 //	
@@ -513,7 +513,7 @@ package fr.inria.corese.kgengine.test.kgraph;
 //
 //query = 
 //	"prefix c: <http://www.inria.fr/acacia/comma#> " +
-//	"prefix fun: <function://fr.inria.edelweiss.kgraph.test.Test>" +
+//	"prefix fun: <function://fr.inria.corese.kgraph.test.Test>" +
 //	"prefix ext: <function://fr.inria.corese.kgramenv.util.Extension>" +
 //	"select debug * (ext:self(?x) as ?y )" +
 //	"(ext:equalsIgnoreAccent('é', 'e') as ?bool )" +

@@ -136,7 +136,7 @@
 							<!--<finalName>kgdqp-${build.version}</finalName>-->
 							<archive>
 								<manifest>
-									<mainClass>fr.inria.edelweiss.kgdqp.test.TestDQP</mainClass>
+									<mainClass>fr.inria.corese.kgdqp.test.TestDQP</mainClass>
 								</manifest>
 							</archive>
                            

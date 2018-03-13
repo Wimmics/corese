@@ -10,7 +10,6 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>fr.inria.corese</groupId>
 	<artifactId>corese-server</artifactId>
 	<name>corese-server</name>
 

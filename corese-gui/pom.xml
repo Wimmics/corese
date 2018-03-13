@@ -8,11 +8,7 @@
 		<version>${revision}</version>
 		<relativePath>..</relativePath>
 	</parent>
-
-	<groupId>${project.parent.groupId}</groupId>
 	<artifactId>corese-gui</artifactId>
-	<version>${revision}</version>
-
 	<name>corese-gui</name>
 
 	<!--    <properties>

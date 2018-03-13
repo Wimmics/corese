@@ -9,7 +9,6 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>fr.inria.corese</groupId>
 	<artifactId>kgram</artifactId>
 	<name>kgram</name>
 

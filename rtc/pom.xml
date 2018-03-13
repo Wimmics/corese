@@ -8,10 +8,7 @@
         <version>${revision}</version>
     </parent>
 
-    <groupId>${project.parent.groupId}</groupId>
     <artifactId>rtc</artifactId>
-    <version>${project.parent.version}</version>
-
     <name>rtc</name>
 
     <properties>

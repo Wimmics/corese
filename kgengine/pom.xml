@@ -10,7 +10,6 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>fr.inria.corese</groupId>
 	<artifactId>kgengine</artifactId>
 	<name>kgengine</name>
 	<packaging>jar</packaging>

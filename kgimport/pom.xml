@@ -10,11 +10,9 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>${project.parent.groupId}</groupId>
 	<artifactId>kgimport</artifactId>
 	<name>kgimport</name>
-	<version>${project.parent.version}</version>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>

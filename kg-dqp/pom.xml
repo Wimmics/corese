@@ -10,7 +10,6 @@
 		<relativePath>..</relativePath>
 	</parent>
 
-	<groupId>fr.inria.corese</groupId>
 	<artifactId>kg-dqp</artifactId>
 	<name>kg-dqp</name>
 

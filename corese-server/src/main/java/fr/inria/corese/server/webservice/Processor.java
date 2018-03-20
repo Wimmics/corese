@@ -2,11 +2,11 @@ package fr.inria.corese.server.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgraph.core.GraphStore;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.load.QueryLoad;
-import fr.inria.corese.kgtool.util.SPINProcess;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.util.SPINProcess;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;

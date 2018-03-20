@@ -2,11 +2,11 @@ package fr.inria.corese.w3c.turtle;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.load.QueryLoad;
-import fr.inria.corese.kgtool.print.TripleFormat;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.w3c.model.TestCase;
 import static fr.inria.corese.w3c.model.TestHelper.isPositiveTest;
 

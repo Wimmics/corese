@@ -6,8 +6,8 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import static fr.inria.corese.server.webservice.Utility.toStringList;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.workflow.Data;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.workflow.Data;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -51,9 +51,9 @@ public class Transformer {
     static void init() {
         nsm = NSManager.create();
         contentType = new HashMap<String, String>();
-        contentType.put(fr.inria.corese.kgtool.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
-        contentType.put(fr.inria.corese.kgtool.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
-        contentType.put(fr.inria.corese.kgtool.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
+        contentType.put(fr.inria.corese.core.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
+        contentType.put(fr.inria.corese.core.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
+        contentType.put(fr.inria.corese.core.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    
     }
     
 
@@ -222,8 +222,8 @@ public class Transformer {
      * hence it is protected wrt img ...
      */
     String protect(Param p, String ft){
-        fr.inria.corese.kgtool.transform.Transformer t = 
-            fr.inria.corese.kgtool.transform.Transformer.create(RESULT);
+        	fr.inria.corese.core.transform.Transformer t = 
+            	fr.inria.corese.core.transform.Transformer.create(RESULT);
         Context c = t.getContext();
         c.set(RESULT, ft);
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());

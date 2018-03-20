@@ -67,17 +67,17 @@
 
 	<modules>
 		<module>kgram</module>
-		<module>engine</module>
-		<module>kgengine</module>
+		<!--<module>engine</module>-->
+		<!--<module>kgengine</module>-->
 		<module>kgenv</module>
 		<module>corese-core</module>
 		<module>corese-server</module>
-		<module>kg-dqp</module> 
-		<module>kgimport</module>
+		<!--<module>kg-dqp</module>--> 
+		<!--<module>kgim/port</module>-->
 		<module>sparql</module>
-		<module>rif</module>
-		<module>rtc</module> 
- 		<!-- RDF Triple Collector(firefox plugin)-->
+		<!--<module>rif</module>-->
+		<!--<module>rtc</module>--> 
+		<!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 		<module>corese-gui</module>
 	</modules>
@@ -98,7 +98,7 @@
 
 	<properties>
 		<!-- Unique entry point for version number management --> 
-		<revision>4.0.0-SNAPSHOT</revision>
+		<revision>4.0.1-SNAPSHOT</revision>
 		<!-- To ignore errors in javadoc usage. -->
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<!-- Sonar -->
@@ -110,16 +110,16 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
+			<!--			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>kgengine</artifactId>
 				<version>${project.version}</version>
-			</dependency>
-			<dependency>
+			</dependency>-->
+			<!--			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>engine</artifactId>
 				<version>${project.version}</version>
-			</dependency>
+			</dependency>-->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>kgenv</artifactId>
@@ -348,6 +348,16 @@
 				<groupId>org.apache.tinkerpop</groupId>
 				<artifactId>gremlin-core</artifactId>
 				<version>3.2.3</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-vfs</groupId>
+				<artifactId>commons-vfs</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty</artifactId>
+				<version>6.1.26</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

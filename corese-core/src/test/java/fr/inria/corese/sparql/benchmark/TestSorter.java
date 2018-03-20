@@ -3,11 +3,11 @@ package fr.inria.corese.sparql.benchmark;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.logic.RDF;
-import fr.inria.corese.kgraph.logic.RDFS;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.load.Load;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.logic.RDF;
+import fr.inria.corese.core.logic.RDFS;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.load.Load;
 
 /**
  * TestSorter.java

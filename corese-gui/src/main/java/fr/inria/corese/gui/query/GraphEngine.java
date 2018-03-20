@@ -11,24 +11,24 @@ import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.core.Command;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.engine.core.Engine;
-import fr.inria.corese.engine.model.api.Bind;
-import fr.inria.corese.engine.model.api.LBind;
-import fr.inria.corese.kgpipe.Pipe;
+//import fr.inria.corese.engine.core.Engine;
+//import fr.inria.corese.engine.model.api.Bind;
+//import fr.inria.corese.engine.model.api.LBind;
+import fr.inria.corese.core.pipe.Pipe;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgraph.core.Event;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.core.GraphStore;
-import fr.inria.corese.kgraph.query.QueryEngine;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgraph.rule.RuleEngine;
-import fr.inria.corese.kgtool.load.Build;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.load.LoadPlugin;
+import fr.inria.corese.core.Event;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.load.Build;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.LoadPlugin;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -60,7 +60,7 @@ public class GraphEngine  {
 	private Graph graph;
 	private RuleEngine rengine, owlEngine;
 	private QueryEngine qengine;
-	private Engine bengine;
+//	private Engine bengine;
 	QueryProcess exec;
 	LoadPlugin plugin;
 	Build build;
@@ -73,7 +73,7 @@ public class GraphEngine  {
 		graph   = GraphStore.create(b);
 		//rengine = RuleEngine.create(graph);
 		qengine = QueryEngine.create(graph);
-		bengine = Engine.create(QueryProcess.create(graph, true));
+//		bengine = Engine.create(QueryProcess.create(graph, true));
 		exec = QueryProcess.create(graph, true);
 	}
         
@@ -159,18 +159,18 @@ public class GraphEngine  {
 	}
 	
 	public void load(String path) throws EngineException, LoadException {
-		if (path.endsWith(BRUL)){
-			bengine.load(path);
-		}
-		else 
-		{
+//		if (path.endsWith(BRUL)){
+//			bengine.load(path);
+//		}
+//		else 
+//		{
                     Load ld = loader();
                     ld.parse(path);
                     // in case of load rule
                     if (ld.getRuleEngine() != null){
                         rengine = ld.getRuleEngine();
                     }
-		}
+//		}
                 
 	}
 	
@@ -301,37 +301,37 @@ public class GraphEngine  {
 	
 
 
-	public Mappings SPARQLProve(String query) throws EngineException {
-		LBind res = bengine.SPARQLProve(query);
-		if (res == null) return  null;
-		Mappings lMap = translate(res);
-		return lMap;
-	}
-	
-	
-	
-	Mappings translate(LBind lb){
-		ASTQuery ast = lb.getAST();
-		Query query = exec.compile(ast);
-		Mappings lMap =  Mappings.create(query);
-		for (Bind b : lb){
-			List<Node> list = new ArrayList<Node>();
-			
-			for (Node qNode : query.getSelect()){
-				IDatatype dt = b.getDatatypeValue(qNode.getLabel());
-				if (dt == null){
-					list.add(null);
-				}
-				else {
-					Node node = graph.getNode(dt, true, false);
-					list.add(node);
-				}
-			}
-			Mapping map = Mapping.create(query.getSelect(), list);
-			lMap.add(map);
-		}
-		return lMap;
-	}
+//	public Mappings SPARQLProve(String query) throws EngineException {
+//		LBind res = bengine.SPARQLProve(query);
+//		if (res == null) return  null;
+//		Mappings lMap = translate(res);
+//		return lMap;
+//	}
+//	
+//	
+//	
+//	Mappings translate(LBind lb){
+//		ASTQuery ast = lb.getAST();
+//		Query query = exec.compile(ast);
+//		Mappings lMap =  Mappings.create(query);
+//		for (Bind b : lb){
+//			List<Node> list = new ArrayList<Node>();
+//			
+//			for (Node qNode : query.getSelect()){
+//				IDatatype dt = b.getDatatypeValue(qNode.getLabel());
+//				if (dt == null){
+//					list.add(null);
+//				}
+//				else {
+//					Node node = graph.getNode(dt, true, false);
+//					list.add(node);
+//				}
+//			}
+//			Mapping map = Mapping.create(query.getSelect(), list);
+//			lMap.add(map);
+//		}
+//		return lMap;
+//	}
 
 	
 	public Mappings SPARQLProve(ASTQuery ast) throws EngineException {

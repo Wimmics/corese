@@ -15,10 +15,10 @@
 	    <revision>3.0.7</revision>
 	</properties>-->
 	<dependencies>            
-		<dependency>
+<!--		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>engine</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgenv</artifactId>

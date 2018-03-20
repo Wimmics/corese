@@ -767,12 +767,12 @@ public class Mapping
     }
         
     List<List<DatatypeValue>> getList() {    
-        ArrayList<List<DatatypeValue>> list = new ArrayList();
+        ArrayList<List<DatatypeValue>> list = new ArrayList<>();
         int i = 0;
         for (Node n : getQueryNodes()) {
             Node val = getNode(i++);
             if (val != null){
-                ArrayList<DatatypeValue> l = new ArrayList(2);
+                ArrayList<DatatypeValue> l = new ArrayList<>(2);
                 l.add(n.getDatatypeValue());
                 l.add(val.getDatatypeValue());
                 list.add(l);
@@ -782,7 +782,7 @@ public class Mapping
     }
     
     public Iterable getLoop2() {
-        ArrayList<Object> list = new ArrayList();
+        ArrayList<Object> list = new ArrayList<>();
         for (Node n : getNodes()) {
             list.add(n.getValue());
         }

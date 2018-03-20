@@ -12,9 +12,9 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.Event;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.util.SPINProcess;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.SPINProcess;
 import org.apache.logging.log4j.Level;
 
 

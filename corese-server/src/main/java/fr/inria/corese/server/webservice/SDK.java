@@ -1,8 +1,8 @@
 package fr.inria.corese.server.webservice;
 
 import com.sun.jersey.multipart.FormDataParam;
-import fr.inria.corese.kgraph.core.GraphStore;
-import fr.inria.corese.kgtool.load.LoadException;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.LoadException;
 import java.io.IOException;
 import org.apache.logging.log4j.Level;
 

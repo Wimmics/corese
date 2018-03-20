@@ -1,9 +1,9 @@
 package fr.inria.corese.similarity;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgraph.approximate.ext.ASTRewriter;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.core.approximate.ext.ASTRewriter;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 
 /**

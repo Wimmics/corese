@@ -9,7 +9,7 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventListener;
-import fr.inria.corese.kgraph.query.QueryProcess;
+import fr.inria.corese.core.query.QueryProcess;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM on top of Corese with

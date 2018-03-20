@@ -140,7 +140,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     void initCallback(){
-        local = new HashMap();
+        local = new HashMap<>();
         local.put(FUN_PRODUCE, true);
     }
 

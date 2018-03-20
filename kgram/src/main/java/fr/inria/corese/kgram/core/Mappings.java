@@ -171,7 +171,7 @@ public class Mappings extends PointerObject
 
     public void reject(Mapping m) {
         if (reject == null) {
-            reject = new ArrayList();
+            reject = new ArrayList<>();
         }
         reject.add(m);
     }

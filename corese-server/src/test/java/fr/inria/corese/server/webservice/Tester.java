@@ -3,9 +3,9 @@ package fr.inria.corese.server.webservice;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.load.Service;
-import static fr.inria.corese.kgtool.load.Service.QUERY;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.Service;
+import static fr.inria.corese.core.load.Service.QUERY;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

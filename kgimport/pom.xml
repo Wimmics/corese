@@ -18,10 +18,10 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgengine</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-core</artifactId>

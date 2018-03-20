@@ -6,12 +6,12 @@ package fr.inria.corese.w3c;
  * and open the template in the editor.
  */
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.print.JSOND3Format;
-import fr.inria.corese.kgtool.print.JSONFormat;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.JSOND3Format;
+import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.kgram.core.Mappings;
 import java.io.InputStream;
 import org.junit.After;

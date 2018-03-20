@@ -99,7 +99,7 @@ public class ApproximateSearchEnv {
      * @return 
      */
     public Double aggregate(Environment env, Expr var, double sim) {
-        List lv = this.getVariables();
+        List<Expr> lv = this.getVariables();
         if (lv.contains(var)) {
             lv.remove(var);
         }

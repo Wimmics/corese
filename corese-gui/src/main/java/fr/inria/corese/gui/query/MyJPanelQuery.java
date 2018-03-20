@@ -43,13 +43,13 @@ import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.print.ResultFormat;
-import fr.inria.corese.kgtool.print.XMLFormat;
-import fr.inria.corese.kgtool.transform.Transformer;
-import fr.inria.corese.kgtool.util.SPINProcess;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.XMLFormat;
+import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.SPINProcess;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -607,7 +607,7 @@ public final class MyJPanelQuery extends JPanel {
     void display(Mappings map, NSManager nsm) {
         fr.inria.corese.kgram.api.core.Node res = map.getTemplateResult();
         if (res != null) {
-            fr.inria.corese.kgraph.core.Graph g = fr.inria.corese.kgraph.core.Graph.create();
+            		fr.inria.corese.core.Graph g = fr.inria.corese.core.Graph.create();
             Load ld = Load.create(g);
             String str = res.getLabel();
             try {
@@ -619,7 +619,7 @@ public final class MyJPanelQuery extends JPanel {
         }
     }
 
-    void displayGraph(fr.inria.corese.kgraph.core.Graph g, NSManager nsm) {
+    void displayGraph(fr.inria.corese.core.Graph g, NSManager nsm) {
         graph = create(g, nsm);
         graph.addAttribute("ui.stylesheet", stylesheet);
         graph.addAttribute("ui.antialias");
@@ -662,7 +662,7 @@ public final class MyJPanelQuery extends JPanel {
 
     
     
-    MultiGraph create(fr.inria.corese.kgraph.core.Graph g, NSManager nsm){
+    MultiGraph create(fr.inria.corese.core.Graph g, NSManager nsm){
         //            graph.addNode(temp).addAttribute("ui.style", "fill-color:white;");
         //                gsub.addAttribute("ui.style", "fill-color:lightblue;size-mode:dyn-size;shape:rounded-box;");
         //                    ee.addAttribute("ui.style", "size:0;edge-style:dashes;fill-color:white;");
@@ -779,11 +779,11 @@ public final class MyJPanelQuery extends JPanel {
                         String str = spin.toSpin(query);
                         coreseFrame.getPanel().getTextArea().setText(str);
                         tabbedPaneResults.setSelectedIndex(XML_PANEL);
-                    } else if (ev.getSource() == buttonProve) {
-                        l_Results = engine.SPARQLProve(query);
-                        if (l_Results != null) {
-                            display(l_Results, coreseFrame);
-                        }
+//                    } else if (ev.getSource() == buttonProve) {
+//                        l_Results = engine.SPARQLProve(query);
+//                        if (l_Results != null) {
+//                            display(l_Results, coreseFrame);
+//                        }
                     } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate) {
                         // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);

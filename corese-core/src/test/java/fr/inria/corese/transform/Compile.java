@@ -1,8 +1,8 @@
 
 package fr.inria.corese.transform;
 
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.transform.TemplatePrinter;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.transform.TemplatePrinter;
 import java.io.IOException;
 import org.junit.Test;
 

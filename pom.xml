@@ -69,7 +69,6 @@
 		<module>kgram</module>
 		<!--<module>engine</module>-->
 		<!--<module>kgengine</module>-->
-		<module>kgenv</module>
 		<module>corese-core</module>
 		<module>corese-server</module>
 		<!--<module>kg-dqp</module>--> 
@@ -80,6 +79,7 @@
 		<!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 		<module>corese-gui</module>
+	 <module>compiler</module>
 	</modules>
 
 	<scm>

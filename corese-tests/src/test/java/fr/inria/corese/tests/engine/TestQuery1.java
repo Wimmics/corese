@@ -1,10 +1,32 @@
-package fr.inria.corese.kgengine.junit;
+package fr.inria.corese.tests.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import fr.inria.corese.core.EdgeFactory;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.logic.RDFS;
+import fr.inria.corese.core.print.JSONLDFormat;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.XMLFormat;
+import fr.inria.corese.core.producer.DataFilter;
+import fr.inria.corese.core.producer.DataFilterFactory;
+import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.core.query.QueryGraph;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.transform.Loader;
+import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.GraphStoreInit;
+import fr.inria.corese.core.util.QueryManager;
+import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.sparql.cg.datatype.RDF;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -29,28 +51,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
-import fr.inria.corese.kgraph.core.EdgeFactory;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.core.GraphStore;
-import fr.inria.corese.kgraph.core.producer.DataFilter;
-import fr.inria.corese.kgraph.core.producer.DataFilterFactory;
-import fr.inria.corese.kgraph.logic.RDF;
-import fr.inria.corese.kgraph.logic.RDFS;
-import fr.inria.corese.kgraph.query.QueryEngine;
-import fr.inria.corese.kgraph.query.QueryGraph;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.transform.Transformer;
-import fr.inria.corese.kgtool.print.ResultFormat;
-import fr.inria.corese.kgtool.print.XMLFormat;
-import fr.inria.corese.kgraph.rule.RuleEngine;
-import fr.inria.corese.kgtool.load.QueryLoad;
-import fr.inria.corese.kgtool.print.JSONLDFormat;
-import fr.inria.corese.kgtool.transform.Loader;
-import fr.inria.corese.kgtool.util.GraphStoreInit;
-import fr.inria.corese.kgtool.util.QueryManager;
-import fr.inria.corese.kgtool.util.SPINProcess;
+
 import java.io.File;
 import java.util.ArrayList;
 import org.apache.logging.log4j.Level;
@@ -2123,7 +2124,7 @@ public class TestQuery1 {
             ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
 
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(5, g.size());
     }
@@ -2139,7 +2140,7 @@ public class TestQuery1 {
             ld.parseDir(data + "junit/data");                      
             ld.parseDir(data + "junit/data", "http://example.org/");                      
         } catch (LoadException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(4, g.size());
     }
@@ -5078,7 +5079,7 @@ public class TestQuery1 {
 
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
             assertEquals("result", true, ex);
         }
 
@@ -5155,7 +5156,7 @@ public class TestQuery1 {
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -5184,7 +5185,7 @@ public class TestQuery1 {
             //System.out.println(map);
             assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
-            LogManager.getLogger(TestUnit.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }

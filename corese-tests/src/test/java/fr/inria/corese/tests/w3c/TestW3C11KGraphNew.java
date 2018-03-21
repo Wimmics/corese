@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,9 +17,9 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.*;
 import org.xml.sax.SAXException;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
@@ -34,7 +34,6 @@ import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Provider;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Query;
@@ -60,12 +59,6 @@ import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  * KGRAM benchmark on W3C SPARQL 1.1 Query & Update Test cases
@@ -443,7 +436,7 @@ public class TestW3C11KGraphNew {
         }
 
         // There are 5 known erros
-        assertEquals("Results", 0, errors.size());
+        Assert.assertEquals("Results", 0, errors.size());
 
 
         //Processor.finish();

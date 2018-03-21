@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestCaseSet;
+
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
 
 /**
  * Helper class for generating report of test results

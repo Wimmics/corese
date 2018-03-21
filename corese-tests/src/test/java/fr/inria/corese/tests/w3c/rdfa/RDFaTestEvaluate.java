@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c.rdfa;
+package fr.inria.corese.tests.w3c.rdfa;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mappings;
@@ -6,15 +6,15 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.tests.w3c.model.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
 import org.testng.Assert;
-import fr.inria.corese.w3c.model.IEvaluate;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestHelper;
-import fr.inria.corese.w3c.model.TestCaseSet;
-import static fr.inria.corese.w3c.model.TestType.TEST_TYPE;
+import fr.inria.corese.tests.w3c.model.IEvaluate;
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestHelper;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
 
 /**
  * Implementation of RDFa test case evaluation
@@ -48,7 +48,7 @@ public class RDFaTestEvaluate implements IEvaluate {
 
     @Override
     public TestCaseSet generateTestCases(String manifest, String root) {
-        TestCaseSet suite = TestHelper.generateTestSuite(root + manifest, query, TestHelper.CASE_RDFA, TEST_TYPE);
+        TestCaseSet suite = TestHelper.generateTestSuite(root + manifest, query, TestHelper.CASE_RDFA, TestType.TEST_TYPE);
 
         return suite;
     }

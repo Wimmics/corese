@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c.model;
+package fr.inria.corese.tests.w3c.model;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
@@ -8,8 +8,9 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import java.util.List;
-import fr.inria.corese.w3c.rdfa.RDFaTestCase;
-import fr.inria.corese.w3c.turtle.TurtleTestCase;
+
+import fr.inria.corese.tests.w3c.turtle.TurtleTestCase;
+import fr.inria.corese.tests.w3c.rdfa.RDFaTestCase;
 
 /**
  * Helper class for testing

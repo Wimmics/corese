@@ -79,8 +79,9 @@
 		<!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 		<module>corese-gui</module>
-	 <module>compiler</module>
-	</modules>
+		<module>corese-tests</module>
+		<module>compiler</module>
+    </modules>
 
 	<scm>
 		<url>https://github.com/Wimmics/corese.git</url>
@@ -110,6 +111,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			 <dependency>
+                         <groupId>org.testng</groupId>
+                         <artifactId>testng</artifactId>
+                         <version>6.8.21</version>
+                         <scope>test</scope>
+                </dependency>
 			<!--			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>kgengine</artifactId>

@@ -1,4 +1,4 @@
-package fr.inria.corese.kgengine.research;
+package fr.inria.corese.tests.research;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.cg.datatype.DatatypeMap;

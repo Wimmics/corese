@@ -2,19 +2,19 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.corese.kgengine.research;
+package fr.inria.corese.tests.research;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.workflow.Data;
+import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgtool.workflow.Data;
-import fr.inria.corese.kgtool.workflow.ShapeWorkflow;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
-import fr.inria.corese.kgtool.transform.Transformer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

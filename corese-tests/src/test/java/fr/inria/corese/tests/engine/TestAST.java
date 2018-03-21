@@ -1,10 +1,15 @@
-package fr.inria.corese.kgengine.junit;
+package fr.inria.corese.tests.engine;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.RDFFormat;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -27,11 +32,6 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgraph.rule.RuleEngine;
-import fr.inria.corese.kgtool.print.RDFFormat;
-import fr.inria.corese.kgtool.print.ResultFormat;
 
 /**
  * 

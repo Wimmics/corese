@@ -1,4 +1,4 @@
-package fr.inria.corese.kgengine.junit;
+package fr.inria.corese.tests.engine;
 
 
 
@@ -6,26 +6,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 
+import fr.inria.corese.core.EdgeFactory;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.pipe.Pipe;
+import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.exceptions.*;
 import fr.inria.corese.sparql.storage.api.Parameters;
 
-import fr.inria.corese.engine.core.Engine;
-import fr.inria.corese.engine.model.api.LBind;
+import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.kgenv.eval.QuerySolver;
-import fr.inria.corese.kgpipe.Pipe;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgraph.core.EdgeFactory;
-import fr.inria.corese.kgraph.core.Graph;
-import fr.inria.corese.kgraph.core.GraphStore;
-import fr.inria.corese.kgraph.query.QueryEngine;
-import fr.inria.corese.kgraph.query.QueryProcess;
-import fr.inria.corese.kgraph.rule.RuleEngine;
-import fr.inria.corese.kgtool.load.Load;
-import fr.inria.corese.kgtool.load.LoadException;
 import java.io.IOException;
 import java.util.Date;
 import org.junit.AfterClass;
@@ -87,7 +86,7 @@ public class TestRuleEngine {
         EdgeFactory.trace();
     }   
 	
-     static  GraphStore createGraph() {
+     static GraphStore createGraph() {
           return createGraph(false);
       }
   
@@ -346,47 +345,47 @@ public class TestRuleEngine {
     
      
 	
-	//@Test
-	public void test1(){
-
-		String query = 
-			"prefix c: <http://www.inria.fr/acacia/comma#>" +
-			"select ?x ?y where { " +
-			"?y c:hasSister ?z" +
-			"?x c:hasBrother ?y " +
-			"}";
-
-		LBind bind = rengine.SPARQLProve(query);
-		assertEquals("Result", 13, bind.size());
-	}
-	
-	
-	//@Test
-	public void test2(){
-
-		String query = 
-			"prefix c: <http://www.inria.fr/acacia/comma#>" +
-			"select     * where {" +
-			"?x c:hasGrandParent c:Pierre " +
-			"}";
-
-		LBind bind = rengine.SPARQLProve(query);
-		assertEquals("Result", 4, bind.size());
-	}
-	
-	
-	//@Test
-	public void test3(){
-
-		String query = 
-			"prefix c: <http://www.inria.fr/acacia/comma#>" +
-			"select     * where {" +
-			"?x c:hasGrandParent c:Pierre ?x c:hasID ?id " +
-			"}";
-
-		LBind bind = rengine.SPARQLProve(query);
-		assertEquals("Result", 0, bind.size());
-	}
+//	//@Test
+//	public void test1(){
+//
+//		String query =
+//			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+//			"select ?x ?y where { " +
+//			"?y c:hasSister ?z" +
+//			"?x c:hasBrother ?y " +
+//			"}";
+//
+//		LBind bind = rengine.SPARQLProve(query);
+//		assertEquals("Result", 13, bind.size());
+//	}
+//
+//
+//	//@Test
+//	public void test2(){
+//
+//		String query =
+//			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+//			"select     * where {" +
+//			"?x c:hasGrandParent c:Pierre " +
+//			"}";
+//
+//		LBind bind = rengine.SPARQLProve(query);
+//		assertEquals("Result", 4, bind.size());
+//	}
+//
+//
+//	//@Test
+//	public void test3(){
+//
+//		String query =
+//			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+//			"select     * where {" +
+//			"?x c:hasGrandParent c:Pierre ?x c:hasID ?id " +
+//			"}";
+//
+//		LBind bind = rengine.SPARQLProve(query);
+//		assertEquals("Result", 0, bind.size());
+//	}
 	
 	
 	@Test
@@ -460,73 +459,72 @@ public class TestRuleEngine {
 	/**
 	 * Rule engine with QueryExec on two graphs
 	 */
-	//@Test
-	public void test6() throws LoadException{
-		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");	
-
-		Graph g1 = createGraph(true);
-		Graph g2 = createGraph(true);
-
-		Load load1 = Load.create(g1);
-		Load load2 = Load.create(g2);
-		
-		load1.parse(data + "engine/ontology/test.rdfs");
-		load2.parse(data + "engine/data/test.rdf");
-
-		QueryProcess exec = QueryProcess.create(g1);
-		exec.add(g2);
-		RuleEngine re = RuleEngine.create(g2, exec);
-		//re.setOptimize(true);
-		
-		load2.setEngine(re);
-		
-		try {
-			load2.parse(data + "engine/rule/test2.brul");
-			load2.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
-		} catch (LoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		Engine rengine = Engine.create(exec);
-
-		rengine.load(data + "engine/rule/test2.brul");
-		rengine.load(data + "engine/rule/meta.brul");
-		
-		
-		
-		String query = 
-			"prefix c: <http://www.inria.fr/acacia/comma#>" +
-			"select     * where {" +
-			"?x c:hasGrandParent c:Pierre " +
-			"}";
-		
-		
-		LBind bind = rengine.SPARQLProve(query);
-		assertEquals("Result", 4, bind.size());
-		//System.out.println(bind);
-		
-
-		re.process();
-		
-		try {
-			Mappings map = exec.query(query);
-			assertEquals("Result", 4, map.size());
-			//System.out.println(map);
-		} catch (EngineException e) {
-			assertEquals("Result", 4, e);
-		}
-		
-	}
+//	//@Test
+//	public void test6() throws LoadException{
+//		QuerySolver.definePrefix("c", "http://www.inria.fr/acacia/comma#");
+//
+//		Graph g1 = createGraph(true);
+//		Graph g2 = createGraph(true);
+//
+//		Load load1 = Load.create(g1);
+//		Load load2 = Load.create(g2);
+//
+//		load1.parse(data + "engine/ontology/test.rdfs");
+//		load2.parse(data + "engine/data/test.rdf");
+//
+//		QueryProcess exec = QueryProcess.create(g1);
+//		exec.add(g2);
+//		RuleEngine re = RuleEngine.create(g2, exec);
+//		//re.setOptimize(true);
+//
+//		load2.setEngine(re);
+//
+//		try {
+//			load2.parse(data + "engine/rule/test2.brul");
+//			load2.load(new FileInputStream(data + "engine/rule/meta.brul"), "meta.brul");
+//		} catch (LoadException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//
+//		Engine rengine = Engine.create(exec);
+//
+//		rengine.load(data + "engine/rule/test2.brul");
+//		rengine.load(data + "engine/rule/meta.brul");
+//
+//
+//
+//		String query =
+//			"prefix c: <http://www.inria.fr/acacia/comma#>" +
+//			"select     * where {" +
+//			"?x c:hasGrandParent c:Pierre " +
+//			"}";
+//
+//
+//		LBind bind = rengine.SPARQLProve(query);
+//		assertEquals("Result", 4, bind.size());
+//		//System.out.println(bind);
+//
+//
+//		re.process();
+//
+//		try {
+//			Mappings map = exec.query(query);
+//			assertEquals("Result", 4, map.size());
+//			//System.out.println(map);
+//		} catch (EngineException e) {
+//			assertEquals("Result", 4, e);
+//		}
+//
+//	}
+//
 	
 	
-	
-	
-	
+	@Test
 	public void test7() throws LoadException{
 		Graph g1 = createGraph(true);
 		Load load1 = Load.create(g1);
@@ -562,8 +560,6 @@ public class TestRuleEngine {
 		qe.process();
 		
 		assertEquals("Result", 1, g.size());
-
-
 	}
 
 	

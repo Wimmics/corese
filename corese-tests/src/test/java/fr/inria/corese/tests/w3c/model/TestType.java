@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c.model;
+package fr.inria.corese.tests.w3c.model;
 
 /**
  * Constant class of test types

@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c.model;
+package fr.inria.corese.tests.w3c.model;
 
 /**
  * Interface that needs to be realized for implementation of a specific evaluator 

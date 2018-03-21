@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseException;

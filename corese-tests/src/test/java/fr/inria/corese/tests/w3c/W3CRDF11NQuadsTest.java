@@ -1,18 +1,18 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 import java.lang.reflect.Method;
 import java.util.List;
+
+import fr.inria.corese.tests.w3c.model.*;
+import fr.inria.corese.tests.w3c.turtle.TurtleTestEvaluate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import fr.inria.corese.tests.w3c.model.IEvaluate;
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestHelper;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
 import org.testng.annotations.Test;
-import fr.inria.corese.w3c.model.IEvaluate;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestHelper;
-import fr.inria.corese.w3c.model.TestCaseSet;
-import static fr.inria.corese.w3c.model.TestType.NQNegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.NQPositiveSyntax;
-import fr.inria.corese.w3c.turtle.TurtleTestEvaluate;
 
 /**
  * W3C RDF1.1 N-Quads test (http://www.w3.org/2013/N-QuadsTests )
@@ -42,26 +42,26 @@ public class W3CRDF11NQuadsTest {
         String test = mt.getName();
         List list;
         if ("testNQPositiveSyntax".equals(test)) {
-            list = suite.getTestCasesByType(NQPositiveSyntax);
+            list = suite.getTestCasesByType(TestType.NQPositiveSyntax);
         } else if ("testNQNegativeSyntax".equals(test)) {
-            list = suite.getTestCasesByType(NQNegativeSyntax);
+            list = suite.getTestCasesByType(TestType.NQNegativeSyntax);
         } else {//all test cases
             list = suite.getTests();
         }
         return TestHelper.toObjectArray(list);
     }
 
-    //@Test(dataProvider = "data")
+    @Test(dataProvider = "data")
     public void testAll(TestCase tc) {
         eval.run(tc);
     }
 
-    //@Test(dataProvider = "data")
+    @Test(dataProvider = "data")
     public void testNQPositiveSyntax(TestCase tc) {
         eval.run(tc);
     }
 
-    //@Test(dataProvider = "data")
+    @Test(dataProvider = "data")
     public void testNQNegativeSyntax(TestCase tc) {
         eval.run(tc);
     }

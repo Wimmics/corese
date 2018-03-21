@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,13 +13,15 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.print.JSOND3Format;
 import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.kgram.core.Mappings;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import java.io.InputStream;
-import org.junit.After;
-import org.junit.AfterClass;
+
+
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -36,14 +38,6 @@ public class JSONTest {
 
     @AfterClass
     public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test
@@ -64,6 +58,6 @@ public class JSONTest {
                 + JSOND3Format.create(g).toString()
                 + " }";
 
-        assertEquals(3005, mapsProvJson.length());
+        Assert.assertEquals(3005, mapsProvJson.length());
     }
 }

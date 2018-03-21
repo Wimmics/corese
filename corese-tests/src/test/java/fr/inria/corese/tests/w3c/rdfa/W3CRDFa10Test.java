@@ -1,17 +1,17 @@
-package fr.inria.corese.w3c.rdfa;
+package fr.inria.corese.tests.w3c.rdfa;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.inria.corese.tests.w3c.model.IEvaluate;
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
+import fr.inria.corese.tests.w3c.model.TestHelper;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import fr.inria.corese.w3c.model.IEvaluate;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestHelper;
-import fr.inria.corese.w3c.TestReport;
-import fr.inria.corese.w3c.model.TestCaseSet;
 
 /**
  * W3C RDFa 1.0 test (http://rdfa.info/test-suite/)

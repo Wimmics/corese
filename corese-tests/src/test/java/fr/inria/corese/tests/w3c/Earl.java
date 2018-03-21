@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c;
+package fr.inria.corese.tests.w3c;
 
 import java.io.BufferedWriter;
 import java.io.File;

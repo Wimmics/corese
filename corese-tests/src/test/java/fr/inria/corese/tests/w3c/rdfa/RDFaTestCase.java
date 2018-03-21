@@ -1,8 +1,8 @@
-package fr.inria.corese.w3c.rdfa;
+package fr.inria.corese.tests.w3c.rdfa;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestCase;
 
 /**
  * RDFa test case

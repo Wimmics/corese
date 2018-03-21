@@ -1,4 +1,4 @@
-package fr.inria.corese.w3c.turtle;
+package fr.inria.corese.tests.w3c.turtle;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -6,11 +6,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import fr.inria.corese.w3c.model.IEvaluate;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestHelper;
-import fr.inria.corese.w3c.TestReport;
-import fr.inria.corese.w3c.model.TestCaseSet;
+import fr.inria.corese.tests.w3c.model.IEvaluate;
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestHelper;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
 
 /**
  * W3C RDF1.1 Turtle test [http://www.w3.org/2013/TurtleTests/]
@@ -45,7 +44,7 @@ public class W3CRDF11TurtleTest {
         if ("all".equalsIgnoreCase(test)) {
             list = suite_turtle.getTests();
         } else {//2. return test case with certain type
-            String testType = TestHelper.getValueByFieldName("test.w3c.model.TestType", test);
+            String testType = TestHelper.getValueByFieldName("test.TestType", test);
             if (testType == null) {
                 return null;
             }

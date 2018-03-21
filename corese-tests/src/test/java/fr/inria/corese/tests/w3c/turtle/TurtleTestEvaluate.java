@@ -1,25 +1,25 @@
-package fr.inria.corese.w3c.turtle;
+package fr.inria.corese.tests.w3c.turtle;
 
 import org.testng.Assert;
-import fr.inria.corese.w3c.model.IEvaluate;
-import fr.inria.corese.w3c.model.TestCase;
-import fr.inria.corese.w3c.model.TestHelper;
-import fr.inria.corese.w3c.model.TestCaseSet;
-import static fr.inria.corese.w3c.model.TestType.NQNegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.NQPositiveSyntax;
-import static fr.inria.corese.w3c.model.TestType.NTNegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.NTPositiveSyntax;
-import static fr.inria.corese.w3c.model.TestType.NegativeEval;
-import static fr.inria.corese.w3c.model.TestType.NegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.PositiveEval;
-import static fr.inria.corese.w3c.model.TestType.PositiveSyntax;
-import static fr.inria.corese.w3c.model.TestType.TEST_TYPE;
-import static fr.inria.corese.w3c.model.TestType.TriGNegativeEval;
-import static fr.inria.corese.w3c.model.TestType.TriGNegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.TriGPositiveEval;
-import static fr.inria.corese.w3c.model.TestType.TriGPositiveSyntax;
-import static fr.inria.corese.w3c.model.TestType.XMLNegativeSyntax;
-import static fr.inria.corese.w3c.model.TestType.XMLPositiveEval;
+import fr.inria.corese.tests.w3c.model.IEvaluate;
+import fr.inria.corese.tests.w3c.model.TestCase;
+import fr.inria.corese.tests.w3c.model.TestHelper;
+import fr.inria.corese.tests.w3c.model.TestCaseSet;
+import static fr.inria.corese.tests.w3c.model.TestType.NQNegativeSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.NQPositiveSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.NTNegativeSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.NTPositiveSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.NegativeEval;
+import static fr.inria.corese.tests.w3c.model.TestType.NegativeSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.PositiveEval;
+import static fr.inria.corese.tests.w3c.model.TestType.PositiveSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.TEST_TYPE;
+import static fr.inria.corese.tests.w3c.model.TestType.TriGNegativeEval;
+import static fr.inria.corese.tests.w3c.model.TestType.TriGNegativeSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.TriGPositiveEval;
+import static fr.inria.corese.tests.w3c.model.TestType.TriGPositiveSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.XMLNegativeSyntax;
+import static fr.inria.corese.tests.w3c.model.TestType.XMLPositiveEval;
 
 /**
  * Implementation of turtle test case evaluation (This evaluation is also

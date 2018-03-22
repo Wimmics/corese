@@ -22,12 +22,12 @@ import org.xml.sax.SAXException;
 
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.printer.SPIN;
-import fr.inria.corese.kgenv.parser.NodeImpl;
+import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -695,7 +695,7 @@ public class TestW3C11KGraph {
                 Producer p = ProducerImpl.create(Graph.create());
                 InputStream stream = getStream(fresult);
                 if (stream != null) {
-                    w3XMLResult = fr.inria.corese.kgenv.result.XMLResult.create(p).parse(stream);
+                    w3XMLResult = fr.inria.corese.compiler.result.XMLResult.create(p).parse(stream);
                 } else {
                     System.out.println("** Stream Error: " + fresult);
                     w3XMLResult = new Mappings();

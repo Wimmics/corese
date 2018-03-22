@@ -37,7 +37,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgenv.parser.Pragma;
+import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;

@@ -128,7 +128,7 @@
 			</dependency>-->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>kgenv</artifactId>
+				<artifactId>compiler</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

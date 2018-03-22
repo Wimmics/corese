@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-92-9.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/l..sainsaulieu">
+         <c:FamilyName>Sainsaulieu</c:FamilyName>
+         <c:FirstName>L.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/et.b.">
+         <c:FamilyName>B.</c:FamilyName>
+         <c:FirstName>et</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>Modélisation Eulérienne des Ecoulements Diphasiques Dispersés et Résolution par une Méthode Décentrée</c:Title>
+</c:Report> 
+</rdf:RDF>

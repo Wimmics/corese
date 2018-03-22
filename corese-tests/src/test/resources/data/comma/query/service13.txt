@@ -1,0 +1,18 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+prefix r: <http://dbpedia.org/resource/Mod_p_C3_p_A8le:>
+construct {
+?e p:succ ?s
+?e rdfs:label ?l
+}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+
+?e p:succ ?s
+filter(isURI(?s))
+?e <http://fr.dbpedia.org/resource/Mod_p_C3_p_A8le:Infobox_Empereur_romain> ?v
+?e rdfs:label ?l
+}
+
+}

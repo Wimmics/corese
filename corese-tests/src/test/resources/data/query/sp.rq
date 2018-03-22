@@ -1,0 +1,12 @@
+select * 
+(st:lod(<http://dbpedia.org/resource/South_Africa>) as ?b)
+where {
+bind (st:set(st:lod, xt:list(<http://dbpedia.org/resource/>)) as ?t)	
+
+}
+
+
+
+function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+  }

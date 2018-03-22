@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3761.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/dominique.guézengar">
+         <c:FamilyName>Guézengar</c:FamilyName>
+         <c:FirstName>Dominique</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/and.hervé">
+         <c:FamilyName>Hervé</c:FamilyName>
+         <c:FirstName>and</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/guillard.and">
+         <c:FamilyName>and</c:FamilyName>
+         <c:FirstName>Guillard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-paul.dussauge">
+         <c:FamilyName>Dussauge</c:FamilyName>
+         <c:FirstName>Jean-Paul</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>9-1999</c:CreationDate>
+   <c:Title>Modelling  the dissipation equation in supersonic turbulent       mixing layers with high density gradients   </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

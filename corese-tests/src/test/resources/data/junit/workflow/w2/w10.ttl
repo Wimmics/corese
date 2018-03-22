@@ -1,0 +1,14 @@
+[] a sw:Workflow ;
+
+sw:param [ st:value 2 ];
+
+sw:body (
+  [ a sw:Test ; sw:if "st:get(st:value, 1)" ;
+    sw:then [a sw:Query ; sw:body "select (1 as ?r) where {}" ]]
+    
+  [ a sw:Test ; sw:if "st:get(st:value, 2)" ;
+    sw:then [a sw:Query ; sw:body "select (2 as ?r) where {}" ]] 
+    
+  [ a sw:Test ; sw:if "st:get(st:value, 3)" ;
+    sw:then [a sw:Query ; sw:body "select (3 as ?r) where {}" ]]   
+)

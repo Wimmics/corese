@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2606.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/aristide.santos">
+         <c:FamilyName>Santos</c:FamilyName>
+         <c:FirstName>Aristide</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/robert.bitmead">
+         <c:FamilyName>Bitmead</c:FamilyName>
+         <c:FirstName>Robert</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1995</c:CreationDate>
+   <c:Title>Preserving Linear Design Capabilities in the Nonlinear Control of Nonholonomic Autonomous Underwater Vehicles</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

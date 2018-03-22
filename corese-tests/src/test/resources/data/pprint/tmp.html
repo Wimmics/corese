@@ -1,0 +1,35 @@
+select ?x
+where {
+?x ex:name ?n . ?x ex:name ?n .
+}
+
+describe ?x ?n where {
+    {optional {
+      ?x ex:name ?n . filter((foo(?n, self("abc")) >= (?x + 12)))}} union
+    {graph ?g {{ex:John ?p 18 .} minus {ex:John ?p 18 .}}}}
+
+construct {?x rdf:type ex:Person . ?x ex:age 18 .}
+where {
+    {optional {
+     ?x ex:name ?n .}} union
+    {graph ?g {?x ?p 18 .}}}
+
+ask {
+    {optional {
+      ?x ex:name ?n .}} union
+    {graph ?g {?x ?p 18 .}}}
+
+describe ex:John
+
+select reduced ?x (group_concat(?x ; separator=';') as ?y)
+from ex:test from ex:ggg
+from named ex:ggg from named ex:test
+where {
+
+    {optional {
+      ?x ex:name ?n . filter(exists {?x ex:name ?n .}) filter((foo(?n, <http://test.fr/fun>("abc")) >= (?x + 12)))}} union
+    {graph ?g {{ex:John ?p _:b102 .} minus {<http://test.fr/Jack> ?p 18 .}}}
+}
+order by ?x desc(?y)
+limit 1
+offset 2

@@ -1,0 +1,37 @@
+<!DOCTYPE rdf:RDF [
+
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"  xmlns:cos="&cos;"  xmlns:c='&c;' xmlns:owl='&owl;'
+>
+
+
+<cos:rule cos:debug='true2'>
+    <cos:if>
+      prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+      prefix fun: &lt;function://fr.inria.corese.sparql.cg.query.FunMarker&gt;
+
+    	{ ?x rdf:type c:Person 
+	optional {?x c:FirstName ?y}
+	filter(!bound(?y))
+	optional {?x c:FirstName ?z}
+	filter(!bound(?z))
+	}
+    </cos:if>
+
+    <cos:then>
+    	{ ?x c:FirstName 'toto'  
+	filter(fun:debug(?x))
+	}
+    </cos:then>
+</cos:rule>
+
+
+
+</rdf:RDF>

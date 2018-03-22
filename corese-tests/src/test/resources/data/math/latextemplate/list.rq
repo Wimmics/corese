@@ -1,0 +1,9 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?e ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+

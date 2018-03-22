@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE rdf:RDF [
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"  xmlns:cos="&cos;"  	 xmlns:c='&c;' xmlns:owl='&owl;'>
+	
+	
+<!--<rdf:Description rdf:about='&cos;tree1'>
+	<cos:subStateOf rdf:resource='&cos;tree1'/>
+</rdf:Description>	
+	
+<rdf:Description rdf:about='&cos;s0'>
+	<cos:subStateOf rdf:resource='&cos;root'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s1'>
+	<cos:subStateOf rdf:resource='&cos;s0'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s2'>
+	<cos:subStateOf rdf:resource='&cos;s0'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s3'>
+	<cos:subStateOf rdf:resource='&cos;s1'/>
+</rdf:Description>
+	
+<rdf:Description rdf:about='&cos;s4'>
+	<cos:subStateOf rdf:resource='&cos;s1'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s5'>
+	<cos:subStateOf rdf:resource='&cos;s2'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s6'>
+	<cos:subStateOf rdf:resource='&cos;s2'/>
+</rdf:Description>-->
+
+
+		
+<!--
+    <rdf:Description rdf:about='&cos;s3'>
+	<cos:partOf rdf:resource='&cos;s1'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s2'>
+	<cos:partOf rdf:resource='&cos;s1'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&cos;s4'>
+	<cos:partOf rdf:resource='&cos;s2'/>
+	<cos:partOf rdf:resource='&cos;s3'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='&owl;'>
+	<cos:partOf rdf:resource='&cos;engine'/>
+</rdf:Description>
+-->
+
+
+
+
+
+
+<!--
+<rdf:Description rdf:about=''>
+	<c:CreatedBy rdf:resource='http://www.inria.fr/ocorby' />
+</rdf:Description>
+-->
+
+<!--
+<c:Person>
+<c:mytest rdf:datatype='&xsd;integer' >50</c:mytest>
+<c:mytest rdf:resource='http://www.cnrs.fr' /> 
+
+<c:mytest ><rdfs:Resource/></c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >10</c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >20</c:mytest>
+<c:mytest rdf:resource='http://www.inra.fr' /> 
+<c:mytest ><rdfs:Resource/></c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >40</c:mytest>
+
+</c:Person>
+-->
+
+<!--
+<c:Person>
+<c:mytest rdf:datatype='&rdf;XMLLiteral'>http://www.inra.fr</c:mytest>
+<c:mytest rdf:datatype='&xsd;dateTime' >2005-01-01</c:mytest>
+<c:mytest xml:lang='en'>http://www.inra.fr</c:mytest>
+<c:mytest rdf:resource='http://www.inra.fr' /> 
+<c:mytest ><rdfs:Resource/></c:mytest>
+<c:mytest rdf:datatype='&xsd;dateTime' >2006-01-01</c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >10</c:mytest>
+<c:mytest>http://www.inra.fr</c:mytest>
+<c:mytest xml:lang='fr'>http://www.inra.fr</c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >20</c:mytest>
+</c:Person>
+
+<c:Person>
+<c:mytest rdf:datatype='&xsd;dateTime' >2005-01-01</c:mytest>
+<c:mytest>http://www.inra.fr</c:mytest>
+<c:mytest xml:lang='en'>http://www.inra.fr</c:mytest>
+<c:mytest rdf:resource='http://www.inra.fr' /> 
+<c:mytest ><rdfs:Resource/></c:mytest>
+<c:mytest rdf:datatype='&xsd;dateTime' >2006-01-01</c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >10</c:mytest>
+<c:mytest xml:lang='fr'>http://www.inra.fr</c:mytest>
+<c:mytest rdf:datatype='&xsd;integer' >20</c:mytest>
+<c:mytest rdf:datatype='&rdf;XMLLiteral'>http://www.inra.fr</c:mytest>
+</c:Person>
+-->
+
+
+<c:Person>
+	<c:anyprop rdf:parseType='Collection'>
+		<c:Person/>
+		<c:Document/>
+		<c:AdditionalTopic/>
+		<c:OrganizationalEntity/>
+	</c:anyprop>	
+</c:Person>
+
+
+<c:Person>
+	<c:test1 rdf:nodeID='n1'/>
+	<c:test2 rdf:nodeID='n1'/>
+	<c:test4 rdf:datatype='&c;test'>abc</c:test4>
+		<c:test5 rdf:datatype='&c;test'>abc</c:test5>
+<!--<c:FirstName>alain</c:FirstName>-->
+</c:Person>
+
+
+<c:Person rdf:ID='myself'>
+<c:anyprop>
+	<rdf:Bag>
+		<rdf:li>AAA</rdf:li>
+		<rdf:li rdf:datatype='&xsd;integer' >10</rdf:li>
+
+		<rdf:li rdf:resource='#myself'/>
+	</rdf:Bag>
+</c:anyprop>
+<c:anyprop>
+	<rdf:Seq>
+		<rdf:li>BBB</rdf:li>
+		<rdf:li rdf:datatype='&xsd;float' >20.0</rdf:li>
+
+		<rdf:li rdf:resource='#myself'/>
+	</rdf:Seq>
+</c:anyprop>
+
+</c:Person>
+
+
+
+
+<c:Person rdf:ID='abc' rdf:bagID='tmp'>
+	<c:FirstName>John</c:FirstName>
+	<c:hasCreated rdf:resource='#doc'/>
+</c:Person>
+
+
+<c:Person >
+	<rdf:type rdf:resource='#Person' rdf:ID='test' />
+	<c:hasCreated>
+		<c:Document rdf:nodeID='abcd'/>
+	</c:hasCreated>
+
+	<c:relatedTo  rdf:nodeID='abcd'/>
+</c:Person>
+
+
+<rdfs:Class rdf:about='&c;Icon'>
+	<c:isTypeOf rdf:resource='#James123'/>
+</rdfs:Class>
+
+
+<rdf:Description rdf:about='JohnDoe'>
+	<c:pp rdf:datatype='&c;unknown'>true</c:pp>
+	<c:pp rdf:datatype='&rdf;XMLLiteral'>false</c:pp>
+	<c:pp rdf:datatype='&xsd;string'>true</c:pp>
+	<c:pp xml:lang='en'>false</c:pp>
+	<c:pp rdf:datatype='&c;undef'>true</c:pp>
+	<!--<c:page>45</c:page>
+	<c:page rdf:datatype='&xsd;integer'>45</c:page>
+	<c:page rdf:datatype='&xsd;integer'>46</c:page>-->
+
+</rdf:Description>
+
+<!--<c:Person rdf:about='John'>
+	<c:speed rdf:parseType='Resource'>
+		<c:date rdf:datatype='&xsd;date'>2006-11-01</c:date>
+		<rdf:value rdf:datatype='&xsd;integer'>100</rdf:value>
+		<c:unit>km/h</c:unit>
+	</c:speed>
+	<c:speed rdf:parseType='Resource'>
+		<c:date rdf:datatype='&xsd;date'>2006-12-01</c:date>
+		<rdf:value rdf:datatype='&xsd;integer'>90</rdf:value>
+		<c:unit>km/h</c:unit>
+	</c:speed>	
+</c:Person>-->
+
+
+</rdf:RDF>

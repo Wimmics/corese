@@ -1,3 +1,0 @@
-prefix c: <http://www.inria.fr/acacia/comma#>
-construct {?x rdfs:subClassOf c:Person}
-where {?x rdfs:subClassOf c:Person}

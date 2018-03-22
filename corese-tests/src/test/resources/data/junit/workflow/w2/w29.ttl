@@ -1,0 +1,22 @@
+@base </home/corby/AAServer/data/>
+
+[] owl:imports <profile.ttl>
+[] owl:imports <tutorial/workflow.ttl>
+
+sw:main a sw:Workflow ;
+
+sw:param [
+st:protocol st:ajax ;
+st:service "tutorial/rdf" ;
+st:profile st:web ;
+st:uri st:bgp
+] ;
+
+  sw:body ( 
+  st:tutocontent 
+  [ a sw:Transformation ; sw:uri st:web ]
+  ) 
+.
+
+ 
+        

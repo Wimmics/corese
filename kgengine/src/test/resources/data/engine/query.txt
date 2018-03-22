@@ -1,5 +1,0 @@
-prefix c: <http://www.inria.fr/acacia/comma#>
-SELECT ?x ?t WHERE
-{
- ?x c:hasUncle ?t
-}

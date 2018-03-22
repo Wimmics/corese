@@ -1,0 +1,31 @@
+[] a sw:Workflow ;
+sw:param [  st:value 0 ];
+sw:body ( us:test )
+
+#
+# Recursive Workflow
+#
+us:test a sw:Workflow ;
+sw:body (
+ [ a sw:Test ;
+
+ sw:if   
+    [ a sw:Query ; sw:body 
+      """select * where { filter (st:get(st:value) < 5) }""" ] ;
+  
+  sw:then 
+    [ a sw:Workflow ; sw:body ( 
+    
+      [ a sw:Query ; sw:body 
+      """insert { [] rdf:value ?v } where { bind (st:get(st:value) as ?v) }""" ]
+    
+      [ a sw:Query ; sw:body 
+      """select  where { bind (st:set(st:value, st:get(st:value) + 1) as ?b) }""" ]
+	
+      us:test
+      )];
+  
+  sw:else 
+    [ a sw:Query ; sw:body "select (st:get(st:value) as ?t) where {}" ] 
+ ]
+)

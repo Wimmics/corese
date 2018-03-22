@@ -1,0 +1,2853 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE rdf:RDF [
+	  
+<!ENTITY cos    'http://www.inria.fr/acacia/corese#'>
+<!ENTITY rdf    'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+<!ENTITY rdfs   'http://www.w3.org/2000/01/rdf-schema#'>
+<!ENTITY c      'http://www.inria.fr/edelweiss/2008/query#'>
+<!ENTITY xsd    'http://www.w3.org/2001/XMLSchema#'>
+<!ENTITY owl    'http://www.w3.org/2002/07/owl#'>
+<!ENTITY cc     "http://www.inria.fr/acacia/comma#">
+]>
+<?xsl-stylesheet href='file:///home/corby/workspace/corese/data/ntest/copy.xsl' ?>
+
+<!--	
+<cos:Query rdf:ID=''>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+			
+</cos:value>
+</cos:Query>	
+-->	  
+<!--
+A set of predefined queries
+Olivier Corby, Edelweiss, INRIA, 2008
+graph $path {?a ?r ?b}
+-->
+	
+<rdf:RDF xmlns:rdfs='&rdfs;' xmlns:rdf='&rdf;'  xmlns:cos='&cos;'  xmlns:c='&c;' xmlns:owl='&owl;' xml:base='&c;'
+xmlns:foaf='http://xmlns.com/foaf/0.1/'	 
+xmlns:cc='&cc;'
+>
+
+
+<rdf:Description rdf:about='file:///home/corby/workspace/corese/data/ntest/query.rdf#xpointer(/rdf:RDF/cos:Query[ contains(@rdf:ID, "obj") ])' >
+<c:value>test</c:value>
+<c:value>123</c:value>
+<c:xml rdf:parseType='Literal'>
+<c:entity>
+  <c:test>test</c:test>
+  <c:test>123</c:test>	
+</c:entity>
+</c:xml>
+<cc:age rdf:datatype='&xsd;integer'>30</cc:age>
+<cc:age rdf:datatype='&xsd;integer'>20</cc:age>
+</rdf:Description>
+
+<rdf:Description rdf:ID='a'>
+<cc:relation rdf:resource='b' />
+</rdf:Description>
+
+<rdf:Description rdf:ID='c'>
+<cc:relation rdf:resource='b' />
+</rdf:Description>
+
+<!--<rdf:Description rdf:about='file:///home/corby/workspace/corese/data/ntest/query.rdf' >
+<cos:value>test</cos:value>
+</rdf:Description>-->
+
+<cos:Query rdf:ID='cath'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX neurolog: &lt;http://modalis.i3s.cnrs.fr/ontologies/2009/neurologLight.owl#>
+PREFIX profile: &lt;http://www.daml.org/services/owl-s/1.2/Profile.owl#>
+select debug distinct ?wf_invoc ?regInput ?regTemplate ?regMatrix ?regOutput where
+{
+	?resampling_invoc neurolog:invoque ?resampling .
+	?registration_invoc neurolog:invoque ?registration .
+	?wf_invoc neurolog:embraceServiceInvocation ?resampling_invoc .
+	?wf_invoc neurolog:embraceServiceInvocation ?registration_invoc .
+	
+	?regOutput neurolog:isInvolvedIn ?resampling_invoc .  	
+	?regOutput neurolog:isProducedBy ?resampling_output .	
+	?resampling profile:hasOutput ?resampling_output .
+	?resampling profile:hasInput ?resampling_input1 .
+	?resampling_input1 rdf:type neurolog:Image .
+	?resampling profile:hasInput ?resampling_input2 .
+	?resampling_input2 rdf:type neurolog:Matrix .
+	?resampling rdf:type neurolog:Resampling .
+
+	?regMatrix neurolog:isInvolvedIn ?registration_invoc .
+	?regMatrix neurolog:isInvolvedIn ?resampling_invoc . 
+	
+	?regMatrix neurolog:isProcessedBy ?resampling_input2 .
+	?regMatrix neurolog:isProducedBy ?registration_output .
+
+	?registration profile:hasOutput ?registration_output .
+	?registration profile:hasInput ?registration_input1 .
+	?registration_input1 rdf:type neurolog:Template .
+	?registration profile:hasInput ?registration_input2 .
+	?registration_input2 rdf:type neurolog:Anatomical .
+	?registration rdf:type neurolog:Registration .
+
+	?regTemplate neurolog:isInvolvedIn ?registration_invoc .
+	?regTemplate neurolog:isProcessedBy ?registration_input1 .
+	 ?regTemplate rdf:type neurolog:Template 
+<!-- ?regTemplate rdf:type ?t1 . FILTER (?t1 ~ 'Template') .-->
+	?regInput neurolog:isInvolvedIn ?registration_invoc .      
+	?regInput neurolog:isInvolvedIn ?resampling_invoc .   
+	?regInput neurolog:isProcessedBy ?registration_input2 .
+	 ?regInput rdf:type neurolog:Anatomical .
+<!-- ?regInput rdf:type ?t2 . FILTER (?t2 ~ 'Anatomical') .-->
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='pp1'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+PREFIX geo: &lt;http://ns.inria.fr/ewok/geology#&gt;
+SELECT ?obj ?unitAndBoundary WHERE {
+    GRAPH ?interpretation {
+        ?obj geo:isConstitutedBy ?unitAndBoundary .
+    }
+    ?interpretation dc:creator ?geolog1 .
+    ?geolog1 foaf:name ?name .
+    FILTER ( str(?name) = "Michel Perrin" )
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='pp2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+PREFIX geo: &lt;http://ns.inria.fr/ewok/geology#&gt;
+PREFIX meta: &lt;http://inria.fr/geological/examples/interpretation-description#&gt;
+PREFIX doc: &lt;http://inria.fr/geological/examples/file-description#&gt;
+SELECT distinct ?obj ?data ?geolog WHERE {
+    GRAPH ?interpretation {
+        ?obj ?x ?y .
+        ?data doc:describe ?obj .
+    }
+    ?interpretation dc:creator ?geolog .
+    ?interpretation meta:hasStatus meta:Documented .
+
+}
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='ge33'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+PREFIX ssna: &lt;http://ns.inria.fr/semsna/2008/10/13/voc>
+construct{
+    ?x ssna:isMemberOf ?y
+}
+<!--select ?x ?y genURI(&lt;myorg>) as ?uri -->
+where {
+ ?x foaf:knows ?y
+}
+group by any 
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='ge3'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+PREFIX ssna: &lt;http://ns.inria.fr/semsna/2008/10/13/voc>
+add{
+    ?x ssna:isMemberOf ?uri
+}
+select ?x ?y genURI(&lt;myorg>) as ?uri where
+
+{
+ ?x $path ?y
+ filter(match($path, star(foaf:knows), 'sa'))
+}
+
+group by any 
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='ge4'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+PREFIX ssna: &lt;http://ns.inria.fr/semsna/2008/10/13/voc>
+select ?x ?y  where
+{
+ ?x ssna:isMemberOf ?y
+}
+group by ?y
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='ge2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+PREFIX ssna: &lt;http://ns.inria.fr/semsna/2008/10/13/voc>
+select ?x ?y genURI(&lt;myorg>) as ?uri where
+{
+{
+ ?x $path ?y
+ filter(match($path, star(foaf:knows), 'sa'))
+}
+UNION { ?x rdf:type foaf:Person }
+?x rdf:type foaf:Person
+}
+group by any 
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='qpd'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX gt: &lt;http://www.owl-ontologies.com/geoTime.owl#>
+SELECT distinct ?x ?r 
+getFile(edge(?p)) as ?file1
+getFile(edge(?q)) as ?file2
+
+WHERE {
+   ?x rdf:type gt:Period .
+   ?x gt:name::?p ?y .
+   FILTER (?y ~ "Jurass")
+   ?x gt:reference::?q ?r
+filter(isDirect(edge(?p))) 
+filter(common(edge(?p), edge(?q)) >= 1).
+<!--filter(isByTransitivity(edge(?p)))
+filter(isByRule(edge(?p)))-->
+}
+pragma {
+cos:query cos:event true
+
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='aeg'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX wiki: &lt;http://sweetwiki.inria.fr/ontology#> 
+SELECT debug * 
+WHERE { 
+    ?page wiki:name 'DocumentationHome' . 
+    ?page wiki:author ?author  . 
+    ?page wiki:hasForWeb 'Documentation' . 
+    ?page wiki:modification ?modification 
+} 
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='trace'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select debug * 
+where {
+?p rdfs:label ?l
+filter(?class ~ 'Person'  )
+?p rdfs:domain ?class
+?p2 rdfs:range ?class
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='filesrc'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select   
+  distinct file(?g) as ?file
+<!--  foo(?meta0) as ?uri-->
+  xpath(?file, '/rdf:RDF/@xml:base') as ?rdf
+?g 
+where {
+  graph ?g { ?x rdfs:label::?p ?l }
+  filter(str(?rdf) = 'http://www.inria.fr/acacia/comma')
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='gui2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+select debug ?from ?to ?between $path 
+pathLength($path) as ?length 
+where{
+?from foaf:knows::$path ?to
+filter(match($path, star(foaf:knows), "s"))
+
+graph $path{?between foaf:knows ?j}
+filter(?from != ?to)
+filter(?from != ?between)
+filter(?between != ?to)
+<!--optional { ?from foaf:knows::?p ?to }
+filter(!bound(?p))-->
+}
+group by $path
+order by ?length
+</cos:value>
+</cos:Query>
+
+
+
+
+
+<cos:Query rdf:ID='groupfun'>
+<rdfs:comment>
+aggregate with exp	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select  ?x ?age  ((?age + ?age) as ?res )  
+where {
+{graph ?g {?x cc:age ?age}}
+union
+{?x cc:age ?age}
+}
+group by  ?res 
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='selfun'>
+<rdfs:comment>
+aggregate with exp	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select    ((?age + ?age) as ?res)   (sum(?res) as ?sum)
+where {
+{graph ?g {?x cc:age ?age}}
+union
+{?x cc:age ?age}
+}
+group by ?x
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='distinctFun'>
+<rdfs:comment>
+distinct with exp	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select  distinct   ((?age + ?age) as ?res) ?x
+where {
+{graph ?g {?x cc:age ?age}}
+union
+{?x cc:age ?age}
+
+}
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='distinctFun1'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select  distinct   ((?age + ?age) as ?res)
+where {
+{graph ?g {?x cc:age ?age}}
+union
+{?x cc:age ?age}
+
+}
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='aggregate'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select  * 
+sum(?l) as ?total
+pathLength($path) as ?l
+where {
+?x cc:age::$path ?y 
+filter(?total > 0)
+}
+group by ?x
+<!--pragma {cos:query cos:connex true}-->
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='cnx'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;&cc;>
+select  where {
+?x ?p ?y 
+filter (?p ^ cc:)
+}
+display rdf
+<!--pragma {cos:query cos:connex true}-->
+</cos:value>
+</cos:Query>
+
+
+
+
+
+<cos:Query rdf:ID='nour'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+
+prefix cc: &lt;&cc;>
+
+construct {
+?dsub ?p ?dran
+}
+select * 
+
+xpath(?t, "//Annotation[@Type = 'Property']/Feature[Name = 'kind']/Value/text()") as ?prop
+
+xpath(?t, "//Annotation[@Type = 'Class']/Feature[Name = 'kind']/Value/text()") as ?class
+
+where {
+?x cc:tree ?t
+?p rdf:type rdf:Property
+?p rdfs:domain ?dom
+?p rdfs:range  ?ran
+filter(?p ~ ?prop)
+
+?dsub rdfs:subClassOf ?dom
+filter(?dsub ~ ?class)
+
+?dran rdfs:subClassOf ?ran
+filter(?dran ~ ?class)
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='dt'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select distinct ?x ?p ?v2 where {
+?x c:value ?v
+?x c:speed ?v
+?x ?p ?v2
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='sum2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+add {
+&lt;toto> c:total ?total
+}
+select * sum(?y) as ?total
+where {
+?x c:age ?y .
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='sum3'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+add {
+?x c:total ?total
+?x c:age ?y .
+
+}
+select * sum(?y) as ?total
+where {
+?x c:age ?y .
+}
+group by ?x
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='cpl'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+select ?x ?y 
+pathLength($ipath) as ?length 
+where {
+   ?x rdf:type foaf:Person
+   ?y rdf:type foaf:Person
+   ?x $ipath ?y
+   filter(match($ipath, star(foaf:knows), "s"))
+   filter(?x = &lt;http://www.inria.fr/a>)
+<!--	filter(pathLength($ipath) &lt;=10)-->
+}
+group by ?x ?y
+order by ?x ?length
+
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='json'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select   nosort  * 
+self([1,2]) as ?res
+where {
+?x ?p ?v1 filter(!lang(?v1))
+?y ?r ?l  filter(lang(?l))
+
+?q rdf:type ?class
+?q rdf:type rdf:Property
+optional { ?a ?q ?b }
+filter(! bound(?b))
+}
+limit 2
+display json
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='ggg'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/> 
+select  debug  ?x ?y ?i 
+count($ipath) as ?icount 
+count($totalpath) as ?totalcount 
+projection 5
+where {
+{ 
+?i foaf:name ?iname 
+?x $ipath ?y 
+?x foaf:name ?xname 
+?y foaf:name ?yname 
+Filter(match($ipath, star(foaf:knows), "d" )) 
+graph $ipath {?i foaf:knows ?j} 
+filter(?i != ?y) filter(?x != ?i) 
+} 
+
+UNION 
+
+{ 
+?x foaf:name ?xname 
+$x $totalpath ?y 
+Filter(match($totalpath, star(foaf:knows), "d")) 
+} 
+
+} 
+group by ?x ?y ?i 
+order by  
+desc(?totalcount)
+desc(?icount)
+limit 2
+
+
+<!--desc(?totalcount)-->
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='speed1'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+
+PREFIX geo: &lt;http://rdf.insee.fr/geo/> 
+select distinct ?doc where {
+
+?doc geo:contain ?seg
+?doc geo:contain ?seg1
+?doc geo:contain ?seg2
+
+?seg geo:loc ?loc
+?z        ?q ?loc
+
+filter(?q = geo:sub || ?q = geo:loc)
+filter(
+?loc = &lt;URI>  || 
+?z   = &lt;URI>  &amp;&amp; ?q = geo:sub
+)
+
+}
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='speed2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+
+PREFIX geo: &lt;http://rdf.insee.fr/geo/> 
+select * where {
+?doc geo:contain ?seg
+?seg geo:loc ?loc
+
+optional {
+  ?z geo:sub ?loc  filter(?z = &lt;URI>)
+}
+
+filter(?loc = &lt;URI> || bound(?z))
+
+
+
+
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='xsql'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix sem: &lt;http://www.inria.fr/acacia/corese/pragma/display#>
+construct {
+graph ?g { ?uri rdfs:label ?name }
+ ?uri rdfs:label ?name 
+
+}
+select  * 
+self([[&lt;a>, &lt;b>], ["a", "b"]]) as (?uri, ?name) 
+where {
+graph ?g { ?a ?p ?b }
+} 
+limit 1	
+pragma sem: {
+	sem:resource sem:format sem:list
+	sem:resource sem:order sem:uri
+	sem:property sem:source true
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='gg'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX geo: &lt;http://rdf.insee.fr/geo/> 
+prefix sem: &lt;http://www.inria.fr/acacia/corese/pragma/display#>
+<!--construct {
+$path rdfs:member ?y
+}-->
+
+<!--  ?cc ?pp ?c ?owl   ?y ?p ?t-->
+SELECT * 
+pathLength($path) as ?length
+array(?length) as ?sum
+WHERE { 
+<!--?x rdf:type &lt;http://rdf.brgm.fr/geo/ZNA> . -->
+	<!--?x rdf:type &lt;http://rdf.brgm.fr/geo/ZNA>-->
+	<!--?x geo:nom ?n
+	?x rdf:type ?class
+	?class rdfs:subClassOf ?zz-->
+	
+	?cc ?pp ?c
+	?c owl:unionOf (?v1 ?v2)
+	
+	?l $path rdf:nil
+	filter(match($path, star(rdf:rest), "d"))
+	graph $path {?x rdf:rest ?z}
+	?x rdf:first ?y
+	{?c owl:unionOf ?l} union {?c owl:intersectionOf ?l} 
+	optional {?y ?p ?t}
+	
+	
+
+}
+<!--group by $path-->
+
+pragma {
+<!--cos:query cos:debug true-->
+<!--cos:query cos:relax true-->
+<!--cos:query cos:display rdf:-->
+<!--cos:query cos:trace true-->
+
+<!--cos:server cos:load 
+   "data/ewok/dateTimeData/ontologies" ,
+   "data/ewok/geographicalData/ontologies" ,
+   "data/ewok/model/ontologies" ,
+   "data/ewok/geographicalData/annotations/zna.rdf";-->
+<!--   cos:status true-->
+   
+<!--cos:engine cos:trace true ;
+  cos:run owl:-->
+   
+
+}
+pragma sem: {
+	sem:resource sem:format sem:list
+	sem:resource sem:order sem:uri
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='prag'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+	
+SELECT  * WHERE { 
+?x rdfs:subClassOf ?y
+rdfs:subClassOf rdf:type ?class
+}
+pragma {
+rdfs:subClassOf rdf:type owl:TransitiveProperty
+cos:engine 
+	cos:trace true ;
+	cos:run owl:
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='gg22'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select ?x ?y pathLength($path) as ?length 
+where {
+?x $path ?y
+filter(match($path, star(cos:Property), "d" ))
+}
+group by ?z
+projection 10
+
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='sys'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix prag:  &lt;http://www.inria.fr/acacia/corese/pragma#>
+select debug
+distinct ?p
+occurrence(?p) as ?card
+where {
+?p rdf:type ?class
+?p rdf:type rdf:Property
+?p rdfs:label get:value
+
+optional { graph prag: {
+cos:server cos:size ?val
+}}
+
+}
+order by desc(?card)
+	
+</cos:value>
+</cos:Query>	
+	
+	
+
+<cos:Query rdf:ID='qowl'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX geo2: &lt;http://rdf.inria.fr/geo/> 
+PREFIX wl:  &lt;http://model.core.weblab.eads.com#>
+PREFIX sws: &lt;function://fr.inria.ewok.semantic.helpers.MediaUnitHelper>
+SELECT debug distinct ?doc WHERE {
+    <!--?doc rdf:type wl:Document .
+    ?doc wl:contains ?seg .-->
+        ?seg rdf:type wl:Segment
+
+    {
+      ?seg geo2:datedAt ?timePeriod .
+      FILTER ( ?timePeriod = &lt;http://www.owl-ontologies.com/geoTime.owl#Jurassic> )
+    
+    }
+    UNION 
+    {
+      ?seg geo2:datedAt ?timePeriod2 .
+      ?timePeriod2 wl:isEquivalentTo ?x .  
+      FILTER ( ?x = &lt;http://www.owl-ontologies.com/geoTime.owl#Jurassic> )
+    }
+}
+pragma {
+cos:query cos:trace true
+cos:query cos:sort true
+}
+limit 1
+	
+	
+	
+</cos:value>
+</cos:Query>
+
+
+
+
+
+<cos:Query rdf:ID='gui'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>     
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/>
+select debug ?xname ?yname ?iname $path pathLength($path) as ?length 
+cardinality(foaf:knows) as ?card
+where{
+   graph $path{?i foaf:knows ?j}
+   ?x foaf:name ?xname
+   ?i foaf:name ?iname
+   ?j foaf:name ?iname
+   ?y foaf:name ?yname
+      ?x $path ?y
+
+   Filter(match($path, star(cos:Property), "dsa"))
+   filter(?length &lt;= 2)
+   
+  <!-- filter(?x != ?y)
+   filter(?i != ?y)
+   filter(?x != ?i)-->
+}
+<!--group by ?x ?y-->
+<!--order by ?length-->
+ limit 5
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='adil'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>     
+prefix geo:  &lt;http://www.owl-ontologies.com/geoTime.owl#>
+prefix wiki: &lt;http://www.owl-ontologies.com/wiki#>
+prefix sem:  &lt;http://www.inria.fr/acacia/corese/pragma/display#>
+prefix prag:  &lt;http://www.inria.fr/acacia/corese/pragma#>
+select debug where {
+graph ?g { ?x ?p ?y } 
+filter(isDistinct(?g))
+filter(?p != rdf:type)
+
+optional {graph prag: {
+cos:server cos:size ?val
+}}
+
+optional {
+graph sem: {
+
+sem:root 
+  rdf:type wiki:Page ;
+<!--  rdf:type rdfs:Class ;-->
+  sem:uri ?x ;
+  sem:uri &lt;wiki:.*> .
+  
+sem:class    sem:format sem:tag , sem:relation .
+
+sem:resource 
+  sem:format sem:nest , sem:list;
+  sem:order sem:class;
+  sem:order sem:uri
+
+sem:property 
+  sem:uri  wiki:name ;
+  sem:uri  wiki: ;
+  sem:type owl:TransitiveProperty ;
+  sem:order sem:uri
+}}
+
+}
+group by ?g
+order by self(?g)
+display rdf 
+</cos:value>     
+</cos:Query>
+
+
+
+
+
+
+<cos:Query rdf:ID='owl'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX geo2: &lt;http://ns.inria.fr/ecco2/generated-2/25/08#>
+SELECT distinct ?n WHERE {
+             ?x rdfs:subClassOf geo2:GeologicalObject .
+             ?x rdfs:label ?n .
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='geo'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+PREFIX geo2: &lt;http://rdf.inria.fr/geo/>
+PREFIX wl: &lt;http://model.core.weblab.eads.com#>
+PREFIX sws: &lt;function://fr.inria.ewok.semantic.helpers.MediaUnitHelper>
+SELECT *
+WHERE { 
+	<!--?doc rdf:type wl:Document .
+	?doc wl:contains ?seg .-->
+	?seg geo2:geoobject ?x .	
+	?x rdf:type ?class 
+<!--	&lt;http://ns.inria.fr/ecco2/generated-2/25/08#Channel> .-->
+}
+
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='xparql'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select *
+sparql("select ?a ?p ?b where {?a ?p ?b} limit 10") as (?x, ?r, ?y)
+where {
+
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='sql'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix db:  &lt;jdbc:derby://localhost:1527/&gt;
+<!--construct {
+?uri c:age ?value
+}-->
+select debug ?x ?p ?y
+sql(db:DBTest,  'lk', 'lk', 
+"SELECT distinct  gene, value FROM EXPRESSIONVALUES WHERE value&lt;100 AND gene &lt; 'g4'") 
+as (?gene,  ?value)
+uri(?gene) as ?uri
+where {
+?x ?p ?y
+<!--filter(?sql ~ 'http://ns.inria.org/edelweiss/immunosearch/GEonto#c4'
+)-->
+filter(?value &lt;= 50 &amp;&amp; ?gene != 'toto') 
+} 
+limit 1
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='sql2'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select * where {
+?x c:age ?sql
+}
+</cos:value>
+</cos:Query>
+
+		
+
+<cos:Query rdf:ID='ct1'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select ?s ?x ?y ?z ?t 
+from named &lt;http://ns.inria.fr/edelweiss/200./exp1.*&gt;
+where {
+graph ?g { ?g1 c:entail ?g2 }
+?g rdf:type c:InVitro
+
+graph ?g1 { ?x ?p ?y }
+graph ?g2 { ?z ?q ?t }
+
+filter (?p ^ c:)
+filter (?q ^ c:)
+
+graph ?s { ?g  rdf:type ?c  }
+graph ?s { ?g1 rdf:type ?c1 }
+graph ?s { ?g2 rdf:type ?c2 }
+
+?s c:date ?vv
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='xpth'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+prefix pml: &lt;http://www.dmg.org/PMML-3_1&gt;
+select 
+getLocalName(
+xpath(?xml, "/pml:PMML/pml:Header/@*")) as ?name
+xpath(?xml, "/pml:PMML/pml:Header/@*")  as ?val
+xpath(?xml, "/pml:PMML//pml:Cluster/pml:Array/text()") as ?array
+xpath(?xml, "//pml:Cluster/@size") as ?size
+where {
+graph ?src { 
+?x c:test ?xml
+filter(xpath(?xml,
+"//*[pml:ClusteringModel/@modelName = 'KMeans_Model' ]"))
+filter(xpath(?xml, 
+"//pml:Cluster[@size >= 40]"))
+
+}
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+
+
+<cos:Query rdf:ID='perf'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select debug * 
+xpath(?g, '//rdf:Property[rdfs:label = $label]/@rdf:ID') as ?prop
+xpath(?g, '//rdf:Property[rdfs:label = $label]/rdfs:label/text()') as ?plab
+where {
+graph ?g {
+?class rdf:type rdfs:Class
+?class rdfs:label ?label
+?p rdf:type rdf:Property
+?p rdfs:label ?label
+}
+filter (xpath(?g, '//rdf:Property/rdfs:label/text()') = str(?label))
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+
+
+<cos:Query rdf:ID='func'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select * 
+  xsd:integer(xpath(?src, '//q:value/text()')) as ?res
+  xpath(?src, '//q:value') as ?test
+  xpath(?test, 'text()') as ?value
+
+  xpath(?xml, '//q:test/text()') as ?text
+where {
+graph ?src {?x q:value '123' ?x q:xml ?xml}
+filter(?res)
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='desik'>
+<rdfs:comment>	
+</rdfs:comment>
+<cos:value>
+select * 
+sparql("q:desik1") as ?elem
+where {
+?x rdf:type ?class
+filter(?x = ?elem)
+}
+</cos:value>
+</cos:Query>
+
+
+  
+
+<cos:Query rdf:ID='desik1'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select row(?b) as ?elem 
+<!--pathLength($path) as ?length-->
+where {
+?x $path ?y
+filter(?x ~ 'olivier.corby')
+filter(?y ~ 'cstb')
+filter(match($path, star(c:SomeRelation), 'ds' ))
+graph $path {?a ?p ?b}
+}
+order by pathLength($path)
+group by $path
+limit 2
+
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='base'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+base &lt;http://www.inria.fr/acacia/comma#&gt;
+select * where {
+   ?x &lt;FirstName&gt; ?name  
+   filter(?name = 'Olivier')
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='chem'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select  ?part  countItem(?p) as ?count where { 
+rec graph c:ML {
+?p rdf:type c:Matter  
+?p $pp ?part
+filter(match($pp, star(rdf:type), 'i'))
+}
+} 
+group by  ?part
+</cos:value>
+</cos:Query>	
+	
+
+
+
+<cos:Query rdf:ID='chem2'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select distinct ?g
+pathLength($pp) as ?l where { 
+rec graph ?g {
+?p rdf:type c:Matter  
+?p $pp c:Hydrogen
+filter(match($pp, star(cos:Property), 'di'))
+
+}
+<!--graph $pp {?a ?q ?b}
+graph ?gg  {?a ?q ?b}
+?a rdf:type ?class
+filter (?g ~ 'model')-->
+} 
+projection 5
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='rule'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+construct {
+?x ?p ?z 
+}
+where {
+<!--?p rdf:type owl:TransitiveProperty-->
+?x ?p ?y ?y ?p ?z  
+}
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='qq'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select * where {
+graph ?g { ?x q:sequence ?y }
+rec graph ?g { ?g1 ?r ?g2 }	
+graph ?g1 { ?a ?p ?b }
+graph ?g2 { ?c ?q ?d }
+}		
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='sparql2'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select
+sparql(?query) as ?res
+where {
+graph ?g { ?x cos:value ?query }
+filter(?x ~ 'xsparql')
+}
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='xsparql'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select
+xpath(?g, '//*[ @rdf:ID = "ccc" ]/cos:value/text()') as ?query
+sparql(?query) as ?res
+where {
+graph ?g { ?x cos:value ?y }
+filter(?x ~ 'xsparql')
+}
+</cos:value>
+</cos:Query>
+
+
+
+
+<cos:Query rdf:ID='ccc'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/edelweiss/ctx#&gt;
+construct {
+graph ?g1 { ?x q:rdfa ?g }
+graph ?g2 { ?g q:rdfa ?x }
+graph ?g3 { ?g1 q:sequence ?g2 }
+}
+select 
+uri(cc: + "c1") as ?g1
+uri(cc: + "c2") as ?g2
+uri(cc: + "c3") as ?g3
+
+where {
+graph ?g { ?x q:rdfa::?p ?html }
+}			
+</cos:value>
+</cos:Query>	
+	
+
+
+<cos:Query rdf:ID='xx'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+construct {
+ 
+?res c:knows ?res 
+?res c:name ?lit
+}
+select 
+("file:///home/corby/workspace/corese/data/ntest/query.rdf#xpointer(/)") as ?uri
+("file:///home/corby/workspace/corese/data/ntest/copy.xsl")  as ?xsl
+("file:///home/corby/workspace/corese/data/ntest/RDFa2RDFXML.xsl")  as ?rdfa
+
+xpointer(?uri)  as ?dd
+
+xpath(?dd, "//processing-instruction()") as ?pi
+substring-before(substring-after(?pi, "href='"), "'") as ?src
+
+xslt(?dd, ?src) as ?doc
+
+xpath(?doc, "/rdf:RDF/namespace::* | /rdf:RDF/@*") as ?ns
+getLocalName(?ns) as ?names
+getNamespaceURI(?ns) as ?pref
+
+getNodeName(?doc) as ?name
+getChildNodes(?doc) as ?child
+
+xslt(?html, ?src) as ?copy
+xslt(?copy, ?rdfa) as ?rdf
+
+uri(xpath(?rdf, "//@rdf:resource[not(contains(., 'Person'))]")) as ?res
+(xpath(?rdf, "//*/text()")) as ?lit
+
+
+where {
+?x q:rdfa ?html
+}	
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+<cos:Query rdf:ID='obj'>
+<rdfs:comment>
+Store an xpath DOM in an XMLLiteral
+reuse this DOM in other xpath()	
+</rdfs:comment>
+<cos:value>
+prefix q: &lt;&c;&gt;
+prefix step: &lt;http://step.express.org/&gt;
+select debug *
+xpath(?xml, "/") as ?root
+xpath(?root, "//step:entity_instance[ contains(@id, 'bed') ]") as ?obj
+xpath(?obj, "@id") as ?id
+xpath(?obj, "@*") as ?attr
+xpath(?obj, "*[@express_attribute_name = 'acidity']//step:real_literal/text()") as ?prop
+xpath(?obj, "*[*//step:real_literal >= 6.2]/@*") as ?at
+
+getParentNode(?obj) as ?father
+<!--xpath(?father, "//step:entity_instance[ contains(@id, 'bed') ]") as ?path-->
+
+xpointer(?y) as ?dom
+<!--xpath(?target, "/rdf:RDF/cos:Query[1]") as ?dom-->
+xslt(?dom, "file:///home/corby/workspace/corese/data/ntest/copy.xsl") as ?copy
+xpath(?copy, "/cos:Query") as ?new
+getTextContent(?new) as ?text
+
+("file:///home/corby/workspace/corese/data/ntest/query.rdf") as ?uri
+xpath(?uri, "/") as ?doc
+xpath(?doc, "//processing-instruction()") as ?top
+xpath(?doc, "/rdf:RDF/namespace::* | /rdf:RDF/@*") as ?ns
+getLocalName(?ns) as ?names
+getNamespaceURI(?ns) as ?pref
+
+
+
+where {
+graph ?g { ?x q:step ?xml }
+filter(xsd:float(?prop) >= 6.2)
+<!--filter(regex(?text, "flower", "s"))-->
+?y cos:value 'test'
+<!--filter (?y ~ 'xpointer')-->
+filter ( (?text ~ 'xpointer') )
+}
+limit 2	
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='consparql'>
+<rdfs:comment>
+describe and construct are returned as XMLLiteral
+ready for xpath !!!
+path match dom are stored in XMLLiteral result !		
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#>
+select debug * 
+sparql("describe ?a where {?a ?p ?b} limit 1") as ?desc
+sparql("construct {?y ?p ?x} where {?x ?p ?y filter(isURI(?y))} limit 5") as ?cons
+xpath(?desc, "/rdf:RDF/namespace::*") as ?xpat1
+xpath(?cons, "/rdf:RDF/*") as ?xpat2
+xpath(?xpat2, "*/@*") as ?xpat3
+xpath(?xpat2, "*") as ?xpat4
+
+where {
+	?x ?p ?y
+filter(?y != ?xpat4 &amp;&amp; ?y != ?xpat4)
+}		
+limit 1
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='xslt2'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
+select * 
+ xslt(?doc, "file:///home/corby/workspace/corese/data/ntest/copy.xsl") as ?any 
+xpath(?any,  "//span/text()") as ?res
+where {
+graph ?doc {?x foaf:knows ?y}
+filter(xpath(?doc, 
+"/html/head[@profile = 'http://www.w3.org/2003/g/data-view']"))
+}
+limit 1			
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='grddl'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
+select * 
+xpath(?doc, "//link[@rel='transformation']/@href") as ?xsl
+xslt(?doc, ?xsl, 's') as ?rdf
+where {
+graph ?doc {?x foaf:knows ?y}
+filter(xpath(?doc, 
+"/html/head[@profile = 'http://www.w3.org/2003/g/data-view']"))
+filter(?rdf)
+}
+limit 1			
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='foaf'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
+select distinct ?doc ?a ?p ?b  
+where {
+graph ?doc {?x foaf:knows ?y ?a ?p ?b}
+}
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+<cos:Query rdf:ID='owl'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+select debug * 
+xpath(?g, 
+"//*[ @rdf:ID and contains($x, @rdf:ID) ]/owl:intersectionOf//owl:onProperty/@rdf:resource") 
+as ?list
+xpath(?g, "//*[ @rdf:ID and contains($x, @rdf:ID) ]/@rdf:ID") as ?id
+where {
+graph ?g { ?x owl:intersectionOf ?int }
+}			
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='xslt'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
+construct {
+?subject  ?predicate  ?object
+?subject2 ?predicate2 ?object2
+}
+select 
+xslt(?rdfa, "file:///home/corby/workspace/corese/data/ntest/RDFa2RDFXML.xsl") as ?doc
+
+uri(xpath(?doc, "/rdf:RDF/rdf:Description[*/@rdf:resource or */@rdf:nodeID]/@rdf:about | /rdf:RDF/rdf:Description[*/@rdf:resource or */@rdf:nodeID]/@rdf:nodeID")) as ?subject
+
+uri(xpath(?doc, "/rdf:RDF/rdf:Description/*[@rdf:resource or @rdf:nodeID]")) as ?predicate
+
+uri(xpath(?doc, "/rdf:RDF/rdf:Description/*/@rdf:resource |                                           /rdf:RDF/rdf:Description/*/@rdf:nodeID")) as ?object
+
+uri(xpath(?doc, "/rdf:RDF/rdf:Description[not(*/@rdf:resource or */@rdf:nodeID)]/@rdf:about |  /rdf:RDF/rdf:Description[not(*/@rdf:resource or */@rdf:nodeID)]/@rdf:nodeID")) as ?subject2
+
+uri(xpath(?doc, "/rdf:RDF/rdf:Description/*[not(@rdf:resource or @rdf:nodeID)]")) as ?predicate2
+
+xpath(?doc, "/rdf:RDF/rdf:Description/*[not(@rdf:resource or @rdf:nodeID)]/text()") as ?object2
+
+where {
+    _:b q:rdfa ?rdfa
+    <!--filter(?doc = ?rdfa)-->
+}
+display flat	
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='xpp'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select debug  * 
+uri(xpath(?g, 
+"/rdf:RDF//*[ c:FamilyName/text() = 'Corby' and c:FirstName/text() = 'Olivier' ]/@rdf:about")) as ?res
+where {
+graph ?g {   ?x c:hasCreated ?doc ?doc c:Title ?title filter(?title ~ 'knowledge' ) }
+filter (xpath(?g, 
+"/rdf:RDF//*[ c:FamilyName/text() = 'Corby' and c:FirstName/text() = 'Olivier' ]"))
+
+filter(isDistinct(?x))
+}			
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+<cos:Query rdf:ID='regex'>
+<rdfs:comment>			
+</rdfs:comment>
+<cos:value>
+select debug * 
+(xpath(?g, "/rdf:RDF/rdf:Property/rdfs:label/text()")) as ?plabel
+where {
+graph ?g {?p rdf:type rdf:Property ?p rdfs:label ?label}
+filter(regex(?plabel, 'createur'))
+filter(?plabel = str(?label))
+
+}
+limit 1			
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='nest'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;&c;>
+select * 
+sparql(?query) as ?res
+where {
+?x c:author ?doc
+?x c:query ?query
+filter(?res)
+}		
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='rdfa2'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+
+construct {
+?s ?p ?o
+}
+select  
+uri(get(?abo, 0)) as ?s
+uri(get(?rel, 0)) as ?p
+uri("who") as ?o
+
+xpath(?rdfa, "//*[@about and @rel]/@about" ) as ?abo
+xpath(?rdfa, "//*[@about and @rel]/@rel" )   as ?rel
+xpath(?rdfa, "//*[@about and @rel]/ul/li/@typeof" )   as ?typ
+
+where {
+_:b q:rdfa ?rdfa
+}			
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='rdfa'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select  
+
+xpath(?rdfa, "//*/@property" )         as ?pro
+xpath(?rdfa, "//*[@property]/text()" ) as ?val
+
+xpath(?rdfa, "//*[@rel and @href]/@rel" )  as ?rel
+xpath(?rdfa, "//*[@rel and @href]/@href" ) as ?hre
+
+xpath(?rdfa, "//*[@about and @rel]/@about" ) as ?abo
+xpath(?rdfa, "//*[@about and @rel]/@rel" )   as ?re2
+
+
+
+where {
+_:b q:rdfa ?rdfa
+}			
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='path2'>
+<rdfs:comment>
+Elements of paths computed by nested query			
+</rdfs:comment>
+<cos:value>
+select distinct ?x 
+sparql(
+"select $path where { ?x $path ?y filter(?x ~ 'olivier.corby') filter(?y ~ 'cstb') } "
+) as ?pp
+where {
+?x rdf:type ?class filter(?pp)
+}
+limit 1
+</cos:value>
+</cos:Query>		
+	
+
+
+<cos:Query rdf:ID='path11'>
+<rdfs:comment>
+Elements of paths computed by nested query			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select debug distinct  ?b 
+where {
+?x $path ?y filter(match($path, star(c:SomeRelation), '' )) 
+filter(?x ~ 'olivier.corby') 
+filter(?y ~ 'cstb')
+graph $path {?a ?p ?b} 
+
+?z $path2 ?t filter(match($path2, star(c:SomeRelation), '' )) 
+filter(?z ~ 'fabien.gandon') 
+filter(?t ~ 'comma') 
+graph $path2 {?a2 ?p2 ?b} 
+}
+order by ?b
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='pp'>
+<rdfs:comment>
+Intersection of two networks
+Elements of paths computed by nested query			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt; 
+select debug distinct ?b where { 
+?x $path ?y 
+filter(match($path, star(c:isMemberOf || c:IsInterestedBy), 'd' )) 
+filter(pathLength($path) &lt;= 5) 
+filter(?x ~ 'olivier.corby')  
+graph $path {?a ?p ?b} 
+}
+</cos:value>
+</cos:Query>		
+
+
+
+<cos:Query rdf:ID='path3'>
+<rdfs:comment>
+Intersection of two networks
+Elements of paths computed by nested query			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+prefix q: &lt;&c;&gt;
+select debug distinct  ?b 
+sparql(q:pp) as ?net
+where {
+?z $path ?t filter(match($path, star(c:isMemberOf || c:IsInterestedBy), 'd' ))
+filter( pathLength($path) &lt;= 5 )
+filter(?z ~ 'fabien.gandon') 
+graph $path {?a ?p ?b} 
+filter(?b = ?net)
+?b rdf:type c:AdditionalTopic
+}
+order by ?b
+</cos:value>
+</cos:Query>		
+	
+	
+	
+<cos:Query rdf:ID='pathType'>
+<rdfs:comment>
+test type un path enumeration 			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select   distinct  ?b 
+where {
+?z $path ?t filter(match($path, star(c:isMemberOf || c:IsInterestedBy), 'd' ))
+filter(?z ~ 'fabien.gandon') 
+graph $path {
+?a ?p ?b
+}
+?b rdf:type c:AdditionalTopic
+
+}
+</cos:value>
+</cos:Query>		
+	
+	
+	
+	
+<cos:Query rdf:ID='fromVar2'>
+<rdfs:comment>
+Compute contexts ?g by inner query
+?g has meaning only in filter, not in triple
+because it is a funcall			
+</rdfs:comment>
+<cos:value>
+select debug * 
+sparql(
+"select distinct ?g where { graph ?g {?x ?p ?y} ?g ?q ?x filter(?q != rdf:type)}"
+) as ?g 
+<!--get(?g, 0) as ?e1
+concat(?e1, "\n" ) as ?ee1-->
+from named ?g 
+where {
+  graph ?s {?x ?p ?y}
+filter(isDistinct(?s))
+}
+limit 100
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='fromVar0'>
+<rdfs:comment>
+Compute contexts ?g by inner query
+?g has meaning only in filter, not in triple
+because it is a funcall			
+</rdfs:comment>
+<cos:value>
+select debug * 
+
+where {
+graph ?g1 {?d1 c:Title ?t1 filter(?t1 ~ 'k' ) }
+graph ?g2 {?d2 c:Title ?t2 filter(?t2 ~ 'k' ) }
+graph ?g1 {?x c:hasCreated ?doc1}
+graph ?g2 {?y c:hasCreated ?doc2}
+graph ?s {
+?x c:isMemberOf ?org
+?y c:isMemberOf ?org
+}
+filter(isDifferent(?x, ?y))
+filter(isDistinct(?org))
+}
+limit 100
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='fromVar'>
+<rdfs:comment>
+Compute contexts ?g by inner query
+?g has meaning only in filter, not in triple
+because it is a funcall			
+</rdfs:comment>
+<cos:value>
+select  * 
+sparql(
+"select  ?g where { graph ?g {?x c:hasCreated ?doc filter(?x ~ 'olivier' ) }}") as ?g
+<!--get(?g, 0) as ?e1
+concat(?e1, "\n" ) as ?ee1-->
+from ?g
+from named ?g
+where {
+  {?x c:hasCreated ?doc1}
+  {?x c:hasCreated ?doc2}
+  {?x c:hasCreated ?doc3}
+  {?x c:hasCreated ?doc4}
+  {?x c:hasCreated ?doc5}
+
+filter(isDifferent(?doc1, ?doc2, ?doc3, ?doc4, ?doc5))
+filter(isDistinct(?x))
+}
+limit 100
+</cos:value>
+</cos:Query>	
+
+<cos:Query rdf:ID='gg2'>
+<rdfs:comment>
+Compute contexts ?g by inner query
+?g has meaning only in filter, not in triple
+because it is a funcall			
+</rdfs:comment>
+<cos:value>
+select debug * 
+where {
+graph ?g1 {?x1 c:hasCreated ?d1 filter(?x1 ~ 'olivier' ) }
+graph ?g2 {?x2 c:hasCreated ?d2 filter(?x2 ~ 'olivier' ) }
+graph ?g3 {?x3 c:hasCreated ?d3 filter(?x3 ~ 'olivier' ) }
+graph ?g4 {?x4 c:hasCreated ?d4 filter(?x4 ~ 'olivier' ) }
+
+graph ?g1 {?x c:hasCreated ?doc1}
+graph ?g2 {?x c:hasCreated ?doc2}
+graph ?g3 {?x c:hasCreated ?doc3}
+graph ?g4 {?x c:hasCreated ?doc4}
+filter(isDistinct(?x))
+
+filter(isDifferent(?doc1, ?doc2, ?doc3, ?doc4))
+}
+limit 100		
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='qq'>
+<rdfs:comment>		
+</rdfs:comment>
+<cos:value>
+select * 
+xpath(?g, "/rdf:RDF/*") as ?c1
+xpath(?g, "/rdf:RDF/*[. = $c1]/*") as ?r
+xpath(?g, "/rdf:RDF/*/*/rdf:resource") as ?c2
+xpath(?g, "/rdf:RDF/*/*/*") as ?c3
+xpath(?g, "/rdf:RDF/*/*[not(*)]/text()") as ?c4
+
+where {
+graph ?g { ?x ?p ?y }	
+filter(xpath(?g, "/rdf:RDF[ count(*) >= 1 ]"))
+}
+limit 1	
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+<cos:Query rdf:ID='md'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select debug * 
+xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:comment/text()") as ?text
+xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:label/text()") as ?label
+xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:domain/@rdf:resource") as ?domain
+xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:range/@rdf:resource") as ?range
+
+where {
+?x ?p ?y 
+graph ?g { ?p rdf:type rdf:Property }
+filter(isDistinct(?p))
+filter(?p ~ xpath(?g, "/rdf:RDF/rdf:Property/@rdf:ID"))
+}
+limit 10		
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='md1'>
+<rdfs:comment>		
+</rdfs:comment>
+<cos:value>
+construct {
+_:b1 rdf:type ?domain
+_:b1 ?p _:b2
+_:b2 rdf:type ?range
+}
+select  
+get(xpath(?g, "/rdf:RDF/@xml:base"), 0) as ?base
+uri(?base + get(xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:domain/@rdf:resource"), 0)) as ?domain
+uri(?base + get(xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:range/@rdf:resource"), 0))  as ?range
+where {
+graph ?g { ?p rdf:type rdf:Property }
+filter(xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:domain/@rdf:resource") )
+filter(xpath(?g, "/rdf:RDF/rdf:Property[contains($p, @rdf:ID)]/rdfs:range/@rdf:resource") ) 
+filter(isDistinct(?g))
+}
+limit 1			
+</cos:value>
+</cos:Query>	
+
+<cos:Query rdf:ID='md2'>
+<rdfs:comment>		
+</rdfs:comment>
+<cos:value>
+select * 
+xpath(?g, "/rdf:RDF/rdf:Property[not(rdfs:domain)]/@rdf:ID") as ?domain
+xpath(?g, "/rdf:RDF/rdf:Property[not(rdfs:range)]/@rdf:ID")  as ?range
+where {
+graph ?g { ?p rdf:type rdf:Property }
+filter(xpath(?g, "/rdf:RDF"))
+filter(isDistinct(?g))
+}			
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='tt'>
+<rdfs:comment>		
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select debug distinct ?g 
+xpath(?g, "/rdf:RDF/namespace::*[ local-name() = 'CoMMA' ]" ) as ?namespace
+xpath(?g, "/rdf:RDF/@xml:base" ) as ?base
+where {
+graph ?g { ?x ?p ?y }
+filter(isDistinct(?g))
+filter(xpath(?g, "/rdf:RDF[ namespace::* and local-name(namespace::*) = 'CoMMA'  ]" ))
+}
+
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+<cos:Query rdf:ID='rewrite'>
+<rdfs:comment>
+test rewrite ?x = ?y with select fun()			
+</rdfs:comment>
+<cos:value>
+select  *
+self(?z) as ?t
+self(?y) as ?z
+where {
+?x ?p ?y filter(?x = ?y) filter(?z = ?t)
+}		
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='bug'>
+<rdfs:comment>
+test rewrite ?x = ?y with select fun()			
+</rdfs:comment>
+<cos:value>
+select  *
+self(?z) as ?t
+self(?t) as ?z
+where {
+?x ?p ?y filter(?x = ?y)  
+optional {filter(?z = ?t)}
+}
+order by ?z		
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+<cos:Query rdf:ID='add'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+add {
+?x c:FirstName ?n 
+graph ?g { ?x c:age ?age }
+<!--?x c:FirstName ?name -->
+} 
+select (?name + "." + ?fname) as ?n 
+(12) as ?age
+where {
+graph ?g {	?x c:FamilyName ?fname filter(?fname = 'Corby' ) }
+	?x c:FirstName ?name
+}
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='xslconstruct'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+construct {
+?subj c:FamilyName ?name
+?g rdf:type ?class
+} 
+select *
+xslt(?g, "file:///home/corby/workspace/corese/data/ntest/copy.xsl") as ?doc 
+uri(xpath(?doc, "/rdf:RDF//*[c:FamilyName]/@rdf:about")) as ?subj
+xpath(?g, "/rdf:RDF//c:FamilyName/text()") as ?name
+where {
+graph ?g {
+	?x c:hasCreated ?doc filter(?x ~ 'olivier.corby')
+	?y c:FamilyName ?fname 
+}
+?g rdf:type ?class
+filter(isDistinct(?g))
+}
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='kgramxslconstruct'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+construct {
+?subj c:FamilyName ?name
+?g rdf:type ?class
+} 
+select *
+xslt(?g, "file:///home/corby/workspace/corese/data/ntest/copy.xsl") as ?doc 
+uri(xpath(?doc, "/rdf:RDF//*[c:FamilyName]/@rdf:about")) as ?subj
+xpath(?g, "/rdf:RDF//c:FamilyName/text()") as ?name
+where {
+graph ?g {
+	?x c:hasCreated ?d
+}
+?g rdf:type ?class
+filter(isDistinct(?g))
+}
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='xconstruct'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+construct {?subj c:FamilyName ?name} 
+select  
+(uri(xpath(?g, "/rdf:RDF//*[c:FamilyName]/@rdf:about"))  as ?subj)
+(xpath(?g, "/rdf:RDF//c:FamilyName/text()") as ?name)
+where {
+graph ?g {
+	?x c:hasCreated ?doc filter(?x ~ 'olivier.corby')
+	?y c:FamilyName ?fname 
+}
+filter(isDistinct(?g))
+}
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='construct'>
+<rdfs:comment>
+</rdfs:comment>
+<cos:value>
+construct {?x c:FirstName ?n } 
+select ((?name + "." + ?fname) as ?n)
+where {
+	?x c:FamilyName ?fname filter(?fname = 'Corby' )
+	?x c:FirstName ?name
+}
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='meta'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix q: &lt;http://www.inria.fr/edelweiss/2008/query#&gt;
+select  ?q where {
+?q rdf:type cos:Query
+?q cos:value ?text
+filter(?q != q:meta)
+filter(sparql(?text))
+}			
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='onto'>
+<rdfs:comment>
+Much longer with inner variable			
+</rdfs:comment>
+<cos:value>
+select   list * 
+xpath(?g, 
+"/rdf:RDF/*[ contains($elem, @rdf:ID) ]/rdfs:comment[ contains(., $label) ]/text()") as ?comment
+where {
+graph ?g { 
+	?elem rdfs:label ?label 
+	}	
+}
+limit 5
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='onto1'>
+<rdfs:comment>
+XPath computed only once and cached			
+</rdfs:comment>
+<cos:value>
+select  * where {
+graph ?g { 
+	?elem rdfs:label ?label 
+	filter(lang(?label) = 'en')
+}	
+filter (
+!(
+str(?label) =
+xpath(?g, "/rdf:RDF/*/rdfs:label[@xml:lang = 'en' ]/text()")
+)
+)	
+}
+
+</cos:value>
+</cos:Query>
+
+
+<cos:Query rdf:ID='onto2'>
+<rdfs:comment>
+Much longer with inner variable			
+</rdfs:comment>
+<cos:value>
+select debug * where {
+graph ?g { 
+	?elem rdfs:label ?label 
+	filter(lang(?label) = 'en')
+}	
+filter (xpath(?g, 
+"/rdf:RDF/*/rdfs:label[ . = $label and @xml:lang = 'fr' ]"))	
+}
+limit 1
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='cc'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select distinct ?b
+pathLength($path) as ?length 
+pathRadius($path) as ?radius
+where {
+ filter(isDistinct(?x))
+?x $path ?y
+graph $path {?a ?p ?b}
+?b rdf:type c:AdditionalTopic
+filter(?x ~ 'fabien.gandon')
+filter(match($path, star(c:SomeRelation), 'cdr' ))
+
+filter(pathLength($path) &lt;= 200)
+}	
+limit 1	
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+<cos:Query rdf:ID='ralyx'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select debug * 
+xpath(?doc,
+"//*/text()[ contains(. , $name) and . != $name ]") as ?text 
+where {
+?doc rdf:type c:TechnicalReport
+?x c:FamilyName ?name filter(?name = 'Corby'  )
+filter (?name != ?text)
+}
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+<cos:Query rdf:ID='spqr'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select * where {
+?x ?p ?val
+?val rdf:type ?class
+filter(?val = sparql(
+"prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt; select  ?val where { ?list $path ?rest  filter(match($path, star(rdf:rest))) graph $path {?a rdf:rest ?b} ?a rdf:first ?val}"
+))
+}
+</cos:value>
+</cos:Query>	
+
+
+
+<cos:Query rdf:ID='nlp2'>
+<cos:date rdf:datatype='&xsd;dateTime'>2008-04-04T00:00:00</cos:date>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select 
+?phrase
+xpath(?phrase, 
+"/sentence//lemma[ @num = /sentence//node[@rule = 'S']/node[@rule = 'NP']/wnode/@lemma ]/@lem") as ?subject
+
+xpath(?phrase, 
+"/sentence//lemma[ @num = /sentence//node[@rule = 'S']//node[@rule = 'VP' or @rule = 'PP']/wnode/@lemma ]/@lem") as ?verb
+
+xpath(?phrase, 
+"/sentence//lemma[ @num = /sentence//node[@rule = 'S']/node[@rule = 'VP']//node[@rule = 'NP']/wnode/@lemma ]/@lem") as ?object
+
+where {
+?a cc:phrase ?phrase
+
+}
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='nlp1'>
+<cos:date rdf:datatype='&xsd;dateTime'>2008-04-04T00:00:00</cos:date>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+construct { ?sc ?p ?oc ?oc ?p ?sc   ?sc cc:FirstName 'Garfield' }
+select 
+uri(cc: + concat(xpath(?phrase, ?sub))) as ?sc
+uri(cc: + concat(xpath(?phrase, ?obj))) as ?oc
+where {
+graph ?g {
+?a cc:phrase ?phrase
+?a cc:subject ?sub
+?a cc:object ?obj
+?a cc:verb ?vrb
+
+?s rdf:type ?class1
+filter (?s ~ xpath(?phrase, ?sub))
+
+?o rdf:type ?class2
+filter (?o ~ xpath(?phrase, ?obj))
+}
+
+graph ?onto {
+?p rdfs:label ?label
+?p rdf:type rdf:Property
+filter(?label ~ xpath(?phrase, ?vrb ))
+}
+filter(?onto ~ 'nlp' )
+
+}
+</cos:value>
+</cos:Query>	
+
+<cos:Query rdf:ID='nlp'>
+<cos:date rdf:datatype='&xsd;dateTime'>2008-04-04T00:00:00</cos:date>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select debug  * 
+xpath(?phrase, ?sub ) as ?subject
+xpath(?phrase, ?obj ) as ?object
+xpath(?phrase, ?vrb ) as ?verb
+xpath(?g, "//phrase//label/text()" ) as ?text
+where {
+graph ?g {
+?a cc:phrase ?phrase
+?a cc:subject ?sub
+?a cc:object ?obj
+?a cc:verb ?vrb
+}
+}
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='path0'>
+<cos:date rdf:datatype='&xsd;dateTime'>2008-04-04T00:00:00</cos:date>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select   * 
+xpath(?g, ?path) as ?text
+concat(xpath(?phrase, ?sub )) as ?subject
+concat(xpath(?phrase, ?obj )) as ?object
+concat(xpath(?phrase, ?vrb )) as ?verb
+
+where {
+graph ?g { 
+?a cc:Title ?title 
+?a cc:path ?path  
+?a cc:phrase ?phrase
+?a cc:subject ?sub
+?a cc:object ?obj
+?a cc:verb ?vrb
+}
+filter(xpath(?g, '/rdf:RDF//*[ cc:Title = $title and cc:path = $path  ]' )) 
+
+<!--filter  ( ?text ~ 'employee' ) -->
+
+<!-- 
+any(?x, xpath(), ?x ~ 'toto' )
+every(?x, xpath(), ?x ~ 'toto' )
+-->
+}
+</cos:value>
+</cos:Query>	
+
+
+
+
+
+
+
+
+<cos:Query rdf:ID='path1'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select   * 
+xpath(?g, ?path) as ?text
+where {
+graph ?g { 
+?a cc:Title ?title ?a c:path ?path  ?x cc:FamilyName ?name  
+filter( ?name = "Corby" )
+}
+filter( ?name = xpath(?g, '/rdf:RDF//*[cc:FamilyName = $name ]/*/text()' ))
+filter  ( ?text ~ 'employee' ) 
+<!-- 
+any(?x, xpath(), ?x ~ 'toto' )
+every(?x, xpath(), ?x ~ 'toto' )
+-->
+}
+</cos:value>
+</cos:Query>	
+
+
+<cos:Query rdf:ID='path1.1'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select   * 
+where {
+graph ?g { 
+?a cc:Title ?title ?a c:path ?path  ?x cc:FamilyName ?name  
+filter( ?name = "Corby" )
+}
+filter( ?name = xpath(?g, '/rdf:RDF//*[cc:FamilyName = $name ]/*/text()' ))
+{select (xpath(?g, ?path) as ?text) where {}}
+filter  ( ?text ~ 'employee' ) 
+<!-- 
+any(?x, xpath(), ?x ~ 'toto' )
+every(?x, xpath(), ?x ~ 'toto' )
+-->
+}
+</cos:value>
+</cos:Query>	
+
+<cos:Query rdf:ID='row'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select * concat(row(?name)) as ?row where {
+?x c:FamilyName ?name
+?x c:FirstName ?fname
+filter (?fname ~ 'olivier')
+filter(concat(row(?name)) ~ ?name )
+}
+group by ?fname 
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='path'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix cc: &lt;http://www.inria.fr/acacia/comma#&gt;
+select   * 
+xpath(?g, '/rdf:RDF/*/cc:Title/text()' ) as ?title
+where {
+graph ?g { ?x cc:hasCreated ?doc  ?x cc:FamilyName ?name  filter( ?name = "Corby" )}
+filter(?name = xpath(?g, '/rdf:RDF//*[cc:FamilyName = "Corby" ]/*/text()' ))
+<!-- 
+any(?x, xpath(), ?x ~ 'toto' )
+every(?x, xpath(), ?x ~ 'toto' )
+-->
+}
+</cos:value>
+</cos:Query>	
+
+	
+	
+<cos:Query rdf:ID='path4'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+select * 
+xpath(?g, '/rdf:RDF/rdfs:Class[contains(rdfs:comment, "' + ?label + '")]/rdfs:comment/text()' ) as ?comment
+where {
+graph ?g { ?x rdfs:label ?label ?x rdf:type rdfs:Class }
+filter(xpath(?g, '/rdf:RDF/rdfs:Class[ contains(rdfs:comment, "' + ?label + '") ]' ))
+}
+limit 2
+</cos:value>
+</cos:Query>		
+		
+	
+	
+<cos:Query rdf:ID='path3'>
+<rdfs:comment>
+http://www.stylusstudio.com/xmldev/200509/post90160.html	
+XPath match on a document within SPARQL query
+Result of match is a CoreseArray, i.e. a Blank Node that contains IDatatype array
+</rdfs:comment>
+<cos:value>
+prefix xpath: &lt;function://test.XProc&gt;
+select * 
+xpath(?g, '/rdf:RDF/rdfs:Class[rdfs:label = "' + ?label + '"]/rdfs:comment/text()' ) as ?res
+where {
+	graph ?g {?x rdfs:label ?label  ?x rdf:type rdfs:Class}
+}
+limit 100
+</cos:value>
+</cos:Query>		
+		
+	
+
+
+<cos:Query rdf:ID='path2'>
+		<rdfs:comment>
+			
+		</rdfs:comment>
+<cos:value>
+select * where {
+graph ?g {?x rdfs:label ?label ?x rdf:type rdfs:Class}
+filter( member(str(?label), 
+xpath(?g, '/rdf:RDF/rdfs:Class[rdfs:label = "' + ?label + '"]/rdfs:label/text()' )))
+}
+limit 2
+</cos:value>
+</cos:Query>		
+	
+	
+	
+	
+	
+	
+	
+<cos:Query rdf:ID='ns'>
+	<rdfs:comment>
+			
+	</rdfs:comment>
+<cos:value>
+	select ?o ?doc  count(?x) as ?count
+	where {
+	
+	graph ?doc {?x rdf:type ?class}
+	graph ?g {
+	?class rdf:type rdfs:Class
+	?o rdf:type owl:Ontology
+	}
+	}
+	group by ?doc ?o
+	order by desc(?count)			
+</cos:value>
+</cos:Query>		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+<cos:Query rdf:ID='rasp'>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+prefix r: &lt;http://www.inria.fr/edelweiss/2008/rasp#&gt;
+construct {
+_:b1  ?prop _:b2
+?prop rdfs:label ?verb
+_:b1  rdfs:label ?subj
+_:b2  rdfs:label ?comp
+}
+where {
+	?p r:verb 	[r:label ?verb] ;
+	   r:subject 	[r:label ?subj] ;
+	   r:comp 	[r:label ?comp]	
+	   	
+	?prop rdfs:label ?verb
+}
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='classShareLabel'>
+<rdfs:comment>
+Find (with a path) classes that share a label
+</rdfs:comment>
+<cos:value>
+select ?a ?b  where { 
+	?class $path ?label  
+	filter(match($path, star(rdfs:label), 'i'  ))  
+	filter(pathLength($path) = 4)  
+	graph $path {?a ?p ?b} 
+} limit 20 	
+</cos:value>
+</cos:Query>
+
+
+
+
+
+<cos:Query rdf:ID='elemOfList'>
+<rdfs:comment>
+Find the elements of a list		
+</rdfs:comment>
+<cos:value>
+select ?elem where { 
+	?list rdf:rest::$path rdf:nil  
+	graph $path { ?a rdf:rest ?b }  
+	?a rdf:first ?elem 
+}		
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='elemOneOf'>
+<rdfs:comment>
+Find the elements of owl:oneOf		
+</rdfs:comment>
+<cos:value>
+select ?g ?class ?elem where { 
+	?class owl:oneOf ?list
+	?list rdf:rest::$path rdf:nil  
+	graph $path { ?a rdf:rest ?b }  
+	?a rdf:first ?elem 
+	graph ?g { ?elem rdf:type ?class }
+}		
+</cos:value>
+</cos:Query>
+
+
+
+<cos:Query rdf:ID='twoSameGraph'>
+<rdfs:comment>
+Find two graphs that contain same triples		
+</rdfs:comment>
+<cos:value>
+select  distinct sorted ?g1 ?g2  where { 
+	graph ?g1 { ?g1 rdf:type ?class } 
+	graph ?g2 { ?g2 rdf:type ?class } 
+	filter(?g1 != ?g2) 
+	optional {  
+		graph ?g1 { ?x ?p ?y } 
+		optional { graph ?g2 { ?x ?q ?y } filter(?p = ?q) } 
+		filter(! bound(?q)) 
+	} 
+	filter(! bound(?p))
+} 		
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='twoDifferentGraph'>
+<rdfs:comment>
+Find two graphs that share no triples				
+</rdfs:comment>
+<cos:value>
+select  distinct sorted ?g1 ?g2  where { 
+	graph ?g1 { ?g1 rdf:type ?class } 
+	graph ?g2 { ?g2 rdf:type ?class } 
+	filter(?g1 != ?g2)
+	optional {  
+		graph ?g1 { ?x ?r ?y } 
+		graph ?g2 { ?x ?r ?y } 
+	} 
+	filter(! bound(?r))
+} 		
+</cos:value>
+</cos:Query>	
+
+
+
+
+<!--	
+<cos:Query rdf:ID=''>
+<rdfs:comment>
+			
+</rdfs:comment>
+<cos:value>
+			
+</cos:value>
+</cos:Query>	
+-->
+
+<cos:Query rdf:ID='signature'>
+<rdfs:comment>
+Signature path between two classes			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select row(?q) as ?row
+length(?row) as ?length
+<!--?a ?q ?b -->
+where { 
+	c:Document  direct::$path c:Person  
+
+optional{
+graph $path {?x ?p ?y 
+filter(?x = c:SomeRelation || ?y = c:SomeRelation)}
+}
+filter(!bound(?x))
+
+	graph $path { ?a ?q ?b } 
+filter(match($path, (rdfs:range || rdfs:domain) &amp;&amp;  
+	star( rdfs:range || rdfs:domain || rdfs:subClassOf ) &amp;&amp; rdfs:subPropertyOf &amp;&amp;
+	star( rdfs:range || rdfs:domain || rdfs:subClassOf )
+,  'i' )) 	 
+} 
+group by $path
+limit 10
+</cos:value>
+</cos:Query>
+	
+	
+	
+<cos:Query rdf:ID='signature2'>
+<rdfs:comment>
+Signature path between two classes
+With rdfs:label in the path			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select debug ?a ?q ?b where { 
+	c:Document  $path c:Person  
+	graph $path { ?a ?q ?b } 
+	filter(match($path,
+		(rdfs:range || rdfs:domain) &amp;&amp;  
+		star(star(rdfs:range || rdfs:domain ||  rdfs:subClassOf) 
+			&amp;&amp; rdfs:label &amp;&amp;
+			star(rdfs:range || rdfs:domain ||  rdfs:subClassOf)
+		    )
+		,  'di' )) 
+}  
+limit 10
+</cos:value>
+</cos:Query>	
+
+
+
+
+<cos:Query rdf:ID='test'>
+<rdfs:comment>
+Signature path between two classes			
+</rdfs:comment>
+<cos:value>
+prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
+select * where { 
+	c:Document  $path c:Person  
+	filter(match($path, 
+	 star( star( star(rdfs:domain) )
+	    &amp;&amp; 
+	  star(star(rdfs:range)  ))
+	  
+	 
+	<!--(star(rdfs:domain &amp;&amp; rdfs:range) || star(rdfs:range &amp;&amp; rdfs:domain)) &amp;&amp; 
+	(rdfs:range &amp;&amp; rdfs:domain) &amp;&amp;  
+		star( (rdfs:range &amp;&amp; (rdfs:label || rdfs:domain)) || (rdfs:subClassOf)) &amp;&amp;
+		rdfs:label-->
+		,  'i' )) 
+} limit 1	
+</cos:value>
+</cos:Query>
+
+
+
+
+
+<cos:Query rdf:ID='geo1'>
+	<rdfs:comment>
+	</rdfs:comment>
+<cos:value>
+prefix geo: &lt;http://rdf.insee.fr/geo/&gt;	
+SELECT debug $path ?name  pathLength($path) as ?length WHERE {
+?x geo:nom 'Nice'@fr
+?y geo:nom 'Grenoble'@fr
+?x rdf:type geo:Commune
+?y rdf:type geo:Commune
+
+?x geo:voisin::$path ?y
+filter(pathLength($path) &lt;= 25 )
+filter(match($path, star(geo:voisin), 'ds' ))
+graph $path {?a geo:voisin ?b}   ?b geo:nom ?name
+} 
+group by $path
+order by pathLength($path)
+</cos:value>
+</cos:Query>
+
+<cos:Query rdf:ID='geo2'>
+	<rdfs:comment>
+	</rdfs:comment>
+	<cos:value>
+		prefix geo: &lt;http://rdf.insee.fr/geo/&gt;	
+		SELECT debug ?x  WHERE {
+		?x geo:nom 'Nice'@fr
+		?x rdf:type geo:Commune
+
+		} 
+		
+	</cos:value>
+</cos:Query>
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+	
+</rdf:RDF>

@@ -1,0 +1,13 @@
+prefix p: <http://fr.dbpedia.org/property/>
+construct {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+?y p:succ ?z}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+<http://fr.dbpedia.org/resource/Auguste> p:succ+ ?y .
+?y p:succ ?z
+}
+
+}

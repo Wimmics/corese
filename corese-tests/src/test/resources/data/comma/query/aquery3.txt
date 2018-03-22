@@ -1,0 +1,5 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select (count(*) as ?c) where {
+graph kg:entailment {?x c:SomeRelation ?y}
+}
+pragma {kg:kgram kg:status false}

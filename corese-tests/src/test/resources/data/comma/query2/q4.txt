@@ -1,0 +1,15 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+
+select distinct ?fn where {
+
+?x c:FirstName ?fn
+
+{select distinct ?ln where {
+?y c:FamilyName ?ln
+}}
+
+filter(?fn = ?ln)
+}
+
+
+

@@ -1,0 +1,12 @@
+[] a sw:Workflow ;
+sw:body (
+  [ a sw:Update ; sw:body "insert data { us:John foaf:name 'Jon' }" ] 
+  
+  [ a sw:Parallel ; sw:body (
+    [a sw:Transformation ; sw:uri st:turtle]
+    [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/sparql#page>])
+  ]
+  
+    [ a sw:Template ; sw:uri <w30.rq> ] 
+
+)

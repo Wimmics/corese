@@ -1,0 +1,7 @@
+template {
+    "InverseObjectProperties("  kg:uri(?in) " " kg:uri(?y) ")"  
+}
+where {
+  ?in owl:inverseOf ?y
+  filter(isURI(?in))
+}

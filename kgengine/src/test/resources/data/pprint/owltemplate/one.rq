@@ -1,8 +1,0 @@
-template {
-  if (bound(?t), "DataOneOf", "ObjectOneOf")
-  "(" ?y ")"  
-}
-where {
-  ?in owl:oneOf ?y 
-  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
-}

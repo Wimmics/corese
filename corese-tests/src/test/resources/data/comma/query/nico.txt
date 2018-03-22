@@ -1,0 +1,7 @@
+select debug distinct ?z where {
+service <http://fr.dbpedia.org/sparql> {
+     select * where {
+<http://fr.dbpedia.org/resource/Paris> ?y ?z
+      } limit 12
+}
+}

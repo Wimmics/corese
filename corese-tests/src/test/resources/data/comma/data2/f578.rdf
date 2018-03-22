@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3485.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/rose.dieng">
+         <c:FamilyName>Dieng</c:FamilyName>
+         <c:FirstName>Rose</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.corby">
+         <c:FamilyName>Corby</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alain.giboin">
+         <c:FamilyName>Giboin</c:FamilyName>
+         <c:FirstName>Alain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/myriam.ribière">
+         <c:FamilyName>Ribière</c:FamilyName>
+         <c:FirstName>Myriam</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/acacia.en.html">
+         <c:Designation>Acacia</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>9-1998</c:CreationDate>
+   <c:Title>Methods and Tools for Corporate Knowledge Management </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

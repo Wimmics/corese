@@ -1,0 +1,6 @@
+template st:start {
+  st:get(st:test)
+}
+where {
+  bind (st:set(st:res, 10) as ?t)
+}

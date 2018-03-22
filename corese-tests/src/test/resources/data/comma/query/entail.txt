@@ -1,0 +1,7 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT *
+from kg:entailment
+ WHERE
+{
+  ?x a c:Document
+}

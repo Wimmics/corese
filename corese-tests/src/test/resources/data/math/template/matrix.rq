@@ -1,0 +1,14 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+"matrix:(" "\n"
+  "(" 
+    group { ?row ; separator = ")\n(" }
+  ")"
+  "\n" ")"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:rest*/rdf:first ?row
+}
+

@@ -1,7 +1,0 @@
-select * where
-{
-graph ?g { ?x c:FirstName 'Olivier' }
-?x c:FirstName ?name
-?g xpath('/rdf:RDF//c:FirstName/text()') ?name
-?y c:FirstName ?name
-}

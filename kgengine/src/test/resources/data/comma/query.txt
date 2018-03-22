@@ -1,8 +1,0 @@
-select * where
-{
-
- {
-select ?class where {?class rdf:type rdfs:Class filter(?class ~ 'comma')}
-}
-?class ?p ?y
-}

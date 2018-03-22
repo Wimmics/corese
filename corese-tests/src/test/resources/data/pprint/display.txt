@@ -1,0 +1,7 @@
+prefix g: <http://example.com/owl/families/>
+construct  WHERE
+{
+ ?x ?p ?y
+}
+pragma
+{kg:display kg:template </home/corby/AData/pprint/owltemplate>}

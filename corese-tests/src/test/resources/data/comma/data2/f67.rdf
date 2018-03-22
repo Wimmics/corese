@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2609.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/aristide.santos">
+         <c:FamilyName>Santos</c:FamilyName>
+         <c:FirstName>Aristide</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bernard.espiau">
+         <c:FamilyName>Espiau</c:FamilyName>
+         <c:FirstName>Bernard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/patrick.rives">
+         <c:FamilyName>Rives</c:FamilyName>
+         <c:FirstName>Patrick</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/daniel.simon">
+         <c:FamilyName>Simon</c:FamilyName>
+         <c:FirstName>Daniel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/vincent.rigaud">
+         <c:FamilyName>Rigaud</c:FamilyName>
+         <c:FirstName>Vincent</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1995</c:CreationDate>
+   <c:Title>Sensor-Based Control of Holonomic Autonomous Underwater Vehicles</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3465.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/paul-henry.cournède">
+         <c:FamilyName>Cournède</c:FamilyName>
+         <c:FirstName>Paul-Henry</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/christophe.debiez">
+         <c:FamilyName>Debiez</c:FamilyName>
+         <c:FirstName>Christophe</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alain.dervieux">
+         <c:FamilyName>Dervieux</c:FamilyName>
+         <c:FirstName>Alain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1998</c:CreationDate>
+   <c:Title>A Positive MUSCL Scheme for Triangulations </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,11 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f "(" group { ?e ; separator = ", " } ")"
+}
+where {
+  ?in a m:Function ;
+      m:name ?f ;
+      m:args/rdf:rest*/rdf:first ?e
+}
+

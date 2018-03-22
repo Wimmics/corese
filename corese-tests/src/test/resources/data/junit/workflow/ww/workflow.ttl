@@ -1,0 +1,27 @@
+[] a sw:Workflow ;
+
+sw:param [
+  sw:test true ;
+  st:status true ;
+  sw:debug true
+] ;
+
+sw:body (
+  [ a sw:Update ; sw:body 
+    """
+    insert data {
+      us:John foaf:name 'Jon'
+    }
+    """
+  ]
+  [ a sw:Update ; sw:uri <load.rq> ]
+  [ a sw:Update ; sw:uri <q3.rq> ]
+  [ a sw:Rule  ; sw:uri sw:owlrl ]
+  [ a sw:RuleBase  ; sw:uri <test.rul> ]
+  [ a sw:Workflow ; sw:body ( 
+    [ a sw:Query ; sw:uri <q2.rq> ] 
+    [ a sw:Workflow ;  sw:uri <subworkflow.ttl> ]
+   )]
+  
+  [ a sw:Transformation ; sw:uri st:turtle ]
+) .

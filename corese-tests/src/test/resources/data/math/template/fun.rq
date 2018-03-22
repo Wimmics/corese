@@ -1,0 +1,21 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  kg:turtle(?t) 
+  coalesce(concat( "[", ?fr, ", ", kg:uri(?to), "]"), "")
+  "(" 
+    group distinct { ?e }
+  ")" 
+  " " 
+  if (bound(?v), group_concat("d", ?v), "")
+}
+where {
+  ?in a ?t ;
+  m:args/rdf:rest*/rdf:first ?e
+  optional { ?in m:vars/rdf:rest*/rdf:first ?v }
+  optional { ?in m:from ?fr ; m:to ?to }
+}
+values ?t {
+m:Integral m:Sigma
+}
+

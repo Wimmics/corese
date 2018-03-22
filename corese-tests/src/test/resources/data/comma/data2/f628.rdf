@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3335.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/laurent.baratchart">
+         <c:FamilyName>Baratchart</c:FamilyName>
+         <c:FirstName>Laurent</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/juliette.leblond">
+         <c:FamilyName>Leblond</c:FamilyName>
+         <c:FirstName>Juliette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jonathan.r.">
+         <c:FamilyName>R.</c:FamilyName>
+         <c:FirstName>Jonathan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/miaou.en.html">
+         <c:Designation>Miaou</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-1998</c:CreationDate>
+   <c:Title>Problems of Adamjan-Arov-Krein type on subsets of the circle and minimal norm extensions  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

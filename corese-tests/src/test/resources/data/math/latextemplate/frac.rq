@@ -1,0 +1,9 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t "{" ?f "}" "{" ?r "}"
+}
+where {
+  ?in a m:Div, ?t 
+  ?in m:args(?f ?r)
+}

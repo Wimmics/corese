@@ -1,0 +1,15 @@
+us:w6 a sw:Workflow ;
+  sw:param [] ;
+  sw:body ( us:q1 )
+.
+
+us:q1 a sw:Query ; 
+   sw:body """
+      select ?x ?p ?y 
+      where { 
+      bind (st:get(st:definition) as ?g)
+      graph st:definition { ?x ?p ?y }
+      }
+      function xt:finish(?q, ?ms){ xt:display(xt:size(?ms), ?ms) }
+      """ 
+.    

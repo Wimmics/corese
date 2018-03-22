@@ -1,0 +1,16 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  "(" ?f " " xsd:string(?ope) " " ?r ")"
+}
+where {
+  ?in ast:ope ?ope  ;
+      ast:body (?f ?r)
+}
+
+
+

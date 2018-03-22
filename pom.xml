@@ -79,7 +79,7 @@
 		<!-- RDF Triple Collector(firefox plugin)-->
 		<!--<module>kgendpoint</module>-->
 		<module>corese-gui</module>
-		<module>corese-tests</module>
+		<module>corese-test</module>
 		<module>compiler</module>
     </modules>
 

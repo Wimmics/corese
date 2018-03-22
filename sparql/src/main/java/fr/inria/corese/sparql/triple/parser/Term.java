@@ -1,69 +1,11 @@
 package fr.inria.corese.sparql.triple.parser;
 
-import fr.inria.corese.sparql.triple.function.extension.Iterate;
-import fr.inria.corese.sparql.triple.function.core.Concat;
-import fr.inria.corese.sparql.triple.function.term.Operation;
-import fr.inria.corese.sparql.triple.function.script.ErrorFunction;
-import fr.inria.corese.sparql.triple.function.core.ZeroaryFunction;
-import fr.inria.corese.sparql.triple.function.extension.Size;
-import fr.inria.corese.sparql.triple.function.core.Coalesce;
-import fr.inria.corese.sparql.triple.function.aggregate.Aggregate;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateGroupConcat;
-import fr.inria.corese.sparql.triple.function.script.MapFunction;
-import fr.inria.corese.sparql.triple.function.term.PlusTerm;
-import fr.inria.corese.sparql.triple.function.term.LE;
-import fr.inria.corese.sparql.triple.function.extension.SystemFunction;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateTemplate;
-import fr.inria.corese.sparql.triple.function.core.Bound;
-import fr.inria.corese.sparql.triple.function.extension.Focus;
-import fr.inria.corese.sparql.triple.function.term.MultTerm;
-import fr.inria.corese.sparql.triple.function.extension.Swap;
-import fr.inria.corese.sparql.triple.function.extension.ZeroAry;
-import fr.inria.corese.sparql.triple.function.extension.ListBinary;
-import fr.inria.corese.sparql.triple.function.term.NEQ;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateAnd;
-import fr.inria.corese.sparql.triple.function.script.Extension;
-import fr.inria.corese.sparql.triple.function.core.IfThenElseTerm;
-import fr.inria.corese.sparql.triple.function.term.NotTerm;
-import fr.inria.corese.sparql.triple.function.extension.ListTerm;
-import fr.inria.corese.sparql.triple.function.script.Funcall;
-import fr.inria.corese.sparql.triple.function.core.UnaryFunction;
-import fr.inria.corese.sparql.triple.function.term.GE;
-import fr.inria.corese.sparql.triple.function.extension.ListNary;
-import fr.inria.corese.sparql.triple.function.script.SetFunction;
-import fr.inria.corese.sparql.triple.function.script.MethodCall;
-import fr.inria.corese.sparql.triple.function.script.MapAnyEvery;
-import fr.inria.corese.sparql.triple.function.script.Self;
-import fr.inria.corese.sparql.triple.function.core.BinaryFunction;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateMinMax;
-import fr.inria.corese.sparql.triple.function.term.EQ;
-import fr.inria.corese.sparql.triple.function.core.BlankNode;
-import fr.inria.corese.sparql.triple.function.script.Return;
-import fr.inria.corese.sparql.triple.function.extension.Get;
-import fr.inria.corese.sparql.triple.function.term.AndTerm;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateCount;
-import fr.inria.corese.sparql.triple.function.core.StrPredicate;
-import fr.inria.corese.sparql.triple.function.core.Extern;
-import fr.inria.corese.sparql.triple.function.term.In;
-import fr.inria.corese.sparql.triple.function.term.OrTerm;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateList;
-import fr.inria.corese.sparql.triple.function.extension.GetGen;
-import fr.inria.corese.sparql.triple.function.term.GT;
-import fr.inria.corese.sparql.triple.function.aggregate.AggregateSumAvg;
-import fr.inria.corese.sparql.triple.function.term.MinusTerm;
-import fr.inria.corese.sparql.triple.function.script.Sequence;
-import fr.inria.corese.sparql.triple.function.script.Reduce;
-import fr.inria.corese.sparql.triple.function.term.DivTerm;
-import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
-import fr.inria.corese.sparql.triple.function.core.BiTriFunction;
-import fr.inria.corese.sparql.triple.function.term.LT;
-import fr.inria.corese.sparql.triple.function.script.MethodTypeCall;
-import fr.inria.corese.sparql.triple.function.core.HashFunction;
-import fr.inria.corese.sparql.triple.function.extension.ListUnary;
-import fr.inria.corese.sparql.triple.function.core.ExistFunction;
-import fr.inria.corese.sparql.triple.function.extension.UnaryExtension;
-import fr.inria.corese.sparql.triple.function.core.DateFunction;
-import fr.inria.corese.sparql.triple.function.extension.Display;
+import fr.inria.corese.sparql.triple.function.core.*;
+import fr.inria.corese.sparql.triple.function.aggregate.*;
+import fr.inria.corese.sparql.triple.function.term.*;
+import fr.inria.corese.sparql.triple.function.extension.*;
+import fr.inria.corese.sparql.triple.function.script.*;
+import fr.inria.corese.sparql.triple.function.proxy.*;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
@@ -455,7 +397,6 @@ public class Term extends Expression {
             case ExprType.STL_SET:
             case ExprType.STL_CGET:
             case ExprType.STL_CSET:
-            case ExprType.STL_FORMAT:
             case ExprType.TURTLE:
             case ExprType.INDENT:
             case ExprType.STL_NL:
@@ -467,6 +408,12 @@ public class Term extends Expression {
             case ExprType.FOCUS_NODE:
             case ExprType.XSDLITERAL:
                 return new TemplateFunction(name);
+                
+            case ExprType.STL_FORMAT:
+            case ExprType.FORMAT:
+                return new TemplateFormat(name);
+            case ExprType.STL_FUTURE:
+                return new TemplateFuture(name);
             case ExprType.STL_PROCESS:
                 return new TemplateProcess(name);
 

@@ -1636,6 +1636,14 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return term;
     }
     
+        // at runtime
+    public Term createFunction(String name, ArrayList<Expression> args) {
+        Term t = createFunction(name);
+        t.setArgs(args);
+        t.compile(this);
+        return t;
+    }
+    
      /**
      * mapfun(st:concat, us:cell, ?list) 
      * ::=

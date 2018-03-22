@@ -253,6 +253,7 @@ public class Processor {
 	public static final String STL_INDEX        = STL + "index";
 	public static final String STL_FUTURE       = STL + "future";
 	public static final String STL_FORMAT       = STL + "format";
+	public static final String FORMAT           =   "format";
         
 	public static final String FUN_NUMBER       = NSManager.STL_PREF + ":"  + "_n_";
 	public static final String FUN_NL           = NSManager.STL_PREF + ":" + "nl"; 
@@ -775,6 +776,7 @@ public class Processor {
 		defoper(STL_NUMBER,             ExprType.STL_NUMBER);
 		defoper(STL_FORMAT,             ExprType.STL_FORMAT);
 		defoper(EXT+"format",           ExprType.STL_FORMAT);
+		defoper(FORMAT,                 ExprType.FORMAT);
                 
 		defoper(STL_INDEX,              ExprType.STL_INDEX);
 		defoper(STL_FUTURE,             ExprType.STL_FUTURE);

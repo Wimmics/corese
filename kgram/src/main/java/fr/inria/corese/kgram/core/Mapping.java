@@ -1233,8 +1233,14 @@ public class Mapping
     }
     
     @Override
-    public void aggregate(Mapping m, int n){
-        
+    public void aggregate(Mapping map, int n){
+        getMappings().setCount(n);
+        // in case there is a nested aggregate, map will be an Environment
+        // it must implement aggregate() and hence must know current Mappings group
+        map.setMappings(getMappings());
+        map.setQuery(getQuery());
+        // share same bnode table in all Mapping of current group solution
+        map.setMap(getMap());
     }
 
     @Override

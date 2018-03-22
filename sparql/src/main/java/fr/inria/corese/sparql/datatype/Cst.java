@@ -4,11 +4,11 @@ public interface Cst {
 	/**
 	 * implementation Class name for datatypes
 	 */
-	static final String pack = "fr.inria.corese.sparql.cg.datatype.";
+	static final String pack = "fr.inria.corese.sparql.datatype.";
 	
 	static final String jDatatype		= pack + "CoreseDatatype";
 	static final String jTypeString		= pack + "CoreseString";
-	static final String jTypeBoolean	= pack + "CoreseBoolean";
+	static final String jTypeBoolean        = pack + "CoreseBoolean";
 	static final String jTypeXMLString 	= pack + "CoreseXMLLiteral";
 	static final String jTypeDouble		= pack + "CoreseDouble";
 	static final String jTypeFloat		= pack + "CoreseFloat";
@@ -17,13 +17,13 @@ public interface Cst {
 	static final String jTypeInt            = pack + "CoreseInt";
         
 	static final String jTypeGenericInteger	= pack + "CoreseGenericInteger";
-	static final String jTypeLong   	= pack + "CoreseLong";
+	static final String jTypeLong       	= pack + "CoreseLong";
 	static final String jTypeLiteral       	= pack + "CoreseLiteral";
 	static final String jTypeUndef  	= pack + "CoreseUndefLiteral";
-	static final String jTypeDate   	= pack + "CoreseDate";
+	static final String jTypeDate       	= pack + "CoreseDate";
 	static final String jTypeDateTime       = pack + "CoreseDateTime";
 	static final String jTypeDay    	= pack + "CoreseDay";
-	static final String jTypeMonth  	= pack + "CoreseMonth";
+	static final String jTypeMonth          = pack + "CoreseMonth";
 	static final String jTypeYear   	= pack + "CoreseYear";
 	static final String jTypeGeneric        = pack + "CoreseGeneric";
 

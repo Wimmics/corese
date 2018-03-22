@@ -6,9 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Formatter;
 
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 

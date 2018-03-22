@@ -28,7 +28,7 @@ import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-//import fr.inria.corese.kgenv.eval.ProxyImpl;
+//import fr.inria.corese.compiler.eval.ProxyImpl;
 import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.api.Log;

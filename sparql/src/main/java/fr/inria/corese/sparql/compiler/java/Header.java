@@ -12,7 +12,7 @@ public class Header {
     
  static final String importList = 
               "import fr.inria.corese.sparql.api.IDatatype;\n"
-            + "import fr.inria.corese.sparql.cg.datatype.DatatypeMap;\n"
+            + "import fr.inria.corese.sparql.datatype.DatatypeMap;\n"
             + "import fr.inria.corese.sparql.triple.function.extension.*;\n"  
             + "import fr.inria.corese.extension.core.Core;\n";
  

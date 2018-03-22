@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Olivier Corby INRIA
  *
  */
+@Deprecated
 public class Interpreter implements Evaluator, ExprType {
 
     private static Logger logger = LogManager.getLogger(Interpreter.class);

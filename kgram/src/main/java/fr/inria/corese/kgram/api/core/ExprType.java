@@ -247,7 +247,8 @@ public interface ExprType {
  	public static int STL_CSET                  = 280;
  	public static int STL_HASGET                = 281;
  	public static int STL_STRIP                 = 282;
-        
+        public static int FORMAT                    = 283;
+
               
 	public static int ISSKOLEM 	= 300;
 	public static int SKOLEM 	= 301;

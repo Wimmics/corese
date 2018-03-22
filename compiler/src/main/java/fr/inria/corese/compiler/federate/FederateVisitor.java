@@ -76,6 +76,7 @@ public class FederateVisitor implements QueryVisitor {
     @Override
     public void visit(ASTQuery ast) {
         this.ast = ast;
+        rew.setDebug(ast.isDebug());
         option();
         
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
@@ -451,5 +452,10 @@ public class FederateVisitor implements QueryVisitor {
         return f.getFilter().isTerm() && f.getFilter().getTerm().isTermExist() ;
     }
 
-    
+    boolean isNotExist(Exp f) {
+        return f.getFilter().isTerm() && 
+               f.getFilter().getTerm().isNot() && 
+               f.getFilter().getTerm().getArg(0).isTerm() &&
+               f.getFilter().getTerm().getArg(0).getTerm().isTermExist() ;
+    }
 }

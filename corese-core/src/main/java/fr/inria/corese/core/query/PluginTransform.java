@@ -181,6 +181,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return visited(dt, env, p);
                                 
             case STL_FORMAT:
+            case FORMAT:
                 return format(dt);     
                         
 
@@ -242,6 +243,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return cget(exp, env, p, dt1, dt2);   
                                    
             case STL_FORMAT:
+            case FORMAT:
                 return format(dt1, dt2);
                  
     
@@ -307,6 +309,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return cset(exp, env, p, dt1, dt2, dt3);     
                 
             case STL_FORMAT:
+            case FORMAT:
                 return format(param);
                            
         }

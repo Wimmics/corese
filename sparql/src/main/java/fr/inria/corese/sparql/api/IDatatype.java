@@ -1,6 +1,6 @@
 package fr.inria.corese.sparql.api;
 
-import fr.inria.corese.sparql.cg.datatype.ICoresePolymorphDatatype;
+import fr.inria.corese.sparql.datatype.ICoresePolymorphDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Entity;

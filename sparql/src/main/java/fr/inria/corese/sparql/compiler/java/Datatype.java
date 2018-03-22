@@ -1,7 +1,7 @@
 package fr.inria.corese.sparql.compiler.java;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.datatype.RDF;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;

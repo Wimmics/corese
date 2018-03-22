@@ -21,7 +21,7 @@
 		</dependency>-->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>kgenv</artifactId>
+			<artifactId>compiler</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>

@@ -108,6 +108,15 @@ function st:pplink(?uri) {
   st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
 }
 
+#
+# take st:lodprofile into account
+# st:lodprofile ((<http://fr.dbpedia.org/>   st:jdev) ("*" st:lod)) 
+# if getprofile(?x) = st:lod, return uri as is, otherwise return pplink
+#
+function st:url(?x) {
+    if (coalesce(st:getprofile(?x) = st:lod, false), ?x, st:pplink(?x)) 
+}
+
 # ?arg = st:mode
 function st:include(?arg){
   coalesce(

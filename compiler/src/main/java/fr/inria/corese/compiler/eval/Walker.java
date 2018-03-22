@@ -29,6 +29,7 @@ import java.util.ArrayList;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
+@Deprecated
 public class Walker extends Interpreter {
 
     static IDatatype ZERO = DatatypeMap.ZERO;

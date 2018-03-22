@@ -1,7 +1,7 @@
 package fr.inria.corese.core.approximate.ext;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.CoreseStringLiteral;
+import fr.inria.corese.sparql.datatype.CoreseStringLiteral;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;

@@ -5,7 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.RDFList;
 import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.kgenv.parser.Pragma;
+import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.Engine;

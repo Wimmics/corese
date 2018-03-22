@@ -1,6 +1,6 @@
 package fr.inria.corese.core;
 
-import fr.inria.corese.kgenv.eval.Interpreter;
+import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.core.api.Engine;
 import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;

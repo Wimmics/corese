@@ -2,7 +2,7 @@ package fr.inria.corese.core.util;
 
 import java.io.IOException;
 
-import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;

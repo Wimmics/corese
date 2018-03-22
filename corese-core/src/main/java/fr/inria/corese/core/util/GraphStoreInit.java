@@ -1,7 +1,7 @@
 
 package fr.inria.corese.core.util;
 
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;

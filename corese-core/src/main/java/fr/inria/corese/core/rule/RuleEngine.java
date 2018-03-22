@@ -1,7 +1,7 @@
 package fr.inria.corese.core.rule;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;

@@ -1,7 +1,7 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgenv.parser.Transformer;
+import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;

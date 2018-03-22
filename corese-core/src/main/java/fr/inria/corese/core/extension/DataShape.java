@@ -2,7 +2,7 @@ package fr.inria.corese.core.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.core.query.PluginImpl;
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 
 /**

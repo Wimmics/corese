@@ -18,8 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgenv.parser.Pragma;
-import fr.inria.corese.kgenv.result.XMLResult;
+import fr.inria.corese.compiler.parser.Pragma;
+import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;

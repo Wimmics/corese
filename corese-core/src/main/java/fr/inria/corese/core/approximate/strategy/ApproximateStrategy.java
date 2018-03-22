@@ -1,7 +1,7 @@
 package fr.inria.corese.core.approximate.strategy;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgenv.parser.Pragma;
+import fr.inria.corese.compiler.parser.Pragma;
 import static fr.inria.corese.core.approximate.strategy.AlgType.ch;
 import static fr.inria.corese.core.approximate.strategy.AlgType.eq;
 import static fr.inria.corese.core.approximate.strategy.AlgType.jw;

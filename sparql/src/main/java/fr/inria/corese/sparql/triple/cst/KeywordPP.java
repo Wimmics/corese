@@ -1,6 +1,6 @@
 package fr.inria.corese.sparql.triple.cst;
 
-import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.datatype.RDF;
 
 
 

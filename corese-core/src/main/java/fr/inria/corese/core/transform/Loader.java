@@ -187,7 +187,7 @@ public class Loader {
             
             if (qprofile.getExtension() != null){
                 // share profile function definitions in templates
-                fr.inria.corese.kgenv.parser.Transformer tr = fr.inria.corese.kgenv.parser.Transformer.create();
+                fr.inria.corese.compiler.parser.Transformer tr = fr.inria.corese.compiler.parser.Transformer.create();
                 tr.definePublic(qprofile.getExtension(), qprofile, false);
                 for (Query t : qe.getTemplates()) {             
                     t.addExtension(qprofile.getExtension());

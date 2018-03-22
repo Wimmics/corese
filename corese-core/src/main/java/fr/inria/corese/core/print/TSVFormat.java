@@ -2,7 +2,7 @@ package fr.inria.corese.core.print;
 
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 

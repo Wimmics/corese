@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
-import fr.inria.corese.kgenv.eval.SQLResult;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.compiler.eval.SQLResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;

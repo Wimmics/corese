@@ -1,6 +1,6 @@
 package fr.inria.corese.core.workflow;
 
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Graph;

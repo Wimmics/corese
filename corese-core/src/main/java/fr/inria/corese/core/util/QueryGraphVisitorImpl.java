@@ -4,7 +4,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Term;
-import fr.inria.corese.kgenv.parser.NodeImpl;
+import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Exp;
@@ -182,8 +182,8 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
      */
     private Exp create(Node node, Node elem) {
        Node var = NodeImpl.createVariable(variable());
-       fr.inria.corese.kgenv.parser.EdgeImpl edge = 
-               fr.inria.corese.kgenv.parser.EdgeImpl.create(var, node, elem);
+        fr.inria.corese.compiler.parser.EdgeImpl edge = 
+               fr.inria.corese.compiler.parser.EdgeImpl.create(var, node, elem);
        Term re = list();
        re.compile(ast);
        Exp exp = Exp.create(Exp.PATH, edge);

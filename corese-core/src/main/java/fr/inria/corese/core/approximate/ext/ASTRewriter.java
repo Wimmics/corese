@@ -12,7 +12,7 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
-import fr.inria.corese.kgenv.api.QueryVisitor;
+import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.kgram.core.Query;
 import static fr.inria.corese.core.approximate.algorithm.Utils.msg;
 import fr.inria.corese.core.approximate.algorithm.Parameters;

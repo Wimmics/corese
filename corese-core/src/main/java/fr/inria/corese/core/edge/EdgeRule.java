@@ -1,6 +1,6 @@
 package fr.inria.corese.core.edge;
 
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 

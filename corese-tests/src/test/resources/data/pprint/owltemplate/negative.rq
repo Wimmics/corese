@@ -1,0 +1,16 @@
+template {
+    xsd:string(?l)  
+    "PropertyAssertion(" 
+      kg:uri(?p) " " kg:uri(?s) " "  kg:uri(?t)
+   ")"
+}
+where {
+  ?in a owl:NegativePropertyAssertion ;
+     owl:sourceIndividual  ?s ;
+     owl:assertionProperty ?p ;
+     ?q  ?t
+}
+values (?q ?l) {
+  (owl:targetIndividual "NegativeObject")
+  (owl:targetValue      "NegativeData")
+}

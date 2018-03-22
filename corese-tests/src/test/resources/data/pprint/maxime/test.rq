@@ -1,0 +1,12 @@
+template {
+  $in " " ?p " " $y
+  
+  $in " a " ex:T1
+  $y  " a " ex:T2
+}
+where {
+  $in ?p $y
+  
+  $in a ex:T1
+  $y  a ex:T2
+}

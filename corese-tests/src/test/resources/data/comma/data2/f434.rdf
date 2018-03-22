@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3881.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mikael.imberty">
+         <c:FamilyName>Imberty</c:FamilyName>
+         <c:FirstName>Mikael</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/xavier.descombes">
+         <c:FamilyName>Descombes</c:FamilyName>
+         <c:FirstName>Xavier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/ariana.en.html">
+         <c:Designation>Ariana</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-2000</c:CreationDate>
+   <c:Title>Simulation de processus objets :  Etude de faisabilité pour une  application à la segmentation d'image </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"  xmlns:cos="&cos;"  xmlns:c='&c;' xmlns:owl='&owl;'
+xml:base='&c;'>
+
+
+<!-- 	xml:base='http://www.inria.fr/acacia/comma#'
+O'Comma Ontology version 4.4 
+Copyright Comma Consortium 2002
+-->
+ 
+<rdf:Property rdf:about='#subPropertyOf'>
+	<rdfs:subPropertyOf rdf:resource='&rdfs;subPropertyOf'/>
+</rdf:Property>
+
+<rdf:Property rdf:about='#superPropertyOf'>
+	<owl:inverseOf rdf:resource='#subPropertyOf'/>
+</rdf:Property>
+
+<rdf:Property rdf:about='&rdfs;subClassOf'>
+	<c:superPropertyOf rdf:resource='#subClassOf'/>
+</rdf:Property>
+
+
+<owl:TransitiveProperty  rdf:about='#superClassOf'>
+	<owl:inverseOf rdf:resource='#subClassOf'/>
+</owl:TransitiveProperty>
+
+
+ 
+
+ <rdf:Property rdf:about='#hasType'>
+	<rdfs:subPropertyOf rdf:resource='&rdf;type'/>
+</rdf:Property>
+ 
+
+<rdfs:Class rdf:about='#Document'>
+	<c:superClassOf rdf:resource='#Icon'/>
+</rdfs:Class>
+
+
+
+
+<rdf:Property rdf:about='#isTypeOf'>
+	<owl:inverseOf rdf:resource='#hasType'/>
+</rdf:Property>
+
+
+
+<rdf:Description rdf:about='&rdfs;Class'>
+	<c:isTypeOf>
+		<rdfs:Resource rdf:about='#Icon'>
+			<c:superClassOf rdf:resource='#Sign'/>
+		</rdfs:Resource>
+	</c:isTypeOf>
+</rdf:Description>
+
+
+
+
+</rdf:RDF>
+

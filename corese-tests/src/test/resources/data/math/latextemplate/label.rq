@@ -1,0 +1,8 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+template  {
+  ?l
+}
+where {
+  ?in rdfs:label ?l
+}
+pragma {kg:template kg:priority 1000}

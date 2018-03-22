@@ -1,0 +1,11 @@
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" kg:uri(?in)  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:SymmetricProperty 	"Symmetric")
+  (owl:TransitiveProperty 	"Transitive")
+}

@@ -1,0 +1,21 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# kg:pprintAll(?in) run all templates on each value of ?in
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template kg:start {
+
+  "Ontology(" kg:uri(?in) "\n\n"
+
+    kg:template(kg:import, ?in)
+    
+    kg:template(kg:body, ?in)
+    
+  "\n)"
+}
+where {
+
+  ?in a owl:Ontology   
+      
+}
+

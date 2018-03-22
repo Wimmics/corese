@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1596.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eitan.altman">
+         <c:FamilyName>Altman</c:FamilyName>
+         <c:FirstName>Eitan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/panagiotis.konstantopoulos">
+         <c:FamilyName>Konstantopoulos</c:FamilyName>
+         <c:FirstName>Panagiotis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/zhen.liu">
+         <c:FamilyName>Liu</c:FamilyName>
+         <c:FirstName>Zhen</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/meval.en.html">
+         <c:Designation>Meval</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1992</c:CreationDate>
+   <c:Title>Some qualitative properties in polling systems</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

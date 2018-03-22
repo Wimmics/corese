@@ -1,0 +1,8 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select  * where
+{
+<http://www.inria.fr/olivier.corby> d i (c:isMemberOf | c:hasCreated |  c:IsInterestedBy)*  ?y
+filter(?y = <http://www.inria.fr/anne-marie.dery>)
+
+}
+limit 1000

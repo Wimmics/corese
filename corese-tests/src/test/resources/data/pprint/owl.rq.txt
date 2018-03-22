@@ -1,0 +1,5 @@
+prefix ex: <http://www.example.org#>
+describe ?c
+pragma {
+kg:display kg:template </home/corby/AData/pprint/owltemplate>
+}

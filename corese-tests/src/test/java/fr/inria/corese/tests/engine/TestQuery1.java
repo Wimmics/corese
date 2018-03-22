@@ -139,7 +139,7 @@ public class TestQuery1 {
     }
     
     
-     
+    @Test
     public void testJSON() throws EngineException, LoadException {
         String t =
                 "template  {  st:apply-templates-with(st:json)}"
@@ -438,7 +438,7 @@ public class TestQuery1 {
                     + "us:Circle        rdfs:subClassOf us:SquareCircle "                    
                     + "}";
             
-             String q = ql.readWE(data + "junit/query/method.rq");
+             String q = ql.readWE(data + "test/method.rq");
              
              exec.query(init);
              Mappings map = exec.query(q);             

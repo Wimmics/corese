@@ -1,0 +1,18 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+
+  <CoMMA:Presentation rdf:about="http://fapollo:8080/comma/doc/mediation.mov">
+  	<CoMMA:Title>Presentation of the purposes of Mediation</CoMMA:Title>
+    <CoMMA:HasForPerceptionMode><CoMMA:VisualPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForPerceptionMode><CoMMA:AudioPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForRepresentationSystem><CoMMA:French/></CoMMA:HasForRepresentationSystem>
+    <CoMMA:HasForRepresentationSystem><CoMMA:TalkingMovieRepresentation/></CoMMA:HasForRepresentationSystem>
+  	<CoMMA:Target>
+  		<CoMMA:OrganizationalEntity>
+  			<CoMMA:IsInterestedBy><CoMMA:KnowledgeManagementTopic/></CoMMA:IsInterestedBy>
+  		</CoMMA:OrganizationalEntity>
+    </CoMMA:Target>
+  </CoMMA:Presentation>
+</rdf:RDF>

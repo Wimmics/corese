@@ -1,0 +1,24 @@
+#
+# To Be Completed
+#
+template {
+
+  if (?p = rdfs:subClassOf, "SubClassOf",  
+  if (?p = owl:equivalentClass, "ObjectEquivalentClasses",
+    kg:uri(?p)))
+ 
+   "(Annotation(" kg:uri(?q)  " " kg:uri(?c) ")\n"
+      kg:uri(?s) " " kg:uri(?t)
+   ")"
+}
+where {
+  ?in owl:annotatedSource   ?s ;
+      owl:annotatedProperty ?p ;
+      owl:annotatedTarget   ?t ;
+      ?q ?c
+      filter(?q not in (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+}
+
+
+
+

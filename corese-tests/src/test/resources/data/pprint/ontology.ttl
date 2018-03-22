@@ -1,0 +1,14 @@
+@prefix ast: <http://www.inria.fr/2012/ast#>
+
+ast:Query a rdfs:Class ;
+rdfs:label "Query", "Requête"@fr
+
+
+ast:SelectQuery rdfs:subClassOf ast:Query
+
+ast:ConstructQuery rdfs:subClassOf ast:Query
+
+ast:DescribeQuery rdfs:subClassOf ast:Query
+
+ast:AskQuery rdfs:subClassOf ast:Query
+

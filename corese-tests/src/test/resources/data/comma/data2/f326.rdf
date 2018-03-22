@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1847.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/anne-marie.dery">
+         <c:FamilyName>Dery</c:FamilyName>
+         <c:FirstName>Anne-Marie</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/christian.huitema">
+         <c:FamilyName>Huitema</c:FamilyName>
+         <c:FirstName>Christian</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/william.maille">
+         <c:FamilyName>Maille</c:FamilyName>
+         <c:FirstName>William</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/rodeo.en.html">
+         <c:Designation>Rodeo</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1993</c:CreationDate>
+   <c:Title>Environnement de programmation pour ASN.1</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

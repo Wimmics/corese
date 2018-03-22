@@ -1,0 +1,25 @@
+us:w6 a sw:Workflow ;
+  sw:param [    
+    sw:test us:John
+  ] ;
+  sw:body ( us:q1 )
+.
+
+
+us:q1 a sw:Query ;
+   sw:body """
+      select *
+      where { 
+      bind (st:get(st:definition) as ?g)
+      bind (st:get(sw:test) as ?t)
+      graph ?g { ?t ?p ?v }
+      }
+      function xt:finish(?q, ?ms){ xt:display(xt:size(?ms), ?ms) }
+      """ 
+.  
+
+
+us:John a foaf:Person ;
+foaf:name "John" ;
+foaf:knows us:James
+.

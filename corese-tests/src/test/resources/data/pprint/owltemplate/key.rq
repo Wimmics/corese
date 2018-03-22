@@ -1,0 +1,17 @@
+template {
+  "HasKey(" kg:uri(?in)  " ("  
+     group distinct { kg:uri(?op) } ") ("
+     group distinct { kg:uri(?dp) } 
+   "))"
+}
+where {
+  ?in owl:hasKey ?l
+  
+  optional { 
+    ?l rdf:rest*/rdf:first ?op
+    ?op a owl:ObjectProperty }
+    
+  optional { 
+    ?l rdf:rest*/rdf:first ?dp
+    ?dp a owl:DatatypeProperty }
+}

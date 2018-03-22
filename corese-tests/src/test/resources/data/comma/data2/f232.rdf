@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2143.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/konrad.weigl">
+         <c:FamilyName>Weigl</c:FamilyName>
+         <c:FirstName>Konrad</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/gerard.giraudon">
+         <c:FamilyName>Giraudon</c:FamilyName>
+         <c:FirstName>Gerard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/marc.berthod">
+         <c:FamilyName>Berthod</c:FamilyName>
+         <c:FirstName>Marc</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/pastis.en.html">
+         <c:Designation>Pastis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1993</c:CreationDate>
+   <c:Title>Application of projection learning to the detection of urban areas in SPOT satellite images</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,8 +1,0 @@
-template {
-    if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
-    "(" kg:uri(?in)  ")"   
-}
-where {
-  ?in a owl:FunctionalProperty 
-  optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
-}

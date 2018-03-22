@@ -1,0 +1,28 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:start {
+"\\documentclass{article}" "\n"
+"\\title{Mathematics meet the Semantic Web}" "\n"
+"\\author{WiFi}" "\n"
+"\\begin{document}" "\n"
+"\\maketitle" "\n"
+
+
+  group { 
+#  "\\section{" ?l "}" "\n"
+  "\\begin{equation}" 
+  
+  ?in 
+  
+  "\\end{equation}" 
+  ; separator = "\n\n" }
+  
+"\n"  
+"\\end{document}"
+"\n"
+}
+where {
+  ?in a ?t ; m:label ?l
+  filter not exists {?x ?p ?in}
+  filter (strstarts(?t, m:))
+}

@@ -1,9 +1,0 @@
-template { 
-  format { 
-    """<table><tr>%s</tr></table>""" 
-    group { format { "<td>%s</td>" ?t }} 
-  }
-}
-where { 
-  values ?t { unnest(st:get(st:transformations)) }
-}

@@ -1,0 +1,37 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix sp:      <http://spinrdf.org/sp#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+_:b1  sp:varName "x"^^xsd:string .
+
+[]    a       sp:Select ;
+      sp:groupBy (_:b1) ;
+      sp:having ([ a       sp:gt ;
+                  sp:arg1 [ sp:varName "g"^^xsd:string
+                          ] ;
+                  sp:arg2 "a"
+                ]) ;
+      sp:resultVariables ([ sp:expression
+                          [ a       sp:Min ;
+                            sp:expression
+                                    [ sp:varName "name"^^xsd:string
+                                    ]
+                          ] ;
+                  sp:varName "g"^^xsd:string
+                ]) ;
+      sp:text """PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ((MIN(?name)) AS ?g)
+WHERE {
+    ?x foaf:knows ?name .
+}
+GROUP BY ?x
+HAVING (?g > \"a\")"""^^xsd:string ;
+      sp:where ([ sp:object
+                          [ sp:varName "name"^^xsd:string
+                          ] ;
+                  sp:predicate foaf:knows ;
+                  sp:subject _:b1
+                ]) .

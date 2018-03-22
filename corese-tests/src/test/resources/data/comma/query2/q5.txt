@@ -1,0 +1,7 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select distinct   ?y where
+{
+<http://www.inria.fr/olivier.corby>  d i (c:isMemberOf | c:hasCreated |  c:IsInterestedBy)*   ?y
+
+}
+limit 1000

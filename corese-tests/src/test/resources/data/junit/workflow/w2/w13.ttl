@@ -1,0 +1,8 @@
+[] a sw:Workflow ;
+
+sw:body (
+   [ a sw:Query ; sw:body "construct { us:John foaf:name 'Jon' } where {}" ]
+
+   [ a sw:Query ; sw:body 
+    "select * where { ?x a foaf:Person ; foaf:name ?n }" ] 
+)

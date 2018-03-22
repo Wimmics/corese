@@ -1,0 +1,21 @@
+[] a sw:Workflow ;
+sw:body (
+
+[a sw:Parallel ; sw:body (
+
+  [ a sw:Query ; sw:body 
+  """construct {
+  graph us:g1 { [] foaf:name 'Johnny', 'John'} 
+  graph us:g2 { us:John foaf:knows <Jon> } 
+  } where {}""" ]
+  
+  [ a sw:Query ; sw:body 
+  """construct {
+  graph us:g2 { us:John foaf:knows <Jon> } 
+  graph us:g1 { [] foaf:name 'John', 'Johnny' } 
+  } where {}""" ]
+)]
+
+[ a sw:Dataset ; sw:debug true ; sw:mode sw:compare ]
+
+)

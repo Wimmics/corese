@@ -1,0 +1,13 @@
+[] a sw:Dataset ;
+
+sw:defaultGraph (
+
+[ a sw:Workflow ; sw:body (  [ a sw:Load ; sw:path <> ] ) ]
+
+)
+
+sw:namedGraph (
+
+[ a sw:Workflow ; sw:name us:g1 ; sw:body ([ a sw:Load ; sw:path <> ]) ]
+
+)

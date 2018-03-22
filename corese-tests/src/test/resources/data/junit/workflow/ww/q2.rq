@@ -1,0 +1,4 @@
+construct 
+where {
+  ?x ?p ?y
+}

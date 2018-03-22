@@ -1,0 +1,10 @@
+template {
+    xsd:string(?l) "("  kg:uri(?in) " "  kg:uri(?p) ")"   
+}
+where {
+  ?in owl:propertyDisjointWith ?p ; a ?t
+}
+values (?t ?l) {
+  (owl:ObjectProperty   "DisjointObjectProperties")
+  (owl:DatatypeProperty "DisjointDataProperties")
+}

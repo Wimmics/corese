@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:TechnicalReport rdf:about="http://www.inria.fr/rapports/sophia/RT-210.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/j..bertot">
+         <c:FamilyName>Bertot</c:FamilyName>
+         <c:FirstName>J.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/y..bertot">
+         <c:FamilyName>Bertot</c:FamilyName>
+         <c:FirstName>Y.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/y..coscoy">
+         <c:FamilyName>Coscoy</c:FamilyName>
+         <c:FirstName>Y.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/h..goguenwith">
+         <c:FamilyName>Goguenwith</c:FamilyName>
+         <c:FirstName>H.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/and.f.">
+         <c:FamilyName>F.</c:FamilyName>
+         <c:FirstName>and</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/croap.en.html">
+         <c:Designation>Croap</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1997</c:CreationDate>
+   <c:Title>User Guide to the  C T COQ  Proof Environment</c:Title>
+</c:TechnicalReport> 
+</rdf:RDF>

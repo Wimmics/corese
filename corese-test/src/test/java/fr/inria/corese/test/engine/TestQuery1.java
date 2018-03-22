@@ -26,14 +26,14 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphStoreInit;
 import fr.inria.corese.core.util.QueryManager;
 import fr.inria.corese.core.util.SPINProcess;
-import fr.inria.corese.sparql.cg.datatype.RDF;
+import fr.inria.corese.sparql.datatype.RDF;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.cg.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.storage.api.Parameters;
@@ -42,7 +42,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Processor;
-import fr.inria.corese.kgenv.result.XMLResult;
+import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -100,7 +100,7 @@ public class TestQuery1 {
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
-        //fr.inria.corese.kgenv.parser.Transformer.ISBGP = !true;
+        //fr.inria.corese.compiler.parser.Transformer.ISBGP = !true;
         QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
         
         QueryProcess.testAlgebra(!true);

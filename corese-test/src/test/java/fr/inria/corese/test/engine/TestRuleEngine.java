@@ -22,7 +22,7 @@ import fr.inria.corese.sparql.exceptions.*;
 import fr.inria.corese.sparql.storage.api.Parameters;
 
 import fr.inria.corese.core.api.Engine;
-import fr.inria.corese.kgenv.eval.QuerySolver;
+import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import java.io.IOException;

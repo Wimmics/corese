@@ -10,9 +10,12 @@ import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+
+
 
 /**
  *
@@ -20,8 +23,9 @@ import java.util.List;
  *
  */
 public class Rewrite {
-
+   
     FederateVisitor visitor;
+    private boolean debug = false;
     
     Rewrite(FederateVisitor vis) {
         visitor = vis;
@@ -115,7 +119,8 @@ public class Rewrite {
         for (Exp exp : body) {
             if (exp.isFilter()) {
                 if (visitor.isRecExist(exp)) {
-                    if (visitor.isExist() && visitor.isExist(exp)) {
+                    if (visitor.isExist() && 
+                            (visitor.isExist(exp) || visitor.isNotExist(exp))) {
                         // draft for testing
                         filterExist(name, body, bgpList, filterList, exp);                       
                     }
@@ -145,36 +150,118 @@ public class Rewrite {
      * service URI { BGP }  filter exists { service URI { EXP } }
      * ->
      * service URI { BGP  filter exists { EXP } } 
+     * 
+     * TODO: 
+     * does not work if there were existing services before rewrite
+     * because they are not in bgpMap
      */
-    void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList, Exp filterExist) {
+    void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
+        boolean isNotExist = visitor.isNotExist(filterExist);
         Expression filter = filterExist.getFilter();
-        List<String> list = filter.getVariables();
-
         visitor.rewriteFilter(name, filter);
-        Exist exist = filter.getTerm().getExistPattern();
+        Exist exist;
+        if (isNotExist) {
+            exist = filter.getTerm().getArg(0).getTerm().getExistPattern();
+        }
+        else {
+            exist = filter.getTerm().getExistPattern();            
+        }
         Exp bgpExist = exist.get(0);
-
+        
         if (bgpExist.size() == 1 && bgpExist.get(0).isService()) {
             Service servExist = bgpExist.get(0).getService();
             if (servExist.getServiceList().size() == 1) {
 
-                for (BasicGraphPattern bgp : bgpList.keySet()) {
-                    Service servBGP = bgpList.get(bgp);
+               List<BasicGraphPattern> bgpList = new ArrayList<>();
+               List<Variable> existVarList = bgpExist.getVariables();
+               List<Variable> intersection = null;
+               
+                // select relevant BGP with same URI as exists
+                // If other BGP bind some variables of exists, 
+                // they must bind the same variables as the relevant one
+                for (BasicGraphPattern bgp : bgpMap.keySet()) {
+
+                    Service servBGP = bgpMap.get(bgp);
+                    List<Variable> bgpVarList = bgp.getVariables();                  
+                    List<Variable> inter = intersection(existVarList, bgpVarList);
+                    
+                    if (isDebug()) {
+                        System.out.println("R: " + existVarList + " " + bgpVarList);
+                        System.out.println("Intersection: " + inter);
+                    }
+                    
                     if (servExist.getServiceName().equals(servBGP.getServiceName())) {
-                        // remove the exist service clause, 
-                        exist.set(0, servExist.get(0));
-                        // move the exist BGP into the outer service BGP
-                        bgp.add(filterExist);
-                        System.out.println("R: " + servBGP);
-                        if (!filterList.contains(filterExist)) {
-                            filterList.add(filterExist);
+                        if (intersection == null) {
+                             intersection = inter;
                         }
+                        
+                        if (equal(intersection, inter)) {
+                            bgpList.add(bgp);
+                        } else {
+                            // two BGP intersect differently the exists clause
+                            return;
+                        }
+                    } 
+                    else // service with another URI
+                    if (!inter.isEmpty()) {
+                        if (intersection == null) {
+                            intersection = inter;
+                        } else if (!equal(intersection, inter)) {
+                            // two BGP intersect differently the exists clause
+                            return;
+                        }
+                    }                   
+                }
+
+                if (bgpList.size() == 1) {
+                    // remove service from exists
+                    exist.set(0, servExist.get(0));
+                    // move exist into relevant service 
+                    bgpList.get(0).add(filterExist);
+                    if (!filterList.contains(filterExist)) {
+                        filterList.add(filterExist);
                     }
                 }
+                
             }
         }
     }
-
+    
+    boolean equal(List<Variable> list1, List<Variable> list2) {
+        if (list1.size() != list2.size()) {
+            return false;
+        }
+        for (Variable var : list1) {
+            if (! list2.contains(var)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    boolean hasIntersection(List<Variable> list1, List<Variable> list2) {
+       return ! intersection(list1, list2).isEmpty();              
+    }
+    
+    List<Variable> intersection(List<Variable> list1, List<Variable> list2) {
+        ArrayList<Variable> list = new ArrayList<>();
+         for (Variable var : list1) {
+            if (list2.contains(var) && ! list.contains(var)) {
+                list.add(var);
+            }
+        }
+        return list;
+    }
+    
+    
+    boolean includedIn(List<Variable> list1, List<Variable> list2) {
+        for (Variable var : list1) {
+            if (! list2.contains(var)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
      /**
      * service s {e1} optional { service s {e2}}
@@ -232,6 +319,18 @@ public class Rewrite {
         return exp;       
     }
     
-    
+ /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }    
     
 }

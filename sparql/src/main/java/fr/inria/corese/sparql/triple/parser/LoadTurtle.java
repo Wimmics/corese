@@ -9,8 +9,8 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import fr.inria.corese.sparql.exceptions.QueryLexicalException;
@@ -31,7 +31,7 @@ import fr.inria.corese.sparql.triple.javacc1.TokenMgrError;
 public class LoadTurtle {
 
 	/** logger from log4j */
-	private static Logger logger = LogManager.getLogger(LoadTurtle.class);
+	private static Logger logger = LoggerFactory.getLogger(LoadTurtle.class);
 	
     SparqlCorese parser;
     Creator create;

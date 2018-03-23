@@ -1,8 +1,8 @@
 package fr.inria.corese.sparql.triple.parser;
 
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
@@ -28,7 +28,7 @@ import java.util.logging.Level;
 public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	/** logger from log4j */
-	private static Logger logger = LogManager.getLogger(Exp.class); 
+	private static Logger logger = LoggerFactory.getLogger(Exp.class); 
 	
 	private ArrayList<Exp> body;
 	

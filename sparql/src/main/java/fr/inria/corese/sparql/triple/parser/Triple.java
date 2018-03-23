@@ -3,8 +3,8 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.triple.cst.RDFS;
@@ -27,7 +27,7 @@ public class Triple extends Exp {
 	private static final long serialVersionUID = 1L;
 	
 	/** logger from log4j */
-	private static Logger logger = LogManager.getLogger(Triple.class);
+	private static Logger logger = LoggerFactory.getLogger(Triple.class);
 	
 //	final static String SDT = KeywordPP.SDT;
 //	final static String LANG = KeywordPP.LANG;

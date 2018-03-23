@@ -2,8 +2,8 @@ package fr.inria.corese.sparql.datatype;
 
 import java.util.Hashtable;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
@@ -40,7 +40,7 @@ public class DatatypeMap implements Cst, RDF {
     /**
      * logger from log4j
      */
-    private static Logger logger = LogManager.getLogger(DatatypeMap.class);
+    private static Logger logger = LoggerFactory.getLogger(DatatypeMap.class);
     public static final IDatatype ZERO = newInstance(0);
     public static final IDatatype ONE = newInstance(1);
     public static final IDatatype TWO = newInstance(2);

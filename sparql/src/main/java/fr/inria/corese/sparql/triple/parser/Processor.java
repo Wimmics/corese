@@ -8,8 +8,8 @@ import java.sql.ResultSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.function.SQLFun;
@@ -23,7 +23,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import java.util.HashMap;
 
 public class Processor {
-	private static Logger logger = LogManager.getLogger(Processor.class);
+	private static Logger logger = LoggerFactory.getLogger(Processor.class);
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
         static final String EXT      = NSManager.EXT;

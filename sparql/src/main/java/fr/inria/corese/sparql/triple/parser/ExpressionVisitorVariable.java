@@ -5,8 +5,8 @@ import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import fr.inria.corese.kgram.api.core.ExprType;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Visit filter/select/bind expressions
@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ExpressionVisitorVariable implements ExpressionVisitor {
   
-    private static Logger logger = LogManager.getLogger(ASTQuery.class);
+    private static Logger logger = LoggerFactory.getLogger(ASTQuery.class);
    
     private boolean let = false;
     private boolean functionDefinition = false;

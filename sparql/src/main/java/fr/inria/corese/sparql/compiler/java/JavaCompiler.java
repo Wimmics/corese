@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Java Compiler for LDScript
@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class JavaCompiler {
   
-    private static Logger logger = LogManager.getLogger(JavaCompiler.class);
+    private static Logger logger = LoggerFactory.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
     String path =
             "/user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/";
@@ -577,10 +577,10 @@ public class JavaCompiler {
             return true;
 
         } catch (ClassNotFoundException e) {
-            logger.error(e);
+            logger.error(e.toString());
         } catch (SecurityException e) {
         } catch (NoSuchMethodException e) {
-            logger.error(e);
+            logger.error(e.toString());
         } catch (IllegalArgumentException e) {
         }
         return false;

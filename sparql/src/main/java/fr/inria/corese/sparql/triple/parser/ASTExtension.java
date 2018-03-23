@@ -7,8 +7,8 @@ import fr.inria.corese.kgram.api.core.ExpType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage extension functions 
@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class ASTExtension {
-    private static Logger logger = LogManager.getLogger(ASTExtension.class);	
+    private static Logger logger = LoggerFactory.getLogger(ASTExtension.class);	
 
     static final String NL = System.getProperty("line.separator");
     public static final String TYPE = ExpType.TYPE_METADATA;

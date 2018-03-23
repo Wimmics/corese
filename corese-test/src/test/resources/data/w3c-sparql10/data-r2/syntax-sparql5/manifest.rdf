@@ -1,0 +1,35 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql5/manifest#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql5/manifest#syntax-reduced-02">
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007OctDec/att-0069/13-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql5/syntax-reduced-02.rq"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#PositiveSyntaxTest"/>
+    <mf:name>syntax-reduced-02.rq</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql5/manifest#syntax-reduced-01"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql5/manifest#syntax-reduced-01">
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007OctDec/att-0069/13-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql5/syntax-reduced-01.rq"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#PositiveSyntaxTest"/>
+    <mf:name>syntax-reduced-01.rq</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql5/manifest#syntax-reduced-02"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql5/manifest.ttl">
+    <mf:entries rdf:nodeID="A0"/>
+    <rdfs:comment>Syntax tests syntax-sparql5</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+</rdf:RDF>

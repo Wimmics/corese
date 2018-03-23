@@ -1,0 +1,101 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns:mfx="http://jena.hpl.hp.com/2005/05/test-manifest-extra#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-eq.srx"/>
+    <mf:action rdf:nodeID="A3"/>
+    <rdfs:comment>sameTerm('xyz', 'xyz'^^xsd:string) and 'xyz'='xyz'^^xsd:string</rdfs:comment>
+    <mf:name>sameTerm-eq</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:nodeID="A6"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.srx"/>
+    <mf:action rdf:nodeID="A1"/>
+    <rdfs:comment>sameTerm('xyz', 'xyz'^^xsd:string)</rdfs:comment>
+    <mf:name>sameTerm</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:rest rdf:nodeID="A8"/>
+    <rdf:first rdf:nodeID="A9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-not-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <mf:requires rdf:resource="http://jena.hpl.hp.com/2005/05/test-manifest-extra#StringSimpleLiteralCmp"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-StringSimpleLiteralCmp.srx"/>
+    <mf:action rdf:nodeID="A0"/>
+    <rdfs:comment>sameTerm('xyz', 'xyz'^^xsd:string) with mfx:StringSimpleLiteralCmp</rdfs:comment>
+    <mf:name>sameTerm-StringSimpleLiteralCmp</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A7"/>
+    <rdf:first rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:nodeID="A11"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-not-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:nodeID="A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <mf:requires rdf:resource="http://jena.hpl.hp.com/2005/05/test-manifest-extra#StringSimpleLiteralCmp"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-not-eq-StringSimpleLiteralCmp.srx"/>
+    <mf:action rdf:nodeID="A10"/>
+    <rdfs:comment>!sameTerm('xyz', 'xyz'^^xsd:string) and 'xyz'='xyz'^^xsd:string with mfx:StringSimpleLiteralCmp</rdfs:comment>
+    <mf:name>sameTerm-not-eq-StringSimpleLiteralCmp</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-manifest.ttl">
+    <mf:entries rdf:nodeID="A4"/>
+    <rdfs:label>sameTerm and mfx:StringSimpleLiteralCmp</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <mf:requires rdf:resource="http://jena.hpl.hp.com/2005/05/test-manifest-extra#StringSimpleLiteralCmp"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-eq-StringSimpleLiteralCmp.srx"/>
+    <mf:action rdf:nodeID="A16"/>
+    <rdfs:comment>sameTerm('xyz', 'xyz'^^xsd:string) and 'xyz'='xyz'^^xsd:string with mfx:StringSimpleLiteralCmp</rdfs:comment>
+    <mf:name>sameTerm-eq-StringSimpleLiteralCmp</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/sameTerm-not-eq.srx"/>
+    <mf:action rdf:nodeID="A13"/>
+    <rdfs:comment>!sameTerm('xyz', 'xyz'^^xsd:string) and 'xyz'='xyz'^^xsd:string</rdfs:comment>
+    <mf:name>sameTerm-not-eq</mf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:nodeID="A17"/>
+  </rdf:Description>
+</rdf:RDF>

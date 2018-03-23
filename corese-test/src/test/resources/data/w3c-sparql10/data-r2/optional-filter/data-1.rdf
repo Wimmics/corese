@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns="http://example.org/books#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:x="http://example.org/ns#" > 
+  <rdf:Description rdf:about="http://example.org/books#book3">
+    <dc:title>TITLE 3</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/books#book1">
+    <x:price rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</x:price>
+    <dc:title>TITLE 1</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/books#book2">
+    <x:price rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</x:price>
+    <dc:title>TITLE 2</dc:title>
+  </rdf:Description>
+</rdf:RDF>

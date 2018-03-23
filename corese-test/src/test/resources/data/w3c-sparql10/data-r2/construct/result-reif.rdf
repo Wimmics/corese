@@ -1,0 +1,44 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:subject rdf:nodeID="A1"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/knows"/>
+    <rdf:object rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:subject rdf:nodeID="A2"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/mbox"/>
+    <rdf:object rdf:resource="mailto:bob@home"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:subject rdf:nodeID="A2"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/knows"/>
+    <rdf:object rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:subject rdf:nodeID="A2"/>
+    <rdf:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+    <rdf:object rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:subject rdf:nodeID="A2"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/name"/>
+    <rdf:object>Bob</rdf:object>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:subject rdf:nodeID="A1"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/mbox"/>
+    <rdf:object rdf:resource="mailto:alice@work"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:subject rdf:nodeID="A1"/>
+    <rdf:predicate rdf:resource="http://xmlns.com/foaf/0.1/name"/>
+    <rdf:object>Alice</rdf:object>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:subject rdf:nodeID="A1"/>
+    <rdf:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+    <rdf:object rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+</rdf:RDF>

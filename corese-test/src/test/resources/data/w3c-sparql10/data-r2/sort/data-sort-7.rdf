@@ -1,0 +1,25 @@
+<rdf:RDF
+    xmlns:ex="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#float">23.0</ex:empId>
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</ex:empId>
+    <foaf:name>Eve</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">29</ex:empId>
+    <foaf:name>Alice</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">27</ex:empId>
+    <foaf:name>Fred</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+</rdf:RDF>

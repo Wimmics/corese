@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>val</rs:variable>
+    <rs:value>ABCdefGHIjkl</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:binding rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:solution rdf:nodeID="A1"/>
+    <rs:solution rdf:nodeID="A3"/>
+    <rs:resultVariable>val</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>val</rs:variable>
+    <rs:value>abcDEFghiJKL</rs:value>
+  </rdf:Description>
+</rdf:RDF>

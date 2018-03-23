@@ -1,0 +1,59 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:t="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#negativeIntegerN1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#negativeInteger">-1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#dateTime1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2005-01-14T12:34:56</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#nonPositiveIntegerN1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#nonPositiveInteger">-1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#float1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#unsignedInt1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#unsignedInt">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#booleanT">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#byte1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#byte">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#double1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#long1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#positiveInteger1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#positiveInteger">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#int1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#nonNegativeInteger1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#short1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#short">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#decimal1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#unsignedShort1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#unsignedShort">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#unsignedByte1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#unsignedByte">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#unsignedLong1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#unsignedLong">1</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data/TypePromotion/tP-0#integer1">
+    <rdf:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rdf:value>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,53 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/y8">
+    <q rdf:resource="http://example/abc"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x5">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x4">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#string">xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x2">
+    <p xml:lang="en">xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x1">
+    <p>xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x3">
+    <p xml:lang="EN">xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x6">
+    <p rdf:datatype="http://example/unknown">xyz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x7">
+    <p rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y1">
+    <q>abc</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y6">
+    <q rdf:datatype="http://example/unknown">abc</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y5">
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">abc</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y4">
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#string">abc</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y2">
+    <q xml:lang="en">abc</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y7">
+    <q rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x8">
+    <p rdf:resource="http://example/xyz"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y3">
+    <q xml:lang="EN">abc</q>
+  </rdf:Description>
+</rdf:RDF>

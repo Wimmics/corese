@@ -1,0 +1,31 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql2/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A0"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql1/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql5/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql4/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A4"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/syntax-sparql3/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/manifest-syntax.ttl">
+    <mf:include rdf:nodeID="A2"/>
+    <rdfs:label>SPARQL Syntax Tests</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+</rdf:RDF>

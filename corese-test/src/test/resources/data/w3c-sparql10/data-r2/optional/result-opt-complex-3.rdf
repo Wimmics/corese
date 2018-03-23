@@ -1,0 +1,54 @@
+<rdf:RDF
+    xmlns:ex="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>dept</rs:variable>
+    <rs:value>DeptA</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>nick</rs:variable>
+    <rs:value>WhoMe?</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>nick</rs:variable>
+    <rs:value>BigB</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>plan</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#HealthPlanA"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>plan</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#HealthPlanD"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>name</rs:variable>
+    <rs:value>Alice</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:solution rdf:nodeID="A7"/>
+    <rs:solution rdf:nodeID="A8"/>
+    <rs:resultVariable>dept</rs:resultVariable>
+    <rs:resultVariable>plan</rs:resultVariable>
+    <rs:resultVariable>nick</rs:resultVariable>
+    <rs:resultVariable>name</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A1"/>
+    <rs:binding rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:binding rdf:nodeID="A0"/>
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A2"/>
+    <rs:binding rdf:nodeID="A9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:variable>name</rs:variable>
+    <rs:value>Bert</rs:value>
+  </rdf:Description>
+</rdf:RDF>

@@ -15,7 +15,7 @@ import org.apache.log4j.LogManager;
 public class Earl {
 	
 	static final String NL 	 = System.getProperty("line.separator");
-	static final String data = TestW3C11KGraph.more;
+	static final String data = TestW3C11KGraphNew.more;
 
 	StringBuilder sb;
 	Formatter fmt;

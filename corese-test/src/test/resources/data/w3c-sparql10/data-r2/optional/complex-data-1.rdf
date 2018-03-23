@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" > 
+  <rdf:Description rdf:about="tag:bert@example:foafUri">
+    <foaf:name>Bert</foaf:name>
+    <foaf:nick>BigB</foaf:nick>
+    <foaf:mbox rdf:resource="mailto:bert@example.net"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="tag:eve@example:foafUri">
+    <foaf:firstName>Eve</foaf:firstName>
+    <foaf:mbox rdf:resource="mailto:eve@example.net"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="tag:alice@example:foafUri">
+    <foaf:depiction rdf:resource="http://example.com/alice.png"/>
+    <foaf:nick>WhoMe?</foaf:nick>
+    <foaf:name>Alice</foaf:name>
+    <foaf:mbox rdf:resource="mailto:alice@example.net"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="tag:john@example:foafUri">
+    <foaf:isPrimaryTopicOf rdf:resource="http://example.com/people/johnDoe"/>
+    <foaf:nick>jDoe</foaf:nick>
+    <foaf:mbox rdf:resource="mailto:john@example.net"/>
+  </rdf:Description>
+</rdf:RDF>

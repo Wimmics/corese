@@ -1,0 +1,448 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#" > 
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-3.srx"/>
+    <mf:action rdf:nodeID="A0"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#var-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-7"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-3.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-8.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-2.srx"/>
+    <mf:action rdf:nodeID="A8"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - List 2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#var-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/var-1.srx"/>
+    <mf:action rdf:nodeID="A9"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Var 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-7">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-7.srx"/>
+    <mf:action rdf:nodeID="A10"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 7</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-7.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/bgp-no-match.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rdf:rest rdf:nodeID="A18"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-9.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <rdf:rest rdf:nodeID="A22"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-1.srx"/>
+    <mf:action rdf:nodeID="A6"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Quotes 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-2.srx"/>
+    <mf:action rdf:nodeID="A24"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Prefix/Base 2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A25"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-8"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#var-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-3.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <rdf:rest rdf:nodeID="A29"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/manifest.ttl">
+    <mf:entries rdf:nodeID="A28"/>
+    <rdfs:label>Basic test cases</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-4.srx"/>
+    <mf:action rdf:nodeID="A27"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Quotes 4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-3.srx"/>
+    <mf:action rdf:nodeID="A31"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - List 3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-6">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-6.srx"/>
+    <mf:action rdf:nodeID="A32"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 6</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:nodeID="A33"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-2.srx"/>
+    <mf:action rdf:nodeID="A34"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <rdf:rest rdf:nodeID="A11"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#prefix-name-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/prefix-name-1.srx"/>
+    <mf:action rdf:nodeID="A36"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>No local name - foo:</rdfs:comment>
+    <mf:name>Prefix name 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:rest rdf:nodeID="A37"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A38">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#prefix-name-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#bgp-no-match">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/bgp-no-match.srx"/>
+    <mf:action rdf:nodeID="A16"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Patterns not in data don't match</rdfs:comment>
+    <mf:name>Non-matching triple pattern</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-3.srx"/>
+    <mf:action rdf:nodeID="A39"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Prefix/Base 3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A40">
+    <rdf:rest rdf:nodeID="A21"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rdf:rest rdf:nodeID="A35"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-5.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/var-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A41">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-5.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rdf:rest rdf:nodeID="A26"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-9"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-5">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-5.srx"/>
+    <mf:action rdf:nodeID="A42"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Prefix/Base 5</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-3.srx"/>
+    <mf:action rdf:nodeID="A43"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Quotes 3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rdf:rest rdf:nodeID="A44"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-1.srx"/>
+    <mf:action rdf:nodeID="A3"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A45">
+    <rdf:rest rdf:nodeID="A46"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rdf:rest rdf:nodeID="A47"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A39">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-5">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-5.srx"/>
+    <mf:action rdf:nodeID="A41"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 5</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-6.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/prefix-name-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-9">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-9.srx"/>
+    <mf:action rdf:nodeID="A20"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 9</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A37">
+    <rdf:rest rdf:nodeID="A45"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A43">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-3.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A48">
+    <rdf:rest rdf:nodeID="A38"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#spoo-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-4.srx"/>
+    <mf:action rdf:nodeID="A30"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - List 4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-6.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A49">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-5.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/var-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A50">
+    <rdf:rest rdf:nodeID="A40"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/list-1.srx"/>
+    <mf:action rdf:nodeID="A19"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - List 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-4.srx"/>
+    <mf:action rdf:nodeID="A51"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Prefix/Base 4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#var-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/var-2.srx"/>
+    <mf:action rdf:nodeID="A49"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Var 2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#quotes-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-2.srx"/>
+    <mf:action rdf:nodeID="A52"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Quotes 2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A48"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#bgp-no-match"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A47">
+    <rdf:rest rdf:nodeID="A17"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A44">
+    <rdf:rest rdf:nodeID="A13"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A51">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-4.srx"/>
+    <mf:action rdf:nodeID="A23"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A46">
+    <rdf:rest rdf:nodeID="A4"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#term-8">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-8.srx"/>
+    <mf:action rdf:nodeID="A7"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Term 8</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A42">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-5.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A53">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-6.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/spoo-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#spoo-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/spoo-1.srx"/>
+    <mf:action rdf:nodeID="A53"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Test the :x :y :o1, :o2 construct</rdfs:comment>
+    <mf:name>Basic graph pattern - spoo</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#base-prefix-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/base-prefix-1.srx"/>
+    <mf:action rdf:nodeID="A15"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0060/2007-08-07-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Basic - Prefix/Base 1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A52">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-3.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/quotes-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/data-4.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/term-7.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A50"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/manifest#list-4"/>
+  </rdf:Description>
+</rdf:RDF>

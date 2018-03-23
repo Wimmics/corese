@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:HR="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/normalization.ttl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <HR:resumé>Alice's normalized resumé</HR:resumé>
+    <foaf:name>Alice</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <HR:resumé>Bob's non-normalized resumé</HR:resumé>
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/i18n/normalization-01.ttl">
+    <owl:versionInfo>$Id: normalization-01.ttl,v 1.1 2005/10/25 09:38:08 aseaborne Exp $</owl:versionInfo>
+    <rdfs:comment>Normalized and non-normalized IRIs</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <HR:resumé>Eve's non-normalized resumé</HR:resumé>
+    <HR:resumé>Eve's normalized resumé</HR:resumé>
+    <foaf:name>Eve</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

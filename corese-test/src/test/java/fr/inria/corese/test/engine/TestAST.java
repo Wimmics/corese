@@ -47,9 +47,7 @@ public class TestAST {
             assertEquals(5, res.intValue());
             assertEquals(res.getCode(), IDatatype.DECIMAL);
             
-            IDatatype dt3 = DatatypeMap.newInstance(Integer.MAX_VALUE);
-            IDatatype dt4 = dt3.plus(DatatypeMap.ONE);
-            assertEquals(dt4, null);
+            
         }
 
 	@Test

@@ -1,0 +1,16 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>S</rs:variable>
+    <rs:value rdf:resource="http://example/vocab#s2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:solution rdf:nodeID="A1"/>
+    <rs:resultVariable>S</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+</rdf:RDF>

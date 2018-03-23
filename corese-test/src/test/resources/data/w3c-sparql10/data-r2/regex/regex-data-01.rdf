@@ -1,0 +1,11 @@
+<rdf:RDF
+    xmlns:ex="http://example.com/#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" > 
+  <rdf:Description rdf:about="http://example.com/#foo">
+    <rdf:value>http://example.com/literal</rdf:value>
+    <rdf:value rdf:resource="http://example.com/uri"/>
+    <rdf:value>0123456789</rdf:value>
+    <rdf:value>ABCdefGHIjkl</rdf:value>
+    <rdf:value>abcDEFghiJKL</rdf:value>
+  </rdf:Description>
+</rdf:RDF>

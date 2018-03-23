@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs  "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY xsd   "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY rul   "http://ns.inria.fr/edelweiss/2011/rule#">
+]>
+
+<!--
+Additional rules for RDFS semantics
+
+olivier.corby@inria.fr Edelweiss INRIA 2011
+ -->
+ 
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;" xmlns:xsd='&xsd;' xmlns:rul='&rul;' 
+xmlns = '&rul;' >
+  
+ 
+<rule>
+<body>
+construct  {
+?c rdfs:subClassOf ?e
+} 
+where { 
+?c rdfs:subClassOf ?d
+?d rdfs:subClassOf ?e
+}
+</body>
+</rule>
+
+
+
+<rule>
+<body>
+construct  {
+?c rdfs:subClassOf ?c
+} 
+where { 
+?c rdf:type rdfs:Class
+}
+</body>
+</rule>
+
+
+<rule>
+<body>
+construct  {
+?p rdfs:subPropertyOf ?p
+} 
+where { 
+?p rdf:type rdf:Property
+}
+</body>
+</rule>
+
+
+<rule>
+<body>
+construct  {
+?x rdf:type ?d
+} 
+where { 
+?x rdf:type ?c
+?c rdfs:subClassOf ?d
+minus {?x rdf:type ?d}
+}
+</body>
+</rule>
+
+
+
+<rule>
+<body>
+construct  {
+?p rdf:type rdfs:ContainerMembershipProperty
+} 
+where { 
+?x ?p ?y
+filter(strstarts(?p, rdf:_))
+}
+</body>
+</rule>
+
+
+
+
+<rule>
+<body>
+construct  {
+?p rdfs:range ?d
+} 
+where { 
+?p rdfs:range ?c
+?c rdfs:subClassOf ?d
+}
+</body>
+</rule>
+
+
+
+<rule>
+<body>
+construct  {
+?p rdfs:domain ?d
+} 
+where { 
+?p rdfs:domain ?c
+?c rdfs:subClassOf ?d
+}
+</body>
+</rule>
+
+
+<!--<rule>
+<body>
+construct  {
+?p rdf:type rdf:Property
+} 
+where { 
+?x ?p ?y
+}
+</body>
+</rule>-->
+
+
+</rdf:RDF>

@@ -76,13 +76,14 @@ import org.apache.logging.log4j.Level;
 public class TestW3C11KGraphNew {
     // root of test case RDF data
 
-    static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
+    //static final String data0 = "/home/corby/workspace/coreseV2/src/test/resources/data/";
 //    static final String data = "/home/corby/NetBeansProjects/kgram/trunk/kgtool/src/test/resources/data/";
-    static final String data = TestW3C11KGraph.class.getClassLoader().getResource("data").getPath()+"/";
+    static final String data = TestW3C11KGraphNew.class.getClassLoader().getResource("data").getPath()+"/";
     // old local copy:
     //static final String froot = data + "w3c-sparql11/WWW/2009/sparql/docs/tests/data-sparql11/";
     // new local copy:
     static final String froot = data + "w3c-sparql11/sparql11-test-suite/";
+    static final String root0 = data + "w3c-sparql10/data-r2/";
     static final String frdf = data + "w3c-rdf/rdf-mt/tests/";
     static final String wrdf = "https://dvcs.w3.org/hg/rdf/raw-file/default/rdf-mt/tests/";
     
@@ -90,7 +91,7 @@ public class TestW3C11KGraphNew {
     static final String wroot = "http://www.w3.org/2009/sparql/docs/tests/data-sparql11/";
     //static final String RULE  = "/net/servers/ftp-sop/wimmics/soft/rule/rdfs.rul";
     static final String RULE = data + "w3c-sparql11/data/rdfs.rul";
-    static final String root0 = data0 + "test-suite-archive/data-r2/";
+    //static final String root0 = data0 + "test-suite-archive/data-r2/";
     static final String DC = "http://purl.org/dc/elements/1.1/";
     
     static final String TTL = "/home/corby/AData/work/w3c/";
@@ -432,7 +433,7 @@ public class TestW3C11KGraphNew {
             le.parse(more + "earl.ttl");
             //System.out.println(ge);
         } catch (LoadException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
 
         // There are 5 known erros
@@ -635,7 +636,7 @@ public class TestW3C11KGraphNew {
             try {
                 ld.parse(fquery);
             } catch (LoadException ex) {
-                LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                 earl.define(test, false);
                 return false;
             }
@@ -645,7 +646,7 @@ public class TestW3C11KGraphNew {
             try {
                 query = ql.readWE(fquery);
             } catch (LoadException ex) {
-                LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
             }
 
             if (query == null || query == "") {
@@ -699,7 +700,7 @@ public class TestW3C11KGraphNew {
                 try {
                     ld.parse(fresult);
                 } catch (LoadException ex) {
-                    LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                    LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                 }
             }
         } else if (fresult == null && output.getURIs().isEmpty()) { //frnamed.size()==0){
@@ -751,7 +752,7 @@ public class TestW3C11KGraphNew {
                     try {
                         rl.parse(ttl2rdf(fresult));
                     } catch (LoadException ex) {
-                        LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                        LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
 
@@ -762,7 +763,7 @@ public class TestW3C11KGraphNew {
                     try {
                         rl.parse(g, output.getNameOrURI(i++));
                     } catch (LoadException ex) {
-                        LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                        LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
                 gres.prepare();
@@ -865,7 +866,7 @@ public class TestW3C11KGraphNew {
                     try {
                         load.parse(file , file);
                     } catch (LoadException ex) {
-                        LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                        LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                     }
                 }
             }
@@ -879,7 +880,7 @@ public class TestW3C11KGraphNew {
                     try {
                         load.parse(file, name);
                     } catch (LoadException ex) {
-                        LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                        LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
                     }
                     ds.addNamed(name);
                 }
@@ -910,7 +911,7 @@ public class TestW3C11KGraphNew {
             try {
                 load.parse(RDF.RDF, RDF.RDF);
             } catch (LoadException ex) {
-                LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
             }
             ds.addFrom(RDF.RDF);
 
@@ -1133,7 +1134,7 @@ public class TestW3C11KGraphNew {
             try {
                 load.parse(name);
             } catch (LoadException ex) {
-                LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+                LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
             }
             p.add(nep, g);
         }
@@ -1483,7 +1484,7 @@ public class TestW3C11KGraphNew {
         try {
             load.parse(fresult);
         } catch (LoadException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
 
         QueryProcess exec = QueryProcess.create(g);
@@ -1552,11 +1553,11 @@ public class TestW3C11KGraphNew {
         try {
             ld.load(new ByteArrayInputStream(str.getBytes("UTF-8")), "spin.ttl");
         } catch (LoadException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "query: [" + str + "]");
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "query: [" + str + "]");
 
         } catch (UnsupportedEncodingException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
 
         TemplateFormat tf = TemplateFormat.create(g, "/home/corby/AData/spin/template");
@@ -1576,9 +1577,9 @@ public class TestW3C11KGraphNew {
             //        }
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "PP:\n" + res);
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "AST:\n" + ast.toString());
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "SPIN:\n" + str);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "PP:\n" + res);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "AST:\n" + ast.toString());
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "SPIN:\n" + str);
 
         }
     }
@@ -1602,7 +1603,7 @@ public class TestW3C11KGraphNew {
             String name = TTL + "f" + cc++ + ".ttl";
             ql.write(name, spin);
         } catch (EngineException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -1625,7 +1626,7 @@ public class TestW3C11KGraphNew {
             String sp = spin.toSpin(query);
             spin.toGraph(sp, spinGraph);
         } catch (EngineException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -1670,7 +1671,7 @@ public class TestW3C11KGraphNew {
             Mappings map = exec.query(q);
             System.out.println(map);
         } catch (EngineException ex) {
-            LogManager.getLogger(TestW3C11KGraph.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestW3C11KGraphNew.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 }

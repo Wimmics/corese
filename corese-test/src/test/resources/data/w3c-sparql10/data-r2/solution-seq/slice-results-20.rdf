@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://example.org/ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:index>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:solution rdf:nodeID="A0"/>
+    <rs:resultVariable>v</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+</rdf:RDF>

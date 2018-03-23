@@ -1,5 +1,0 @@
-content   rtc                  chrome/content/
-skin      rtc    classic/1.0   chrome/skin/
-locale    rtc    en-US         chrome/locale/en-US/
-
-overlay chrome://browser/content/browser.xul    chrome://rtc/content/main.xul

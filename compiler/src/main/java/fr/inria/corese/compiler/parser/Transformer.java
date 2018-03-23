@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.RDFS;
@@ -74,7 +74,7 @@ public class Transformer implements ExpType {
         this.isBGP = BGP;
     }
 
-    private static Logger logger = LogManager.getLogger(Transformer.class);
+    private static Logger logger = LoggerFactory.getLogger(Transformer.class);
     public static final String ROOT = "?_kgram_";
     public static final String THIS = "?this";
     private static final String EXTENSION = Processor.KGEXTENSION;
@@ -280,7 +280,7 @@ public class Transformer implements ExpType {
                 jc.toJava(ast);
                 jc.write();
             } catch (IOException ex) {
-                logger.error(ex);
+                logger.error(ex.getMessage());
             }
         }
     }

@@ -577,10 +577,10 @@ public class JavaCompiler {
             return true;
 
         } catch (ClassNotFoundException e) {
-            logger.error(e.toString());
+            logger.error(e.getMessage());
         } catch (SecurityException e) {
         } catch (NoSuchMethodException e) {
-            logger.error(e.toString());
+            logger.error(e.getMessage());
         } catch (IllegalArgumentException e) {
         }
         return false;

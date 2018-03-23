@@ -1703,10 +1703,11 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
   	stack = PropertyList(expression1, stack)
   	
   | stack = tuple(stack)
+  | stack = triple(stack)
   )
 }
 
-
+// tuple(p s o v)
 Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
 	<TUPLE> <LPAREN> 
 	
@@ -1731,7 +1732,30 @@ Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayL
 	}
 }
 
-
+// triple(s p o v)
+Exp triple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
+	<TRIPLE> <LPAREN> 
+	
+	expression1 = GraphNode(stack)
+	prop = Verb2()
+	expression2 = GraphNode(stack)
+	{ 
+            list = new ArrayList<Atom>();
+            list.add(expression1.getAtom());
+            list.add(expression2.getAtom());       
+	}
+	
+	(  expressioni = GraphNode(stack)  
+	  { list.add(expressioni.getAtom()); } 
+	)*
+	  
+	<RPAREN>
+	{ 
+	    triple = createTriple(prop, list); 
+	    if (triple != null){ stack.add(triple);	}	
+		return stack; 
+	}
+}
   
 Exp PropertyList(Expression expression1, Exp stack) : {}
 {  
@@ -3135,6 +3159,7 @@ TOKEN [IGNORE_CASE] :
 | <CHECK: "check">
 | <NOSORT: "nosort">
 | <TUPLE: "tuple">
+| <TRIPLE: "triple">
 | <XPATH: "xpath">
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">

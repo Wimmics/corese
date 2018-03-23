@@ -70,9 +70,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 
-    static String data = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
+    static String data  = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
     static String QUERY = TestQuery1.class.getClassLoader().getResource("query").getPath() + "/";
-    static String text = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
+    static String text  = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
     private static final String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
@@ -154,7 +154,7 @@ public class TestQuery1 {
         Mappings map = exec.query(t);
 
         String json = map.getTemplateStringResult();
-        assertEquals(true, (json.length() <= 1200 && json.length() >= 1000));
+        assertEquals(true, (json.length() <= 1300 && json.length() >= 1000));
 
         Graph gg = Graph.create();
         Load ll = Load.create(gg);
@@ -445,8 +445,8 @@ public class TestQuery1 {
             // ?a = "65.2744"^^xsd:decimal; ?p = "52.849599999999995"^^xsd:decimal; 
             IDatatype a = (IDatatype) map.getValue("?a");
             IDatatype p = (IDatatype) map.getValue("?p");
-            assertEquals(65.2744, a.doubleValue(),   1e-5);
-            assertEquals(52.8496, p.doubleValue(), 1e-5);
+            assertEquals(28.2744, a.doubleValue(),   1e-5);
+            assertEquals(18.8496, p.doubleValue(), 1e-5);
         }
     
     
@@ -6051,7 +6051,7 @@ public class TestQuery1 {
     @Test
     public void test20() {
         String query ="prefix c: <http://www.inria.fr/acacia/comma#>" +
-                "prefix ext: <function://junit.TestQuery1> "
+                "prefix ext: <function://fr.inria.corese.test.engine.TestQuery1> "
                 + "select (ext:fun(?fn, ?ln) as ?res) where {"
                 + "?x c:FirstName ?fn ; c:FamilyName ?ln"
                 + "}";

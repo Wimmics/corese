@@ -11,8 +11,8 @@ import fr.inria.corese.kgram.api.query.Producer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Compute select expression, 
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class CompleteSPARQL {
-    private static Logger logger = LogManager.getLogger(CompleteSPARQL.class);
+    private static Logger logger = LoggerFactory.getLogger(CompleteSPARQL.class);
     
     Eval eval;
     Query query;

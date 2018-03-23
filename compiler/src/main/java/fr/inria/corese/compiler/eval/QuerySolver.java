@@ -6,8 +6,8 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -49,7 +49,7 @@ import fr.inria.corese.kgram.tool.MetaProducer;
 public class QuerySolver  implements SPARQLEngine {
 
    
-	private static Logger logger = LogManager.getLogger(QuerySolver.class);
+	private static Logger logger = LoggerFactory.getLogger(QuerySolver.class);
         public static final String MAIN_FUN = NSManager.EXT + "main";
 	
 	public static final int STD_ENTAILMENT  = 0;
@@ -491,7 +491,7 @@ public class QuerySolver  implements SPARQLEngine {
 		
 	void debug(Query query){
 		if (query.isDebug()){
-			logger.debug(query.getBody());
+			logger.debug(query.getBody().toString());
 			logger.debug("limit " + query.getLimit());
 			if (query.isFail()){
 				logger.debug("Fail at compile time");

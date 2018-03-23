@@ -9,8 +9,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -26,13 +25,13 @@ public class Custom {
         try {
             return evalWE(exp, env, p, param);
         } catch (NoSuchMethodException ex) {
-            LogManager.getLogger(Custom.class.getName()).error(ex);
+            LoggerFactory.getLogger(Custom.class.getName()).error(ex.getMessage());
         } catch (IllegalAccessException ex) {
-            LogManager.getLogger(Custom.class.getName()).error(ex);
+            LoggerFactory.getLogger(Custom.class.getName()).error(ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            LogManager.getLogger(Custom.class.getName()).error(ex);
+            LoggerFactory.getLogger(Custom.class.getName()).error(ex.getMessage());
         } catch (InvocationTargetException ex) {
-            LogManager.getLogger(Custom.class.getName()).error(ex);
+            LoggerFactory.getLogger(Custom.class.getName()).error(ex.getMessage());
         }
         return null;
     }
@@ -84,7 +83,7 @@ public class Custom {
             try {
                 sort(list.getValues());
             } catch (CoreseDatatypeException ex) {
-                LogManager.getLogger(Custom.class.getName()).log(Level.ERROR, "", ex);
+                LoggerFactory.getLogger(Custom.class.getName()).error("", ex);
             }
         }
         return list;

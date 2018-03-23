@@ -19,8 +19,8 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Prototype for federated query
@@ -46,7 +46,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class ServiceVisitor implements QueryVisitor {
-    private static Logger logger = LogManager.getLogger(ServiceVisitor.class);
+    private static Logger logger = LoggerFactory.getLogger(ServiceVisitor.class);
     
     public static final String PROXY = "_proxy_";
     // false: evaluate named graph pattern as a whole on each server 

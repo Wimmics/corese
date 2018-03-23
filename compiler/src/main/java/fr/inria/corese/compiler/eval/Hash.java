@@ -3,8 +3,8 @@ package fr.inria.corese.compiler.eval;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import fr.cryptohash.*;
 
@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  */
 public class Hash {
-	private static Logger logger = LogManager.getLogger(Hash.class);	
+	private static Logger logger = LoggerFactory.getLogger(Hash.class);	
 
 	//static String SHA224 = "SHA-224";
 	String name;

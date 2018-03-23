@@ -20,8 +20,8 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgram.tool.Message;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Pragma processor
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class Pragma  {
-	private static Logger logger = LogManager.getLogger(Pragma.class);
+	private static Logger logger = LoggerFactory.getLogger(Pragma.class);
         
 	public static final String KG 		= ExpType.KGRAM;
 	public static final String STL 		= ExpType.STL;

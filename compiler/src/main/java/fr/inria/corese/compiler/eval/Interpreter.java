@@ -9,7 +9,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -32,7 +32,7 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.filter.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  * A generic filter Evaluator Values are Java Object Target processing is
@@ -43,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Interpreter implements Computer, Evaluator, ExprType {
     public static boolean testNewEval = true;
-    private static Logger logger = LogManager.getLogger(Interpreter.class);
+    private static Logger logger = LoggerFactory.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
     protected ProxyInterpreter proxy;

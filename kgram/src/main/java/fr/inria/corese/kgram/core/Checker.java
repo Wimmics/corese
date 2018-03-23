@@ -1,6 +1,7 @@
 package fr.inria.corese.kgram.core;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
@@ -8,7 +9,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
-import org.apache.logging.log4j.LogManager;
+
 
 /**
  * Query Type Checker
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Checker {
 	
-	static Logger logger = LogManager.getLogger(Checker.class);
+	static Logger logger = LoggerFactory.getLogger(Checker.class);
 	
 	Eval eval;
 	Producer producer;

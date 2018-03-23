@@ -3,7 +3,8 @@ package fr.inria.corese.kgram.filter;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -24,7 +25,7 @@ import fr.inria.corese.kgram.core.Stack;
 import fr.inria.corese.kgram.event.ResultListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
+
 
 /**
  * A generic filter Evaluator Values are Java Object Target processing is
@@ -36,7 +37,7 @@ import org.apache.logging.log4j.LogManager;
 @Deprecated
 public class Interpreter implements Evaluator, ExprType {
 
-    private static Logger logger = LogManager.getLogger(Interpreter.class);
+    private static Logger logger = LoggerFactory.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
     protected Proxy proxy;

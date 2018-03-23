@@ -1,8 +1,8 @@
 package fr.inria.corese.sparql.triple.parser;
 
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
@@ -28,7 +28,7 @@ public class Option extends Exp {
 	private static final long serialVersionUID = 1L;
 	
 	/** logger from log4j */
-	private static Logger logger = LogManager.getLogger(Option.class);
+	private static Logger logger = LoggerFactory.getLogger(Option.class);
         // false: OPTION corese (unary)
         // true:  OPTIONAL SPARQL (binary)
 	public static boolean isOptional = true;

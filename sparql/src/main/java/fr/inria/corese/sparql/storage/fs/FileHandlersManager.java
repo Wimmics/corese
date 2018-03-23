@@ -6,8 +6,7 @@ import fr.inria.corese.sparql.storage.cache.LRUCache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manager all the files and file handlers, including a poop of handlers for
@@ -75,7 +74,7 @@ public class FileHandlersManager extends LRUCache<Integer, FileHandler> {
         } else if (allFiles.containsKey(fid)) { //not in the pool, but in the maintenence list
             return this.getFileHandler(fid, allFiles.get(fid));
         } else {//not anywhere
-            LogManager.getLogger(FileHandlersManager.class.getName()).log(Level.WARN, "File handler id [{0}]  not yet initialized!", fid);
+            LoggerFactory.getLogger(FileHandlersManager.class.getName()).warn("File handler id [{}]  not yet initialized!", fid);
             return null;
         }
     }

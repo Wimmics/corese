@@ -12,8 +12,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -40,7 +40,7 @@ public class Binding implements Binder {
 
     private boolean debug = false;
 
-    private static Logger logger = LogManager.getLogger(fr.inria.corese.kgram.core.Bind.class);
+    private static Logger logger = LoggerFactory.getLogger(fr.inria.corese.kgram.core.Bind.class);
     private boolean result;
 
     Binding() {

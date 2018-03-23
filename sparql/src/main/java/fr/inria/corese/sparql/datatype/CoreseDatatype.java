@@ -2,8 +2,8 @@ package fr.inria.corese.sparql.datatype;
 
 import java.util.Hashtable;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.IDatatypeList;
@@ -42,7 +42,7 @@ import java.util.List;
 public class CoreseDatatype
         implements IDatatype {
 
-    private static Logger logger = LogManager.getLogger(CoreseDatatype.class);
+    private static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
     static final CoreseBoolean TRUE = CoreseBoolean.TRUE;

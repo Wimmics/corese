@@ -6,12 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import java.util.TimeZone;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * <p>Title: Corese</p>
@@ -30,7 +32,8 @@ public class CoreseDate extends CoreseDatatype {
     /**
      * logger from log4j
      */
-    private static Logger logger = LogManager.getLogger(CoreseDate.class);
+    private static Logger logger = LoggerFactory.getLogger(CoreseDate.class);
+    private Marker fatal = MarkerFactory.getMarker("FATAL");
     static int code = DATE;
     static final String TODAY = "today";
     public static final String MINUS_BOUND = "-14:00";
@@ -96,9 +99,9 @@ public class CoreseDate extends CoreseDatatype {
             String buf = df.format(date);
             logger.debug("** date " + buf + " " + date);
         } catch (ParseException e) {
-            logger.fatal(e.getMessage());
+            logger.error(fatal, e.getMessage());
         } catch (Exception e) {
-            logger.fatal(e.getMessage());
+            logger.error(fatal, e.getMessage());
         }
     }
 

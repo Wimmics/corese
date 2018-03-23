@@ -1,8 +1,8 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.api.Computer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -29,7 +29,7 @@ import java.util.List;
 public class Constant extends Atom {
 
     public static Constant rootProperty;
-    private static Logger logger = LogManager.getLogger(Constant.class);
+    private static Logger logger = LoggerFactory.getLogger(Constant.class);
     private static NSManager nsm;
     static DatatypeMap dm;
     boolean isQName = false;

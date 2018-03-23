@@ -3,8 +3,8 @@ package fr.inria.corese.sparql.datatype;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.storage.api.IStorage;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Title: Corese</p>
@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class CoreseStringLiteral extends CoreseStringableImpl{
   static int code=STRING;
-  private static Logger logger = LogManager.getLogger(CoreseStringLiteral.class);
+  private static Logger logger = LoggerFactory.getLogger(CoreseStringLiteral.class);
   
   private IStorage manager ;
   private int id;

@@ -12,8 +12,8 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class TermEval extends Term {
-    public static Logger logger = LogManager.getLogger(TermEval.class);
+    public static Logger logger = LoggerFactory.getLogger(TermEval.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
     

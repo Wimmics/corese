@@ -56,8 +56,7 @@ public class Extern extends TermEval {
         for (IDatatype dt : ldt) {
             str += dt + " ";
         }
-        TermEval.logger.error(e);
-        TermEval.logger.error(title + " "+ name + " " + str);  
+        TermEval.logger.error(title + " "+ name + " " + str, e);  
     }
     
 }

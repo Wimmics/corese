@@ -101,10 +101,10 @@ public class CompileService {
     }
         
     public void prepare(Query q) {
-        Query g = q.getGlobalQuery();
-        ASTQuery ast = (ASTQuery) q.getAST();
-        ASTQuery ag = (ASTQuery) g.getAST();
-        ast.setPrefixExp(ag.getPrefixExp());
+//        Query g = q.getGlobalQuery();
+//        ASTQuery ast = (ASTQuery) q.getAST();
+//        ASTQuery ag = (ASTQuery) g.getAST();
+        //ast.setPrefixExp(ag.getPrefixExp());
     }
 
     public int slice(Query q) {

@@ -29,6 +29,7 @@ public class Extension {
     // Embedding extension in case of method
     private Extension extension;
     private Hierarchy hierarchy;
+    private boolean debug = false;
 
     public Extension() {
         maps = new FunMap[11];
@@ -185,8 +186,12 @@ public class Extension {
         if (getActualHierarchy() != null && param.length > 0) {
             for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0], (DatatypeValue) type)) {
                 Extension ext = getMethodExtension(atype);
+                if (isDebug()) {
+                    System.out.println("Ext: " + atype + " " + ext);
+                }
                 if (ext != null) {
                     Expr exp = ext.get(label, param.length);
+                    System.out.println("Ext: " + atype + " " + exp);
                     if (exp != null) {
                         return exp;
                     }
@@ -278,5 +283,21 @@ public class Extension {
     public void setHierarchy(Hierarchy hierarchy) {
         this.hierarchy = hierarchy;
     }
+    
+     /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+
     
 }

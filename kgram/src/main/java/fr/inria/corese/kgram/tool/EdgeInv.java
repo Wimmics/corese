@@ -33,8 +33,12 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
 
     @Override
     public int nbNode() {
-
         return edge.nbNode();
+    }
+    
+    @Override
+    public int nbGraphNode() {
+        return edge.nbGraphNode();
     }
 
     @Override

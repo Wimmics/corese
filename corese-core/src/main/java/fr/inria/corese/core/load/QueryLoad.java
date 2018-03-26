@@ -17,13 +17,12 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.query.QueryEngine;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueryLoad {
 
-    private static Logger logger = LogManager.getLogger(QueryLoad.class);
+    private static Logger logger = LoggerFactory.getLogger(QueryLoad.class);
     static final String HTTP = "http://";
     static final String FILE = "file://";
     static final String FTP = "ftp://";
@@ -138,7 +137,7 @@ public class QueryLoad {
         try {
             query = readWE(name);
         } catch (LoadException ex) {
-            LogManager.getLogger(QueryLoad.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(QueryLoad.class.getName()).error( "", ex);
         }
         if (query == "") {
             return null;

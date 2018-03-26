@@ -6,8 +6,8 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import java.io.InputStream;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class Extension {
-  	private static final Logger logger = LogManager.getLogger(Extension.class);
+  	private static final Logger logger = LoggerFactory.getLogger(Extension.class);
   
     private static final String[] NAMES = 
     { "system.rq", "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
@@ -40,11 +40,10 @@ public class Extension {
             try {
                 exec.compile(str);
             } catch (EngineException ex) {
-                logger.error(name);
-                logger.error(ex);
+                logger.error(name, ex);
             }
         } catch (LoadException ex) {
-            logger.error(ex);
+            logger.error(ex.getMessage());
         }
 
     }

@@ -13,8 +13,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.util.SPINProcess;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -62,7 +61,7 @@ public class RDFizer {
         try {
             ld.loadString(rdf, Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(SPINProcess.class.getName()).error("", ex);
         } 
         g.prepare();
         return g;

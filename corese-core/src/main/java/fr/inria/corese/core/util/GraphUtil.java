@@ -3,8 +3,7 @@ package fr.inria.corese.core.util;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +24,7 @@ public class GraphUtil {
             Load ld = Load.create(g);
             ld.loadString(gs.toString(), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            LogManager.getLogger(GraphUtil.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(GraphUtil.class.getName()).error( "", ex);
         }
         return g;
     }   

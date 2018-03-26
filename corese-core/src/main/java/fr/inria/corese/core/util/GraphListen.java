@@ -14,8 +14,8 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Graph Listener implements callbacks as FunSPARQL functions Manage an Eval
@@ -79,7 +79,7 @@ public class GraphListen implements GraphListener {
                 eval = QueryProcess.createEval(graph, init);
             }
         } catch (EngineException ex) {
-            LogManager.getLogger(GraphListen.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(GraphListen.class.getName()).error(  "", ex);
         }
     }
 

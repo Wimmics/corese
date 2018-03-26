@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
@@ -40,7 +40,7 @@ public class EdgeManagerIndexer
     private static final String NL = System.getProperty("line.separator");
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
-    private static Logger logger = LogManager.getLogger(EdgeManagerIndexer.class);
+    private static Logger logger = LoggerFactory.getLogger(EdgeManagerIndexer.class);
     private boolean byIndex = true;
     int index = 0, other = 1;
     int count = 0;
@@ -651,7 +651,7 @@ public class EdgeManagerIndexer
         for (int i = 0; i < list.size(); i++) {
             if (!list.get(i).getNode(1).same(nn)) {
                 nn = list.get(i).getNode(1);
-                logger.debug(nn);
+                logger.debug(nn.toString());
             }
         }
     }

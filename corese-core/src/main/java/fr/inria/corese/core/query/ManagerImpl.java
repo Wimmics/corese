@@ -1,7 +1,7 @@
 package fr.inria.corese.core.query;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.update.Basic;
@@ -24,7 +24,7 @@ import fr.inria.corese.core.logic.Entailment;
 public class ManagerImpl implements Manager {
 
    
-    static Logger logger = LogManager.getLogger(ManagerImpl.class);
+    static Logger logger = LoggerFactory.getLogger(ManagerImpl.class);
     GraphManager gm;
     static final int COPY = 0;
     static final int MOVE = 1;

@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Dataset;
@@ -31,7 +31,7 @@ import fr.inria.corese.core.util.Duplicate;
 public class Construct
         implements Comparator<Node> {
 
-    private static Logger logger = LogManager.getLogger(Construct.class);
+    private static Logger logger = LoggerFactory.getLogger(Construct.class);
     static final String BLANK = "_:b_";
     static final String DOT = ".";
     int count = 0, ruleIndex = 0, index = 0;

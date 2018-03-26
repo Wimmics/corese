@@ -8,8 +8,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,7 +30,7 @@ import fr.inria.corese.core.rule.RuleEngine;
  */
 public class RuleLoad {
 
-    private static Logger logger = LogManager.getLogger(Load.class);
+    private static Logger logger = LoggerFactory.getLogger(Load.class);
     public static final String NS = "http://ns.inria.fr/edelweiss/2011/rule#";
     static final String STL = NSManager.STL;
     static final String BRUL = "http://ns.inria.fr/corese/2008/rule#";
@@ -77,7 +77,7 @@ public class RuleLoad {
         try {
             loadWE(file);
         } catch (LoadException e) {
-            logger.error(e);
+            logger.error(e.getMessage());
         }
     }
 
@@ -98,7 +98,7 @@ public class RuleLoad {
         try {
             loadWE(stream);
         } catch (LoadException e) {
-            logger.error(e);
+            logger.error(e.getMessage());
         }
     }
 
@@ -114,7 +114,7 @@ public class RuleLoad {
             Document doc = parsing(stream);
             load(doc);
         } catch (LoadException e) {
-            logger.error(e);
+            logger.error(e.getMessage());
         }
     }
 

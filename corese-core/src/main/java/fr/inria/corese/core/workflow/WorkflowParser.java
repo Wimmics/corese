@@ -22,8 +22,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parse a graph that describes a Workflow 
@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class WorkflowParser {
 
-    private static Logger logger = LogManager.getLogger(WorkflowParser.class);
+    private static Logger logger = LoggerFactory.getLogger(WorkflowParser.class);
     public static final String PREF = NSManager.SWL;
         
     public static final String QUERY = PREF + "Query";

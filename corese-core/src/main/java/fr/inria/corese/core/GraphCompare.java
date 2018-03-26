@@ -4,8 +4,8 @@ import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class GraphCompare {
-    private static Logger logger = LogManager.getLogger(GraphCompare.class);
+    private static Logger logger = LoggerFactory.getLogger(GraphCompare.class);
     
     Graph g1, g2;
     
@@ -94,8 +94,8 @@ public class GraphCompare {
                         Entity ent2 = it.next();
                         if (!compare(ent1, ent2, t, isGraph)) {
                             if (isDebug) {
-                                logger.error(ent1);
-                                logger.error(ent2);
+                                logger.error(ent1.toString());
+                                logger.error(ent2.toString());
                             }
                             return false;
                         }

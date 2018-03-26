@@ -10,8 +10,7 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.QueryLoad;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  * Graph Execution Context
@@ -151,7 +150,7 @@ public class Context implements Graphable {
         try {
             str = ql.getResource("/data/kgram.ttl");
         } catch (IOException ex) {
-            LogManager.getLogger(Context.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(Context.class.getName()).error("", ex);
         }
         return str;
     }

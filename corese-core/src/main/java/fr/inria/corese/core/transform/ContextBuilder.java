@@ -11,8 +11,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Extract a Transformer Context from a profile.ttl graph st:param object
@@ -41,7 +41,7 @@ public class ContextBuilder {
         try {
             ld.parse(path);
         } catch (LoadException ex) {
-            LogManager.getLogger(ContextBuilder.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(ContextBuilder.class.getName()).error(  "", ex);
         }
     }
     

@@ -12,8 +12,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -143,9 +143,9 @@ public class SPINProcess {
         try {
             ld.parse(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(SPINProcess.class.getName()).error(  "", ex);
         } catch (UnsupportedEncodingException ex) {
-            LogManager.getLogger(SPINProcess.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(SPINProcess.class.getName()).error(  "", ex);
         }
         return g;
      }

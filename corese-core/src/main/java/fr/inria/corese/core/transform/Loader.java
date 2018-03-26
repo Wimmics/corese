@@ -27,8 +27,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage load, import, profile
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Loader {
     
-    private static Logger logger = LogManager.getLogger(Loader.class);
+    private static Logger logger = LoggerFactory.getLogger(Loader.class);
     private String STL = NSManager.STL;
     public static final String PPLIB = "/template/";
     
@@ -94,8 +94,7 @@ public class Loader {
                 load(ld, qe, pp);
             } catch (LoadException e) {
                 // TODO Auto-generated catch block
-                logger.error(e);
-                logger.error("Transformer Load Error: " + pp);
+                logger.error("Transformer Load Error: " + pp, e);
             }
         }
           

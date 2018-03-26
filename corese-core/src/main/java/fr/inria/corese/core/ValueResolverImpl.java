@@ -5,8 +5,7 @@ import fr.inria.corese.core.api.ValueResolver;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 //import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
@@ -28,7 +27,7 @@ public class ValueResolverImpl implements ValueResolver {
         try {
             hasher = MessageDigest.getInstance(NAME);
         } catch (NoSuchAlgorithmException ex) {
-            LogManager.getLogger(ValueResolverImpl.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(ValueResolverImpl.class.getName()).error("", ex);
         }
     }
 

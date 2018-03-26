@@ -37,8 +37,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SPARQL Template Transformation Engine
@@ -55,7 +55,7 @@ import org.apache.logging.log4j.LogManager;
  * Olivier Corby, Wimmics INRIA I3S - 2012
  */
 public class Transformer  {
-    private static Logger logger = LogManager.getLogger(Transformer.class);
+    private static Logger logger = LoggerFactory.getLogger(Transformer.class);
 
     private static final String NULL = "";
     private static final String STL         = NSManager.STL;
@@ -1441,7 +1441,7 @@ public class Transformer  {
             g.init();
             exec.add(g);
         } catch (LoadException ex) {
-            logger.error(ex);
+            logger.error(ex.getMessage());
         }
     }
 

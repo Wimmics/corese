@@ -15,8 +15,8 @@ import fr.inria.corese.core.Workflow;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
 
 /**
@@ -30,7 +30,7 @@ import fr.inria.corese.core.load.Load;
  *
  */
 public class GraphManager {
-    static Logger logger = LogManager.getLogger(GraphManager.class);
+    static Logger logger = LoggerFactory.getLogger(GraphManager.class);
 
     //static final String DEFAULT_GRAPH = Entailment.DEFAULT;
     // default loader, by meta protocol to preserve modularity
@@ -280,7 +280,7 @@ public class GraphManager {
             try {
                 load.parse(uri, src);
             } catch (LoadException ex) {
-                logger.error(ex);
+                logger.error(ex.getMessage());
             }
             graph.logFinish(q);
         } else {

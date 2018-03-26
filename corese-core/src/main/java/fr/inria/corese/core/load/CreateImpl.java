@@ -15,9 +15,8 @@ import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
-import java.util.Date;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -27,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * 
  */
 public class CreateImpl implements Creator {
-    private static Logger logger = LogManager.getLogger(CreateImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(CreateImpl.class);
     
     HashMap<String, String> blank;
     NSManager nsm;
@@ -139,7 +138,7 @@ public class CreateImpl implements Creator {
             try {
                 load.parseImport(object.getLongName());
             } catch (LoadException ex) {
-                logger.error(ex);
+                logger.error(ex.getMessage());
             }
         }
     }

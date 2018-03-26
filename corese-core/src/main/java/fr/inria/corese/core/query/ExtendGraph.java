@@ -22,8 +22,8 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import java.io.IOException;
 import java.util.HashMap;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage extended named graph 
@@ -32,7 +32,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class ExtendGraph {
-    static Logger logger = LogManager.getLogger(ExtendGraph.class);
+    static Logger logger = LoggerFactory.getLogger(ExtendGraph.class);
     
     private static final String KGEXT     = NSManager.KGEXT;
     private static final String KGEXTQUERY = NSManager.KGEXTCONS;    
@@ -166,7 +166,7 @@ public class ExtendGraph {
              }
          } catch (LoadException ex) {
              logger.error("Load error: " + dt);
-             logger.error(ex);
+             logger.error(ex.getMessage());
              ex.printStackTrace();
          }
         IDatatype res = DatatypeMap.createObject(g);
@@ -181,8 +181,7 @@ public class ExtendGraph {
                 ld.parse(dt.getLabel(), (undef_format == null) ? Load.TURTLE_FORMAT : Load.UNDEF_FORMAT);
              }
          } catch (LoadException ex) {
-             logger.error("Load error: " + dt);
-             logger.error(ex);
+             logger.error("Load error: " + dt, ex);
              ex.printStackTrace();
          }
         IDatatype res = create("load", g, IDatatype.GRAPH);

@@ -2,8 +2,8 @@ package fr.inria.corese.core.query;
 
 
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
@@ -30,7 +30,7 @@ import fr.inria.corese.kgram.core.Query;
  *
  */
 public class UpdateProcess {
-	private static Logger logger = LogManager.getLogger(UpdateProcess.class);	
+	private static Logger logger = LoggerFactory.getLogger(UpdateProcess.class);	
 
 	Manager manager;
         QueryProcess exec;

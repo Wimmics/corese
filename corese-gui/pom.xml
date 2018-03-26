@@ -138,7 +138,7 @@
 							<shadedClassifierName>jar-with-dependencies</shadedClassifierName>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>fr.inria.corese.sparql.gui.core.MainFrame</mainClass>
+									<mainClass>fr.inria.corese.gui.core.MainFrame</mainClass>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 							</transformers>

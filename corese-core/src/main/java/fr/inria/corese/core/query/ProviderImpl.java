@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -49,7 +49,7 @@ public class ProviderImpl implements Provider {
 
     private static final String DB = "db:";
     private static final String SERVICE_ERROR = "Service error: ";
-    private static Logger logger = LogManager.getLogger(ProviderImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ProviderImpl.class);
     static final String LOCALHOST = "http://localhost:8080/sparql";
     static final String LOCALHOST2 = "http://localhost:8090/sparql";
     static final String DBPEDIA = "http://fr.dbpedia.org/sparql";
@@ -356,8 +356,7 @@ public class ProviderImpl implements Provider {
             }
             return res;
         } catch (IOException e) {
-            logger.error(e);
-            logger.error(q.getAST());
+            logger.error(q.getAST().toString(), e);
             gq.addError(SERVICE_ERROR, e);
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block

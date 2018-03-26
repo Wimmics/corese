@@ -1,20 +1,15 @@
 package fr.inria.corese.test.w3c.rdfa;
 
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.test.w3c.model.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-
 import org.testng.Assert;
-import fr.inria.corese.test.w3c.model.IEvaluate;
-import fr.inria.corese.test.w3c.model.TestCase;
-import fr.inria.corese.test.w3c.model.TestHelper;
-import fr.inria.corese.test.w3c.model.TestCaseSet;
 
 /**
  * Implementation of RDFa test case evaluation

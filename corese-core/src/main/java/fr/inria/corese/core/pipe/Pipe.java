@@ -3,8 +3,8 @@ package fr.inria.corese.core.pipe;
 
 import java.util.Date;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.compiler.parser.NodeImpl;
@@ -20,7 +20,6 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.RuleLoad;
-import org.apache.logging.log4j.Level;
 
 /**
  * Pipeline described using RDF, interpreted using SPARQL queries
@@ -29,7 +28,7 @@ import org.apache.logging.log4j.Level;
  *
  */
 public class Pipe {
-	private static Logger logger = LogManager.getLogger(Pipe.class);	
+	private static Logger logger = LoggerFactory.getLogger(Pipe.class);	
 
 	static final String KGRAM = ExpType.KGRAM ;
 	
@@ -133,7 +132,7 @@ public class Pipe {
             try {
                 load.parse(name);
             } catch (LoadException ex) {
-                LogManager.getLogger(Pipe.class.getName()).log(Level.ERROR, "", ex);
+                LoggerFactory.getLogger(Pipe.class.getName()).error( "", ex);
             }
 	}
 	
@@ -236,7 +235,7 @@ public class Pipe {
             try {
                 load.parse(name);
             } catch (LoadException ex) {
-                LogManager.getLogger(Pipe.class.getName()).log(Level.ERROR, "", ex);
+                LoggerFactory.getLogger(Pipe.class.getName()).error("", ex);
             }
 	}
 	
@@ -262,7 +261,7 @@ public class Pipe {
 
 		Mappings res = exec.query(qq);
 
-		if (isDebug) logger.debug(res);
+		if (isDebug) logger.debug(res.toString());
 		
 		return res;
 	}
@@ -378,7 +377,7 @@ public class Pipe {
 		
 		if (nif == null) return;
 
-		if (isDebug) logger.debug(nif);
+		if (isDebug) logger.debug(nif.toString());
 
 		Mappings res = query(nif.getLabel());
 		

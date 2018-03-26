@@ -18,8 +18,8 @@ import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import java.util.HashMap;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -175,7 +175,7 @@ public class DefaultGraphListener implements GraphListener {
             try {
                 sp.toSpinGraph(ast, gg, "kg:query");
             } catch (EngineException ex) {
-                LogManager.getLogger(DefaultGraphListener.class.getName()).log(Level.ERROR, "", ex);
+                LoggerFactory.getLogger(DefaultGraphListener.class.getName()).error(  "", ex);
             }
         }
 

@@ -27,8 +27,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Plugin to Transformer
@@ -37,7 +37,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class PluginTransform implements ComputerProxy, ExprType {
-    static Logger logger = LogManager.getLogger(PluginTransform.class);
+    static Logger logger = LoggerFactory.getLogger(PluginTransform.class);
     private static final String FORMAT_LIB = "/webapp/data/format/";
 
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
@@ -443,7 +443,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                     t = Transformer.create((Graph) prod.getGraph(), transform, gname, isGraph); //isWith(exp));
                     complete(q, t, uri);
                 } catch (LoadException ex) {
-                    logger.error(ex);
+                    logger.error(ex.getMessage());
                     t = Transformer.create(Graph.create(), null);
                 }
             }

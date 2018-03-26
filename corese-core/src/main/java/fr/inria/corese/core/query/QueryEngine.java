@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -33,7 +33,7 @@ import fr.inria.corese.core.transform.TransformerVisitor;
  */
 public class QueryEngine implements Engine {
 
-    private static Logger logger = LogManager.getLogger(QueryEngine.class);
+    private static Logger logger = LoggerFactory.getLogger(QueryEngine.class);
     Graph graph;
     private QueryProcess exec;
     ArrayList<Query> list;

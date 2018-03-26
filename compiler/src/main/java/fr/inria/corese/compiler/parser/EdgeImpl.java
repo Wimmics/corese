@@ -177,38 +177,32 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 	}
 
 	@Override
-	public int getIndex() {
-		// TODO Auto-generated method stub
+	public int getIndex() {		
 		return index;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return label;
 	}
 
 	@Override
 	public Node getNode(int n) {
-		// TODO Auto-generated method stub
 		return nodes.get(n);
 	}
 
-//	@Override
-//	public boolean match(Edge edge) {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
-
 	@Override
 	public int nbNode() {
-		// TODO Auto-generated method stub
 		return nodes.size();
 	}
-
+        
+        @Override
+	public int nbGraphNode() {
+		return nodes.size();
+	}
+        
 	@Override
 	public void setIndex(int n) {
-		// TODO Auto-generated method stub
 		index = n;
 	}
 

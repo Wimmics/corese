@@ -27,7 +27,6 @@ import fr.inria.corese.kgram.core.Sorter;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.filter.Extension.FunMap;
-//import fr.inria.corese.kgram.filter.Interpreter;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;

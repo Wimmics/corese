@@ -751,6 +751,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
         Extension ext = env.getExtension();
         if (ext != null) {
+            if (env.getQuery().isDebug()) {
+                ext.setDebug(true);
+            }
             Expr ee = ext.getMethod(name, type, param);
             if (ee != null) {
                 return ee;

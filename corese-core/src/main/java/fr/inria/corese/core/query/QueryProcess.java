@@ -434,21 +434,39 @@ public class QueryProcess extends QuerySolver {
         IDatatype[] param = new IDatatype[2];
         param[0] = DatatypeMap.createObject(e);
         param[1] = DatatypeMap.createObject((o == null) ? "null" : o);
-        method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);        
-    }
-    
-    public void method(String name, String type, IDatatype[] param) throws EngineException {
         EventManager mgr = getGraph().getEventManager();
         boolean b = mgr.isVerbose();
         mgr.setVerbose(false);
-        Function function = getFunction(name, type, param);
-        if (function != null) {
-            Eval eval = getEval();
-            new Funcall(EVENT).call((Interpreter) eval.getEvaluator(),
-                    (Binding) eval.getMemory().getBind(),
-                    eval.getMemory(), eval.getProducer(), function, param);
-        }
+        method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);
         mgr.setVerbose(b);
+
+    }
+    
+    public IDatatype method(String name, String type, IDatatype[] param) throws EngineException {
+        Function function = getFunction(name, type, param);
+        if (function == null) {
+            return null;
+        }
+        return call(EVENT, function, param);
+    }
+    
+    /**
+     * Execute LDScript function defined as @public
+     */
+    public IDatatype funcall(String name, IDatatype[] param) throws EngineException {
+        Function function = getFunction(name, param);
+        if (function == null) {
+            return null;
+        }
+        return call(name, function, param);
+
+    }
+    
+    IDatatype call(String name, Function function, IDatatype[] param) throws EngineException {
+        Eval eval = getEval();
+        return new Funcall(name).call((Interpreter) eval.getEvaluator(),
+                (Binding) eval.getMemory().getBind(),
+                eval.getMemory(), eval.getProducer(), function, param);
     }
 
     Eval getEval() throws EngineException {
@@ -462,6 +480,10 @@ public class QueryProcess extends QuerySolver {
      * Search a method 
      * @public @type us:Event us:start(?e, ?o)
      */
+    Function getFunction(String name,  IDatatype[] param) {
+        return (Function) Interpreter.getExtension().get(name, param.length);
+    }
+    
     Function getFunction(String name, String type, IDatatype[] param) {
         return (Function) Interpreter.getExtension().getMethod(
                 name, DatatypeMap.newResource(type), 

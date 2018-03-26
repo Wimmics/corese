@@ -51,6 +51,7 @@ public class EdgeGeneric extends EdgeTop
         return new EdgeGeneric(g, pred, subject, object);
     }
     
+    @Override
     public void replicate(Entity cur){
         setNode(0, cur.getNode(0));
         setNode(1, cur.getNode(1));
@@ -58,7 +59,8 @@ public class EdgeGeneric extends EdgeTop
         setProvenance(cur.getProvenance());
     }
     
-     public void duplicate(Entity cur){
+    @Override
+    public void duplicate(Entity cur){
         setEdgeNode(cur.getEdge().getEdgeNode());
         setGraph(cur.getGraph());
         replicate(cur);
@@ -106,6 +108,7 @@ public class EdgeGeneric extends EdgeTop
         return predicate;
     }
 
+    @Override
     public void setEdgeNode(Node node) {
         predicate = node;
     }
@@ -139,6 +142,11 @@ public class EdgeGeneric extends EdgeTop
 
     @Override
     public int nbNode() {
+        return 2;
+    }
+    
+    @Override
+    public int nbGraphNode() {
         return 2;
     }
 

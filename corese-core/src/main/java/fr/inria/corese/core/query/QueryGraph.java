@@ -101,7 +101,7 @@ public class QueryGraph implements QueryGraphVisitor {
 			Entity e = visitor.visit(ent);
 			if (e != null){
 				init(e);
-				exp.add(fac.copy(e).getEdge());
+				exp.add(fac.queryEdge(e).getEdge());
 			}
 		}
 		return exp;
@@ -137,18 +137,22 @@ public class QueryGraph implements QueryGraphVisitor {
 	 * Visitor
 	 */
 	
+        @Override
 	public Query visit(Query q) {
 		return q;
 	}
 
+        @Override
 	public Graph visit(Graph g) {
 		return g;
 	}
 	
+        @Override
 	public ASTQuery visit(ASTQuery ast) {
 		return ast;
 	}
 	
+        @Override
 	public Entity visit(Entity ent) {
 		return ent;
 	}

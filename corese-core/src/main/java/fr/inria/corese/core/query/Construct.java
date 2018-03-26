@@ -362,7 +362,7 @@ public class Construct
             for (int i = 2; i < edge.nbNode(); i++) {
                 Node n = construct(source, edge.getNode(i), env);
                 if (n != null) {
-                    graph.add(n);
+                    graph.add(n, i);
                     list.add(n);
                 }
             }

@@ -11,7 +11,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.edge.EdgeGeneric;
+import fr.inria.corese.core.edge.EdgeTop;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +33,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     
     Iterable<Entity> iter;
     Iterator<Entity> it;
-    EdgeGeneric glast;
+    EdgeTop glast;
     Edge last;
     Graph graph;
     private DataFilter filter;
@@ -290,18 +290,32 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
      * Eliminate successive duplicates
      * 
      **/
-    boolean different(Edge last, Edge edge) {       
-        if (edge.getEdgeNode() == null || ! same(last.getEdgeNode(), edge.getEdgeNode())) {
+    boolean different(Edge last, Edge edge) {
+        if (edge.getEdgeNode() == null || !same(last.getEdgeNode(), edge.getEdgeNode())) {
             // different properties: ok
             return true;
-        } else {
-            int size = last.nbNode();
-            if (size == edge.nbNode()) {               
-                for (int i = 0; i < size; i++) {
-                    if (!same(last.getNode(i), edge.getNode(i))) {
-                        return true;
-                    }
+        }
+        if (graph.isMetadata()) {
+            return metadataDifferent(last, edge);
+        }
+        int size = last.nbNode();
+        if (size == edge.nbNode()) {
+            for (int i = 0; i < size; i++) {
+                if (!same(last.getNode(i), edge.getNode(i))) {
+                    return true;
                 }
+            }
+            return false;
+        } else {
+            // different nb of nodes => different
+            return true;
+        }
+    }
+    
+    boolean metadataDifferent(Edge last, Edge edge) {
+        for (int i = 0; i < 2; i++) {
+            if (!same(last.getNode(i), edge.getNode(i))) {
+                return true;
             }
         }
         return false;
@@ -319,7 +333,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     // record a copy of ent for last
     void record2(Entity ent) {
         if (glast == null) {
-            glast = new EdgeGeneric();
+            glast = graph.getEdgeFactory().createDuplicate(ent);
             last = glast;
         }
         glast.duplicate(ent);

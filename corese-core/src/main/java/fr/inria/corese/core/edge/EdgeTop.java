@@ -6,6 +6,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.core.GraphObject;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
-public abstract class EdgeTop extends GraphObject implements Entity {
+public abstract class EdgeTop extends GraphObject implements Entity, Edge {
 
     public Entity copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -23,10 +24,15 @@ public abstract class EdgeTop extends GraphObject implements Entity {
         return null;
     }
 
+    @Override
     public Node getEdgeNode() {
         return null;
     }
     
+    public void setEdgeNode(Node pred) {
+    }
+    
+    @Override
     public Node getPredicate(){
         return getEdgeNode();
     }
@@ -45,6 +51,10 @@ public abstract class EdgeTop extends GraphObject implements Entity {
     @Override
     public void setProvenance(Object o) {
     }
+    
+    public void replicate(Entity cur){}
+    
+    public void duplicate(Entity cur){}
 
     @Override
     public Iterable<IDatatype> getLoop() {

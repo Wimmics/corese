@@ -93,6 +93,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;    
     static boolean byIndexDefault = true;
+    public static boolean METADATA_DEFAULT = false;
     
     private static final String[] PREDEFINED = {
         Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
@@ -194,6 +195,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     private String name;
     private boolean hasTag = false;
     private boolean isTuple = false;
+    private boolean metadata = METADATA_DEFAULT;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
 
@@ -1301,7 +1303,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
     public Entity addEdgeWithNode(Entity ee) {
         addGraphNode(ee.getGraph());
         addPropertyNode(ee.getEdge().getEdgeNode());
-        for (int i = 0; i < ee.nbNode(); i++) {
+        for (int i = 0; i < ee.nbGraphNode(); i++) {
             add(ee.getNode(i));
         }
         return addEdge(ee);
@@ -3351,5 +3353,20 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         }
         return ds;
     }
+    
+        /**
+     * @return the metadata
+     */
+    public boolean isMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(boolean metadata) {
+        this.metadata = metadata;
+    }
+
         
 }

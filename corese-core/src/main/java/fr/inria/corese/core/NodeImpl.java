@@ -174,7 +174,12 @@ public class NodeImpl extends GraphObject implements Node, Entity, Comparable<No
     public int nbNode() {
         return 0;
     }
-
+    
+    @Override
+    public int nbGraphNode() {
+        return 0;
+    }
+    
     @Override
     public String getKey() {
         return null;

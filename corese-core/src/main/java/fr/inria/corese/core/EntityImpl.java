@@ -6,51 +6,57 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.PointerObject;
 
 public class EntityImpl extends PointerObject implements Entity {
-	Node graph, node;
 
-	EntityImpl(Node g, Node n){
-		graph = g;
-		node = n;
-	}
-	
-	public static EntityImpl create(Node g, Node n){
-		return new EntityImpl(g, n);
-	}
-	
-	public Edge getEdge() {
+    Node graph, node;
 
-		return null;
-	}
+    EntityImpl(Node g, Node n) {
+        graph = g;
+        node = n;
+    }
 
-	
-	public Node getNode() {
+    public static EntityImpl create(Node g, Node n) {
+        return new EntityImpl(g, n);
+    }
 
-		return node;
-	}
+    @Override
+    public Edge getEdge() {
+        return null;
+    }
 
-	
-	public Node getGraph() {
+    @Override
+    public Node getNode() {
+        return node;
+    }
 
-		return graph;
-	}
+    @Override
+    public Node getGraph() {
 
-	@Override
-	public Node getNode(int i) {
-		return null;
-	}
+        return graph;
+    }
 
-	@Override
-	public int nbNode() {
-		return 0;
-	}
+    @Override
+    public Node getNode(int i) {
+        return null;
+    }
+
+    @Override
+    public int nbNode() {
+        return 0;
+    }
+
+    @Override
+    public int nbGraphNode() {
+        return 0;
+    }
 
     @Override
     public Object getProvenance() {
-        return null;    
+        return null;
     }
-    
-    public void setProvenance(Object obj){
-        
+
+    @Override
+    public void setProvenance(Object obj) {
+
     }
 
     @Override

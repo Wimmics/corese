@@ -55,6 +55,10 @@ public class EdgeManager implements Iterable<Entity> {
             next = 1;
         }
     }
+    
+    public Graph getGraph() {
+        return graph;
+    }
 
     ArrayList<Entity> getList() {
         return list;
@@ -83,12 +87,12 @@ public class EdgeManager implements Iterable<Entity> {
         ArrayList<Entity> l = new ArrayList<Entity>();
         Entity pred = null;
         int count = 0, ind = 0;
-        for (Entity ent : list) {
+        for (Entity ent : list) {          
             if (pred == null) {
                 l.add(ent);
                 mgr.add(ent.getNode(index), predicate, ind);
                 ind++;
-            } else if (comp.compare(ent, pred) != 0) {
+            } else if (comp.compare(ent, pred) != 0) {               
                 l.add(ent);
                 if (ent.getNode(index) != pred.getNode(index)) {
                    mgr.add(ent.getNode(index), predicate, ind); 
@@ -578,18 +582,16 @@ public class EdgeManager implements Iterable<Entity> {
 
                 // check the Index Node
                 int res = compareNodeTerm(o1.getNode(index), o2.getNode(index));
-
-                if (res != 0) {
+                if (res != 0) {                   
                     return res;
                 }
                 
                 res = compareNodeTerm(o1.getNode(other), o2.getNode(other));
-
                 if (res != 0) {
                     return res;
                 }
                 
-                if (o1.nbNode() == 2 && o2.nbNode() == 2) {
+                if (o1.nbNode() == 2 && o2.nbNode() == 2 || graph.isMetadata()) {
                     // compare third Node
                     res = compareNodeTerm(o1.getNode(next), o2.getNode(next));
                     return res;

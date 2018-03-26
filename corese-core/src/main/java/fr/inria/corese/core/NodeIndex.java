@@ -41,7 +41,7 @@ public class NodeIndex {
 	
 	void add(Entity ent){
 		Edge edge = ent.getEdge();
-		for (int i=0; i<edge.nbNode(); i++){
+		for (int i=0; i<edge.nbGraphNode(); i++){
 			add(ent.getGraph(), edge.getNode(i));
 		}
 	}

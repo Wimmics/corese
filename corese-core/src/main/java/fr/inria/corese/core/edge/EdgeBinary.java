@@ -80,6 +80,11 @@ public abstract class EdgeBinary extends EdgeTop
     public int nbNode() {
         return 2;
     }
+    
+    @Override
+    public int nbGraphNode() {
+        return 2;
+    }
 
     @Override
     public Edge getEdge() {

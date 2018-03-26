@@ -2,6 +2,7 @@ package fr.inria.corese.core.index;
 
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.core.edge.EdgeGeneric;
+import fr.inria.corese.core.edge.EdgeTop;
 import java.util.Iterator;
 
 /**
@@ -20,7 +21,7 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     int focusNodeIndex;
     int ind, start = 0;
     boolean isList = true;
-    EdgeGeneric buffer;
+    EdgeTop buffer;
 
     EdgeManagerIterate(EdgeManager l) {
         list = l;
@@ -61,7 +62,26 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     /**
      * Fill buffer Edge from internal ent
      */
-    void fill(EdgeGeneric buf, Entity ent){
+    void fill(EdgeTop buf, Entity ent) {
+        if (ent.nbNode() == 2) {
+            fillTriple(buf, ent);
+        }
+        else {
+            fillTuple(buf, ent);
+        }
+    }
+    
+    void fillTriple(EdgeTop buf, Entity ent){
+        buf.setGraph(ent.getGraph());
+        buf.replicate(ent);
+    }
+    
+    void fillTuple(EdgeTop buf, Entity ent){
+        if (buf.nbNode() == 2) {
+            buffer = list.getGraph().getEdgeFactory().createDuplicate(ent); //new EdgeImpl();
+            buf = buffer;
+            buf.setEdgeNode(list.getPredicate());
+        }
         buf.setGraph(ent.getGraph());
         buf.replicate(ent);
     }

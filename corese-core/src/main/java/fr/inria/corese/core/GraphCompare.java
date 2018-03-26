@@ -124,7 +124,7 @@ public class GraphCompare {
 
     boolean compare(Entity ent1, Entity ent2, TBN t, boolean isGraph) {
 
-        for (int j = 0; j < ent1.getEdge().nbNode(); j++) {
+        for (int j = 0; j < ent1.getEdge().nbGraphNode(); j++) {
 
             Node n1 = ent1.getEdge().getNode(j);
             Node n2 = ent2.getEdge().getNode(j);

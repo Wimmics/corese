@@ -16,7 +16,10 @@ public interface Entity extends  Pointerable {
 	
 	int nbNode();
 	
-	Node getGraph();
+        // vertex node
+	int nbGraphNode();
+
+        Node getGraph();
         
         Object getProvenance();
         

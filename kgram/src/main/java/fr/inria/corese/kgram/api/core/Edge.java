@@ -16,6 +16,12 @@ public interface Edge  {
 	 * @return
 	 */
 	int nbNode();
+        
+        /**
+         * nodes that are vertex of the graph
+         * use case: metadata node is not a graph vertex
+         */
+        int nbGraphNode();
 
 	/**
 	 * Node at index n.

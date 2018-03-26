@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4. - Wimmics INRIA I3S - 2018-03-20";
+    private static final String TITLE = "Corese 4.0 - Wimmics INRIA I3S - 2018-04-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés

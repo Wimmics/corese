@@ -12,6 +12,7 @@ public class Command extends HashMap<String, String> {
     public static final String DEBUG            = "-debug";
     public static final String MAX_LOAD         = "-maxload";
     public static final String LINKED_FUNCTION  = "-linkedfunction";
+    public static final String METADATA         = "-metadata";
         
     
     Command (String[] args) {
@@ -23,6 +24,10 @@ public class Command extends HashMap<String, String> {
         while (i < args.length){
             String str = args[i++];
             switch (str) {
+                case METADATA:
+                case "-m":
+                    put(METADATA, "true");
+                    break;
                 case VERBOSE:
                 case "-v":
                     put(VERBOSE, "true");

@@ -93,6 +93,9 @@ public class GraphEngine  {
                         int max = Integer.valueOf(cmd.get(key));
                         Load.setLimitDefault(max);
                         break;
+                    case Command.METADATA:
+                        graph.setMetadata(true);
+                        break;
                 }
             }
         }

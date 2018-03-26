@@ -165,7 +165,14 @@ public class GraphManager {
     void add(Node node) {
         graph.add(node);
     }
-
+    
+    void add(Node node, int n) {
+        if (graph.isMetadata() && n > 1){
+            return;
+        }
+        graph.add(node);
+    }
+    
     void addPropertyNode(Node property) {
         graph.addPropertyNode(property);
     }

@@ -18,10 +18,15 @@ import fr.inria.corese.core.edge.EdgeBinaryFirst;
 import fr.inria.corese.core.edge.EdgeBinaryType;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.edge.EdgeBinaryRest;
+import fr.inria.corese.core.edge.EdgeInternalMetadata;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.List;
 
 /*
@@ -33,8 +38,10 @@ import java.util.List;
  */
 public class EdgeFactory {
     public static int std = 0, def = 0, rul = 0, ent = 0, typ = 0, sub = 0, fst = 0, rst = 0;
+    static final String METADATA = NSManager.USER + "metadata";
     public static boolean trace = false;
     Graph graph;
+    QueryProcess exec;
     boolean isOptim = false,
             isTag = false,
             isGraph = false;
@@ -60,30 +67,85 @@ public class EdgeFactory {
         System.out.println("Tot: " + (std+def+rul+ent));        
     }   
 
-    public Entity create(Node source, Node subject, Node predicate, Node value) {
+    public Entity create(Node source, Node subject, Node predicate, Node object) {
         if (graph.isTuple()){
-             return EdgeImpl.create(source, subject, predicate, value);
+             return EdgeImpl.create(source, subject, predicate, object);
+        }
+        else if (graph.isMetadata()) {
+             return EdgeImpl.createMetadata(source, subject, predicate, object, metadata());
         }
         else if (optimize) {
-            return genCreate(source, subject, predicate, value);
+            return genCreate(source, subject, predicate, object);
         }
         else {
-            return EdgeGeneric.create(source, subject, predicate, value);
+            return createGeneric(source, subject, predicate, object);
         }
     } 
     
+    Node metadata() {
+        if (exec == null) {
+            exec = QueryProcess.create(Graph.create());
+        }
+        IDatatype dt = null;
+        try {
+            dt = exec.funcall(METADATA, new IDatatype[0]);
+        } catch (EngineException ex) {
+        }
+        if (dt == null) {
+            dt = defaultMetadata();
+        }
+        return graph.getNode(dt, true, false);
+    }
+    
+    IDatatype defaultMetadata() {
+        return DatatypeMap.newInstance(count++);
+    }
+    
     public Entity internal(Entity ent){
+        if (ent.getGraph().getIndex() == Graph.RULE_INDEX) {
+            // rule edge must store an index
+            return ent;
+        }
+        if (ent.nbNode() == 3) {
+            return EdgeInternalMetadata.create(ent);
+        }
+        return internal2(ent);
+    }
+    
+    public Entity internal2(Entity ent){
         switch (ent.getGraph().getIndex()){
             // rule edge must store an index
             case Graph.RULE_INDEX: return ent;
+            
+            case Graph.ENTAIL_INDEX:
+                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+                
             case Graph.DEFAULT_INDEX:
                 return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
-            case Graph.ENTAIL_INDEX:
-                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));    
+
             default: 
                 return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
         }
     }
+    
+    public EdgeTop createDuplicate(Entity ent) {
+        if (ent.nbNode() == 2) {
+            return new EdgeGeneric();
+        }
+        else if (graph.isMetadata()) {
+            EdgeImpl ee = new EdgeImpl();
+            ee.setMetadata(true);
+            return ee;
+        }
+        else {
+            return new EdgeImpl();
+        }
+    }
+    
+    public Entity createGeneric(Node source, Node subject, Node predicate, Node value) {
+        return EdgeGeneric.create(source, subject, predicate, value);
+    }
+        
     
     public Entity compact(Entity ent){
         switch (ent.getGraph().getIndex()){
@@ -173,7 +235,8 @@ public class EdgeFactory {
    }
     
     public Entity create(Node source, Node predicate, List<Node> list) {
-        Entity ee = EdgeImpl.create(source, predicate, list);
+        EdgeImpl ee = EdgeImpl.create(source, predicate, list);
+        ee.setMetadata(graph.isMetadata());
         return ee;
     }
     
@@ -182,13 +245,20 @@ public class EdgeFactory {
             EdgeImpl ee = ((EdgeImpl)ent).copy();
             ee.setGraph(node);
             return ee;
-        }       
+        }  
         else {
             return create(node, ent.getNode(0), pred,  ent.getNode(1));
         }
     }
     
     public Entity copy(Entity ent){
+        return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
+    }
+    
+    public Entity queryEdge(Entity ent){
+        if (graph.isMetadata()) {
+            return createGeneric(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+        }
         return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
     }
 

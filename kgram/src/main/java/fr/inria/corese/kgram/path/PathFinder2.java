@@ -5,7 +5,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
@@ -24,7 +25,7 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.tool.EdgeInv;
 import fr.inria.corese.kgram.tool.EntityImpl;
-import org.apache.logging.log4j.LogManager;
+
 
 
 /**********************************************************
@@ -42,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
 public class PathFinder2 
 {	
 	
-	private static Logger logger = LogManager.getLogger(PathFinder.class);
+	private static Logger logger = LoggerFactory.getLogger(PathFinder.class);
 	
 	static int cc = 0;
 	static boolean isStack = true;

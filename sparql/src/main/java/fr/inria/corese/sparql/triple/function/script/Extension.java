@@ -11,8 +11,8 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * LDScript function call
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Extension extends TermEval {
 
-    private static Logger logger = LogManager.getLogger(Extension.class);
+    private static Logger logger = LoggerFactory.getLogger(Extension.class);
     Function function;
     boolean isUnary = false, isBinary = false, isSystem = false;
     private boolean tailRecursion = false;

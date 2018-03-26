@@ -1,7 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
@@ -23,7 +23,7 @@ public class CoreseInteger extends CoreseNumber {
     /**
      * logger from log4j
      */
-    private static Logger logger = LogManager.getLogger(CoreseInteger.class);
+    private static Logger logger = LoggerFactory.getLogger(CoreseInteger.class);
     public static final CoreseInteger ZERO = new CoreseInteger(0);
     public static final CoreseInteger ONE = new CoreseInteger(1);
     public static final CoreseInteger TWO = new CoreseInteger(2);

@@ -1,12 +1,13 @@
 package fr.inria.corese.kgram.tool;
 
 import java.util.Hashtable;
-import org.apache.logging.log4j.LogManager;
 
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Message {
-	static Logger logger = LogManager.getLogger(Message.class);
+	static Logger logger = LoggerFactory.getLogger(Message.class);
 	
 	public static final int UNDEF_VAR 	= 0;
 	public static final int FAIL 	= 1;
@@ -66,7 +67,7 @@ public class Message {
 	}
 	
 	public static void log(Object mes){
-		logger.warn(mes);
+		logger.warn(mes.toString());
 	}
 	
 }

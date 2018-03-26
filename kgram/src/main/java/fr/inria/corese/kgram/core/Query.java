@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
@@ -19,7 +17,8 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.filter.Compile;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * KGRAM Query
@@ -85,7 +84,7 @@ public class Query extends Exp implements Graphable {
     public static final int DEFAULT_SLICE = 20;
 
 	
-    private static Logger logger = LogManager.getLogger(Exp.class);
+    private static Logger logger = LoggerFactory.getLogger(Query.class);
 
     public static final String PATHNODE = "pathNode";
     public static final String BPATH = "_:_path_";

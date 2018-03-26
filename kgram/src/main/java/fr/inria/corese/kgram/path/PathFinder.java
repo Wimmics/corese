@@ -27,8 +27,9 @@ import fr.inria.corese.kgram.path.Visit.TTable;
 import fr.inria.corese.kgram.tool.EdgeInv;
 import fr.inria.corese.kgram.tool.EntityImpl;
 import java.util.HashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ********************************************************
@@ -76,7 +77,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class PathFinder {
 
-    private static Logger logger = LogManager.getLogger(PathFinder.class);
+    private static Logger logger = LoggerFactory.getLogger(PathFinder.class);
     public static long cedge = 0, cresult = 0, ctest = 0;
     // thread that enumerates the path
     private GraphPath path;

@@ -30,8 +30,8 @@ import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine Compute graph homomorphism and
@@ -50,7 +50,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Eval implements ExpType, Plugin {
 
-    private static Logger logger = LogManager.getLogger(Eval.class);
+    private static Logger logger = LoggerFactory.getLogger(Eval.class);
     private static final String PREF = EXT;
     private static final String FUN_CANDIDATE = PREF + "candidate";
     private static final String FUN_SERVICE = PREF + "service";
@@ -1131,7 +1131,7 @@ public class Eval implements ExpType, Plugin {
 
                     Mapping scan = env.store(query, p);
                     if (scan != null) {
-                        logger.debug(scan);
+                        logger.debug(scan.toString());
                     }
                     backtrack = eval(p, gNode, stack, n + 1);
                     break;

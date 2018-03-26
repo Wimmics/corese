@@ -6,8 +6,9 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +34,7 @@ public class Bind implements Binder {
     int currentLevel = 0;
     Expr current;
     
-    private static Logger logger = LogManager.getLogger(Bind.class);
+    private static Logger logger = LoggerFactory.getLogger(Bind.class);
 
     Bind() {
         varList = new ArrayList();

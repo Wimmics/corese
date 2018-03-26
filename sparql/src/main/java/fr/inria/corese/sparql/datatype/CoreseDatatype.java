@@ -1217,31 +1217,31 @@ public class CoreseDatatype
 
     @Override
     public Edge getEdge() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Node getNode() {
-        // TODO Auto-generated method stub
         return this;
     }
 
     @Override
     public Node getNode(int i) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Node getGraph() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int nbNode() {
-        // TODO Auto-generated method stub
+        return 0;
+    }
+    
+     @Override
+    public int nbGraphNode() {
         return 0;
     }
 

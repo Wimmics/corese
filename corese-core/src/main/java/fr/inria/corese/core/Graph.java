@@ -20,8 +20,8 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -69,7 +69,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
 	    Corese.init();
     }
 
-    private static Logger logger = LogManager.getLogger(Graph.class);
+    private static Logger logger = LoggerFactory.getLogger(Graph.class);
     public static final String TOPREL
             = fr.inria.corese.sparql.triple.cst.RDFS.RootPropertyURI;
     static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);

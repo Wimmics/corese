@@ -4,8 +4,8 @@ import fr.inria.corese.sparql.api.ComputerProxy;
 import fr.inria.corese.core.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -61,7 +61,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-import org.apache.logging.log4j.Level;
+
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -75,7 +75,7 @@ public class PluginImpl
         implements ProxyPlugin
 {
 
-    static public Logger logger = LogManager.getLogger(PluginImpl.class);
+    static public Logger logger = LoggerFactory.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     public static boolean readWriteAuthorized = true;
     private static final String NL = System.getProperty("line.separator");
@@ -939,7 +939,7 @@ public class PluginImpl
         try {
             ld.parse(dt.getLabel());
         } catch (LoadException e) {
-            logger.error(e);
+            logger.error(e.getMessage());
             return FALSE;
         }
         return TRUE;
@@ -1089,7 +1089,7 @@ public class PluginImpl
         try {
             str = ql.readWE(dt.getLabel());
         } catch (LoadException ex) {
-            LogManager.getLogger(PluginImpl.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(PluginImpl.class.getName()).error(  "", ex);
         }
         if (str == null){
             str = "";

@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Reader;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.semarglproject.rdf.ParseException;
 import org.semarglproject.rdf.rdfa.RdfaParser;
@@ -23,7 +23,7 @@ public class RDFaLoader {
     /**
      * logger from log4j
      */
-    private static Logger logger = LogManager.getLogger(RDFaLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(RDFaLoader.class);
 
     private Reader reader;
     private InputStream is;

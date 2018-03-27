@@ -6,8 +6,8 @@ import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;
 import static fr.inria.corese.core.Event.Start;
 import fr.inria.corese.core.logic.Entailment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Event Manager for consistency and trace
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class EventManager {
 
-    private static Logger logger = LogManager.getLogger(EventManager.class);
+    private static Logger logger = LoggerFactory.getLogger(EventManager.class);
     Graph graph;
     private boolean verbose    = !true;
     private boolean isEntail = true;

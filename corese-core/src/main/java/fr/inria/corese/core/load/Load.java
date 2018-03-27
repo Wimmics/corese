@@ -14,8 +14,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -61,7 +61,7 @@ public class Load
         implements StatementHandler, RDFListener, org.xml.sax.ErrorHandler,
         Loader {
 
-    private static Logger logger = LogManager.getLogger(Load.class);
+    private static Logger logger = LoggerFactory.getLogger(Load.class);
     private static int DEFAULT_FORMAT = RDFXML_FORMAT;
     static final String HTTP = "http://";
     static final String FTP = "ftp://";
@@ -528,7 +528,7 @@ public class Load
     }
 
     void error(Object mes) {
-        logger.error(mes);
+        logger.error(mes.toString());
     }
 
     public void loadString(String str, int format) throws LoadException {
@@ -799,7 +799,7 @@ public class Load
             try {
                 parse(uri);
             } catch (LoadException ex) {
-                logger.error(ex);
+                logger.error(ex.getMessage());
             }
             build = save;
         }
@@ -931,7 +931,7 @@ public class Load
             try {
                 load(path, src, null);
             } catch (LoadException e) {
-                logger.error(e);
+                logger.error(e.getMessage());
             }
         }
     }

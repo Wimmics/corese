@@ -10,8 +10,8 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.Transformer;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Query Manager that process and modify a query before processing
@@ -102,7 +102,7 @@ public class QueryManager {
         try {
             query = load(q);
         } catch (LoadException ex) {
-            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(QueryManager.class.getName()).error(  "", ex);
              return new Mappings();
         }
         QueryProcess exec = QueryProcess.create(g);
@@ -111,7 +111,7 @@ public class QueryManager {
             Mappings map = exec.query(query);
             return map;
         } catch (EngineException ex) {
-            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(QueryManager.class.getName()).error(  "", ex);
         }
         return new Mappings();
     }
@@ -152,14 +152,14 @@ public class QueryManager {
         try {
             update = load(q);
         } catch (LoadException ex) {
-            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(QueryManager.class.getName()).error(  "", ex);
             return g;
         }
         QueryProcess up = QueryProcess.create(g);
         try {
             up.query(update);
         } catch (EngineException ex) {
-            LogManager.getLogger(QueryManager.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(QueryManager.class.getName()).error(  "", ex);
         }
         return g;
     }

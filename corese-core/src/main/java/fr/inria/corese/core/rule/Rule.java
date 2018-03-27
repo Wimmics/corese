@@ -16,8 +16,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 public class Rule {
 
@@ -48,7 +47,7 @@ public class Rule {
             TRANS_QUERY = ql.readWE(Rule.class.getResourceAsStream("/query/transitive.rq"));
             TRANS_PSEUDO_QUERY = ql.readWE(Rule.class.getResourceAsStream("/query/transitivepseudo.rq"));
         } catch (LoadException ex) {
-            LogManager.getLogger(Rule.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(Rule.class.getName()).error( "", ex);
         }
     }
 

@@ -6,8 +6,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic Process to be programmed
@@ -87,9 +86,9 @@ public class DatasetProcess extends WorkflowProcess {
             Data res = sw.process(input);
             return res;
         } catch (LoadException ex) {
-            LogManager.getLogger(DatasetProcess.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(DatasetProcess.class.getName()).error( "", ex);
         } catch (EngineException ex) {
-            LogManager.getLogger(DatasetProcess.class.getName()).log(Level.ERROR, "", ex);
+            LoggerFactory.getLogger(DatasetProcess.class.getName()).error( "", ex);
         }
 
         return data;

@@ -17,8 +17,8 @@ import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
 import java.util.Date;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class SPARQLProcess extends  WorkflowProcess {
-    private static Logger logger = LogManager.getLogger(SPARQLProcess.class);
+    private static Logger logger = LoggerFactory.getLogger(SPARQLProcess.class);
     static final String NL = System.getProperty("line.separator");
     static final NSManager nsm = NSManager.create();
 

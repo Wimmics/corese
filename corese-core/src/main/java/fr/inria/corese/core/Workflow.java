@@ -7,8 +7,8 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.core.logic.Entailment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class Workflow implements Engine {
-    private static Logger logger = LogManager.getLogger(Workflow.class);
+    private static Logger logger = LoggerFactory.getLogger(Workflow.class);
 
     Graph graph;
     ArrayList<Engine> engines;

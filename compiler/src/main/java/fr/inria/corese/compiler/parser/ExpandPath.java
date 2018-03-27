@@ -3,8 +3,8 @@ package fr.inria.corese.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -39,7 +39,7 @@ import fr.inria.corese.kgram.core.Query;
  */
 public class ExpandPath implements QueryVisitor {
 	
-	private static Logger log = LogManager.getLogger(ExpandPath.class);
+	private static Logger log = LoggerFactory.getLogger(ExpandPath.class);
 	
 	private static final String ROOT = "?_VAR_";
 	private static final String NEQ = Term.SNEQ;

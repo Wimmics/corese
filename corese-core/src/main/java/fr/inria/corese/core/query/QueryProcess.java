@@ -45,8 +45,8 @@ import fr.inria.corese.core.util.Extension;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM as a lightweight version
@@ -61,7 +61,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class QueryProcess extends QuerySolver {
 
-    private static Logger logger = LogManager.getLogger(QueryProcess.class);
+    private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
     private static ProducerImpl p;
     private static final String EVENT = "event";
     static final String DB_FACTORY  = "fr.inria.corese.tinkerpop.Factory";
@@ -239,8 +239,7 @@ public class QueryProcess extends QuerySolver {
             logger.info("Connect db");
             return p;
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            logger.error(ex);
-            logger.error("impossible to create a producer, aborting");
+            logger.error("impossible to create a producer, aborting", ex);
         }
         return ProducerImpl.create(g);
     }
@@ -498,9 +497,9 @@ public class QueryProcess extends QuerySolver {
             Query q = compile(str);
             return q;
         } catch (LoadException ex) {
-			logger.error(ex);
+			logger.error(ex.getMessage());
         } catch (EngineException ex) {
-			logger.error(ex);
+			logger.error(ex.getMessage());
         }
         return null;
     }

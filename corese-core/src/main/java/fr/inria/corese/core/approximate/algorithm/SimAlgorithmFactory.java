@@ -45,7 +45,7 @@ public class SimAlgorithmFactory {
 //                try {
 //                    return new TextSimilarity(NLPHelper.createInstance());
 //                } catch (Exception ex) {
-//                    //LogManager.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "** Cannot initialize NLP helper, WordNet similarity algorithms are disabled!**");
+//                    //LoggerFactory.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "** Cannot initialize NLP helper, WordNet similarity algorithms are disabled!**");
 //                }
 //                return null;
             case ch:

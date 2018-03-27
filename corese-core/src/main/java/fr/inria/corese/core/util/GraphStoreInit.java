@@ -9,8 +9,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
 import java.io.InputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+
+import org.slf4j.LoggerFactory;
 
 /**
  * Initialize a GraphStore
@@ -72,7 +72,7 @@ public class GraphStoreInit {
             try {
                 ld.load(stream, SYSTEM, name);
             } catch (LoadException ex) {
-                LogManager.getLogger(GraphStore.class.getName()).log(Level.ERROR, "", ex);
+                LoggerFactory.getLogger(GraphStore.class.getName()).error(  "", ex);
             }
         }
     }

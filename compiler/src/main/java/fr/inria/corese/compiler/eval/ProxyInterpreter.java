@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -51,7 +51,7 @@ import java.util.List;
 public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
-    private static Logger logger = LogManager.getLogger(ProxyInterpreter.class);
+    private static Logger logger = LoggerFactory.getLogger(ProxyInterpreter.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
     public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
@@ -955,8 +955,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         for (IDatatype dt : ldt) {
             str += dt + " ";
         }
-        logger.warn(e);
-        logger.warn(title + " "+ name + " " + str);  
+        logger.warn(title + " "+ name + " " + str, e);  
     }
     
     /**

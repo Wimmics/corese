@@ -14,8 +14,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RDFS Entailment
@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Entailment implements Engine {
 
-    private static Logger logger = LogManager.getLogger(Entailment.class);
+    private static Logger logger = LoggerFactory.getLogger(Entailment.class);
     private static final String S_TYPE = RDF.TYPE;
     private static final String S_BLI = RDF.BLI;
     private static final String S_PROPERTY = RDF.PROPERTY;

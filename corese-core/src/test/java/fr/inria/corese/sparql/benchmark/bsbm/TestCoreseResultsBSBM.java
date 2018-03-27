@@ -21,75 +21,74 @@ import org.testng.annotations.Test;
  */
 public class TestCoreseResultsBSBM {
 
-    private static final String ENDPOINT_CORESE = "http://localhost:8080/kgram/sparql";
-    private static final String ENDPOINT_JENA = "http://localhost:3030/ds/query";
-    private static final String ENDPOINT_SESAME = "http://localhost:9090/openrdf-sesame/repositories/bsbm";
+	private static final String ENDPOINT_CORESE = "http://localhost:8080/kgram/sparql";
+	private static final String ENDPOINT_JENA = "http://localhost:3030/ds/query";
+	private static final String ENDPOINT_SESAME = "http://localhost:9090/openrdf-sesame/repositories/bsbm";
 
-    public static void main(String[] args) {
-        TestCoreseResultsBSBM tt = new TestCoreseResultsBSBM();
-       //tt.run(ENDPOINT_JENA, BSBMQueries.Bi_Q03);
-        //tt.run(ENDPOINT_SESAME, BSBMQueries.Bi_Q03);
-        //tt.run(ENDPOINT_CORESE, BSBMQueries.Bi_Q03);
+	public static void main(String[] args) {
+		TestCoreseResultsBSBM tt = new TestCoreseResultsBSBM();
+		tt.run(ENDPOINT_JENA, BSBMQueries.Bi_Q03);
+		tt.run(ENDPOINT_SESAME, BSBMQueries.Bi_Q03);
+		tt.run(ENDPOINT_CORESE, BSBMQueries.Bi_Q03);
 
-        tt.testSizeOfDataset();
-    }
+		tt.testSizeOfDataset();
+	}
 
-    @DataProvider(name = "data")
-    public Object[][] data(Method mt) {
-        String test = mt.getName();
-        if ("testExploreUseCase".equals(test)) {
-            return BSBMQueries.EXPLORE_USE_CASE;
-        } else if ("testBiUseCase".equals(test)) {
-            return BSBMQueries.BI_USE_CASE;
-        }else if ("testBiUseCaseDebug".equals(test)) {
-            return BSBMQueries.BI_USE_CASE2;
-        }
-        return null;
-    }
+	@DataProvider(name = "data")
+	public Object[][] data(Method mt) {
+		String test = mt.getName();
+		if ("testExploreUseCase".equals(test)) {
+			return BSBMQueries.EXPLORE_USE_CASE;
+		} else if ("testBiUseCase".equals(test)) {
+			return BSBMQueries.BI_USE_CASE;
+		} else if ("testBiUseCaseDebug".equals(test)) {
+			return BSBMQueries.BI_USE_CASE2;
+		}
+		return null;
+	}
 
-    //@Test
-    public void testSizeOfDataset() {
-        runOneTest("BSBMQueries.DF_Q01", BSBMQueries.DF_Q01);
-    }
+	//@Test
+	public void testSizeOfDataset() {
+		runOneTest("BSBMQueries.DF_Q01", BSBMQueries.DF_Q01);
+	}
 
-    //use case "Explore"
-    @Test(dataProvider = "data")
-    public void testExploreUseCase(String title, String query) {
-        runOneTest(title, query);
-    }
+	//use case "Explore"
+	@Test(dataProvider = "data")
+	public void testExploreUseCase(String title, String query) {
+		runOneTest(title, query);
+	}
 
-    //use case "BI: business intellegence"
-    @Test(dataProvider = "data")
-    public void testBiUseCase(String title, String query) {
-        runOneTest(title, query);
-    }
+	//use case "BI: business intellegence"
+	@Test(dataProvider = "data")
+	public void testBiUseCase(String title, String query) {
+		runOneTest(title, query);
+	}
 
-    //use case "BI: business intellegence" debug
-    //@Test(dataProvider = "data")
-    public void testBiUseCaseDebug(String title, String query) {
-        runOneTest(title, query);
-    }
+	//use case "BI: business intellegence" debug
+	//@Test(dataProvider = "data")
+	public void testBiUseCaseDebug(String title, String query) {
+		runOneTest(title, query);
+	}
 
-    
-    private void runOneTest(String title, String query) {
+	private void runOneTest(String title, String query) {
 
-        int rJena = run(ENDPOINT_JENA, query);
-        int rSesame = run(ENDPOINT_SESAME, query);
-        int rCorese = run(ENDPOINT_CORESE, query);
+		int rJena = run(ENDPOINT_JENA, query);
+		int rSesame = run(ENDPOINT_SESAME, query);
+		int rCorese = run(ENDPOINT_CORESE, query);
 
-        System.out.println("\n##### " + title + " ##### \n" + query);
-        System.out.println(ENDPOINT_CORESE + ":\t" + rCorese);
-        System.out.println(ENDPOINT_JENA + ":\t" + rJena);
-        System.out.println(ENDPOINT_SESAME + ":\t" + rSesame);
+		System.out.println("\n##### " + title + " ##### \n" + query);
+		System.out.println(ENDPOINT_CORESE + ":\t" + rCorese);
+		System.out.println(ENDPOINT_JENA + ":\t" + rJena);
+		System.out.println(ENDPOINT_SESAME + ":\t" + rSesame);
 
-        Assert.assertEquals(title + " Corse == Jena?", rCorese, rJena);
-        Assert.assertEquals(title + " Corse == Sesame?", rCorese, rSesame);
-        Assert.assertEquals(title + " Jena == Sesame?", rJena, rSesame);
+		Assert.assertEquals(title + " Corse == Jena?", rCorese, rJena);
+		Assert.assertEquals(title + " Corse == Sesame?", rCorese, rSesame);
+		Assert.assertEquals(title + " Jena == Sesame?", rJena, rSesame);
 
-    }
+	}
 
-    private int run(String sparqlEndpoint, String sQuery) {
-        QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, sQuery);
-        return ResultSetFactory.makeRewindable(httpQuery.execSelect()).size();
-    }
+	private int run(String sparqlEndpoint, String sQuery) {
+		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, sQuery);
+		return ResultSetFactory.makeRewindable(httpQuery.execSelect()).size();
+	}
 }

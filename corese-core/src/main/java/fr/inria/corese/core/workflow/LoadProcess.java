@@ -6,7 +6,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Load a directory.
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class LoadProcess extends WorkflowProcess {
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(LoadProcess.class);
+    private static Logger logger = LoggerFactory.getLogger(LoadProcess.class);
     
     public static final String FILE = "file://";
     String name;
@@ -108,8 +109,7 @@ public class LoadProcess extends WorkflowProcess {
                     return;
                 } catch (LoadException ex) {
                     // not right format
-                    logger.warn("Load RDF string format: " + ft);
-                    logger.warn(ex);
+                    logger.warn("Load RDF string format: " + ft, ex);
                 }
             }
         } else {

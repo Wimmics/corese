@@ -32,9 +32,9 @@ import org.slf4j.Logger;
  * PRAGMA:
  * Property Path evaluated in each of the services but not on the union 
  * (hence PP is not federated)
- * graph ?g { } by default is evaluated as a whole, not federated onto servers
- * @type kg:distributeNamed : 
- * draft federate named graph with rewrite 
+ * graph ?g { } by default is evaluated as federated onto servers
+ * @skip kg:distributeNamed : 
+ * named graph as a whole on each server 
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
@@ -57,6 +57,7 @@ public class FederateVisitor implements QueryVisitor {
     // factorize unique service in optional/minus/union
     boolean simplify  = true;
     boolean exist = false;
+    boolean verbose = false;
 
     ASTQuery ast;
     Stack stack;
@@ -79,16 +80,17 @@ public class FederateVisitor implements QueryVisitor {
         rew.setDebug(ast.isDebug());
         option();
         
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
-            System.out.println("before:");
+        if (verbose) {
+            System.out.println("\nbefore:");
             System.out.println(ast.getBody());
         }
 
         rewrite(ast);
 
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
-            System.out.println("after:");
-            System.out.println(ast.getBody());           
+        if (verbose) {
+            System.out.println("\nafter:");
+            System.out.println(ast.getBody());
+            System.out.println();
         }
     }
     
@@ -98,7 +100,17 @@ public class FederateVisitor implements QueryVisitor {
         query.setFederate(true);
     }
     
+    /**
+     * Metadata: 
+     * default is true:
+     * @skip kg:select kg:group kg:simplify kg:distributeNamed
+     * default is false:
+     * @type kg:exist kg:verbose
+     */
     void option() {
+        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
+            verbose = true;
+        }
         if (ast.hasMetadataValue(Metadata.SKIP, Metadata.DISTRIBUTE_NAMED)) {
             distributeNamed = false;
         }

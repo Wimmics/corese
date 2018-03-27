@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.Serializer;
+import java.awt.Cursor;
 import java.util.HashMap;
 
 /**
@@ -316,7 +317,7 @@ public class EdgeManagerIndexer
             return null;
         }
 
-        Entity internal = internal(edge);       
+        Entity internal = internal(edge); 
         EdgeManager el = define(edge.getEdge().getEdgeNode());
        
         if (isSort(edge)) {

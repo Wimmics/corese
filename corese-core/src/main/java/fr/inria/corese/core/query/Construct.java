@@ -352,7 +352,6 @@ public class Construct
         }
 
         Entity ee;
-
         if (edge.nbNode() > 2) {
             // tuple()
             ArrayList<Node> list = new ArrayList<Node>();

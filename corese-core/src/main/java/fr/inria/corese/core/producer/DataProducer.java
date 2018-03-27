@@ -322,7 +322,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
         
     void record(Entity ent) {
-        if (EdgeManagerIndexer.test){
+        if (ent.nbNode() == 2){
             record2(ent);
         }
         else {

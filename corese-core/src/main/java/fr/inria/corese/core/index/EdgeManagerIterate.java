@@ -55,36 +55,21 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     @Override
     public Entity next() {
         Entity ent = list.get(ind++);
-        fill(buffer, ent);
-        return buffer;
+        if (ent.nbNode() == 2) {
+            fill(buffer, ent);
+            return buffer;
+        }
+        return ent;
     }
     
     /**
      * Fill buffer Edge from internal ent
      */
     void fill(EdgeTop buf, Entity ent) {
-        if (ent.nbNode() == 2) {
-            fillTriple(buf, ent);
-        }
-        else {
-            fillTuple(buf, ent);
-        }
-    }
-    
-    void fillTriple(EdgeTop buf, Entity ent){
         buf.setGraph(ent.getGraph());
         buf.replicate(ent);
     }
-    
-    void fillTuple(EdgeTop buf, Entity ent){
-        if (buf.nbNode() == 2) {
-            buffer = list.getGraph().getEdgeFactory().createDuplicate(ent); //new EdgeImpl();
-            buf = buffer;
-            buf.setEdgeNode(list.getPredicate());
-        }
-        buf.setGraph(ent.getGraph());
-        buf.replicate(ent);
-    }
+
 
     @Override
     public void remove() {

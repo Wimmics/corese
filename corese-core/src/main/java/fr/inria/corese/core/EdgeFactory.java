@@ -18,7 +18,6 @@ import fr.inria.corese.core.edge.EdgeBinaryFirst;
 import fr.inria.corese.core.edge.EdgeBinaryType;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.edge.EdgeBinaryRest;
-import fr.inria.corese.core.edge.EdgeInternalMetadata;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
@@ -100,19 +99,11 @@ public class EdgeFactory {
     IDatatype defaultMetadata() {
         return DatatypeMap.newInstance(count++);
     }
-    
+     
     public Entity internal(Entity ent){
-        if (ent.getGraph().getIndex() == Graph.RULE_INDEX) {
-            // rule edge must store an index
+        if (ent.nbNode() > 2) {
             return ent;
         }
-        if (ent.nbNode() == 3) {
-            return EdgeInternalMetadata.create(ent);
-        }
-        return internal2(ent);
-    }
-    
-    public Entity internal2(Entity ent){
         switch (ent.getGraph().getIndex()){
             // rule edge must store an index
             case Graph.RULE_INDEX: return ent;
@@ -131,14 +122,10 @@ public class EdgeFactory {
     public EdgeTop createDuplicate(Entity ent) {
         if (ent.nbNode() == 2) {
             return new EdgeGeneric();
-        }
-        else if (graph.isMetadata()) {
+        } else {
             EdgeImpl ee = new EdgeImpl();
-            ee.setMetadata(true);
+            ee.setMetadata(graph.isMetadata());
             return ee;
-        }
-        else {
-            return new EdgeImpl();
         }
     }
     

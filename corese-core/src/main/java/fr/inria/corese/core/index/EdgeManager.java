@@ -127,7 +127,24 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Replace kg:rule Edge by compact EdgeInternalRule
      */
-    void compact(){
+    
+    void compact() {
+        if (graph.isMetadata()) {
+            doCompactMetadata();
+        }
+        else {
+            doCompact();
+        }
+    }
+
+    // keep metadata, reset index
+    void doCompactMetadata(){
+        for (Entity ent : list) {
+           ent.getEdge().setIndex(-1);
+        }
+    }
+    
+    void doCompact(){
         ArrayList<Entity> l = new ArrayList<Entity>(list.size());
         for (Entity ent : list) {
            Entity ee = graph.getEdgeFactory().compact(ent);

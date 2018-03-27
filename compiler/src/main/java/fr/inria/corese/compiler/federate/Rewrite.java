@@ -78,7 +78,7 @@ public class Rewrite {
         
         // record triples that are member of created BGPs
         for (BasicGraphPattern bgp : map.getMap().values()) {
-            if (bgp.size() > 1) {
+            if (bgp.size() > 0) {
                 for (Exp exp : bgp) {
                     table.put(exp.getTriple(), bgp);
                 }

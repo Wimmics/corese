@@ -74,7 +74,7 @@ public class Workflow implements Engine {
 
     public synchronized boolean process(Engine e) {
         boolean b = false;
-        if (isAvailable()) {
+        if (isBasicAvailable()) {
             isIdle = false;
             b = run(e);
             isIdle = true;
@@ -83,7 +83,11 @@ public class Workflow implements Engine {
     }
     
     boolean isAvailable() {
-        return isActivate && isIdle && engines.size() > 0;
+        return isBasicAvailable() && engines.size() > 0;
+    }
+    
+     boolean isBasicAvailable() {
+        return isActivate && isIdle ;
     }
     
     EventManager getEventManager() {

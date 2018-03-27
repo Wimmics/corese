@@ -29,7 +29,10 @@ import org.junit.Test;
  */
 public class DataShape {
 
-    static String data = "/user/corby/home/AATest/data-shapes/data-shapes-test-suite/tests/";
+    //static String data = "/user/corby/home/AATest/data-shapes/data-shapes-test-suite/tests/";
+    static final String data = 
+       DataShape.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
+    
     static String[] names = {
         "core/property", "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports"
     //   "sparql/node" , "sparql/property", "sparql/component"
@@ -124,6 +127,7 @@ public class DataShape {
     
       @Test
      public void testSimple() throws LoadException, EngineException, IOException {
+        //Graph.METADATA_DEFAULT = true;
         Date d1 = new Date();
         //lds = false; // Java
         test();
@@ -179,7 +183,8 @@ public class DataShape {
             System.out.println();
         }
 
-        report.write("/home/corby/AATest/data-shapes/earl-report-test.ttl");
+        //report.write("/home/corby/AATest/data-shapes/earl-report-test.ttl");
+        report.write("/user/corby/home/NetBeansProjects/corese-github-v4/corese-test/src/test/resources/data/data-shapes/earl-report-test.ttl");
         System.out.println((error == 0) ? "No error" : ("*** ERRORS: " + error));
     }
 

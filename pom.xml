@@ -108,6 +108,7 @@
         <sonar.language>java</sonar.language>
         <surefire.version>2.20.1</surefire.version>
         <log4j2.version>2.11.0</log4j2.version>
+        <jersey.version>1.19.4</jersey.version>
     </properties>
 
     <dependencyManagement>
@@ -273,37 +274,37 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-bundle</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-server</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey.contribs</groupId>
                 <artifactId>jersey-multipart</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-json</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-servlet</artifactId>
-                <version>1.15</version>
+                <version>${jersey.version}</version>
             </dependency>
 
             <dependency>
@@ -340,6 +341,11 @@
                 <groupId>com.hp.hpl.jena</groupId>
                 <artifactId>jena</artifactId>
                 <version>2.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-arq</artifactId>
+                <version>2.10.0</version>
             </dependency>
             <dependency>
                 <groupId>com.hp.hpl.jena</groupId>
@@ -380,6 +386,26 @@
                 <groupId>xerces</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>2.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
+                <artifactId>arp</artifactId>
+                <version>2.2.b</version>
+            </dependency>
+            <dependency>
+                <groupId>org.semarglproject</groupId>
+                <artifactId>semargl-core</artifactId>
+                <version>0.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.semarglproject</groupId>
+                <artifactId>semargl-rdfa</artifactId>
+                <version>0.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>0.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

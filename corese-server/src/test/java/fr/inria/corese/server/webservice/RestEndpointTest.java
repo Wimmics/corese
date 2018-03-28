@@ -5,21 +5,20 @@ package fr.inria.corese.server.webservice;
  * and open the template in the editor.
  */
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import fr.inria.corese.server.webservice.EmbeddedJettyServer;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -109,17 +108,16 @@ public class RestEndpointTest {
                 + "}"
                 + "     LIMIT 10";
 
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
-        System.out.println(service.path("sparql").path("reset").post(String.class).toString());
+        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
 
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("remote_path", "http://nyx.unice.fr/~gaignard/data/neurolog.rdf");
+        target
+                .queryParam("remote_path", "http://nyx.unice.fr/~gaignard/data/neurolog.rdf")
+                .path("sparql").path("load").request().post(Entity.text(null));
 //        formData.add("remote_path", "/Users/gaignard/Desktop/bsbmtools-0.2/dataset.ttl");
-        service.path("sparql").path("load").post(formData);
-        System.out.println(service.path("sparql").queryParam("query", query).accept("application/sparql-results+xml").get(String.class));
+        System.out.println(target.path("sparql").queryParam("query", query).request().accept("application/sparql-results+xml").get(String.class));
 //        System.out.println(service.path("sparql").queryParam("query", query).accept("application/json").get(String.class));
     }
 
@@ -138,21 +136,25 @@ public class RestEndpointTest {
                 + "}";
         String count = "SELECT (COUNT(*) AS ?no) { ?s ?p ?o  }";
 
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
-        System.out.println(service.path("sparql").path("reset").post(String.class).toString());
+        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
 
         //First POST of the SPARQL protocol
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("update", insertData1);
-        service.path("sparql").path("update").type("application/x-www-form-urlencoded").post(formData);
-        System.out.println(service.path("sparql").queryParam("query", count).accept("application/sparql-results+xml").get(String.class));
+        target
+                .queryParam("update", insertData1)
+                .path("sparql").path("update").request().post(Entity.text(null));
+        System.out.println(target.path("sparql").queryParam("query", count).request("application/sparql-results+xml").get(String.class));
 
         //Second POST of the SPARQL protocol
-        service.path("sparql").path("update").type("application/sparql-update").entity(insertData2).post();
-        System.out.println(service.path("sparql").queryParam("query", count).accept("application/sparql-results+xml").get(String.class));
+        target.path("sparql").path("update").request("application/sparql-update").post(Entity.text(insertData2));
+        System.out.println(target
+                .path("sparql")
+                .queryParam("query", count)
+                .request()
+                .accept("application/sparql-results+xml")
+                .get(String.class));
     }
 
     @Test
@@ -172,24 +174,20 @@ public class RestEndpointTest {
 
         String allWithGraph = "SELECT * WHERE {GRAPH ?g {?x ?p ?y}}";
 
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
-        System.out.println(service.path("sparql").path("reset").post(String.class).toString());
-        MultivaluedMap resetParams = new MultivaluedMapImpl();
-        resetParams.add("entailments", "true");
-        System.out.println(service.path("sparql").path("reset").post(String.class, resetParams));
+        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
+        target.queryParam("entailments", "true");
+        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class));
 
 
         //First POST of the SPARQL protocol
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        formData.add("update", insertDataNG);
-        service.path("sparql").path("update").type("application/x-www-form-urlencoded").post(formData);
-        System.out.println(service.path("sparql").queryParam("query", allWithGraph).accept("application/sparql-results+xml").get(String.class));
+        target.path("sparql").path("update").request("application/x-www-form-urlencoded").post(Entity.text(null));
+        System.out.println(target.path("sparql").queryParam("query", allWithGraph).request("application/sparql-results+xml").get(String.class));
 
 
         String selectBook = "SELECT * WHERE {GRAPH ?g {?x ?p ?y}}";
-        System.out.println(service.path("sparql").queryParam("query", selectBook).queryParam("named-graph-uri", "http://secondStore").accept("application/sparql-results+xml").get(String.class));
+        System.out.println(target.path("sparql").queryParam("query", selectBook).queryParam("named-graph-uri", "http://secondStore").request("application/sparql-results+xml").get(String.class));
     }
 }

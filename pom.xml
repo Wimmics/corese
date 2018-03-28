@@ -108,7 +108,8 @@
         <sonar.language>java</sonar.language>
         <surefire.version>2.20.1</surefire.version>
         <log4j2.version>2.11.0</log4j2.version>
-        <jersey.version>1.19.4</jersey.version>
+        <sesame.version>4.1.1</sesame.version>
+        <jersey.version>2.25.1</jersey.version>
     </properties>
 
     <dependencyManagement>
@@ -151,39 +152,39 @@
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-rio-api</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-rio-nquads</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-model</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-util</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-sail-nativerdf</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-sail</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.openrdf.sesame</groupId>
                 <artifactId>sesame-rio-rdfxml</artifactId>
-                <version>4.1.1</version>
+                <version>${sesame.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -292,7 +293,7 @@
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
@@ -406,6 +407,11 @@
                 <groupId>com.github.jsonld-java</groupId>
                 <artifactId>jsonld-java</artifactId>
                 <version>0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

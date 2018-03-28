@@ -1,7 +1,5 @@
 package fr.inria.corese.server.webservice;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import static fr.inria.corese.server.webservice.EmbeddedJettyServer.HOME_PAGE;
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * This class enables to assign an URL to services
@@ -125,7 +125,7 @@ public class SrvWrapper {
     @Path(pathRegex)
     @Produces("text/html")
     public Response transformPostMD(
-     @Context HttpServletRequest request,
+            @Context HttpServletRequest request,
             @PathParam("path") String path,
             @FormDataParam("profile") String profile, // query + transform
             @FormDataParam("uri") String resource, // URI of resource focus

@@ -1,12 +1,10 @@
 package fr.inria.corese.server.webservice;
 
-import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
 import java.io.IOException;
 import org.apache.logging.log4j.Level;
 
-import javax.print.attribute.standard.Media;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /*
  * To change this template, choose Tools | Templates

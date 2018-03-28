@@ -17,9 +17,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -83,16 +83,16 @@ public class Tutorial {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response postMD(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+            @javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormDataParam("profile")   String profile, // query + transform
             @FormDataParam("uri")       String resource, // query + transform
-            @FormDataParam("mode")      String mode, 
-            @FormDataParam("param")     String param, 
-            @FormDataParam("format")     String format, 
+            @FormDataParam("mode")      String mode,
+            @FormDataParam("param")     String param,
+            @FormDataParam("format")     String format,
             @FormDataParam("query")     String query, // SPARQL query
             @FormDataParam("name")      String name, // SPARQL query name (in webapp/query)
-            @FormDataParam("value")     String value, // values clause that may complement query           
+            @FormDataParam("value")     String value, // values clause that may complement query
             @FormDataParam("transform") String transform, // Transformation URI to post process result
             @FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
             @FormDataParam("named-graph-uri")   List<FormDataBodyPart> namedGraphUris) {

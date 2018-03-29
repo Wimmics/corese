@@ -1,6 +1,5 @@
 package fr.inria.corese.server.webservice;
 
-import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Graph;
@@ -20,6 +19,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *

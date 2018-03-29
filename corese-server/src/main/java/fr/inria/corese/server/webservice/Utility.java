@@ -1,11 +1,9 @@
 package fr.inria.corese.server.webservice;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
 import fr.inria.corese.core.load.QueryLoad;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+
 import java.io.IOException;
-//import java.nio.charset.StandardCharsets;
-//import java.nio.file.Files;
-//import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 

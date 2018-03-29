@@ -4,16 +4,15 @@
  * and open the template in the editor.
  */
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.net.URI;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -55,14 +54,15 @@ public class SparqlEndpoint {
         logger.info("----------------------------------------------");
 
         //server initialization
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        WebResource service = client.resource(new URI("http://localhost:" + port + "/"));
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(new URI("http://localhost:" + port + "/"));
 
-        MultivaluedMap formData;
-        formData = new MultivaluedMapImpl();
-        formData.add("remote_path", dataPath);
-        service.path("sparql").path("load").post(formData);
+        target
+                .queryParam("remote_path", dataPath)
+                .path("sparql")
+                .path("load")
+                .request()
+                .post(Entity.text(null));
 
         server.join();
 

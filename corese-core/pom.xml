@@ -23,7 +23,6 @@
         <dependency>
             <groupId>fr.com.hp.hpl.jena.rdf.arp</groupId>
             <artifactId>arp</artifactId>
-            <version>2.2.b</version>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
@@ -59,19 +58,22 @@
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sun.jersey</groupId>-->
+            <!--<artifactId>jersey-bundle</artifactId>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sun.jersey</groupId>-->
+            <!--<artifactId>jersey-core</artifactId>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.semarglproject</groupId>
             <artifactId>semargl-core</artifactId>
-            <version>0.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
@@ -95,13 +97,11 @@
         <dependency>
             <groupId>org.semarglproject</groupId>
             <artifactId>semargl-rdfa</artifactId>
-            <version>0.6.1</version>
         </dependency>
         <!-- JSON-LD parser-->
         <dependency>
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
-            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -111,8 +111,37 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-            <version>2.10.0</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- remove the logger backend so that we can use log4j2 backend with slf4j.-->
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
         </dependency>
     </dependencies>
 
@@ -153,7 +182,7 @@
             <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
+                <executions>/
                 <execution>
                     <phase>package</phase>
                     <configuration>

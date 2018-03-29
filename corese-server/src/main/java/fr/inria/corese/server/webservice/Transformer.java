@@ -1,7 +1,5 @@
 package fr.inria.corese.server.webservice;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -23,6 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * HTML SPARQL endpoint 
@@ -97,12 +97,12 @@ public class Transformer {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response queryPOSTHTML_MD(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+            @javax.ws.rs.core.Context HttpServletRequest request,
             @FormDataParam("profile") String profile, // query + transform
-            @FormDataParam("uri") String resource, 
-            @FormDataParam("mode") String mode, 
-            @FormDataParam("param") String param, 
-            @FormDataParam("format") String format, 
+            @FormDataParam("uri") String resource,
+            @FormDataParam("mode") String mode,
+            @FormDataParam("param") String param,
+            @FormDataParam("format") String format,
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value") String value, // values clause that may complement query           

@@ -64,11 +64,15 @@ public class FederateVisitor implements QueryVisitor {
     Selector selector;
     QuerySolver exec;
     Rewrite rew;
+    RewriteTriple rwt;
+    Simplify sim;
     
     public FederateVisitor(QuerySolver e){
         stack = new Stack();
         exec = e;
         rew = new Rewrite(this);
+        rwt = new RewriteTriple(this);
+        sim = new Simplify(this);
     }
     
     /**
@@ -198,7 +202,7 @@ public class FederateVisitor implements QueryVisitor {
             } else if (exp.isTriple()) {
                 // triple t -> service <Si> { t }
                 // copy relevant filters in service
-                Exp res = rewrite(name, exp.getTriple(), body, filterList);
+                Exp res = rwt.rewrite(name, exp.getTriple(), body, filterList);
                 body.set(i, res);
             } else if (exp.isGraph()) {
                 Exp res = rewrite(exp.getNamedGraph());
@@ -210,7 +214,7 @@ public class FederateVisitor implements QueryVisitor {
             else if (exp.isMinus() || exp.isOptional() || exp.isUnion()) {
                 exp = rewrite(name, exp);
                 if (simplify) {
-                    Exp simple = rew.simplify(exp);
+                    Exp simple = sim.simplify(exp);
                     body.set(i, simple);
                 } else {
                     body.set(i, exp);
@@ -231,10 +235,20 @@ public class FederateVisitor implements QueryVisitor {
             expand(body, expandList);
         }
         
+        if (body.isBGP()) {
+            sim.simplifyBGP(body);
+        }
+        
         return body;
     }
     
+     ASTQuery getAST() {
+         return ast;
+     }
      
+     RewriteTriple getRewriteTriple() {
+         return rwt;
+     }
     
    
     Exp rewrite(Source exp) {
@@ -252,7 +266,7 @@ public class FederateVisitor implements QueryVisitor {
         Exp res = exp;
         // send named graph as is to remote servers
         if (ast.getDataset().hasNamed()) {
-            Query q = query(BasicGraphPattern.create(exp));
+            Query q = rwt.query(BasicGraphPattern.create(exp));
             q.getAST().getDataset().setNamed(ast.getNamed());
             res = q;
         }
@@ -335,38 +349,8 @@ public class FederateVisitor implements QueryVisitor {
             }
         }
     }
-    
-    /**
-     * Rewrite Triple t as: 
-     * service <Si> { t }  -- name == null
-     * service <Si> { select * from g1 .. from gn { t }} -- name == null && query = select from g1 .. from gn 
-     * service <Si> { select * from g { t }} -- name == g
-     * Add filters of body bound by t in the BGP, except exists filters.
-     */
-    Service rewrite(Atom name, Triple t, Exp body, List <Exp> list) {
-        BasicGraphPattern bgp = BasicGraphPattern.create();
-        bgp.add(t);
-        filter(body, t, bgp, list);        
-        return rewrite(name, bgp, getServiceList(t));
-    }    
-        
-    Service rewrite(Atom name, BasicGraphPattern bgp, List<Atom> list) { 
-        if (name == null) {
-            // std triple
-            Exp exp = from(name, bgp);
-            Service s = Service.create(list, exp, false);
-            return s;
-        }
-        else {
-            // graph <name> { triple }
-            Query q = query(bgp);
-            q.getAST().getDataset().addFrom(name.getConstant());
-            Exp exp = BasicGraphPattern.create(q);
-            Service s = Service.create(list, exp, false);
-            return s;
-        }
-    }
-          
+     
+         
     List<Atom> getServiceList(Triple t) {
         return getServiceList(t.getPredicate());
     }
@@ -387,25 +371,7 @@ public class FederateVisitor implements QueryVisitor {
         }
         return ast.getServiceList();
     }
-    
-          
-    Exp from(Atom name, Exp exp) {
-        if (ast.getDataset().hasFrom()) {
-            Query q = query(exp);
-            q.getAST().getDataset().setFrom(ast.getFrom());
-            return BasicGraphPattern.create(q);
-        }
-        return exp;
-    }
-    
-    Query query(Exp exp){
-         ASTQuery as = ast.subCreate();
-         as.setBody(exp);
-         as.setSelectAll(true);
-         return Query.create(as);
-    }
-    
-
+           
    
     boolean rewriteFilter(Atom name, Expression exp) {
         boolean exist = false;

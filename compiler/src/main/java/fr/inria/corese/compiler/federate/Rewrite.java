@@ -59,17 +59,23 @@ public class Rewrite {
      */
     void prepare(Atom name, Exp body, List<Exp> filterList) {
         ServiceBGP map = new ServiceBGP();
-        
+        boolean tripleFilter = true;
         // create BGPs for triples that share same service URI
         // create a table service -> BGP
         for (int i = 0; i<body.size(); i++) {
             Exp exp = body.get(i);
-            if (exp.isTriple() && ! exp.isFilter()) {
+            if (exp.isFilter()) {
+                // do nothing
+            }
+            else if (exp.isTriple()) {
                 List<Atom> list = visitor.getServiceList(exp.getTriple());
                 if (list.size() == 1) {
                    BasicGraphPattern bgp = map.get(list.get(0).getLabel());
                    bgp.add(exp);
                 }
+            }
+            else {
+                tripleFilter = false;
             }
         }
                
@@ -95,7 +101,7 @@ public class Rewrite {
                     BasicGraphPattern bgp = table.get(t);
                     if (done.get(bgp) == null ) {                       
                         // service s { bgp }
-                        Service serv = visitor.rewrite(name, bgp, visitor.getServiceList(t));
+                        Service serv = visitor.getRewriteTriple().rewrite(name, bgp, visitor.getServiceList(t));
                         // do it once for first triple of this BGP
                         done.put(bgp, serv);
                         // replace first triple of BGP by service BGP
@@ -110,16 +116,16 @@ public class Rewrite {
             body.getBody().remove(t);
         }
         
-        filter(name, body, done, filterList);
+        filter(name, body, done, filterList, tripleFilter);
     }
     
     
-    void filter(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList) {
+    void filter(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList, boolean tripleFilter) {
         // copy filters from body into BGP who bind all filter variables
         for (Exp exp : body) {
             if (exp.isFilter()) {
                 if (visitor.isRecExist(exp)) {
-                    if (visitor.isExist() && 
+                    if (visitor.isExist() && tripleFilter &&
                             (visitor.isExist(exp) || visitor.isNotExist(exp))) {
                         // draft for testing
                         filterExist(name, body, bgpList, filterList, exp);                       
@@ -152,8 +158,9 @@ public class Rewrite {
      * service URI { BGP  filter exists { EXP } } 
      * 
      * TODO: 
-     * does not work if there were existing services before rewrite
+     * does not work if there were existing service before rewrite
      * because they are not in bgpMap
+     * In this case, this function is not called
      */
     void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
         boolean isNotExist = visitor.isNotExist(filterExist);
@@ -174,7 +181,7 @@ public class Rewrite {
 
                List<BasicGraphPattern> bgpList = new ArrayList<>();
                List<Variable> existVarList = bgpExist.getVariables();
-               List<Variable> intersection = null;
+               List<Variable> previousIntersection = null;
                
                 // select relevant BGP with same URI as exists
                 // If other BGP bind some variables of exists, 
@@ -183,30 +190,29 @@ public class Rewrite {
 
                     Service servBGP = bgpMap.get(bgp);
                     List<Variable> bgpVarList = bgp.getVariables();                  
-                    List<Variable> inter = intersection(existVarList, bgpVarList);
+                    List<Variable> currentIntersection = intersection(existVarList, bgpVarList);
                     
                     if (isDebug()) {
                         System.out.println("R: " + existVarList + " " + bgpVarList);
-                        System.out.println("Intersection: " + inter);
+                        System.out.println("Intersection: " + currentIntersection);
                     }
                     
                     if (servExist.getServiceName().equals(servBGP.getServiceName())) {
-                        if (intersection == null) {
-                             intersection = inter;
-                        }
-                        
-                        if (equal(intersection, inter)) {
+                        if (previousIntersection == null) {
+                             previousIntersection = currentIntersection;
+                        }                        
+                        if (equal(previousIntersection, currentIntersection)) {
                             bgpList.add(bgp);
                         } else {
                             // two BGP intersect differently the exists clause
                             return;
                         }
-                    } 
-                    else // service with another URI
-                    if (!inter.isEmpty()) {
-                        if (intersection == null) {
-                            intersection = inter;
-                        } else if (!equal(intersection, inter)) {
+                    }
+                    // service with another URI
+                    else if (!currentIntersection.isEmpty()) {
+                        if (previousIntersection == null) {
+                            previousIntersection = currentIntersection;
+                        } else if (!equal(previousIntersection, currentIntersection)) {
                             // two BGP intersect differently the exists clause
                             return;
                         }
@@ -261,63 +267,7 @@ public class Rewrite {
             }
         }
         return true;
-    }
-    
-     /**
-     * service s {e1} optional { service s {e2}}
-     * ->
-     * service s { e1 optional {e2} }
-     * and simplifySelectFrom(exp)
-     */
-    Exp simplify(Exp exp) {
-        if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
-            Exp e1 = exp.get(0).get(0);
-            Exp e2 = exp.get(1).get(0);
-            if (e1.isService() && e2.isService()) {
-                Service s1 = e1.getService();
-                Service s2 = e2.getService();
-                if (s1.getServiceList().size() == 1
-                        && s2.getServiceList().size() == 1
-                        && s1.getServiceName().equals(s2.getServiceName())) {
-                    exp.set(0, s1.get(0));
-                    exp.set(1, s2.get(0));
-                    Exp simple = simplifySelectFrom(exp);
-                    Service s = 
-                        Service.create(s1.getServiceName(), 
-                            BasicGraphPattern.create(simple));
-                    return s;
-                }
-            }
-        }
-        return exp;
-    }
-    
-    /**
-     * select from  g { e1 } optional { select from  g { e2 } }
-     * ->
-     * select from  g { e1 optional { e2 } }
-     */
-    Exp simplifySelectFrom(Exp exp) {
-        if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
-            Exp e1 = exp.get(0).get(0);
-            Exp e2 = exp.get(1).get(0);
-            if (e1.isQuery() && e2.isQuery()){
-                ASTQuery ast1 = e1.getQuery();
-                ASTQuery ast2 = e2.getQuery();                
-               if (ast1.getFrom().size() == 1 && 
-                    ast2.getFrom().size() == 1 &&
-                    ast1.getFrom().get(0).equals(ast2.getFrom().get(0))
-                        && ast1.isSelectAll() && ast2.isSelectAll()) {
-                    exp.set(0, ast1.getBody());
-                    exp.set(1, ast2.getBody());
-                    Query q = visitor.query(BasicGraphPattern.create(exp));
-                    q.getAST().getDataset().setFrom(ast1.getFrom());
-                    return q;
-                }
-            }
-        }
-        return exp;       
-    }
+    }     
     
  /**
      * @return the debug

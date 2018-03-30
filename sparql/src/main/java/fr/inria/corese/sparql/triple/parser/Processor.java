@@ -58,7 +58,7 @@ public class Processor {
 	private static final String ISIRI = "isIRI";
 	private static final String ISUNDEF = "isUndefined";
 	public static final String ISWELLFORMED = "isWellFormed";
-	private static final String ISBLANK = "isBlank";
+	public static final String ISBLANK = "isBlank";
 	private static final String ISLITERAL = "isLiteral";
 	private static final String ISLIST = "isList";
 	private static final String ISNUMERIC = "isNumeric";

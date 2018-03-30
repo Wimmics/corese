@@ -57,6 +57,7 @@ public class Metadata extends ASTObject
     public static final String GROUP            = PREF + "group";
     public static final String SIMPLIFY         = PREF + "simplify";
     public static final String EXIST            = PREF + "exist";
+    public static final String SKIP_STR         = PREF + "skip";
     
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";

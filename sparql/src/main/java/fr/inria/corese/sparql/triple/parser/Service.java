@@ -79,6 +79,10 @@ public class Service extends And {
     public boolean isService() {
         return true;
     }
+    
+    public boolean isFederate() {
+        return getServiceList().size() > 1;
+    }
 
     public Atom getServiceName() {
         return uri;

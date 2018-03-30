@@ -34,10 +34,14 @@ public class RewriteTriple {
     }
 
     /**
-     * Rewrite Triple t as: service <Si> { t } -- name == null service <Si> {
-     * select * from g1 .. from gn { t }} -- name == null && query = select from
-     * g1 .. from gn service <Si> { select * from g { t }} -- name == g Add
-     * filters of body bound by t in the BGP, except exists filters.
+     * Rewrite Triple t as: 
+     * -- name == null
+     * service <Si> { t }  
+     * -- name == null && query = select from g1 gn 
+     * service <Si> { graph g1 { t } union graph gn { t } }
+     * -- name == g
+     * service <Si> { graph g { t } }  
+     * Add filters of body bound by t in the BGP, except exists filters.
      */
     Service rewrite(Atom name, Triple t, Exp body, List<Exp> list) {
         BasicGraphPattern bgp = BasicGraphPattern.create();
@@ -46,7 +50,12 @@ public class RewriteTriple {
         return rewrite(name, bgp, vis.getServiceList(t));
     }
 
-    Service rewrite(Atom name, BasicGraphPattern bgp, List<Atom> list) {
+    /**
+     * Two cases:
+     * 1- One triple and several service URI
+     * 2- A BGP and one service URI.
+     */
+    Service rewrite(Atom name, BasicGraphPattern bgp, List<Atom> serviceList) {
         Exp exp;
         if (name == null) {
             if (getAST().getDataset().hasFrom()) {
@@ -59,7 +68,7 @@ public class RewriteTriple {
             // graph name { bgp }
             exp = named(name, bgp);
         }        
-        Service s = Service.create(list, bgp(exp), false);
+        Service s = Service.create(serviceList, bgp(exp), false);
         return s;
     }
     
@@ -72,27 +81,18 @@ public class RewriteTriple {
     
     // graph name { bgp }
     Exp named(Atom name, BasicGraphPattern bgp) {
-        if (withGraph) {
-            return graphNamed(name, bgp);
-        }
-       return selectNamed(name, bgp);
+        return graphNamed(name, bgp);
+    }   
+     
+    // select from where bgp
+    Exp from(BasicGraphPattern bgp) {
+        return graphFrom(bgp.copy());
     }
+    
+    
     
     Exp graphNamed(Atom name, BasicGraphPattern bgp) {
         return Source.create(name, bgp);
-    }
-   
-    Exp selectNamed(Atom name, BasicGraphPattern bgp) {
-        Query q = query(bgp);
-        q.getAST().getDataset().addFrom(name.getConstant());
-        return BasicGraphPattern.create(q);
-    }
-    
-    Exp from(BasicGraphPattern bgp) {
-        if (withGraph) {
-            return graphFrom(bgp.copy());
-        }
-        return selectFrom(bgp);
     }
     
     /**
@@ -141,12 +141,6 @@ public class RewriteTriple {
         return union;
     }
         
-    // select from uri { bgp }
-    Exp selectFrom(BasicGraphPattern bgp) {
-        Query q = query(bgp);
-        q.getAST().getDataset().setFrom(getAST().getFrom());
-        return BasicGraphPattern.create(q);
-    }
 
     Query query(Exp exp) {
         ASTQuery as = getAST().subCreate();
@@ -183,5 +177,17 @@ public class RewriteTriple {
         return vis.getAST();
     }
 
+    Exp selectNamed(Atom name, BasicGraphPattern bgp) {
+        Query q = query(bgp);
+        q.getAST().getDataset().addFrom(name.getConstant());
+        return BasicGraphPattern.create(q);
+    }
+    
+        // select from uri { bgp }
+    Exp selectFrom(BasicGraphPattern bgp) {
+        Query q = query(bgp);
+        q.getAST().getDataset().setFrom(getAST().getFrom());
+        return BasicGraphPattern.create(q);
+    }
 
 }

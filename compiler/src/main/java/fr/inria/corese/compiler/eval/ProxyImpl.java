@@ -50,6 +50,7 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
+@Deprecated
 public class ProxyImpl implements Proxy, ExprType {
 
     private static final String URN_UUID = "urn:uuid:";

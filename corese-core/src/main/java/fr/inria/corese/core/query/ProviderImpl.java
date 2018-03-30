@@ -31,6 +31,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -170,11 +171,12 @@ public class ProviderImpl implements Provider {
 
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean hasValues = ast.getValues() != null;
+        boolean skipBind = ast.getGlobalAST().hasMetadata(Metadata.BIND, Metadata.SKIP_STR);
         Mappings res = null;
 
-        if (map == null || slice == 0 || hasValues) {
+        if (map == null || slice == 0 || hasValues || skipBind) {
             // if query has its own values {}, do not include Mappings
-            return basicSend(g, compiler, serv, q, exp, map, env, 0, 0);
+            return basicSend(g, compiler, serv, q, exp, (skipBind)?null:map, env, 0, 0);
         }         
         else {          
             res = sliceSend(g, compiler, serv, q, exp, map, env, slice);            

@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.List;
 
 public class CompileService {
@@ -175,7 +176,7 @@ public class CompileService {
 
             Mapping m = map.get(j);
             boolean ok = false;
-            lval = new ArrayList<Constant>();
+            lval = new ArrayList<>();
 
             for (Node qnode : q.getBody().getRecordInScopeNodes()) {
                 Node val = m.getNode(qnode);
@@ -278,23 +279,20 @@ public class CompileService {
     Term getFilter(Query q, Mapping m) {
         ArrayList<Term> lt = new ArrayList<Term>();
 
-        //for (Node varNode : q.getSelect()) {
         for (Node varNode : q.getBody().getRecordInScopeNodes()) {
             String varName = varNode.getLabel();
             Node valNode = m.getNode(varName);
-            if (valNode != null && ! valNode.isBlank()) {
+            if (valNode != null) { // && ! valNode.isBlank()) {
                 // do not send bnode because it will raise a syntax error
                 // and it will not be available on another server because 
                 // bnode are local
                 // wish: select Mapping with unique(varNode, valNode)
-                Variable var = Variable.create(varName);
-                Constant val = Constant.create((IDatatype) valNode.getDatatypeValue());
-                Term t       = Term.create(Term.SEQ, var, val);
+                Term t = filter(Variable.create(varName), (IDatatype) valNode.getDatatypeValue()); 
                 lt.add(t);
             }
         }
         
-        if (lt.size() > 0) { // && accept(lt)) {
+        if (lt.size() > 0) { 
             submit(lt);
             Term f = lt.get(0);
 
@@ -304,6 +302,20 @@ public class CompileService {
             return f;
         }
         return null;
+    }
+        
+    /**
+     * Generate filter var = val
+     * except when val is a bnode, in this case: isBlank(var)
+     * because there is no mean to retrieve a specific bnode in a remote server
+     * hence, the service query will get all bnodes (!) and the local join will do the job
+     * of selecting the right bnodes according to current partial solution where we have the bnode val
+     */
+    Term filter(Variable var, IDatatype dt) {
+        if (dt.isBlank()) {
+            return Term.function(Processor.ISBLANK, var);
+        }
+        return Term.create(Term.SEQ, var, Constant.create(dt));
     }
     
     /**

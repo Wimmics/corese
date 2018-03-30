@@ -54,7 +54,7 @@ public class Simplify {
         ServiceList map = new ServiceList();
         
         for (Exp exp : bgp) {
-            if (exp.isService()) {
+            if (exp.isService() && ! exp.getService().isFederate()) {
                 map.add(exp.getService());
             }
         }

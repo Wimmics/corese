@@ -9,13 +9,21 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import org.apache.logging.log4j.Logger;
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler.Context;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 /**
  *
@@ -40,14 +48,17 @@ public class SparqlEndpoint {
     }
 
     public void createServer() throws Exception {
+        URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
+//        ResourceConfig config = new ResourceConfig(MyResource.class);
+        Server server = JettyHttpContainerFactory.createServer(baseUri, false);
 
         ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
         jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
         jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
         jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
-        Context servletCtx = new Context(server, "/", Context.SESSIONS);
-        servletCtx.addServlet(jerseyServletHolder, "/*");
+        ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/*");
+        servletContextHandler.addServlet(jerseyServletHolder, "/*");
         server.start();
         logger.info("----------------------------------------------");
         logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/");
@@ -57,13 +68,11 @@ public class SparqlEndpoint {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(new URI("http://localhost:" + port + "/"));
 
-        target
-                .queryParam("remote_path", dataPath)
-                .path("sparql")
-                .path("load")
-                .request()
-                .post(Entity.text(null));
-
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        formData.add("remote_path", dataPath);
+        target.path("sparql").path("load")
+                .request(APPLICATION_FORM_URLENCODED_TYPE)
+                .post(Entity.form(formData));
         server.join();
 
     }

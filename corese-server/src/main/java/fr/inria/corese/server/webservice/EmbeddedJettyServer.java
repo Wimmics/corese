@@ -4,18 +4,6 @@
  */
 package fr.inria.corese.server.webservice;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,18 +17,45 @@ import org.apache.commons.vfs.FileDepthSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.glassfish.jersey.client.ClientConfig;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.servlet.ServletContainer;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 /**
  * Embedded HTTP server for Corese, Using Jetty implementation
@@ -55,7 +70,8 @@ import org.glassfish.jersey.servlet.ServletContainer;
  * @author Fuqi Song Inria 2015
  * @author Olivier Corby Inria 2015-2016
  */
-public class EmbeddedJettyServer {
+@ApplicationPath("resources")
+public class EmbeddedJettyServer extends ResourceConfig {
 
     private static Logger logger = null;
     static int port = 8080;
@@ -75,9 +91,15 @@ public class EmbeddedJettyServer {
     private static String keystore, password;
 
     public static URI resourceURI;
-    public static String HOME_PAGE = null;
+    public static String HOME_PAGE;
     private static boolean isLocalHost;
     private static boolean debug = false;
+
+    public static String BASE_URI;
+
+    public EmbeddedJettyServer() {
+        packages("fr.inria.corese.server.webservice");
+    }
 
     public static void main(String args[]) throws Exception {
 
@@ -196,36 +218,49 @@ public class EmbeddedJettyServer {
                 setDebug(true);
             }
 
-            Server server = new Server(port);
+//            final ResourceConfig resourceConfig = new ResourceConfig(Transformer.class);
+//            resourceConfig.register(SPARQLRestAPI.class);
+//            resourceConfig.register(MultiPartFeature.class);
+//
+//            ServletContainer servletContainer = new ServletContainer(resourceConfig);
+//            ServletHolder jerseyServletHolder = new ServletHolder(servletContainer);
+////            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+////            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
+//            jerseyServletHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "fr.inria.corese.server.webservice");
+//            jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
+//            jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
+//            Context servletCtx = new Context(server, "/", Context.SESSIONS);
+//            servletCtx.addServlet(jerseyServletHolder, "/*");
 
-            ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
-            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-            jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
-            jerseyServletHolder.setInitParameter("requestBufferSize", "8192");
-            jerseyServletHolder.setInitParameter("headerBufferSize", "8192");
-            Context servletCtx = new Context(server, "/", Context.SESSIONS);
-            servletCtx.addServlet(jerseyServletHolder, "/*");
+            URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
+            BASE_URI = baseUri.toString();
+            logger.info("BASE_URI = {}", BASE_URI);
+
             logger.info("----------------------------------------------");
             logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/sparql");
 
-            URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
-            logger.info("Webapp dir: " + webappUri);
+            Server server = JettyHttpContainerFactory.createServer(baseUri, false);
+            ContextHandlerCollection root = new ContextHandlerCollection();
+            server.setHandler(root);
+
+            // Configure the ResourceHandler. Setting the resource base indicates where the files should be served out of.
             ResourceHandler resource_handler = new ResourceHandler();
             resource_handler.setWelcomeFiles(new String[]{HOME_PAGE, "index.html"});
+            URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
+            logger.info("Webapp dir: " + webappUri);
             resource_handler.setResourceBase(webappUri.getRawPath());
-            ContextHandler staticContextHandler = new ContextHandler();
-            staticContextHandler.setContextPath("/");
+
+            ContextHandler staticContextHandler = new ContextHandler(root, "/");
             staticContextHandler.setHandler(resource_handler);
             logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
             logger.info("----------------------------------------------");
 
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(new Handler[]{staticContextHandler, servletCtx});
-            server.setHandler(handlers);
+//            Server server = JettyHttpContainerFactory.createServer(baseUri, config, false);
 
             // === SSL Connector begin ====
             if (enableSsl) {
-                SslSocketConnector sslConnector = new SslSocketConnector();
+                SslContextFactory sslContextFactory = new SslContextFactory();
+              /*  SslSocketConnector sslConnector = new SslSocketConnector();
                 sslConnector.setPort(portSsl);
                 sslConnector.setServer(server);
                 sslConnector.setKeystore(webappUri.getRawPath() + "/keystore/" + keystore);
@@ -234,39 +269,63 @@ public class EmbeddedJettyServer {
                 sslConnector.setTruststore(webappUri.getRawPath() + "/keystore/" + keystore);
                 sslConnector.setTrustPassword(password);
 
-                server.addConnector(sslConnector);
+                server.addConnector(sslConnector);*/
+
+                HttpConfiguration httpsConfiguration = new HttpConfiguration();
+                httpsConfiguration.setSecureScheme("https");
+//                httpsConfiguration.addCustomizer(src);
+                ServerConnector https = new ServerConnector(server,
+                        new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
+                        new HttpConnectionFactory(httpsConfiguration));
+                https.setPort(portSsl);
+                server.setConnectors(new Connector[] { https });
+
                 logger.info("Corese SSL connection https://localhost:" + portSsl);
             }
             // === SSL Connector end ====
 
-            server.start();
+            ResourceConfig config = new ResourceConfig(
+                    SPARQLRestAPI.class
+                    , SrvWrapper.class
+                    , LdpRequestAPI.class
+                    , SPIN.class
+                    , MultiPartFeature.class
+                    , SDK.class
+                    , Tutorial.class
+            );
+            ServletContainer servletContainer = new ServletContainer(config);
+            ServletHolder servletHolder = new ServletHolder(servletContainer);
+            ServletContextHandler servletContextHandler = new ServletContextHandler(root, "/*");
+            servletContextHandler.addServlet(servletHolder, "/*");
 
+
+            server.start();
             // server initialization
             Client client = ClientBuilder.newClient();
-            // WebResource service = client.resource(new URI("http://localhost:" + port+"/kgram"));
             WebTarget target = client.target(new URI("http://localhost:" + port + "/"));
-            WebTarget resetTarget = target
-                    .queryParam("entailments", Boolean.toString(entailments))
-                    .queryParam("owlrl", Boolean.toString(owlrl))
-                    .queryParam("load", Boolean.toString(loadProfileData));
+            MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+            formData.add("entailments", Boolean.toString(entailments));
+            formData.add("owlrl", Boolean.toString(owlrl));
+            formData.add("load", Boolean.toString(loadProfileData));
             if (localProfile != null) {
-                resetTarget = resetTarget.queryParam("profile", localProfile);
+                formData.add("profile", localProfile);
             }
             if (isLocalHost) {
-                resetTarget = resetTarget.queryParam("localhost", "true");
+                formData.add("localhost", "true");
             }
-            resetTarget.path("sparql").path("reset").request().post(Entity.text(null));
+            target.path("sparql").path("reset")
+                    .request(APPLICATION_FORM_URLENCODED_TYPE)
+                    .post(Entity.form(formData));
 
             if (dataPaths != null) {
                 for (String dataPath : dataPaths) {
                     String[] lp = dataPath.split(";");
                     for (String p : lp) {
-                        target
-                                .queryParam("remote_path", p)
-                                .path("sparql")
-                                .path("load")
-                                .request()
-                                .post(Entity.text(null));
+                        formData.clear();
+                        formData.add("remote_path", p);
+                        target.path("sparql").path("load")
+                                .request(APPLICATION_FORM_URLENCODED_TYPE)
+                                .post(Entity.form(formData));
                     }
                 }
             }

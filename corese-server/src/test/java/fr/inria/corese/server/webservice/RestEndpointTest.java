@@ -13,24 +13,21 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.glassfish.jersey.client.ClientConfig;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+
+
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
  *
@@ -50,10 +47,19 @@ public class RestEndpointTest {
 
         URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
         server = new Server(port);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        ServletHolder jerseyServlet = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
+        jerseyServlet.setInitOrder(1);
+        jerseyServlet.setInitParameter("jersey.config.server.provider.packages","rest");
+        context.setContextPath("/");
+        context.setServer(server);
 
         ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
         jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
+
+
+
         Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
         servletCtx.addServlet(jerseyServletHolder, "/*");
         logger.info("----------------------------------------------");

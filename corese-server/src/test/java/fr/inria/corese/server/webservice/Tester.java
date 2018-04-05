@@ -6,12 +6,18 @@ import fr.inria.corese.core.load.Service;
 
 import static fr.inria.corese.core.load.Service.QUERY;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +26,32 @@ import static org.junit.Assert.assertEquals;
  */
 public class Tester {
     private boolean isDebug;
+    private static Process server;
 
+    @BeforeClass
+    public static void init() throws InterruptedException, IOException {
+        System.out.println("starting");
+        server = Runtime.getRuntime().exec(new String[] {
+                "/usr/bin/java",
+                "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
+                "-lh",
+                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl"
+        } );
+//        BufferedReader input =
+//                new BufferedReader
+//                        (new InputStreamReader(server.getInputStream()));
+//        String line;
+//        while ((line = input.readLine()) != null) {
+//            System.out.println(line);
+//        }
+//        input.close();
+        Thread.sleep(5000);
+    }
+
+    @AfterClass
+    public static void shutdown(){
+        server.destroy();
+    }
 
     @Test
     public void test() throws LoadException {
@@ -37,7 +68,7 @@ public class Tester {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(service);
         String res = target.queryParam("profile", "st:dbedit").request().get(String.class);
-        assertEquals(true, res.length() > 22000);
+        assertEquals(true, res.length() > 17000);
         assertEquals(true, res.contains("Front yougoslave de la Seconde Guerre mondiale"));
         System.out.println(res.length());
     }

@@ -292,6 +292,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
                     , MultiPartFeature.class
                     , SDK.class
                     , Tutorial.class
+                    , Transformer.class
+                    , Processor.class
             );
             ServletContainer servletContainer = new ServletContainer(config);
             ServletHolder servletHolder = new ServletHolder(servletContainer);

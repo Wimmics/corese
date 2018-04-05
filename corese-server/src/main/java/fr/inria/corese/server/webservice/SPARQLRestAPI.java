@@ -1,21 +1,11 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.print.CSVFormat;
-import fr.inria.corese.core.print.JSOND3Format;
-import fr.inria.corese.core.print.JSONFormat;
-import fr.inria.corese.core.print.JSONLDFormat;
-import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.core.print.TSVFormat;
-import fr.inria.corese.core.print.TripleFormat;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -27,12 +17,25 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.CSVFormat;
+import fr.inria.corese.core.print.JSOND3Format;
+import fr.inria.corese.core.print.JSONFormat;
+import fr.inria.corese.core.print.JSONLDFormat;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.TSVFormat;
+import fr.inria.corese.core.print.TripleFormat;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.

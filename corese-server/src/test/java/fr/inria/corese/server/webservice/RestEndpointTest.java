@@ -6,6 +6,7 @@ package fr.inria.corese.server.webservice;
  */
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,21 +14,38 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.glassfish.jersey.uri.UriComponent;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -45,7 +63,7 @@ public class RestEndpointTest {
     @BeforeClass
     public static void setUpClass() throws FileSystemException, URISyntaxException, Exception {
 
-        URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
+        URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", false);
         server = new Server(port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         ServletHolder jerseyServlet = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
@@ -54,13 +72,21 @@ public class RestEndpointTest {
         context.setContextPath("/");
         context.setServer(server);
 
-        ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "fr.inria.corese.server.webservice");
+        ResourceConfig config = new ResourceConfig(
+                SPARQLRestAPI.class
+                , SrvWrapper.class
+                , LdpRequestAPI.class
+                , SPIN.class
+                , MultiPartFeature.class
+                , SDK.class
+                , Tutorial.class
+                , Transformer.class
+                , Processor.class
+        );
+        ServletContainer servletContainer = new ServletContainer(config);
+        ServletHolder jerseyServletHolder = new ServletHolder(servletContainer);
 
-
-
-        Context servletCtx = new Context(server, "/kgram", Context.SESSIONS);
+        ServletContextHandler servletCtx = new ServletContextHandler(server, "/kgram", ServletContextHandler.SESSIONS);
         servletCtx.addServlet(jerseyServletHolder, "/*");
         logger.info("----------------------------------------------");
         logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/kgram");
@@ -105,7 +131,7 @@ public class RestEndpointTest {
     }
 
     @Test
-    public void query() throws URISyntaxException, MalformedURLException, IOException {
+    public void query() throws URISyntaxException, MalformedURLException, IOException, ParserConfigurationException, SAXException {
 
         String query = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
                 + "SELECT distinct ?x ?p ?y WHERE"
@@ -117,18 +143,26 @@ public class RestEndpointTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
-        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData)).toString());
 
-        target
-                .queryParam("remote_path", "http://nyx.unice.fr/~gaignard/data/neurolog.rdf")
-                .path("sparql").path("load").request().post(Entity.text(null));
-//        formData.add("remote_path", "/Users/gaignard/Desktop/bsbmtools-0.2/dataset.ttl");
-        System.out.println(target.path("sparql").queryParam("query", query).request().accept("application/sparql-results+xml").get(String.class));
+        formData.add("remote_path", "http://nyx.unice.fr/~gaignard/data/neurolog.rdf");
+        target.path("sparql").path("load").request().post(Entity.form(formData));
+        String xmlAnswer = target
+                        .path("sparql")
+                        .queryParam("query", UriComponent.encode(query, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                        .request()
+                        .accept("application/sparql-results+xml")
+                        .get(String.class);
+        Document doc = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(new InputSource(new StringReader(xmlAnswer)));
+        assertEquals(doc.getElementsByTagName("result").getLength(), 10);
 //        System.out.println(service.path("sparql").queryParam("query", query).accept("application/json").get(String.class));
     }
 
     @Test
-    public void update() throws URISyntaxException, MalformedURLException, IOException {
+    public void update() throws URISyntaxException, MalformedURLException, IOException, InterruptedException {
 
         String insertData1 = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
                 + "INSERT DATA\n"
@@ -145,22 +179,32 @@ public class RestEndpointTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
-        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData), String.class).toString());
 
         //First POST of the SPARQL protocol
+        formData.add("query", UriComponent.encode(insertData1, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED));
         target
-                .queryParam("update", insertData1)
-                .path("sparql").path("update").request().post(Entity.text(null));
-        System.out.println(target.path("sparql").queryParam("query", count).request("application/sparql-results+xml").get(String.class));
+                .path("sparql")
+                .queryParam("query", UriComponent.encode(insertData1, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                .request("application/sparql-results+xml")
+                .get(String.class);
+        System.out.println(
+                target.path("sparql")
+                        .queryParam("query", UriComponent.encode(count, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                        .request("application/sparql-results+xml")
+                        .get(String.class)
+        );
 
         //Second POST of the SPARQL protocol
         target.path("sparql").path("update").request("application/sparql-update").post(Entity.text(insertData2));
         System.out.println(target
                 .path("sparql")
-                .queryParam("query", count)
-                .request()
+                .queryParam("query", UriComponent.encode(count, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                .request(APPLICATION_FORM_URLENCODED_TYPE)
                 .accept("application/sparql-results+xml")
-                .get(String.class));
+                .get(String.class)
+        );
     }
 
     @Test
@@ -181,19 +225,32 @@ public class RestEndpointTest {
         String allWithGraph = "SELECT * WHERE {GRAPH ?g {?x ?p ?y}}";
 
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
+        WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port ) + "/kgram");
 
-        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class).toString());
-        target.queryParam("entailments", "true");
-        System.out.println(target.path("sparql").path("reset").request().post(Entity.text(null), String.class));
+        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(null).toString());
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        formData.add("entailments", "true");
+        System.out.println(target.path("sparql").path("reset").request().post(Entity.form(formData)));
 
 
         //First POST of the SPARQL protocol
-        target.path("sparql").path("update").request("application/x-www-form-urlencoded").post(Entity.text(null));
-        System.out.println(target.path("sparql").queryParam("query", allWithGraph).request("application/sparql-results+xml").get(String.class));
+        target.path("sparql").path("update").request("application/x-www-form-urlencoded").post(null);
+        System.out.println(
+                target.path("sparql")
+                        .queryParam("query", UriComponent.encode(allWithGraph, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                        .request("application/sparql-results+xml")
+                        .get(String.class)
+        );
 
 
         String selectBook = "SELECT * WHERE {GRAPH ?g {?x ?p ?y}}";
-        System.out.println(target.path("sparql").queryParam("query", selectBook).queryParam("named-graph-uri", "http://secondStore").request("application/sparql-results+xml").get(String.class));
+        System.out.println(
+                target
+                        .path("sparql")
+                        .queryParam("query", UriComponent.encode(allWithGraph, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED))
+                        .queryParam("named-graph-uri", "http://secondStore")
+                        .request("application/sparql-results+xml")
+                        .get(String.class)
+        );
     }
 }

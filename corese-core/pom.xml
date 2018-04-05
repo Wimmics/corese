@@ -58,10 +58,6 @@
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.sun.jersey</groupId>-->
-            <!--<artifactId>jersey-bundle</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>

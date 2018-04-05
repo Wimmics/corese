@@ -45,7 +45,7 @@ public class SPIN {
     @Produces("text/html")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("tospin")
-    public Response toSPINPOST_MD(@FormDataParam("query") String query) {
+    public Response toSPINPOST_MD(@FormParam("query") String query) {
         return toSPIN(query);
     }
 
@@ -94,7 +94,7 @@ public class SPIN {
     @Produces("text/html")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("tosparql")
-    public Response toSPARQLPOST_MD(@FormDataParam("query") String query) {
+    public Response toSPARQLPOST_MD(@FormParam("query") String query) {
         return toSPARQL(query);
     }
 

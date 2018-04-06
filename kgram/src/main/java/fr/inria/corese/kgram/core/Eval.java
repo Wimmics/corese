@@ -1485,7 +1485,10 @@ public class Eval implements ExpType, Plugin {
             // bound in map1, otherwise it would generate duplicates in map2
             // or impose irrelevant bindings 
             Mappings map1dist = set1.getMappings().distinct(nodeListInScope);
-            if (exp.isJoin() || memory.getQuery().isFederate()) {
+            if (exp.isJoin() 
+                    || memory.getQuery().isFederate() // everybody is a service 
+                    || rest.size() == 1 && rest.get(0).isService() // rest is a service
+               ) {
                 // service clause in rest may take Mappings into account
                 // select distinct map1 wrt map2 inscope nodes  
                 exp.rest().setMappings(map1dist);

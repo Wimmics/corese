@@ -305,4 +305,21 @@ public class BasicGraphPattern extends And {
     	return exp;
     }
     
+    public boolean isConnected(Triple t) {
+        for (Exp exp : this) {
+            if (exp.isTriple() && !  exp.isFilter()) {
+                if (exp.getTriple().isConnected(t)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public void include(BasicGraphPattern bgp) {
+        for (Exp exp : bgp) {
+            add(exp);
+        }
+    }
+    
 }

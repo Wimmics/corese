@@ -178,13 +178,16 @@ public class Triple extends Exp {
 		return true;
 	}
         
-        public boolean connected(Triple t){
-            for (int i = 0; i<3; i++) {
-                for (int j = 0; j<3; j++){
+        public boolean isConnected(Triple t){
+            for (int i = 0; i<2; i++) {
+                for (int j = 0; j<2; j++){
                     if (getTerm(i).equals(t.getTerm(j))) {
                         return true;
                     }
                 }
+            }
+            if (getPredicate().isVariable() && t.getPredicate().isVariable()) {
+                return getPredicate().equals(t.getPredicate());
             }
             return false;
         }

@@ -352,7 +352,26 @@ public class FederateVisitor implements QueryVisitor {
      
          
     List<Atom> getServiceList(Triple t) {
+        if (t.isPath()){
+            return getServiceListPath(t);
+        }
         return getServiceList(t.getPredicate());
+    }
+    
+    List<Atom> getServiceListPath(Triple t) {
+        List<Atom> serviceList = new ArrayList<>();
+        for (Constant p : t.getRegex().getPredicateList()) {
+            for (Atom serv : getServiceList(p)) {
+                add(serviceList, serv);
+            }
+        }
+        return serviceList;
+    }
+    
+    void add(List<Atom> list, Atom at) {
+        if (! list.contains(at)) {
+            list.add(at);
+        }
     }
     
     List<Atom> getServiceList(Atom p) {

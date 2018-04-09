@@ -289,6 +289,15 @@ public class Expression extends TopExp
     public boolean isAnd() {
         return false;
     }
+    
+    public List<Constant> getPredicateList() {
+        List<Constant> list = new ArrayList<>();
+        getPredicateList(list);
+        return list;
+    }
+    
+    void getPredicateList(List<Constant> list) {       
+    }
 
     @Override
     public boolean isSeq() {

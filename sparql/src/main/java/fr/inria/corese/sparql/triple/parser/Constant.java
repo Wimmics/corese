@@ -468,6 +468,13 @@ public class Constant extends Atom {
     }
     
     @Override
+    void getPredicateList(List<Constant> list) {
+        if (! list.contains(this)) {
+            list.add(this);
+        }
+    }
+    
+    @Override
      public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
         return dt;
     }

@@ -763,6 +763,20 @@ public class Term extends Expression {
         }
         return false;
     }
+    
+    @Override
+    void getPredicateList(List<Constant> list) {
+        if (isNot()) {
+            Constant cst = Constant.createResource(ASTQuery.getRootPropertyURI());
+            if (! list.contains(cst)) {
+                list.add(cst);
+            }
+        } else {
+            for (Expression exp : getArgs()) {
+                exp.getPredicateList(list);
+            }
+        }
+    }
 
     @Override
     public boolean isSeq() {

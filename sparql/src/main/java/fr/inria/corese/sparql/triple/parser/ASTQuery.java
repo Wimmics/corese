@@ -1884,7 +1884,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     }
     
     void submit(Triple t) {
-        if (t.getPredicate().isConstant()) {
+        if (t.isPath()) {
+            for (Constant pred : t.getRegex().getPredicateList()) {
+                submit(pred);
+            }
+        }
+        else if (t.getPredicate().isConstant()) {
             submit(t.getPredicate().getConstant());
         }
     }
@@ -1956,7 +1961,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         exp.setShort(isShort);
         t.setRegex(exp);
         t.setMode(mode);
-
+        submit(t);
         return t;
 
     }

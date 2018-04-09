@@ -22,29 +22,40 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-@Deprecated
-public class Rewrite {
+public class RewriteBGP {
    
     FederateVisitor visitor;
     private boolean debug = false;
     
-    Rewrite(FederateVisitor vis) {
+    RewriteBGP(FederateVisitor vis) {
         visitor = vis;
     }
     
+    /**
+     * service -> List of connected BGP
+     */
      class ServiceBGP {
-        HashMap<String, BasicGraphPattern> map = new HashMap<>();
+        HashMap<String, List<BasicGraphPattern>> map = new HashMap<>();
         
-        BasicGraphPattern get(String label){
-            BasicGraphPattern bgp = map.get(label);
-            if (bgp == null) {
-                bgp = BasicGraphPattern.create();
-                map.put(label, bgp);
+        List<BasicGraphPattern> get(String label){
+            List<BasicGraphPattern> bgpList = map.get(label);
+            if (bgpList == null) {
+                bgpList = new ArrayList<>();
+                map.put(label, bgpList);
             }
-            return bgp;
+            return bgpList;
         }
         
-        HashMap<String, BasicGraphPattern> getMap() {
+        void add(String label, BasicGraphPattern bgp) {
+            List<BasicGraphPattern> bgpList = map.get(label);
+            if (bgpList == null) {
+                bgpList = new ArrayList<>();
+                map.put(label, bgpList);
+            }
+            bgpList.add(bgp);
+        }
+        
+        HashMap<String, List<BasicGraphPattern>> getMap() {
             return map;
         }      
        
@@ -69,10 +80,10 @@ public class Rewrite {
                 // do nothing
             }
             else if (exp.isTriple()) {
-                List<Atom> list = visitor.getServiceList(exp.getTriple());
+                Triple triple = exp.getTriple();
+                List<Atom> list = visitor.getServiceList(triple);
                 if (list.size() == 1) {
-                   BasicGraphPattern bgp = map.get(list.get(0).getLabel());
-                   bgp.add(exp);
+                   process(map, triple, list.get(0));
                 }
             }
             else {
@@ -84,9 +95,11 @@ public class Rewrite {
         HashMap<BasicGraphPattern, Service> done  = new HashMap<>();
         
         // record triples that are member of created BGPs
-        for (BasicGraphPattern bgp : map.getMap().values()) {
-            for (Exp exp : bgp) {
-                table.put(exp.getTriple(), bgp);
+        for (List<BasicGraphPattern> list : map.getMap().values()) {
+            for (BasicGraphPattern bgp : list) {
+                for (Exp exp : bgp) {
+                    table.put(exp.getTriple(), bgp);
+                }
             }
         }
         
@@ -116,6 +129,60 @@ public class Rewrite {
         }
         
         filter(name, body, done, filterList, tripleFilter);
+    }
+    
+    /**
+     * Add triple in appropriate serv -> (BGP)
+     */
+    void process2(ServiceBGP map, Triple triple, Atom serv) {
+        List<BasicGraphPattern> bgpList = map.get(serv.getLabel());
+        if (bgpList.isEmpty()) {
+            bgpList.add(BasicGraphPattern.create());
+        }
+        bgpList.get(0).add(triple);
+    }
+
+    /**
+     * Add triple in appropriate BGP in serv -> (BGP1 , BGPn)
+     * where triple is connected to BGP
+     * merge BGPs that are connected with triple.
+     */
+    void process(ServiceBGP map, Triple triple, Atom serv) {
+        List<BasicGraphPattern> bgpList = map.get(serv.getLabel());
+        boolean isConnected = false;
+        int i = 0;
+        
+        // find a connected BGP
+        for (BasicGraphPattern bgp : bgpList) {
+            if (bgp.isConnected(triple)) {
+                bgp.add(triple);
+                isConnected = true;
+                break;
+            }
+            i++;
+        }
+        
+        if (isConnected) {
+            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
+            
+            // if  another BGP is connected to triple
+            // include it into the first BGP
+            for (int j = i+1; j < bgpList.size(); j++) {
+                if (bgpList.get(j).isConnected(triple)) {
+                    bgpList.get(i).include(bgpList.get(j));
+                    toRemove.add(bgpList.get(j));
+                }
+            }
+            
+            // remove BGPs that have been included
+            for (BasicGraphPattern bgp : toRemove) {
+                bgpList.remove(bgp);
+            }
+        }
+        else {
+            // new BGP because triple is connected to nobody
+            bgpList.add(BasicGraphPattern.create(triple));
+        }
     }
     
     

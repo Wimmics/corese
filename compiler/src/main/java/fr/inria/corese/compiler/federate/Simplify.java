@@ -55,7 +55,13 @@ public class Simplify {
         
         for (Exp exp : bgp) {
             if (exp.isService() && ! exp.getService().isFederate()) {
-                map.add(exp.getService());
+                if (isTripleOnly(exp.get(0))) {
+                    // do not merge basic BGP with same service URI
+                    // because they are not connected 
+                }
+                else {
+                    map.add(exp.getService());
+                }
             }
         }
         
@@ -78,7 +84,14 @@ public class Simplify {
         return bgp;
     }
     
-    
+    boolean isTripleOnly(Exp exp) {
+        for (Exp ee : exp) {
+            if (! ee.isTriple()) {
+                return false;
+            }
+        }
+        return true;
+    }
     
       /**
      * service s {e1} optional { service s {e2}}

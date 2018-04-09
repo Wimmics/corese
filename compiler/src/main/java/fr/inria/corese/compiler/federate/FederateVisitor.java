@@ -63,14 +63,14 @@ public class FederateVisitor implements QueryVisitor {
     Stack stack;
     Selector selector;
     QuerySolver exec;
-    Rewrite rew;
+    RewriteBGP rew;
     RewriteTriple rwt;
     Simplify sim;
     
     public FederateVisitor(QuerySolver e){
         stack = new Stack();
         exec = e;
-        rew = new Rewrite(this);
+        rew = new RewriteBGP(this);
         rwt = new RewriteTriple(this);
         sim = new Simplify(this);
     }

@@ -93,14 +93,19 @@ public class Selector {
         int i = 0;
         
         for (Constant p : ast.getPredicateList()) {
-            Variable s = Variable.create("?s");
-            Variable o = Variable.create("?o");
-            Triple t   = aa.triple(s, p, o);
-            BasicGraphPattern bb = BasicGraphPattern.create(t);
-            Variable var = Variable.create("?b" + i++);      
-            Binding exist = Binding.create(aa.createExist(bb, false), var);
-            bgp.add(exist);
-            declare(p, var);
+            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
+                
+            }
+            else {
+                Variable s = Variable.create("?s");
+                Variable o = Variable.create("?o");
+                Triple t   = aa.triple(s, p, o);
+                BasicGraphPattern bb = BasicGraphPattern.create(t);
+                Variable var = Variable.create("?b" + i++);      
+                Binding exist = Binding.create(aa.createExist(bb, false), var);
+                bgp.add(exist);
+                declare(p, var);
+            }
         }
                 
         Variable serv = Variable.create(SERVER_VAR);

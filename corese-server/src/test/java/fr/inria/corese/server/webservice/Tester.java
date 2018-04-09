@@ -30,21 +30,13 @@ public class Tester {
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
-        System.out.println("starting");
-        server = Runtime.getRuntime().exec(new String[] {
+        System.out.println("starting in "+ System.getProperty("user.dir"));
+        server = new ProcessBuilder().inheritIO().command(
                 "/usr/bin/java",
-                "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
+                "-jar","./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
                 "-lh",
                 "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl"
-        } );
-//        BufferedReader input =
-//                new BufferedReader
-//                        (new InputStreamReader(server.getInputStream()));
-//        String line;
-//        while ((line = input.readLine()) != null) {
-//            System.out.println(line);
-//        }
-//        input.close();
+        ).start();
         Thread.sleep(5000);
     }
 

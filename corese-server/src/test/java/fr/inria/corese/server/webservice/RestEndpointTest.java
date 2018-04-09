@@ -180,7 +180,8 @@ public class RestEndpointTest {
         WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port + "/kgram"));
 
         MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData), String.class).toString());
+        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData)).toString());
+
 
         //First POST of the SPARQL protocol
         formData.add("query", UriComponent.encode(insertData1, UriComponent.Type.QUERY_PARAM_SPACE_ENCODED));
@@ -227,8 +228,8 @@ public class RestEndpointTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(new URI("http://localhost:" + RestEndpointTest.port ) + "/kgram");
 
-        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(null).toString());
         MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+        System.out.println(target.path("sparql").path("reset").request(APPLICATION_FORM_URLENCODED_TYPE).post(Entity.form(formData), String.class).toString());
         formData.add("entailments", "true");
         System.out.println(target.path("sparql").path("reset").request().post(Entity.form(formData)));
 

@@ -10,9 +10,8 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.core.approximate.algorithm.ISimAlgorithm;
 import fr.inria.corese.core.approximate.algorithm.SimAlgorithmFactory;
-
+import static fr.inria.corese.core.approximate.algorithm.Utils.format;
 import static fr.inria.corese.core.approximate.algorithm.Utils.msg;
-
 import fr.inria.corese.core.approximate.algorithm.impl.BaseAlgorithm;
 import fr.inria.corese.core.query.PluginImpl;
 
@@ -48,12 +47,12 @@ public class AppxSearchPlugin implements ExprType {
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
         IDatatype[] param = (IDatatype[]) args;
         switch (exp.oper()) {
-
+            
             case APPROXIMATE:
                 msg("[Eval appx ... ]: " + exp);
                 //0. check parameters
                 return eval(exp, env, param);
-
+                
             default:
                 return null;
         }
@@ -62,7 +61,7 @@ public class AppxSearchPlugin implements ExprType {
     // Use approximate as a filter function
     private IDatatype match(IDatatype dt1, IDatatype dt2, String parameter, String algs, double threshold) {
         String s1 = stringValue(dt1);
-        String s2 = stringValue(dt2);
+        String s2 = stringValue(dt2);    
         if (s1.equalsIgnoreCase(s2)) {
             return TRUE;
         }
@@ -71,9 +70,9 @@ public class AppxSearchPlugin implements ExprType {
 
         return (sim > threshold) ? TRUE : FALSE;
     }
-
-    String stringValue(IDatatype dt) {
-        if (dt.hasLang()) {
+    
+    String stringValue(IDatatype dt){
+        if (dt.hasLang()){
             return dt.stringValue().concat("@").concat(dt.getLang());
         }
         return dt.stringValue();
@@ -83,7 +82,7 @@ public class AppxSearchPlugin implements ExprType {
     private IDatatype approximate(IDatatype dt1, IDatatype dt2, String parameter, String algs, double threshold, Environment env, Expr exp) {
         //0. initialize
         String s1 = stringValue(dt1);
-        String s2 = stringValue(dt2);
+        String s2 = stringValue(dt2);   
         Expr var = exp.getExp(0);
         ApproximateSearchEnv appxEnv = env.getAppxSearchEnv();
 
@@ -94,7 +93,7 @@ public class AppxSearchPlugin implements ExprType {
 
         //1 calculation to get current similarity and overall similarity
         if (s1.equalsIgnoreCase(s2)) {
-            singleSim = ISimAlgorithm.MAX;
+            singleSim   = ISimAlgorithm.MAX;
             combinedSim = ISimAlgorithm.MAX;
         } else {
             if (notExisted) { //2.1.2 otherwise, re-calculate
@@ -106,7 +105,7 @@ public class AppxSearchPlugin implements ExprType {
 
         //3 finalize
         boolean filtered = combinedSim > threshold;
-        msg("\t [Similarity,\t " + dt1 + ",\t" + dt2 + "]: c:" + String.format("%02.4d", singleSim) + ", all:" + String.format("%02.4d", combinedSim) + ", " + filtered);
+        msg("\t [Similarity,\t " + dt1 + ",\t" + dt2 + "]: c:" + format(singleSim) + ", all:" + format(combinedSim) + ", " + filtered);
 
         if (notExisted) {
             appxEnv.add(var, dt2, dt1, algs, singleSim);
@@ -114,15 +113,15 @@ public class AppxSearchPlugin implements ExprType {
         return filtered ? TRUE : FALSE;
     }
 
-
-    /**
+    
+    /** 
      * filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
-     * args[0] = var 1
-     * args[1] = uri
-     * args[2] = alg list
-     * args[3] = threshold
-     * args[4] = false|true.
-     */
+        args[0] = var 1
+        args[1] = uri
+        args[2] = alg list
+        args[3] = threshold
+        args[4] = false|true.
+    */
     private IDatatype eval(Expr exp, Environment env, IDatatype[] args) {
         if (args.length != 4) {
             return FALSE;
@@ -135,7 +134,7 @@ public class AppxSearchPlugin implements ExprType {
         }
         //IF the types are different, then return FALSE directly
         boolean match = match(dt1.getCode(), dt2.getCode());
-        if (!match) {
+        if (! match){
             return FALSE;
         }
 
@@ -163,17 +162,17 @@ public class AppxSearchPlugin implements ExprType {
         }
 
     }
-
-    boolean match(int c1, int c2) {
-        if (c1 == c2) {
+    
+    boolean match(int c1, int c2){
+        if (c1 == c2){
             return true;
         }
         if ((c1 == IDatatype.STRING && c2 == IDatatype.LITERAL) ||
-                (c2 == IDatatype.STRING && c1 == IDatatype.LITERAL)) {
+            (c2 == IDatatype.STRING && c1 == IDatatype.LITERAL)){
             return true;
         }
-
+        
         return false;
     }
-
+  
 }

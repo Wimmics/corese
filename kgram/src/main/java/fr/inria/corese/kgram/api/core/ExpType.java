@@ -8,7 +8,8 @@ package fr.inria.corese.kgram.api.core;
  */
 public interface ExpType {
 	
-	public static final String KGRAM  = "http://ns.inria.fr/edelweiss/2010/kgram/";
+	//public static final String KGRAM  = "http://ns.inria.fr/edelweiss/2010/kgram/";
+	public static final String KGRAM  = "http://ns.inria.fr/corese/kgram/";
         public static final String SKOLEM_MARKER = "/.well-known/genid/";
         public static final String SKOLEM = "http://ns.inria.fr" + SKOLEM_MARKER ;
 	public static final String SPARQL = "http://ns.inria.fr/sparql-function/";

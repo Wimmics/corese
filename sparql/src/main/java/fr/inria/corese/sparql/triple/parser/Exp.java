@@ -71,6 +71,13 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return body.add(exp);
 	}
         
+        // for structured exp only
+        public void include(Exp exp) {
+            for (Exp ee : exp) {
+                add(ee);
+            }
+        }
+        
         @Override
         public Iterator<Exp> iterator(){
             return body.iterator();
@@ -91,6 +98,11 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	public List<Exp> getBody(){
 		return body;
 	}
+        
+        // BGP body of service, graph
+        public Exp getBodyExp() {
+            return get(0);
+        }
                  
         public List<Variable> getVariables() {
             ArrayList<Variable> list = new ArrayList<>();

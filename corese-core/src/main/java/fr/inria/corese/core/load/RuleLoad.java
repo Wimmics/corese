@@ -31,10 +31,11 @@ import fr.inria.corese.core.rule.RuleEngine;
 public class RuleLoad {
 
     private static Logger logger = LoggerFactory.getLogger(Load.class);
-    public static final String NS = "http://ns.inria.fr/edelweiss/2011/rule#";
+    static final String NS  = "http://ns.inria.fr/corese/rule/";
+    static final String NS2 = "http://ns.inria.fr/edelweiss/2011/rule#";
+    static final String NS1 = "http://ns.inria.fr/corese/2008/rule#";
     static final String STL = NSManager.STL;
-    static final String BRUL = "http://ns.inria.fr/corese/2008/rule#";
-    static final String COS = "http://www.inria.fr/acacia/corese#";
+    static final String COS = NSManager.COS;
     static final String BODY = "body";
     static final String RULE = "rule";
     static final String VALUE = "value";
@@ -127,16 +128,19 @@ public class RuleLoad {
         }
 
         if (list.getLength() == 0) {
-            list = doc.getElementsByTagNameNS(BRUL, VALUE);
+            list = doc.getElementsByTagNameNS(NS2, BODY);
         }
 
         if (list.getLength() == 0) {
-            list = doc.getElementsByTagNameNS(COS, RULE);
-            if (list.getLength() == 0) {
-                error();
-                return;
-            }
-            loadCorese(list);
+            list = doc.getElementsByTagNameNS(NS1, VALUE);
+        }
+        
+        if (list.getLength() == 0) {
+            list = doc.getElementsByTagNameNS(NS1, BODY);
+        }
+
+        if (list.getLength() == 0) {
+            error();
             return;
         }
 
@@ -150,48 +154,11 @@ public class RuleLoad {
             }
         }
     }
-
-    /**
-     * Corese format
-     */
-    public void loadCorese(String file) {
-        Document doc;
-        try {
-            doc = parsing(file);
-            NodeList list = doc.getElementsByTagNameNS(COS, RULE);
-            loadCorese(list);
-        } catch (LoadException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    void loadCorese(NodeList list) {
-        if (getBase() != null){
-            engine.setBase(getBase());
-            if (engine.getQueryEngine() != null){
-                engine.getQueryEngine().setBase(getBase());
-            }
-        }
-        for (int i = 0; i < list.getLength(); i++) {
-            Element node = (Element) list.item(i);
-            NodeList lconst = node.getElementsByTagNameNS(COS, THEN);
-            NodeList lwhere = node.getElementsByTagNameNS(COS, IF);
-
-            String rule = getRule(((Element) lconst.item(0)), ((Element) lwhere.item(0)));
-
-            try {
-                engine.defRule(rule);
-            } catch (EngineException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+  
     void error() {
         logger.error("Rule Namespace should be one of:");
-        logger.error(NS);
-        logger.error(BRUL);
+        logger.error(NS2);
+        logger.error(NS1);
     }
 
     String getRule(Element econst, Element ewhere) {

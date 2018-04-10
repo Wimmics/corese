@@ -104,6 +104,7 @@ public class TestQuery1 {
         QueryProcess.setPlanDefault(Query.QP_HEURISTICS_BASED); 
         
         QueryProcess.testAlgebra(!true);
+        Graph.METADATA_DEFAULT = true;
 
     }
     
@@ -4291,7 +4292,7 @@ public class TestQuery1 {
 
         QueryProcess exec = QueryProcess.create(gs);
 
-        String str = "select * where  { ?x ?p ?y ?y ?q ?z }";
+        String str = "select * where  { ?x ?p ?y . ?y ?q ?z }";
 
         Mappings m1 = exec.query(str);
         assertEquals(1, m1.size());
@@ -4551,7 +4552,7 @@ public class TestQuery1 {
 
         Transformer pp = Transformer.create(g, Transformer.TRIG);
         String str = pp.transform();
-        assertEquals(10162, str.length());
+        assertEquals(10154, str.length());
 
 
     }

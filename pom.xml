@@ -109,26 +109,16 @@
         <surefire.version>2.21.0</surefire.version>
         <log4j2.version>2.11.0</log4j2.version>
         <sesame.version>4.1.1</sesame.version>
-        <jersey.version>2.25.1</jersey.version>
+        <jersey.version>2.26</jersey.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-	    <dependency>
+            <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-		<version>6.9.8</version>
-	    </dependency> 
-            <!--			<dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>kgengine</artifactId>
-                <version>${project.version}</version>
-            </dependency>-->
-            <!--			<dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>engine</artifactId>
-                <version>${project.version}</version>
-            </dependency>-->
+                <version>6.9.8</version>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>compiler</artifactId>
@@ -273,6 +263,11 @@
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
@@ -459,12 +454,11 @@
                                 <value>false</value>
                             </property>
                         </properties>
-                        <threadCount>1</threadCount>
                     </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
+                            <artifactId>surefire-junit4</artifactId>
                             <version>${surefire.version}</version>
                         </dependency>
                         <dependency>
@@ -476,12 +470,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<version>${surefire.version}</version>
-		</plugin>
+        <plugins>
+		<!-- <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+	    </plugin> -->
             <!-- To be able to change the version number of the project and its submodules.
             98                              -->
             <plugin>

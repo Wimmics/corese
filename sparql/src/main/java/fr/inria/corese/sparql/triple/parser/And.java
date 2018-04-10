@@ -57,6 +57,7 @@ public class And extends Exp {
 	}
 	
 	
+        @Override
 	public boolean validate(ASTQuery ast, boolean exist){
 		boolean ok = true;
 		for (Exp exp : getBody()){

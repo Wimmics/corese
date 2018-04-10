@@ -52,6 +52,8 @@ public class NSManager extends ASTObject {
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String SHAPE = "http://www.w3.org/ns/shacl#";
 
+    public static final String COSNS      = RDFS.COSNS;
+    public static final String COS        = RDFS.COS;
     public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
     public static final String STL_FORMAT = STL + "format/";
@@ -217,7 +219,7 @@ public class NSManager extends ASTObject {
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
         def.put(KGEXTCONS, KECPREF);
-        def.put(RDFS.COS, RDFS.COSPrefix);
+        def.put(COS, RDFS.COSPrefix);
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);

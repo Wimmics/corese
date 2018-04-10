@@ -316,10 +316,4 @@ public class BasicGraphPattern extends And {
         return false;
     }
     
-    public void include(BasicGraphPattern bgp) {
-        for (Exp exp : bgp) {
-            add(exp);
-        }
-    }
-    
 }

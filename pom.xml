@@ -471,11 +471,11 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
+		<!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
-            </plugin>
+	    </plugin> -->
             <!-- To be able to change the version number of the project and its submodules.
             98                              -->
             <plugin>

@@ -11,14 +11,7 @@
 	<artifactId>corese-gui</artifactId>
 	<name>corese-gui</name>
 
-	<!--    <properties>
-	    <revision>3.0.7</revision>
-	</properties>-->
-	<dependencies>            
-<!--		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>engine</artifactId>
-		</dependency>-->
+	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>compiler</artifactId>

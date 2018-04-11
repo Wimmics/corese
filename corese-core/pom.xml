@@ -62,11 +62,10 @@
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.sun.jersey</groupId>-->
-            <!--<artifactId>jersey-core</artifactId>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.semarglproject</groupId>
             <artifactId>semargl-core</artifactId>
@@ -178,28 +177,6 @@
                     <!--<skip>true</skip>-->
                 </configuration>
             </plugin>
-            <!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>/
-                <execution>
-                    <phase>package</phase>
-                    <configuration>
-                    <descriptorId>jar-with-dependencies</descriptorId>
-                    <archive>
-                        <manifest>
-                        <mainClass></mainClass>
-                        <addClasspath>false</addClasspath>
-                        </manifest>
-                    </archive>
-                    </configuration>
-                    <goals>
-                    <goal>single</goal>
-                    </goals>
-                </execution>
-                </executions>
-            </plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>

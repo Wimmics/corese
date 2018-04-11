@@ -7438,9 +7438,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(query);
-        Query q = map.getQuery();
-        System.out.println("NB Procesor: " + Processor.count);
-        assertEquals("Result", 20, q.nbNodes());
+        assertEquals("Result", 16, map.size());
 
     }
 

@@ -99,6 +99,28 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return body;
 	}
         
+        public boolean isConnected(Triple t) {
+            for (Exp exp : this) {
+                if (exp.isTriple() && !  exp.isFilter()) {
+                    if (exp.getTriple().isConnected(t)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        public boolean isConnected(Exp exp) {
+            for (Exp ee : exp) {
+                if (ee.isTriple() && ! ee.isFilter()) {
+                    if (isConnected(ee.getTriple())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
         // BGP body of service, graph
         public Exp getBodyExp() {
             return get(0);

@@ -37,6 +37,8 @@ public class Metadata extends ASTObject
     public static final int DB      = 21;
     public static final int DB_FACTORY = 22;
     public static final int BGP     = 23;
+    public static final int BOUNCE  = 24;
+    public static final int SPARQL10  = 25;
     
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -58,7 +60,6 @@ public class Metadata extends ASTObject
     public static final String SIMPLIFY         = PREF + "simplify";
     public static final String EXIST            = PREF + "exist";
     public static final String SKIP_STR         = PREF + "skip";
-    public static final String BOUNCE           = PREF + "bounce";
     
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
@@ -86,6 +87,8 @@ public class Metadata extends ASTObject
         define("@more",     MORE);      
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
+        define("@bounce",   BOUNCE);      
+        define("@sparqlzero", SPARQL10);      
         define("@encoding", ENCODING);      
         define("@bind",     BIND);      
         define("@import",   IMPORT);      

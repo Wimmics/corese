@@ -40,7 +40,11 @@ public class Option extends Exp {
 	// PRAGMA: exp is BGP
 	public Option(Exp exp){
 		add(exp);
-		//exp.setOption(true);
+	}
+        
+        public Option(Exp e1, Exp  e2){
+            this(e1);
+            add(e2);
 	}
 	
 	public static Option create(Exp exp){

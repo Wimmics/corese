@@ -13,6 +13,10 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,29 +37,85 @@ public class Selector {
     HashMap<String, List<Atom>> predicateService;
     HashMap<String, String> predicateVariable;
     QuerySolver exec;
+    boolean sparql10 = false;
     
     Selector(QuerySolver e, ASTQuery ast) {
         this.ast = ast;
         exec = e;
         predicateService  = new HashMap<>();
         predicateVariable = new HashMap<>();
+        
+        if (ast.hasMetadata(Metadata.SPARQL10)){
+            sparql10 = true;
+        }
     }
     
     void process() {
-        ASTQuery aa = create();
+        if (sparql10) {
+            process10(getServiceList(true));
+            predicateVariable.clear();
+            process11(getServiceList(false));
+        }
+        else {
+            process11(getServiceList());
+        }
+    }
+    
+    
+    List<Constant> getServiceList(boolean sparql10) {
+        List<Constant> list = getServiceList();
+        List<Constant> res = new ArrayList<>();
+        for (Constant serv : list) {
+            if (sparql10){
+                if (ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
+                    res.add(serv);
+                }
+            }
+            else {
+                if (! ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
+                    res.add(serv);
+                }
+            }
+        }
+        return res;
+    }
+    
+    void process11(List<Constant> list) {
+        ASTQuery aa = create(list, false);
         Mappings map = exec.basicQuery(aa);
-        
+
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
             for (String pred : predicateVariable.keySet()) {
                 String var = predicateVariable.get(pred);
                 IDatatype val = (IDatatype) m.getValue(var);
-                if (val.booleanValue()) {
+                if (val != null && val.booleanValue()) {
+                    predicateService.get(pred).add(Constant.create(serv));
+                }
+            }
+        }
+
+        trace();
+    }
+    
+    void process10(List<Constant> list) {
+        ASTQuery aa = create(list, true);
+        Mappings map = exec.basicQuery(aa);
+        if (ast.isDebug()) {
+            System.out.println(map);
+        }
+        for (Mapping m : map) {
+            IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
+            for (String pred : predicateVariable.keySet()) {
+                String var = predicateVariable.get(pred);
+                IDatatype val = (IDatatype) m.getValue(var);
+                if (val != null) {
                     predicateService.get(pred).add(Constant.create(serv));
                 }
             }
         }
         
+
         trace();
     }
     
@@ -74,7 +134,9 @@ public class Selector {
     
     void declare(Constant p, Variable var) {
         predicateVariable.put(p.getLabel(), var.getLabel());
-        predicateService.put(p.getLabel(), new ArrayList<Atom>());
+        if (! predicateService.containsKey(p.getLabel())) {
+            predicateService.put(p.getLabel(), new ArrayList<Atom>());
+        }
     }
     
     /**
@@ -85,36 +147,84 @@ public class Selector {
      *  }
      * }
      */
-    ASTQuery create() {
+    ASTQuery create(List<Constant> list, boolean sparql10) {
         ASTQuery aa = ASTQuery.create();
         aa.setSelectAll(true);
-        aa.setNSM(ast.getNSM());
-        BasicGraphPattern bgp = BasicGraphPattern.create();
-        int i = 0;
-        
-        for (Constant p : ast.getPredicateList()) {
-            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
-                
-            }
-            else {
-                Variable s = Variable.create("?s");
-                Variable o = Variable.create("?o");
-                Triple t   = aa.triple(s, p, o);
-                BasicGraphPattern bb = BasicGraphPattern.create(t);
-                Variable var = Variable.create("?b" + i++);      
-                Binding exist = Binding.create(aa.createExist(bb, false), var);
-                bgp.add(exist);
-                declare(p, var);
-            }
-        }
-                
+        aa.setNSM(ast.getNSM());        
+        BasicGraphPattern bgp = (sparql10) ? createBGP10(aa) : createBGP(aa);
+                        
         Variable serv = Variable.create(SERVER_VAR);
-        Values values = Values.create(serv, getServiceList());
+        Values values = Values.create(serv, list);
         
         Service service = Service.create(serv, bgp);
         aa.setBody(BasicGraphPattern.create(values, service));
         return aa;
     }
+    
+    
+    BasicGraphPattern createBGP(ASTQuery aa) {
+        BasicGraphPattern bgp = BasicGraphPattern.create();
+        int i = 0;
+        for (Constant p : ast.getPredicateList()) {
+            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
+
+            } else {
+                Variable s = Variable.create("?s");
+                Variable o = Variable.create("?o");
+                Triple t = aa.triple(s, p, o);
+                BasicGraphPattern bb = BasicGraphPattern.create(t);
+                Variable var = Variable.create("?b" + i++);
+                Binding exist = Binding.create(aa.createExist(bb, false), var);
+                bgp.add(exist);
+                declare(p, var);
+            }
+        }
+        return bgp;
+    }
+    
+    /**
+     * for SPARQL 1.0 
+     * select * where {
+     * optional { si pi oi }
+     * } limit 1
+     * }
+     * 
+     */
+    BasicGraphPattern createBGP10(ASTQuery aa) {
+        ArrayList<Triple> tripleList = new ArrayList<>();
+        int i = 0;
+        for (Constant p : ast.getPredicateList()) {
+            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
+
+            } else {
+                Variable s = Variable.create("?s" + i);
+                Variable var = Variable.create("?o" + i++);
+                Triple t = aa.triple(s, p, var);
+                tripleList.add(t);
+                declare(p, var);
+            }
+        }
+        
+        Exp option = optional(tripleList);
+        
+        ASTQuery a = aa.subCreate();
+        a.setSelectAll(true);
+        a.setBody(BasicGraphPattern.create(option));
+        a.setLimit(1);
+        
+        BasicGraphPattern bgp = BasicGraphPattern.create(Query.create(a));
+        
+        return bgp;
+    }
+    
+    Exp optional(List<Triple> list) {
+        Option option = new Option(BasicGraphPattern.create(), BasicGraphPattern.create(list.get(0)));
+        for (int i = 1; i < list.size(); i++) {
+            option = new Option(BasicGraphPattern.create(option), BasicGraphPattern.create(list.get(i)));
+        }
+        return option;
+    }
+    
     
     ArrayList<Constant> getServiceList() {
         ArrayList<Constant> list = new ArrayList<>();

@@ -1,7 +1,5 @@
 package fr.inria.corese.core.approximate.algorithm;
 
-import com.ibm.icu.text.DecimalFormat;
-
 /**
  * Utils class
  *
@@ -10,27 +8,16 @@ import com.ibm.icu.text.DecimalFormat;
  */
 public class Utils {
 
-    private final static String DEF_FORMAT = "##.####";
     private final static boolean SHOW_MSG = !true;
 
     /**
-     * Format a real number using given format
-     * @param d
-     * @param format
-     * @return 
-     */
-    public static String format(double d, String format) {
-        return new DecimalFormat(format).format(d);
-    }
-
-    /**
      * Format a double using default format "##.####"
-     * 
+     *
      * @param d
-     * @return 
+     * @return
      */
     public static String format(double d) {
-        return format(d, DEF_FORMAT);
+        return String.format("%2.4f", d);
     }
 
     /**
@@ -43,7 +30,7 @@ public class Utils {
      */
     public static void msg(String alg, String s1, String s2, String parameter, double sim) {
         if (SHOW_MSG) {
-            System.out.println("\t [" + alg + ", "+parameter+"]: " + s1 + ", " + s2 + ", " + format(sim));
+            System.out.println("\t [" + alg + ", "+parameter+"]: " + s1 + ", " + s2 + ", " + String.format("%2.4f", sim));
         }
     }
 

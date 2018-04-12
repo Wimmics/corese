@@ -40,6 +40,7 @@ import org.slf4j.Logger;
  *
  */
 public class FederateVisitor implements QueryVisitor {
+
     private static Logger logger = LoggerFactory.getLogger(FederateVisitor.class);
     
     public static final String PROXY = "_proxy_";
@@ -57,6 +58,7 @@ public class FederateVisitor implements QueryVisitor {
     // factorize unique service in optional/minus/union
     boolean simplify  = true;
     boolean exist = false;
+    private boolean bounce = false;
     boolean verbose = false;
 
     ASTQuery ast;
@@ -129,6 +131,9 @@ public class FederateVisitor implements QueryVisitor {
         }
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.EXIST)) {
             exist = true;
+        }
+        if (ast.hasMetadata(Metadata.BOUNCE)) {
+            bounce = true;
         }
         if (select) {
             selector = new Selector(exec, ast);
@@ -214,7 +219,7 @@ public class FederateVisitor implements QueryVisitor {
             else if (exp.isMinus() || exp.isOptional() || exp.isUnion()) {
                 exp = rewrite(name, exp);
                 if (simplify) {
-                    Exp simple = sim.simplify(exp);
+                    Exp simple = sim.simplifyStatement(exp);
                     body.set(i, simple);
                 } else {
                     body.set(i, exp);
@@ -454,5 +459,12 @@ public class FederateVisitor implements QueryVisitor {
                f.getFilter().getTerm().isNot() && 
                f.getFilter().getTerm().getArg(0).isTerm() &&
                f.getFilter().getTerm().getArg(0).getTerm().isTermExist() ;
+    }
+    
+      /**
+     * @return the bounce
+     */
+    public boolean isBounce() {
+        return bounce;
     }
 }

@@ -3,6 +3,7 @@ package fr.inria.corese.compiler.federate;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -28,7 +29,7 @@ public class Simplify {
         HashMap<String, List<Service>> map;
         
         ServiceList() {
-            map = new HashMap<String, List<Service>>();
+            map = new HashMap<>();
         }
         
         void add(Service serv) {
@@ -45,17 +46,28 @@ public class Simplify {
         }
     }
     
-    /**
-     * BGP { service URI {EXP1} service URI {EXP2} EXP3 }
-     * ::= 
-     * BGP { service URI {EXP1 EXP2} EXP3 }
-     */
+    
     Exp simplifyBGP(Exp bgp) {
+        bgp = merge(bgp);
+        if (visitor.isBounce()){
+            bgp = bounce(bgp);
+        }
+        return bgp;
+    }
+        
+    /**
+     * BGP { service URI {EXP1} service URI {EXP2} EXP3 } ::= 
+     * BGP { service URI {EXP1 EXP2} EXP3 }
+     *
+     * TODO: merge when there is only one URI ???
+     */ 
+    Exp merge(Exp bgp) {    
         ServiceList map = new ServiceList();
         
+        // create map: service URI -> list (Service)
         for (Exp exp : bgp) {
             if (exp.isService() && ! exp.getService().isFederate()) {
-                if (isTripleOnly(exp.get(0))) {
+                if (isTripleOnly(exp.getBodyExp())) {
                     // do not merge basic BGP with same service URI
                     // because they are not connected 
                 }
@@ -65,6 +77,7 @@ public class Simplify {
             }
         }
         
+        // group several services with same URI into one service
         for (List<Service> list : map.getMap().values()) {
             if (list.size() > 1) {
                 int i = 0;
@@ -72,9 +85,7 @@ public class Simplify {
                 
                 for (Service s : list) {
                     if (i++ > 0) {
-                        for (Exp ee : s.get(0)) {
-                            first.get(0).add(ee);
-                        }
+                        first.getBodyExp().include(s.getBodyExp());                       
                         bgp.getBody().remove(s);
                     }
                 }
@@ -84,6 +95,59 @@ public class Simplify {
         return bgp;
     }
     
+    /**
+     * BGP { service URI1 { EXP1 } service URI2 { EXP2 } }
+     * if URI1 accept bouncing and EXP1.isConnected(EXP2)
+     * ->
+     * BGP { service URI1 { EXP1 service URI2 { EXP2 } } }
+     */
+    
+    Exp bounce(Exp bgp) {
+        HashMap<Service, Boolean> done   = new HashMap();
+        HashMap<Service, Boolean> remove = new HashMap();
+        
+        for (int i = 0; i < bgp.size(); i++) {
+            Exp e1 = bgp.get(i);
+            if (done.get(e1) == null && e1.isService() && ! e1.getService().isFederate()) {
+                Service s1 = e1.getService();
+                
+                for (int j = i + 1; j < bgp.size(); j++) {
+                    Exp e2 = bgp.get(j);
+                    if (done.get(e2) == null && e2.isService() && ! e2.getService().isFederate()) {
+                        Service s2 = e2.getService();
+                        
+                        if (! s1.getServiceName().equals(s2.getServiceName())
+                           && s1.getBodyExp().isConnected(s2.getBodyExp())) {
+                            
+                            if (bounce(s1)) {
+                                s1.getBodyExp().add(s2);
+                                done.put(s2, true);
+                                remove.put(s2, true);
+                                break;
+                            } else if (bounce(s2)) {
+                                s2.getBodyExp().add(s1);
+                                done.put(s2, true);
+                                remove.put(s1, true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        for (Service exp : remove.keySet()) {
+            bgp.getBody().remove(exp);
+        }
+        
+        return bgp;
+    }
+    
+    // @bounce <URI>
+    boolean bounce(Service s) {
+        return visitor.getAST().hasMetadataValue(Metadata.BOUNCE, s.getServiceName().getLabel());
+    }
+       
     boolean isTripleOnly(Exp exp) {
         for (Exp ee : exp) {
             if (! ee.isTriple()) {
@@ -99,7 +163,7 @@ public class Simplify {
      * service s { e1 optional {e2} }
      * and simplifySelectFrom(exp)
      */
-    Exp simplify(Exp exp) {
+    Exp simplifyStatement(Exp exp) {
         if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
             Exp e1 = exp.get(0).get(0);
             Exp e2 = exp.get(1).get(0);
@@ -109,8 +173,8 @@ public class Simplify {
                 if (s1.getServiceList().size() == 1
                         && s2.getServiceList().size() == 1
                         && s1.getServiceName().equals(s2.getServiceName())) {
-                    exp.set(0, s1.get(0));
-                    exp.set(1, s2.get(0));
+                    exp.set(0, s1.getBodyExp());
+                    exp.set(1, s2.getBodyExp());
                     Exp simple = simplifyGraph(exp);
                     Service s = 
                         Service.create(s1.getServiceName(), 
@@ -162,8 +226,8 @@ public class Simplify {
                 Source g1 = e1.getNamedGraph();
                 Source g2 = e2.getNamedGraph();                
                if (g1.getSource().isConstant() && g1.getSource().equals(g2.getSource())) {
-                    exp.set(0, g1.get(0));
-                    exp.set(1, g2.get(0));
+                    exp.set(0, g1.getBodyExp());
+                    exp.set(1, g2.getBodyExp());
                     Source g = Source.create(g1.getSource(), exp);
                     return g;
                 }

@@ -45,6 +45,7 @@ import org.slf4j.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
+@Deprecated
 public class ServiceVisitor implements QueryVisitor {
     private static Logger logger = LoggerFactory.getLogger(ServiceVisitor.class);
     

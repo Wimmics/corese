@@ -1543,7 +1543,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     public Term defLoop(Variable var, Expression exp, Expression body) {
         Variable list = new Variable("?_list_" + nbd++);
         Expression let = defLet(list, createFunction(createQName("xt:list")));
-        Expression add = createFunction(createQName("xt:add"), body, list);
+        Expression add = createFunction(createQName("xt:add"), list, body);
         Expression loop = new ForLoop(var, exp, add);
         Expression app  = 
                 createFunction(Constant.createResource("reduce"), 

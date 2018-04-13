@@ -614,7 +614,7 @@ public IDatatype rec(IDatatype shape, IDatatype s, IDatatype p, IDatatype res, I
   else {
     for (IDatatype e : l.getValueList()) {
       if (not(member(e, res)).booleanValue()) {
-        add(e, res);
+        add(res, e);
         rec(shape, e, p, res, inv);
         
       }

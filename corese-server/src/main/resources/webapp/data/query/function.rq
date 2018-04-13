@@ -171,27 +171,19 @@ function st:split(?l, ?n){
   xt:split(?l, ?n)
 }
 
-function xt:split(?list, ?nc){
-  let (?size  = xt:size(?list),
-       ?nr    = xt:div(?size, ?nc),
-       ?table = xt:list(),
-       ?jlist = xt:iota(0, ?nc - 1),
-       ?max   = if (xt:mod(?size, ?nc) = 0, ?nr - 1, ?nr)){
-    for (?i in xt:iota(0, ?max)){
-      let (?row = xt:list(), ?nb = ?i * ?nc){
-	for (?j in ?jlist){
-	  let (?k = ?nb + ?j){
-	    if (?k < ?size){
-	      xt:add(xt:get(?list, ?k), ?row)
-	    }
-	  }
-	} ;
-	xt:add(?row, ?table)
-      }
+function xt:split(?list, ?n) {
+  let (?table = xt:list()) {
+    xt:add(?table, xt:list());
+    for (?e in ?list) {
+      if (xt:size(xt:first(?table)) = ?n) {
+        xt:add(?table, 0, xt:list())
+      } ;
+      xt:add(xt:first(?table), ?e)
     } ;
-    ?table
-  }
+    return (xt:reverse(?table))
+  } 
 }
+
 
 
 # ____________________________________________________

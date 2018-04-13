@@ -948,7 +948,7 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     // modify
-    public static IDatatype add(IDatatype elem, IDatatype list) {
+    public static IDatatype add(IDatatype list, IDatatype elem) {
         if (!list.isList()) {
             return null;
         }
@@ -956,7 +956,7 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     // modify
-    public static IDatatype add(IDatatype elem, IDatatype list, IDatatype ind) {
+    public static IDatatype add(IDatatype list, IDatatype ind, IDatatype elem) {
         if (!list.isList()) {
             return null;
         }

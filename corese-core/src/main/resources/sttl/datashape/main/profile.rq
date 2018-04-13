@@ -725,7 +725,7 @@ function sh:rec(?shape, ?s, ?p, ?res, ?inv){
         else {
             for (?e in ?l){
                 if (! xt:member(?e, ?res)){
-                    xt:add(?e, ?res) ; 
+                    xt:add(?res, ?e) ; 
                     sh:rec(?shape, ?e, ?p, ?res, ?inv)
                 }             
             } ;

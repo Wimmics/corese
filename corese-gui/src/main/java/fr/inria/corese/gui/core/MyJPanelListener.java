@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.DateFormat;
 import java.util.Date;
 
 import javax.swing.DefaultListModel;
@@ -24,9 +25,6 @@ import javax.swing.JTextPane;
 import javax.swing.LayoutStyle;
 import javax.swing.text.Document;
 
-import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.SimpleDateFormat;
 
 /**
  * Onglet Listener avec tout ce qu'il contient
@@ -139,50 +137,45 @@ public class MyJPanelListener extends JPanel implements MouseListener, ActionLis
         popupMenu.getDelete().addActionListener(l_DeleteFileListener);
 
         //Ecoute le about du pop-up
-        ActionListener l_AboutFileListener = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                File file = new File(coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()).toString());
-                String info = null, b = "Bytes";
-                double size;
-                String ext = MyCellRenderer.extension(file);
-                if (ext.equals("rul")) {
-                    info = "Fichier contenant les règles d'inférences";
-                } else if (ext.equals("rdfs")) {
-                    info = "Fichier contenant les éléments de base pour décrire l'ontologie (classe, propriétés) ";
-                } else if (ext.equals("rdf")) {
-                    info = "Fichier qui permet d'exploiter le fichier .rdfs, il permet de définir chaque entité sous la forme d'un triplets (sujet, prédicat, objet)";
-
-                }
-
-                DecimalFormat df = new DecimalFormat("########.0");
-                DateFormat sdf = new SimpleDateFormat("E - dd MMM yyyy - KK:mm:ss a");
-
-                size = file.length();
-                if (size > 1024) {
-                    size = size / 1024;
-                    b = "KB";
-                }
-                if (size > 2048) {
-                    size = size / 2048;
-                    b = "MB";
-                }
-                if (size > 4096) {
-                    size = size / 4096;
-                    b = "GB";
-                }
-
-                Date d = new Date(file.lastModified());
-                String message = "Name : 		" + file
-                        + "\nType : 		" + ext.toUpperCase() + " file"
-                        + "\nMore information : " + info
-                        + "\nModified :    " + sdf.format(d)
-                        + "\nSize :       " + df.format(size) + " " + b
-                        + "";
-                JOptionPane.showMessageDialog(null, message);
-
-
+        ActionListener l_AboutFileListener = e -> {
+            File file = new File(coreseFrame.getOngletListener().getModel().getElementAt(getListLoadedFiles().getSelectedIndex()).toString());
+            String info = null, b = "Bytes";
+            double size;
+            String ext = MyCellRenderer.extension(file);
+            if (ext.equals("rul")) {
+                info = "Fichier contenant les règles d'inférences";
+            } else if (ext.equals("rdfs")) {
+                info = "Fichier contenant les éléments de base pour décrire l'ontologie (classe, propriétés) ";
+            } else if (ext.equals("rdf")) {
+                info = "Fichier qui permet d'exploiter le fichier .rdfs, il permet de définir chaque entité sous la forme d'un triplets (sujet, prédicat, objet)";
 
             }
+
+            size = file.length();
+            if (size > 1024) {
+                size = size / 1024;
+                b = "KB";
+            }
+            if (size > 2048) {
+                size = size / 2048;
+                b = "MB";
+            }
+            if (size > 4096) {
+                size = size / 4096;
+                b = "GB";
+            }
+
+            Date d = new Date(file.lastModified());
+            String message = "Name : 		" + file
+                    + "\nType : 		" + ext.toUpperCase() + " file"
+                    + "\nMore information : " + info
+                    + "\nModified :    " + DateFormat.getDateInstance(DateFormat.FULL).format(d)
+                    + "\nSize :       " + String.format("8.1f", size) + " " + b
+                    + "";
+            JOptionPane.showMessageDialog(null, message);
+
+
+
         };
         popupMenu.getInfos().addActionListener(l_AboutFileListener);
 

@@ -429,6 +429,9 @@ public class PluginImpl
                 
              case XT_TRIPLE:
                 return triple(exp, env, p, param[0], param[1], param[2]); 
+                
+            case XT_VALUE:
+                 return value(exp, env, p, param[0], param[1], param[2]);    
                  
              case KGRAM:
                  Graph g = getGraph(p);
@@ -754,6 +757,14 @@ public class PluginImpl
      * value of a property
      */
     private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred) {
+        return value(exp, env, p, subj, pred, 1);
+    }
+    
+    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype n) {
+        return value(exp, env, p, subj, pred, n.intValue());
+    }
+
+    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, int n) {
        Graph g = getGraph(p);
        Node ns = g.getNode(subj);
        Node np = g.getPropertyNode(pred.getLabel());
@@ -764,7 +775,7 @@ public class PluginImpl
        if (edge == null){
            return null;
        }
-       return (IDatatype) edge.getNode(1).getDatatypeValue();
+       return (IDatatype) edge.getNode(n).getDatatypeValue();
     }
     
     private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {

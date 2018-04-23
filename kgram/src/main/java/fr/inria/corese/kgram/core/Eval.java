@@ -1321,15 +1321,18 @@ public class Eval implements ExpType, Plugin {
          switch (main.type()) {
                 case Exp.JOIN:
                     service(exp, mem);
-                    mem.setJoinMappings(exp.getMappings());
-                    break;
+//                    mem.setJoinMappings(exp.getMappings());
+//                    break;
+                    // continue
                 case Exp.MINUS:
                 case Exp.OPTIONAL:
                     // draft test
                     if (memory.getJoinMappings() != null && exp == main.first()){
                         // use case:
-                        // join (and(service(s, exp)), and(optional(e1, e2)))
+                        // 1- join (and(service(s, exp)), and(optional(e1, e2)))
                         // optional in rest of join inherits Mappings of first of join
+                        // 2- A optional { join (s1, s2) }
+                        // join in optional inherits Mappings
                         mem.setJoinMappings(memory.getJoinMappings());
                         // clean for statements after this main
                         memory.setJoinMappings(null);
@@ -1486,7 +1489,7 @@ public class Eval implements ExpType, Plugin {
             // or impose irrelevant bindings 
             Mappings map1dist = set1.getMappings().distinct(nodeListInScope);
             if (exp.isJoin() 
-                    || memory.getQuery().isFederate() // everybody is a service 
+                    || memory.getQuery().getGlobalQuery().isFederate() // everybody is a service 
                     || rest.size() == 1 && rest.get(0).isService() // rest is a service
                ) {
                 // service clause in rest may take Mappings into account

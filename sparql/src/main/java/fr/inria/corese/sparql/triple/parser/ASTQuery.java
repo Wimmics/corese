@@ -1585,6 +1585,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         return term;
     }
     
+    public Term createFunction(Constant name, Expression e1, Expression e2, Expression e3) {
+        Term term = createFunction(name, e1, e2);
+        term.add(e3);
+        return term;
+    }
+    
     public Term createFunction(Constant name, ExpressionList el) {
         Term term = createFunction(name.getName(), el);
         term.setCName(name);
@@ -2838,7 +2844,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     /**
      * Use case: collect select *
      */
-    void defSelect(Variable var) {
+    public void defSelect(Variable var) {
         //if (isSelectAll()){
         addSelect(var);
         //}

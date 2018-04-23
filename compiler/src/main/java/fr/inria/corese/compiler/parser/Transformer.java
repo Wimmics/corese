@@ -30,6 +30,7 @@ import fr.inria.corese.kgram.filter.Extension.FunMap;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -286,10 +287,20 @@ public class Transformer implements ExpType {
     }
     
     void visit(ASTQuery ast){
+        metadataVisitor(ast);
          if (visit != null) {
             for (QueryVisitor v : visit) {
                 v.visit(ast);
             }
+        }
+    }
+    
+    /**
+     * Metadata => Visitor
+     */
+    void metadataVisitor(ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.METADATA)){
+            add(new MetadataVisitor());
         }
     }
     

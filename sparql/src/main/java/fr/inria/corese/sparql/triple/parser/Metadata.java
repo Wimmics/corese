@@ -40,6 +40,9 @@ public class Metadata extends ASTObject
     public static final int BOUNCE  = 24;
     public static final int SPARQL10  = 25;
     
+    // uncertainty triple metadata
+    public static final int METADATA  = 50;
+       
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
     public static final String DISPLAY_JSON_LD  = PREF + "jsonld";
@@ -99,7 +102,8 @@ public class Metadata extends ASTObject
         define("@skip",     SKIP);      
         define("@db",       DB);      
         define("@dbfactory",DB_FACTORY);      
-        define("@bgp",      BGP);      
+        define("@bgp",      BGP); 
+        define("@metadata", METADATA);      
     }
     
     static void define(String str, int type){

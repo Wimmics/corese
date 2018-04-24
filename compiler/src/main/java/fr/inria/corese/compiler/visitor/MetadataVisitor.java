@@ -37,7 +37,6 @@ public class MetadataVisitor implements QueryVisitor {
     public void visit(ASTQuery ast) {
         init(ast);
         process(null, ast.getBody());
-        System.out.println(ast);
     }
 
     @Override
@@ -47,7 +46,9 @@ public class MetadataVisitor implements QueryVisitor {
     
     void init(ASTQuery ast) {
          this.ast = ast;
-         ast.defNSNamespace("munc", "http://ns.inria.fr/metauncertainty/v1/");
+         if (ast.getNSM().getNamespace("munc") == null) {
+             ast.defNSNamespace("munc", "http://ns.inria.fr/metauncertainty/v1/");
+         }
     }
     
     /**
@@ -95,6 +96,7 @@ public class MetadataVisitor implements QueryVisitor {
       graph ?g {triple(?s ?p ?o ?Tm)}
       * ->
       bind(us:metaList(?Tm, xt:value(xt:name(), munc:hasUncertainty, 2)) as ?meta)
+      * 
       * xt:name() -> current named graph, that is ?g
       * xt:value get the value of subject property
       * 2 is the node index of metadata value (1 is node index of object value)

@@ -26,6 +26,7 @@ public class MetadataVisitor implements QueryVisitor {
     private static final String META_LIST       = "munc:metaList";
     private static final String UNCERTAINTY     = "munc:hasUncertainty";
     private static final String VALUE           = "xt:value";
+    private static final String NAME            = "xt:name";
     
     ASTQuery ast;
     int count = 0;
@@ -91,18 +92,22 @@ public class MetadataVisitor implements QueryVisitor {
     /**
       graph ?g {triple(?s ?p ?o ?Tm)}
       * ->
-      bind(us:metaList(?Tm, xt:value(?g, munc:hasUncertainty, 2)) as ?meta)
+      bind(us:metaList(?Tm, xt:value(xt:name(), munc:hasUncertainty, 2)) as ?meta)
+      * xt:name() -> current named graph, that is ?g
       * xt:value get the value of subject property
       * 2 is the node index of metadata value (1 is node index of object value)
      */
-    void process(Triple t, List<Exp> list, Atom gname) {
-        Variable tmeta = t.getArgs().get(0).getVariable();
-        Term gmeta = ast.createFunction(ast.createQName(VALUE), 
-                gname, ast.createQName(UNCERTAINTY), Constant.create(2));
-        Term fun = ast.createFunction(ast.createQName(META_LIST), tmeta, gmeta);
-        Variable meta = Variable.create(META_VARIABLE + count++);
-        Binding b = Binding.create(fun, meta);
-        list.add(b);
+    void process(Triple t, List<Exp> list, Atom name) {
+        if (t.getArgs() != null && !t.getArgs().isEmpty()) {
+            Variable tmeta = t.getArgs().get(0).getVariable();
+            Term gname = ast.createFunction(ast.createQName(NAME));
+            Term gmeta = ast.createFunction(ast.createQName(VALUE),
+                    gname, ast.createQName(UNCERTAINTY), Constant.create(2));
+            Term fun = ast.createFunction(ast.createQName(META_LIST), tmeta, gmeta);
+            Variable meta = Variable.create(META_VARIABLE + count++);
+            Binding b = Binding.create(fun, meta);
+            list.add(b);
+        }
     }
    
       

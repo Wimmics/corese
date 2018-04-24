@@ -33,6 +33,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query Use Corese SPARQL parser Use an
@@ -287,7 +288,7 @@ public class Transformer implements ExpType {
     }
     
     void visit(ASTQuery ast){
-        metadataVisitor(ast);
+        visitor(ast);
          if (visit != null) {
             for (QueryVisitor v : visit) {
                 v.visit(ast);
@@ -298,9 +299,29 @@ public class Transformer implements ExpType {
     /**
      * Metadata => Visitor
      */
-    void metadataVisitor(ASTQuery ast) {
+    void visitor(ASTQuery ast) {
         if (ast.hasMetadata(Metadata.METADATA)){
             add(new MetadataVisitor());
+        }
+        if (ast.hasMetadata(Metadata.VISITOR)) {
+            for (String name : ast.getMetadata().getValues(Metadata.VISITOR)) {
+                try {
+                    Class visClass = Class.forName(name);
+                    Object obj = visClass.newInstance();
+                    if (obj instanceof QueryVisitor) {
+                        add((QueryVisitor) obj);
+                    }
+                    else {
+                        logger.error("Undefined QueryVisitor: " + name);
+                    }
+                } catch (ClassNotFoundException ex) {
+                    logger.error("Undefined QueryVisitor: " + name);
+                } catch (InstantiationException ex) {
+                    logger.error("Undefined QueryVisitor: " + name);
+                } catch (IllegalAccessException ex) {
+                    logger.error("Undefined QueryVisitor: " + name);
+                }
+            }
         }
     }
     

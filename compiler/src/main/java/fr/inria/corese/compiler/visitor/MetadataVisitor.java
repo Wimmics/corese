@@ -30,6 +30,8 @@ public class MetadataVisitor implements QueryVisitor {
     
     ASTQuery ast;
     int count = 0;
+    
+    public MetadataVisitor() {}
 
     @Override
     public void visit(ASTQuery ast) {

@@ -31,7 +31,8 @@ public class ASTPrinter {
             ast.getUpdate().toString(sb);
         } else {
             if (isPrefix()){
-                getSparqlPrefix(sb);
+                sb.append(ast.getNSM().toString(null, false, false));
+                //getSparqlPrefix(sb);
             }
             getSparqlHeader(sb);
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
@@ -54,7 +55,6 @@ public class ASTPrinter {
     }
 
     public StringBuffer getSparqlPrefix(Exp exp, StringBuffer sb) {
-        sb.append(ast.getNSM().toString(null, false, false));
         
         for (Exp e : exp.getBody()) {
             Triple t = e.getTriple();

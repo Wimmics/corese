@@ -42,6 +42,7 @@ public class Metadata extends ASTObject
     
     // uncertainty triple metadata
     public static final int METADATA  = 50;
+    public static final int VISITOR   = 51;
        
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -104,6 +105,7 @@ public class Metadata extends ASTObject
         define("@dbfactory",DB_FACTORY);      
         define("@bgp",      BGP); 
         define("@metadata", METADATA);      
+        define("@visitor",  VISITOR);      
     }
     
     static void define(String str, int type){

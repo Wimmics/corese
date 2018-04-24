@@ -195,7 +195,9 @@ public class PluginImpl
     @Override
     public IDatatype function(Expr exp, Environment env, Producer p) {
 
-        switch (exp.oper()) {         
+        switch (exp.oper()) {   
+            
+            case XT_NAME: return name(env);
 
             case KG_GRAPH:
                 return DatatypeMap.createObject(getGraph(p));
@@ -665,6 +667,18 @@ public class PluginImpl
             return (ent == null) ? FALSE :TRUE;
         }
         return FALSE;
+    }
+    
+    // name of  current named graph 
+    IDatatype name(Environment env) {
+        if (env.getGraphNode() == null) {
+            return null;
+        }      
+        Node n = env.getNode(env.getGraphNode());
+        if (n == null) {
+            return null;
+        }
+        return (IDatatype) n.getDatatypeValue();
     }
     
     /*

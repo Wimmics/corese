@@ -360,7 +360,7 @@ public class FederateVisitor implements QueryVisitor {
         if (t.isPath()){
             return getServiceListPath(t);
         }
-        return getServiceList(t.getPredicate());
+        return getServiceListTriple(t);
     }
     
     List<Atom> getServiceListPath(Triple t) {
@@ -379,16 +379,22 @@ public class FederateVisitor implements QueryVisitor {
         }
     }
     
-    List<Atom> getServiceList(Atom p) {
-        if (p.isVariable()) {
-            return ast.getServiceList();
-        }
-        return getServiceList(p.getConstant());
-    }
-    
-    List<Atom> getServiceList(Constant p) {
+     List<Atom> getServiceList(Constant p) {          
         if (select) {
             List<Atom> list = selector.getPredicateService(p);
+            if (! list.isEmpty()) {
+                return list;
+            }
+        }
+        return ast.getServiceList();
+    }
+    
+    List<Atom> getServiceListTriple(Triple t) {
+        if (t.getPredicate().isVariable()) {
+            return ast.getServiceList();
+        }        
+        if (select) {
+            List<Atom> list = selector.getPredicateService(t);
             if (! list.isEmpty()) {
                 return list;
             }

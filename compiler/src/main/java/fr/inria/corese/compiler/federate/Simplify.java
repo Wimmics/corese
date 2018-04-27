@@ -1,6 +1,7 @@
 package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
@@ -62,23 +63,27 @@ public class Simplify {
      * TODO: merge when there is only one URI ???
      */ 
     Exp merge(Exp bgp) {    
-        ServiceList map = new ServiceList();
-        
+        ServiceList map1 = new ServiceList();
+        ServiceList map2 = new ServiceList();        
         // create map: service URI -> list (Service)
         for (Exp exp : bgp) {
-            if (exp.isService() && ! exp.getService().isFederate()) {
-                if (isTripleOnly(exp.getBodyExp())) {
+            if (exp.isService()){ 
+                if (exp.getService().isFederate()) {
+                    // skip
+                }               
+                else if (isTripleOnly(exp.getBodyExp())) {
                     // do not merge basic BGP with same service URI
                     // because they are not connected 
+                    map2.add(exp.getService());
                 }
                 else {
-                    map.add(exp.getService());
+                    map1.add(exp.getService());
                 }
             }
         }
-        
+              
         // group several services with same URI into one service
-        for (List<Service> list : map.getMap().values()) {
+        for (List<Service> list : map1.getMap().values()) {
             if (list.size() > 1) {
                 int i = 0;
                 Service first = list.get(0);
@@ -91,8 +96,56 @@ public class Simplify {
                 }
             }
         }
+        
+        // @local rdfs:label
+        /**
+         * if there is a service s1 with several uri with  a triple 
+         *  annotated as @local and if there is a service s2 with 
+         * one of the URI of s1, s1 can be merged with s2
+         */
+        ArrayList<Service> list = new ArrayList<>();
+        for (Exp exp : bgp) {
+            if (exp.isService() && isLocalizable(exp.getService())) {
+                Service serv = getCandidate(exp.getService(), map2);
+                if (serv != null) {
+                    serv.getBodyExp().include(exp.getService().getBodyExp());
+                    list.add(exp.getService());
+                }               
+            }
+        }
+  
+        for (Service s : list) {
+            bgp.getBody().remove(s);
+        }
                
         return bgp;
+    }
+    
+    
+    Service getCandidate(Service serv, ServiceList map) {
+        Service res = null;       
+        for (Atom name : serv.getServiceList()) {
+            List<Service> list = map.getMap().get(name.getLabel());
+            if (list != null) {
+                if (res == null) {
+                    res = list.get(0);
+                    if (! serv.getBodyExp().isConnected(res.getBodyExp())) {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+        }
+        return res;
+    }
+    
+    boolean isLocalizable(Service exp) {
+        Exp body = exp.getBodyExp();
+        return exp.isFederate()
+                && body.size() == 1 && body.get(0).isTriple()
+                && body.get(0).getTriple().getPredicate().isConstant()
+                && visitor.getAST().hasMetadata(Metadata.LOCAL, body.get(0).getTriple().getPredicate().getLabel());
     }
     
     /**
@@ -169,19 +222,35 @@ public class Simplify {
             Exp e2 = exp.get(1).get(0);
             if (e1.isService() && e2.isService()) {
                 Service s1 = e1.getService();
-                Service s2 = e2.getService();
-                if (s1.getServiceList().size() == 1
-                        && s2.getServiceList().size() == 1
-                        && s1.getServiceName().equals(s2.getServiceName())) {
-                    exp.set(0, s1.getBodyExp());
-                    exp.set(1, s2.getBodyExp());
-                    Exp simple = simplifyGraph(exp);
-                    Service s = 
-                        Service.create(s1.getServiceName(), 
-                            BasicGraphPattern.create(simple));
-                    return s;
-                }
+                Service s2 = e2.getService();               
+                return simplifyService(exp, s1, s2);
             }
+        }
+        return exp;
+    }
+    
+    Exp simplifyService(Exp exp, Service s1, Service s2) {
+        if (!s1.isFederate() && !s2.isFederate()
+                && s1.getServiceName().equals(s2.getServiceName())) {
+            exp.set(0, s1.getBodyExp());
+            exp.set(1, s2.getBodyExp());
+            Exp simple = simplifyGraph(exp);
+            Service s = Service.create(s1.getServiceName(),
+                            BasicGraphPattern.create(simple));
+            return s;
+        }
+        return simplifyService2(exp, s1, s2);
+    }
+    
+    Exp simplifyService2(Exp exp, Service s1, Service s2) {
+        if (!s1.isFederate() && isLocalizable(s2)
+                && s2.getServiceList().contains(s1.getServiceName())) {
+            exp.set(0, s1.getBodyExp());
+            exp.set(1, s2.getBodyExp());
+            Exp simple = simplifyGraph(exp);
+            Service s = Service.create(s1.getServiceName(),
+                            BasicGraphPattern.create(simple));
+            return s;
         }
         return exp;
     }

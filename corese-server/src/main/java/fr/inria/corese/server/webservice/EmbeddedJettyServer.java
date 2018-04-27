@@ -124,6 +124,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Option versionOpt = new Option("v", "version", false, "print the version information and exit");
         Option localhost = new Option("lh", "localhost", false, "set server name as localhost");
         Option optDebug = new Option("debug", "debug", false, "set server mode as debug");
+        Option protect = new Option("protect", "protect", false, "set server mode as protect");
 
         Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
         Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -140,6 +141,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         options.addOption(versionOpt);
         options.addOption(localhost);
         options.addOption(optDebug);
+        options.addOption(protect);
 
         options.addOption(sslOpt);
         options.addOption(portSslOpt);
@@ -211,6 +213,10 @@ public class EmbeddedJettyServer extends ResourceConfig {
             if (cmd.hasOption("debug")) {
                 System.out.println("debug");
                 setDebug(true);
+            }
+            if (cmd.hasOption("protect")) {
+                System.out.println("protect");
+                SPARQLRestAPI.isProtected = true;
             }
 
 //            final ResourceConfig resourceConfig = new ResourceConfig(Transformer.class);

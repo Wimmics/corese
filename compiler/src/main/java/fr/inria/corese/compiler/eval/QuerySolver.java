@@ -58,6 +58,7 @@ public class QuerySolver  implements SPARQLEngine {
         
         public static final int DEFAULT_MODE = 0;
         public static final int SERVER_MODE  = 1;
+        static int INIT_SERVER_MODE  = DEFAULT_MODE;
 
         private static int QUERY_PLAN  = Query.QP_DEFAULT;
         
@@ -105,7 +106,7 @@ public class QuerySolver  implements SPARQLEngine {
 	boolean isSequence = false;
 	
 	int slice = Query.DEFAULT_SLICE;
-        private int mode = DEFAULT_MODE;
+        private int mode = INIT_SERVER_MODE;
 	
 	// set default base for SPARQL Query
 	// it is overloaded if query has a base (cf prefix/base)
@@ -706,6 +707,10 @@ public class QuerySolver  implements SPARQLEngine {
     public void setMode(int mode) {
         this.mode = mode;
         initMode();
+    }
+    
+    static public void setModeDefault(int mode) {
+        INIT_SERVER_MODE = mode;
     }
     
     public void initMode(){       

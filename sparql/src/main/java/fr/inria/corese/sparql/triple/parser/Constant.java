@@ -32,6 +32,7 @@ public class Constant extends Atom {
     private static Logger logger = LoggerFactory.getLogger(Constant.class);
     private static NSManager nsm;
     static DatatypeMap dm;
+    private static boolean stringDatatype = false;
     boolean isQName = false;
     IDatatype dt;
     String datatype = null;
@@ -163,6 +164,10 @@ public class Constant extends Atom {
     public void toJava(JavaCompiler jc) {
         jc.toJava(this);
     }
+    
+    public static void setString(boolean b) {
+        stringDatatype = b;
+    }
 
     @Override
     public StringBuffer toString(StringBuffer sb) {
@@ -182,12 +187,12 @@ public class Constant extends Atom {
                     sb.append(name);
                 } else if (datatype.startsWith("http://")) {
                     toString(name, sb);
-                    if (!datatype.equals(RDF.xsdstring)) {
+                    if (!datatype.equals(RDF.xsdstring) || stringDatatype) {
                         sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
                     }
                 } else {
                     toString(name, sb);
-                    if (!datatype.equals(RDF.qxsdString)) {
+                    if (!datatype.equals(RDF.qxsdString) || stringDatatype) {
                         sb.append(KeywordPP.SDT).append(datatype);
                     }
                 }

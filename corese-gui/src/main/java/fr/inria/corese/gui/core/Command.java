@@ -13,6 +13,7 @@ public class Command extends HashMap<String, String> {
     public static final String MAX_LOAD         = "-maxload";
     public static final String LINKED_FUNCTION  = "-linkedfunction";
     public static final String METADATA         = "-metadata";
+    public static final String STRING           = "-string";
         
     
     Command (String[] args) {
@@ -31,7 +32,11 @@ public class Command extends HashMap<String, String> {
                 case VERBOSE:
                 case "-v":
                     put(VERBOSE, "true");
-                    break;                                  
+                    break;  
+                    
+                case STRING:
+                    put(STRING, "true");
+                    break;
                     
                 case MAX_LOAD:
                    put(MAX_LOAD, args[i++]);

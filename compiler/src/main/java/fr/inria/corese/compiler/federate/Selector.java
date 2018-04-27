@@ -36,6 +36,8 @@ public class Selector {
     ASTQuery ast;
     HashMap<String, List<Atom>> predicateService;
     HashMap<String, String> predicateVariable;
+    HashMap<Triple, List<Atom>> tripleService;
+    HashMap<Triple, String> tripleVariable;
     QuerySolver exec;
     boolean sparql10 = false;
     
@@ -44,6 +46,8 @@ public class Selector {
         exec = e;
         predicateService  = new HashMap<>();
         predicateVariable = new HashMap<>();
+        tripleVariable    = new HashMap<>();
+        tripleService     = new HashMap<>();
         
         if (ast.hasMetadata(Metadata.SPARQL10)){
             sparql10 = true;
@@ -86,6 +90,7 @@ public class Selector {
 
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
+            
             for (String pred : predicateVariable.keySet()) {
                 String var = predicateVariable.get(pred);
                 IDatatype val = (IDatatype) m.getValue(var);
@@ -93,6 +98,15 @@ public class Selector {
                     predicateService.get(pred).add(Constant.create(serv));
                 }
             }
+            
+            for (Triple t : tripleVariable.keySet()) {
+                String var = tripleVariable.get(t);
+                IDatatype val = (IDatatype) m.getValue(var);
+                if (val != null && val.booleanValue()) {
+                    tripleService.get(t).add(Constant.create(serv));
+                }
+            }
+            
         }
 
         trace();
@@ -123,11 +137,22 @@ public class Selector {
         return predicateService.get(pred.getLabel());
     }
     
+    List<Atom> getPredicateService(Triple t) {
+        List<Atom> list = tripleService.get(t);
+        if (list != null && !list.isEmpty()) {
+            return list;
+        }
+        return predicateService.get(t.getPredicate().getLabel());
+    }
+   
     void trace() {
         if (ast.isDebug()) {
             System.out.println("Triple Selection");
             for (String pred : predicateService.keySet()) {
                 System.out.println(pred + " " + predicateService.get(pred));
+            }
+            for (Triple t : tripleService.keySet()) {
+                System.out.println(t + " " + tripleService.get(t));
             }
         }
     }
@@ -137,6 +162,11 @@ public class Selector {
         if (! predicateService.containsKey(p.getLabel())) {
             predicateService.put(p.getLabel(), new ArrayList<Atom>());
         }
+    }
+    
+    void declare(Triple t, Variable var) {
+        tripleVariable.put(t, var.getLabel());
+        tripleService.put(t, new ArrayList<Atom>());
     }
     
     /**
@@ -165,6 +195,7 @@ public class Selector {
     BasicGraphPattern createBGP(ASTQuery aa) {
         BasicGraphPattern bgp = BasicGraphPattern.create();
         int i = 0;
+        
         for (Constant p : ast.getPredicateList()) {
             if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
 
@@ -179,7 +210,24 @@ public class Selector {
                 declare(p, var);
             }
         }
+        
+        for (Triple t : ast.getTripleList()) {
+            if (selectable(t)) {
+                // triple with constant
+                BasicGraphPattern bb = BasicGraphPattern.create(t);
+                Variable var = Variable.create("?b" + i++);
+                Binding exist = Binding.create(aa.createExist(bb, false), var);
+                bgp.add(exist);
+                declare(t, var);
+            }
+        }
+        
         return bgp;
+    }
+    
+    boolean selectable(Triple t) {
+        return t.getPredicate().isConstant() 
+                && (t.getSubject().isConstant() || t.getObject().isConstant());
     }
     
     /**

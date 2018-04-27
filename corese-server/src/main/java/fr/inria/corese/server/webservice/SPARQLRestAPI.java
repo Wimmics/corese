@@ -35,7 +35,6 @@ import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.core.print.TripleFormat;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.

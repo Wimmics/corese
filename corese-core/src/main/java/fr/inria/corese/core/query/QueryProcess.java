@@ -711,8 +711,12 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
+    boolean isProtected(Query q) {
+        return (getMode() == SERVER_MODE || getAST(q).isUserQuery()); 
+    }
+    
     Mappings synUpdate(Query query, Dataset ds) throws EngineException {
-        if (getMode() == SERVER_MODE) {
+        if (isProtected(query)) {
             return new Mappings();
         }
         Graph g = getGraph();

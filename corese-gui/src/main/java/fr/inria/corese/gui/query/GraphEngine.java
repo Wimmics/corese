@@ -21,6 +21,7 @@ import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -96,6 +97,8 @@ public class GraphEngine  {
                     case Command.METADATA:
                         graph.setMetadata(true);
                         break;
+                    case Command.STRING:
+                        Constant.setString(true);
                 }
             }
         }

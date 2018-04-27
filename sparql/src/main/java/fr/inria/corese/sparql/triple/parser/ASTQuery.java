@@ -263,6 +263,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     private String service;
     private List<Atom> serviceList;
     private List<Constant> predicateList;
+    private List<Triple> tripleList;
 
     /**
      * @return the defaultDataset
@@ -414,6 +415,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         lambdaDefine = new ASTExtension();
         undefined = new HashMap();
         predicateList = new ArrayList<>();
+        tripleList = new ArrayList<>();
     }
 
     ASTQuery(String query) {
@@ -1897,7 +1899,16 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         }
         else if (t.getPredicate().isConstant()) {
             submit(t.getPredicate().getConstant());
+            record(t);
         }
+    }
+    
+    void record(Triple t) {
+        tripleList.add(t);
+    }
+    
+    public List<Triple> getTripleList() {
+        return tripleList;
     }
     
     void submit(Constant p){

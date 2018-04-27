@@ -43,7 +43,8 @@ public class Metadata extends ASTObject
     // uncertainty triple metadata
     public static final int METADATA  = 50;
     public static final int VISITOR   = 51;
-       
+    public static final int LOCAL     = 52;
+      
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
     public static final String DISPLAY_JSON_LD  = PREF + "jsonld";
@@ -91,6 +92,7 @@ public class Metadata extends ASTObject
         define("@more",     MORE);      
         define("@relax",    RELAX);      
         define("@service",  SERVICE);      
+        define("@local",    LOCAL);      
         define("@bounce",   BOUNCE);      
         define("@sparqlzero", SPARQL10);      
         define("@encoding", ENCODING);      

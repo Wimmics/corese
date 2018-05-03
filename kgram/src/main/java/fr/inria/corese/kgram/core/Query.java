@@ -361,10 +361,12 @@ public class Query extends Exp implements Graphable {
         return queries;
     }
 
+    @Override
     public Object getObject() {
         return object;
     }
 
+    @Override
     public void setObject(Object o) {
         object = o;
     }

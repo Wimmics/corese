@@ -111,6 +111,7 @@
         <log4j2.version>2.11.0</log4j2.version>
         <sesame.version>4.1.1</sesame.version>
         <jersey.version>2.26</jersey.version>
+	<semargl.version>0.7.1-SNAPSHOT</semargl.version>
     </properties>
 
     <dependencyManagement>
@@ -395,12 +396,12 @@
             <dependency>
                 <groupId>org.semarglproject</groupId>
                 <artifactId>semargl-core</artifactId>
-                <version>0.6.1</version>
+		<version>${semargl.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.semarglproject</groupId>
                 <artifactId>semargl-rdfa</artifactId>
-                <version>0.6.1</version>
+		<version>${semargl.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.jsonld-java</groupId>
@@ -676,7 +677,7 @@
 						    <jdkToolchain>
 							    <version>9</version>
 						    </jdkToolchain> 
-						    <releae>9</releae>
+						    <!--<releae>9</releae>-->
 						    <source>9</source>
 						    <target>9</target>
 					    </configuration> 

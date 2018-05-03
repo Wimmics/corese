@@ -7,4 +7,7 @@ module fr.inria.corese.kgram {
 	exports fr.inria.corese.kgram.filter;
 	exports fr.inria.corese.kgram.event;
 	exports fr.inria.corese.kgram.tool;
+	exports fr.inria.corese.kgram.sorter.core;
+	exports fr.inria.corese.kgram.path;
+	exports fr.inria.corese.kgram.sorter.impl.qpv1;
 }

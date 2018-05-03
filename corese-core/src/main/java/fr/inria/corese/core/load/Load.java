@@ -49,7 +49,7 @@ import java.net.URLConnection;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.semarglproject.rdf.ParseException;
+import org.semarglproject.rdf.core.ParseException;
 
 /**
  * Translate an RDF/XML document into a Graph use ARP

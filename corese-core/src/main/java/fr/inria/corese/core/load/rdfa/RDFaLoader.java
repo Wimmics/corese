@@ -8,7 +8,7 @@ import java.io.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.semarglproject.rdf.ParseException;
+import org.semarglproject.rdf.core.ParseException;
 import org.semarglproject.rdf.rdfa.RdfaParser;
 import org.semarglproject.source.StreamProcessor;
 

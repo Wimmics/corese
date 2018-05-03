@@ -12,4 +12,10 @@ module fr.inria.corese.sparql {
 	exports fr.inria.corese.sparql.triple.function.term;
 	exports fr.inria.corese.sparql.compiler.java;
 	exports fr.inria.corese.sparql.datatype.function;
+    exports fr.inria.corese.sparql.storage.api;
+	exports fr.inria.corese.sparql.storage.util;
+    exports fr.inria.corese.sparql.triple.printer;
+    exports fr.inria.corese.sparql.triple.api;
+	exports fr.inria.corese.sparql.triple.function.core;
+	exports fr.inria.corese.sparql.storage.fs;
 }

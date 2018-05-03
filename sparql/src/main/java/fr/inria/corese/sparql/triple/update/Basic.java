@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.update;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import fr.inria.corese.sparql.triple.parser.ASTPrinter;
 import fr.inria.corese.sparql.triple.parser.And;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -45,7 +46,8 @@ public class Basic extends Update {
 	}
 	
 	
-	public StringBuffer toString(StringBuffer sb){
+        @Override
+	public ASTBuffer toString(ASTBuffer sb){
 		
 		switch (type()){
 		
@@ -105,7 +107,7 @@ public class Basic extends Update {
 		return prolog.size() > 0;
 	}	
 	
-	void prolog(StringBuffer sb){
+	void prolog(ASTBuffer sb){
 		//getASTUpdate().getASTQuery().getSparqlPrefix(prolog, sb);
                 ASTPrinter pr = new ASTPrinter(getASTUpdate().getASTQuery());
                 pr.getSparqlPrefix(prolog, sb);

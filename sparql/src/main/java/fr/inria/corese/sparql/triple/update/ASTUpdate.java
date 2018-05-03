@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.update;
 
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,18 +30,19 @@ public class ASTUpdate {
 	}
 	
 	
+        @Override
 	public String toString(){
-		StringBuffer sb = new StringBuffer();
+		ASTBuffer sb = new ASTBuffer();
 		toString(sb);
 		return sb.toString();
 	}
 	
-	public StringBuffer toString(StringBuffer sb){
+	public ASTBuffer toString(ASTBuffer sb){
 		for (Update ast : list){
 			ast.toString(sb);
 			if (ast.type() != Update.PROLOG) {
 				sb.append(PV);
-				sb.append(NL);
+				sb.nl();
 			}
 		}
 		return sb;

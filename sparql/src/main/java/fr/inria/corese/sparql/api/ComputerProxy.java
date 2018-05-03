@@ -21,10 +21,16 @@ public interface ComputerProxy {
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt);
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     
-    IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
-            Expr exp, Environment env, Producer prod);
+    IDatatype transform(IDatatype[] args, IDatatype focus, 
+                        IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod);
     
     IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod);
+    
+    IDatatype   visit(Environment env, Producer prod, IDatatype dt1, IDatatype dt2, IDatatype dt3);
+    IDatatype visited(Environment env, Producer prod, IDatatype dt);
+    IDatatype  indent(Environment env, Producer prod, IDatatype dt);
+    IDatatype      nl(Environment env, Producer prod, IDatatype dt);
+    IDatatype format(IDatatype[] ldt);
     
     Context getContext(Environment env, Producer p);
     

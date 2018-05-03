@@ -33,9 +33,11 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.function.template.CGetSetContext;
 import fr.inria.corese.sparql.triple.function.template.FocusNode;
 import fr.inria.corese.sparql.triple.function.template.GetSetContext;
+import fr.inria.corese.sparql.triple.function.template.Indent;
 import fr.inria.corese.sparql.triple.function.template.Prefix;
 import fr.inria.corese.sparql.triple.function.template.TemplateNumber;
 import fr.inria.corese.sparql.triple.function.template.Turtle;
+import fr.inria.corese.sparql.triple.function.template.Visit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -416,9 +418,11 @@ public class Term extends Expression {
                 
             case ExprType.INDENT:
             case ExprType.STL_NL:
+                return new Indent(name);
+                
             case ExprType.STL_VISIT:
             case ExprType.STL_VISITED:
-                return new TemplateFunction(name);
+                return new Visit(name);
                 
             case ExprType.APPLY_TEMPLATES:
             case ExprType.APPLY_TEMPLATES_ALL:

@@ -32,7 +32,7 @@ public class TemplateProcess extends Extension  {
                     // extension function call:  st:process(?x)
                     return super.eval(eval, b, env, p);
                 } else {
-                    proxy = new TemplateFunction(getName());
+                    proxy = new Turtle(getName());
                     fill(proxy);
                     proxy.setOper(ExprType.TURTLE);
                 }

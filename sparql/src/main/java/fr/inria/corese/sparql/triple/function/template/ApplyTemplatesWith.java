@@ -8,7 +8,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 
 /**
  *
- * @author Olivier Corby, Wimmics INRIA I3S, 2017
+ * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
 public class ApplyTemplatesWith extends TemplateFunction {  

@@ -30,18 +30,23 @@ public class TemplateFunction extends TermEval {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype[] param = evalArguments(eval, b, env, p, 0);
-        if (param == null){
-            return null;
-        }
-
-        switch (param.length){
-            case 0:  return eval.getComputerTransform().function(this, env, p); 
-            case 1:  return eval.getComputerTransform().function(this, env, p, param[0]); 
-            case 2:  return eval.getComputerTransform().function(this, env, p, param[0], param[1]); 
-            default: return eval.getComputerTransform().eval(this, env, p, param); 
-        }
+        return null;
     }
+    
+    //@Override
+//    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
+//        IDatatype[] param = evalArguments(eval, b, env, p, 0);
+//        if (param == null){
+//            return null;
+//        }
+//
+//        switch (param.length){
+//            case 0:  return eval.getComputerTransform().function(this, env, p); 
+//            case 1:  return eval.getComputerTransform().function(this, env, p, param[0]); 
+//            case 2:  return eval.getComputerTransform().function(this, env, p, param[0], param[1]); 
+//            default: return eval.getComputerTransform().eval(this, env, p, param); 
+//        }
+//    }
     
   /**
      * st:format (e1, st:number(), e2)

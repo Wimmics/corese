@@ -27,7 +27,13 @@ public class TemplateFormat extends TemplateFunction {
         if (oper() == ExprType.STL_FORMAT && isFuture()) {
             return future(eval, b, env, p);
         }
-        return super.eval(eval, b, env, p);
+        
+        IDatatype[] param = evalArguments(eval, b, env, p, 0);
+        if (param == null){
+            return null;
+        }
+        
+        return eval.getComputerTransform().format(param);
     }   
        
 }

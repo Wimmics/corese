@@ -8,7 +8,6 @@ import java.util.List;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.datatype.XSD;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -695,7 +694,7 @@ public class Transformer  {
     public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
             boolean allTemplates, String sep, Expr exp, Query q){
         return process(args, dt, temp, allTemplates, sep, exp, q, null); 
-   }
+    }
     
     public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
             boolean allTemplates, String sep, Expr exp, Query q, Environment env) {   
@@ -1237,30 +1236,14 @@ public class Transformer  {
      * display RDF Node in its Turtle syntax
      */
     public IDatatype turtle(IDatatype dt) {
-        return turtle(dt, false);
+        return nsm.turtle(dt, false);
     }
     
     /**
      * force = true: if no prefix generate prefix
      */
     public IDatatype turtle(IDatatype dt, boolean force) {
-        String label = dt.getLabel();
-        if (dt.isURI()) {
-            nsm.setRecord(true);
-            String uri = nsm.toPrefixURI(label, ! force);
-            dt = DatatypeMap.newStringBuilder(uri);          
-        } else if (dt.isLiteral()) {
-            if ((dt.getCode() == IDatatype.INTEGER 
-                    && dt.getDatatypeURI().equals(XSD.xsdinteger) 
-                    && (! (label.startsWith("0") && label.length() > 1))) 
-             || (dt.getCode() == IDatatype.BOOLEAN && (label.equals("true") || label.equals("false")))) {
-                // print string value as is
-            } else {
-                // add quotes around string, add lang tag if any
-                dt = DatatypeMap.newStringBuilder(dt.toString());
-            }
-        }
-        return dt;
+        return nsm.turtle(dt, force);
     }
     
     /**

@@ -147,7 +147,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
-                return transformFocus(dt, null, null, exp, env, p);
+                return transform(null, dt, null, null, null, exp, env, p);
 
             case CALL_TEMPLATE:
             case STL_TEMPLATE:
@@ -210,13 +210,13 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 // dt1: transformation
                 // dt2: focus
                 
-               return transformFocus(dt2,  dt1, null, exp, env, p);
+               return transform(null, dt2,  dt1, null, null, exp, env, p);
 
             case CALL_TEMPLATE:
             case STL_TEMPLATE:
                 // dt1: template name
                 // dt2: focus
-                return transformFocus(dt2,  null, dt1, exp, env, p);
+                return transform(null, dt2,  null, dt1, null, exp, env, p);
 
             case CALL_TEMPLATE_WITH:
                 // dt1: transformation
@@ -561,19 +561,15 @@ public class PluginTransform implements ComputerProxy, ExprType {
     /**
      * Without focus node
      */
-    IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
+    @Override
+    public IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
         Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
                 exp.getModality());
     }
-
-   
-    IDatatype transformFocus(IDatatype focus,  IDatatype trans, IDatatype temp, Expr exp, Environment env, Producer prod) {
-        return transform(null, focus,  trans, temp, null, exp, env, prod);
-    }
-
+  
     /**
      * exp:   calling expression eg st:apply-templates
      * focus: focus node, arg is an argument node
@@ -581,7 +577,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * temp:  name of a named template, may be null
      * name:  named graph
      */    
-    IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
+    @Override
+    public IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
         Transformer p = getTransformer(exp, env, prod, trans, temp, name);
         IDatatype dt = p.process(args, focus, 
@@ -591,6 +588,11 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 exp.getModality(), exp, env.getQuery(), env);
         return dt;
     }
+    
+    IDatatype transformFocus(IDatatype focus,  IDatatype trans, IDatatype temp, Expr exp, Environment env, Producer prod) {
+        return transform(null, focus,  trans, temp, null, exp, env, prod);
+    }
+
     
     /*****************************************************************************************
      * 
@@ -699,7 +701,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
     * Transformation templates share Transformer Context
     * Query and Template alone have own Context
     */
-    Context getContext(Environment env, Producer p) {
+    public Context getContext(Environment env, Producer p) {
         Context c = getQueryContext(env, p);
         if (c == null){
             c = getTransformerContext(env, p);
@@ -914,6 +916,11 @@ public class PluginTransform implements ComputerProxy, ExprType {
         Transformer p = getTransformer(env, prod);
         IDatatype dt = p.turtle(o);
         return dt;
+    }
+    
+    public NSManager getNSM(Environment env, Producer prod) {
+        Transformer p = getTransformer(env, prod);
+        return p.getNSM();
     }
     
     IDatatype strip(IDatatype dt, Environment env, Producer prod){

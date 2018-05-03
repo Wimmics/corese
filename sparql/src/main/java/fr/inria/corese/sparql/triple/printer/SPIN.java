@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.triple.printer;
 
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.And;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -80,7 +81,7 @@ public class SPIN implements ASTVisitor {
     
     private final static String BN = "_:sb";
     
-    StringBuffer sb;
+    ASTBuffer sb;
     private int counter = 0;
     int vcount = 0;
 
@@ -91,7 +92,7 @@ public class SPIN implements ASTVisitor {
 
     
     SPIN() {
-        setBuffer(new StringBuffer());
+        setBuffer(new ASTBuffer());
         tvar   = new HashMap <String, String> ();
         tbnode = new HashMap <String, String> ();        
     }
@@ -111,11 +112,11 @@ public class SPIN implements ASTVisitor {
         return new SPIN();
     }
 
-    public void setBuffer(StringBuffer s) {
+    public void setBuffer(ASTBuffer s) {
         sb = s;
     }
 
-    public StringBuffer getBuffer() {
+    public ASTBuffer getBuffer() {
         return sb;
     }
     
@@ -1390,7 +1391,7 @@ public class SPIN implements ASTVisitor {
         return t;
     }
     
-     private void tab(StringBuffer sb) {
+     private void tab(ASTBuffer sb) {
         for (int j = 0; j < counter; j++) {
             sb.append(SPACE);
         }

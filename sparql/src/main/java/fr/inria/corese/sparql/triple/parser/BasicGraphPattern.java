@@ -69,7 +69,7 @@ public class BasicGraphPattern extends And {
 	}
     
         @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
     	sb.append ("{");
     	super.toString(sb);
     	sb.append("}");
@@ -164,6 +164,7 @@ public class BasicGraphPattern extends And {
 	 * check bind(EXP, VAR) : var not in scope
 	 */
     
+        @Override
     public boolean validate(ASTQuery ast, boolean exist) {
 		boolean ok = true;
 		

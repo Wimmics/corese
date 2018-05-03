@@ -46,7 +46,7 @@ public class Variable extends Atom {
 	}
 	
         @Override
-	public StringBuffer toString(StringBuffer sb){
+	public ASTBuffer toString(ASTBuffer sb){
 		if (isBlankNode()) {
 			if (isBlankVariable(name)){
 				// variable for blank node, replace ?_ by _:

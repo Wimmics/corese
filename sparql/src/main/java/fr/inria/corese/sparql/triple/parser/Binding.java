@@ -26,7 +26,7 @@ public class Binding extends Exp {
     }
         
     @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         sb.append("bind(");
         exp.toString(sb);
         sb.append(" as ");

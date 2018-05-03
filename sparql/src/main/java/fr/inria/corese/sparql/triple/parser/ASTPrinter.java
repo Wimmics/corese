@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
-import static fr.inria.corese.sparql.triple.parser.ASTQuery.NL;
 import java.util.List;
 
 /**
@@ -21,12 +20,12 @@ public class ASTPrinter {
     
     @Override
      public String toString() {
-        StringBuffer sb = new StringBuffer();
+        ASTBuffer sb = new ASTBuffer();
         toString(sb);
         return sb.toString();
     }
 
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         if (ast.isUpdate()) {
             ast.getUpdate().toString(sb);
         } else {
@@ -35,12 +34,14 @@ public class ASTPrinter {
                 //getSparqlPrefix(sb);
             }
             getSparqlHeader(sb);
+            
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
-                ast.getBody().toString(sb);
+                sb.append(KeywordPP.WHERE).append(" ");
+                ast.getBody().pretty(sb);
             }
 
             if (!ast.isAsk()) {
-                sb.append(NL);
+                sb.nl();
                 getSparqlSolutionModifier(sb);
             }
         }
@@ -50,11 +51,11 @@ public class ASTPrinter {
         return sb;
     }
 
-    StringBuffer getSparqlPrefix(StringBuffer sb) {
+    ASTBuffer getSparqlPrefix(ASTBuffer sb) {
         return getSparqlPrefix(ast.getPrefixExp(), sb);
     }
 
-    public StringBuffer getSparqlPrefix(Exp exp, StringBuffer sb) {
+    public ASTBuffer getSparqlPrefix(Exp exp, ASTBuffer sb) {
         
         for (Exp e : exp.getBody()) {
             Triple t = e.getTriple();
@@ -72,10 +73,10 @@ public class ASTPrinter {
                     
                     ) {
                 sb.append(KeywordPP.PREFIX + KeywordPP.SPACE).append(p)
-                        .append(": " + KeywordPP.OPEN).append(v).append(KeywordPP.CLOSE).append(NL);
+                        .append(": " + KeywordPP.OPEN).append(v).append(KeywordPP.CLOSE).nl();
             } else if (r.equalsIgnoreCase(KeywordPP.BASE)) {
                 sb.append(KeywordPP.BASE + KeywordPP.SPACE + KeywordPP.OPEN)
-                        .append(v).append(KeywordPP.CLOSE).append(NL);
+                        .append(v).append(KeywordPP.CLOSE).nl();
             }
         }
         return sb;
@@ -86,7 +87,7 @@ public class ASTPrinter {
      *
      * @return
      */
-    StringBuffer getSparqlHeader(StringBuffer sb) {
+    ASTBuffer getSparqlHeader(ASTBuffer sb) {
         String SPACE = KeywordPP.SPACE;
         List<Constant> from = ast.getFrom();
         List<Constant> named = ast.getNamed();
@@ -174,31 +175,26 @@ public class ASTPrinter {
 
         // DataSet
         //if (! isConstruct())    // because it's already done in the construct case
-        sb.append(NL);
+        sb.nl();
 
         // From
         for (Atom name : from) {
-            sb.append(KeywordPP.FROM).append(SPACE);
+            sb.append(KeywordPP.FROM, SPACE);
             name.toString(sb);
-            sb.append(NL);
+            sb.nl();
         }
 
         // From Named
         for (Atom name : named) {
-            sb.append(KeywordPP.FROM).append(SPACE).append(KeywordPP.NAMED).append(SPACE);
+            sb.append(KeywordPP.FROM, SPACE, KeywordPP.NAMED, SPACE);
             name.toString(sb);
-            sb.append(NL);
+            sb.nl();
         }
-
-        // Where
-        if ((!(ast.isDescribe() && !ast.isWhere())) && !ast.isData()) {
-            sb.append(KeywordPP.WHERE).append(NL);
-        }
-
+      
         return sb;
     }
 
-    void expr(Expression exp, Variable var, StringBuffer sb) {
+    void expr(Expression exp, Variable var, ASTBuffer sb) {
         sb.append("(");
         exp.toString(sb);
         sb.append(" as ");
@@ -225,7 +221,7 @@ public class ASTPrinter {
      * @param parser
      * @return
      */
-    public StringBuffer getSparqlSolutionModifier(StringBuffer sb) {
+    public ASTBuffer getSparqlSolutionModifier(ASTBuffer sb) {
         String SPACE = KeywordPP.SPACE;
         List<Expression> sort = ast.getSort();
         List<Boolean> reverse = ast.getReverse();
@@ -235,7 +231,7 @@ public class ASTPrinter {
             for (Expression exp : ast.getGroupBy()) {
                 sb.append(exp.toString()).append(SPACE);
             }
-            sb.append(NL);
+            sb.nl();
         }
 
         if (sort.size() > 0) {
@@ -246,7 +242,7 @@ public class ASTPrinter {
 
                 boolean breverse = reverse.get(i++);
                 if (breverse) {
-                    sb.append(KeywordPP.DESC + "(");
+                    sb.append(KeywordPP.DESC, "(");
                 }
                 sb.append(exp.toString());
                 if (breverse) {
@@ -254,7 +250,7 @@ public class ASTPrinter {
                 }
                 sb.append(SPACE);
             }
-            sb.append(NL);
+            sb.nl();
         }
 
         if (ast.getOffset() > 0) {
@@ -279,7 +275,7 @@ public class ASTPrinter {
         return sb;
     }
 
-    void getFinal(StringBuffer sb) {
+    void getFinal(ASTBuffer sb) {
         String SPACE = " ";
 
         if (ast.getValues() != null) {
@@ -293,15 +289,15 @@ public class ASTPrinter {
         }
 
         for (Expression fun : ast.getDefine().getFunList()) {
+            sb.nl();
             fun.toString(sb);
-            sb.append(NL);
-            sb.append(NL);
+            sb.nl();
         }
         
         for (Expression fun : ast.getDefineLambda().getFunList()) {
+            sb.nl();
             fun.toString(sb);
-            sb.append(NL);
-            sb.append(NL);
+            sb.nl();
         }
     }
 

@@ -1,5 +1,12 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.triple.function.template.ApplyTemplatesWith;
+import fr.inria.corese.sparql.triple.function.template.TemplateFuture;
+import fr.inria.corese.sparql.triple.function.template.CallTemplateWith;
+import fr.inria.corese.sparql.triple.function.template.CallTemplate;
+import fr.inria.corese.sparql.triple.function.template.ApplyTemplatesWithGraph;
+import fr.inria.corese.sparql.triple.function.template.ApplyTemplates;
+import fr.inria.corese.sparql.triple.function.template.TemplateFormat;
 import fr.inria.corese.sparql.triple.function.core.*;
 import fr.inria.corese.sparql.triple.function.aggregate.*;
 import fr.inria.corese.sparql.triple.function.term.*;
@@ -15,14 +22,20 @@ import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.proxy.GraphFunction;
-import fr.inria.corese.sparql.triple.function.proxy.TemplateFunction;
-import fr.inria.corese.sparql.triple.function.proxy.TemplateProcess;
+import fr.inria.corese.sparql.triple.function.template.TemplateFunction;
+import fr.inria.corese.sparql.triple.function.template.TemplateProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.function.template.CGetSetContext;
+import fr.inria.corese.sparql.triple.function.template.FocusNode;
+import fr.inria.corese.sparql.triple.function.template.GetSetContext;
+import fr.inria.corese.sparql.triple.function.template.Prefix;
+import fr.inria.corese.sparql.triple.function.template.TemplateNumber;
+import fr.inria.corese.sparql.triple.function.template.Turtle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -386,28 +399,53 @@ public class Term extends Expression {
 
             case ExprType.STL_CONCAT:
                 return new Concat(name);
-            case ExprType.APPLY_TEMPLATES_WITH_GRAPH:
-            case ExprType.APPLY_TEMPLATES_WITH_ALL:
-            case ExprType.APPLY_TEMPLATES_WITH:
-            case ExprType.APPLY_TEMPLATES:
-            case ExprType.APPLY_TEMPLATES_ALL:
-            case ExprType.CALL_TEMPLATE:
-            case ExprType.CALL_TEMPLATE_WITH:
-            case ExprType.STL_GET:
-            case ExprType.STL_SET:
-            case ExprType.STL_CGET:
-            case ExprType.STL_CSET:
+                     
+            case ExprType.XSDLITERAL:
             case ExprType.TURTLE:
+                return new Turtle(name);
+                
+            case ExprType.STL_PREFIX:
+            case ExprType.PROLOG:    
+                return new Prefix(name);
+                
+            case ExprType.STL_NUMBER:
+                return new TemplateNumber(name);
+                
+            case ExprType.FOCUS_NODE:
+                return new FocusNode(name);
+                
             case ExprType.INDENT:
             case ExprType.STL_NL:
             case ExprType.STL_VISIT:
             case ExprType.STL_VISITED:
-            case ExprType.STL_NUMBER:
-            case ExprType.STL_PREFIX:
-            case ExprType.PROLOG:
-            case ExprType.FOCUS_NODE:
-            case ExprType.XSDLITERAL:
                 return new TemplateFunction(name);
+                
+            case ExprType.APPLY_TEMPLATES:
+            case ExprType.APPLY_TEMPLATES_ALL:
+                return new ApplyTemplates(name); 
+                
+            case ExprType.APPLY_TEMPLATES_WITH:    
+            case ExprType.APPLY_TEMPLATES_WITH_ALL:
+                return new ApplyTemplatesWith(name);
+                
+            case ExprType.APPLY_TEMPLATES_WITH_GRAPH:           
+            case ExprType.APPLY_TEMPLATES_WITH_NOGRAPH:
+                return new ApplyTemplatesWithGraph(name);
+                    
+            case ExprType.CALL_TEMPLATE:
+                return new CallTemplate(name);
+                
+            case ExprType.CALL_TEMPLATE_WITH:
+                return new CallTemplateWith(name);
+                
+            case ExprType.STL_GET:
+            case ExprType.STL_SET:
+            case ExprType.STL_EXPORT:    
+                return new GetSetContext(name);
+                
+            case ExprType.STL_CGET:
+            case ExprType.STL_CSET:
+                return new CGetSetContext(name);
                 
             case ExprType.STL_FORMAT:
             case ExprType.FORMAT:
@@ -593,7 +631,7 @@ public class Term extends Expression {
     }
 
     @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
 
         if (getName() == null) {
             return sb;
@@ -609,7 +647,7 @@ public class Term extends Expression {
         int n = args.size();
 
         if (isNegation(getName())) {
-            sb.append(KeywordPP.OPEN_PAREN + SENOT);
+            sb.append(KeywordPP.OPEN_PAREN, SENOT);
             n = 1;
         } else if (isFunction()) {
             if (!getName().equals(LIST)) {
@@ -626,8 +664,7 @@ public class Term extends Expression {
 
         if (isDistinct()) {
             // count(distinct ?x)
-            sb.append(KeywordPP.DISTINCT);
-            sb.append(SPACE);
+            sb.append(KeywordPP.DISTINCT, SPACE);
         }
 
         for (int i = 0; i < n; i++) {
@@ -636,10 +673,9 @@ public class Term extends Expression {
 
             if (i < n - 1) {
                 if (isope) {
-                    sb.append(SPACE + getName() + SPACE);
+                    sb.append(SPACE, getName(), SPACE);
                 } else {
-                    sb.append(KeywordPP.COMMA);
-                    sb.append(SPACE);
+                    sb.append(KeywordPP.COMMA, SPACE);
                 }
             }
         }
@@ -661,14 +697,14 @@ public class Term extends Expression {
         return sb;
     }
 
-    StringBuffer funExist(StringBuffer sb) {
+    ASTBuffer funExist(ASTBuffer sb) {
         if (isSystem()) {
             return ldscriptExist(sb);
         }
         return getExist().toString(sb);
     }
 
-    StringBuffer ldscriptExist(StringBuffer sb) {
+    ASTBuffer ldscriptExist(ASTBuffer sb) {
         Exp exp = getExist().get(0).get(0);
         sb.append("query(");
         exp.toString(sb);
@@ -680,7 +716,7 @@ public class Term extends Expression {
         return sb;
     }
 
-    StringBuffer funSequence(StringBuffer sb) {
+    ASTBuffer funSequence(ASTBuffer sb) {
         if (getArgs().size() >= 1) {
             getArg(0).toString(sb);
         }

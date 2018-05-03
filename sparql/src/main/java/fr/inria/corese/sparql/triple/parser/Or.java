@@ -69,16 +69,13 @@ public class Or extends Exp {
 	}
 			
 	
-	public StringBuffer toString(StringBuffer sb) {
-				
-		sb.append(get(0).toString());
-						
-		for (int i=1; i<size(); i++) {
-			sb.append(KeywordPP.SPACE + KeywordPP.UNION + KeywordPP.SPACE); 		
-			sb.append(get(i).toString());
-		}
-		
-		return sb;
+        @Override
+	public ASTBuffer toString(ASTBuffer sb) {
+            sb.append("{ ").incr();
+            get(0).display(sb);
+            sb.decr().nl().append("} ").append(KeywordPP.UNION).append(" ");
+            get(1).pretty(sb);
+            return sb;
 	}
 	
 	/**

@@ -115,14 +115,11 @@ public class Source extends And {
 
 
         @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         sb.append(KeywordPP.GRAPH + KeywordPP.SPACE);
-        if (state) sb.append(KeywordPP.STATE + KeywordPP.SPACE);
         sb.append(asource);
         sb.append(KeywordPP.SPACE);
-        for (int i=0; i<size(); i++){
-        	sb.append(eget(i).toString());
-        }
+        getBodyExp().pretty(sb);
         return sb;       
     }
 

@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 
 /**
  *
@@ -28,20 +29,15 @@ public class ForLoop extends Statement {
     }
     
     @Override
-    public StringBuffer toString(StringBuffer sb) {         
-        sb.append(Processor.FOR);
-        sb.append(" (");
+    public ASTBuffer toString(ASTBuffer sb) {         
+        sb.append(Processor.FOR, " (");
         getArg(0).toString(sb);
-        sb.append(" ");       
-        sb.append(Processor.IN);
-        sb.append(" ");       
+        sb.append(" ", Processor.IN, " ");       
         getArg(1).toString(sb);
-        sb.append(")");
-        sb.append(" {");
-        sb.append(Term.NL);
-        sb.append("  ");
+        sb.append(") {");
+        sb.nlincr();
         getArg(2).toString(sb);
-        sb.append(Term.NL);
+        sb.nldecr();
         sb.append("}");
         return sb;
     }  

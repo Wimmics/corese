@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 
 /**
  *
@@ -54,7 +55,7 @@ public class Let extends Statement {
     }
 
     @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         sb.append(Processor.LET);
         Expression def = getArg(0);
         sb.append(" (");
@@ -63,10 +64,9 @@ public class Let extends Statement {
         // may be match() after parsing ...
         getDefinition().toString(sb);
         sb.append(") {");
-        sb.append(NL);
-        sb.append("  ");
+        sb.nlincr();
         getBody().toString(sb);
-        sb.append(NL);
+        sb.nldecr();
         sb.append("}");
         return sb;
     }

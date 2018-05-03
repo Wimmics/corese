@@ -13,9 +13,9 @@ import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,18 +102,18 @@ public class Function extends Statement {
     }
 
     @Override
-    public StringBuffer toString(StringBuffer sb) {
-        if (getMetadata() != null){
-//            sb.append(getMetadata());
-//            sb.append(Term.NL);
+    public ASTBuffer toString(ASTBuffer sb) {
+        if (isLambda()) {
+            sb.append(getLabel(), " ");
+            getFunction().toString(sb);
+        } else {
+            sb.append(getLabel(), " ");
+            getFunction().toString(sb);
         }
-        sb.append(getLabel());
-        sb.append(" ");
-        getFunction().toString(sb);
         sb.append(" { ");
-        sb.append(Term.NL);
+        sb.nlincr();
         getBody().toString(sb);
-        sb.append(" }");
+        sb.nldecr().append("}");
         return sb;
     }
     

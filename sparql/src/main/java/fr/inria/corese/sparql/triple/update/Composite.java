@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.update;
 
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,38 +56,42 @@ public class Composite extends Update {
 	}
 	
 
-	public StringBuffer toString(StringBuffer sb){
+        @Override
+	public ASTBuffer toString(ASTBuffer sb){
 
 		if (type() != COMPOSITE){
-			sb.append(title() + " ");
+			sb.append(title(), " ");
 		}
 
 		if (getData()!=null){
-			sb.append(DATA + " " + getData());
+			sb.append(DATA, " ");
+                        getData().pretty(sb);
 		}
 		else {
 			if (getWith()!=null){
-				sb.append(WITH + " " + getWith().toString() + NL);
+				sb.append(WITH, " ", getWith().toString()).nl();
 			}
 			for (Composite cc : getUpdates()){
-				sb.append(cc.title() + " ") ;
+				sb.append(cc.title(), " ") ;
                                 if (cc.getPattern() != getBody()){
                                     // use case: delete where {}
                                     // no pattern in this case
-                                    sb.append(cc.getPattern()  + NL);
+                                    cc.getPattern().pretty(sb);
+                                    sb.nl();
                                 }
 			}
 
 			for (Constant uri : getUsing()){
-				sb.append(USING + " " + uri.toString() + NL);
+				sb.append(USING, " ", uri.toString()).nl();
 			}
 			
 			for (Constant uri : getNamed()){
-				sb.append(NAMED + " " + uri.toString() + NL);
+				sb.append(NAMED, " ", uri.toString()).nl();
 			}
 
 			if (getBody()!=null){
-				sb.append(WHERE + " " + getBody());
+				sb.append(WHERE,  " ");
+                                getBody().pretty(sb);
 			}
 		}
 		return sb;

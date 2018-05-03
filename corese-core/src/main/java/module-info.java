@@ -7,6 +7,7 @@ module fr.inria.corese.corese_core {
 	exports fr.inria.corese.core.transform;
 	exports fr.inria.corese.core.util;
 	exports fr.inria.corese.core.print;
+	exports fr.inria.corese.core.pipe;
 	requires transitive fr.inria.corese.compiler;
 	requires org.slf4j;
 	requires java.logging;

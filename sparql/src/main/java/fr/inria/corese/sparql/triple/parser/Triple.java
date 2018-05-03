@@ -439,7 +439,7 @@ public class Triple extends Exp {
 	
 
 	
-	public StringBuffer ftoSparql(Expression exp, StringBuffer sb) {
+	public ASTBuffer ftoSparql(Expression exp, ASTBuffer sb) {
 		if (exp == null) return sb;
 		boolean isAtom = (exp.isAtom());
 		sb.append(KeywordPP.FILTER + KeywordPP.SPACE);
@@ -452,7 +452,7 @@ public class Triple extends Exp {
 	
 	
         @Override
-	public StringBuffer toString(StringBuffer sb) {
+	public ASTBuffer toString(ASTBuffer sb) {
 		
 		if (isExpression()) {
 			return ftoSparql(getExp(), sb);

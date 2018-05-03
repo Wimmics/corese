@@ -13,12 +13,16 @@ public class TopExp implements ASTVisitable  {
 	
         @Override
 	public String toString(){
-		StringBuffer sb = new StringBuffer();
+		ASTBuffer sb = new ASTBuffer();
 		toString(sb);
 		return sb.toString();
 	}
 	
 	public StringBuffer toString(StringBuffer sb){
+		return sb;
+	}
+        
+        public ASTBuffer toString(ASTBuffer sb){
 		return sb;
 	}
 	

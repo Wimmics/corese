@@ -25,11 +25,12 @@ public class Minus extends And {
         }
 	
         @Override
-	public StringBuffer toString(StringBuffer sb){
-		sb.append(get(0));
-		sb.append(" " + KeywordPP.MINUS + " ");
-		sb.append(get(1));
-		return sb;
+	public ASTBuffer toString(ASTBuffer sb) {
+            sb.append("{ ").incr();
+            get(0).display(sb);
+            sb.decr().nl().append("} ").append(KeywordPP.MINUS).append(" ");
+            get(1).pretty(sb);
+            return sb;
 	}
 	
 	

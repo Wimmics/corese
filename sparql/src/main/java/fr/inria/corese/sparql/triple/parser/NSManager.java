@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.sparql.datatype.XSD;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -527,6 +528,31 @@ public class NSManager extends ASTObject {
         }
         return sb.toString();
     }
+    
+    public IDatatype turtle(IDatatype dt) {
+        return turtle(dt, false);
+    }
+        
+    public IDatatype turtle(IDatatype dt, boolean force) {
+        String label = dt.getLabel();
+        if (dt.isURI()) {
+            setRecord(true);
+            String uri = toPrefixURI(label, ! force);
+            dt = DatatypeMap.newStringBuilder(uri);          
+        } else if (dt.isLiteral()) {
+            if ((dt.getCode() == IDatatype.INTEGER 
+                    && dt.getDatatypeURI().equals(fr.inria.corese.sparql.datatype.XSD.xsdinteger) 
+                    && (! (label.startsWith("0") && label.length() > 1))) 
+             || (dt.getCode() == IDatatype.BOOLEAN && (label.equals("true") || label.equals("false")))) {
+                // print string value as is
+            } else {
+                // add quotes around string, add lang tag if any
+                dt = DatatypeMap.newStringBuilder(dt.toString());
+            }
+        }
+        return dt;
+    }
+    
         
     boolean isDisplayable(String ns){
         if (isRecorded(ns)){

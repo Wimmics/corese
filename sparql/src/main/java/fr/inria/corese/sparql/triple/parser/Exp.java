@@ -235,23 +235,27 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	
 	
         @Override
-	public StringBuffer toString(StringBuffer sb) {
+	public ASTBuffer toString(ASTBuffer sb) {
             return display(sb);
         }
          
-        public StringBuffer display(StringBuffer sb) {        
-		if (size() == 0) return sb;
-
-		get(0).toString(sb);
-
-		if (size() > 1) {
-			for (int i=1;i<size();i++) {
-				sb.append(ASTQuery.NL);
-				get(i).toString(sb);
-			}
-		}
-		return sb;
-	}
+        public ASTBuffer display(ASTBuffer sb) {
+            int i = 0;
+            for (Exp exp : getBody()) {
+                if (i++ > 0) {
+                    sb.nl();
+                }
+                exp.toString(sb);
+            }
+            return sb;
+        }        
+        
+        public ASTBuffer pretty(ASTBuffer sb) {
+            sb.append("{").nlincr();
+            display(sb);
+            sb.nldecr().append("}");            
+            return sb;
+        }
 	
 	
 	public Exp eget(int i){

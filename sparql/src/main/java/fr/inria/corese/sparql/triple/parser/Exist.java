@@ -17,13 +17,17 @@ public class Exist extends BasicGraphPattern {
 		return true;
 	}
         
+        @Override
         public Exist getExist() {
             return this;
         }
 	
         @Override
-	public StringBuffer toString(StringBuffer sb){
-		sb.append(Term.EXIST + " ").append(get(0));
+	public ASTBuffer toString(ASTBuffer sb){
+		sb.append(Term.EXIST).append(" ");
+                sb.incr();
+                get(0).toString(sb);
+                sb.decr();
 		return sb;
 	}
 	

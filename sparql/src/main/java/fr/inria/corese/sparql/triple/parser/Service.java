@@ -61,14 +61,21 @@ public class Service extends And {
     }
 
     @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         sb.append(Term.SERVICE);
+        int i = 0;
         for (Atom at : serviceList) {
-            sb.append(" ");
-            at.toString(sb);
+            if (i++ == 0) {
+                sb.append(" ");
+            }
+            else {
+                sb.nl().indent();
+            }
+            at.toString(sb);           
         }
         sb.append(" ");
-        return super.toString(sb);
+        getBodyExp().pretty(sb);
+        return sb;
     }
 
     public boolean isSilent() {

@@ -15,7 +15,7 @@ public class Query extends Exp {
 	}
 	
         @Override
-	public StringBuffer toString(StringBuffer sb){
+	public ASTBuffer toString(ASTBuffer sb){
 		//sb.append(ast.toString());
                 ASTPrinter pr = new ASTPrinter(ast);
                 pr.setPrefix(false);

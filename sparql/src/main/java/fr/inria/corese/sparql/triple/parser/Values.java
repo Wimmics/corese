@@ -71,44 +71,42 @@ public class Values extends Exp {
         }
 	
         @Override
-	public StringBuffer toString(StringBuffer sb){
-		String SPACE = " ";
-		String NL = ASTQuery.NL;
+	   public ASTBuffer toString(ASTBuffer sb) {
+        String SPACE = " ";
+        String NL = ASTQuery.NL;
 
-		sb.append(KeywordPP.BINDINGS);
-		sb.append(SPACE);
+        sb.append(KeywordPP.BINDINGS);
+        sb.append(SPACE);
 
-		sb.append(KeywordPP.OPEN_PAREN);
+        sb.append(KeywordPP.OPEN_PAREN);
+        for (Atom var : getVariables()) {
+            sb.append(var.getName());
+            sb.append(SPACE);
+        }
+        sb.append(KeywordPP.CLOSE_PAREN);
 
-		for (Atom var : getVariables()){
-			sb.append(var.getName());
-			sb.append(SPACE);
-		}
-		sb.append(KeywordPP.CLOSE_PAREN);
+        sb.append(KeywordPP.OPEN_BRACKET);
+        sb.incr();
 
-		sb.append(KeywordPP.OPEN_BRACKET);
-		sb.append(NL);
+        for (List<Constant> list : getValues()) {
+            sb.nl();
+            sb.append(KeywordPP.OPEN_PAREN);
 
-		for (List<Constant> list : getValues()){
-			sb.append(KeywordPP.OPEN_PAREN);
-
-			for (Constant value : list){
-				if (value == null){
-					sb.append(KeywordPP.UNDEF);
-				}
-				else {
-					sb.append(value);
-				}
-				sb.append(SPACE);
-			}
-			sb.append(KeywordPP.CLOSE_PAREN);
-			sb.append(NL);
-		}
-
-		sb.append(KeywordPP.CLOSE_BRACKET);
-		sb.append(NL);
-		return sb;
-	}
+            for (Constant value : list) {
+                if (value == null) {
+                    sb.append(KeywordPP.UNDEF);
+                } else {
+                    sb.append(value);
+                }
+                sb.append(SPACE);
+            }
+            sb.append(KeywordPP.CLOSE_PAREN);
+        }
+        sb.nldecr();
+        sb.append(KeywordPP.CLOSE_BRACKET);
+        //sb.nl();
+        return sb;
+    }
         
         @Override
         void getVariables(List<Variable> list) {

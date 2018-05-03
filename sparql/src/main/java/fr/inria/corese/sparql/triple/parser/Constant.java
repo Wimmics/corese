@@ -170,7 +170,7 @@ public class Constant extends Atom {
     }
 
     @Override
-    public StringBuffer toString(StringBuffer sb) {
+    public ASTBuffer toString(ASTBuffer sb) {
         if (isLiteral()) {
             if (hasLang()) {
                 //return name + "@" + lang;
@@ -218,7 +218,7 @@ public class Constant extends Atom {
     /**
      * Escape special chars Add surrounding quotes to a string literal
      */
-    public static void toString(String str, StringBuffer sb) {
+    public static void toString(String str, ASTBuffer sb) {
         String s = addEscapes(str);
         String sep = KeywordPP.QUOTE;
 

@@ -33,7 +33,6 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 /**
  * Compiler of SPARQL AST to KGRAM Exp Query Use Corese SPARQL parser Use an
@@ -1552,17 +1551,17 @@ public class Transformer implements ExpType {
         return compiler.createNode(at);
     }
 
-    void pop(Exp exp) {
-        List<Exp> list = new ArrayList<Exp>();
-        for (Exp ee : exp) {
-            if (ee.isQuery() && ee.getQuery().isBind()) {
-                list.add(Exp.create(POP, ee));
-            }
-        }
-        for (Exp ee : list) {
-            exp.insert(ee);
-        }
-    }
+//    void pop(Exp exp) {
+//        List<Exp> list = new ArrayList<Exp>();
+//        for (Exp ee : exp) {
+//            if (ee.isQuery() && ee.getQuery().isBind()) {
+//                list.add(Exp.create(POP, ee));
+//            }
+//        }
+//        for (Exp ee : list) {
+//            exp.insert(ee);
+//        }
+//    }
 
     /**
      * Rewrite fun() as ?var in exp Compile exists {}

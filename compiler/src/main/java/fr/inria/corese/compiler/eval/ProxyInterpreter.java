@@ -2082,4 +2082,29 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     public NSManager getNSM(Environment env, Producer p) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public IDatatype visit(Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype visited(Environment env, Producer p, IDatatype dt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype indent(Environment env, Producer prod, IDatatype dt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype nl(Environment env, Producer prod, IDatatype dt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype format(IDatatype[] ldt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

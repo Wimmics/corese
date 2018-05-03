@@ -507,21 +507,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
 
     /**
-     * Extension manage extension functions Their parameters are tagged as local
-     * variables, managed in a specific stack
-     */
-    //@Override
-//    public IDatatype extension(Expr exp, Environment env, Producer p, IDatatype[] values) {
-//        Expr def = getDefine(exp, env);
-//        if (def == null) {
-//            logger.error("Undefined function: " + exp);
-//            return ERROR_VALUE;
-//        }
-//        return call(exp, env, p, values, def);
-//    }
-
-
-    /**
      * exp is funcall(arg, arg) arg is an expression that evaluates to a
      * function name URI evaluate arg return function definition corresponding
      * to name with arity n.

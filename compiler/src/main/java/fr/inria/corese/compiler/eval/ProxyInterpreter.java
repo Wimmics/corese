@@ -36,6 +36,7 @@ import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.filter.Proxy;
+import fr.inria.corese.sparql.triple.parser.Context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -578,25 +579,6 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return arg;
     }
     
-         
-//    IDatatype method(IDatatype name, IDatatype[] param, Environment env, Producer p) {
-//        return method(name.stringValue(), null, param, env, p);
-//    }
-//          
-     /**
-     * Try to execute a method name in the namespace of the generalized datatype URI
-     * http://ns.inria.fr/sparql-datatype/triple#display(?x)
-     * URI:   dt:uri#name
-     * bnode: dt:bnode#name
-     * literal: dt:datatype#name or dt:literal#name
-     */   
-//    IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {   
-//        if (env == null){
-//            return null;
-//        }       
-//        return eval.method(name, type, param, env, p);
-//    }
-    
               
     IDatatype xt_datatype(IDatatype dt){
         if (dt.isLiteral()) return dt.getDatatype();
@@ -822,13 +804,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
             case XT_PRINT:
                 // string + content if gprint
                 return xt_display(env, p, param, false, (!exp.getLabel().equals(Processor.XT_PRINT)));
-                
-//            case XT_METHOD:
-//                return method(param[0].stringValue(), null, copy(param, 1), env, p) ;  
-//                
-//            case XT_METHOD_TYPE:
-//                return method(param[0].stringValue(), param[1], copy(param, 2), env, p) ;  
-                    
+                                   
             
         }
 
@@ -2085,5 +2061,25 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
      @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
         return eval(exp, env, p, (IDatatype[])args);
+    }
+
+    @Override
+    public IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Context getContext(Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NSManager getNSM(Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

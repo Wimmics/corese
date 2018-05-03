@@ -71,6 +71,7 @@ public class DefaultVisitor implements TemplateVisitor {
     }
     //*/
     
+    @Override
     public void visit(IDatatype name, IDatatype obj, IDatatype arg){
         if (name.getLabel().equals(TRACE) || name.getLabel().equals(START)){
             define(name, obj.getLabel(), arg);

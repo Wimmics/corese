@@ -66,13 +66,13 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return getLevel(env, p);
 
             case STL_NL:
-                return nl(null, env, p);
+                return nl(env, p, null);
 
             case STL_ISSTART:
                 return isStart(env, p);
 
             case STL_VISITED:
-                return visited(exp, env, p);
+                return visited(env, p);
                 
            case STL_VISITED_GRAPH:
                 return visitedGraph(exp, env, p);     
@@ -110,10 +110,10 @@ public class PluginTransform implements ComputerProxy, ExprType {
 
 
             case INDENT:
-                return indent(dt, env, p);
+                return indent(env, p, dt);
 
             case STL_NL:
-                return nl(dt, env, p);
+                return nl(env, p, dt);
 
             case PROLOG:
                 return prolog(dt, env, p);
@@ -137,13 +137,13 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return bool(exp, env, p, dt);
 
             case STL_VISITED:
-                return visited(exp, env, p, dt);
+                return visited(env, p, dt);
                                                 
             case STL_ERRORS:
                 return errors(exp, env, p, dt);
 
             case STL_VISIT:
-                return visit(exp, env, p, null, dt, null);
+                return visit(env, p, null, dt, null);
 
             case APPLY_TEMPLATES:
             case APPLY_TEMPLATES_ALL:
@@ -234,7 +234,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return vget(exp, env, p, dt1, dt2);    
                 
            case STL_VISIT:
-                return visit(exp, env, p, dt1, dt2, null);
+                return visit(env, p, dt1, dt2, null);
                 
             case STL_GET:
                 return get(exp, env, p, dt1, dt2);
@@ -300,7 +300,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
                 return transform(getArgs(param, 2), dt3,  dt1, null, dt2, exp, env, p);
                 
             case STL_VISIT:
-                return visit(exp, env, p, dt1, dt2, dt3);
+                return visit(env, p, dt1, dt2, dt3);
                 
             case STL_VSET:
                 return vset(exp, env, p, dt1, dt2, dt3); 
@@ -370,7 +370,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
               
     
-    IDatatype format(IDatatype... par){
+    @Override
+    public IDatatype format(IDatatype... par){
         String f = getFormat(par[0]);
         Object [] arr = new Object[par.length-1];
         for (int i = 0; i<arr.length; i++) {
@@ -481,7 +482,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     /**
      * Increment indentation level
      */
-    IDatatype indent(IDatatype dt, Environment env, Producer prod) {
+    @Override
+    public IDatatype indent(Environment env, Producer prod, IDatatype dt) {
         Transformer t = getTransformer(env, prod);
         t.setLevel(t.getLevel() + dt.intValue());
         return EMPTY;
@@ -491,7 +493,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * New Line with indentation given by t.getLevel() Increment level if
      * dt!=null
      */
-    IDatatype nl(IDatatype dt, Environment env, Producer prod) {
+    @Override
+    public IDatatype nl(Environment env, Producer prod, IDatatype dt) {
         Transformer t = getTransformer(env, prod);
         if (dt != null) {
             t.setLevel(t.getLevel() + dt.intValue());
@@ -834,7 +837,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return getVisitor(env, p).get(dt1, dt2);
     }
 
-    public IDatatype visited(Expr exp, Environment env, Producer p) {
+    public IDatatype visited(Environment env, Producer p) {
         Collection<IDatatype> list = getVisitor(env, p).visited();
         return DatatypeMap.createList(list);
     }
@@ -843,7 +846,11 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return getVisitor(env, p).visitedGraphNode();
     }
 
-    public IDatatype visited(Expr exp, Environment env, Producer p, IDatatype dt) {
+    @Override
+    public IDatatype visited(Environment env, Producer p, IDatatype dt) {
+        if (dt == null){
+            return visited(env, p);
+        }
         boolean b = getVisitor(env, p).isVisited(dt);
         return plugin.getValue(b);
     }
@@ -854,7 +861,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
 
     // Visitor design pattern
-    public IDatatype visit(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
+    @Override
+    public IDatatype visit(Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;
         }
@@ -862,7 +870,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return TRUE;
     }
     
-     public IDatatype visit(IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
+    public IDatatype visit(IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;
         }

@@ -36,6 +36,8 @@ import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.filter.Proxy;
+import fr.inria.corese.sparql.api.TransformProcessor;
+import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -402,6 +404,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return function(exp, env, p, (IDatatype)o1);
     }
     
+    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
         switch (exp.oper()) {
 
@@ -2082,29 +2085,24 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     public NSManager getNSM(Environment env, Producer p) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public IDatatype visit(Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IDatatype visited(Environment env, Producer p, IDatatype dt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IDatatype indent(Environment env, Producer prod, IDatatype dt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IDatatype nl(Environment env, Producer prod, IDatatype dt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+  
     @Override
     public IDatatype format(IDatatype[] ldt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TransformVisitor getVisitor(Environment env, Producer prod) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TransformProcessor getTransformer(Environment env, Producer p) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TransformProcessor getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype temp, IDatatype dtgname) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

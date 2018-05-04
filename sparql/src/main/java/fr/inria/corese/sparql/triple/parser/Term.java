@@ -33,11 +33,11 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.function.template.CGetSetContext;
 import fr.inria.corese.sparql.triple.function.template.FocusNode;
 import fr.inria.corese.sparql.triple.function.template.GetSetContext;
-import fr.inria.corese.sparql.triple.function.template.Indent;
+import fr.inria.corese.sparql.triple.function.template.TemplateAccess;
 import fr.inria.corese.sparql.triple.function.template.Prefix;
 import fr.inria.corese.sparql.triple.function.template.TemplateNumber;
 import fr.inria.corese.sparql.triple.function.template.Turtle;
-import fr.inria.corese.sparql.triple.function.template.Visit;
+import fr.inria.corese.sparql.triple.function.template.TemplateVisitor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -418,11 +418,8 @@ public class Term extends Expression {
                 
             case ExprType.INDENT:
             case ExprType.STL_NL:
-                return new Indent(name);
-                
-            case ExprType.STL_VISIT:
-            case ExprType.STL_VISITED:
-                return new Visit(name);
+            case ExprType.STL_ISSTART:           
+                return new TemplateAccess(name);
                 
             case ExprType.APPLY_TEMPLATES:
             case ExprType.APPLY_TEMPLATES_ALL:
@@ -458,6 +455,14 @@ public class Term extends Expression {
                 return new TemplateFuture(name);
             case ExprType.STL_PROCESS:
                 return new TemplateProcess(name);
+                
+            case ExprType.STL_VISIT:
+            case ExprType.STL_VISITED:
+            case ExprType.STL_VGET:
+            case ExprType.STL_VSET:
+            case ExprType.STL_ERRORS:
+            case ExprType.STL_VISITED_GRAPH:               
+                return new TemplateVisitor(name);            
 
             case ExprType.APPROXIMATE:
             case ExprType.DEPTH:
@@ -1361,29 +1366,6 @@ public class Term extends Expression {
         return this;
     }
 
-//	public Term differ(){
-//		if (args.size() >= 2){
-//			Term res =  diff(args, 0);
-//			return res;
-//		}
-//		else return this;
-//	}
-//	
-//	/**
-//	 * generate ?x != ?y ?x != ?z ?y != ?z 
-//	 * from (?x ?y ?z)
-//	 */
-//	public Term diff(ArrayList<Expression> vars, int start){
-//		Term res = null;
-//		for (int i=start; i<vars.size(); i++){
-//			for (int j=i+1; j<vars.size(); j++){
-//				Term tt = 	new Term(Keyword.SNEQ, getArg(i), getArg(j));
-//				if (res == null) res = tt;
-//				else res = new Term(Keyword.SEAND, res, tt);
-//			}
-//		}
-//		return res;
-//	}
     /**
      * KGRAM
      */

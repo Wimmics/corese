@@ -81,6 +81,10 @@
             <groupId>org.semarglproject</groupId>
             <artifactId>semargl-rdfa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.semarglproject</groupId>
+            <artifactId>semargl-core</artifactId>
+        </dependency>
         <!-- JSON-LD parser-->
         <dependency>
             <groupId>com.github.jsonld-java</groupId>
@@ -117,18 +121,6 @@
             <version>${log4j2.version}</version>
             <scope>runtime</scope>
         </dependency>
-    <!--    <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
-            <scope>runtime</scope>
-        </dependency>-->
     </dependencies>
 
     <repositories>
@@ -150,14 +142,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

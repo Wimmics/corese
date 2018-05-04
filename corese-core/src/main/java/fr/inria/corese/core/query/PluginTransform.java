@@ -392,8 +392,9 @@ public class PluginTransform implements ComputerProxy, ExprType {
     /**
      * Return or create current transformer (create in case of different graph)
      */
-    Transformer getTransformer(Environment env, Producer p) {
-        return getTransformer(null, env, p, (IDatatype) null, (IDatatype) null, null);
+    @Override
+    public Transformer getTransformer(Environment env, Producer p) {
+        return getTransformer(env, p, null, (IDatatype) null, (IDatatype) null, null);
     }
     
     /**
@@ -403,7 +404,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return getTransformer(env, p, (IDatatype) null, (IDatatype) null, null, true, false);
     }
     
-    Transformer getTransformer(Expr exp, Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname) {
+    @Override
+    public Transformer getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype temp, IDatatype dtgname) {
         return getTransformer(env, prod, uri, temp, dtgname, false, isWith(exp));
     }
     
@@ -482,7 +484,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     /**
      * Increment indentation level
      */
-    @Override
     public IDatatype indent(Environment env, Producer prod, IDatatype dt) {
         Transformer t = getTransformer(env, prod);
         t.setLevel(t.getLevel() + dt.intValue());
@@ -493,7 +494,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * New Line with indentation given by t.getLevel() Increment level if
      * dt!=null
      */
-    @Override
     public IDatatype nl(Environment env, Producer prod, IDatatype dt) {
         Transformer t = getTransformer(env, prod);
         if (dt != null) {
@@ -566,7 +566,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
      */
     @Override
     public IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
+        Transformer p = getTransformer(env, prod, exp, trans, temp, name);
         return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
@@ -583,12 +583,12 @@ public class PluginTransform implements ComputerProxy, ExprType {
     @Override
     public IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(exp, env, prod, trans, temp, name);
-        IDatatype dt = p.process(args, focus, 
+        Transformer p = getTransformer(env, prod, exp, trans, temp, name);
+        IDatatype dt = p.process(focus, args,  
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
-                exp.getModality(), exp, env.getQuery(), env);
+                exp.getModality(), exp, env);
         return dt;
     }
     
@@ -606,8 +606,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     public IDatatype transform(IDatatype isAll, IDatatype trans, IDatatype... ldt) {
         IDatatype temp = null;
         Transformer p = getTransformer(trans, temp);
-        IDatatype dt = p.process(ldt, ldt[0], getTemp(trans, temp),
-                isAll.booleanValue(), " ", null, getEnvironment().getQuery(), getEnvironment());
+        IDatatype dt = p.process(ldt[0], ldt,  getTemp(trans, temp),
+                isAll.booleanValue(), " ", null, getEnvironment());
         return dt;
     }
     
@@ -806,9 +806,9 @@ public class PluginTransform implements ComputerProxy, ExprType {
         getContext().set(dt1.getLabel(), dt2);
         return dt2;
     } 
-    
-     
-    TemplateVisitor getVisitor(Environment env, Producer p){
+       
+    @Override
+    public TemplateVisitor getVisitor(Environment env, Producer p){
         TemplateVisitor tv = (TemplateVisitor) env.getQuery().getTemplateVisitor();
         if (tv == null){
             tv = getTransformer(env, p).defVisitor();
@@ -846,7 +846,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return getVisitor(env, p).visitedGraphNode();
     }
 
-    @Override
     public IDatatype visited(Environment env, Producer p, IDatatype dt) {
         if (dt == null){
             return visited(env, p);
@@ -861,7 +860,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
 
     // Visitor design pattern
-    @Override
     public IDatatype visit(Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype dt3) {        
         if (dt1 == null) {
             dt1 = VISIT_DEFAULT;

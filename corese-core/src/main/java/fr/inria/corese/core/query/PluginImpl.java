@@ -1138,11 +1138,12 @@ public class PluginImpl
         return null;
     }
 
-    Transformer getTransformer(Environment env, Producer p) {
+    public Transformer getTransformer(Environment env, Producer p) {
         return pt.getTransformer(env, p);
     } 
     
-    TemplateVisitor getVisitor(Environment env, Producer p){
+    @Override
+    public TemplateVisitor getVisitor(Environment env, Producer p){
         return pt.getVisitor(env, p);
     }
     

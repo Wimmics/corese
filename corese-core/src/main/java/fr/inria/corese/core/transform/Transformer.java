@@ -34,6 +34,7 @@ import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.sparql.api.TransformProcessor;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.slf4j.Logger;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * Olivier Corby, Wimmics INRIA I3S - 2012
  */
-public class Transformer  {
+public class Transformer implements TransformProcessor {
     private static Logger logger = LoggerFactory.getLogger(Transformer.class);
 
     private static final String NULL = "";
@@ -570,6 +571,7 @@ public class Transformer  {
      * Run transformation when there is no focus node
      * Usually it runs the st:start template.
      */
+    @Override
     public IDatatype process(String temp, boolean all, String sep) {
         count++;
         query = null;
@@ -639,14 +641,17 @@ public class Transformer  {
         return max;
     }
     
+    @Override
     public int getLevel(){
         return level;
     }
     
+    @Override
     public void setLevel(int n){
          level = n;
     }
     
+    @Override
     public boolean isStart(){        
         return query != null && query.getName()!=null && query.getName().equals(STL_START);
     }
@@ -656,16 +661,16 @@ public class Transformer  {
     }
 
     public IDatatype process(IDatatype dt) {
-        return process(null, dt, null, false, null, null, null);
+        return process(dt, null, null, false, null, null);
     }
     
     public IDatatype process(IDatatype[] a){
-        return process(a, (a.length>0)?a[0]:null, null, false, null, null, null);
+        return process((a.length>0)?a[0]:null, a,  null, false, null, null);
     }
 
 
     public IDatatype template(String temp, IDatatype dt) {
-        return process(null, dt, temp, false, null, null, null);
+        return process(dt, null,  temp, false, null, null);
     }
     
     public static int getCount(){
@@ -691,13 +696,14 @@ public class Transformer  {
      * context of evaluation: it is an extension function of a SPARQL query
      * select (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
-    public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
-            boolean allTemplates, String sep, Expr exp, Query q){
-        return process(args, dt, temp, allTemplates, sep, exp, q, null); 
+    public IDatatype process(IDatatype dt, IDatatype[] args,  String temp,
+            boolean allTemplates, String sep, Expr exp){
+        return process(dt, args, temp, allTemplates, sep, exp, null); 
     }
     
-    public IDatatype process(IDatatype[] args, IDatatype dt, String temp,
-            boolean allTemplates, String sep, Expr exp, Query q, Environment env) {   
+    @Override
+    public IDatatype process(IDatatype dt, IDatatype[] args,  String temp,
+            boolean allTemplates, String sep, Expr exp, Environment env) { 
         count++;
         if (dt == null) {
             return EMPTY;
@@ -705,7 +711,7 @@ public class Transformer  {
         
         if (level() >= levelMax){
            //return defaut(dt, q);
-            return eval(STL_DEFAULT, q, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
+            return eval(STL_DEFAULT, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
         }
 
         //ArrayList<IDatatype> result = null;
@@ -809,7 +815,7 @@ public class Transformer  {
             // gather results of several templates
             if (nodes.size() > 0) {
                // IDatatype res = result(result, separator(sep));
-                IDatatype mres = result(q, nodes); 
+                IDatatype mres = result((env == null) ? null : env.getQuery(), nodes); 
                 return mres;
             }
         }
@@ -818,15 +824,11 @@ public class Transformer  {
 
         if (temp != null) {
             // named template does not match focus node dt
-            return eval(STL_DEFAULT_NAMED, q, dt, (isBoolean()?defaultBooleanResult():EMPTY), env);
-//            if (isBoolean()){
-//                return defaultBooleanResult();
-//            }
-//            return EMPTY;
+            return eval(STL_DEFAULT_NAMED, dt, (isBoolean()?defaultBooleanResult():EMPTY), env);
         }
         else if (isHasDefault()) {
             // apply st:default named template
-            IDatatype res = process(args, dt, STL_DEFAULT, allTemplates, sep, exp, q, env);
+            IDatatype res = process(dt, args, STL_DEFAULT, allTemplates, sep, exp, env);
             if (res != EMPTY) {
                 return res;
             }
@@ -835,7 +837,7 @@ public class Transformer  {
         // return a default result (may be dt)
         // may be overloaded by function st:default(?x) { st:turtle(?x) }
          //return defaut(dt, q);
-        return eval(STL_DEFAULT, q, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
+        return eval(STL_DEFAULT, dt, (isBoolean()?defaultBooleanResult():turtle(dt)), env);
 
     }
     
@@ -1171,38 +1173,20 @@ public class Transformer  {
         return display(dt, ope);
     }
     
-    IDatatype eval(String name, Query q, IDatatype dt, IDatatype def, Environment env) {
-        Extension ext = q.getExtension();
-        if (ext != null) {
-            Expr function = ext.get(name, (dt == null) ? 0 : 1);
-            if (function != null) {                 
-                return (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt) ;
+    IDatatype eval(String name, IDatatype dt, IDatatype def, Environment env) {
+        if (env != null && env.getQuery() != null) {
+            Query q = env.getQuery();
+            Extension ext = q.getExtension();
+            if (ext != null) {
+                Expr function = ext.get(name, (dt == null) ? 0 : 1);
+                if (function != null) {
+                    return (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt);
+                }
             }
         }
         return def;
     }
     
-    
-//    IDatatype eval2(String name, Query q, IDatatype dt, IDatatype def, Environment env) {
-//        Extension ext = q.getExtension();
-//        if (ext != null) {
-//            Expr function = ext.get(name, (dt==null)?0:1);
-//            if (function != null) { 
-//                IDatatype res = null;
-//                if (dt == null){
-//                    res =  (IDatatype) exec.getEvaluator().eval(function.getFunction(), getEnvironment(env, q), exec.getProducer()) ;
-//                }
-//                else {
-//                    IDatatype[] arr = new IDatatype[1];
-//                    arr[0] = dt;
-//                    //res = (IDatatype) exec.getEvaluator().getProxy().let(function.getFunction(), getEnvironment(env, q), exec.getProducer(), dt);
-//                    res = (IDatatype) exec.getEvaluator().eval(function.getFunction(), getEnvironment(env, q), exec.getProducer(), arr, function);
-//                }
-//                return res;
-//            }
-//        }
-//        return def;
-//    }
     
     Environment getEnvironment(Environment env, Query q){
         if (env == null){

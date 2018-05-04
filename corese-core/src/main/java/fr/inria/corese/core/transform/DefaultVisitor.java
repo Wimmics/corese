@@ -167,21 +167,32 @@ public class DefaultVisitor implements TemplateVisitor {
     }
     
     void storeErrors(IDatatype name, IDatatype obj){
-    	if(errors.get(obj) == null) {
-    		errors.put(obj, new ArrayList<IDatatype>());
-    		errors.get(obj).add(name);
-    	} else {
-    		int arr_size = errors.get(obj).size();
-	    	for(int i=0; i<arr_size;i++) {
-	    		//if name is already present
-	    		if(errors.get(obj).get(i).getLabel().equals(name.getLabel()) == true) break;
-	    		//else if name not found adds it
-	    		else if(i+1 == arr_size) {
-	    			errors.get(obj).add(name);
-	    		}
-	        }
-    	}
+        List<IDatatype> list = errors.get(obj);
+        if (list == null) {
+            list = new ArrayList<>();
+            errors.put(obj, list);
+        }
+        if (! list.contains(name)) {
+            list.add(name);
+        }
     }
+    
+//    void storeErrors2(IDatatype name, IDatatype obj){
+//    	if(errors.get(obj) == null) {
+//    		errors.put(obj, new ArrayList<IDatatype>());
+//    		errors.get(obj).add(name);
+//    	} else {
+//    		int arr_size = errors.get(obj).size();
+//	    	for(int i=0; i<arr_size;i++) {
+//	    		//if name is already present
+//	    		if(errors.get(obj).get(i).getLabel().equals(name.getLabel()) == true) break;
+//	    		//else if name not found adds it
+//	    		else if(i+1 == arr_size) {
+//	    			errors.get(obj).add(name);
+//	    		}
+//	        }
+//    	}
+//    }
     
     void addGraph(Graph g){
         visitedGraph.copy(g);

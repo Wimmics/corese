@@ -22,19 +22,22 @@ public interface ComputerProxy {
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     
     IDatatype transform(IDatatype[] args, IDatatype focus, 
-                        IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod);
+                        IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer p);
     
-    IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod);
+    IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer p);
     
-    IDatatype   visit(Environment env, Producer prod, IDatatype dt1, IDatatype dt2, IDatatype dt3);
-    IDatatype visited(Environment env, Producer prod, IDatatype dt);
-    IDatatype  indent(Environment env, Producer prod, IDatatype dt);
-    IDatatype      nl(Environment env, Producer prod, IDatatype dt);
     IDatatype format(IDatatype[] ldt);
+    
+    IDatatype hash(Expr exp, IDatatype dt);
+
+    TransformProcessor getTransformer(Environment env, Producer p);
+    
+    TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype temp, IDatatype gname);
+    
+    TransformVisitor getVisitor(Environment env, Producer p);
     
     Context getContext(Environment env, Producer p);
     
     NSManager getNSM(Environment env, Producer p);
 
-    IDatatype hash(Expr exp, IDatatype dt);
 }

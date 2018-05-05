@@ -78,11 +78,11 @@
         </dependency>
         <!--RDFa parser-->
         <dependency>
-            <groupId>org.semarglproject</groupId>
+	    <groupId>${semargl.groupId}</groupId>
             <artifactId>semargl-rdfa</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.semarglproject</groupId>
+	    <groupId>${semargl.groupId}</groupId>
             <artifactId>semargl-core</artifactId>
         </dependency>
         <!-- JSON-LD parser-->

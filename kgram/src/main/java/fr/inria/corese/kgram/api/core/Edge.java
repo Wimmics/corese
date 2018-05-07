@@ -83,5 +83,7 @@ public interface Edge  {
         Node getPredicate();
         
         Node getNode();
+        
+        Node getGraph();
 	
 }

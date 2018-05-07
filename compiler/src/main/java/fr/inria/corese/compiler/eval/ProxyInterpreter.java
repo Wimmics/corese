@@ -36,6 +36,7 @@ import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.filter.Proxy;
+import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -2065,17 +2066,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
         return eval(exp, env, p, (IDatatype[])args);
     }
-
-    @Override
-    public IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+  
     @Override
     public Context getContext(Environment env, Producer p) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -2102,7 +2093,12 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
     }
 
     @Override
-    public TransformProcessor getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype temp, IDatatype dtgname) {
+    public TransformProcessor getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype dtgname) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public GraphProcessor getGraphProcessor() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -22,6 +22,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.sparql.api.GraphProcessor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -394,23 +395,23 @@ public class PluginTransform implements ComputerProxy, ExprType {
      */
     @Override
     public Transformer getTransformer(Environment env, Producer p) {
-        return getTransformer(env, p, null, (IDatatype) null, (IDatatype) null, null);
+        return getTransformer(env, p, null, (IDatatype) null,  null);
     }
     
     /**
      * Return current transformer (do not create in case of different graph)
      */
     Transformer getTransformerCurrent(Environment env, Producer p) {
-        return getTransformer(env, p, (IDatatype) null, (IDatatype) null, null, true, false);
+        return getTransformer(env, p, (IDatatype) null, (IDatatype) null,  true, false);
     }
     
     @Override
-    public Transformer getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype temp, IDatatype dtgname) {
-        return getTransformer(env, prod, uri, temp, dtgname, false, isWith(exp));
+    public Transformer getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri,  IDatatype dtgname) {
+        return getTransformer(env, prod, uri, dtgname, false, isWith(exp));
     }
     
     Transformer getTransformer(IDatatype uri, IDatatype temp) {
-        return getTransformer(getEnvironment(), getProducer(), uri, temp, null, false, false);
+        return getTransformer(getEnvironment(), getProducer(), uri, null, false, false);
     }
     
    /**
@@ -421,10 +422,10 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * use case: graph ?shape {  st:cget(sh:def, ?name)  }
      * TODO: cache for named graph
      */
-    Transformer getTransformer(Environment env, Producer prod, IDatatype uri, IDatatype temp, IDatatype dtgname, boolean current, boolean isGraph) {
+    Transformer getTransformer(Environment env, Producer prod, IDatatype uri, IDatatype dtgname, boolean current, boolean isGraph) {
         Query q = env.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
-        String transform = getTrans(uri, temp);
+        String transform = getTrans(uri);
         Transformer t = (Transformer) q.getTransformer(transform);
 
         if (transform == null && t != null) {
@@ -553,7 +554,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return null;
     }
     
-    String getTrans(IDatatype trans, IDatatype temp){
+    String getTrans(IDatatype trans){
        return getLabel(trans);    
     }
     
@@ -564,13 +565,13 @@ public class PluginTransform implements ComputerProxy, ExprType {
     /**
      * Without focus node
      */
-    @Override
+    //@Override
     public IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod, exp, trans, temp, name);
+        Transformer p = getTransformer(env, prod, exp, trans, name);
         return p.process(getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
-                exp.getModality());
+                exp.getModality(), exp, env);
     }
   
     /**
@@ -580,15 +581,15 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * temp:  name of a named template, may be null
      * name:  named graph
      */    
-    @Override
+    //@Override
     public IDatatype transform(IDatatype[] args, IDatatype focus, IDatatype trans, IDatatype temp, IDatatype name,
             Expr exp, Environment env, Producer prod) {
-        Transformer p = getTransformer(env, prod, exp, trans, temp, name);
-        IDatatype dt = p.process(focus, args,  
+        Transformer p = getTransformer(env, prod, exp, trans,name);
+        IDatatype dt = p.process(  
                 getTemp(trans, temp),
                 exp.oper() == ExprType.APPLY_TEMPLATES_ALL
                 || exp.oper() == ExprType.APPLY_TEMPLATES_WITH_ALL,
-                exp.getModality(), exp, env);
+                exp.getModality(), exp, env, focus, args);
         return dt;
     }
     
@@ -606,8 +607,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     public IDatatype transform(IDatatype isAll, IDatatype trans, IDatatype... ldt) {
         IDatatype temp = null;
         Transformer p = getTransformer(trans, temp);
-        IDatatype dt = p.process(ldt[0], ldt,  getTemp(trans, temp),
-                isAll.booleanValue(), " ", null, getEnvironment());
+        IDatatype dt = p.process(getTemp(trans, temp),
+                isAll.booleanValue(), " ", null, getEnvironment(), ldt[0], ldt);
         return dt;
     }
     
@@ -992,6 +993,11 @@ public class PluginTransform implements ComputerProxy, ExprType {
 
     @Override
     public IDatatype hash(Expr exp, IDatatype dt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public GraphProcessor getGraphProcessor() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
      

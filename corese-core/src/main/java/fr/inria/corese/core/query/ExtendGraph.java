@@ -157,7 +157,7 @@ public class ExtendGraph {
          return load(p, exp, env, dt, null);
      }
 
-      IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
+     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
          Graph g = Graph.create();
          Load ld = Load.create(g);
          try {
@@ -173,20 +173,20 @@ public class ExtendGraph {
         return res;
     }
       
-         Object load2(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype undef_format) {
-         Graph g = Graph.create();
-         Load ld = Load.create(g);
-         try {
-             if (PluginImpl.readWriteAuthorized){
-                ld.parse(dt.getLabel(), (undef_format == null) ? Load.TURTLE_FORMAT : Load.UNDEF_FORMAT);
-             }
-         } catch (LoadException ex) {
-             logger.error("Load error: " + dt, ex);
-             ex.printStackTrace();
-         }
-        IDatatype res = create("load", g, IDatatype.GRAPH);
-        return res;
-    }
+//         Object load2(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype undef_format) {
+//         Graph g = Graph.create();
+//         Load ld = Load.create(g);
+//         try {
+//             if (PluginImpl.readWriteAuthorized){
+//                ld.parse(dt.getLabel(), (undef_format == null) ? Load.TURTLE_FORMAT : Load.UNDEF_FORMAT);
+//             }
+//         } catch (LoadException ex) {
+//             logger.error("Load error: " + dt, ex);
+//             ex.printStackTrace();
+//         }
+//        IDatatype res = create("load", g, IDatatype.GRAPH);
+//        return res;
+//    }
     
      IDatatype describe(Producer p, Expr exp, Environment env) {
         Graph g = (Graph) p.getGraph();

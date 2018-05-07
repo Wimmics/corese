@@ -63,7 +63,9 @@ import java.util.Map;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class Graph extends GraphObject implements Graphable, TripleStore {
+public class Graph extends GraphObject implements 
+        fr.inria.corese.sparql.api.Graph, 
+        Graphable, TripleStore {
   
     static {
 	    Corese.init();
@@ -1947,6 +1949,7 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
         return ie;
     }
 
+    @Override
     public Edge getEdge(Node pred, Node node, int index) {
         Iterable<Entity> it = getEdges(pred, node, index);
         if (it == null) {
@@ -1956,6 +1959,20 @@ public class Graph extends GraphObject implements Graphable, TripleStore {
             return ent.getEdge();
         }
         return null;
+    }
+    
+    @Override
+    public Node value(Node subj, Node pred, int n) {
+       Node ns = getNode(subj);
+       Node np = getPropertyNode(pred);
+       if (ns == null || np == null){
+           return null;
+       }
+       Edge edge = getEdge(np, ns, 0);
+       if (edge == null){
+           return null;
+       }
+       return  edge.getNode(n);
     }
 
     public Edge getEdge(String name, Node node, int index) {

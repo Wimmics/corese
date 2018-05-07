@@ -9,7 +9,6 @@ import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.tool.MetaIterator;
-import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.edge.EdgeTop;
 import java.util.ArrayList;
@@ -136,7 +135,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
             return iterate(np, ns, 0).filter(new DataFilterFactory().filter(ExprType.EQ, o));
         }
     } 
-
+    
     /**
      * Iterate predicate from named
      */

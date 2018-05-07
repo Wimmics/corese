@@ -39,6 +39,8 @@ import fr.inria.corese.kgram.filter.Proxy;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.api.TransformVisitor;
+import fr.inria.corese.sparql.datatype.function.StringHelper;
+import fr.inria.corese.sparql.datatype.function.VariableResolverImpl;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

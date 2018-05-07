@@ -305,7 +305,12 @@ public class Term extends Expression {
                 return new Aggregate(name);
             case ExprType.STL_AGGREGATE:
                 return new AggregateTemplate(name);
-
+                
+            case ExprType.EXTCONT:
+            case ExprType.EXTEQUAL:
+            case ExprType.XPATH:
+                return new BinaryExtension(name);
+                
             case ExprType.UNDEF:
                 return new Extension(name);
             case ExprType.XT_METHOD:
@@ -448,16 +453,22 @@ public class Term extends Expression {
             case ExprType.STL_VISITED_GRAPH:               
                 return new TemplateVisitor(name);            
 
-            case ExprType.APPROXIMATE:
-            case ExprType.XT_EXISTS:
-                return new GraphGenericFunction(name);
+//            case ExprType.XT_EXISTS:
+//                return new GraphGenericFunction(name);
                 
             case ExprType.LOAD:
             case ExprType.WRITE:
             case ExprType.XT_TUNE:
             case ExprType.SIM:                
+            case ExprType.APP_SIM:                
+            case ExprType.APPROXIMATE:
             case ExprType.DEPTH:
             case ExprType.XT_EDGE:
+            case ExprType.XT_EXISTS: 
+            case ExprType.XT_MINUS:
+            case ExprType.XT_JOIN:
+            case ExprType.XT_OPTIONAL:
+            case ExprType.XT_UNION:
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALUE:
@@ -465,7 +476,7 @@ public class Term extends Expression {
             case ExprType.XT_SUBJECT:
             case ExprType.XT_OBJECT:
             case ExprType.XT_PROPERTY:
-            case ExprType.XT_INDEX:    
+            case ExprType.XT_INDEX:                 
                 return new GraphFunction(name);
                 
             case ExprType.XT_METADATA:
@@ -1660,6 +1671,7 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        //System.out.println("********* eval: " + this);
         return eval.function((Expr) this, env, p);
     }
 }

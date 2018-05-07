@@ -1,11 +1,18 @@
 package fr.inria.corese.sparql.triple.function.proxy;
 
+import static fr.inria.corese.kgram.api.core.ExprType.APPROXIMATE;
+import static fr.inria.corese.kgram.api.core.ExprType.APP_SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.DEPTH;
 import static fr.inria.corese.kgram.api.core.ExprType.LOAD;
 import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_MINUS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_OPTIONAL;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_UNION;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -56,6 +63,12 @@ public class GraphSpecificFunction extends TermEval {
                     default: return null;
                 }
                 
+            case APPROXIMATE:
+                  return proc.approximate(this, env, p, param);
+                  
+             case APP_SIM:
+                  return proc.approximate(this, env, p);      
+                
             case DEPTH:
                 return proc.depth(env, p, param[0]);
                 
@@ -63,17 +76,18 @@ public class GraphSpecificFunction extends TermEval {
                 return proc.tune(this, env, p, param[0], param[1]);
                 
             case XT_EDGE:
-                switch (param.length) {
-                    case 0:
-                        return proc.edge(this, env, p, null, null, null);
-                    case 1:
-                        return proc.edge(this, env, p, null, param[0], null);    
-                    case 2:
-                        return proc.edge(this, env, p, param[0], param[1], null); 
-                    default:
-                        return proc.edge(this, env, p, param[0], param[1], param[2]);
-                                                
-                }
+                return edge(proc, env, p, param);
+                
+            case XT_EXISTS:
+                return exists(proc, env, p, param);  
+                
+            case XT_MINUS:
+            case XT_JOIN:
+            case XT_OPTIONAL:
+                return proc.algebra(this, env, p, param[0], param[1]);
+                
+            case XT_UNION:    
+                return proc.union(this, env, p, param[0], param[1]);
                 
             default: return null;
                 
@@ -82,6 +96,33 @@ public class GraphSpecificFunction extends TermEval {
     }
     
     
+    IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        switch (param.length) {
+            case 0:
+                return proc.edge(env, p, null, null, null);
+            case 1:
+                return proc.edge(env, p, null, param[0], null);
+            case 2:
+                return proc.edge(env, p, param[0], param[1], null);
+            default:
+                return proc.edge(env, p, param[0], param[1], param[2]);
+
+        }
+    }
+    
+    IDatatype exists(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        switch (param.length) {
+            case 0:
+                return proc.exists(env, p, null, null, null);
+            case 1:
+                return proc.exists(env, p, null, param[0], null);
+            case 2:
+                return proc.exists(env, p, param[0], param[1], null);
+            default:
+                return proc.exists(env, p, param[0], param[1], param[2]);
+
+        }
+    }
   
          
 }

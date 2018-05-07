@@ -25,7 +25,7 @@ public class GetSetContext extends TemplateFunction {
         if (param == null){
             return null;
         }
-        Context c = eval.getComputerTransform().getContext(env, p);
+        Context c = eval.getContext(env, p);
         
         switch (oper()) {
             

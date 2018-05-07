@@ -28,25 +28,22 @@ public class TemplateAccess extends TemplateFunction {
             return null;
         }
         
-        TransformProcessor trans = eval.getComputerTransform().getTransformer(env, p);
+        TransformProcessor trans = eval.getTransformer(env, p);
         
         switch (oper()) {
             case ExprType.STL_NL:
                 switch (param.length) {
                     case 0:
                         return trans.tabulate();
-                    //return eval.getComputerTransform().nl(env, p, null);
                     case 1:
                         trans.setLevel(trans.getLevel() + param[0].intValue());
                         return trans.tabulate();
-                    //return eval.getComputerTransform().nl(env, p, param[0]);
                 }
 
             case ExprType.INDENT:
                 switch (param.length) {
                     case 1: trans.setLevel(trans.getLevel() + param[0].intValue());
                     return EMPTY;
-                        //return eval.getComputerTransform().indent(env, p, param[0]);
                 }
                 
             case ExprType.STL_ISSTART:

@@ -560,11 +560,11 @@ public class Transformer implements TransformProcessor {
    
     
     public IDatatype process() {
-        return process(null, false, null);
+        return process(null, false, null, null, null);
     }
 
     public IDatatype process(String temp) {
-        return process(temp, false, null);
+        return process(temp, false, null, null, null);
     }
     
     /**
@@ -572,7 +572,7 @@ public class Transformer implements TransformProcessor {
      * Usually it runs the st:start template.
      */
     @Override
-    public IDatatype process(String temp, boolean all, String sep) {
+    public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) {
         count++;
         query = null;
         //ArrayList<IDatatype> result = new ArrayList<IDatatype>();
@@ -698,12 +698,12 @@ public class Transformer implements TransformProcessor {
      */
     public IDatatype process(IDatatype dt, IDatatype[] args,  String temp,
             boolean allTemplates, String sep, Expr exp){
-        return process(dt, args, temp, allTemplates, sep, exp, null); 
+        return process(temp, allTemplates, sep, exp, null, dt, args); 
     }
     
     @Override
-    public IDatatype process(IDatatype dt, IDatatype[] args,  String temp,
-            boolean allTemplates, String sep, Expr exp, Environment env) { 
+    public IDatatype process(String temp, boolean allTemplates, String sep, 
+            Expr exp, Environment env, IDatatype dt, IDatatype[] args) { 
         count++;
         if (dt == null) {
             return EMPTY;
@@ -828,7 +828,7 @@ public class Transformer implements TransformProcessor {
         }
         else if (isHasDefault()) {
             // apply st:default named template
-            IDatatype res = process(dt, args, STL_DEFAULT, allTemplates, sep, exp, env);
+            IDatatype res = process(STL_DEFAULT, allTemplates, sep, exp, env, dt, args);
             if (res != EMPTY) {
                 return res;
             }

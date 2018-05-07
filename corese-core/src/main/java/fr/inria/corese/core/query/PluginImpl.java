@@ -47,15 +47,18 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.edge.EdgeQuad;
+import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.logic.Distance;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
+import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,8 +74,8 @@ import java.util.TreeMap;
  *
  */
 public class PluginImpl 
-        extends ProxyInterpreter //ProxyImpl 
-        implements ProxyPlugin
+        extends ProxyInterpreter  
+        implements ProxyPlugin, GraphProcessor
 {
 
     static public Logger logger = LoggerFactory.getLogger(PluginImpl.class);
@@ -202,13 +205,9 @@ public class PluginImpl
             case KG_GRAPH:
                 return DatatypeMap.createObject(getGraph(p));
                 
-            case SIM:
-                Graph g = getGraph(p);
-                if (g == null){
-                    return null;
-                }
+            case SIM:               
                 // solution similarity
-                return similarity(g, env);
+                return similarity(env, p);
                 
             case DESCRIBE:
                 return ext.describe(p, exp, env); 
@@ -258,7 +257,7 @@ public class PluginImpl
 //                        return load(g, o);
 
                     case DEPTH:
-                        return depth(g, dt);
+                        return depth(env, p, dt);
                         
                      case SKOLEM:               
                         return g.skolem(dt);  
@@ -302,7 +301,7 @@ public class PluginImpl
                 return test(p, exp, env, dt);
                 
              case LOAD:
-                return ext.load(p, exp, env, dt);
+                return load(dt);
                  
              case EXTENSION:
                 return ext.extension(p, exp, env, dt); 
@@ -322,10 +321,7 @@ public class PluginImpl
                  
              case XT_EXISTS:
                  return exists(p, null, dt, null);    
-                 
-//             case XT_TUNE:
-//                 return tune(exp, env, p, dt);
-                 
+                                 
              case XT_ENTAILMENT:
                  return entailment(exp, env, p, dt);
                                          
@@ -362,7 +358,7 @@ public class PluginImpl
                 switch (exp.oper()) {
                     case SIM:
                         // class similarity
-                        return similarity(g, dt1, dt2);
+                        return similarity(env, p, dt1, dt2);
 
                     case PSIM:
                         // prop similarity
@@ -375,13 +371,13 @@ public class PluginImpl
                 }
                 
              case LOAD:
-                return ext.load(p, exp, env, dt1, dt2);   
+                return load(dt1, dt2);   
 
              case WRITE:                
                 return write(dt1, dt2);   
                 
              case XT_VALUE:
-                 return value(exp, env, p, dt1, dt2);
+                 return value(p, dt1, dt2, DatatypeMap.ONE);
                  
               case XT_EDGE:
                  return edge(exp, env, p, dt1, dt2, null); 
@@ -433,7 +429,7 @@ public class PluginImpl
                 return triple(exp, env, p, param[0], param[1], param[2]); 
                 
             case XT_VALUE:
-                 return value(exp, env, p, param[0], param[1], param[2]);    
+                 return value(p, param[0], param[1], param[2]);    
                  
              case KGRAM:
                  Graph g = getGraph(p);
@@ -445,11 +441,11 @@ public class PluginImpl
         }
 
     }
+      
     
-   
-    
-    IDatatype similarity(Graph g, IDatatype dt1, IDatatype dt2) {
-
+    @Override
+    public IDatatype similarity(Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        Graph g = getGraph(p);
         Node n1 = g.getNode(dt1.getLabel());
         Node n2 = g.getNode(dt2.getLabel());
         if (n1 == null || n2 == null) {
@@ -491,7 +487,12 @@ public class PluginImpl
      *
      * TODO: cache distance in Environment during query proc
      */
-    public IDatatype similarity(Graph g, Environment env) {
+    @Override
+    public IDatatype similarity(Environment env, Producer p) {
+        Graph g = getGraph(p);
+        if (g == null) {
+            return null;
+        }
         if (!(env instanceof Memory)) {
             return getValue(0);
         }
@@ -564,7 +565,29 @@ public class PluginImpl
     }
 
     
-    private IDatatype write(IDatatype dtfile, IDatatype dt) {
+    IDatatype load(IDatatype dt) {
+         return load(dt, null);
+    }
+
+    @Override
+    public IDatatype load(IDatatype dt, IDatatype format) {
+         Graph g = Graph.create();
+         Load ld = Load.create(g);
+         try {
+             if (readWriteAuthorized){
+                ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
+             }
+         } catch (LoadException ex) {
+             logger.error("Load error: " + dt);
+             logger.error(ex.getMessage());
+             ex.printStackTrace();
+         }
+        IDatatype res = DatatypeMap.createObject(g);
+        return res;
+    }
+    
+    @Override
+    public IDatatype write(IDatatype dtfile, IDatatype dt) {
         if (readWriteAuthorized){
             QueryLoad ql = QueryLoad.create();
             ql.write(dtfile.getLabel(), dt.getLabel());
@@ -684,7 +707,8 @@ public class PluginImpl
     /*
      * Return Loopable with edges
      */
-    private IDatatype edge(Expr exp, Environment env, final Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
+    @Override
+    public IDatatype edge(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
        return DatatypeMap.createObject("tmp", getLoop(p, subj, pred, obj));        
     }
     
@@ -696,28 +720,13 @@ public class PluginImpl
        return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, obj));        
     }
           
-    Loopable getLoop(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
-       Loopable loop = new Loopable(){
-           @Override
-           public Iterable getLoop() {
-               return new DataProducer(getGraph(p)).iterate(subj, pred, obj);
-           }          
-       };
+    Loopable getLoop(Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
+       DataProducer dp = new DataProducer(getGraph(p)).iterate(subj, pred, obj);
+       Loopable loop = () -> dp;
        return loop;
     } 
     
-     @Deprecated
-    Loopable getLoop2(final Producer p, final IDatatype subj, final IDatatype pred, final IDatatype obj){
-       Loopable loop = new Loopable(){
-           @Override
-           public Iterable getLoop() {
-               Graph g = getGraph(p); 
-               return g.getEdges(value(subj), value(pred), value(obj));
-           }          
-       };
-       return loop;
-    } 
-    
+  
     IDatatype value(IDatatype dt){
         if (dt == null || dt.isBlank()){
             return null;
@@ -767,18 +776,8 @@ public class PluginImpl
         return null;
     }
     
-    /**
-     * value of a property
-     */
-    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred) {
-        return value(exp, env, p, subj, pred, 1);
-    }
-    
-    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype n) {
-        return value(exp, env, p, subj, pred, n.intValue());
-    }
 
-    private IDatatype value(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, int n) {
+    public IDatatype value(Producer p, IDatatype subj, IDatatype pred, IDatatype dt) {
        Graph g = getGraph(p);
        Node ns = g.getNode(subj);
        Node np = g.getPropertyNode(pred.getLabel());
@@ -789,7 +788,7 @@ public class PluginImpl
        if (edge == null){
            return null;
        }
-       return (IDatatype) edge.getNode(n).getDatatypeValue();
+       return (IDatatype) edge.getNode(dt.intValue()).getDatatypeValue();
     }
     
     private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
@@ -836,7 +835,8 @@ public class PluginImpl
         return null;
     }
 
-    private IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    @Override
+    public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         if (dt1.getLabel().equals(LISTEN)){  
             if (dt2.booleanValue()){
@@ -891,14 +891,13 @@ public class PluginImpl
      * */
     private Object tune(Expr exp, Environment env, Producer p, IDatatype dt) {
         Graph g = getGraph(p);
-        if (dt.getLabel().equals(LISTEN)){           
+        if (dt.getLabel().equals(LISTEN)) {
             return tune(exp, env, p, dt, TRUE);
-        }
-        else if (dt.getLabel().equals(SILENT)){
-             return tune(exp, env, p, dt, FALSE);
+        } else if (dt.getLabel().equals(SILENT)) {
+            return tune(exp, env, p, dt, FALSE);
         }
         return TRUE;
-     }
+    }
 
    
  
@@ -942,7 +941,9 @@ public class PluginImpl
         return n;
     }
 
-    IDatatype depth(Graph g, IDatatype dt) {
+    @Override
+    public IDatatype depth(Environment env, Producer p, IDatatype dt) {
+        Graph g = getGraph(p);
         Node n = node(g, dt);
         if (n == null){ 
             return null;
@@ -1251,6 +1252,11 @@ public class PluginImpl
     void createManager(){
         storageMgr = StorageFactory.create(IStorage.STORAGE_FILE, null);
         storageMgr.enable(true);
+    }
+    
+     @Override
+    public GraphProcessor getGraphProcessor() {
+        return this;
     }
     
 }

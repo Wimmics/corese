@@ -111,6 +111,8 @@
         <log4j2.version>2.11.0</log4j2.version>
         <sesame.version>4.1.1</sesame.version>
         <jersey.version>2.26</jersey.version>
+        <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>
+        <semargl.version>0.7.1</semargl.version>
     </properties>
 
     <dependencyManagement>
@@ -482,7 +484,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-		<!-- <version>1.0.0</version> -->
+		<version>1.0.1</version> 
                 <configuration>
                     <flattenMode>ossrh</flattenMode>
                     <updatePomFile>true</updatePomFile>
@@ -543,14 +545,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>default</id>
-            <activation><activeByDefault>true</activeByDefault></activation>
-            <properties>
-                <semargl.groupId>org.semarglproject</semargl.groupId>
-                <semargl.version>0.7</semargl.version>
-            </properties>
-        </profile>
         <!-- Jenkins by default defines a property BUILD_NUMBER which is used to enable the profile. -->
         <profile>
             <id>jenkins</id>
@@ -646,9 +640,12 @@
         </profile>
         <profile>
             <id>java9</id>
+	    <activation>
+		    <property>
+			    <name>!skip.java9</name> 
+		    </property>
+	    </activation>
             <properties>
-                <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>
-                <semargl.version>0.7.1</semargl.version>
             </properties>
             <build>
                 <plugins>
@@ -688,7 +685,6 @@
                             <jdkToolchain>
                                 <version>9</version>
                             </jdkToolchain>
-                            <!--<releae>9</releae>-->
                             <source>9</source>
                             <target>9</target>
                         </configuration>
@@ -698,9 +694,6 @@
         </profile>
         <profile>
             <id>java8</id>
-            <!--<activation>-->
-            <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
             <properties>
                 <semargl.version>0.7</semargl.version>
             </properties>

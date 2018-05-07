@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.core.Exp;
@@ -214,7 +215,7 @@ public interface Producer {
          Query getQuery();
 	
          // May return an object that implement the RDF graph
-         Object getGraph();
+         Graph getGraph();
          
          void setGraphNode(Node n);
          

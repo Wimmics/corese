@@ -213,10 +213,10 @@ public class PluginImpl
                 return ext.describe(p, exp, env); 
                 
              case XT_EDGE:
-                 return edge(exp, env, p, null, null, null);
+                 return edge(env, p, null, null, null);
                  
              case XT_EXISTS:
-                 return exists(p, null, null, null);
+                 return exists(env, p, null, null, null);
                  
              case APP_SIM:
                  return pas.eval(exp, env, p);
@@ -317,10 +317,10 @@ public class PluginImpl
                  return access(exp, env, p, dt);
                  
              case XT_EDGE:
-                 return edge(exp, env, p, null, dt, null);
+                 return edge(env, p, null, dt, null);
                  
              case XT_EXISTS:
-                 return exists(p, null, dt, null);    
+                 return exists(env, p, null, dt, null);    
                                  
              case XT_ENTAILMENT:
                  return entailment(exp, env, p, dt);
@@ -380,10 +380,10 @@ public class PluginImpl
                  return value(p, dt1, dt2, DatatypeMap.ONE);
                  
               case XT_EDGE:
-                 return edge(exp, env, p, dt1, dt2, null); 
+                 return edge(env, p, dt1, dt2, null); 
                  
               case XT_EXISTS:
-                 return exists(p, dt1, dt2, null);   
+                 return exists(env, p, dt1, dt2, null);   
                   
               case XT_TUNE:
                  return tune(exp, env, p, dt1, dt2);     
@@ -420,10 +420,10 @@ public class PluginImpl
                 return pas.eval(exp, env, p, param);
                                
             case XT_EDGE:
-                return edge(exp, env, p, param[0], param[1], param[2]);
+                return edge(env, p, param[0], param[1], param[2]);
                 
             case XT_EXISTS:
-                return exists(p, param[0], param[1], param[2]);    
+                return exists(env, p, param[0], param[1], param[2]);    
                 
              case XT_TRIPLE:
                 return triple(exp, env, p, param[0], param[1], param[2]); 
@@ -441,7 +441,16 @@ public class PluginImpl
         }
 
     }
+    
+    @Override
+    public IDatatype approximate(Expr exp, Environment env, Producer p, IDatatype[] param) {
+        return pas.eval(exp, env, p, param);
+    }
       
+    @Override
+    public IDatatype approximate(Expr exp, Environment env, Producer p) {
+        return pas.eval(exp, env, p);
+    }
     
     @Override
     public IDatatype similarity(Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
@@ -685,7 +694,8 @@ public class PluginImpl
         return DatatypeMap.createObject(g);
     }
     
-    private IDatatype exists(Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+    @Override
+    public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         for (Entity ent : new DataProducer(getGraph(p)).iterate(subj, pred, obj)) {
             return (ent == null) ? FALSE :TRUE;
         }
@@ -708,7 +718,7 @@ public class PluginImpl
      * Return Loopable with edges
      */
     @Override
-    public IDatatype edge(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
+    public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
        return DatatypeMap.createObject("tmp", getLoop(p, subj, pred, obj));        
     }
     
@@ -791,7 +801,8 @@ public class PluginImpl
        return (IDatatype) edge.getNode(dt.intValue()).getDatatypeValue();
     }
     
-    private IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    @Override
+    public IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         if ((! (dt1.isPointer() && dt2.isPointer()))
             || (dt1.pointerType() != dt2.pointerType()) ){
             return null;
@@ -811,7 +822,8 @@ public class PluginImpl
         return null;
     }
     
-    private IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    @Override
+    public IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         if ((! (dt1.isPointer() && dt2.isPointer()))
             || (dt1.pointerType() != dt2.pointerType()) ){
             return null;

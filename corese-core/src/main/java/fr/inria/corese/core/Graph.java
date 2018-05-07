@@ -1223,16 +1223,6 @@ public class Graph extends GraphObject implements
         } 
     }
     
-    /**
-     * Draft (transitivity is missing ...)
-     */
-//    public void sameas(){
-//        for (Entity ent : getEdges(OWL.SAMEAS)){
-//            ent.getNode(1).setIndex(ent.getNode(0).getIndex());
-//        }
-//        index();
-//    }
-
     void clearIndex() {
         gindex.clear();
     }

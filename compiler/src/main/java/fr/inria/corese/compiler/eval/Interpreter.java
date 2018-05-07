@@ -21,11 +21,16 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.filter.Proxy;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.ComputerProxy;
+import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.TransformProcessor;
+import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -777,6 +782,36 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public Expr getDefineMethod(Environment env, String name, Object type, Object[] values) {
         return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
+    }
+
+    @Override
+    public TransformProcessor getTransformer(Environment env, Producer p) {
+        return getComputerTransform().getTransformer(env, p);
+    }
+
+    @Override
+    public TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) {
+        return getComputerTransform().getTransformer(env, p, exp, uri, gname);
+    }
+
+    @Override
+    public TransformVisitor getVisitor(Environment env, Producer p) {
+        return getComputerTransform().getVisitor(env, p);
+    }
+    
+    @Override
+    public GraphProcessor getGraphProcessor() {
+        return getComputerPlugin().getGraphProcessor();
+    }
+
+    @Override
+    public Context getContext(Environment env, Producer p) {
+        return getComputerTransform().getContext(env, p);
+    }
+
+    @Override
+    public NSManager getNSM(Environment env, Producer p) {
+        return getComputerTransform().getNSM(env, p);
     }
 
 

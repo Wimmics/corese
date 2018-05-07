@@ -1,15 +1,10 @@
 package fr.inria.corese.sparql.triple.parser;
 
-import fr.inria.corese.sparql.triple.function.template.ApplyTemplatesWith;
-import fr.inria.corese.sparql.triple.function.template.TemplateFuture;
-import fr.inria.corese.sparql.triple.function.template.CallTemplateWith;
-import fr.inria.corese.sparql.triple.function.template.CallTemplate;
-import fr.inria.corese.sparql.triple.function.template.ApplyTemplatesWithGraph;
-import fr.inria.corese.sparql.triple.function.template.ApplyTemplates;
-import fr.inria.corese.sparql.triple.function.template.TemplateFormat;
+import fr.inria.corese.sparql.triple.function.template.*;
 import fr.inria.corese.sparql.triple.function.core.*;
 import fr.inria.corese.sparql.triple.function.aggregate.*;
 import fr.inria.corese.sparql.triple.function.term.*;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.*;
 import fr.inria.corese.sparql.triple.function.script.*;
 import fr.inria.corese.sparql.triple.function.proxy.*;
@@ -21,23 +16,12 @@ import java.util.List;
 import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
-import fr.inria.corese.sparql.triple.function.proxy.GraphFunction;
-import fr.inria.corese.sparql.triple.function.template.TemplateFunction;
-import fr.inria.corese.sparql.triple.function.template.TemplateProcess;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.sparql.triple.function.template.CGetSetContext;
-import fr.inria.corese.sparql.triple.function.template.FocusNode;
-import fr.inria.corese.sparql.triple.function.template.GetSetContext;
-import fr.inria.corese.sparql.triple.function.template.TemplateAccess;
-import fr.inria.corese.sparql.triple.function.template.Prefix;
-import fr.inria.corese.sparql.triple.function.template.TemplateNumber;
-import fr.inria.corese.sparql.triple.function.template.Turtle;
-import fr.inria.corese.sparql.triple.function.template.TemplateVisitor;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -465,13 +449,31 @@ public class Term extends Expression {
                 return new TemplateVisitor(name);            
 
             case ExprType.APPROXIMATE:
-            case ExprType.DEPTH:
-            case ExprType.XT_EDGE:
             case ExprType.XT_EXISTS:
-            case ExprType.SIM:
+                return new GraphGenericFunction(name);
+                
             case ExprType.LOAD:
             case ExprType.WRITE:
+            case ExprType.XT_TUNE:
+            case ExprType.SIM:                
+            case ExprType.DEPTH:
+            case ExprType.XT_EDGE:
+                return new GraphSpecificFunction(name);
+                
+            case ExprType.XT_VALUE:
+            case ExprType.XT_GRAPH:
+            case ExprType.XT_SUBJECT:
+            case ExprType.XT_OBJECT:
+            case ExprType.XT_PROPERTY:
+            case ExprType.XT_INDEX:    
                 return new GraphFunction(name);
+                
+            case ExprType.XT_METADATA:
+            case ExprType.XT_CONTEXT:    
+            case ExprType.XT_QUERY:    
+            case ExprType.XT_FROM:    
+            case ExprType.XT_NAMED:  
+                return new Introspection(name);
 
             default:
                 return new Term(name);

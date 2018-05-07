@@ -20,20 +20,17 @@ public interface ComputerProxy {
     IDatatype function(Expr exp, Environment env, Producer p);
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt);
     IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
-    
-    IDatatype transform(IDatatype[] args, IDatatype focus, 
-                        IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer p);
-    
-    IDatatype transform(IDatatype trans, IDatatype temp, IDatatype name, Expr exp, Environment env, Producer p);
-    
+        
     IDatatype format(IDatatype[] ldt);
     
     IDatatype hash(Expr exp, IDatatype dt);
 
     TransformProcessor getTransformer(Environment env, Producer p);
     
-    TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype temp, IDatatype gname);
+    TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname);
     
+    GraphProcessor getGraphProcessor();
+
     TransformVisitor getVisitor(Environment env, Producer p);
     
     Context getContext(Environment env, Producer p);

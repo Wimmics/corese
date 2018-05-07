@@ -17,9 +17,9 @@ public interface TransformProcessor {
     
     boolean isStart();
     
-    IDatatype process(String temp, boolean all, String sep);
+    IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env);
     
-    IDatatype process(IDatatype dt, IDatatype[] args, 
-            String temp, boolean all, String sep, Expr exp, Environment env);
+    IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env, 
+            IDatatype dt, IDatatype[] args);
     
 }

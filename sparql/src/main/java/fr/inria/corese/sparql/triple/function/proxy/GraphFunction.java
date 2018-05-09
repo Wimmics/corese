@@ -1,7 +1,7 @@
 package fr.inria.corese.sparql.triple.function.proxy;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
+import static fr.inria.corese.kgram.api.core.ExprType.INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
@@ -60,7 +60,7 @@ public class GraphFunction extends TermEval {
 
         }
     }
-
+    
     IDatatype access(IDatatype dt) {
         if (!(dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)) {
             return null;

@@ -3,11 +3,13 @@ package fr.inria.corese.sparql.triple.function.proxy;
 import static fr.inria.corese.kgram.api.core.ExprType.APPROXIMATE;
 import static fr.inria.corese.kgram.api.core.ExprType.APP_SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.DEPTH;
+import static fr.inria.corese.kgram.api.core.ExprType.KGRAM;
 import static fr.inria.corese.kgram.api.core.ExprType.LOAD;
 import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINUS;
@@ -89,12 +91,24 @@ public class GraphSpecificFunction extends TermEval {
             case XT_UNION:    
                 return proc.union(this, env, p, param[0], param[1]);
                 
+            case XT_ENTAILMENT:
+                return entailment(proc, env, p, param);
+                
+            case KGRAM:
+                return proc.sparql(env, p, param);
+                
             default: return null;
                 
         }
         
     }
     
+    IDatatype entailment(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        switch (param.length) {
+            case 0: return proc.entailment(env, p, null);
+            default:return proc.entailment(env, p, param[0]);
+        }
+    }
     
     IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {

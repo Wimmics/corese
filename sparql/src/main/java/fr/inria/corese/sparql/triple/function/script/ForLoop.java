@@ -79,7 +79,7 @@ public class ForLoop extends Statement {
             for (IDatatype dt : list.getValues()) {
                 b.bind(this, var, dt);
                 res = body.eval(eval, b, env, p);
-                if (b.isResult()) { //if (isReturn(res)) {
+                if (b.isResult()) { 
                     b.unset(this, var, dt);
                     return res;
                 }
@@ -88,7 +88,7 @@ public class ForLoop extends Statement {
             for (IDatatype dt : list) {
                 b.bind(this, var, dt);
                 res = body.eval(eval, b, env, p);
-                if (b.isResult()) { //if (isReturn(res)) {
+                if (b.isResult()) { 
                     b.unset(this, var, dt);
                     return res;
                 }

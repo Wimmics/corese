@@ -74,22 +74,6 @@ public class IfThenElseTerm extends TermEval {
         }
     }
     
-    
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype val = test.eval(eval, b, env, p);
-        if (val == null) {
-            return null;
-        }
-        try {
-            if (val.isTrue()) {
-                return e1.eval(eval, b, env, p);
-            } 
-        } catch (CoreseDatatypeException e) {
-            // continue
-        }
-        return e2.eval(eval, b, env, p);
-    } 
-    
      @Override
     public void tailRecursion(Function fun){
         e1.tailRecursion(fun);

@@ -71,9 +71,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 
-    static String data = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
+    static String data  = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
     static String QUERY = TestQuery1.class.getClassLoader().getResource("query").getPath() + "/";
-    static String text = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
+    static String text  = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
     private static final String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
@@ -140,7 +140,50 @@ public class TestQuery1 {
         return graph;
     }
 
+    
+    @Test
+    public void testSparql() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (kg:sparql('select * (sum(?i) as ?sum) where { values ?i { unnest(xt:iota(5))} }') as ?res) "
+                + "where {}";
 
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);        
+        IDatatype dt = (IDatatype) map.getValue("?res");
+        Mappings m = dt.getPointerObject().getMappings();
+        IDatatype sum = (IDatatype) m.getValue("?sum");
+        assertEquals(15, sum.intValue());
+    } 
+    
+    
+    @Test
+    public void testNumber() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (kg:number() as ?n) (sum(?n) as ?sum) where {"
+                + "values ?e { unnest (xt:iota(5)) }"
+                + "}";
+
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?sum");
+        assertEquals(10, dt.intValue());
+    } 
+    
+    
+    @Test
+    public void testEnt() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (xt:entailment() as ?g) where {"
+                + "}";
+
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?g");
+        Graph gg = (Graph) dt.getObject();
+        assertEquals(7, gg.size());
+    } 
+
+    
     @Test
     public void testJSON() throws EngineException, LoadException {
         String t =
@@ -1895,59 +1938,6 @@ public class TestQuery1 {
         assertEquals(0, dt2.intValue());
     }
 
-
-    @Test
-    public void testContext4() throws EngineException {
-        Graph g = GraphStore.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "template {} "
-                + "where {"
-                + "bind (st:export(st:test, 'test') as ?t)"
-                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)"
-                + "}";
-
-        Mappings map = exec.query(q);
-        Context c = (Context) map.getContext();
-        IDatatype dt = c.getName("test");
-        assertEquals("test", dt.stringValue());
-        Transformer t = (Transformer) map.getQuery().getTransformer();
-        IDatatype res = t.getContext().getName("res");
-        assertEquals(10, res.intValue());
-    }
-
-
-    @Test
-    public void testContext33() throws EngineException {
-        Graph g = GraphStore.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "select * "
-                + "where {"
-                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)"
-                + "}";
-
-        Context c = new Context().exportName("test", DatatypeMap.newInstance("test"));
-        Mappings map = exec.query(q, c);
-        IDatatype dt = (IDatatype) map.getValue(("?tt"));
-        assertEquals("test", dt.stringValue());
-
-    }
-
-
-    @Test
-    public void testContext3() throws EngineException {
-        Graph g = GraphStore.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "select * "
-                + "where {"
-                + "bind (st:export(st:test, 'test') as ?t)"
-                + "bind (st:atw('" + data + "junit/sttl/test') as ?tt)"
-                + "}";
-
-        Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue(("?tt"));
-        assertEquals("test", dt.stringValue());
-
-    }
 
 
     @Test
@@ -4121,7 +4111,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    
     public void myastpp3() throws LoadException, EngineException {
         GraphStore graph = GraphStore.create();
         QueryProcess exec = QueryProcess.create(graph);
@@ -4711,7 +4701,7 @@ public class TestQuery1 {
         }
     }
 
-    @Test
+    //@Test
     public void testRDFa() throws LoadException {
 
         Graph g = createGraph();
@@ -4980,7 +4970,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testQM() {
         Graph g = createGraph();
         QueryManager man = QueryManager.create(g);
@@ -5404,7 +5394,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void test1() {
         String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select check where {"

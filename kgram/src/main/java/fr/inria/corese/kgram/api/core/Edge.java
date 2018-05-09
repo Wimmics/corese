@@ -8,7 +8,7 @@ package fr.inria.corese.kgram.api.core;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Edge  {
+public interface Edge  extends Entity {
 	
 	/**
 	 * Number of nodes.

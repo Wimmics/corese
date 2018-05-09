@@ -26,7 +26,7 @@ public class Sequence extends TermEval {
         IDatatype res = TRUE;
         for (Expression exp : getArgs()) {
             res = exp.eval(eval, b, env, p);
-                if (b.isResult()) { //if (isReturn(res)) {
+                if (b.isResult()) { 
                 return res;
             }
         }

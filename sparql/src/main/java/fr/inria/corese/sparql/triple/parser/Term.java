@@ -399,7 +399,12 @@ public class Term extends Expression {
             case ExprType.PROLOG:    
                 return new Prefix(name);
                 
+            case ExprType.QNAME:
+                return new Namespace(name);
+                
+            //case ExprType.STL_INDEX:
             case ExprType.STL_NUMBER:
+            case ExprType.NUMBER:
                 return new TemplateNumber(name);
                 
             case ExprType.FOCUS_NODE:
@@ -469,6 +474,8 @@ public class Term extends Expression {
             case ExprType.XT_JOIN:
             case ExprType.XT_OPTIONAL:
             case ExprType.XT_UNION:
+            case ExprType.XT_ENTAILMENT:    
+            case ExprType.KGRAM:    
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALUE:
@@ -483,7 +490,8 @@ public class Term extends Expression {
             case ExprType.XT_CONTEXT:    
             case ExprType.XT_QUERY:    
             case ExprType.XT_FROM:    
-            case ExprType.XT_NAMED:  
+            case ExprType.XT_NAMED:
+            case ExprType.XT_NAME:
                 return new Introspection(name);
 
             default:
@@ -1671,7 +1679,7 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        //System.out.println("********* eval: " + this);
+       // System.out.println("********* eval: " + this);
         return eval.function((Expr) this, env, p);
     }
 }

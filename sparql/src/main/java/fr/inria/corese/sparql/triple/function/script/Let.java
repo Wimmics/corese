@@ -83,7 +83,7 @@ public class Let extends Statement {
         Variable var = getVariable();
         b.set(this, var, val);
         IDatatype res = getBody().eval(eval, b, env, p);
-        env.unset(this, var, val);
+        b.unset(this, var, val);
         return res;
     }
     

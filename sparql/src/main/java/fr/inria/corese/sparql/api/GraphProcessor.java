@@ -29,6 +29,10 @@ public interface GraphProcessor {
    
     IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
     
+    IDatatype entailment(Environment env, Producer p, IDatatype graph);
+    
+    IDatatype sparql(Environment env, Producer p, IDatatype[] param);
+    
     IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     
     IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);

@@ -568,8 +568,8 @@ public class ProducerImpl implements Producer, IProducerQP {
 			// return nodes of from named graph
 			return getNodes(gNode, from, env);
 		} else {
-			// all nodes
-			return graph.getAllNodes();
+			// all nodes with named graph
+			return graph.getAllNodesIndex();
 		}
 
 		return empty;

@@ -1,28 +1,12 @@
 package fr.inria.corese.core;
 
-import fr.inria.corese.core.edge.EdgeInternalDefault;
-import fr.inria.corese.core.edge.EdgeEntail;
-import fr.inria.corese.core.edge.EdgeInternalEntail;
-import fr.inria.corese.core.edge.EdgeTop;
-import fr.inria.corese.core.edge.EdgeRule;
-import fr.inria.corese.core.edge.EdgeQuad;
-import fr.inria.corese.core.edge.EdgeBinaryLabel;
-import fr.inria.corese.core.edge.EdgeRuleSubclass;
-import fr.inria.corese.core.edge.EdgeRuleType;
-import fr.inria.corese.core.edge.EdgeBinarySubclass;
-import fr.inria.corese.core.edge.EdgeGeneric;
-import fr.inria.corese.core.edge.EdgeDefault;
-import fr.inria.corese.core.edge.EdgeInternal;
-import fr.inria.corese.core.edge.EdgeInternalRule;
-import fr.inria.corese.core.edge.EdgeBinaryFirst;
-import fr.inria.corese.core.edge.EdgeBinaryType;
-import fr.inria.corese.core.edge.EdgeImpl;
-import fr.inria.corese.core.edge.EdgeBinaryRest;
+import fr.inria.corese.core.edge.*;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -66,7 +50,7 @@ public class EdgeFactory {
         System.out.println("Tot: " + (std+def+rul+ent));        
     }   
 
-    public Entity create(Node source, Node subject, Node predicate, Node object) {
+    public Edge create(Node source, Node subject, Node predicate, Node object) {
         if (graph.isTuple()){
              return EdgeImpl.create(source, subject, predicate, object);
         }
@@ -100,7 +84,11 @@ public class EdgeFactory {
         return DatatypeMap.newInstance(count++);
     }
      
-    public Entity internal(Entity ent){
+    public Edge internal(Entity ent) {
+        return internal(ent.getEdge());
+    }
+    
+    public Edge internal(Edge ent){
         if (ent.nbNode() > 2) {
             return ent;
         }
@@ -120,6 +108,10 @@ public class EdgeFactory {
     }
     
     public EdgeTop createDuplicate(Entity ent) {
+        return createDuplicate(ent.getEdge());
+    }
+    
+    public EdgeTop createDuplicate(Edge ent) {
         if (ent.nbNode() == 2) {
             return new EdgeGeneric();
         } else {
@@ -129,12 +121,15 @@ public class EdgeFactory {
         }
     }
     
-    public Entity createGeneric(Node source, Node subject, Node predicate, Node value) {
+    public Edge createGeneric(Node source, Node subject, Node predicate, Node value) {
         return EdgeGeneric.create(source, subject, predicate, value);
     }
         
-    
-    public Entity compact(Entity ent){
+    public Edge compact(Entity ent){
+        return compact(ent.getEdge());
+    }
+        
+    public Edge compact(Edge ent){
         switch (ent.getGraph().getIndex()){
             case Graph.RULE_INDEX: 
                 return EdgeInternalRule.create(ent.getNode(0), ent.getNode(1));
@@ -145,7 +140,7 @@ public class EdgeFactory {
     /**
      * Specific named graph and specific properties have specific Edge class
      */
-    public Entity genCreate(Node source, Node subject, Node predicate, Node value) {
+    public Edge genCreate(Node source, Node subject, Node predicate, Node value) {
         switch (source.getIndex()) {
             case Graph.RULE_INDEX:
                 rul++;
@@ -167,7 +162,7 @@ public class EdgeFactory {
      * Named Graph is not stored in Edge
      * Several properties have specific class: rdf:type, rdf:first, rdf:rest, rdfs:subClassOf
      */
-    public Entity defaultCreate(Node source, Node subject, Node predicate, Node value) {
+    public Edge defaultCreate(Node source, Node subject, Node predicate, Node value) {
         switch (predicate.getIndex()){
             case Graph.TYPE_INDEX: 
                 typ++;
@@ -191,7 +186,7 @@ public class EdgeFactory {
     /**
      * Edge for RDFS entailment graph kg:entail
      */
-    public Entity entailCreate(Node source, Node subject, Node predicate, Node value) {
+    public Edge entailCreate(Node source, Node subject, Node predicate, Node value) {
         ent++;
         return EdgeEntail.create(source, subject, predicate, value);
     }
@@ -201,7 +196,7 @@ public class EdgeFactory {
      * Named Graph is not stored in Edge
      * Several properties have specific class: rdf:type, rdfs:subClassOf
      */    
-    public Entity ruleCreate(Node source, Node subject, Node predicate, Node value) {
+    public Edge ruleCreate(Node source, Node subject, Node predicate, Node value) {
         switch (predicate.getIndex()){
             case Graph.TYPE_INDEX: 
                 typ++;
@@ -217,17 +212,21 @@ public class EdgeFactory {
     /**
      * Edge for user named graph
      */
-    public Entity quad(Node source, Node subject, Node predicate, Node value) {
+    public Edge quad(Node source, Node subject, Node predicate, Node value) {
             return EdgeQuad.create(source, subject, predicate, value);
    }
     
-    public Entity create(Node source, Node predicate, List<Node> list) {
+    public Edge create(Node source, Node predicate, List<Node> list) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
         return ee;
     }
     
-    public Entity copy(Node node, Node pred, Entity ent) {
+    public Edge copy(Node node, Node pred, Entity ent) {
+        return copy(node, pred, ent.getEdge());
+    }
+    
+    public Edge copy(Node node, Node pred, Edge ent) {
         if (ent instanceof EdgeImpl) {
             EdgeImpl ee = ((EdgeImpl)ent).copy();
             ee.setGraph(node);
@@ -238,11 +237,19 @@ public class EdgeFactory {
         }
     }
     
-    public Entity copy(Entity ent){
+    public Edge copy(Entity ent){
+        return copy(ent.getEdge());
+    }
+    
+    public Edge copy(Edge ent){
         return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
     }
     
-    public Entity queryEdge(Entity ent){
+    public Edge queryEdge(Entity ent){
+           return queryEdge(ent.getEdge());
+    }
+    
+    public Edge queryEdge(Edge ent){
         if (graph.isMetadata()) {
             return createGeneric(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
         }
@@ -252,16 +259,23 @@ public class EdgeFactory {
     /**
      * Piece of code specific to EdgeImpl
      */
-    public void setGraph(Entity ent, Node g) {
+    public void setGraph(Edge ent, Node g) {
         if (ent instanceof EdgeTop) {
             EdgeTop e = (EdgeTop) ent;
             e.setGraph(g);
         }
  
     }
+    
+     public void setGraph(Entity ent, Node g) {
+         setGraph(ent.getEdge(), g);
+     }
 
-
-    Entity tag(Entity ent) {
+    Edge tag(Entity ent) {
+        return tag(ent.getEdge());
+    }
+    
+    Edge tag(Edge ent) {
         if (ent instanceof EdgeImpl) {
             EdgeImpl ee = (EdgeImpl) ent;
             ee.setTag(graph.tag());
@@ -269,14 +283,14 @@ public class EdgeFactory {
         return ent;
     }
 
-    public Entity createDelete(Node source, Node subject, Node predicate, Node value) {
+    public Edge createDelete(Node source, Node subject, Node predicate, Node value) {
         return EdgeQuad.create(source, subject, predicate, value);
     }
 
     /**
      * Tuple
      */
-    public Entity createDelete(Node source, Node predicate, List<Node> list) {
+    public Edge createDelete(Node source, Node predicate, List<Node> list) {
         return create(source, predicate, list);
     }
     
@@ -299,9 +313,9 @@ public class EdgeFactory {
     }
 
     // with time stamp
-    public Entity timeCreate(Node source, Node subject, Node predicate, Node value) {
+    public Edge timeCreate(Node source, Node subject, Node predicate, Node value) {
         Node time = graph.getNode(DatatypeMap.newDate(), true, true);
-        Entity edge = new EdgeImpl(source, predicate, subject, value, time);
+        Edge edge = new EdgeImpl(source, predicate, subject, value, time);
         return edge;
     }
 }

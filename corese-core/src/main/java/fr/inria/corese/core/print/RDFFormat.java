@@ -156,7 +156,7 @@ public class RDFFormat {
         without.add(name);
     }
 
-    Iterable<Entity> getNodes() {
+    Iterable<Node> getNodes() {
         if (map != null) {
             return map.getMapNodes();
         }
@@ -210,8 +210,7 @@ public class RDFFormat {
 
         error();
 
-        for (Entity ent : getNodes()) {
-            Node node = ent.getNode();
+        for (Node node : getNodes()) {
             print(node);
         }
 

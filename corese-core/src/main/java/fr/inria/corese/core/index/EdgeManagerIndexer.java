@@ -109,10 +109,7 @@ public class EdgeManagerIndexer
      * Iterate edges in external format as complete Edge
      */
     Iterable<Entity> extGet(Node p){
-        if (test){
-            return getEdges(p, null, null);
-        }
-        return get(p);
+        return getEdges(p, null, null);
     }
 
      int intCompare(int n1, int n2) {
@@ -298,10 +295,7 @@ public class EdgeManagerIndexer
     }
 
     Entity internal(Entity ent){
-        if (test){
-            return graph.getEdgeFactory().internal(ent);
-        }
-        return ent;
+        return graph.getEdgeFactory().internal(ent);
     }
     
     /**
@@ -518,11 +512,9 @@ public class EdgeManagerIndexer
 
    @Override
     public void compact(){
-        if (test){
-            for (Node pred : getProperties()) {
+        for (Node pred : getProperties()) {
                 EdgeManager el = get(pred);
                 el.compact();
-            }
         }
     }
 
@@ -594,17 +586,12 @@ public class EdgeManagerIndexer
             return list;
         }
         else if (node == null){
-            if (test){
-                return new EdgeManagerIterate(list);
-            }
-            else {
-                return list;
-            }
+            return new EdgeManagerIterate(list);
         }
-        else if (test || node2 == null) {
+        else {
             return list.getEdges(node);
         }
-        return list.getEdges(node, node2);
+        //return list.getEdges(node, node2);
     }
     
     @Override

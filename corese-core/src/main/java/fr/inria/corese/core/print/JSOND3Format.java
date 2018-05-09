@@ -120,8 +120,7 @@ public class JSOND3Format extends RDFFormat {
 
     void d3Nodes() {
         
-        for (Entity e : graph.getRBNodes()) {
-            Node node = e.getNode();
+        for (Node node : graph.getRBNodes()) {
             int group = 1;
             if (node.isBlank()) {
                 group = 0;
@@ -146,9 +145,8 @@ public class JSOND3Format extends RDFFormat {
             cpt++;
         }
 
-        for (Entity e : graph.getLiteralNodes()) {
+        for (Node node : graph.getLiteralNodes()) {
 //        for (Entity e :  graph.getRBNodes()) {
-            Node node = e.getNode();
             sdisplay(TAB);
             sdisplay(OOBJ);
             sdisplay("\"name\" : ");
@@ -201,8 +199,7 @@ public class JSOND3Format extends RDFFormat {
     
     
     void nodes() {
-        for (Entity ent : getNodes()) {
-            Node node = ent.getNode();
+        for (Node node : getNodes()) {
             print(null, node);
         }
     }

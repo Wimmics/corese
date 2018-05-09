@@ -84,7 +84,7 @@ public class EdgeManager implements Iterable<Entity> {
      * Remove duplicate edges
      */
     int reduce(NodeManager mgr) {
-        ArrayList<Entity> l = new ArrayList<Entity>();
+        ArrayList<Entity> l = new ArrayList<>();
         Entity pred = null;
         int count = 0, ind = 0;
         for (Entity ent : list) {          
@@ -316,14 +316,7 @@ public class EdgeManager implements Iterable<Entity> {
         // node is bound, enumerate edges where node = edge.getNode(index)
         int n = findNodeIndex(node);
         if (n >= 0 && n < list.size()) {
-            if (EdgeManagerIndexer.test) {
-                // draft
-                return new EdgeManagerIterate(this, n);
-
-            } else {
-                // format
-                return new Iterate(this, n);
-            }
+           return new EdgeManagerIterate(this, n);
         }
         return null;
     }
@@ -496,6 +489,7 @@ public class EdgeManager implements Iterable<Entity> {
      * edge = list.get(n) node = edge.getNode(index) Return an iterator of edges
      * with node as index element
      */
+    @Deprecated
     class Iterate implements Iterable<Entity>, Iterator<Entity> {
 
         List<Entity> list;

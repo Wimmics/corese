@@ -97,8 +97,7 @@ public class TripleFormat extends RDFFormat {
 	
 	
 	void nodes(){
-		for (Entity ent : getNodes()){
-			Node node = ent.getNode();
+		for (Node node : getNodes()){
 			print(null, node);
 		}
 	}

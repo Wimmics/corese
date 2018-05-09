@@ -49,6 +49,7 @@ import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.api.Tagger;
 import fr.inria.corese.core.api.ValueResolver;
+import fr.inria.corese.kgram.tool.MetaIteratorCast;
 import java.util.Map;
 
 /**
@@ -144,10 +145,10 @@ public class Graph extends GraphObject implements
     // predefined individual
     HashMap<String, Node> system;
     // key -> URI Node
-    Hashtable<String, Entity> individual;
+    Hashtable<String, Node> individual;
     // label -> Blank Node
-    Hashtable<String, Entity> blank;
-    SortedMap<IDatatype, Entity> 
+    Hashtable<String, Node> blank;
+    SortedMap<IDatatype, Node> 
             // IDatatype -> Literal Node 
             // number with same value but different datatype have different Node
             // but (may) have same index
@@ -156,7 +157,7 @@ public class Graph extends GraphObject implements
             sliteral;
     // @deprecated
     // key -> Node
-    Map<String, Entity> vliteral;
+    Map<String, Node> vliteral;
     // graph nodes: key -> Node
     Hashtable<String, Node> graph;
     // property nodes: label -> Node (for performance)
@@ -248,8 +249,8 @@ public class Graph extends GraphObject implements
      * Contain undefined datatype
      */
     public boolean isFlawed() {
-        for (Entity ent : getLiteralNodes()) {
-            IDatatype dt = (IDatatype) ent.getNode().getValue();
+        for (Node ent : getLiteralNodes()) {
+            IDatatype dt = (IDatatype) ent.getValue();
             if (DatatypeMap.isUndefined(dt)) {
                 return true;
             }
@@ -411,7 +412,7 @@ public class Graph extends GraphObject implements
         this.defaultGraphMode = defaultGraph;
     }
    
-    public class TreeNode extends TreeMap<IDatatype, Entity> {
+    public class TreeNode extends TreeMap<IDatatype, Node> {
 
         TreeNode() {
             super(new CompareNode());
@@ -548,15 +549,15 @@ public class Graph extends GraphObject implements
         // Literal numbers and booleans  (to manage Node index):
         sliteral = Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.SPARQLCompliant));
         // deprecated:
-        vliteral = Collections.synchronizedMap(new HashMap<String, Entity>());
+        vliteral = Collections.synchronizedMap(new HashMap<>());
         // URI Node
-        individual = new Hashtable<String, Entity>();
+        individual = new Hashtable<>();
         // Blank Node
-        blank = new Hashtable<String, Entity>();
+        blank = new Hashtable<>();
         // Named Graph Node
-        graph = new Hashtable<String, Node>();
+        graph = new Hashtable<>();
         // Property Node
-        property = new Hashtable<String, Node>();
+        property = new Hashtable<>();
         
         // Index of nodes of named graphs
         // Use case: SPARQL Property Path
@@ -921,16 +922,16 @@ public class Graph extends GraphObject implements
         String str = "";
         int uri = 0, blank = 0, string = 0, lit = 0, date = 0, num = 0;
 
-        for (Entity e : getNodes()) {
+        for (Node e : getNodes()) {
             uri++;
         }
 
-        for (Entity e : getBlankNodes()) {
+        for (Node e : getBlankNodes()) {
             blank++;
         }
 
-        for (Entity e : getLiteralNodes()) {
-            IDatatype dt = (IDatatype) e.getNode().getValue();
+        for (Node e : getLiteralNodes()) {
+            IDatatype dt = (IDatatype) e.getValue();
             if (dt.isNumber()) {
                 num++;
             } else if (dt.getCode() == IDatatype.STRING) {
@@ -1235,8 +1236,8 @@ public class Graph extends GraphObject implements
 
     public void indexResources() {
         int i = 0;
-        for (Entity n : getRBNodes()) {
-            n.getNode().setIndex(i++);
+        for (Node n : getRBNodes()) {
+            n.setIndex(i++);
         }
     }
 
@@ -1686,7 +1687,7 @@ public class Graph extends GraphObject implements
     }
 
     void addNode(IDatatype dt, Node node) {
-        individual.put(getID(node), (Entity) node);
+        individual.put(getID(node), node);
     }
 
     public Node getBlankNode(String name) {
@@ -1694,7 +1695,7 @@ public class Graph extends GraphObject implements
     }
 
     void addBlankNode(IDatatype dt, Node node) {
-        blank.put(node.getLabel(), (Entity) node);
+        blank.put(node.getLabel(), node);
     }
 
     String getID(Node node) {
@@ -1825,10 +1826,10 @@ public class Graph extends GraphObject implements
 
     public void addLiteralNode(IDatatype dt, Node node) {
         if (valueOut) {
-            vliteral.put(node.getKey(), (Entity) node);
+            vliteral.put(node.getKey(), node);
             indexNode(dt, node);
         } else {
-            literal.put(dt, (Entity) node);
+            literal.put(dt,  node);
             indexLiteralNode(dt, node);
         }
     }
@@ -1853,13 +1854,13 @@ public class Graph extends GraphObject implements
      */
     void indexLiteralNode(IDatatype dt, Node node) {
         if (isSameIndexAble(dt)) {
-            Entity n = sliteral.get(dt);
+            Node n = sliteral.get(dt);
             if (n == null) {
-                sliteral.put(dt, (Entity) node);
+                sliteral.put(dt,  node);
                 indexNode(dt, node);
             } else if (node.getIndex() == -1) {
                 // assign same index as existing same value
-                node.setIndex(n.getNode().getIndex());
+                node.setIndex(n.getIndex());
             }
         } else {
             indexNode(dt, node);
@@ -2088,8 +2089,7 @@ public class Graph extends GraphObject implements
      * Return the root of the graph, when it is a tree (e.g. SPIN Graph)
      */
     public Node getRoot() {
-        for (Entity ent : getBlankNodes()) {
-            Node node = ent.getNode();
+        for (Node node : getBlankNodes()) {
             if (!hasEdge(node, 1)) {
                 return node;
             }
@@ -2339,11 +2339,11 @@ public class Graph extends GraphObject implements
         return graph.size();
     }
 
-    public Iterable<Entity> getNodes() {
+    public Iterable<Node> getNodes() {
         return individual.values();
     }
 
-    public Iterable<Entity> getBlankNodes() {
+    public Iterable<Node> getBlankNodes() {
         return blank.values();
     }
 
@@ -2351,14 +2351,14 @@ public class Graph extends GraphObject implements
      * resource & blank TODO: a node may have been deleted (by a delete triple)
      * but still be in the table
      */
-    public Iterable<Entity> getRBNodes() {
-        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+    public Iterable<Node> getRBNodes() {
+        MetaIterator<Node> meta = new MetaIterator<>();
         meta.next(getNodes());
         meta.next(getBlankNodes());
         return meta;
     }
 
-    public Iterable<Entity> getLiteralNodes() {
+    public Iterable<Node> getLiteralNodes() {
         if (valueOut) {
             return vliteral.values();
         }
@@ -2374,13 +2374,9 @@ public class Graph extends GraphObject implements
             return getAllNodesDirect();
         }
     }
-
-    /**
-     * TODO: a node may have been deleted (by a delete triple) but still be in
-     * the table
-     */
+    
     public Iterable<Entity> getAllNodesDirect() {
-        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+        MetaIteratorCast<Node, Entity> meta = new MetaIteratorCast<>();
         meta.next(getNodes());
         meta.next(getBlankNodes());
         meta.next(getLiteralNodes());

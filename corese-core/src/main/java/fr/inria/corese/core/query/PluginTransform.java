@@ -705,6 +705,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
     * Transformation templates share Transformer Context
     * Query and Template alone have own Context
     */
+    @Override
     public Context getContext(Environment env, Producer p) {
         Context c = getQueryContext(env, p);
         if (c == null){
@@ -925,6 +926,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return dt;
     }
     
+    @Override
     public NSManager getNSM(Environment env, Producer prod) {
         Transformer p = getTransformer(env, prod);
         return p.getNSM();

@@ -327,25 +327,6 @@ public class EdgeManager implements Iterable<Entity> {
         }
         return null;
     }
-     
-//    Iterable<Entity> getEdges(Node node) {
-//        // node is bound, enumerate edges where node = edge.getNode(index)
-//        int n = findNodeIndex(node);
-//        if (n >= 0 && n < list.size()) {
-//            int i = getNodeIndex(n, index);
-//            if (i == node.getIndex()) {
-//                if (EdgeManagerIndexer.test) {
-//                    // draft
-//                    return new EdgeManagerIterate(this, n);
-//
-//                } else {
-//                    // format
-//                    return new Iterate(this, n);
-//                }
-//            }
-//        }
-//        return null;
-//    }
     
     Iterable<Entity> getEdges(Node node, int n) {
         return new EdgeManagerIterate(this, n);

@@ -222,7 +222,7 @@ public class PluginImpl
                  return pas.eval(exp, env, p);
                  
              case XT_ENTAILMENT:
-                 return entailment(exp, env, p, null);
+                 return entailment(env, p, null);
                    
             default: 
                 return pt.function(exp, env, p);
@@ -323,7 +323,7 @@ public class PluginImpl
                  return exists(env, p, null, dt, null);    
                                  
              case XT_ENTAILMENT:
-                 return entailment(exp, env, p, dt);
+                 return entailment(env, p, dt);
                                          
              default:
                  return pt.function(exp, env, p, dt);
@@ -434,7 +434,7 @@ public class PluginImpl
              case KGRAM:
                  Graph g = getGraph(p);
                  if (g == null){return null;}
-                 return kgram(env, p, g, param);
+                 return sparql(env, p, param);
 
             default: 
                 return pt.eval(exp, env, p, param);  
@@ -682,7 +682,8 @@ public class PluginImpl
         return pt;
     }
        
-    private IDatatype entailment(Expr exp, Environment env, Producer p, IDatatype dt) { 
+    @Override
+    public IDatatype entailment(Environment env, Producer p, IDatatype dt) { 
         Graph g = getGraph(p);
         if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == Pointerable.GRAPH_POINTER){
             g = (Graph) dt.getPointerObject().getTripleStore();
@@ -1005,8 +1006,14 @@ public class PluginImpl
         return kgram(env, g, dt.getLabel(), null);
     }
     
-    IDatatype kgram(Environment env, Producer p, Graph g, IDatatype[] param) {
-        return kgram(env, g, param[0].getLabel(), createMapping(p, param, 1));
+    /**
+     * param[0] = query
+     * param[i, i+1] =  var, val
+     */
+    @Override
+    public IDatatype sparql(Environment env, Producer p, IDatatype[] param) {
+        return kgram(env, getGraph(p), param[0].getLabel(), 
+                (param.length == 1) ? null : createMapping(p, param, 1));
     }
     
     /**
@@ -1032,7 +1039,7 @@ public class PluginImpl
     
     
       
-     IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
+    IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
         try {

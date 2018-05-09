@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 26 16:48:58 CEST 2017
+Fri Apr 13 13:41:33 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -57,8 +57,10 @@ where {
   bind (st:visit(st:start, st:trace) as ?vis) 
   bind (coalesce(st:get(st:shape), st:shape) as ?shape)
   bind (sh:starter() as ?st)
-  bind (st:call-template(sh:sibling, ?shape) as ?sib)
-  bind (st:apply-templates(?shape) as ?suc)
+  #bind (st:call-template(sh:sibling, ?shape) as ?sib)
+  #bind (st:apply-templates(?shape) as ?suc) # 13.159 sec
+  bind (xt:focus(?shape, sh:sibling()) as ?sib)
+  bind (sh:target(?shape) as ?suc) # 12.228 sec
   bind (sh:success(?suc) as ?b)
 }
 ]]>
@@ -110,7 +112,7 @@ function sh:test(){
 
 function sh:pack(?test, ?name){
     if (sh:test(), 
-        return(concat("/user/corby/home/AAData/sttl/datashapelds/", ?test)), ?name)
+        return(concat("/user/corby/home/AAData/sttl/datashape/", ?test)), ?name)
 }
 
 function sh:main(){
@@ -355,6 +357,86 @@ function sh:def(){
         return(?list)
     } 
 } 
+
+# within xt:focus(?shape, sh:sibling())
+function sh:sibling() {
+    for (select  ?qsh ?list where {
+            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
+            where {
+                select distinct ?qsh ?sibling ?path
+                where {
+                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
+                        sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
+                    filter (?sibling != ?qsh)
+                }
+            }
+            group by ?qsh
+        } ) {
+            if (bound(?qsh), st:cset(sh:sibling, ?qsh, ?list), true) 
+    } ;
+    return (true)
+}
+
+#
+# Select target nodes
+# for each shape ?sh, aggregate target nodes in ?list
+# call sh:hasShape for each shape ?sh with list of target nodes ?list
+#
+
+function sh:target(?shape) {
+let (?suc = true) {
+for (
+   select ?shape ?sh  (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } group by ?sh ) {
+  
+  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
+        set(?suc = false) , true)
+        
+  } ;
+  return(?suc)
+  }
+}
+  
+  
 
 function sh:isdefby(?name){
     st:cget(sh:def, ?name)

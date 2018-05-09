@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 26 16:48:59 CEST 2017
+Fri Apr 13 13:41:33 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -493,10 +493,12 @@ format {
 }
 }
 where {
-   ?x ?p ?y
-   filter (isLiteral(?y) 
-   && datatype(?y) != rdf:langString
-   && datatype(?y) != xsd:string)
+   ?x ?p ?z 
+   # must distinguish 12 and 012
+   filter sameTerm(?z, ?y)
+   filter (isLiteral(?z) 
+   && datatype(?z) != rdf:langString
+   && datatype(?z) != xsd:string)
 }
 ]]>
 </body>

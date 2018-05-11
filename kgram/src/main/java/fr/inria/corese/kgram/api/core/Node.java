@@ -63,6 +63,10 @@ public interface Node {
 	Object getValue();
         
         DatatypeValue getDatatypeValue();
+        
+        Node getGraph();
+        
+        Node getNode();
 	
 	Object getObject();
         

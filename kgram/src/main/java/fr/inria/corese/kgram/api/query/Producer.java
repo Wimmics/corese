@@ -61,7 +61,7 @@ public interface Producer {
 	 * @return true if the node is a graph node
 	 */
 	boolean isGraphNode(Node gNode, List<Node> from, Environment env);
-	
+        	
 	/**
 	 * Return candidate edges that match a query edge. Matcher checks conformity afterwards.
 	 * If there is a gNode
@@ -124,11 +124,12 @@ public interface Producer {
 	 * If the argument is a constant, it matches even if it is not a node of the graph
 	 * 
 	 */
-	
+	@Deprecated
 	Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge qEdge, Environment env, 
-			List<Regex> exp, int index);
+		List<Regex> exp, int index);
 	
-	
+	Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge, Environment env, 
+                List<Regex> exp, int index);
 	/**
 	 * Return candidate edges for a path step for an elementary regex exp.
 	 * Edge start at start Node, start is the node at index.

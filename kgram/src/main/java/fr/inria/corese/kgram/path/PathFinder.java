@@ -19,13 +19,11 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgram.event.Event;
-import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.Visit.TTable;
 import fr.inria.corese.kgram.tool.EdgeInv;
-import fr.inria.corese.kgram.tool.EntityImpl;
+import fr.inria.corese.kgram.tool.NodeImpl;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -233,7 +231,7 @@ public class PathFinder {
      * Start/init computation of a new list of path
      *
      */
-    public void start(Edge edge, Node node, Memory memo, Filter f) {
+    public void start(Edge edge, Node node, Memory env, Filter f) {
         regexNode = node;
         List<String> lVar = null;
         if (f != null) {
@@ -242,28 +240,27 @@ public class PathFinder {
         //lMap.clear();
         lMap = new Mappings();
         this.edge = edge;
-        int n = index(edge, memo, lVar);
+        int n = index(edge, env, lVar);
         start(n);
         index = n;
-        targetNode = memo.getNode(edge.getNode(other));
+        targetNode = env.getNode(edge.getNode(other));
         varNode = edge.getEdgeVariable();
-        //producer.initPath(edge, index);
 
         if (f != null) {
             if (match(edge, lVar, index)) {
                 filter = f;
-                init(memo);
+                init(env);
             }
         }
         if (mem == null && node != null) {
-            init(memo);
+            init(env);
         }
     }
 
-    void init(Memory memo) {
+    void init(Memory env) {
         mem = new Memory(matcher, evaluator);
-        mem.init(memo.getQuery());
-        mem.init(memo);
+        mem.init(env.getQuery());
+        mem.init(env);
         mem.setFake(true);
     }
 
@@ -419,28 +416,12 @@ public class PathFinder {
         isOne = false;
         other = 1;
 
-//		if (mode != null){			
-//			if (mode.indexOf(DEPTH) >= 0)   isBreadth = false;
-//			if (mode.indexOf(BREADTH) >= 0) isBreadth = true;
-//			isSubProperty = mode.indexOf(PROPERTY) == -1;
-//			isShort =       mode.indexOf(SHORT) != -1;
-//			if (isShort && ! isBreadth){
-//				isOne = mode.indexOf(ALL) == -1;
-//			}
-//		}
-
         if (exp.isShort()) {
             isShort = true;
             if (exp.isDistinct()) {
                 isOne = true;
             }
         }
-//		else if (exp.isDistinct()){
-//			isDistinct = true;
-//			// to speed up, eliminate longer path to same target
-//			isShort = true;
-//		}
-
 
         userMin = pmin;
         userMax = pmax;
@@ -492,7 +473,6 @@ public class PathFinder {
             return null;
         }
         Node qc = edge.getNode(i);
-        //if (qc == null) return null;
         Node node = memory.getNode(qc);
         return node;
     }
@@ -627,58 +607,108 @@ public class PathFinder {
     /**
      * List of starting nodes for path TODO: check start memberOf src
      */
-    private Iterable<Entity> getStart(Node cstart, Node csrc) {
-        if (cstart != null) {
-            // start is bound
-            ArrayList<Entity> vec = new ArrayList<Entity>();
-            if (csrc != null) {
-                // check graph src contains start
-                //System.out.println("** PF should check: " + csrc + " contains " + cstart);
-            }
-            vec.add(EntityImpl.create(csrc, cstart));
-            return vec;
+//    private Iterable<Entity> getStart(Node cstart, Node csrc) {
+//        if (cstart != null) {
+//            // start is bound
+//            ArrayList<Entity> vec = new ArrayList<Entity>();
+//            if (csrc != null) {
+//                // check graph src contains start
+//                //System.out.println("** PF should check: " + csrc + " contains " + cstart);
+//            }
+//            vec.add(EntityImpl.create(csrc, cstart));
+//            return vec;
+//        } else {
+//            return getNodes(csrc, edge, from, null);
+//        }
+//    }
+
+//    public Iterable<Entity> getNodes(Node csrc, final Edge edge, List<Node> from, List<Regex> list) {
+//
+//        Iterable<Entity> iter = producer.getNodes(gNode, from, edge, memory, list, index);
+//
+//        if (filter == null) {
+//            return iter;
+//        }
+//
+//        final Iterator<Entity> it = iter.iterator();
+//
+//        return () -> new Iterator<Entity>() {
+//            @Override
+//            public boolean hasNext() {
+//                return it.hasNext();
+//            }
+//            
+//            @Override
+//            public Entity next() {
+//                while (hasNext()) {
+//                    Entity entity = it.next();
+//                    if (entity == null) {
+//                        return null;
+//                    }
+//                    Node node = entity.getNode();
+//                    if (test(node)) {
+//                        return entity;
+//                    }
+//                }
+//                return null;
+//            }
+//            
+//            @Override
+//            public void remove() {
+//                // TODO Auto-generated method stub
+//            }
+//        };
+//    }
+    
+    /**
+     * cstart is bound when edge node is a bound variable 
+     * cstart is not bound when edge node is a constant, this case
+     * is processed by Producer
+     */
+    private Iterable<Node> getNodeIterator(Node cstart, Node csrc) {
+        if (cstart == null) {
+            return getNodeIterator(csrc, edge, from, null);
         } else {
-            return getNodes(csrc, edge, from, null);
+            // start is bound
+            ArrayList<Node> list = new ArrayList<>();
+            list.add(cstart);
+            return list;
         }
     }
 
-    public Iterable<Entity> getNodes(Node csrc, final Edge edge, List<Node> from, List<Regex> list) {
+    public Iterable<Node> getNodeIterator(Node csrc, final Edge edge, List<Node> from, List<Regex> regex) {
 
-        Iterable<Entity> iter = producer.getNodes(gNode, from, edge, memory, list, index);
+        Iterable<Node> iter = producer.getNodeIterator(gNode, from, edge, memory, regex, index);
 
         if (filter == null) {
             return iter;
         }
 
-        final Iterator<Entity> it = iter.iterator();
+        final Iterator<Node> it = iter.iterator();
 
-        return new Iterable<Entity>() {
-            public Iterator<Entity> iterator() {
-
-                return new Iterator<Entity>() {
-                    public boolean hasNext() {
-                        return it.hasNext();
-                    }
-
-                    public Entity next() {
-                        while (hasNext()) {
-                            Entity entity = it.next();
-                            if (entity == null) {
-                                return null;
-                            }
-                            Node node = entity.getNode();
-                            if (test(node)) {
-                                return entity;
-                            }
-                        }
+        return () -> new Iterator<Node>() {
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+            
+            @Override
+            public Node next() {
+                while (hasNext()) {
+                    Node entity = it.next();
+                    if (entity == null) {
                         return null;
                     }
-
-                    @Override
-                    public void remove() {
-                        // TODO Auto-generated method stub
+                    Node node = entity.getNode();
+                    if (test(node)) {
+                        return entity;
                     }
-                };
+                }
+                return null;
+            }
+            
+            @Override
+            public void remove() {
             }
         };
     }
@@ -1121,28 +1151,52 @@ public class PathFinder {
 
             if (store) {
                 Mapping map = result(path, gNode, src, start, isReverse);
-                //System.out.println("** PF: \n" + map);
                 if (map != null) {
                     result(map);
                 }
             }
         } else {
-            for (Entity ent : getStart(start, src)) {
+            resultNode(stack, path, start, src);
+        }
+    }
+    
+    
+//    void resultNodeEntity(Record stack, Path path, Node start, Node src) {
+//        for (Entity ent : getStart(start, src)) {
+//
+//            if (isStop) {
+//                return;
+//            }
+//
+//            if (ent != null) {
+//                Node node = ent.getNode();
+//                if (gNode != null) {
+//                    src = ent.getGraph();
+//                }
+//                Mapping m = result(path, gNode, src, node, isReverse);
+//
+//                if (m != null) {
+//                    result(m);
+//                }
+//            }
+//        }
+//    }
+    
+     void resultNode(Record stack, Path path, Node start, Node src) {
+        for (Node node : getNodeIterator(start, src)) {
 
-                if (isStop) {
-                    return;
+            if (isStop) {
+                return;
+            }
+
+            if (node != null) {
+                if (gNode != null) {
+                    src = node.getGraph();
                 }
+                Mapping m = result(path, gNode, src, node, isReverse);
 
-                if (ent != null) {
-                    Node node = ent.getNode();
-                    if (gNode != null) {
-                        src = ent.getGraph();
-                    }
-                    Mapping m = result(path, gNode, src, node, isReverse);
-
-                    if (m != null) {
-                        result(m);
-                    }
+                if (m != null) {
+                    result(m);
                 }
             }
         }

@@ -206,11 +206,7 @@ public class Path extends ProducerDefault {
 
     public Iterable<Entity> nodes() {
 
-        return new Iterable<Entity>() {
-            public Iterator<Entity> iterator() {
-                return elements();
-            }
-        };
+        return () -> elements();
     }
 
     Entity entity(Node node) {
@@ -229,10 +225,12 @@ public class Path extends ProducerDefault {
             private int ii;
             private boolean hasNext = length() > 0 ? true : false;
 
+            @Override
             public boolean hasNext() {
                 return hasNext;
             }
 
+            @Override
             public Entity next() {
                 switch (j) {
                     case 0:
@@ -261,6 +259,50 @@ public class Path extends ProducerDefault {
         };
 
     }
+    
+    public Iterator<Node> nodeIterator() {
+
+        return new Iterator<Node>() {
+            private int i = 0;
+            private int j = 0;
+            private int ii;
+            private boolean hasNext = length() > 0 ? true : false;
+
+            @Override
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            @Override
+            public Node next() {
+                switch (j) {
+                    case 0:
+                        j = 1;
+                        return path.get(i).getEdge().getNode(0);
+                    case 1:
+                        ii = i;
+                        if (i == path.size() - 1) {
+                            j = 2;
+                        } else {
+                            j = 0;
+                            i++;
+                        }
+                        return path.get(ii).getEdge().getEdgeNode();
+                    case 2:
+                        hasNext = false;
+                        j = -1;
+                        return path.get(i).getEdge().getNode(1);
+                }
+                return null;
+            }
+
+            @Override
+            public void remove() {
+            }
+        };
+
+    }
+    
 
     @Override
     public String toString() {
@@ -294,4 +336,5 @@ public class Path extends ProducerDefault {
             Environment env) {
         return nodes();
     }
+    
 }

@@ -62,10 +62,10 @@ public class GraphFunction extends TermEval {
     }
     
     IDatatype access(IDatatype dt) {
-        if (!(dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)) {
+        if (!(dt.isPointer() && dt.pointerType() == Pointerable.EDGE_POINTER)) {
             return null;
         }
-        Edge edge = dt.getPointerObject().getEntity().getEdge();
+        Edge edge = dt.getPointerObject().getEdge();
         switch (oper()) {
             case XT_GRAPH:
                 return (IDatatype) edge.getGraph().getDatatypeValue();

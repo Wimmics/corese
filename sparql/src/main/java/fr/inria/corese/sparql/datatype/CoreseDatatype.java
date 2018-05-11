@@ -1202,7 +1202,7 @@ public class CoreseDatatype
     }
 
     @Override
-    public Object getValue() {
+    public IDatatype getValue() {
         return this;
     }
 

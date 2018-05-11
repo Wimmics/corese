@@ -132,19 +132,16 @@ public class NodeImpl extends GraphObject implements Node, Entity, Comparable<No
 
     @Override
     public Edge getEdge() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Node getGraph() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Node getNode() {
-        // TODO Auto-generated method stub
         return this;
     }
 

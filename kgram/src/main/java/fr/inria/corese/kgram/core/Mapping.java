@@ -1311,7 +1311,7 @@ public class Mapping
     }
 
     @Override
-    public Entity getEntity() {
+    public Edge getEdge() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

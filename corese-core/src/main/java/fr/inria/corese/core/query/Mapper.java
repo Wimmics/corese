@@ -78,8 +78,8 @@ public class Mapper {
             case Pointerable.MAPPINGS_POINTER:
                 return map(nodes, obj.getMappings());
                 
-            case Pointerable.ENTITY_POINTER:
-                 return map(nodes, obj.getEntity()); 
+            case Pointerable.EDGE_POINTER:
+                 return map(nodes, obj.getEdge()); 
                 
             case Pointerable.NSMANAGER_POINTER:
                  return map(nodes, (NSManager) obj);   
@@ -133,7 +133,7 @@ public class Mapper {
         }
     }
         
-    Mappings map(List<Node> varList, Entity e) {
+    Mappings map(List<Node> varList, Edge e) {
         Mappings map = new Mappings();
         int size = varList.size();
         if (size != 1) {

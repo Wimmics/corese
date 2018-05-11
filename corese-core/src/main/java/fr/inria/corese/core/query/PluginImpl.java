@@ -754,8 +754,8 @@ public class PluginImpl
         if (dt.isPointer()){
             Pointerable obj = dt.getPointerObject();
            switch (dt.pointerType()){
-               case Pointerable.ENTITY_POINTER:
-                   return (IDatatype) obj.getEntity().getGraph().getValue();
+               case Pointerable.EDGE_POINTER:
+                   return (IDatatype) obj.getEdge().getGraph().getValue();
                case Pointerable.MAPPINGS_POINTER:                   
                    return DatatypeMap.createObject(obj.getMappings().getGraph());
            }           
@@ -764,10 +764,10 @@ public class PluginImpl
     }
     
     private IDatatype access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (! (dt.isPointer() && dt.pointerType() == Pointerable.ENTITY_POINTER)){
+        if (! (dt.isPointer() && dt.pointerType() == Pointerable.EDGE_POINTER)){
             return null;
         }
-        Entity ent = dt.getPointerObject().getEntity();        
+        Edge ent = dt.getPointerObject().getEdge();        
         switch (exp.oper()){
             case XT_GRAPH:
                 return (IDatatype) ent.getGraph().getDatatypeValue();
@@ -779,10 +779,10 @@ public class PluginImpl
                 return (IDatatype) ent.getNode(1).getDatatypeValue();
                 
             case XT_PROPERTY:
-                return (IDatatype) ent.getEdge().getEdgeNode().getDatatypeValue();
+                return (IDatatype) ent.getEdgeNode().getDatatypeValue();
                 
             case XT_INDEX:
-                return getValue(ent.getEdge().getIndex());
+                return getValue(ent.getIndex());
         }
         return null;
     }

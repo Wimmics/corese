@@ -1,13 +1,5 @@
 package fr.inria.corese.core;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.tool.MetaIterator;
-
 /**
  * 
  * Manage Nodes of a graph, for each graph name

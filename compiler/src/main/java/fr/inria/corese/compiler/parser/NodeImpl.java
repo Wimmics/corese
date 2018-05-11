@@ -58,6 +58,16 @@ public class NodeImpl implements Node {
     public IDatatype getDatatypeValue() {
         return atom.getDatatypeValue();
     }
+    
+    @Override
+    public Node getGraph() {
+        return null;
+    }
+    
+    @Override
+    public Node getNode() {
+        return this;
+    }
 
     @Override
     public String toString() {

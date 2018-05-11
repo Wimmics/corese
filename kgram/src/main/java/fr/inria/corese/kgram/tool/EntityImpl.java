@@ -86,7 +86,7 @@ public class EntityImpl extends PointerObject implements Entity {
     @Override
     public int pointerType() {
         if (edge != null) {
-            return Pointerable.ENTITY_POINTER;
+            return Pointerable.EDGE_POINTER;
         }
         return Pointerable.UNDEF_POINTER;
     }

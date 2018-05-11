@@ -51,8 +51,7 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
         return ent.getGraph();
     }
 
-    @Override
-    public Entity getEntity() {
+    public Entity getEdgeEntity() {
         return ent;
     }
 
@@ -120,6 +119,6 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
 
     @Override
     public int pointerType() {
-        return Pointerable.ENTITY_POINTER;
+        return Pointerable.EDGE_POINTER;
     }
 }

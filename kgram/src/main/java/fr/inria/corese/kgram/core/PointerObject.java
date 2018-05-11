@@ -1,6 +1,6 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public abstract class PointerObject implements Pointerable {
     }
 
     @Override
-    public Entity getEntity() {
+    public Edge getEdge() {
         return null;
     }
     

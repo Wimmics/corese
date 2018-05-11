@@ -13,7 +13,7 @@ public interface Pointerable extends Loopable {
     public static final int UNDEF_POINTER    = -1;
     public static final int MAPPINGS_POINTER = 1;
     public static final int MAPPING_POINTER  = 2;
-    public static final int ENTITY_POINTER   = 3;
+    public static final int EDGE_POINTER     = 3;
     public static final int GRAPH_POINTER    = 4;
     public static final int NSMANAGER_POINTER= 5;
     public static final int CONTEXT_POINTER  = 6;
@@ -28,7 +28,7 @@ public interface Pointerable extends Loopable {
     
     Mapping getMapping();
     
-    Entity getEntity();
+    Edge getEdge();
     
     Query getQuery();
 

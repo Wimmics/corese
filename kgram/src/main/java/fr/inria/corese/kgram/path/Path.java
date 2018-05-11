@@ -144,7 +144,7 @@ public class Path extends ProducerDefault {
             // when r is reverse, add real target relation
             if (ent instanceof EdgeInv) {
                 EdgeInv ee = (EdgeInv) ent;
-                path.add(ee.getEntity());
+                path.add(ee.getEdgeEntity());
             } else {
                 path.add(ent);
             }
@@ -158,7 +158,7 @@ public class Path extends ProducerDefault {
         for (Entity ent : this.path) {
             // when r is reverse, add real target relation
             if (ent instanceof EdgeInv) {
-                ent = ((EdgeInv) ent).getEntity();
+                ent = ((EdgeInv) ent).getEdgeEntity();
             } 
             path.add(p.copy(ent));
         }

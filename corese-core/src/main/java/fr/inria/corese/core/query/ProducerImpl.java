@@ -28,7 +28,6 @@ import static fr.inria.corese.kgram.sorter.core.Const.SUBJECT;
 import static fr.inria.corese.kgram.sorter.core.Const.TRIPLE;
 import fr.inria.corese.kgram.sorter.core.IProducerQP;
 import fr.inria.corese.kgram.sorter.core.QPGNode;
-import fr.inria.corese.kgram.tool.EntityImpl;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.Event;

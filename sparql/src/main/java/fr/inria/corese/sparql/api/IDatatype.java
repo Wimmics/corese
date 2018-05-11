@@ -3,10 +3,10 @@ package fr.inria.corese.sparql.api;
 import fr.inria.corese.sparql.datatype.ICoresePolymorphDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.api.core.Loopable;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
-        extends Iterable<IDatatype>, ICoresePolymorphDatatype, Node, Entity, DatatypeValue, Comparable {
+        extends Iterable<IDatatype>, ICoresePolymorphDatatype, Node, Loopable, DatatypeValue, Comparable {
     static final int VALUE  = -1;
     static final int RESULT = -2;
     // use case: cast

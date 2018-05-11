@@ -90,11 +90,11 @@ public abstract class EdgeTop extends GraphObject implements Entity, Edge {
 
     @Override
     public int pointerType() {
-        return Pointerable.ENTITY_POINTER;
+        return Pointerable.EDGE_POINTER;
     }
 
     @Override
-    public Entity getEntity() {
+    public Edge getEdge() {
         return this;
     }
 

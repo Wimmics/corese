@@ -35,7 +35,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     @Override
     public IDatatype getDatatype() {
         switch (pointerType()){
-            case Pointerable.ENTITY_POINTER:    return triple_dt;
+            case Pointerable.EDGE_POINTER:    return triple_dt;
             case Pointerable.GRAPH_POINTER:     return graph_dt;
             case Pointerable.MAPPINGS_POINTER:  return mappings_dt;
             case Pointerable.MAPPING_POINTER:   return mapping_dt;

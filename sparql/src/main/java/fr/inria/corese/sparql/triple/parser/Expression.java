@@ -14,7 +14,7 @@ import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -958,7 +958,7 @@ public class Expression extends TopExp
     }
 
     @Override
-    public Entity getEntity() {
+    public Edge getEdge() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

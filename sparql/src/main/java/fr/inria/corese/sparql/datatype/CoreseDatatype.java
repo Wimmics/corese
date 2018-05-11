@@ -1283,11 +1283,6 @@ public class CoreseDatatype
     }
 
     @Override
-    public Entity getEntity() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Object getValue(String var, int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

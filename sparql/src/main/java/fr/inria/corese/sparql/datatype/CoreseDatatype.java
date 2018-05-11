@@ -16,7 +16,6 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -1215,35 +1214,35 @@ public class CoreseDatatype
     public void setProperty(int p, Object o) {
     }
 
-    @Override
-    public Edge getEdge() {
-        return null;
-    }
+//    @Override
+//    public Edge getEdge() {
+//        return null;
+//    }
 
     @Override
     public Node getNode() {
         return this;
     }
 
-    @Override
-    public Node getNode(int i) {
-        return null;
-    }
+//    @Override
+//    public Node getNode(int i) {
+//        return null;
+//    }
 
     @Override
     public Node getGraph() {
         return null;
     }
 
-    @Override
-    public int nbNode() {
-        return 0;
-    }
-    
-     @Override
-    public int nbGraphNode() {
-        return 0;
-    }
+//    @Override
+//    public int nbNode() {
+//        return 0;
+//    }
+//    
+//     @Override
+//    public int nbGraphNode() {
+//        return 0;
+//    }
 
     @Override
     public String getKey() {
@@ -1263,34 +1262,34 @@ public class CoreseDatatype
         }
     }
 
-    @Override
-    public Object getProvenance() {
-        return null;
-    }
+//    @Override
+//    public Object getProvenance() {
+//        return null;
+//    }
+//
+//    @Override
+//    public void setProvenance(Object obj) {
+//    }
 
-    @Override
-    public void setProvenance(Object obj) {
-    }
+//    @Override
+//    public Mappings getMappings() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public Mapping getMapping() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    @Override
-    public Mappings getMappings() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public Object getValue(String var, int n) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    @Override
-    public Mapping getMapping() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object getValue(String var, int n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Query getQuery() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public Query getQuery() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
     @Override
     public TripleStore getTripleStore() {

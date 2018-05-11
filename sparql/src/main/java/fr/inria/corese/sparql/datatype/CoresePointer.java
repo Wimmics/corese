@@ -73,7 +73,7 @@ public class CoresePointer extends CoreseUndefLiteral {
             return false; 
         }
         switch (pobject.pointerType()){
-            case EXPRESSION_POINTER: return false;
+            case Pointerable.EXPRESSION_POINTER: return false;
             default: return true;
         }
     }

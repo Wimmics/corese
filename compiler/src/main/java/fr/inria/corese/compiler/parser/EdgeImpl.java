@@ -237,12 +237,7 @@ public class EdgeImpl extends PointerObject implements Edge, Entity {
 
     @Override
     public int pointerType() {
-        return Pointerable.ENTITY_POINTER;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return this;
+        return Pointerable.EDGE_POINTER;
     }
 
 }

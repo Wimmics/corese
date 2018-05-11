@@ -1051,9 +1051,9 @@ public class Eval implements ExpType, Plugin {
                     }
                     break;
 
-                case NODE:
-                    backtrack = node(gNode, exp, stack, n);
-                    break;
+//                case NODE:
+//                    backtrack = node(gNode, exp, stack, n);
+//                    break;
 
                 case QUERY:
 
@@ -2555,52 +2555,52 @@ public class Eval implements ExpType, Plugin {
         return res;
     }
 
-    private int node(Node gNode, Exp exp, Stack stack, int n) {
-        int backtrack = n - 1;
-        // enumerate candidate nodes
-        Node qNode = exp.getNode();
-        Memory env = memory;
-
-        //if (qNode == null) break;
-        if (exp.hasArg()) {
-            // target nodes to bind to this qnode
-            for (Exp ee : exp) {
-                Node node = ee.getNode();
-                if (match.match(qNode, node, env) && env.push(qNode, node, n)) {
-                    backtrack = eval(gNode, stack, n + 1);
-                    env.pop(qNode);
-                    if (backtrack < n) {
-                        return backtrack;
-                    }
-                }
-            }
-        } else {
-            for (Entity entity : producer.getNodes(gNode, query.getFrom(gNode), qNode, env)) {
-
-                if (entity != null) {
-                    Node node = entity.getNode();
-                    Node graph = entity.getGraph();
-
-                    if (match(qNode, node, gNode, graph) && push(qNode, node, gNode, graph, n)) {
-
-                        backtrack = eval(gNode, stack, n + 1);
-
-                        if (gNode != null) {
-                            env.pop(gNode);
-                        }
-                        env.pop(qNode);
-
-                        if (backtrack < n) {
-                            return backtrack;
-                        }
-                    }
-                }
-
-            }
-        }
-
-        return backtrack;
-    }
+//    private int node(Node gNode, Exp exp, Stack stack, int n) {
+//        int backtrack = n - 1;
+//        // enumerate candidate nodes
+//        Node qNode = exp.getNode();
+//        Memory env = memory;
+//
+//        //if (qNode == null) break;
+//        if (exp.hasArg()) {
+//            // target nodes to bind to this qnode
+//            for (Exp ee : exp) {
+//                Node node = ee.getNode();
+//                if (match.match(qNode, node, env) && env.push(qNode, node, n)) {
+//                    backtrack = eval(gNode, stack, n + 1);
+//                    env.pop(qNode);
+//                    if (backtrack < n) {
+//                        return backtrack;
+//                    }
+//                }
+//            }
+//        } else {
+//            for (Entity entity : producer.getNodes(gNode, query.getFrom(gNode), qNode, env)) {
+//
+//                if (entity != null) {
+//                    Node node = entity.getNode();
+//                    Node graph = entity.getGraph();
+//
+//                    if (match(qNode, node, gNode, graph) && push(qNode, node, gNode, graph, n)) {
+//
+//                        backtrack = eval(gNode, stack, n + 1);
+//
+//                        if (gNode != null) {
+//                            env.pop(gNode);
+//                        }
+//                        env.pop(qNode);
+//
+//                        if (backtrack < n) {
+//                            return backtrack;
+//                        }
+//                    }
+//                }
+//
+//            }
+//        }
+//
+//        return backtrack;
+//    }
 
     /**
      * select * where {{select distinct ?y where {?x p ?y}} . ?y q ?z} new eval,

@@ -205,11 +205,10 @@ public class JSONLDFormat {
     private JSONLDObject graph(Node gNode) {
         JSONLDObject jGraph = new JSONLDObject(KW_GRAPH, OC_SBRACKET);
 
-        Iterable<Entity> allNode = gNode == null ? graph.getAllNodes() : graph.getNodes(gNode);
+        Iterable<Node> allNode = gNode == null ? graph.getAllNodeIterator(): graph.getNodeGraphIterator(gNode);
 
         //iterate each node and add to this graph
-        for (Entity ent : allNode) {
-            Node node = ent.getNode();
+        for (Node node : allNode) {
             JSONLDObject jo = jsonldObject(gNode, node, false);
             if (jo != null) {
                 jGraph.addObject(jo);

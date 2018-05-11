@@ -211,8 +211,7 @@ public class JSOND3Format extends RDFFormat {
                 sdisplay(SPACE);
                 subject(gNode);
                 sdisplay(OOBJ);
-                for (Entity ent : graph.getNodes(gNode)) {
-                    Node node = ent.getNode();
+                for (Node node : graph.getNodeGraphIterator(gNode)) {
                     print(gNode, node);
                 }
                 display(SPACE);
@@ -222,20 +221,6 @@ public class JSOND3Format extends RDFFormat {
         }
     }
 
-//    void header(StringBuilder bb) {
-//        boolean first = true;
-//        for (String p : nsm.getPrefixSet()) {
-//
-//            if (first) {
-//                first = false;
-//            } else {
-//                bb.append(NL);
-//            }
-//
-//            String ns = nsm.getNamespace(p);
-//            bb.append(PREFIX + SPACE + p + ": <" + toXML(ns) + "> .");
-//        }
-//    }
     void print(Node gNode, Node node) {
         boolean first = true;
 

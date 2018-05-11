@@ -164,6 +164,7 @@ public class Graph extends GraphObject implements
     Hashtable<String, Node> property;
     ArrayList<Node> nodes;
     NodeIndex gindex;
+    NodeGraphIndex nodeGraphIndex;
     ValueResolver values;
     Log log;
     List<GraphListener> listen;
@@ -561,7 +562,8 @@ public class Graph extends GraphObject implements
         
         // Index of nodes of named graphs
         // Use case: SPARQL Property Path
-        gindex = new NodeIndex();
+        //gindex = new NodeIndex();
+        nodeGraphIndex = new NodeGraphIndex();
         values = new ValueResolverImpl();
         fac = new EdgeFactory(this);
         manager = new Workflow(this);
@@ -1225,11 +1227,12 @@ public class Graph extends GraphObject implements
     }
     
     void clearIndex() {
-        gindex.clear();
+        //gindex.clear();
+        nodeGraphIndex.clear();
     }
 
     synchronized void indexNode() {
-        if (gindex.size() == 0) {
+        if (nodeGraphIndex.size() == 0) {
             table.indexNode();
         }
     }
@@ -1242,7 +1245,8 @@ public class Graph extends GraphObject implements
     }
 
    public  void define(Entity ent) {
-        gindex.add(ent);
+        //gindex.add(ent);
+        nodeGraphIndex.add(ent.getEdge());
     }
 
     public Iterable<Node> getProperties() {
@@ -2365,36 +2369,69 @@ public class Graph extends GraphObject implements
         return literal.values();
     }
 
-    public Iterable<Entity> getAllNodes() {
-        if (getEventManager().isDeletion()) {
-            // recompute existing nodes (only if it has not been already recomputed)
-            return getAllNodesIndex();
-        } else {
-            // get nodes from tables
-            return getAllNodesDirect();
-        }
-    }
-    
-    public Iterable<Entity> getAllNodesDirect() {
-        MetaIteratorCast<Node, Entity> meta = new MetaIteratorCast<>();
-        meta.next(getNodes());
-        meta.next(getBlankNodes());
-        meta.next(getLiteralNodes());
-        return meta;
-    }
+//    public Iterable<Entity> getAllNodes() {
+//        if (getEventManager().isDeletion()) {
+//            // recompute existing nodes (only if it has not been already recomputed)
+//            return getAllNodesIndex();
+//        } else {
+//            // get nodes from tables
+//            return getAllNodesDirect();
+//        }
+//    }
+//    
+//    public Iterable<Entity> getAllNodesDirect() {
+//        MetaIteratorCast<Node, Entity> meta = new MetaIteratorCast<>();
+//        meta.next(getNodes());
+//        meta.next(getBlankNodes());
+//        meta.next(getLiteralNodes());
+//        return meta;
+//    }
 
     /**
      * Prepare an index of nodes for each graph, enumerate all nodes 
      * TODO: there are duplicates (same node in several graphs)
      */
-    public Iterable<Entity> getAllNodesIndex() {
+//    public Iterable<Entity> getAllNodesIndex() {
+//        indexNode();
+//        return gindex.getNodes();
+//    }
+
+//    public Iterable<Entity> getNodes(Node gNode) {
+//        indexNode();
+//        return gindex.getNodes(gNode);
+//    }
+    
+    public Iterable<Node> getAllNodeIterator() {
+        if (getEventManager().isDeletion()) {
+            // recompute existing nodes (only if it has not been already recomputed)
+            return getNodeGraphIterator();
+        } else {
+            // get nodes from tables
+            return getNodeIterator();
+        }
+    }
+    
+    public Iterable<Node> getNodeIterator() {
+        MetaIterator<Node> meta = new MetaIterator<>();
+        meta.next(getNodes());
+        meta.next(getBlankNodes());
+        meta.next(getLiteralNodes());
+        return meta;
+    }
+    
+    public Iterable<Node> getNodeGraphIterator() {
         indexNode();
-        return gindex.getNodes();
+        return nodeGraphIndex.getNodes();
     }
 
-    public Iterable<Entity> getNodes(Node gNode) {
+    public Iterable<Node> getNodeGraphIterator(Node gNode) {
         indexNode();
-        return gindex.getNodes(gNode);
+        return nodeGraphIndex.getNodes(gNode);
+    }
+    
+    public boolean contains(Node graph, Node node) {
+        indexNode();
+        return nodeGraphIndex.contains(graph, node);
     }
 
     /**

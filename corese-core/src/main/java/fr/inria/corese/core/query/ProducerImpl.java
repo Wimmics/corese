@@ -80,6 +80,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	private Node prevnode;
 
 	HashMap<Edge, DataProducer> cache;
+        ProducerImplNode pn;
 
 	public ProducerImpl() {
 		this(Graph.create());
@@ -93,6 +94,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 		toRDF = new RDFizer();
 		vcache = new ValueCache();
 		cache = new HashMap<Edge, DataProducer>();
+                pn = new ProducerImplNode(this);
 	}
 
 	public static ProducerImpl create(Graph g) {
@@ -527,6 +529,12 @@ public class ProducerImpl implements Producer, IProducerQP {
 		}
 		return false;
 	}
+        
+        public Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge,
+		Environment env, List<Regex> exp, int index) {
+            return pn.getNodeIterator(gNode, from, edge, env, exp, index);
+        }
+               
 
 	/**
 	 * SPARQL requires *all* graph nodes for zero length path that is all
@@ -535,72 +543,66 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 * TODO: env.isBound(gNode) is not thread safe
 	 */
 	@Override
+        @Deprecated
 	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge edge,
 		Environment env, List<Regex> exp, int index) {
-
-		Node node = edge.getNode(index);
-
-		if (node.isConstant()) {
-			// return constant
-			Node nn = graph.copy(node);
-			ArrayList<Entity> list = new ArrayList<Entity>(1);
-			list.add(EntityImpl.create(null, nn));
-			return list;
-		} else if (gNode == null) {
-			// default graph nodes
-			if (from.size() > 0) {
-				return getNodes(gNode, from, env);
-			} else {
-				return graph.getAllNodes();
-			}
-		} // named graph nodes
-		else if (env.isBound(gNode)) {
-			// return nodes of this named graph
-			node = env.getNode(gNode);
-			return graph.getNodes(node);
-		} else if (gNode.isConstant()) {
-			// return nodes of this named graph
-			node = graph.getGraphNode(gNode.getLabel());
-			if (node != null) {
-				return graph.getNodes(node);
-			}
-		} else if (from.size() > 0) {
-			// return nodes of from named graph
-			return getNodes(gNode, from, env);
-		} else {
-			// all nodes with named graph
-			return graph.getAllNodesIndex();
-		}
+//
+//		Node node = edge.getNode(index);
+//
+//		if (node.isConstant()) {
+//			// return constant
+//			Node nn = graph.copy(node);
+//			ArrayList<Entity> list = new ArrayList<Entity>(1);
+//			list.add(EntityImpl.create(null, nn));
+//			return list;
+//		} else if (gNode == null) {
+//			// default graph nodes
+//			if (from.size() > 0) {
+//				return getNodes(gNode, from, env);
+//			} else {
+//				return graph.getAllNodes();
+//			}
+//		} // named graph nodes
+//		else if (env.isBound(gNode)) {
+//			// return nodes of this named graph
+//			node = env.getNode(gNode);
+//			return graph.getNodes(node);
+//		} else if (gNode.isConstant()) {
+//			// return nodes of this named graph
+//			node = graph.getGraphNode(gNode.getLabel());
+//			if (node != null) {
+//				return graph.getNodes(node);
+//			}
+//		} else if (from.size() > 0) {
+//			// return nodes of from named graph
+//			return getNodes(gNode, from, env);
+//		} else {
+//			// all nodes with named graph
+//			return graph.getAllNodesIndex();
+//		}
 
 		return empty;
 	}
 
-	/**
-	 * Does graph gNode contain node use case: graph ?g {?x :p* ?y} ?g and
-	 * ?x are bound
-	 *
-	 */
-//    public boolean contains(Node gNode, Node node) {
-//        return true;
-//    }
+	
 	/**
 	 * Enumerate nodes from graphs in the list gNode == null : from gNode !=
 	 * null : from named
 	 */
-	Iterable<Entity> getNodes(Node gNode, List<Node> from, Environment env) {
-		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-		for (Node gn : getGraphNodes(gNode, from, env)) {
-			meta.next(graph.getNodes(gn));
-		}
-		if (meta.isEmpty()) {
-			return new ArrayList<Entity>();
-		}
-		if (gNode == null) {
-			// eliminate duplicates
-			return getNodes(meta);
-		}
-		return meta;
-	}
+//	Iterable<Entity> getNodes(Node gNode, List<Node> from, Environment env) {
+//		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+//		for (Node gn : getGraphNodes(gNode, from, env)) {
+//			meta.next(graph.getNodes(gn));
+//		}
+//		if (meta.isEmpty()) {
+//			return new ArrayList<Entity>();
+//		}
+//		if (gNode == null) {
+//			// eliminate duplicates
+//			return getNodes(meta);
+//		}
+//		return meta;
+//	}
 
 	/**
 	 * Use case:
@@ -611,39 +613,48 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 *
 	 * enumerate nodes from g1 and g2 and eliminate duplicates
 	 */
-	Iterable<Entity> getNodes(final Iterable<Entity> iter) {
-
-		return new Iterable<Entity>() {
-			public Iterator<Entity> iterator() {
-
-				final HashMap<Node, Node> table = new HashMap<Node, Node>();
-				final Iterator<Entity> it = iter.iterator();
-
-				return new Iterator<Entity>() {
-					public boolean hasNext() {
-						return it.hasNext();
-					}
-
-					public Entity next() {
-						while (hasNext()) {
-							Entity ent = it.next();
-							if (ent == null) {
-								return null;
-							}
-							if (!table.containsKey(ent.getNode())) {
-								table.put(ent.getNode(), ent.getNode());
-								return ent;
-							}
-						}
-						return null;
-					}
-
-					public void remove() {
-					}
-				};
-			}
-		};
-	}
+//	Iterable<Entity> getNodes(final Iterable<Entity> iter) {
+//
+//		return new Iterable<Entity>() {
+//			public Iterator<Entity> iterator() {
+//
+//				final HashMap<Node, Node> table = new HashMap<Node, Node>();
+//				final Iterator<Entity> it = iter.iterator();
+//
+//				return new Iterator<Entity>() {
+//					public boolean hasNext() {
+//						return it.hasNext();
+//					}
+//
+//					public Entity next() {
+//						while (hasNext()) {
+//							Entity ent = it.next();
+//							if (ent == null) {
+//								return null;
+//							}
+//							if (!table.containsKey(ent.getNode())) {
+//								table.put(ent.getNode(), ent.getNode());
+//								return ent;
+//							}
+//						}
+//						return null;
+//					}
+//
+//					public void remove() {
+//					}
+//				};
+//			}
+//		};
+//	}
+        
+        public boolean contains(Node gNode, Node node) {
+            Node g = graph.getNode(gNode);
+            Node n = graph.getNode(node);
+            if (g == null || n == null) {
+                return false;
+            }
+            return graph.contains(g, n);
+        }
 
 	/**
 	 * Return list of named graph Nodes, possibly in from

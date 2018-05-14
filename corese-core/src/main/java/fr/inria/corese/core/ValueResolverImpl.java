@@ -33,24 +33,29 @@ public class ValueResolverImpl implements ValueResolver {
 
     
     
+    @Override
     public int size() {
         return tvalues.size();
     }
 
+    @Override
     public IDatatype getValue(String key) {
         return tvalues.get(key);
     }
 
+    @Override
     public void setValue(String key, IDatatype dt) {
         tvalues.put(key, dt);
     }
  
+    @Override
     public String getKey(IDatatype dt) {
         String str = dt.getID();
         String key = getKey(str);
         return key.intern();
     }
        
+    @Override
     synchronized public String getKey(String str) {
         byte[] hash = hasher.digest(str.getBytes());
         

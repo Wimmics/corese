@@ -161,7 +161,6 @@ public class Graph extends GraphObject implements
     // property nodes: label -> Node (for performance)
     Hashtable<String, Node> property;
     ArrayList<Node> nodes;
-    NodeIndex gindex;
     NodeGraphIndex nodeGraphIndex;
     ValueResolver values;
     Log log;

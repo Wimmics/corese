@@ -4,7 +4,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 
 /**
- *
+ * Node that contain the named graph of node, only for PP query.
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */

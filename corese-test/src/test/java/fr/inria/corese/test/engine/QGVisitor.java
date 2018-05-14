@@ -7,7 +7,7 @@ import fr.inria.corese.core.api.QueryGraphVisitor;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.compiler.parser.NodeImpl;
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
 
@@ -40,7 +40,7 @@ public class QGVisitor implements QueryGraphVisitor {
 	}
 
 	
-	public Entity visit(Entity ent) {
+	public Edge visit(Edge ent) {
 		
 		if (! (ent.getEdge() instanceof EdgeImpl)){
 			return ent;

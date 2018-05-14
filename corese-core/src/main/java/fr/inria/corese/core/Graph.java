@@ -33,8 +33,6 @@ import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.core.Distinct;
-import fr.inria.corese.kgram.core.Exp;
-import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.storage.api.IStorage;

@@ -18,7 +18,6 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.compiler.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprLabel;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -46,6 +45,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -1606,7 +1606,7 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         for (Edge qEdge : memory.getQueryEdges()) {
 
             if (qEdge != null && qEdge.getLabel().equals(RDFTYPE)) {
-                Entity edge = memory.getEdge(qEdge);
+                Edge edge = memory.getEdge(qEdge);
                 if (edge != null) {
                     Node type = qEdge.getNode(1);
                     if (type.isConstant()) {

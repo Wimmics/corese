@@ -10,12 +10,11 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.PointerObject;
 
-public class EdgeImpl extends PointerObject implements Edge, Entity {
+public class EdgeImpl extends PointerObject implements Edge {
 
 	public static String TOP = RDFS.RootPropertyURI;
 	ArrayList<Node> nodes;

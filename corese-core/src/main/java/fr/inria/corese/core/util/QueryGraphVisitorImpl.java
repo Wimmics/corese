@@ -5,13 +5,13 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.compiler.parser.NodeImpl;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.QueryGraphVisitor;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,8 +80,8 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
      * They will be replaced by rdf:rest* / rdf:first path edges 
      */
     @Override
-    public Entity visit(Entity ent) {
-        String label = ent.getEdge().getEdgeNode().getLabel();
+    public Edge visit(Edge ent) {
+        String label = ent.getEdgeNode().getLabel();
 
         if (label.equals(REST) || label.equals(FIRST)) {
             return null;
@@ -113,13 +113,13 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
      * Replace Node by Variable
      * Use Case: [ sp:varName "x" ] -> [ sp:varName ?x ]
      */
-    Entity process(Entity ent) {
+    Edge process(Edge ent) {
 
-        if (!(ent.getEdge() instanceof EdgeImpl)) {
+        if (!(ent instanceof EdgeImpl)) {
             return ent;
         }
 
-        EdgeImpl edge = (EdgeImpl) ent.getEdge();
+        EdgeImpl edge = (EdgeImpl) ent;
 
         if (! predicates.contains(edge.getLabel())) {
             return ent;

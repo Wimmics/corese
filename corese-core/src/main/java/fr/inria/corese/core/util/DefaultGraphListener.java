@@ -9,7 +9,6 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Source;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
@@ -20,6 +19,7 @@ import fr.inria.corese.core.GraphStore;
 import java.util.HashMap;
 
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -84,19 +84,19 @@ public class DefaultGraphListener implements GraphListener {
     }
 
     @Override
-    public boolean onInsert(Graph g, Entity ent) {
+    public boolean onInsert(Graph g, Edge ent) {
         return true;
     }
 
     @Override
-    public void insert(Graph g, Entity ent) {
+    public void insert(Graph g, Edge ent) {
         if (isListen(INSERT)) {
             log("Insert: " + ent);
         }
     }
 
     @Override
-    public void delete(Graph g, Entity ent) {
+    public void delete(Graph g, Edge ent) {
         if (isListen(DELETE)) {
             log("Delete: " + ent);
         }

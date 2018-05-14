@@ -4,11 +4,11 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public class TripleFormat extends RDFFormat {
 
@@ -136,7 +136,7 @@ public class TripleFormat extends RDFFormat {
     void print(Node gNode, Node node) {
         boolean first = true;
 
-        for (Entity ent : getEdges(gNode, node)) {
+        for (Edge ent : getEdges(gNode, node)) {
 
             if (ent != null && accept(ent)) {
 
@@ -159,7 +159,7 @@ public class TripleFormat extends RDFFormat {
         }
     }
 
-    Iterable<Entity> getEdges(Node gNode, Node node) {
+    Iterable<Edge> getEdges(Node gNode, Node node) {
         if (isGraph) {
             return graph.getNodeEdges(gNode, node);
         } else {
@@ -167,7 +167,7 @@ public class TripleFormat extends RDFFormat {
         }
     }
 
-    void subject(Entity ent) {
+    void subject(Edge ent) {
         subject(ent.getNode(0));
     }
 
@@ -189,8 +189,7 @@ public class TripleFormat extends RDFFormat {
         sdisplay(str);
     }
 
-    void edge(Entity ent) {
-        Edge edge = ent.getEdge();
+    void edge(Edge edge) {
 
         String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
 

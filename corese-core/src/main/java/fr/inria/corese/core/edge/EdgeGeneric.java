@@ -1,10 +1,9 @@
 package fr.inria.corese.core.edge;
 
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Graph Edge as Quad
@@ -13,7 +12,7 @@ import fr.inria.corese.core.Graph;
  *
  */
 public class EdgeGeneric extends EdgeTop 
-    implements Edge, Entity {
+    implements Edge {
     static int pcount = 0;
     public static boolean displayGraph = true;
     int index = -1;
@@ -52,16 +51,16 @@ public class EdgeGeneric extends EdgeTop
     }
     
     @Override
-    public void replicate(Entity cur){
+    public void replicate(Edge cur){
         setNode(0, cur.getNode(0));
         setNode(1, cur.getNode(1));
-        setIndex(cur.getEdge().getIndex());
+        setIndex(cur.getIndex());
         setProvenance(cur.getProvenance());
     }
     
     @Override
-    public void duplicate(Entity cur){
-        setEdgeNode(cur.getEdge().getEdgeNode());
+    public void duplicate(Edge cur){
+        setEdgeNode(cur.getEdgeNode());
         setGraph(cur.getGraph());
         replicate(cur);
     }

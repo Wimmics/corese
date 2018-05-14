@@ -1,26 +1,25 @@
 package fr.inria.corese.core.edge;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.core.GraphObject;
-import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
  * @author Olivier Corby, Wimmics Inria I3S, 2014
  *
  */
-public abstract class EdgeTop extends GraphObject implements Entity, Edge {
+public abstract class EdgeTop extends GraphObject implements Edge {
 
-    public Entity copy() {
+    public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
     }
 
-    public static Entity create(Node source, Node subject, Node predicate, Node objet) {
+    public static Edge create(Node source, Node subject, Node predicate, Node objet) {
         return null;
     }
 
@@ -52,9 +51,9 @@ public abstract class EdgeTop extends GraphObject implements Entity, Edge {
     public void setProvenance(Object o) {
     }
     
-    public void replicate(Entity cur){}
+    public void replicate(Edge cur){}
     
-    public void duplicate(Entity cur){}
+    public void duplicate(Edge cur){}
 
     @Override
     public Iterable<IDatatype> getLoop() {
@@ -75,7 +74,7 @@ public abstract class EdgeTop extends GraphObject implements Entity, Edge {
             case 0:
                 return nodeValue(getNode(0));
             case 1:
-                return nodeValue(getEdge().getEdgeNode());
+                return nodeValue(getEdgeNode());
             case 2:
                 return nodeValue(getNode(1));
             case 3:

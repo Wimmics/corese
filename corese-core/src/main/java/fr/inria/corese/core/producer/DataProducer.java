@@ -5,13 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.edge.EdgeTop;
 import java.util.ArrayList;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Transient Dataset over graph in order to iterate edges 
@@ -26,12 +26,12 @@ import java.util.ArrayList;
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  */
-public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
+public class DataProducer implements Iterable<Edge>, Iterator<Edge> {
 
-    static final List<Entity> empty     = new ArrayList<Entity>(0);
+    static final List<Edge> empty     = new ArrayList<Edge>(0);
     
-    Iterable<Entity> iter;
-    Iterator<Entity> it;
+    Iterable<Edge> iter;
+    Iterator<Edge> it;
     EdgeTop glast;
     Edge last;
     Graph graph;
@@ -91,7 +91,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
      
     DataProducer empty(){
-        setIterable(new ArrayList<Entity>(0));
+        setIterable(new ArrayList<Edge>(0));
         return this; 
     } 
      
@@ -139,13 +139,13 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     /**
      * Iterate predicate from named
      */
-    Iterable<Entity> getEdgesFromNamed(List<Node> from, Node predicate) {
-        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+    Iterable<Edge> getEdgesFromNamed(List<Node> from, Node predicate) {
+        MetaIterator<Edge> meta = new MetaIterator<Edge>();
 
         for (Node src : from) {
             Node tfrom = graph.getGraphNode(src.getLabel());
             if (tfrom != null) {
-                Iterable<Entity> it = graph.getEdges(predicate, tfrom, Graph.IGRAPH);
+                Iterable<Edge> it = graph.getEdges(predicate, tfrom, Graph.IGRAPH);
                 if (it != null) {
                     meta.next(it);
                 }
@@ -160,7 +160,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
    
     
-    public void setIterable(Iterable<Entity> it){
+    public void setIterable(Iterable<Edge> it){
         if (iter == null){
             iter = it;
         }
@@ -168,7 +168,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
             ((MetaIterator) iter).next(it);
         }
         else {
-            MetaIterator m = new MetaIterator<Entity>();
+            MetaIterator m = new MetaIterator<>();
             m.next(iter);
             m.next(it);
             iter = m;
@@ -234,7 +234,7 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
     }
     
     @Override
-    public Iterator<Entity> iterator() {
+    public Iterator<Edge> iterator() {
         if (from != null && from.isOneFrom() && from.getFromNode() == null) {
             return empty.iterator();
         }
@@ -257,16 +257,16 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
      * Main function iterate Edges.
      */
     @Override
-    public Entity next() {
+    public Edge next() {
 
         while (hasNext()) {
-            Entity ent = it.next();
+            Edge ent = it.next();
             
 
             if (isNamedGraph) {
                 // ok
             } 
-            else if (last != null && ! different(last, ent.getEdge())){
+            else if (last != null && ! different(last, ent)){
                 continue;
             }
             if (filter != null && ! filter.eval(ent)) {
@@ -320,17 +320,17 @@ public class DataProducer implements Iterable<Entity>, Iterator<Entity> {
         return false;
     }
         
-    void record(Entity ent) {
+    void record(Edge ent) {
         if (ent.nbNode() == 2){
             record2(ent);
         }
         else {
-            last = ent.getEdge();
+            last = ent;
         }
     }
 
     // record a copy of ent for last
-    void record2(Entity ent) {
+    void record2(Edge ent) {
         if (glast == null) {
             glast = graph.getEdgeFactory().createDuplicate(ent);
             last = glast;

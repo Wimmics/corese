@@ -1,9 +1,9 @@
 package fr.inria.corese.core.api;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * 
@@ -16,7 +16,7 @@ public interface QueryGraphVisitor {
 	
 	ASTQuery visit(ASTQuery ast);
 	
-	Entity visit(Entity ent);
+	Edge visit(Edge ent);
 
 	Query visit(Query q);
 

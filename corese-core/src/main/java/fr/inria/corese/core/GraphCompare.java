@@ -1,11 +1,11 @@
 package fr.inria.corese.core;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -58,7 +58,7 @@ public class GraphCompare {
 
         for (Node pred1 : g1.getProperties()) {
 
-            Iterable<Entity> l1 = g1.getEdges(pred1);
+            Iterable<Edge> l1 = g1.getEdges(pred1);
 
             Node pred2 = g2.getPropertyNode(pred1.getLabel());
 
@@ -70,11 +70,11 @@ public class GraphCompare {
                     return false;
                 }
             } else {
-                Iterable<Entity> l2 = g2.getEdges(pred2);
+                Iterable<Edge> l2 = g2.getEdges(pred2);
 
-                Iterator<Entity> it = l2.iterator();
+                Iterator<Edge> it = l2.iterator();
 
-                for (Entity ent1 : l1) {
+                for (Edge ent1 : l1) {
 
                     if (g1.isByIndex()) {
                         // node index
@@ -91,7 +91,7 @@ public class GraphCompare {
                             return false;
                         }
 
-                        Entity ent2 = it.next();
+                        Edge ent2 = it.next();
                         if (!compare(ent1, ent2, t, isGraph)) {
                             if (isDebug) {
                                 logger.error(ent1.toString());
@@ -111,10 +111,10 @@ public class GraphCompare {
         * TODO: may return false negative because it does not backtrack
         * It should be a projection ...
         */
-    boolean compare(Graph g2, Node pred2, TBN t, Entity ent1, boolean isGraph) {
-        Iterable<Entity> l2 = g2.getEdges(pred2);
-        Iterator<Entity> it = l2.iterator();
-        for (Entity ent2 : l2) {
+    boolean compare(Graph g2, Node pred2, TBN t, Edge ent1, boolean isGraph) {
+        Iterable<Edge> l2 = g2.getEdges(pred2);
+        Iterator<Edge> it = l2.iterator();
+        for (Edge ent2 : l2) {
             if (compare(ent1, ent2, t, isGraph)) {
                 return true;
             }
@@ -122,16 +122,16 @@ public class GraphCompare {
         return false;
     }
 
-    boolean compare(Entity ent1, Entity ent2, TBN t, boolean isGraph) {
+    boolean compare(Edge ent1, Edge ent2, TBN t, boolean isGraph) {
 
-        for (int j = 0; j < ent1.getEdge().nbGraphNode(); j++) {
+        for (int j = 0; j < ent1.nbGraphNode(); j++) {
 
-            Node n1 = ent1.getEdge().getNode(j);
-            Node n2 = ent2.getEdge().getNode(j);
+            Node n1 = ent1.getNode(j);
+            Node n2 = ent2.getNode(j);
 
             if (!compare(n1, n2, t)) {
                 for (int k = 0; k < j; k++) {
-                    t.pop(ent1.getEdge().getNode(k));
+                    t.pop(ent1.getNode(k));
                 }
                 return false;
             }

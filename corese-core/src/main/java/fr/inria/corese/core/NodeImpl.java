@@ -2,11 +2,10 @@ package fr.inria.corese.core;
 
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import java.util.Objects;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Node
@@ -14,7 +13,7 @@ import java.util.Objects;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class NodeImpl extends GraphObject implements Node, Entity, Comparable<NodeImpl> {
+public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl> {
 
 //    String key = INITKEY;
     public static boolean byIDatatype = false;
@@ -153,10 +152,6 @@ public class NodeImpl extends GraphObject implements Node, Entity, Comparable<No
         dt.setObject(o);
     }
 
-    @Override
-    public Node getNode(int i) {
-        return null;
-    }
 
     @Override
     public Object getProperty(int p) {
@@ -167,15 +162,7 @@ public class NodeImpl extends GraphObject implements Node, Entity, Comparable<No
     public void setProperty(int p, Object o) {
     }
 
-    @Override
-    public int nbNode() {
-        return 0;
-    }
-    
-    @Override
-    public int nbGraphNode() {
-        return 0;
-    }
+ 
     
     @Override
     public String getKey() {
@@ -187,15 +174,6 @@ public class NodeImpl extends GraphObject implements Node, Entity, Comparable<No
         
     }
 
-    @Override
-    public Object getProvenance() {
-        return null;    
-    }
-    
-    @Override
-	public void setProvenance(Object obj) {
-        
-    }
 
     @Override
     public Iterable getLoop() {

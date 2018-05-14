@@ -6,11 +6,11 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /*
  * Factory creates Edges
@@ -84,9 +84,9 @@ public class EdgeFactory {
         return DatatypeMap.newInstance(count++);
     }
      
-    public Edge internal(Entity ent) {
-        return internal(ent.getEdge());
-    }
+//    public Edge internal(Edge ent) {
+//        return internal(ent);
+//    }
     
     public Edge internal(Edge ent){
         if (ent.nbNode() > 2) {
@@ -97,19 +97,19 @@ public class EdgeFactory {
             case Graph.RULE_INDEX: return ent;
             
             case Graph.ENTAIL_INDEX:
-                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
                 
             case Graph.DEFAULT_INDEX:
-                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
 
             default: 
-                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
         }
     }
     
-    public EdgeTop createDuplicate(Entity ent) {
-        return createDuplicate(ent.getEdge());
-    }
+//    public EdgeTop createDuplicate(Edge ent) {
+//        return createDuplicate(ent);
+//    }
     
     public EdgeTop createDuplicate(Edge ent) {
         if (ent.nbNode() == 2) {
@@ -125,9 +125,9 @@ public class EdgeFactory {
         return EdgeGeneric.create(source, subject, predicate, value);
     }
         
-    public Edge compact(Entity ent){
-        return compact(ent.getEdge());
-    }
+//    public Edge compact(Edge ent){
+//        return compact(ent);
+//    }
         
     public Edge compact(Edge ent){
         switch (ent.getGraph().getIndex()){
@@ -222,9 +222,9 @@ public class EdgeFactory {
         return ee;
     }
     
-    public Edge copy(Node node, Node pred, Entity ent) {
-        return copy(node, pred, ent.getEdge());
-    }
+//    public Edge copy(Node node, Node pred, Edge ent) {
+//        return copy(node, pred, ent);
+//    }
     
     public Edge copy(Node node, Node pred, Edge ent) {
         if (ent instanceof EdgeImpl) {
@@ -237,23 +237,23 @@ public class EdgeFactory {
         }
     }
     
-    public Edge copy(Entity ent){
-        return copy(ent.getEdge());
-    }
+//    public Edge copy(Edge ent){
+//        return copy(ent);
+//    }
     
     public Edge copy(Edge ent){
-        return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
+        return copy(ent.getGraph(), ent.getEdgeNode(), ent);
     }
     
-    public Edge queryEdge(Entity ent){
-           return queryEdge(ent.getEdge());
-    }
+//    public Edge queryEdge(Edge ent){
+//           return queryEdge(ent);
+//    }
     
     public Edge queryEdge(Edge ent){
         if (graph.isMetadata()) {
-            return createGeneric(ent.getGraph(), ent.getNode(0), ent.getEdge().getEdgeNode(), ent.getNode(1));
+            return createGeneric(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
         }
-        return copy(ent.getGraph(), ent.getEdge().getEdgeNode(), ent);
+        return copy(ent.getGraph(), ent.getEdgeNode(), ent);
     }
 
     /**
@@ -267,13 +267,13 @@ public class EdgeFactory {
  
     }
     
-     public void setGraph(Entity ent, Node g) {
-         setGraph(ent.getEdge(), g);
-     }
+//     public void setGraph(Edge ent, Node g) {
+//         setGraph(ent, g);
+//     }
 
-    Edge tag(Entity ent) {
-        return tag(ent.getEdge());
-    }
+//    Edge tag(Edge ent) {
+//        return tag(ent);
+//    }
     
     Edge tag(Edge ent) {
         if (ent instanceof EdgeImpl) {

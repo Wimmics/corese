@@ -25,7 +25,6 @@ import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.compiler.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -64,6 +63,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import fr.inria.corese.kgram.api.core.Edge;
 
 
 /**
@@ -519,7 +519,7 @@ public class PluginImpl
         for (Edge qEdge : memory.getQueryEdges()) {
 
             if (qEdge != null) {
-                Entity edge = memory.getEdge(qEdge);
+                Edge edge = memory.getEdge(qEdge);
 
                 if (edge != null) {
                     count += 1;
@@ -615,13 +615,13 @@ public class PluginImpl
         return p;
     }
     
-    Entity getEdge(Expr exp, Environment env){
+    Edge getEdge(Expr exp, Environment env){
         Memory mem = (Memory) env;
         return mem.getEdge(exp.getExp(0).getLabel());
     }
     
     private IDatatype provenance(Expr exp, Environment env, IDatatype dt) {
-       Entity e = getEdge(exp, env);
+       Edge e = getEdge(exp, env);
        if (e == null){
            return  null;
        }
@@ -639,11 +639,11 @@ public class PluginImpl
     }
 
     private IDatatype timestamp(Expr exp, Environment env, IDatatype dt) {
-         Entity e = getEdge(exp, env);
+         Edge e = getEdge(exp, env);
         if (e == null){
             return  null;
         }
-        int level = e.getEdge().getIndex();
+        int level = e.getIndex();
         return getValue(level);
     }
     
@@ -697,7 +697,7 @@ public class PluginImpl
     
     @Override
     public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        for (Entity ent : new DataProducer(getGraph(p)).iterate(subj, pred, obj)) {
+        for (Edge ent : new DataProducer(getGraph(p)).iterate(subj, pred, obj)) {
             return (ent == null) ? FALSE :TRUE;
         }
         return FALSE;

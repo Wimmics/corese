@@ -1,12 +1,11 @@
 package fr.inria.corese.core.edge;
 
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import java.util.Arrays;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Graph Edge with n nodes (not only triple)
@@ -15,7 +14,7 @@ import java.util.List;
  *
  */
 public class EdgeImpl extends EdgeTop 
-    implements Edge, Entity {
+    implements Edge {
  
     public static boolean displayGraph = true;
     int index = -1;
@@ -248,19 +247,19 @@ public class EdgeImpl extends EdgeTop
     }
     
     @Override
-    public void duplicate(Entity cur){
-        setEdgeNode(cur.getEdge().getEdgeNode());
+    public void duplicate(Edge cur){
+        setEdgeNode(cur.getEdgeNode());
         setGraph(cur.getGraph());
         replicate(cur);
     }
     
     @Override
-    public void replicate(Entity cur){
+    public void replicate(Edge cur){
         nodes = new Node[cur.nbNode()];
         for (int i = 0; i<nodes.length; i++) {
             nodes[i] = cur.getNode(i);
         }
-        setIndex(cur.getEdge().getIndex());
+        setIndex(cur.getIndex());
     }
     
      /**

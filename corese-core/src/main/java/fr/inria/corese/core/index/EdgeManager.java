@@ -1,7 +1,6 @@
 package fr.inria.corese.core.index;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.IGRAPH;
@@ -11,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Edge List of a predicate
@@ -33,12 +33,12 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class EdgeManager implements Iterable<Entity> {
+public class EdgeManager implements Iterable<Edge> {
     Graph graph;
     EdgeManagerIndexer indexer;
     private Node predicate;
-    ArrayList<Entity> list;
-    Comparator<Entity> comp;
+    ArrayList<Edge> list;
+    Comparator<Edge> comp;
     int index = 0, other = 0, next = IGRAPH;
     boolean indexedByNode = false;
 
@@ -46,7 +46,7 @@ public class EdgeManager implements Iterable<Entity> {
         graph = indexer.getGraph();
         this.indexer = indexer;        
         predicate = p;
-        list = new ArrayList<Entity>();
+        list = new ArrayList<Edge>();
         index = i;
         if (index == 0) {
             other = 1;
@@ -60,7 +60,7 @@ public class EdgeManager implements Iterable<Entity> {
         return graph;
     }
 
-    ArrayList<Entity> getList() {
+    ArrayList<Edge> getList() {
         return list;
     }
 
@@ -72,7 +72,7 @@ public class EdgeManager implements Iterable<Entity> {
         list.clear();
     }
 
-    Entity get(int i) {
+    Edge get(int i) {
         return list.get(i);
     }
     
@@ -84,10 +84,10 @@ public class EdgeManager implements Iterable<Entity> {
      * Remove duplicate edges
      */
     int reduce(NodeManager mgr) {
-        ArrayList<Entity> l = new ArrayList<>();
-        Entity pred = null;
+        ArrayList<Edge> l = new ArrayList<>();
+        Edge pred = null;
         int count = 0, ind = 0;
-        for (Entity ent : list) {          
+        for (Edge ent : list) {          
             if (pred == null) {
                 l.add(ent);
                 mgr.add(ent.getNode(index), predicate, ind);
@@ -111,9 +111,9 @@ public class EdgeManager implements Iterable<Entity> {
      * 
      */
     void indexNodeManager(NodeManager mgr) {
-        Entity pred = null;
+        Edge pred = null;
         int ind = 0;
-        for (Entity ent : list) {
+        for (Edge ent : list) {
             if (pred == null) {
                 mgr.add(ent.getNode(index), predicate, ind);
             } else if (ent.getNode(index) != pred.getNode(index)) {
@@ -139,15 +139,15 @@ public class EdgeManager implements Iterable<Entity> {
 
     // keep metadata, reset index
     void doCompactMetadata(){
-        for (Entity ent : list) {
-           ent.getEdge().setIndex(-1);
+        for (Edge ent : list) {
+           ent.setIndex(-1);
         }
     }
     
     void doCompact(){
-        ArrayList<Entity> l = new ArrayList<Entity>(list.size());
-        for (Entity ent : list) {
-           Entity ee = graph.getEdgeFactory().compact(ent);
+        ArrayList<Edge> l = new ArrayList<Edge>(list.size());
+        for (Edge ent : list) {
+           Edge ee = graph.getEdgeFactory().compact(ent);
            l.add(ee);
         }
         list = l;
@@ -166,7 +166,7 @@ public class EdgeManager implements Iterable<Entity> {
             // we are sure that there are at least 2 nodes
             list.addAll(el.getList());
         } else {
-            for (Entity ent : el) {
+            for (Edge ent : el) {
                 // if additional node is missing: do not index this edge
                 if (ent.nbNode() > index) {
                     list.add(ent);
@@ -175,16 +175,16 @@ public class EdgeManager implements Iterable<Entity> {
         }
     }
 
-    void add(Entity ent) {
+    void add(Edge ent) {
         list.add(ent);
     }
 
-    void add(int i, Entity ent) {
+    void add(int i, Edge ent) {
         list.add(i, ent);
     }
 
-    Entity remove(int i) {
-        Entity ent = list.get(i);
+    Edge remove(int i) {
+        Edge ent = list.get(i);
         list.remove(i);
         return ent;
     }
@@ -193,7 +193,7 @@ public class EdgeManager implements Iterable<Entity> {
      * PRAGMA: All Edge in list have p as predicate, no duplicates Use case:
      * Rule Engine
      */
-    void add(List<Entity> l) {
+    void add(List<Edge> l) {
         list.ensureCapacity(l.size() + list.size());
         list.addAll(l);
     }
@@ -202,7 +202,7 @@ public class EdgeManager implements Iterable<Entity> {
      * Return place where edge should be inserted in this Index return -1 if
      * already exists
      */
-    int getPlace(Entity edge) {
+    int getPlace(Edge edge) {
         int i = find(edge);
 
         if (i >= list.size()) {
@@ -221,11 +221,11 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Place of edge in this Index
      */
-    int find(Entity edge) {
+    int find(Edge edge) {
         return find(edge, 0, list.size());
     }
 
-    int find(Entity edge, int first, int last) {
+    int find(Edge edge, int first, int last) {
         if (first >= last) {
             return first;
         } else {
@@ -245,7 +245,7 @@ public class EdgeManager implements Iterable<Entity> {
     boolean exist(Node n1, Node n2) {
         int n = findNodeTerm(n1, n2, 0, list.size());
         if (n >= 0 && n < list.size()) {
-            Entity ent = list.get(n);
+            Edge ent = list.get(n);
             if (n1.getIndex() == getNodeIndex(ent, 0)
                     && n2.getIndex() == getNodeIndex(ent, 1)) {
                 return true;
@@ -257,7 +257,7 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Find index of edge If not found, return -1
      */
-    int findIndexNodeTerm(Entity ent) {
+    int findIndexNodeTerm(Edge ent) {
         int i = find(ent);
 
         if (i >= size()) {
@@ -285,7 +285,7 @@ public class EdgeManager implements Iterable<Entity> {
         return -1;
     }
 
-    boolean exist(Entity ent) {
+    boolean exist(Edge ent) {
         int i = findIndexNodeTerm(ent);
         return i != -1;
     }
@@ -293,7 +293,7 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Iterate edges with index node node1 (and other node node2)
      */
-    Iterable<Entity> getEdges(Node node1, Node node2) {
+    Iterable<Edge> getEdges(Node node1, Node node2) {
         int n = findNodeTerm(node1, node2, 0, list.size());
         if (n >= 0 && n < list.size()) {
             int n1 = getNodeIndex(n, index);
@@ -312,7 +312,7 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Iterate edges with index node node1
      */
-     Iterable<Entity> getEdges(Node node) {
+     Iterable<Edge> getEdges(Node node) {
         // node is bound, enumerate edges where node = edge.getNode(index)
         int n = findNodeIndex(node);
         if (n >= 0 && n < list.size()) {
@@ -321,7 +321,7 @@ public class EdgeManager implements Iterable<Entity> {
         return null;
     }
     
-    Iterable<Entity> getEdges(Node node, int n) {
+    Iterable<Edge> getEdges(Node node, int n) {
         return new EdgeManagerIterate(this, n);
     }
 
@@ -428,7 +428,7 @@ public class EdgeManager implements Iterable<Entity> {
         }
     }   
     
-     int compare(Entity ent, Node n1, Node n2) {
+     int compare(Edge ent, Node n1, Node n2) {
         int res = compareNodeTerm(ent.getNode(index), n1);
         if (res == 0) {
             res = compareNodeTerm(ent.getNode(other), n2);
@@ -473,7 +473,7 @@ public class EdgeManager implements Iterable<Entity> {
     }
 
     @Override
-    public Iterator<Entity> iterator() {
+    public Iterator<Edge> iterator() {
         return list.iterator();
     }
 
@@ -490,9 +490,9 @@ public class EdgeManager implements Iterable<Entity> {
      * with node as index element
      */
     @Deprecated
-    class Iterate implements Iterable<Entity>, Iterator<Entity> {
+    class Iterate implements Iterable<Edge>, Iterator<Edge> {
 
-        List<Entity> list;
+        List<Edge> list;
         int node;
         int ind, start;
 
@@ -503,7 +503,7 @@ public class EdgeManager implements Iterable<Entity> {
         }
 
         @Override
-        public Iterator<Entity> iterator() {
+        public Iterator<Edge> iterator() {
             ind = start;
             return this;
         }
@@ -516,8 +516,8 @@ public class EdgeManager implements Iterable<Entity> {
         }
 
         @Override
-        public Entity next() {
-            Entity ent = list.get(ind++);
+        public Edge next() {
+            Edge ent = list.get(ind++);
             return ent; 
         }
 
@@ -529,19 +529,19 @@ public class EdgeManager implements Iterable<Entity> {
        
 
     // getNode(IGRAPH) must return getGraph()
-    int getNodeIndex(Entity ent, int n) {
+    int getNodeIndex(Edge ent, int n) {
         return ent.getNode(n).getIndex();
     }
 
     // getNode(IGRAPH) must return getGraph()
     int getNodeIndex(int i, int n) {
-        Entity ent = list.get(i);
+        Edge ent = list.get(i);
         return ent.getNode(n).getIndex();
     }
     
     // getNode(IGRAPH) must return getGraph()
     Node getNode(int i, int n) {
-        Entity ent = list.get(i);
+        Edge ent = list.get(i);
         return ent.getNode(n);
     }
     
@@ -549,7 +549,7 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * **************************************************************
      */
-    Comparator<Entity> getComparator(int n) {
+    Comparator<Edge> getComparator(int n) {
         switch (n) {
             case ILIST:
                 return getListComparator();
@@ -557,7 +557,7 @@ public class EdgeManager implements Iterable<Entity> {
         return getComparator();
     }
     
-    void setComparator(Comparator<Entity> c){
+    void setComparator(Comparator<Edge> c){
         comp = c;
     }
 
@@ -565,12 +565,12 @@ public class EdgeManager implements Iterable<Entity> {
     /**
      * Compare two edges to sort them in Index
      */
-     Comparator<Entity> getComparator() {
+     Comparator<Edge> getComparator() {
 
-        return new Comparator<Entity>() {
+        return new Comparator<Edge>() {
             
             @Override
-            public int compare(Entity o1, Entity o2) {
+            public int compare(Edge o1, Edge o2) {
 
                 // check the Index Node
                 int res = compareNodeTerm(o1.getNode(index), o2.getNode(index));
@@ -622,13 +622,13 @@ public class EdgeManager implements Iterable<Entity> {
      * sort in reverse order of edge timestamp
      * new edge first (for RuleEngine)
      */
-    Comparator<Entity> getListComparator() {
+    Comparator<Edge> getListComparator() {
 
-        return new Comparator<Entity>() {
+        return new Comparator<Edge>() {
             @Override
-            public int compare(Entity o1, Entity o2) {
-                int i1 = o1.getEdge().getIndex();
-                int i2 = o2.getEdge().getIndex();
+            public int compare(Edge o1, Edge o2) {
+                int i1 = o1.getIndex();
+                int i2 = o2.getIndex();
                 
                 if (i1 > i2) {
                     return -1;

@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Extract a Transformer Context from a profile.ttl graph st:param object
@@ -50,7 +50,7 @@ public class ContextBuilder {
      * Create a Context from content of st:param
      */
     public Context process(){
-        Entity ent = graph.getEdge(Context.STL_PARAM);
+        Edge ent = graph.getEdge(Context.STL_PARAM);
         if (ent == null){
             return context;
         }
@@ -71,8 +71,8 @@ public class ContextBuilder {
     void context(Node ctx, boolean exporter) {
         importer(ctx);
 
-        for (Entity ent : graph.getEdgeList(ctx)) {
-            String label = ent.getEdge().getLabel();
+        for (Edge ent : graph.getEdgeList(ctx)) {
+            String label = ent.getLabel();
             Node object = ent.getNode(1);
             
             if (label.equals(Context.STL_EXPORT) && object.isBlank()){
@@ -106,7 +106,7 @@ public class ContextBuilder {
       *           
       */
      void importer(Node n) {         
-        for (Entity ent : graph.getEdges(Context.STL_IMPORT, n, 0)) {
+        for (Edge ent : graph.getEdges(Context.STL_IMPORT, n, 0)) {
             if (ent != null){
                 Node imp = ent.getNode(1);
                 if (done(imp)){

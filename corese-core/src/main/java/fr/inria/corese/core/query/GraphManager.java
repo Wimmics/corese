@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.Engine;
@@ -18,6 +17,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -131,7 +131,7 @@ public class GraphManager {
      * edge has no named graph
      * Return the list of deleted edges
      */
-    List<Entity> delete(Entity ent, List<Constant> from) {
+    List<Edge> delete(Edge ent, List<Constant> from) {
         return graph.delete(ent, from);
     }
 
@@ -139,7 +139,7 @@ public class GraphManager {
      * If Edge have a named graph: delete this occurrence
      * Otherwise: delete all occurrences of edge 
      */
-    List<Entity> delete(Entity ent) {
+    List<Edge> delete(Edge ent) {
         return graph.delete(ent);
     }
 
@@ -147,7 +147,7 @@ public class GraphManager {
      * Return null if edge already exists in graph
      * and in its named graph
      */
-    Entity insert(Entity ent) {
+    Edge insert(Edge ent) {
         return graph.addEdge(ent);
     }
 
@@ -190,11 +190,11 @@ public class GraphManager {
      * Create a candidate edge to be inserted
      * Do not insert it yet, it will be done explicitely by insert().
      */
-    Entity create(Node source, Node subject, Node property, Node object) {
+    Edge create(Node source, Node subject, Node property, Node object) {
         return graph.create(source, subject, property, object);
     }
     
-    Entity create(Node source, Node property, List<Node> list) {
+    Edge create(Node source, Node property, List<Node> list) {
         return graph.create(source, property, list);
     }
 
@@ -202,11 +202,11 @@ public class GraphManager {
      * Create a candidate edge to be deleted
      * Do not delete it yet, it will be done explicitely by delete().
      */
-    Entity createDelete(Node source, Node subject, Node property, Node object) {
+    Edge createDelete(Node source, Node subject, Node property, Node object) {
         return graph.createDelete(source, subject, property, object);
     }
     
-    Entity createDelete(Node source, Node property, List<Node> list) {
+    Edge createDelete(Node source, Node property, List<Node> list) {
         return graph.createDelete(source, property, list);
     }
 

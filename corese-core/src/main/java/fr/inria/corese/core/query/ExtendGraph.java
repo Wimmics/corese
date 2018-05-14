@@ -9,7 +9,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Manage extended named graph 
@@ -104,7 +104,7 @@ public class ExtendGraph {
      */
      IDatatype stack(Producer p, Expr exp, Environment env){
         Graph g = Graph.create();
-        for (Entity e : env.getEdges()){
+        for (Edge e : env.getEdges()){
             if (e != null){
                 g.copy(e);
             }

@@ -29,8 +29,6 @@ import fr.inria.corese.sparql.datatype.XSD;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Graphable;
@@ -49,8 +47,8 @@ import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.api.Tagger;
 import fr.inria.corese.core.api.ValueResolver;
-import fr.inria.corese.kgram.tool.MetaIteratorCast;
 import java.util.Map;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -75,7 +73,7 @@ public class Graph extends GraphObject implements
     private static Logger logger = LoggerFactory.getLogger(Graph.class);
     public static final String TOPREL
             = fr.inria.corese.sparql.triple.cst.RDFS.RootPropertyURI;
-    static final ArrayList<Entity> EMPTY = new ArrayList<Entity>(0);
+    static final ArrayList<Edge> EMPTY = new ArrayList<Edge>(0);
     public static boolean valueOut = !true;
     public static final int IGRAPH = -1;
     // edges in chronological order
@@ -355,7 +353,7 @@ public class Graph extends GraphObject implements
     @Override 
     public IDatatype getValue(String var, int n){
         int i = 0;
-        for (Entity ent : getEdges()){
+        for (Edge ent : getEdges()){
             if (i++ == n){
                 return DatatypeMap.createObject(ent);
             }
@@ -973,7 +971,7 @@ public class Graph extends GraphObject implements
                 sb.append(p + " (" + getIndex().size(p) + ") : ");
                 sb.append(sep);
                 int i = 0;
-                for (Entity ent : (n == 0) ? getEdges(p) : getIndex(n).getEdges()) {
+                for (Edge ent : (n == 0) ? getEdges(p) : getIndex(n).getEdges()) {
                     sb.append((i<10)?"0":"").append(i++).append(" ");
                     sb.append(ent);
                     sb.append(sep);
@@ -1095,8 +1093,8 @@ public class Graph extends GraphObject implements
 
     public void cleanEdge() {
         // clean rule engine timestamp
-        for (Entity ent : getEdges()) {
-            ent.getEdge().setIndex(-1);
+        for (Edge ent : getEdges()) {
+            ent.setIndex(-1);
         }
     }
 
@@ -1244,9 +1242,9 @@ public class Graph extends GraphObject implements
         }
     }
 
-   public  void define(Entity ent) {
+   public  void define(Edge ent) {
         //gindex.add(ent);
-        nodeGraphIndex.add(ent.getEdge());
+        nodeGraphIndex.add(ent);
     }
 
     public Iterable<Node> getProperties() {
@@ -1257,27 +1255,27 @@ public class Graph extends GraphObject implements
         return table.getSortedProperties();
     }
        
-    public Entity add(Entity edge) {
+    public Edge add(Edge edge) {
         return add(edge, true);
     }
 
-    public Entity add(Entity edge, boolean duplicate) {
+    public Edge add(Edge edge, boolean duplicate) {
         // store edge in index 0
-        Entity ent = table.add(edge, duplicate);
+        Edge ent = table.add(edge, duplicate);
         // tell other index that predicate has instances
         if (ent != null) {
             if (edge.getGraph() == null){
                 System.out.println("Graph: " + edge);
             }
             addGraphNode(edge.getGraph());
-            addPropertyNode(edge.getEdge().getEdgeNode());
+            addPropertyNode(edge.getEdgeNode());
             declare(edge, duplicate);
             size++;
         }
         return ent;
     }
     
-    void declare(Entity edge, boolean duplicate) {
+    void declare(Edge edge, boolean duplicate) {
         for (Index ei : getIndexList()) {
             if (ei.getIndex() != 0) {
                 ei.declare(edge, duplicate);
@@ -1285,7 +1283,7 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public boolean exist(Entity edge) {
+    public boolean exist(Edge edge) {
         return table.exist(edge);
     }
 
@@ -1297,9 +1295,9 @@ public class Graph extends GraphObject implements
         return table.exist(p, n1, n2);
     }
 
-    public Entity addEdgeWithNode(Entity ee) {
+    public Edge addEdgeWithNode(Edge ee) {
         addGraphNode(ee.getGraph());
-        addPropertyNode(ee.getEdge().getEdgeNode());
+        addPropertyNode(ee.getEdgeNode());
         for (int i = 0; i < ee.nbGraphNode(); i++) {
             add(ee.getNode(i));
         }
@@ -1334,28 +1332,28 @@ public class Graph extends GraphObject implements
         return head;
     }
 
-    public Entity addEdge(Entity edge) {
+    public Edge addEdge(Edge edge) {
         return addEdge(edge, true);
     }
 
-    public Entity addEdge(Entity edge, boolean duplicate) {
-        Entity ent = add(edge, duplicate);
+    public Edge addEdge(Edge edge, boolean duplicate) {
+        Edge ent = add(edge, duplicate);
         if (ent != null) {
             //setUpdate(true);
             getEventManager().process(Event.Insert, ent);
-            manager.onInsert(ent.getGraph(), edge.getEdge());
+            manager.onInsert(ent.getGraph(), edge);
         }
         return ent;
     }
 
-    public int add(List<Entity> lin) {
+    public int add(List<Edge> lin) {
         return add(lin, null, true);
     }
 
-    public int add(List<Entity> lin, List<Entity> lout, boolean duplicate) {
+    public int add(List<Edge> lin, List<Edge> lout, boolean duplicate) {
         int n = 0;
-        for (Entity ee : lin) {
-            Entity ent = addEdge(ee, duplicate);
+        for (Edge ee : lin) {
+            Edge ent = addEdge(ee, duplicate);
             if (ent != null) {
                 n++;
                 if (lout != null) {
@@ -1366,14 +1364,14 @@ public class Graph extends GraphObject implements
         return n;
     }
 
-    public void addOpt(Node p, List<Entity> list) {
+    public void addOpt(Node p, List<Edge> list) {
         if (list.isEmpty()) {
             return;
         }
         if (p == null) {
             addOpt(list);
         } else {
-            p = list.get(0).getEdge().getEdgeNode();
+            p = list.get(0).getEdgeNode();
             add(p, list);
         }
     }
@@ -1383,7 +1381,7 @@ public class Graph extends GraphObject implements
 	 * predicate is declared in graph TODO: if same predicate, perform
 	 * ensureCapacity on Index list
      */
-    void add(Node p, List<Entity> list) {
+    void add(Node p, List<Edge> list) {
         for (Index ei : getIndexList()) {
             ei.add(p, list);
         }
@@ -1396,7 +1394,7 @@ public class Graph extends GraphObject implements
      * Use cas: RuleEngine
      * PRAGMA: edges in list do not exists in graph (no duplicate)
      */
-    public void addOpt(List<Entity> list) {
+    public void addOpt(List<Edge> list) {
         if (list.isEmpty()) {
             return;
         }
@@ -1404,9 +1402,9 @@ public class Graph extends GraphObject implements
         setIndex(true);
         HashMap<String, Node> t = new HashMap<String, Node>();
 
-        for (Entity ee : list) {
+        for (Edge ee : list) {
 
-            Node pred = ee.getEdge().getEdgeNode();
+            Node pred = ee.getEdgeNode();
             t.put(pred.getLabel(), pred);
 
             // add Entity at the end of list index
@@ -1427,7 +1425,7 @@ public class Graph extends GraphObject implements
      * Use case: Entailment
      * PRAGMA: edges in list may exist in graph
      */
-    public List<Entity> copy(List<Entity> list) {
+    public List<Edge> copy(List<Edge> list) {
         for (Index id : tables) {
             if (id.getIndex() != 0) {
                 id.clearCache();
@@ -1440,8 +1438,8 @@ public class Graph extends GraphObject implements
 
         // fake Index not sorted to add edges at the end of the Index
         setIndex(true);
-        for (Entity ent : list) {
-            Entity e = add(ent);
+        for (Edge ent : list) {
+            Edge e = add(ent);
             if (e != null) {
                 getEventManager().process(Event.Insert, e);
             }
@@ -1454,23 +1452,23 @@ public class Graph extends GraphObject implements
     }
     
 
-    public Entity create(Node source, Node subject, Node predicate, Node value) {
+    public Edge create(Node source, Node subject, Node predicate, Node value) {
         return fac.create(source, subject, predicate, value);
     }
 
-    public Entity createDelete(Node source, Node subject, Node predicate, Node value) {
+    public Edge createDelete(Node source, Node subject, Node predicate, Node value) {
         return fac.createDelete(source, subject, predicate, value);
     }
 
-    public Entity create(Node source, Node predicate, List<Node> list) {
+    public Edge create(Node source, Node predicate, List<Node> list) {
         return fac.create(source, predicate, list);
     }
 
-    public Entity createDelete(Node source, Node predicate, List<Node> list) {
+    public Edge createDelete(Node source, Node predicate, List<Node> list) {
         return fac.createDelete(source, predicate, list);
     }
 
-    public Entity create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+    public Edge create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
         return null;
     }
 
@@ -1936,22 +1934,22 @@ public class Graph extends GraphObject implements
         return getDataStore().getNamed();
     }
 
-    public Iterable<Entity> getEdges() {
-        Iterable<Entity> ie = table.getEdges();
+    public Iterable<Edge> getEdges() {
+        Iterable<Edge> ie = table.getEdges();
         if (ie == null) {
-            return new ArrayList<Entity>();
+            return new ArrayList<>();
         }
         return ie;
     }
 
     @Override
     public Edge getEdge(Node pred, Node node, int index) {
-        Iterable<Entity> it = getEdges(pred, node, index);
+        Iterable<Edge> it = getEdges(pred, node, index);
         if (it == null) {
             return null;
         }
-        for (Entity ent : it) {
-            return ent.getEdge();
+        for (Edge ent : it) {
+            return ent;
         }
         return null;
     }
@@ -2013,27 +2011,27 @@ public class Graph extends GraphObject implements
     }
 
     public Iterable<Node> getNodes(Node pred, Node node, int n) {
-        Iterable<Entity> it = getEdges(pred, node, n);
+        Iterable<Edge> it = getEdges(pred, node, n);
         if (it == null) {
-            return new ArrayList<Node>();
+            return new ArrayList<>();
         }
         int index = (n == 0) ? 1 : 0;
         return NodeIterator.create(it, index);
     }
 
-    public Iterable<Entity> properGetEdges(Node predicate, Node node, int n) {
-        Iterable<Entity> it = getEdges(predicate, node, null, n);
+    public Iterable<Edge> properGetEdges(Node predicate, Node node, int n) {
+        Iterable<Edge> it = getEdges(predicate, node, null, n);
         if (it == null){
             return EMPTY;
         }
         return it;
     }
     
-    public Iterable<Entity> getEdges(Node predicate, Node node, int n) {
+    public Iterable<Edge> getEdges(Node predicate, Node node, int n) {
         return getEdges(predicate, node, null, n);
     }
 
-    public Iterable<Entity> getEdges(Node predicate, Node node, Node node2, int n) {
+    public Iterable<Edge> getEdges(Node predicate, Node node, Node node2, int n) {
         if (isTopRelation(predicate)) {
             return getEdges(node, n);
         } else {
@@ -2041,30 +2039,30 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public Iterable<Entity> basicEdges(Node predicate, Node node, Node node2, int n) {
+    public Iterable<Edge> basicEdges(Node predicate, Node node, Node node2, int n) {
         return getIndex(n).getEdges(predicate, node, node2);
     }
 
     /**
      * with rdfs:subPropertyOf
      */
-    public Iterable<Entity> getAllEdges(Node predicate, Node node, Node node2, int n) {
-        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+    public Iterable<Edge> getAllEdges(Node predicate, Node node, Node node2, int n) {
+        MetaIterator<Edge> meta = new MetaIterator<>();
 
         for (Node pred : getProperties(predicate)) {
-            Iterable<Entity> it = getIndex(n).getEdges(pred, node);
+            Iterable<Edge> it = getIndex(n).getEdges(pred, node);
             if (it != null) {
                 meta.next(it);
             }
         }
         if (meta.isEmpty()) {
-            return new ArrayList<Entity>();
+            return new ArrayList<Edge>();
         }
         return meta;
     }
 
     public Iterable<Node> getProperties(Node p) {
-        ArrayList<Node> list = new ArrayList<Node>();
+        ArrayList<Node> list = new ArrayList<>();
         for (Node n : getProperties()) {
             if (getEntailment().isSubPropertyOf(n, p)) {
                 list.add(n);
@@ -2077,8 +2075,8 @@ public class Graph extends GraphObject implements
      * Return start blank node for all lists
      */
     public List<Node> getLists() {
-        List<Node> list = new ArrayList<Node>();
-        for (Entity ent : getEdges(RDF.FIRST)) {
+        List<Node> list = new ArrayList<>();
+        for (Edge ent : getEdges(RDF.FIRST)) {
             Node start = ent.getNode(0);
             Edge edge = getEdge(RDF.REST, start, 1);
             if (edge == null) {
@@ -2102,7 +2100,7 @@ public class Graph extends GraphObject implements
     }
 
     public boolean hasEdge(Node node, int i) {
-        Iterable<Entity> it = getEdges(node, i);
+        Iterable<Edge> it = getEdges(node, i);
         return it.iterator().hasNext();
     }
 
@@ -2114,7 +2112,7 @@ public class Graph extends GraphObject implements
     
     public List<IDatatype> getDatatypeList(Node node) {
         List<Node> list = getList(node);
-        ArrayList<IDatatype> ldt = new ArrayList<IDatatype>();
+        ArrayList<IDatatype> ldt = new ArrayList<>();
         for (Node n : list) {
             ldt.add(value(n));
         }
@@ -2152,7 +2150,7 @@ public class Graph extends GraphObject implements
     
       public ArrayList<IDatatype> reclist(Node node) {
         if (node.getLabel().equals(RDF.NIL)) {
-            return new ArrayList<IDatatype>();
+            return new ArrayList<>();
         } 
         else {
             Edge first = getEdge(RDF.FIRST, node, 0);
@@ -2195,11 +2193,11 @@ public class Graph extends GraphObject implements
     }
 
     // without duplicates 
-    public Iterable<Entity> getNodeEdges(Node node) {
+    public Iterable<Edge> getNodeEdges(Node node) {
         return getDataStore().getDefault().iterate(node, 0);
     }
 
-    public Iterable<Entity> getNodeEdges(Node gNode, Node node) {
+    public Iterable<Edge> getNodeEdges(Node gNode, Node node) {
         return getDataStore().getNamed().from(gNode).iterate(node, 0);
     }
 
@@ -2232,7 +2230,7 @@ public class Graph extends GraphObject implements
         tables.add(n, e);
     }
 
-    public Iterable<Entity> getEdges(Node node, int n) {
+    public Iterable<Edge> getEdges(Node node, int n) {
         if (node == null){
             // without NodeManager
             return getSortedEdgesBasic(node, n);
@@ -2245,23 +2243,23 @@ public class Graph extends GraphObject implements
        
     
     // without NodeManager
-    public Iterable<Entity> getSortedEdgesBasic(Node node, int n) {
-        MetaIterator<Entity> meta = new MetaIterator<Entity>();
+    public Iterable<Edge> getSortedEdgesBasic(Node node, int n) {
+        MetaIterator<Edge> meta = new MetaIterator<Edge>();
 
         for (Node pred : getSortedProperties()) {
-            Iterable<Entity> it = getIndex(n).getEdges(pred, node);
+            Iterable<Edge> it = getIndex(n).getEdges(pred, node);
             if (it != null) {
                 meta.next(it);
             }
         }
         if (meta.isEmpty()) {
-            return new ArrayList<Entity>();
+            return new ArrayList<Edge>();
         }
         return meta;
     }
             
     
-    public Iterable<Entity> getEdges(String p) {
+    public Iterable<Edge> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
             return EMPTY;
@@ -2269,27 +2267,27 @@ public class Graph extends GraphObject implements
         return getEdges(predicate);
     }
     
-    public Entity getEdge(String p){
-        Iterator<Entity> it = getEdges(p).iterator();
+    public Edge getEdge(String p){
+        Iterator<Edge> it = getEdges(p).iterator();
         if (it.hasNext()){
             return it.next();
         }
         return null;
     }
     
-    public Iterable<Entity> getEdges(String p, Node n, int i) {
+    public Iterable<Edge> getEdges(String p, Node n, int i) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
             return EMPTY;
         }
-        Iterable<Entity> it = getEdges(predicate, n, i);
+        Iterable<Edge> it = getEdges(predicate, n, i);
         if (it == null){
             return EMPTY;
         }
         return it;
     }
     
-    public Iterable<Entity> getEdges(IDatatype s, IDatatype p, IDatatype o) {
+    public Iterable<Edge> getEdges(IDatatype s, IDatatype p, IDatatype o) {
         Node ns = null, np, no = null;
         if (p == null){
             np = getTopProperty();
@@ -2309,15 +2307,15 @@ public class Graph extends GraphObject implements
         if (s == null && o != null){
            return getEdges(np, no, null, 1); 
         }
-        Iterable<Entity> it = getEdges(np, ns, no, 0);
+        Iterable<Edge> it = getEdges(np, ns, no, 0);
         if (it == null) {
             return EMPTY;
         }
         return it;
     }
 
-    public Iterable<Entity> getEdges(Node predicate) {
-        Iterable<Entity> it = getEdges(predicate, null, 0);
+    public Iterable<Edge> getEdges(Node predicate) {
+        Iterable<Edge> it = getEdges(predicate, null, 0);
         if (it == null) {
             it = EMPTY;
         }
@@ -2625,7 +2623,7 @@ public class Graph extends GraphObject implements
 
         GTable map = new GTable();
 
-        for (Entity ent : getEdges()) {
+        for (Edge ent : getEdges()) {
             Graph g = map.getGraph(ent.getGraph());
             g.addEdgeWithNode(ent);
         }
@@ -2651,9 +2649,9 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public List<Entity> getEdgeList(Node n) {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-        for (Entity e : getEdges(n, 0)) {
+    public List<Edge> getEdgeList(Node n) {
+        ArrayList<Edge> list = new ArrayList<Edge>();
+        for (Edge e : getEdges(n, 0)) {
             list.add(e);
         }
         return list;
@@ -2663,9 +2661,9 @@ public class Graph extends GraphObject implements
      *
      * Without rule entailment
      */
-    public List<Entity> getEdgeListSimple(Node n) {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-        for (Entity e : getEdges(n, 0)) {
+    public List<Edge> getEdgeListSimple(Node n) {
+        ArrayList<Edge> list = new ArrayList<Edge>();
+        for (Edge e : getEdges(n, 0)) {
             if (!getProxy().isRule(e)) {
                 list.add(e);
             }
@@ -2680,19 +2678,19 @@ public class Graph extends GraphObject implements
      *
      ****************************************************************
      */
-    public Entity insert(Entity ent) {
+    public Edge insert(Edge ent) {
         return addEdge(ent);
     }
 
-    public List<Entity> delete(Entity edge) {
-        List<Entity> res = null;
+    public List<Edge> delete(Edge edge) {
+        List<Edge> res = null;
 
         if (edge.getGraph() == null) {
             res = deleteAll(edge);
         } else {
-            Entity ee = basicDelete(edge);
+            Edge ee = basicDelete(edge);
             if (ee != null) {
-                res = new ArrayList<Entity>();
+                res = new ArrayList<Edge>();
                 res.add(ee);
             }
         }
@@ -2703,18 +2701,18 @@ public class Graph extends GraphObject implements
         return res;
     }
 
-    public List<Entity> delete(Entity edge, List<Constant> from) {
-        List<Entity> res = null;
+    public List<Edge> delete(Edge edge, List<Constant> from) {
+        List<Edge> res = null;
 
         for (Constant str : from) {
             Node node = getGraphNode(str.getLabel());
 
             if (node != null) {
                 fac.setGraph(edge, node);
-                Entity ent = basicDelete(edge);
+                Edge ent = basicDelete(edge);
                 if (ent != null) {
                     if (res == null) {
-                        res = new ArrayList<Entity>();
+                        res = new ArrayList<Edge>();
                     }
                     res.add(ent);
                     //setDelete(true);
@@ -2732,11 +2730,11 @@ public class Graph extends GraphObject implements
     /**
      * Does not delete nodes
      */
-    Entity basicDelete(Entity edge) {
-        Entity res = null;
+    Edge basicDelete(Edge edge) {
+        Edge res = null;
 
         for (Index ie : tables) {
-            Entity ent = ie.delete(edge);
+            Edge ent = ie.delete(edge);
             if (isDebug) {
                 logger.debug("delete: " + ie.getIndex() + " " + edge);
                 logger.debug("delete: " + ie.getIndex() + " " + ent);
@@ -2753,15 +2751,15 @@ public class Graph extends GraphObject implements
     /**
      * delete occurrences of this edge in all graphs
      */
-    List<Entity> deleteAll(Entity edge) {
-        ArrayList<Entity> res = null;
+    List<Edge> deleteAll(Edge edge) {
+        ArrayList<Edge> res = null;
 
         for (Node graph : getGraphNodes()) {
             fac.setGraph(edge, graph);
-            Entity ent = basicDelete(edge);
+            Edge ent = basicDelete(edge);
             if (ent != null) {
                 if (res == null) {
-                    res = new ArrayList<Entity>();
+                    res = new ArrayList<Edge>();
                 }
                 res.add(ent);
                 //setDelete(true);
@@ -2775,10 +2773,8 @@ public class Graph extends GraphObject implements
     /**
      * This edge has been deleted TODO: Delete its nodes from tables if needed
      */
-    void deleted(List<Entity> list) {
-        for (Entity ent : list) {
-            Edge edge = ent.getEdge();
-
+    void deleted(List<Edge> list) {
+        for (Edge edge : list) {
             for (int i = 0; i < edge.nbNode(); i++) {
                 delete(edge.getNode(i));
             }
@@ -2947,14 +2943,14 @@ public class Graph extends GraphObject implements
      * Add a copy of the entity edge Use case: entity comes from another graph,
      * create a local copy of nodes
      */
-    public Edge copy(Entity ent) {
-        Node g = basicAddGraph(ent.getGraph().getLabel());
-        Node p = basicAddProperty(ent.getEdge().getEdgeNode().getLabel());
+    public Edge copy(Edge edge) {
+        Node g = basicAddGraph(edge.getGraph().getLabel());
+        Node p = basicAddProperty(edge.getEdgeNode().getLabel());
 
         ArrayList<Node> list = new ArrayList<Node>();
 
-        for (int i = 0; i < ent.nbNode(); i++) {
-            Node n = addNode((IDatatype) ent.getNode(i).getValue());
+        for (int i = 0; i < edge.nbNode(); i++) {
+            Node n = addNode((IDatatype) edge.getNode(i).getValue());
             list.add(n);
         }
         Edge e = addEdge(g, p, list);
@@ -2964,8 +2960,8 @@ public class Graph extends GraphObject implements
     /**
      * TODO: setUpdate(true)
      */
-    public Entity copy(Node gNode, Node pred, Entity ent) {
-        Entity e = fac.copy(gNode, pred, ent);
+    public Edge copy(Node gNode, Node pred, Edge ent) {
+        Edge e = fac.copy(gNode, pred, ent);
         //fac.setGraph(e, gNode);
 
         if (hasTag() && e.nbNode() == 3) {
@@ -2973,13 +2969,13 @@ public class Graph extends GraphObject implements
             // copy must have a new tag
             tag(e);
         }
-        Entity res = add(e);
+        Edge res = add(e);
         return res;
     }   
 
     public void copy(Graph g) {
         copyNode(g);
-        for (Entity ent : g.getEdges()) {
+        for (Edge ent : g.getEdges()) {
             copy(ent);
         }
     }
@@ -3011,39 +3007,39 @@ public class Graph extends GraphObject implements
         return gu;       
     }
 
-    void copyEdge(Entity ent) {
+    void copyEdge(Edge ent) {
     }
 
     /**
      * Add edge and add it's nodes
      */
-    public Entity add(Node source, Node subject, Node predicate, Node value) {
-        Entity e = fac.create(source, subject, predicate, value);
-        Entity ee = addEdgeWithNode(e);
+    public Edge add(Node source, Node subject, Node predicate, Node value) {
+        Edge e = fac.create(source, subject, predicate, value);
+        Edge ee = addEdgeWithNode(e);
         return ee;
     }
 
     /**
      * Add edge and add it's nodes
      */
-    public Entity add(IDatatype subject, IDatatype predicate, IDatatype value) {
+    public Edge add(IDatatype subject, IDatatype predicate, IDatatype value) {
         Node def = addDefaultGraphNode();
         return add((IDatatype) def.getValue(), subject, predicate, value);
     }
     
-    public Entity add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
-        Entity e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
-        Entity ee = addEdgeWithNode(e);
+    public Edge add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+        Edge e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
+        Edge ee = addEdgeWithNode(e);
         return ee;
     }
     /**
      * Add Edge, not add nodes
      */
     public Edge addEdge(Node source, Node subject, Node predicate, Node value) {
-        Entity e = fac.create(source, subject, predicate, value);
-        Entity ee = addEdge(e);
+        Edge e = fac.create(source, subject, predicate, value);
+        Edge ee = addEdge(e);
         if (ee != null) {
-            return ee.getEdge();
+            return ee;
         }
         return null;
     }
@@ -3055,16 +3051,16 @@ public class Graph extends GraphObject implements
 
     // tuple
     public Edge addEdge(Node source, Node predicate, List<Node> list) {
-        Entity e;
+        Edge e;
         if (list.size() == 2) {
             e = fac.create(source, list.get(0), predicate, list.get(1));
         } else {
             e = fac.create(source, predicate, list);
         }
 
-        Entity ee = addEdge(e);
+        Edge ee = addEdge(e);
         if (ee != null) {
-            return ee.getEdge();
+            return ee;
         }
         return null;
     }
@@ -3210,7 +3206,7 @@ public class Graph extends GraphObject implements
         return tag;
     }
 
-    public void tag(Entity ent) {
+    public void tag(Edge ent) {
         fac.tag(ent);
     }
 
@@ -3226,7 +3222,7 @@ public class Graph extends GraphObject implements
         return hasTag;
     }
 
-    boolean needTag(Entity ent) {
+    boolean needTag(Edge ent) {
         return hasTag()
                 && ent.nbNode() == TAGINDEX
                 && !getProxy().isEntailed(ent.getGraph());
@@ -3242,7 +3238,7 @@ public class Graph extends GraphObject implements
     /**
      * This log would be used to broadcast deletion to peers
      */
-    public void logDelete(Entity ent) {
+    public void logDelete(Edge ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 gl.delete(this, ent);
@@ -3250,7 +3246,7 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public void logInsert(Entity ent) {
+    public void logInsert(Edge ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 gl.insert(this, ent);
@@ -3286,7 +3282,7 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public boolean onInsert(Entity ent) {
+    public boolean onInsert(Edge ent) {
         if (listen != null) {
             for (GraphListener gl : listen) {
                 if (!gl.onInsert(this, ent)) {

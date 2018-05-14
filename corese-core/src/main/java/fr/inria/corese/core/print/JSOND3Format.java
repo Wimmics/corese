@@ -5,13 +5,13 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import java.util.HashMap;
 import java.util.Map;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public class JSOND3Format extends RDFFormat {
 
@@ -171,9 +171,9 @@ public class JSOND3Format extends RDFFormat {
     void d3Edges() {
         sb = new StringBuilder();
 
-        for (Entity e : graph.getEdges()) {
+        for (Edge e : graph.getEdges()) {
 
-            Edge edge = e.getEdge();
+            Edge edge = e;
 
             sdisplay(TAB);
             sdisplay(OOBJ);
@@ -224,7 +224,7 @@ public class JSOND3Format extends RDFFormat {
     void print(Node gNode, Node node) {
         boolean first = true;
 
-        for (Entity ent : getEdges(gNode, node)) {
+        for (Edge ent : getEdges(gNode, node)) {
 
             if (ent != null && accept(ent)) {
 
@@ -249,7 +249,7 @@ public class JSOND3Format extends RDFFormat {
         }
     }
 
-    Iterable<Entity> getEdges(Node gNode, Node node) {
+    Iterable<Edge> getEdges(Node gNode, Node node) {
         if (isGraph) {
             return graph.getNodeEdges(gNode, node);
         } else {
@@ -257,7 +257,7 @@ public class JSOND3Format extends RDFFormat {
         }
     }
 
-    void subject(Entity ent) {
+    void subject(Edge ent) {
         subject(ent.getNode(0));
     }
 
@@ -288,8 +288,8 @@ public class JSOND3Format extends RDFFormat {
         }
     }
 
-    void edge(Entity ent) {
-        Edge edge = ent.getEdge();
+    void edge(Edge ent) {
+        Edge edge = ent;
 
         String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
 

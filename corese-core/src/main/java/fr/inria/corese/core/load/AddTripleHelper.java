@@ -1,12 +1,12 @@
 package fr.inria.corese.core.load;
 
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.semarglproject.vocab.core.RDF;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Helper class to aid the parsers (ex.jsonld, rdfa) for adding triples to
@@ -85,7 +85,7 @@ public class AddTripleHelper implements ILoadSerialization {
                 break;
         }
 
-        Entity e = graph.create(source, s, p, o);
+        Edge e = graph.create(source, s, p, o);
         graph.addEdge(e);
     }
 

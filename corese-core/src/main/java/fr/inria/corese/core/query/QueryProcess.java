@@ -22,13 +22,11 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-//import fr.inria.corese.kgram.filter.Interpreter;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-//import fr.inria.corese.compiler.eval.ProxyImpl;
 import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.api.Log;
@@ -316,22 +314,6 @@ public class QueryProcess extends QuerySolver {
 	eval.setProducer(p);
         return eval;
     }
-    
-//    public static Interpreter createInterpreter(Producer p, Matcher m) {
-//        PluginImpl plugin = PluginImpl.create(m);
-//        ProxyImpl  proxy = new ProxyImpl();
-//        proxy.setPlugin(plugin);
-//        Interpreter eval  = new Interpreter(proxy);
-//	eval.setProducer(p);
-//        return eval;
-//    }    
-    
-    
-//    public static Interpreter createInterpreter(Producer p, Matcher m) {       
-//        Interpreter eval = interpreter(p);        
-//        eval.getProxy().setPlugin(PluginImpl.create(m));
-//        return eval;
-//    }
     
     /**
 	 * *************************************************************

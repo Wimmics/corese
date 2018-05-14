@@ -136,23 +136,6 @@ public class QuerySolver  implements SPARQLEngine {
 		return new QuerySolver();
 	}
 		
-
-//	public static QuerySolver create(Producer prod, Evaluator ev, Matcher match){
-//		QuerySolver exec = new QuerySolver(prod, ev, match);
-//		return exec;
-//	}
-//	
-//	public static QuerySolver create(Producer prod, Matcher match){
-//		Interpreter eval  = interpreter(prod);
-//		QuerySolver exec = new QuerySolver(prod, eval, match);
-//		return exec;
-//	}
-//	
-//	public static Interpreter interpreter(Producer p){
-//		Interpreter eval  = new Interpreter(new ProxyImpl());
-//		eval.setProducer(p);
-//		return eval;
-//	}
         
         public static void setPlanDefault(int n){
             QUERY_PLAN = n;
@@ -228,8 +211,8 @@ public class QuerySolver  implements SPARQLEngine {
 		if (sort != null) {
 			transformer.set(sort);
 		}
-		if (visit!=null){
-			transformer.add(visit);
+		if (getVisitorList()!=null){
+			transformer.add(getVisitorList());
 		}
 		return transformer;
 	}

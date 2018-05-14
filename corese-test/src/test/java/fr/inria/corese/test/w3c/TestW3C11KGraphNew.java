@@ -30,7 +30,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.printer.SPIN;
 import fr.inria.corese.compiler.parser.NodeImpl;
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Provider;
@@ -193,6 +193,7 @@ public class TestW3C11KGraphNew {
         tok = new Testing();
         earl = new Earl(); 
         //QueryProcess.testAlgebra(true);
+        Graph.METADATA_DEFAULT =  true;
     }
 
     public static void main(String[] args) {
@@ -277,7 +278,7 @@ public class TestW3C11KGraphNew {
         test(root + "bindings");
         test(root + "exists");
 
-      //  test(root + "negation");
+       // test(root + "subquery");
 
     }
 
@@ -614,7 +615,7 @@ public class TestW3C11KGraphNew {
 
         // here
 
-        //if (! fquery.contains("expr-5") ) return true;
+        //if (! fquery.contains("sq14") ) return true;
 
         if (trace && fquery != null) {
             System.out.println(pp(fquery));
@@ -1386,7 +1387,7 @@ public class TestW3C11KGraphNew {
          for (Node n : list) {
              IDatatype dd = (IDatatype) n.getValue();
 
-             for (Entity ent : g.getEdges()) {
+             for (Edge ent : g.getEdges()) {
                  IDatatype dt = (IDatatype) ent.getNode(1).getValue();                
 
                 if (dt.getDatatypeURI() != null) {

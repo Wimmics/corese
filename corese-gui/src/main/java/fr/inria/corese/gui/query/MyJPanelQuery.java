@@ -38,7 +38,6 @@ import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.parser.Pragma;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -674,7 +673,7 @@ public final class MyJPanelQuery extends JPanel {
 
         MultiGraph graph = new MultiGraph(g.getName(), false, true);
 
-        for (Entity ent : g.getEdges()) {
+        for (fr.inria.corese.kgram.api.core.Edge ent : g.getEdges()) {
             fr.inria.corese.kgram.api.core.Edge edge = ent.getEdge();
             fr.inria.corese.kgram.api.core.Node n1 = edge.getNode(0);
             fr.inria.corese.kgram.api.core.Node n2 = edge.getNode(1);

@@ -3,13 +3,13 @@ package fr.inria.corese.core.query;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.QueryGraphVisitor;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Translate a Graph into a Query
@@ -97,11 +97,11 @@ public class QueryGraph implements QueryGraphVisitor {
 	Exp getExp(Graph g){
 		Exp exp = Exp.create(Exp.AND);
 		
-		for (Entity ent : g.getEdges()){
-			Entity e = visitor.visit(ent);
+		for (Edge ent : g.getEdges()){
+			Edge e = visitor.visit(ent);
 			if (e != null){
 				init(e);
-				exp.add(fac.queryEdge(e).getEdge());
+				exp.add(fac.queryEdge(e));
 			}
 		}
 		return exp;
@@ -114,10 +114,9 @@ public class QueryGraph implements QueryGraphVisitor {
 	 * Set the index of Node to -1
 	 * Just in case the graph has already been used as a Query
 	 */
-	void init(Entity ent){
-		Edge edge = ent.getEdge();
+	void init(Edge edge){
 		
-		for (int i=0; i<ent.nbNode(); i++){
+		for (int i=0; i<edge.nbNode(); i++){
 			edge.getNode(i).setIndex(-1);
 		}
 		
@@ -153,7 +152,7 @@ public class QueryGraph implements QueryGraphVisitor {
 	}
 	
         @Override
-	public Entity visit(Entity ent) {
+	public Edge visit(Edge ent) {
 		return ent;
 	}
 	

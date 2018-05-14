@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Pretty printing for JSON-LD format
@@ -254,12 +254,12 @@ public class JSONLDFormat {
     private List<JSONLDObject> propertyAndObject(Node gNode, Node node) {
         HashMap<String, List<Object>> map = new HashMap<String, List<Object>>();
 
-        for (Entity ent : graph.getNodeEdges(gNode, node)) {
+        for (Edge ent : graph.getNodeEdges(gNode, node)) {
             if (ent == null) {
                 continue;
             }
 
-            Edge edge = ent.getEdge();
+            Edge edge = ent;
 
             //1. get property
             String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());

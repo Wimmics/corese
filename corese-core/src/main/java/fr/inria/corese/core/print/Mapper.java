@@ -3,9 +3,9 @@ package fr.inria.corese.core.print;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public class Mapper {
 	
@@ -59,7 +59,7 @@ public class Mapper {
 	}
 	
 	Iterable<Node> getNodes(Mapping m, List<Node> list){
-            for (Entity edge : m.getEdges()) {
+            for (Edge edge : m.getEdges()) {
                 Node node = edge.getNode(0);
                 if (!list.contains(node)) {
                     list.add(node);
@@ -69,8 +69,8 @@ public class Mapper {
 	}
 	
 	
-	Iterable<Entity> getMapEdges(Node node){
-		ArrayList<Entity> list = new ArrayList<Entity>();
+	Iterable<Edge> getMapEdges(Node node){
+		ArrayList<Edge> list = new ArrayList<Edge>();
 		//getMapEdges(lMap.get(0), node, list);
 		for (Mapping map : lMap){
 			getMapEdges(map, node, list);
@@ -79,7 +79,7 @@ public class Mapper {
 	}
 	
 	
-	Iterable<Entity> getMapEdges(Mapping map, Node node, ArrayList<Entity> list){
+	Iterable<Edge> getMapEdges(Mapping map, Node node, ArrayList<Edge> list){
 		if (map.getMappings() != null){
 			for (Mapping m : map.getMappings()){
 				getMapEdges(node, m, list);
@@ -91,10 +91,10 @@ public class Mapper {
 		return list;
 	}
 	
-	void getMapEdges(Node node, Mapping map, List<Entity> list){
-		for (Entity edge : map.getEdges()){
-			if (edge instanceof Entity){
-				Entity ent = (Entity) edge;
+	void getMapEdges(Node node, Mapping map, List<Edge> list){
+		for (Edge edge : map.getEdges()){
+			if (edge instanceof Edge){
+				Edge ent = (Edge) edge;
 				if (edge.getNode(0).equals(node) && ! list.contains(ent)){
 					list.add(ent);
 				}

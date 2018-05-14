@@ -6,7 +6,6 @@ package fr.inria.corese.core.util;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
@@ -16,6 +15,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Graph Listener implements callbacks as FunSPARQL functions Manage an Eval
@@ -84,18 +84,18 @@ public class GraphListen implements GraphListener {
     }
 
     @Override
-    public boolean onInsert(Graph g, Entity ent) {
+    public boolean onInsert(Graph g, Edge ent) {
        exec(ONINSERT, param(ent));
         return true;
     }
 
     @Override
-    public void insert(Graph g, Entity ent) {
+    public void insert(Graph g, Edge ent) {
         exec(INSERT, param(ent));
     }
 
     @Override
-    public void delete(Graph g, Entity ent) {
+    public void delete(Graph g, Edge ent) {
         exec(DELETE, param(ent));
     }
 

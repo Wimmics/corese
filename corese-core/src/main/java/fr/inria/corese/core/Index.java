@@ -4,9 +4,9 @@ package fr.inria.corese.core;
 
 import fr.inria.corese.core.index.NodeManager;
 import fr.inria.corese.core.index.PredicateList;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Interface for Index for Graph 
@@ -47,39 +47,39 @@ public interface Index {
 	        
         boolean same(Node n1, Node n2);
 
-	Entity add(Entity edge);
+	Edge add(Edge edge);
 	
-	Entity add(Entity edge, boolean duplicate);
+	Edge add(Edge edge, boolean duplicate);
         
-        void add(Node p, List<Entity> list);
+        void add(Node p, List<Edge> list);
 
-        Entity delete(Entity edge);
+        Edge delete(Edge edge);
         
-        Entity delete(Node pred, Entity edge);
+        Edge delete(Node pred, Edge edge);
 
 	void delete(Node pred);
 
-	boolean exist(Entity edge);
+	boolean exist(Edge edge);
         
         boolean exist(Node p, Node n1, Node n2);
 
-	void declare(Entity edge);
+	void declare(Edge edge);
         
-         void declare(Entity edge, boolean duplicate);        
+         void declare(Edge edge, boolean duplicate);        
 	
 	int size(Node pred);
         
-        Iterable<Entity> getSortedEdges(Node node);
+        Iterable<Edge> getSortedEdges(Node node);
 
-	Iterable<Entity> getEdges();
+	Iterable<Edge> getEdges();
         
-        Iterable<Entity> get(Node pred);
+        Iterable<Edge> get(Node pred);
 
-	Iterable<Entity> getEdges(Node pred, Node node);
+	Iterable<Edge> getEdges(Node pred, Node node);
         
-        Iterable<Entity> getEdges(Node pred, Node node, int position);
+        Iterable<Edge> getEdges(Node pred, Node node, int position);
 
-	Iterable<Entity> getEdges(Node pred, Node node, Node node2);
+	Iterable<Edge> getEdges(Node pred, Node node, Node node2);
         
         NodeManager getNodeManager();
 	

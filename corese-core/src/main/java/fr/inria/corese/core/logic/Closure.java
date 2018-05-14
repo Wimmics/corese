@@ -1,12 +1,12 @@
 package fr.inria.corese.core.logic;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.rule.Rule;
 import java.util.ArrayList;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Transitive Closure of one property, e.g. rdfs:subClassOf
@@ -57,7 +57,7 @@ static int count = 0;
             int i = graph.getNodeIndex();            
             try {
                 connect = new boolean[i][];
-                for (Entity ent : graph.getEdges(pred1)) {
+                for (Edge ent : graph.getEdges(pred1)) {
                     connect(ent.getNode(0), ent.getNode(1));
                 }
             } catch (OutOfMemoryError E) {
@@ -129,14 +129,14 @@ static int count = 0;
         boolean go = true, isFirst = loop == 0;
         int n = 0;
 
-        ArrayList<Entity> lnew = new ArrayList<Entity>(),
-                ltmp = new ArrayList<Entity>();
+        ArrayList<Edge> lnew = new ArrayList<Edge>(),
+                ltmp = new ArrayList<Edge>();
         if (isTrace){
             System.out.println("Cl: 0 "  + graph.size(pred1));
         }
         while (go) {
 
-            Iterable<Entity> it1 = lnew;
+            Iterable<Edge> it1 = lnew;
             if (n == 0) {
                 it1 = graph.getEdges(pred1);
             }
@@ -145,7 +145,7 @@ static int count = 0;
             }
             n++;
 
-            for (Entity e1 : it1) {
+            for (Edge e1 : it1) {
                 // after step 0, consider only edges created at previous step
                 Node node = e1.getNode(1);
                 Node n1   = e1.getNode(0);
@@ -153,17 +153,17 @@ static int count = 0;
                 if (same && n1 == node) {
                     continue;
                 }
-                boolean ok1 = isFirst || e1.getEdge().getIndex() >= prevIndex;
+                boolean ok1 = isFirst || e1.getIndex() >= prevIndex;
 
-               Iterable<Entity> it2 = graph.getEdges(pred2, node, 0);
+               Iterable<Edge> it2 = graph.getEdges(pred2, node, 0);
 
                 if (it2 != null) {
 
-                    for (Entity e2 : it2) {
+                    for (Edge e2 : it2) {
                         // join e2 on edge e1
                         if (e2 != null) {
 
-                            boolean ok2 = ok1 || e2.getEdge().getIndex() >= prevIndex;
+                            boolean ok2 = ok1 || e2.getIndex() >= prevIndex;
                             if (!ok2) {
                                 // need at least one new edge
                                 continue;
@@ -175,8 +175,8 @@ static int count = 0;
                             }
 
                             if (!isConnected(pred1, n1, n2) && isDistinct(n1, n2)) {
-                                Entity ent = create(pred1, n1, n2);
-                                ent.getEdge().setIndex(loopIndex);
+                                Edge ent = create(pred1, n1, n2);
+                                ent.setIndex(loopIndex);
                                 ltmp.add(ent);
                                 connect(n1, n2);
                             }
@@ -193,7 +193,7 @@ static int count = 0;
             }
            graph.addOpt(p, ltmp);
            lnew = ltmp;
-           ltmp = new ArrayList<Entity>();
+           ltmp = new ArrayList<Edge>();
            go = ! lnew.isEmpty();
         }
     }
@@ -205,8 +205,8 @@ static int count = 0;
         return true;
     }
 
-    Entity create(Node p, Node n1, Node n2) {
-        Entity ent = graph.create(src, n1, p, n2);
+    Edge create(Node p, Node n1, Node n2) {
+        Edge ent = graph.create(src, n1, p, n2);
         ent.setProvenance(query.getProvenance());
         return ent;
     }

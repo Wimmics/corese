@@ -8,12 +8,12 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 
 /**
@@ -86,7 +86,7 @@ public class GraphListenerImpl implements GraphListener {
 		}
 	}
 	
-	public void insert(Graph g, Entity ent) {
+	public void insert(Graph g, Edge ent) {
 		if (isInsert){
 			System.out.println("Insert: " + ent);
 		}
@@ -99,9 +99,9 @@ public class GraphListenerImpl implements GraphListener {
 	/**
 	 * Test if edge matches a triple pattern 
 	 */
-	private void linsert(Graph g, Entity ent) {
+	private void linsert(Graph g, Edge ent) {
 		for (Triple t : linsert){
-			if (match(t, ent.getEdge())){
+			if (match(t, ent)){
 				System.out.println("insert: " + ent);
 			}
 		}
@@ -136,7 +136,7 @@ public class GraphListenerImpl implements GraphListener {
 		}
 	}
 
-	public void delete(Graph g, Entity ent) {
+	public void delete(Graph g, Edge ent) {
 		if (isDelete){
 			
 		}
@@ -145,7 +145,7 @@ public class GraphListenerImpl implements GraphListener {
 	public void addSource(Graph g) {
 	}
 
-	public boolean onInsert(Graph g, Entity ent) {
+	public boolean onInsert(Graph g, Edge ent) {
 		return g.size() < max;
 	}
 

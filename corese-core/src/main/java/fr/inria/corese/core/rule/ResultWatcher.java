@@ -4,8 +4,6 @@
  */
 package fr.inria.corese.core.rule;
 
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
@@ -23,6 +21,7 @@ import fr.inria.corese.core.logic.RDFS;
 import fr.inria.corese.core.query.Construct;
 import java.util.ArrayList;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Watch kgram query solutions of rules for RuleEngine 1 Check that a solution
@@ -56,13 +55,13 @@ public class ResultWatcher implements ResultListener, GraphListener {
     Rule rule;
     Graph graph;
     Distinct dist;
-    ArrayList<Entity> list;
+    ArrayList<Edge> list;
     private boolean trace;
     private boolean isTestable;
 
     ResultWatcher(Graph g) {
         graph = g;
-        list = new ArrayList<Entity>();
+        list = new ArrayList<Edge>();
     }
 
     public Distinct getDistinct() {
@@ -177,9 +176,9 @@ public class ResultWatcher implements ResultListener, GraphListener {
             return store(env);
         }
 
-        for (Entity ent : env.getEdges()) {
+        for (Edge ent : env.getEdges()) {
 
-            if (ent != null && ent.getEdge().getIndex() >= ruleLoop) {
+            if (ent != null && ent.getIndex() >= ruleLoop) {
                 return store(env);
             }
         }
@@ -219,12 +218,12 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
 
     @Override
-    public boolean enter(Entity ent, Regex exp, int size) {
+    public boolean enter(Edge ent, Regex exp, int size) {
         return true;
     }
 
     @Override
-    public boolean leave(Entity ent, Regex exp, int size) {
+    public boolean leave(Edge ent, Regex exp, int size) {
         return true;
     }
 
@@ -274,10 +273,10 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
   
     @Override
-    public boolean listen(Edge edge, Entity ent) {
+    public boolean listen(Edge edge, Edge ent) {
         if (selectNewEdge
                 && edge.getIndex() == index
-                && ent.getEdge().getIndex() < ruleLoop) {
+                && ent.getIndex() < ruleLoop) {
             return false;
         }
         return true;
@@ -361,7 +360,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
         list.clear();
     }
 
-    public List<Entity> getList() {
+    public List<Edge> getList() {
         return list;
     }
 
@@ -370,20 +369,20 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
 
     @Override
-    public boolean onInsert(Graph g, Entity ent) {
+    public boolean onInsert(Graph g, Edge ent) {
         return true;
     }
 
     @Override
-    public void insert(Graph g, Entity ent) {
+    public void insert(Graph g, Edge ent) {
         // TODO
-        if (ent.getEdge().getLabel().equals(RDFS.SUBCLASSOF)) {
+        if (ent.getLabel().equals(RDFS.SUBCLASSOF)) {
             list.add(ent);
         }
     }
 
     @Override
-    public void delete(Graph g, Entity ent) {
+    public void delete(Graph g, Edge ent) {
     }
 
     @Override

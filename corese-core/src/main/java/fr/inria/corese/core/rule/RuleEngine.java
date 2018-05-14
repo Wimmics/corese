@@ -16,7 +16,6 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.printer.SPIN;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.core.Mappings;
@@ -41,6 +40,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Forward Rule Engine 
@@ -724,7 +724,7 @@ public class RuleEngine implements Engine, Graphable {
             // after query completes, edges are inserted in graph
             // no Mappings are created by kgram
             cons.setBuffer(true);
-            cons.setInsertList(new ArrayList<Entity>());
+            cons.setInsertList(new ArrayList<Edge>());
             //cons.setDefaultGraph(graph.addRuleGraphNode());
             Mappings map = Mappings.create(qq);
             // ResultWatcher call cons to create edges when a solution occur
@@ -784,7 +784,7 @@ public class RuleEngine implements Engine, Graphable {
             // Producer will take this edge list into account
             qq.setEdgeList(cons.getInsertList());
             qq.setEdgeIndex(rule.getEdgeIndex());
-            cons.setInsertList(new ArrayList<Entity>());
+            cons.setInsertList(new ArrayList<Edge>());
             int size = graph.size();
 
             process(rule, cons);

@@ -12,11 +12,11 @@ import org.apache.commons.lang.StringEscapeUtils;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * SPARQL XML Result Format for KGRAM Mappings
@@ -218,7 +218,7 @@ public class XMLFormat  {
 		if (lMap.getInsert() != null){
 			println(OCOM);
 			println("Insert:");
-			for (Entity ent : lMap.getInsert()){
+			for (Edge ent : lMap.getInsert()){
 				println(ent);
 			}
 			println(CCOM);
@@ -227,7 +227,7 @@ public class XMLFormat  {
 		if (lMap.getDelete() != null){
 			println(OCOM);
 			println("Delete:");
-			for (Entity ent : lMap.getDelete()){
+			for (Edge ent : lMap.getDelete()){
 				println(ent);
 			}
 			println(CCOM);

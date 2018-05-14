@@ -1,7 +1,6 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.event.EvalListener;
@@ -10,6 +9,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.logic.RDFS;
+import fr.inria.corese.kgram.api.core.Edge;
 
 
 /**
@@ -111,7 +111,7 @@ public class ValidateListener extends EvalListener {
 	void check(Node type){
 		Node rdfsClass = graph.getNode(RDFS.CLASS);
 		Node rdftype   = graph.getPropertyNode(RDF.TYPE);
-		Iterable<Entity> it = graph.getEdges(rdftype, type, rdfsClass, 0);
+		Iterable<Edge> it = graph.getEdges(rdftype, type, rdfsClass, 0);
 		if (it == null){
 			// undefined class
 			System.out.println("** Validate: undefined class: " + type);

@@ -256,11 +256,11 @@ public class PluginTransform implements ComputerProxy, ExprType {
     
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
-        switch (exp.oper()){
-            
-           case STL_PROCESS:
-                return processDef(exp, env, p, param);     
-        }
+//        switch (exp.oper()){
+//            
+//           case STL_PROCESS:
+//                return processDef(exp, env, p, param);     
+//        }
 
         IDatatype dt1 =  param[0];
         IDatatype dt2 =  param[1];
@@ -624,22 +624,22 @@ public class PluginTransform implements ComputerProxy, ExprType {
      * behavior the default behavior is st:turtle
      */
     @Deprecated
-    public IDatatype processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
-        Extension ext = env.getQuery().getExtension();
-        if (ext != null && ext.isDefined(exp)) {
-            return (IDatatype) plugin.getEvaluator().eval(exp, env, p, args, ext);
-        }
-
-        Transformer pp = getTransformer(env, p);
-        int oper = pp.getProcess();
-
-        // overload current st:process() oper code to default behaviour oper code
-        // future executions of this st:process() will directly execute target default behavior
-        exp.setOper(oper);
-        IDatatype res = plugin.function(exp, env, p,  args[0]);
-        return  res;
-
-    }
+//    public IDatatype processDef(Expr exp, Environment env, Producer p, IDatatype[] args) {
+//        Extension ext = env.getQuery().getExtension();
+//        if (ext != null && ext.isDefined(exp)) {
+//            return (IDatatype) plugin.getEvaluator().eval(exp, env, p, args, ext);
+//        }
+//
+//        Transformer pp = getTransformer(env, p);
+//        int oper = pp.getProcess();
+//
+//        // overload current st:process() oper code to default behaviour oper code
+//        // future executions of this st:process() will directly execute target default behavior
+//        exp.setOper(oper);
+//        IDatatype res = plugin.function(exp, env, p,  args[0]);
+//        return  res;
+//
+//    }
   
  
     /**

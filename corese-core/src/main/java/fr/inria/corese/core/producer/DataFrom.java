@@ -1,10 +1,10 @@
 package fr.inria.corese.core.producer;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * from, from named dataset for edge iteration
@@ -75,12 +75,12 @@ public class DataFrom extends DataFilter {
     }
     
     @Override
-    boolean eval(Entity ent){
+    boolean eval(Edge ent){
         boolean b = result(isFrom(ent));
         return b;
     }
     
-    boolean isFrom(Entity ent) {
+    boolean isFrom(Edge ent) {
         if (isOneFrom()) {
             return same(fromNode, ent.getGraph());
         } else {

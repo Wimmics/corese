@@ -5,7 +5,7 @@
 
 package fr.inria.corese.core.producer;
 
-import fr.inria.corese.kgram.api.core.Entity;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -22,7 +22,7 @@ public class DataFilterNot extends DataFilterBoolean {
     }
        
     @Override
-    boolean eval(Entity ent){
+    boolean eval(Edge ent){
         for (DataFilter f : list){
            if (f.eval(ent)){
                return false;

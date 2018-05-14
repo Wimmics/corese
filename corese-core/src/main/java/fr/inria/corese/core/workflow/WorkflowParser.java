@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Parse a graph that describes a Workflow 
@@ -307,7 +307,7 @@ public class WorkflowParser {
     
     Node getTopLevel(List<String> list) {
         for (String name : list) {
-            for (Entity ent : getGraph().getEdges(name)) {
+            for (Edge ent : getGraph().getEdges(name)) {
                 if (!getGraph().hasEdge(ent.getNode(0), 1)) {
                     return ent.getNode(0);
                 }
@@ -584,11 +584,11 @@ public class WorkflowParser {
         boolean named = (dnamed == null) ? false : dnamed.booleanValue();
         SemanticWorkflow w = new SemanticWorkflow();
         
-        for (Entity ent : getGraph().getEdges(PATH, subject, 0)){
+        for (Edge ent : getGraph().getEdges(PATH, subject, 0)){
             String pp = ent.getNode(1).getLabel();
             w.add(new LoadProcess(pp, getName(pp, name, named), rec));
         }
-        for (Entity ent : getGraph().getEdges(URI, subject, 0)){
+        for (Edge ent : getGraph().getEdges(URI, subject, 0)){
             String pp = ent.getNode(1).getLabel();
             w.add(new LoadProcess(pp, getName(pp, name, named), rec));
         }

@@ -2,12 +2,12 @@ package fr.inria.corese.core.util;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Listener for the named graph kg:system
@@ -40,12 +40,12 @@ class SystemGraphListener implements GraphListener {
         }
 
         @Override
-        public boolean onInsert(Graph g, Entity ent) {
+        public boolean onInsert(Graph g, Edge ent) {
             return true;
         }
 
         @Override
-        public void insert(Graph g, Entity ent) {
+        public void insert(Graph g, Edge ent) {
             System.out.println("** Listen: " + ent);
             process(ent);
         }
@@ -54,7 +54,7 @@ class SystemGraphListener implements GraphListener {
     
 
         @Override
-        public void delete(Graph g, Entity ent) {
+        public void delete(Graph g, Edge ent) {
         }
 
         @Override
@@ -76,9 +76,8 @@ class SystemGraphListener implements GraphListener {
          * Some edges may tune kgram:
          * kg:kgram kg:skolem true
          */
-        void process(Entity ent){
-            Edge edge = ent.getEdge();
-            String subject = ent.getNode(0).getLabel();
+        void process(Edge edge){
+            String subject = edge.getNode(0).getLabel();
             String predicate = edge.getLabel();
             IDatatype dt = (IDatatype) edge.getNode(1).getValue();
 

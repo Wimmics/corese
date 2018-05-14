@@ -11,12 +11,12 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.RDFList;
 import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * 
@@ -128,7 +128,7 @@ public class CreateImpl implements Creator {
 			o = getNode(object);
 		}
 		
-		Entity e = graph.create(source, s, p, o);
+		Edge e = graph.create(source, s, p, o);
 		graph.addEdge(e);
                 parseImport(property, object);              
 	}
@@ -157,7 +157,7 @@ public class CreateImpl implements Creator {
 			list.add(n);
 		}
 		
-		Entity e = graph.create(source, p, list);
+		Edge e = graph.create(source, p, list);
 		graph.addEdge(e);
 	}
 	

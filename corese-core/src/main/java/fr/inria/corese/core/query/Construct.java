@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Exp;
@@ -21,6 +20,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.util.Duplicate;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * construct where describe where delete where
@@ -40,7 +40,7 @@ public class Construct
     GraphManager graph;
     Node defaultGraph;
     //IDatatype dtDefaultGraph;
-    List<Entity> lInsert, lDelete;
+    List<Edge> lInsert, lDelete;
     Dataset ds;
     boolean isDebug = false,
             isDelete = false,
@@ -72,9 +72,9 @@ public class Construct
         Construct cons = new Construct(q);
         if (q.isDetail()) {
             if (q.isConstruct()) {
-                cons.setInsertList(new ArrayList<Entity>());
+                cons.setInsertList(new ArrayList<Edge>());
             } else {
-                cons.setDeleteList(new ArrayList<Entity>());
+                cons.setDeleteList(new ArrayList<Edge>());
             }
         }
         return cons;
@@ -126,19 +126,19 @@ public class Construct
         isDebug = b;
     }
 
-    public void setInsertList(List<Entity> l) {
+    public void setInsertList(List<Edge> l) {
         lInsert = l;
     }
 
-    public List<Entity> getInsertList() {
+    public List<Edge> getInsertList() {
         return lInsert;
     }
 
-    public void setDeleteList(List<Entity> l) {
+    public void setDeleteList(List<Edge> l) {
         lDelete = l;
     }
 
-    public List<Entity> getDeleteList() {
+    public List<Edge> getDeleteList() {
         return lDelete;
     }
 
@@ -233,15 +233,15 @@ public class Construct
 
         for (Exp ee : exp.getExpList()) {
             if (ee.isEdge()) {
-                Entity ent = construct(gNode, ee.getEdge(), env);
+                Edge ent = construct(gNode, ee.getEdge(), env);
                 if (ent != null) {
                     // RuleEngine loop index
-                    ent.getEdge().setIndex(loopIndex);
+                    ent.setIndex(loopIndex);
                     if (isDelete) {
                         if (isDebug) {
                             logger.debug("** Delete: " + ent);
                         }
-                        List<Entity> list = null;
+                        List<Edge> list = null;
                         if (gNode == null && ds != null && ds.hasFrom()) {
                             // delete in default graph
                             list = graph.delete(ent, ds.getFrom());
@@ -307,7 +307,7 @@ public class Construct
     /**
      * Construct target edge from query edge and map
      */
-    Entity construct(Node gNode, Edge edge, Environment env) {
+    Edge construct(Node gNode, Edge edge, Environment env) {
 
         Node pred = edge.getEdgeVariable();
         if (pred == null) {
@@ -351,7 +351,7 @@ public class Construct
             
         }
 
-        Entity ee;
+        Edge ee;
         if (edge.nbNode() > 2) {
             // tuple()
             ArrayList<Node> list = new ArrayList<Node>();
@@ -376,7 +376,7 @@ public class Construct
         return ee;
     }
 
-    Entity create(Node source, Node property, List<Node> list) {
+    Edge create(Node source, Node property, List<Node> list) {
         if (isDelete) {
             return graph.createDelete(source, property, list);
         } else {
@@ -384,7 +384,7 @@ public class Construct
         }
     }
 
-    Entity create(Node source, Node subject, Node property, Node object) {
+    Edge create(Node source, Node subject, Node property, Node object) {
         if (isDelete) {
             return graph.createDelete(source, subject, property, object);
         } else {

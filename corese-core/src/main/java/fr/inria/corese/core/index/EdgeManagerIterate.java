@@ -1,9 +1,9 @@
 package fr.inria.corese.core.index;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.core.edge.EdgeGeneric;
 import fr.inria.corese.core.edge.EdgeTop;
 import java.util.Iterator;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Iterate internal Edge Index 
@@ -15,7 +15,7 @@ import java.util.Iterator;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
+class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
 
     EdgeManager list;
     int focusNodeIndex;
@@ -36,7 +36,7 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     }
 
     @Override
-    public Iterator<Entity> iterator() {
+    public Iterator<Edge> iterator() {
         ind = start;
         return this;
     }
@@ -53,8 +53,8 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     }
 
     @Override
-    public Entity next() {
-        Entity ent = list.get(ind++);
+    public Edge next() {
+        Edge ent = list.get(ind++);
         if (ent.nbNode() == 2) {
             fill(buffer, ent);
             return buffer;
@@ -65,7 +65,7 @@ class EdgeManagerIterate implements Iterable<Entity>, Iterator<Entity> {
     /**
      * Fill buffer Edge from internal ent
      */
-    void fill(EdgeTop buf, Entity ent) {
+    void fill(EdgeTop buf, Edge ent) {
         buf.setGraph(ent.getGraph());
         buf.replicate(ent);
     }

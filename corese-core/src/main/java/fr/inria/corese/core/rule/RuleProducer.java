@@ -3,7 +3,6 @@ package fr.inria.corese.core.rule;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Memory;
@@ -11,6 +10,7 @@ import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.ProducerImpl;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Draft Producer for RuleEngine
@@ -26,7 +26,7 @@ public class RuleProducer extends MetaProducer {
 	
 	ProducerImpl p1, p2;
 	int loop = 0;
-	List<Entity> list;
+	List<Edge> list;
 
 	RuleProducer() {
 	}
@@ -49,7 +49,7 @@ public class RuleProducer extends MetaProducer {
 	/**
 	 * ** Rules: 24105 24105 2.614s  vs  1.805s
 	 */
-	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env){
+	public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env){
 		Memory memory = (Memory) env;
 		int n = env.getQuery().nbEdges();
 		

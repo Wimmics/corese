@@ -2,9 +2,9 @@ package fr.inria.corese.core.api;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Index;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public interface IGraph {
 
@@ -14,9 +14,9 @@ public interface IGraph {
 
 	boolean isType(Edge edge);
 
-	Iterable<Entity> getEdges(Node predicate, Node node, Node node2, int n);
+	Iterable<Edge> getEdges(Node predicate, Node node, Node node2, int n);
 
-	Iterable<Entity> getEdges(Node predicate, Node node, int n);
+	Iterable<Edge> getEdges(Node predicate, Node node, int n);
 
 	boolean isGraphNode(Node src);
 
@@ -28,9 +28,9 @@ public interface IGraph {
 
 	Node copy(Node node);
 
-	Iterable<Entity> getNodes(Node gNode);
+	Iterable<Edge> getNodes(Node gNode);
 
-	Iterable<Entity> getAllNodes();
+	Iterable<Edge> getAllNodes();
 
 	Iterable<Node> getGraphNodes();
 

@@ -12,7 +12,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -24,6 +23,7 @@ import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.logic.RDFS;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -163,7 +163,7 @@ public class RDFFormat {
         return graph.getRBNodes();
     }
 
-    Iterable<Entity> getEdges(Node node) {
+    Iterable<Edge> getEdges(Node node) {
         if (map != null) {
             return map.getMapEdges(node);
         }
@@ -252,7 +252,7 @@ public class RDFFormat {
 
     void print(Node node) {
 
-        Iterator<Entity> it = getEdges(node).iterator();
+        Iterator<Edge> it = getEdges(node).iterator();
 
         if (it.hasNext()) {
 
@@ -275,7 +275,7 @@ public class RDFFormat {
             }
 
             for (; it.hasNext();) {
-                Entity ent = it.next();
+                Edge ent = it.next();
                 if (ent != null) {
                     wprint(ent);
                 }
@@ -302,13 +302,13 @@ public class RDFFormat {
         return open;
     }
 
-    void wprint(Entity ent) {
+    void wprint(Edge ent) {
         if (accept(ent)) {
             edge(ent);
         }
     }
 
-    boolean accept(Entity ent) {
+    boolean accept(Edge ent) {
         return accept(ent.getGraph());
     }
 
@@ -326,8 +326,8 @@ public class RDFFormat {
         return true;
     }
 
-    void edge(Entity ent) {
-        Edge edge = ent.getEdge();
+    void edge(Edge ent) {
+        Edge edge = ent;
         String pred = nsm.toPrefixXML(edge.getEdgeNode().getLabel());
         IDatatype dt = getValue(edge.getNode(1));
         String open = "<" + pred;

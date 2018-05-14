@@ -6,7 +6,6 @@ package fr.inria.corese.core.query;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.core.Graph;
@@ -14,6 +13,7 @@ import fr.inria.corese.core.transform.Transformer;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Given two bnodes representing OWL expressions
@@ -141,8 +141,8 @@ public class MatchBNode {
         List<Node> ln1 = graph.getList(n1);
         
         if (ln1.isEmpty()) {
-            List<Entity> l1 = graph.getEdgeListSimple(n1);
-            List<Entity> l2 = graph.getEdgeListSimple(n2);
+            List<Edge> l1 = graph.getEdgeListSimple(n1);
+            List<Edge> l2 = graph.getEdgeListSimple(n2);
 
             if (size(l1, l2, n)
                     && match(l1, l2)
@@ -162,11 +162,11 @@ public class MatchBNode {
         return suc;
   }
             
-   boolean match(List<Entity> l1, List<Entity> l2, TreeNode tree, int n) {
+   boolean match(List<Edge> l1, List<Edge> l2, TreeNode tree, int n) {
         for (int i = 0; i < l1.size(); i++) {
 
-            Edge e1 = l1.get(i).getEdge();
-            Edge e2 = l2.get(i).getEdge();
+            Edge e1 = l1.get(i);
+            Edge e2 = l2.get(i);
             boolean b = match(e1, e2, tree, n);
             if (!b) {
                 return false;
@@ -208,11 +208,11 @@ public class MatchBNode {
     
     
     
-    boolean size(List<Entity> l1, List<Entity> l2, int n) {
+    boolean size(List<Edge> l1, List<Edge> l2, int n) {
         return l1.size() == l2.size();
     }
 
-    boolean clean2(List<Entity> l1, List<Entity> l2, int n){
+    boolean clean2(List<Edge> l1, List<Edge> l2, int n){
         if (l1.size() == l2.size()) {
             return true;
         }      
@@ -228,11 +228,11 @@ public class MatchBNode {
         return false;
     }
     
-    boolean match(List<Entity> l1, List<Entity> l2) {
+    boolean match(List<Edge> l1, List<Edge> l2) {
         
         for (int i = 0; i < l1.size(); i++) {
-            Edge e1 = l1.get(i).getEdge();
-            Edge e2 = l2.get(i).getEdge();
+            Edge e1 = l1.get(i);
+            Edge e2 = l2.get(i);
             if (!e1.getEdgeNode().equals(e2.getEdgeNode())) {
                 return false;
             }
@@ -268,10 +268,10 @@ public class MatchBNode {
      * compare PAT and PAT subClassOf EXP
      * The second occurrence of PAT has subClassOf edge
      */
-    boolean clean(List<Entity> l1, List<Entity> l2) {
+    boolean clean(List<Edge> l1, List<Edge> l2) {
 
         if (l1.size() < l2.size()) {
-            List<Entity> tmp = l1;
+            List<Edge> tmp = l1;
             l1 = l2;
             l2 = tmp;
         }
@@ -281,11 +281,11 @@ public class MatchBNode {
         }
 
         boolean found = false;
-        Entity rem = null;
+        Edge rem = null;
         for (int i = 0; i < l2.size(); i++) {
 
-            Edge e1 = l1.get(i).getEdge();
-            Edge e2 = l2.get(i).getEdge();
+            Edge e1 = l1.get(i);
+            Edge e2 = l2.get(i);
 
             if (!e1.getEdgeNode().equals(e2.getEdgeNode())) {
                 rem = l1.get(i);

@@ -2,11 +2,11 @@ package fr.inria.corese.core.producer;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Simple filter applied to object or subject of current edge
@@ -94,23 +94,23 @@ public class DataFilter implements ExprType {
         }
     }
     
-    Node getNode(Entity ent, int n){
+    Node getNode(Edge ent, int n){
         switch (n){
-            case PROPERTY: return ent.getEdge().getEdgeNode();
+            case PROPERTY: return ent.getEdgeNode();
             default: return ent.getNode(n);
         }
     }
     
-    IDatatype getValue(Entity ent, int n){
+    IDatatype getValue(Edge ent, int n){
         return (IDatatype) getNode(ent, n).getValue();
     }
     
-    boolean eval(Entity ent) {
+    boolean eval(Edge ent) {
         switch (getOper()) {
 
             // Rule Engine optimization require edge with index >= index
             case EDGE_LEVEL:
-                return result(ent.getEdge().getIndex() >= index);
+                return result(ent.getIndex() >= index);
                 
             default:
                 IDatatype dt =  getValue(ent, index);

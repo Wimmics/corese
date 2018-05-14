@@ -8,7 +8,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
@@ -54,7 +53,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	static final int IGRAPH = Graph.IGRAPH;
 	static final int ILIST = Graph.ILIST;
 	public static final String TOPREL = Graph.TOPREL;
-	List<Entity> empty = new ArrayList<Entity>(0);
+	List<Edge> empty = new ArrayList<Edge>(0);
 	List<Node> emptyFrom = new ArrayList<Node>(0);
 	DataProducer ei;
 	Graph graph,
@@ -209,7 +208,7 @@ public class ProducerImpl implements Producer, IProducerQP {
      * if edge has a bound query node, use its value to focus candidate edges in the Edge Index
 	 */
 	@Override
-	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge,
+	public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge,
 		Environment env) {
 
 		Node predicate = getPredicate(edge, env);
@@ -236,7 +235,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 					n = ILIST;
 					// rule engine requires new edges with level >= exp.getLevel()
 					// ILIST is index of specific Edge Index sorted by reverse level
-					Iterable<Entity> it = graph.getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
+					Iterable<Edge> it = graph.getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
 					return localMatch(it, gNode, edge, env);
 				}
 			}
@@ -285,7 +284,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 			}
 		}
 
-		Iterable<Entity> it;
+		Iterable<Edge> it;
 
 		if (mode == EXTENSION && getQuery() == q) {
 			// Producer for an external graph ?g :
@@ -304,7 +303,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 * Enumerate candidate edges either from default graph or from named
 	 * graphs
 	 */
-	public Iterable<Entity> getEdges(Node gNode, Node sNode, List<Node> from,
+	public Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
 		Node predicate, Node focusNode, Node objectNode, int n) {
 		return dataProducer(gNode, from, sNode).iterate(predicate, focusNode, n);
 	}
@@ -318,7 +317,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	}
 
 	// draft test: manage DataStore in a cache
-	Iterable<Entity> getEdges(Edge edge, Node gNode, Node sNode, List<Node> from,
+	Iterable<Edge> getEdges(Edge edge, Node gNode, Node sNode, List<Node> from,
 		Node predicate, Node focusNode, Node objectNode, int n) {
 		DataProducer ds;
 		if (sNode != null) {
@@ -369,7 +368,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 * ontologies In addition, with rdfs entailment, ?x a us:Person return
 	 * one occurrence of each value of ?x
 	 */
-	Iterable<Entity> localMatch(Iterable<Entity> it, Node gNode, Edge edge, Environment env) {
+	Iterable<Edge> localMatch(Iterable<Edge> it, Node gNode, Edge edge, Environment env) {
 		if (isMatch && !env.getQuery().isRelax()) {
 			MatchIterator mit = new MatchIterator(it, gNode, edge, graph, env, match);
 			return mit;
@@ -438,7 +437,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 *
 	 */
 	@Override
-	public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
+	public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge, Environment env,
 		Regex exp, Node src, Node start, int index) {
 
 		boolean isdb = isDB();
@@ -482,7 +481,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 			}
 		}
 
-		Iterable<Entity> it = getEdges(gNode, src, from, predicate, start, null, index);
+		Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index);
 
 		return it;
 	}
@@ -495,16 +494,16 @@ public class ProducerImpl implements Producer, IProducerQP {
 	 * regex is a negation ?x ! rdf:type ?y ?x !(rdf:type|rdfs:subClassOf)
 	 * ?y enumerate properties but those in the negation
 	 */
-	public Iterable<Entity> getNegEdges(Node gNode, List<Node> from, Edge edge, Environment env,
+	public Iterable<Edge> getNegEdges(Node gNode, List<Node> from, Edge edge, Environment env,
 		Regex exp, Node src, Node start, int index) {
 
 		exp = exp.getArg(0);
-		MetaIterator<Entity> meta = new MetaIterator<Entity>();
+		MetaIterator<Edge> meta = new MetaIterator<Edge>();
 		for (Node predicate : graph.getSortedProperties()) {
 			if (match(exp, predicate)) {
 				// exclude
 			} else {
-				Iterable<Entity> it = getEdges(gNode, src, from, predicate, start, null, index);
+				Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index);
 
 				if (it != null) {
 					meta.next(it);
@@ -529,122 +528,11 @@ public class ProducerImpl implements Producer, IProducerQP {
 		return false;
 	}
         
-        public Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge,
+        public Iterable<Node> getNodes(Node gNode, List<Node> from, Edge edge,
 		Environment env, List<Regex> exp, int index) {
             return pn.getNodeIterator(gNode, from, edge, env, exp, index);
         }
-               
-
-	/**
-	 * SPARQL requires *all* graph nodes for zero length path that is all
-	 * subject and object nodes
-	 *
-	 * TODO: env.isBound(gNode) is not thread safe
-	 */
-	@Override
-        @Deprecated
-	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge edge,
-		Environment env, List<Regex> exp, int index) {
-//
-//		Node node = edge.getNode(index);
-//
-//		if (node.isConstant()) {
-//			// return constant
-//			Node nn = graph.copy(node);
-//			ArrayList<Entity> list = new ArrayList<Entity>(1);
-//			list.add(EntityImpl.create(null, nn));
-//			return list;
-//		} else if (gNode == null) {
-//			// default graph nodes
-//			if (from.size() > 0) {
-//				return getNodes(gNode, from, env);
-//			} else {
-//				return graph.getAllNodes();
-//			}
-//		} // named graph nodes
-//		else if (env.isBound(gNode)) {
-//			// return nodes of this named graph
-//			node = env.getNode(gNode);
-//			return graph.getNodes(node);
-//		} else if (gNode.isConstant()) {
-//			// return nodes of this named graph
-//			node = graph.getGraphNode(gNode.getLabel());
-//			if (node != null) {
-//				return graph.getNodes(node);
-//			}
-//		} else if (from.size() > 0) {
-//			// return nodes of from named graph
-//			return getNodes(gNode, from, env);
-//		} else {
-//			// all nodes with named graph
-//			return graph.getAllNodesIndex();
-//		}
-
-		return empty;
-	}
-
-	
-	/**
-	 * Enumerate nodes from graphs in the list gNode == null : from gNode !=
-	 * null : from named
-	 */
-//	Iterable<Entity> getNodes(Node gNode, List<Node> from, Environment env) {
-//		MetaIterator<Entity> meta = new MetaIterator<Entity>();
-//		for (Node gn : getGraphNodes(gNode, from, env)) {
-//			meta.next(graph.getNodes(gn));
-//		}
-//		if (meta.isEmpty()) {
-//			return new ArrayList<Entity>();
-//		}
-//		if (gNode == null) {
-//			// eliminate duplicates
-//			return getNodes(meta);
-//		}
-//		return meta;
-//	}
-
-	/**
-	 * Use case:
-	 *
-	 * from <g1>
-	 * from <g2>
-	 * ?x :p{*} ?y
-	 *
-	 * enumerate nodes from g1 and g2 and eliminate duplicates
-	 */
-//	Iterable<Entity> getNodes(final Iterable<Entity> iter) {
-//
-//		return new Iterable<Entity>() {
-//			public Iterator<Entity> iterator() {
-//
-//				final HashMap<Node, Node> table = new HashMap<Node, Node>();
-//				final Iterator<Entity> it = iter.iterator();
-//
-//				return new Iterator<Entity>() {
-//					public boolean hasNext() {
-//						return it.hasNext();
-//					}
-//
-//					public Entity next() {
-//						while (hasNext()) {
-//							Entity ent = it.next();
-//							if (ent == null) {
-//								return null;
-//							}
-//							if (!table.containsKey(ent.getNode())) {
-//								table.put(ent.getNode(), ent.getNode());
-//								return ent;
-//							}
-//						}
-//						return null;
-//					}
-//
-//					public void remove() {
-//					}
-//				};
-//			}
-//		};
-//	}
+               	
         
         public boolean contains(Node gNode, Node node) {
             Node g = graph.getNode(gNode);
@@ -734,14 +622,6 @@ public class ProducerImpl implements Producer, IProducerQP {
 
 	public Object getValue(Node node) {
 		return node.getValue();
-	}
-
-	@Override
-	@Deprecated
-	public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node qNode,
-		Environment env) {
-		// TODO Auto-generated method stub
-		return empty;
 	}
 
 	@Override
@@ -1003,7 +883,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 	}
 
 	@Override
-	public Entity copy(Entity ent) {
+	public Edge copy(Edge ent) {
 		if (EdgeManagerIndexer.test) {
 			return graph.getEdgeFactory().copy(ent);
 		}

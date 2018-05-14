@@ -8,7 +8,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.api.Engine;
@@ -16,6 +15,7 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * RDFS Entailment
@@ -67,7 +67,7 @@ public class Entailment implements Engine {
     public static boolean trace = false;
     Signature domain, range, inverse, symetric, subproperty;
     Graph graph; //, target;
-    List<Entity> targetList;
+    List<Edge> targetList;
     Node hasType, subClassOf, graphNode;
     Edge last, current;
     Hashtable<Node, Integer> count;
@@ -238,9 +238,9 @@ public class Entailment implements Engine {
         for (Node pred : graph.getSortedProperties()) {
             boolean isType = isType(pred);
 
-            for (Entity ent : graph.getEdges(pred)) {
-                Edge edge = ent.getEdge();
-                boolean isMeta = define(ent.getGraph(), ent.getEdge());
+            for (Edge ent : graph.getEdges(pred)) {
+                Edge edge = ent;
+                boolean isMeta = define(ent.getGraph(), ent);
                 if (!isMeta) {
                     if (isType) {
                         // continue for rdf:type owl:Symmetric
@@ -272,18 +272,18 @@ public class Entailment implements Engine {
     /**
      * Internal process of entailed edge
      */
-    void recordWithoutEntailment(Node gNode, Edge ee, Entity edge) {
+    void recordWithoutEntailment(Node gNode, Edge ee, Edge edge) {
         if (! graph.exist(edge)){
             targetList.add(edge);
         }       
     }
 
-    void recordWithEntailment(Node gNode, Edge ee, Entity edge) {
+    void recordWithEntailment(Node gNode, Edge ee, Edge edge) {
         recordWithoutEntailment(gNode, ee, edge);
-        define(gNode, edge.getEdge());
+        define(gNode, edge);
     }
 
-    Entity create(Node src, Node sub, Node pred, Node obj) {
+    Edge create(Node src, Node sub, Node pred, Node obj) {
         return graph.create(src, sub, pred, obj);
     }
 
@@ -359,7 +359,7 @@ public class Entailment implements Engine {
         Node gNode = graph.addGraph(ENTAIL);
         Node tNode = graph.addResource(S_PROPERTY);
         graph.add(pNode);
-        Entity ee = create(gNode, pNode, hasType, tNode);
+        Edge ee = create(gNode, pNode, hasType, tNode);
         recordWithoutEntailment(gNode, null, ee);
 
         if (isMember && pNode.getLabel().startsWith(S_BLI)) {
@@ -388,7 +388,7 @@ public class Entailment implements Engine {
         List<Node> list = table.get(pred);
         if (list != null) {
             for (Node type : list) {
-                Entity ee = create(gNode, edge.getNode(1), type, edge.getNode(0));
+                Edge ee = create(gNode, edge.getNode(1), type, edge.getNode(0));
                 recordWithoutEntailment(gNode, edge, ee);
             }
         }
@@ -403,10 +403,10 @@ public class Entailment implements Engine {
         List<Node> list = subproperty.get(pred);
         if (list != null) {
             for (Node sup : list) {
-                Entity ee = create(gNode, edge.getNode(0), sup, edge.getNode(1));
+                Edge ee = create(gNode, edge.getNode(0), sup, edge.getNode(1));
                 recordWithoutEntailment(gNode, edge, ee);
                 if (isMeta(sup)) {
-                    define(gNode, ee.getEdge());
+                    define(gNode, ee);
                 }
             }
         }
@@ -435,7 +435,7 @@ public class Entailment implements Engine {
 
         for (Node elem : list) {
             if (!elem.isBlank()) {
-                Entity ee;
+                Edge ee;
                 if (union) {
                     ee = create(gNode, elem, subClassOf, node);
                 } else {
@@ -493,7 +493,7 @@ public class Entailment implements Engine {
         
         if (list != null) {
             for (Node type : list) {
-                Entity ee = create(gNode, node, hasType, type);
+                Edge ee = create(gNode, node, hasType, type);
                 recordWithoutEntailment(gNode, edge, ee);
             }
         }
@@ -507,12 +507,12 @@ public class Entailment implements Engine {
             return;
         }
 
-        Iterable<Entity> list = graph.getEdges(subClassOf, edge.getNode(1), 0);
+        Iterable<Edge> list = graph.getEdges(subClassOf, edge.getNode(1), 0);
 
         if (list != null) {
-            for (Entity type : list) {
-                Entity ee =
-                        create(gNode, edge.getNode(0), hasType, type.getEdge().getNode(1));
+            for (Edge type : list) {
+                Edge ee =
+                        create(gNode, edge.getNode(0), hasType, type.getNode(1));
                 recordWithoutEntailment(gNode, edge, ee);
             }
         }
@@ -534,15 +534,15 @@ public class Entailment implements Engine {
      * TODO: track loop
      */
     public void getClasses(Node node, List<Node> list, boolean isSubClass) {
-        Iterable<Entity> it =
+        Iterable<Edge> it =
                 graph.getEdges(graph.getPropertyNode(S_SUBCLASSOF), node, (isSubClass) ? 1 : 0);
 
         if (it == null) {
             return;
         }
 
-        for (Entity ent : it) {
-            Node nn = ent.getEdge().getNode((isSubClass) ? 0 : 1);
+        for (Edge ent : it) {
+            Node nn = ent.getNode((isSubClass) ? 0 : 1);
             if (!list.contains(nn)) {
                 list.add(nn);
                 getClasses(nn, list, isSubClass);
@@ -591,7 +591,7 @@ public class Entailment implements Engine {
      * Take loop into account
      */
     boolean isSubOf(Node pred, Node node, Node sup, Table t) {
-        Iterable<Entity> it = graph.getEdges(pred, node, 0);
+        Iterable<Edge> it = graph.getEdges(pred, node, 0);
 
         if (it == null) {
             return false;
@@ -599,8 +599,8 @@ public class Entailment implements Engine {
 
         t.enter(node);
 
-        for (Entity ent : it) {
-            Node nn = ent.getEdge().getNode(1);
+        for (Edge ent : it) {
+            Node nn = ent.getNode(1);
             if (nn.same(sup)) {
                 return true;
             }
@@ -632,7 +632,7 @@ public class Entailment implements Engine {
         return hasLabel(source, RULE);
     }
 
-    public boolean isRule(Entity e) {
+    public boolean isRule(Edge e) {
         return hasLabel(e.getGraph(), RULE);
     }
 
@@ -677,15 +677,15 @@ public class Entailment implements Engine {
      ********************
      */
     int inference() {
-        targetList = new ArrayList<Entity>();
+        targetList = new ArrayList<Edge>();
         int count = 0;
 
         // extension of metamodel
         meta();
-        List<Entity> lDef = copy(targetList, graph);
+        List<Edge> lDef = copy(targetList, graph);
         count += lDef.size();
 
-        targetList = new ArrayList<Entity>();
+        targetList = new ArrayList<Edge>();
 
         // first: entail for all edges in graph
         // and add infered edges in fresh target graph
@@ -699,7 +699,7 @@ public class Entailment implements Engine {
     /**
      * Complementary entailment from rules on new edge list
      */
-    public int entail(List<Entity> list) {
+    public int entail(List<Edge> list) {
         inference(list);
         return loop();
     }
@@ -721,7 +721,7 @@ public class Entailment implements Engine {
             // already existing edges are rejected
             // accepted edges are also put in list
 
-            List<Entity> list = copy(targetList, graph);
+            List<Edge> list = copy(targetList, graph);
 
             // loop on new infered edges
             if (list.size() > 0) {
@@ -736,18 +736,18 @@ public class Entailment implements Engine {
         return count;
     }
 
-    void inference(List<Entity> list) {
+    void inference(List<Edge> list) {
         graph.getEventManager().start(Event.InferenceCycle);
         if (isDebug) {
             logger.info("Entail list: " + list.size());
         }
-        targetList = new ArrayList<Entity>();
+        targetList = new ArrayList<Edge>();
         
-        Entity prev = null;
+        Edge prev = null;
 
-        for (Entity ent : list) {
+        for (Edge ent : list) {
 
-            Edge edge = ent.getEdge();
+            Edge edge = ent;
             Node gg = getGraph(ent);
 
             property(gg, edge);
@@ -756,9 +756,9 @@ public class Entailment implements Engine {
 
             if (prev == null) {
                 prev = ent;
-                defProperty(ent.getEdge().getEdgeNode());
-            } else if (prev.getEdge().getEdgeNode() != ent.getEdge().getEdgeNode()) {
-                defProperty(ent.getEdge().getEdgeNode());
+                defProperty(ent.getEdgeNode());
+            } else if (prev.getEdgeNode() != ent.getEdgeNode()) {
+                defProperty(ent.getEdgeNode());
             }
         }
         graph.getEventManager().finish(Event.InferenceCycle);
@@ -767,14 +767,14 @@ public class Entailment implements Engine {
     /**
      * Copy entailed edges into graph
      */
-    List<Entity> copy(List<Entity> list, Graph to) {
+    List<Edge> copy(List<Edge> list, Graph to) {
         return to.copy(list);
     }
 
     /**
      * Graph where entailed edges are stored May be default or edge graph
      */
-    Node getGraph(Entity ent) {
+    Node getGraph(Edge ent) {
         if (isDefaultGraph) {
             if (graphNode == null) {
                 graphNode = graph.addGraph(ENTAIL);
@@ -799,14 +799,14 @@ public class Entailment implements Engine {
             Node pdomain = null, prange = null;
             boolean isFirst = true;
             
-            for (Entity ent : graph.getEdges(pred)) {
+            for (Edge ent : graph.getEdges(pred)) {
                 
                 if (isFirst) {
                     // ?p rdf:type rdf:Property
                     defProperty(pred);
                 }
 
-                Edge edge = ent.getEdge();
+                Edge edge = ent;
                 Node gg = getGraph(ent);
 
                 property(gg, edge);
@@ -822,13 +822,13 @@ public class Entailment implements Engine {
                     prange  = ent.getNode(1);                    
                 } else {
 
-                    if (pdomain != ent.getEdge().getNode(0)
+                    if (pdomain != ent.getNode(0)
                             || !isDefaultGraph) {
                         domain(gg, edge);
                         pdomain = ent.getNode(0);                      
                     }
                     
-                    if (prange != ent.getEdge().getNode(1)
+                    if (prange != ent.getNode(1)
                             || !isDefaultGraph) {
                         range(gg, edge);
                         prange = ent.getNode(1);
@@ -856,14 +856,14 @@ public class Entailment implements Engine {
     void meta() {
         Node subprop = graph.getPropertyNode(S_SUBPROPERTYOF);
         if (subprop != null) {
-            for (Entity ent : graph.getEdges(subprop)) {
-                Edge edge = ent.getEdge();
+            for (Edge ent : graph.getEdges(subprop)) {
+                Edge edge = ent;
                 if (isMeta(edge.getNode(1))) {
                     // codomain subPropertyOf rdfs:range
                     Node pred = edge.getNode(0);
-                    for (Entity meta : graph.getEdges(pred)) {
+                    for (Edge meta : graph.getEdges(pred)) {
                         // entail: pp codomain dd
-                        subproperty(getGraph(meta), meta.getEdge());
+                        subproperty(getGraph(meta), meta);
                     }
                 }
             }
@@ -895,7 +895,7 @@ public class Entailment implements Engine {
             if (range != null) {
                 isDatatype = DatatypeMap.isDatatype(range);
             }
-            for (Entity ent : graph.getEdges(prop)) {
+            for (Edge ent : graph.getEdges(prop)) {
                 IDatatype dt = (IDatatype) ent.getNode(1).getValue();
                 if (range == null) {
                     if (DatatypeMap.isUndefined(dt)) {

@@ -7,7 +7,6 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.eval.SQLResult;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -18,6 +17,7 @@ import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Implements unnest() statement 
@@ -110,7 +110,7 @@ public class Mapper {
         if (! (size == 1 || size == 3 || size == 4)){
             return map;
         }
-        for (Entity ent : g.getEdges()){
+        for (Edge ent : g.getEdges()){
             nodes = new Node[size];
             if (size >= 3){
                 nodeArray(ent, nodes);
@@ -124,9 +124,9 @@ public class Mapper {
         return map;
     }
     
-    void nodeArray(Entity ent, Node[] nodes){
+    void nodeArray(Edge ent, Node[] nodes){
         nodes[0] = ent.getNode(0);
-        nodes[1] = ent.getEdge().getEdgeNode();
+        nodes[1] = ent.getEdgeNode();
         nodes[2] = ent.getNode(1);
         if (nodes.length > 3){
             nodes[3] = ent.getGraph(); 

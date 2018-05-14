@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.tool.EdgeInv;
 import fr.inria.corese.kgram.tool.ProducerDefault;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -27,12 +27,12 @@ public class Path extends ProducerDefault {
             isReverse = false;
     int max = Integer.MAX_VALUE;
     int weight = 0;
-    ArrayList<Entity> path;
+    ArrayList<Edge> path;
     int radius = 0;
 
     public Path() {
         setMode(Producer.EXTENSION);
-        path = new ArrayList<Entity>();
+        path = new ArrayList<Edge>();
     }
 
     public Path(boolean b) {
@@ -42,10 +42,10 @@ public class Path extends ProducerDefault {
 
     Path(int n) {
         setMode(Producer.EXTENSION);
-        path = new ArrayList<Entity>(n);
+        path = new ArrayList<Edge>(n);
     }
 
-    public ArrayList<Entity> getEdges() {
+    public ArrayList<Edge> getEdges() {
         return path;
     }
 
@@ -69,16 +69,16 @@ public class Path extends ProducerDefault {
         path.clear();
     }
 
-    public void add(Entity ent) {
+    public void add(Edge ent) {
         path.add(ent);
     }
 
-    public void add(Entity ent, int w) {
+    public void add(Edge ent, int w) {
         path.add(ent);
         weight += w;
     }
 
-    public void remove(Entity ent, int w) {
+    public void remove(Edge ent, int w) {
         path.remove(path.size() - 1);
         weight -= w;
     }
@@ -116,20 +116,20 @@ public class Path extends ProducerDefault {
         return get(lst).getNode(1);
     }
 
-    public Entity get(int n) {
+    public Edge get(int n) {
         return path.get(n);
     }
 
     // Edge or EdgeInv
     public Edge getEdge(int n) {
-        Entity ent = path.get(n);
+        Edge ent = path.get(n);
         if (ent instanceof EdgeInv) {
             return (EdgeInv) ent;
         }
         return ent.getEdge();
     }
 
-    public Entity last() {
+    public Edge last() {
         if (size() > 0) {
             return get(size() - 1);
         } else {
@@ -139,7 +139,7 @@ public class Path extends ProducerDefault {
 
     public Path copy() {
         Path path = new Path(size());
-        for (Entity ent : this.path) {
+        for (Edge ent : this.path) {
             // when r is reverse, add real target relation
             if (ent instanceof EdgeInv) {
                 EdgeInv ee = (EdgeInv) ent;
@@ -154,7 +154,7 @@ public class Path extends ProducerDefault {
 
     public Path copy(Producer p) {
         Path path = new Path(size());
-        for (Entity ent : this.path) {
+        for (Edge ent : this.path) {
             // when r is reverse, add real target relation
             if (ent instanceof EdgeInv) {
                 ent = ((EdgeInv) ent).getEdgeEntity();
@@ -196,7 +196,7 @@ public class Path extends ProducerDefault {
 
     public Path reverse() {
         for (int i = 0; i < length() / 2; i++) {
-            Entity tmp = path.get(i);
+            Edge tmp = path.get(i);
             path.set(i, path.get(length() - i - 1));
             path.set(length() - i - 1, tmp);
         }
@@ -277,7 +277,7 @@ public class Path extends ProducerDefault {
                 switch (j) {
                     case 0:
                         j = 1;
-                        return path.get(i).getEdge().getNode(0);
+                        return path.get(i).getNode(0);
                     case 1:
                         ii = i;
                         if (i == path.size() - 1) {
@@ -286,11 +286,11 @@ public class Path extends ProducerDefault {
                             j = 0;
                             i++;
                         }
-                        return path.get(ii).getEdge().getEdgeNode();
+                        return path.get(ii).getEdgeNode();
                     case 2:
                         hasNext = false;
                         j = -1;
-                        return path.get(i).getEdge().getNode(1);
+                        return path.get(i).getNode(1);
                 }
                 return null;
             }
@@ -309,7 +309,7 @@ public class Path extends ProducerDefault {
         if (path.size() > 1) {
             str += "\n";
         }
-        for (Entity edge : path) {
+        for (Edge edge : path) {
             str += edge + "\n";
         }
         str += "}";
@@ -326,7 +326,7 @@ public class Path extends ProducerDefault {
     }
 
     @Override
-    public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env) {
+    public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env) {
         return path;
     }
 

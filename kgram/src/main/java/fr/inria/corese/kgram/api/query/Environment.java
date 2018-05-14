@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.api.query;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
@@ -15,6 +14,7 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Interface of the binding environment provided by KGRAM
@@ -146,7 +146,7 @@ public interface Environment {
 	
 	Map getMap();
         
-        Entity[] getEdges();	
+        Edge[] getEdges();	
         
         Node[] getNodes();
 	

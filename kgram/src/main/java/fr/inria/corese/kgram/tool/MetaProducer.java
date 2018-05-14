@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
@@ -15,6 +14,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Meta Producer that manages several Producer Uses a generic MetaIterator that
@@ -97,29 +97,20 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env) {
-        MetaIterator<Entity> meta = null;
+    public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge, Environment env) {
+        MetaIterator<Edge> meta = null;
         for (Producer p : getProducerList()) {
             meta = add(meta, p.getEdges(gNode, from, edge, env));
         }
         return meta;
     }
 
-    MetaIterator<Entity> add(MetaIterator<Entity> meta, Iterable<Entity> it) {
-        MetaIterator<Entity> m = new MetaIterator<>(it);
+    MetaIterator<Edge> add(MetaIterator<Edge> meta, Iterable<Edge> it) {
+        MetaIterator<Edge> m = new MetaIterator<>(it);
         if (meta == null) {
             meta = m;
         } else {
             meta.next(m);
-        }
-        return meta;
-    }
-
-    @Override
-    public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node node, Environment env) {
-        MetaIterator<Entity> meta = null;
-        for (Producer p : getProducerList()) {
-            meta = add(meta, p.getNodes(gNode, from, node, env));
         }
         return meta;
     }
@@ -160,9 +151,9 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env,
+    public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env,
             Regex exp, Node src, Node start, int index) {
-        MetaIterator<Entity> meta = null;
+        MetaIterator<Edge> meta = null;
         for (Producer p : getProducerList()) {
             meta = add(meta, p.getEdges(gNode, from, qEdge, env, exp, src, start, index));
         }
@@ -170,22 +161,11 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    // TODO: eliminate duplicate nodes from different Producers
-    public Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge edge, Environment env, List<Regex> list,
-            int index) {
-        MetaIterator<Entity> meta = null;
-        for (Producer p : getProducerList()) {
-            meta = add(meta, p.getNodes(gNode, from, edge, env, list, index));
-        }
-        return meta;
-    }
-
-    @Override
-    public Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge,
+    public Iterable<Node> getNodes(Node gNode, List<Node> from, Edge edge,
             Environment env, List<Regex> exp, int index) {
         MetaIterator<Node> meta = null;
         for (Producer p : getProducerList()) {
-            Iterable<Node> m = p.getNodeIterator(gNode, from, edge, env, exp, index);
+            Iterable<Node> m = p.getNodes(gNode, from, edge, env, exp, index);
             if (meta == null) {
                 meta = new MetaIterator<>(m);
             } else {
@@ -261,7 +241,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Entity copy(Entity ent) {
+    public Edge copy(Edge ent) {
         return producer.copy(ent);
     }
 

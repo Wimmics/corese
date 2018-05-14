@@ -6,7 +6,6 @@ import java.util.List;
 
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -2363,7 +2362,7 @@ public class Eval implements ExpType, Plugin {
 
 //        StopWatch sw = new StopWatch();
 //        sw.start();
-        Iterable<Entity> entities;
+        Iterable<Edge> entities;
         if (hasProduce) {
             // draft
             entities = produce(p, gNode, list, qEdge);
@@ -2374,20 +2373,20 @@ public class Eval implements ExpType, Plugin {
             entities = p.getEdges(gNode, list, qEdge, env);
         }
 
-        Iterator<Entity> it = entities.iterator();
+        Iterator<Edge> it = entities.iterator();
 
         while (it.hasNext()) {
 
-            Entity ent = it.next();
+            Edge edge = it.next();
             //if (query.isDebug())System.out.println("E: " + ent);
-            if (ent != null) {
+            if (edge != null) {
                 nbEdge++;
-                if (hasListener && !listener.listen(qEdge, ent)) {
+                if (hasListener && !listener.listen(qEdge, edge)) {
                     continue;
                 }
 
-                Edge edge = ent.getEdge();
-                graph = ent.getGraph();
+                //Edge edge = ent;
+                graph = edge.getGraph();
 
 //				if (draft && edgeToDiffer != null && previous != null){
 //					// draft backjump with position
@@ -2410,14 +2409,14 @@ public class Eval implements ExpType, Plugin {
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
 
                 if (hasCandidate) {
-                    DatatypeValue val = candidate(qEdge, ent, p.getValue(bmatch));
+                    DatatypeValue val = candidate(qEdge, edge, p.getValue(bmatch));
                     if (val != null) {
                         bmatch = val.booleanValue();
                     }
                 }
 
                 if (bmatch) {
-                    bmatch = push(qEdge, ent, gNode, graph, n);
+                    bmatch = push(qEdge, edge, gNode, graph, n);
                 }
 
                 if (isEvent) {
@@ -2428,7 +2427,7 @@ public class Eval implements ExpType, Plugin {
                     isSuccess = true;
                     backtrack = eval(p, gNode, stack, n + 1);
 
-                    env.pop(qEdge, ent);
+                    env.pop(qEdge, edge);
                     if (hasGraphNode) {
                         env.pop(gNode);
                     }
@@ -2468,14 +2467,14 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    Iterable<Entity> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
+    Iterable<Edge> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
         Expr exp = getExpression(FUN_PRODUCE);
         if (exp != null) {
             Object res = evaluator.eval(exp, memory, p, toArray(edge.getNode()));
             if (res instanceof Loopable) {
                 Iterable loop = ((Loopable) res).getLoop();
                 if (loop != null) {
-                    Iterable<Entity> it = new IterableEntity(loop);
+                    Iterable<Edge> it = new IterableEntity(loop);
                     return it;
                 }
             }
@@ -2483,7 +2482,7 @@ public class Eval implements ExpType, Plugin {
         return null;
     }
 
-    DatatypeValue candidate(Edge q, Entity ent, Object match) {
+    DatatypeValue candidate(Edge q, Edge ent, Object match) {
         Expr exp = getExpression(FUN_CANDIDATE);
         if (exp != null) {
             Object obj = eval(exp, 
@@ -3043,7 +3042,7 @@ public class Eval implements ExpType, Plugin {
         return match.match(gNode, graphNode, memory);
     }
 
-    private boolean push(Edge qEdge, Entity ent, Node gNode, Node node, int n) {
+    private boolean push(Edge qEdge, Edge ent, Node gNode, Node node, int n) {
         Memory env = memory;
         if (!env.push(qEdge, ent, n)) {
             return false;

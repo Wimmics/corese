@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -22,6 +21,7 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import java.util.ArrayList;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Node and Edge binding stacks for KGRAM evaluator
@@ -33,7 +33,7 @@ public class Memory implements Environment {
 
     public static boolean IS_EDGE = !true;
     static final Edge[] emptyEdges = new Edge[0];
-    static final Entity[] emptyEntities = new Entity[0];
+    static final Edge[] emptyEntities = new Edge[0];
     // number of times nodes are bound by Stack
     // decrease with backtrack
     int[] nbNodes, nbEdges,
@@ -41,7 +41,7 @@ public class Memory implements Environment {
             // enable to compute where to backjump
             stackIndex;
     Edge[] qEdges;
-    Entity[] result;
+    Edge[] result;
     Node[] qNodes, nodes;
     // path result stored in Mapping (enumerate edges, pathLength)
     // $path node is in qNodes, associated Path is in lPath at $path index
@@ -185,7 +185,7 @@ public class Memory implements Environment {
             emax = 0;
         }
         nbEdges = new int[emax];
-        result = new Entity[emax];
+        result = new Edge[emax];
         qEdges = new Edge[emax];
 
         nodes = new Node[nmax];
@@ -408,7 +408,7 @@ public class Memory implements Environment {
             }
         }
         Edge[] qedge = emptyEdges;
-        Entity[] tedge = emptyEntities;
+        Edge[] tedge = emptyEntities;
         Node[] qnode = new Node[nb], tnode = new Node[nb];
         // order by
         Node[] snode = new Node[q.getOrderBy().size()],
@@ -418,7 +418,7 @@ public class Memory implements Environment {
         int n = 0, i = 0;
         if (isEdge) {
             qedge = new Edge[nbEdge];
-            tedge = new Entity[nbEdge];
+            tedge = new Edge[nbEdge];
             for (Edge edge : qEdges) {
                 if (edge != null) {
                     qedge[n] = edge;
@@ -568,7 +568,7 @@ public class Memory implements Environment {
     /**
      * pop nodes when fail
      */
-    boolean push(Edge q, Entity ent, int n) {
+    boolean push(Edge q, Edge ent, int n) {
         boolean success = true;
         int max = q.nbNode();
         for (int i = 0; i < max; i++) {
@@ -590,7 +590,7 @@ public class Memory implements Environment {
             // e.g. the node that represents the property/relation
             Node pNode = q.getEdgeVariable();
             if (pNode != null) {
-                success = push(pNode, ent.getEdge().getEdgeNode(), n);
+                success = push(pNode, ent.getEdgeNode(), n);
 
                 if (!success) {
                     // it fail: pop nodes
@@ -733,14 +733,14 @@ public class Memory implements Environment {
         return stackIndex[node.getIndex()];
     }
 
-    void pop(Edge q, Entity r) {
+    void pop(Edge q, Edge r) {
         popNode(q, r);
         if (isEdge) {
             popEdge(q, r);
         }
     }
 
-    void popNode(Edge q, Entity r) {
+    void popNode(Edge q, Edge r) {
         if (q != null) {
             int max = q.nbNode();
             for (int i = 0; i < max; i++) {
@@ -760,7 +760,7 @@ public class Memory implements Environment {
         }
     }
 
-    void popEdge(Edge q, Entity r) {
+    void popEdge(Edge q, Edge r) {
         int index = q.getIndex();
         if (nbEdges[index] > 0) {
             nbEdges[index]--;
@@ -824,7 +824,7 @@ public class Memory implements Environment {
         if (isEdge) {
             k = 0;
             for (Edge qEdge : res.getQueryEdges()) {
-                Entity edge = res.getEdge(k);
+                Edge edge = res.getEdge(k);
                 if (!push(qEdge, edge, n)) {
                     for (int i = 0; i < k; i++) {
                         pop(res.getQueryEdge(i), res.getEdge(i));
@@ -949,11 +949,11 @@ public class Memory implements Environment {
         return getNode(qNode) != null;
     }
 
-    public Entity getEdge(Edge qEdge) {
+    public Edge getEdge(Edge qEdge) {
         return result[qEdge.getIndex()];
     }
 
-    public Entity getEdge(int n) {
+    public Edge getEdge(int n) {
         return result[n];
     }
 
@@ -962,11 +962,11 @@ public class Memory implements Environment {
     }
 
     @Override
-    public Entity[] getEdges() {
+    public Edge[] getEdges() {
         return result;
     }
 
-    public Entity getEdge(Node qnode) {
+    public Edge getEdge(Node qnode) {
         for (Edge e : getQueryEdges()) {
             if (e.getEdgeVariable() != null
                     && e.getEdgeVariable().equals(qnode)) {
@@ -976,7 +976,7 @@ public class Memory implements Environment {
         return null;
     }
 
-    public Entity getEdge(String var) {
+    public Edge getEdge(String var) {
         for (Edge e : getQueryEdges()) {
             if (e != null && e.getEdgeVariable() != null
                     && e.getEdgeVariable().getLabel().equals(var)) {

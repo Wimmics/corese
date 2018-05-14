@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -17,6 +16,7 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /*
  * Manage list of Mapping, result of a query
@@ -42,8 +42,8 @@ public class Mappings extends PointerObject
     boolean sortWithDesc = true;
     Query query;
     List<Mapping> list, reject;
-    private List<Entity> insert;
-    private List<Entity> delete;
+    private List<Edge> insert;
+    private List<Edge> delete;
     Group group, distinct;
     Node fake;
     Object object;
@@ -1420,19 +1420,19 @@ public class Mappings extends PointerObject
         this.nbInsert = nbInsert;
     }
 
-    public List<Entity> getInsert() {
+    public List<Edge> getInsert() {
         return insert;
     }
 
-    public void setInsert(List<Entity> lInsert) {
+    public void setInsert(List<Edge> lInsert) {
         this.insert = lInsert;
     }
 
-    public List<Entity> getDelete() {
+    public List<Edge> getDelete() {
         return delete;
     }
 
-    public void setDelete(List<Entity> lDelete) {
+    public void setDelete(List<Edge> lDelete) {
         this.delete = lDelete;
     }
 

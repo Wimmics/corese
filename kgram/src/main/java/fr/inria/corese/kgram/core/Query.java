@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -19,6 +18,7 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * KGRAM Query
@@ -232,7 +232,7 @@ public class Query extends Exp implements Graphable {
     private Exp templateGroup, templateNL;
     private List<Node> argList;
     private Mapping mapping;
-    private List<Entity> edgeList;
+    private List<Edge> edgeList;
     private String name;
     private String profile;
     private boolean isNumbering;
@@ -1923,14 +1923,14 @@ public class Query extends Exp implements Graphable {
     /**
      * @return the edgeList
      */
-    public List<Entity> getEdgeList() {
+    public List<Edge> getEdgeList() {
         return edgeList;
     }
 
     /**
      * @param edgeList the edgeList to set
      */
-    public void setEdgeList(List<Entity> edgeList) {
+    public void setEdgeList(List<Edge> edgeList) {
         this.edgeList = edgeList;
     }
 

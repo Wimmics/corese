@@ -4,8 +4,6 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
@@ -14,6 +12,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -30,27 +29,20 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
-    public Iterable<Entity> getNodes(Node node, List<Node> from, Node node2,
+    public Iterable<Edge> getEdges(Node node, List<Node> from, Edge edge,
             Environment env) {
         // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Iterable<Entity> getEdges(Node node, List<Node> from, Edge edge,
-            Environment env) {
-        // TODO Auto-generated method stub
-        ArrayList<Entity> list = new ArrayList<Entity>();
+        ArrayList<Edge> list = new ArrayList<Edge>();
         //list.add( EntityImpl.create(null, edge));
         return list;
     }
 
     @Override
-    public Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge edge, Environment env, Regex exp,
+    public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge, Environment env, Regex exp,
             Node src, Node start,
             int index) {
         // TODO Auto-generated method stub
-        return new ArrayList<Entity>();
+        return new ArrayList<Edge>();
     }
 
     @Override
@@ -103,14 +95,7 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
-    public Iterable<Entity> getNodes(Node node, List<Node> from, Edge edge,
-            Environment env, List<Regex> exp, int index) {
-        // TODO Auto-generated method stub
-        return new ArrayList<Entity>();
-    }
-
-    @Override
-    public Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge, Environment env, List<Regex> exp, int index) {
+    public Iterable<Node> getNodes(Node gNode, List<Node> from, Edge edge, Environment env, List<Regex> exp, int index) {
         return new ArrayList<Node>();
     }
 
@@ -167,7 +152,7 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
-    public Entity copy(Entity ent) {
+    public Edge copy(Edge ent) {
         return ent;
     }
 

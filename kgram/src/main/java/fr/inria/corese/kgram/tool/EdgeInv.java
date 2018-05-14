@@ -1,23 +1,22 @@
 package fr.inria.corese.kgram.tool;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.PointerObject;
 
-public class EdgeInv extends PointerObject implements Edge, Entity {
+public class EdgeInv extends PointerObject implements Edge{
 
     Edge edge;
-    Entity ent;
+    Edge ent;
+
+//    public EdgeInv(Edge e) {
+//        edge = e;
+//    }
 
     public EdgeInv(Edge e) {
-        edge = e;
-    }
-
-    public EdgeInv(Entity e) {
         ent = e;
-        edge = e.getEdge();
+        edge = e;
     }
 
     @Override
@@ -51,7 +50,7 @@ public class EdgeInv extends PointerObject implements Edge, Entity {
         return ent.getGraph();
     }
 
-    public Entity getEdgeEntity() {
+    public Edge getEdgeEntity() {
         return ent;
     }
 

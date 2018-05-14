@@ -47,6 +47,7 @@ import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.api.Tagger;
 import fr.inria.corese.core.api.ValueResolver;
+import fr.inria.corese.core.query.QueryCheck;
 import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
 
@@ -1538,15 +1539,6 @@ public class Graph extends GraphObject implements
     public List<Node> getTopProperties() {
         List<Node> nl = new ArrayList<Node>();
         Node n;
-
-//		n = getNode(OWL.TOPOBJECTPROPERTY);
-//		if (n != null){
-//			nl.add(n);
-//		}
-//		n = getNode(OWL.TOPDATAPROPERTY);
-//		if (n != null){
-//			nl.add(n);
-//		}
         if (nl.size() == 0) {
             n = getTopProperty();
             nl.add(n);
@@ -1735,7 +1727,6 @@ public class Graph extends GraphObject implements
             node = createNode(key, dt);
             indexNode(dt, node);
         }
-        //graph.put(label, node);	               
         graph.put(key, node);
         return node;
     }
@@ -1760,18 +1751,6 @@ public class Graph extends GraphObject implements
         }
         if (node != null) {
             add(getDatatypeValue(node), node);
-            return node;
-        }
-        IDatatype dt = DatatypeMap.createResource(label);
-        node = createNode(key, dt);
-        add(dt, node);
-        return node;
-    }
-
-    Node basicAddResource2(String label) {
-        String key = getID(label);
-        Node node = getResource(key, label);
-        if (node != null) {
             return node;
         }
         IDatatype dt = DatatypeMap.createResource(label);
@@ -1845,13 +1824,11 @@ public class Graph extends GraphObject implements
 
     /**
      * Assign an index to Literal Node Assign same index to same number values:
-<<<<<<< master
      * same datatype with same value and different label have same index
      * 1 and 01 have same index: they join with SPARQL
-=======
-     * 1, '1'^^xsd:double, 1.0 have same index If EdgeIndex is sorted by index,
+     * 1, '1'^^xsd:double, 1.0 have same index 
+     * If EdgeIndex is sorted by index,
      * dichotomy enables join on semantically equivalent values
->>>>>>> HEAD~207
      */
     void indexLiteralNode(IDatatype dt, Node node) {
         if (isSameIndexAble(dt)) {
@@ -2365,39 +2342,7 @@ public class Graph extends GraphObject implements
         }
         return literal.values();
     }
-
-//    public Iterable<Entity> getAllNodes() {
-//        if (getEventManager().isDeletion()) {
-//            // recompute existing nodes (only if it has not been already recomputed)
-//            return getAllNodesIndex();
-//        } else {
-//            // get nodes from tables
-//            return getAllNodesDirect();
-//        }
-//    }
-//    
-//    public Iterable<Entity> getAllNodesDirect() {
-//        MetaIteratorCast<Node, Entity> meta = new MetaIteratorCast<>();
-//        meta.next(getNodes());
-//        meta.next(getBlankNodes());
-//        meta.next(getLiteralNodes());
-//        return meta;
-//    }
-
-    /**
-     * Prepare an index of nodes for each graph, enumerate all nodes 
-     * TODO: there are duplicates (same node in several graphs)
-     */
-//    public Iterable<Entity> getAllNodesIndex() {
-//        indexNode();
-//        return gindex.getNodes();
-//    }
-
-//    public Iterable<Entity> getNodes(Node gNode) {
-//        indexNode();
-//        return gindex.getNodes(gNode);
-//    }
-    
+   
     public Iterable<Node> getAllNodeIterator() {
         if (getEventManager().isDeletion()) {
             // recompute existing nodes (only if it has not been already recomputed)
@@ -3297,82 +3242,10 @@ public class Graph extends GraphObject implements
      * RDF match
      */
     public boolean check(Query q) {
-        return check(q, q.getBody());
+        return new QueryCheck(this).check(q);
     }
 
-    boolean check(Query q, Exp exp) {
-
-        switch (exp.type()) {
-
-            case ExpType.EDGE:
-                Edge edge = exp.getEdge();
-                Node pred = edge.getEdgeNode();
-                Node var = edge.getEdgeVariable();
-
-                if (var == null) {
-
-                    if (getPropertyNode(pred) == null) {
-                        // graph does not contain this property: fail now
-                        return false;
-                    } else if (isType(pred)) {
-                        Node value = edge.getNode(1);
-                        // ?c a owl:TransitiveProperty
-                        if (value.isConstant()) {
-                            if (getNode(value) == null) {
-                                return false;
-                            }
-                        } else if (q.getBindingNodes().contains(value) && q.getValues().getMappings() != null) {
-                            // ?c a ?t with bindings
-                            for (Mapping map : q.getValues().getMappings()) {
-
-                                Node node = map.getNode(value);
-                                if (node != null && getNode(node) != null) {
-                                    // graph  contain node
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                } else if (q.getBindingNodes().contains(var) && q.getValues().getMappings() != null) {
-                    // property variable with bindings: check the bindings
-                    for (Mapping map : q.getValues().getMappings()) {
-
-                        Node node = map.getNode(var);
-                        if (node != null && getPropertyNode(node) != null) {
-                            // graph  contain a property
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
-
-                break;
-
-            case ExpType.UNION:
-
-                for (Exp ee : exp.getExpList()) {
-                    if (check(q, ee)) {
-                        return true;
-                    }
-                }
-                return false;
-
-            case ExpType.AND:
-            case ExpType.GRAPH:
-
-                for (Exp ee : exp.getExpList()) {
-                    boolean b = check(q, ee);
-                    if (!b) {
-                        return false;
-                    }
-                }
-        }
-
-        return true;
-    }
-
+    
     public Graph getNamedGraph(String name) {
         return null;
     }

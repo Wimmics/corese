@@ -80,7 +80,7 @@ public class CoresePointer extends CoreseUndefLiteral {
            
     @Override
     public Iterable getLoop(){
-        return ((Loopable) pobject).getLoop();
+        return pobject.getLoop();
     }
     
     @Override

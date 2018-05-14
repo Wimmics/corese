@@ -191,7 +191,9 @@ public class Extension {
                 }
                 if (ext != null) {
                     Expr exp = ext.get(label, param.length);
-                    System.out.println("Ext: " + atype + " " + exp);
+                    if (isDebug()) {
+                        System.out.println("Ext: " + atype + " " + exp);
+                    }
                     if (exp != null) {
                         return exp;
                     }

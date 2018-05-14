@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.api.core.Edge;
 
 
 /**
@@ -77,11 +77,11 @@ public class Checker {
 		Edge edge = exp.getEdge();
 		boolean exist = false, match = false, define = false;
 
-		for (Entity ent : producer.getEdges(gNode, query.getFrom(gNode), edge, env)){
+		for (Edge ent : producer.getEdges(gNode, query.getFrom(gNode), edge, env)){
 
 			if (ent != null){
 				exist = true;
-				if (matcher.match(edge, ent.getEdge(), env)){
+				if (matcher.match(edge, ent, env)){
 					match = true;
 					break;
 				}

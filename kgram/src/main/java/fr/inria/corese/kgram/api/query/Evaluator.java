@@ -7,7 +7,6 @@ import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.filter.Proxy;
 
 /**
@@ -57,13 +56,7 @@ public interface Evaluator {
 	Object eval(Expr f, Environment e, Producer p);
         
         Object eval(Expr f, Environment e, Producer p, Object[] values);
-        
-        Object eval(Expr f, Environment e, Producer p, Object[] values, Extension ext);
-        
-        Object eval(Expr f, Environment e, Producer p, Object[] values, Expr ee);
-        
-        Object eval(String name, Environment e, Producer p, Object value);
-
+                        
         Object eval(Expr f, Environment e, Producer p, Object value);
 
         Expr getDefine(Expr exp, Environment env, Producer p, int n);

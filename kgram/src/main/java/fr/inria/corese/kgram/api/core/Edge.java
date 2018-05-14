@@ -1,16 +1,14 @@
 package fr.inria.corese.kgram.api.core;
 
-
 /**
- * Interface of Edge provided by graph implementation
- * and also by KGRAM query edges
+ * Interface for Producer iterator that encapsulate Edge or Node with its Graph Node
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Edge  extends Entity {
+public interface Edge extends  Pointerable {
 	
-	/**
+    /**
 	 * Number of nodes.
 	 * 
 	 * @return
@@ -85,5 +83,11 @@ public interface Edge  extends Entity {
         Node getNode();
         
         Node getGraph();
-	
+    
+	Edge getEdge();	
+        
+        Object getProvenance();
+        
+        void setProvenance(Object obj);
+
 }

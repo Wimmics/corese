@@ -4,13 +4,13 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Interface for the Connector that produces candidate edges for KGRAM 
@@ -76,22 +76,9 @@ public interface Producer {
 	 * @param env   The current mapping : query node -> target node
 	 * @return Candidate edge iterator
 	 */
-	Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env);
+	Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env);
         
         Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env);
-
-	
-	
-	/**
-	 * Same as candidate() for edges
-	 * @param gNode
-	 * @param from
-	 * @param qNode
-	 * @param env
-	 * @return
-	 */
-	Iterable<Entity> getNodes(Node gNode, List<Node> from, Node qNode,  Environment env);
-
 	
 	
 	/**************** PATH **************/
@@ -113,7 +100,7 @@ public interface Producer {
 	 * 
 	 * @param gNode The graph node where to get nodes (may be null)
 	 * @param from from or from named, may be empty
-	 * @param qEdge Pseudo query edge for path
+	 * @param edge Pseudo query edge for path
 	 * @param env The binding environment
 	 * @param exp either property name or a ! (pname | pname) or null
 	 * @param index of the node to return
@@ -124,11 +111,8 @@ public interface Producer {
 	 * If the argument is a constant, it matches even if it is not a node of the graph
 	 * 
 	 */
-	@Deprecated
-	Iterable<Entity> getNodes(Node gNode, List<Node> from, Edge qEdge, Environment env, 
-		List<Regex> exp, int index);
 	
-	Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge, Environment env, 
+	Iterable<Node> getNodes(Node gNode, List<Node> from, Edge edge, Environment env, 
                 List<Regex> exp, int index);
 	/**
 	 * Return candidate edges for a path step for an elementary regex exp.
@@ -152,7 +136,7 @@ public interface Producer {
 	 * exp.isInverse() authorize to consider nodes in reverse order (as if the symmetric relation would exist)
 	 * @return Iterable of start nodes for exp
 	 */
-	Iterable<Entity> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
+	Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge, Environment env, 
 			Regex exp, Node src, Node start, int index);
 	
 	
@@ -222,7 +206,7 @@ public interface Producer {
          
          Node getGraphNode();
          
-         Entity copy(Entity ent);
+         Edge copy(Edge ent);
 
 	 void close();
 }

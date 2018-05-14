@@ -7,7 +7,6 @@ import java.util.List;
 
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * ********************************************************
@@ -678,7 +678,7 @@ public class PathFinder {
 
     public Iterable<Node> getNodeIterator(Node csrc, final Edge edge, List<Node> from, List<Regex> regex) {
 
-        Iterable<Node> iter = producer.getNodeIterator(gNode, from, edge, memory, regex, index);
+        Iterable<Node> iter = producer.getNodes(gNode, from, edge, memory, regex, index);
 
         if (filter == null) {
             return iter;
@@ -842,7 +842,7 @@ public class PathFinder {
                 Node gg = gNode, previous = null;
                 ResultListener handler = listener;
 
-                for (Entity ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)) {
+                for (Edge ent : pp.getEdges(gg, ff, ee, env, exp, src, start, ii)) {
 
                     if (isStop) {
                         stack.push(exp);
@@ -862,7 +862,7 @@ public class PathFinder {
                     //cedge++;
                     //trace(ent);
 
-                    Edge rel = ent.getEdge();
+                    Edge rel = ent;
                     Node node = rel.getNode(ii);
 
                     if (inverse) {

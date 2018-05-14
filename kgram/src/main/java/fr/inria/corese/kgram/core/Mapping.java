@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Entity;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -25,6 +24,7 @@ import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /*
  * An elementary result of a query or a subquery
@@ -42,10 +42,10 @@ public class Mapping
         implements Result, Environment, Pointerable {
 
     static final Edge[] emptyEdge = new Edge[0];
-    static final Entity[] emptyEntity = new Entity[0];
+    static final Edge[] emptyEntity = new Edge[0];
     static final Node[] emptyNode = new Node[0];
     Edge[] qEdges;
-    Entity[] edges;
+    Edge[] edges;
     // path edges when Mapping has a path result
     Path[] lPath;
     Node[] qNodes, nodes,
@@ -71,7 +71,7 @@ public class Mapping
 //		this.nodes = qNodes;
     }
 
-    Mapping(Edge[] query, Entity[] result, Node[] qnodes, Node[] nodes) {
+    Mapping(Edge[] query, Edge[] result, Node[] qnodes, Node[] nodes) {
         this.qEdges = query;
         this.edges = result;
         init(qnodes, nodes);
@@ -169,7 +169,7 @@ public class Mapping
         return new Mapping(qNodes, tNodes);
     }
 
-    public static Mapping create(Edge[] query, Entity[] result,
+    public static Mapping create(Edge[] query, Edge[] result,
             Node[] qnodes, Node[] nodes) {
         return new Mapping(query, result, qnodes, nodes);
     }
@@ -808,11 +808,11 @@ public class Mapping
     }
 
     @Override
-    public Entity[] getEdges() {
+    public Edge[] getEdges() {
         return edges;
     }
 
-    Entity getEdge(int n) {
+    Edge getEdge(int n) {
         return edges[n];
     }
 

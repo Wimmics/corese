@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.tool;
 
-import fr.inria.corese.kgram.api.core.Entity;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
@@ -19,6 +18,7 @@ import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import java.util.List;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public class EnvironmentImpl implements Environment {
 	Query query;
@@ -142,7 +142,7 @@ public class EnvironmentImpl implements Environment {
 	}
 
     @Override
-    public Entity[] getEdges() {
+    public Edge[] getEdges() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

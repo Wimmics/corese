@@ -759,21 +759,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return eval(f, e, p, (IDatatype[]) values);
     }
 
-//    @Override
-//    public IDatatype eval(Expr f, Environment e, Producer p, Object[] values, Extension ext) {
-//        return eval(f, e, p, (IDatatype[]) values, ext);
-//    }
-
-//    @Override
-//    public IDatatype eval(Expr f, Environment e, Producer p, Object[] values, Expr ee) {
-//        return call(f, e, p, (IDatatype[]) values, ee);
-//    }
-
-//    @Override
-//    public IDatatype eval(String name, Environment e, Producer p, Object value) {
-//        return eval(name, e, p, (IDatatype) value);
-//    }
-
     @Override
     public IDatatype eval(Expr f, Environment e, Producer p, Object value) {
         return eval(f, e, p, (IDatatype) value);

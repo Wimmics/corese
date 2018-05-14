@@ -2,7 +2,6 @@ package fr.inria.corese.core;
 
 import fr.inria.corese.core.edge.*;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.QueryProcess;
@@ -83,11 +82,7 @@ public class EdgeFactory {
     IDatatype defaultMetadata() {
         return DatatypeMap.newInstance(count++);
     }
-     
-//    public Edge internal(Edge ent) {
-//        return internal(ent);
-//    }
-    
+         
     public Edge internal(Edge ent){
         if (ent.nbNode() > 2) {
             return ent;
@@ -106,11 +101,7 @@ public class EdgeFactory {
                 return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
         }
     }
-    
-//    public EdgeTop createDuplicate(Edge ent) {
-//        return createDuplicate(ent);
-//    }
-    
+       
     public EdgeTop createDuplicate(Edge ent) {
         if (ent.nbNode() == 2) {
             return new EdgeGeneric();
@@ -124,11 +115,7 @@ public class EdgeFactory {
     public Edge createGeneric(Node source, Node subject, Node predicate, Node value) {
         return EdgeGeneric.create(source, subject, predicate, value);
     }
-        
-//    public Edge compact(Edge ent){
-//        return compact(ent);
-//    }
-        
+                
     public Edge compact(Edge ent){
         switch (ent.getGraph().getIndex()){
             case Graph.RULE_INDEX: 
@@ -237,17 +224,10 @@ public class EdgeFactory {
         }
     }
     
-//    public Edge copy(Edge ent){
-//        return copy(ent);
-//    }
-    
     public Edge copy(Edge ent){
         return copy(ent.getGraph(), ent.getEdgeNode(), ent);
     }
     
-//    public Edge queryEdge(Edge ent){
-//           return queryEdge(ent);
-//    }
     
     public Edge queryEdge(Edge ent){
         if (graph.isMetadata()) {
@@ -266,14 +246,6 @@ public class EdgeFactory {
         }
  
     }
-    
-//     public void setGraph(Edge ent, Node g) {
-//         setGraph(ent, g);
-//     }
-
-//    Edge tag(Edge ent) {
-//        return tag(ent);
-//    }
     
     Edge tag(Edge ent) {
         if (ent instanceof EdgeImpl) {

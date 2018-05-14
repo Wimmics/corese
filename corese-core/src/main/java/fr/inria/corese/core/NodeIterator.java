@@ -20,21 +20,25 @@ public class NodeIterator implements Iterable<Node>, Iterator<Node> {
 		return new NodeIterator(it, n);
 	}
 
+        @Override
 	public Iterator<Node> iterator() {
 		it = ie.iterator();
 		return this;
 	}
 
+        @Override
 	public boolean hasNext() {
 		return it.hasNext();
 	}
 
+        @Override
 	public Node next() {
 		Edge ent = it.next();
 		if (ent == null) return null;
 		return ent.getNode(index);
 	}
 
+        @Override
 	public void remove() {		
 	}
 	

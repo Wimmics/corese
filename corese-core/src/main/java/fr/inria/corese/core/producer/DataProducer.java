@@ -11,7 +11,6 @@ import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.edge.EdgeTop;
 import java.util.ArrayList;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Transient Dataset over graph in order to iterate edges 

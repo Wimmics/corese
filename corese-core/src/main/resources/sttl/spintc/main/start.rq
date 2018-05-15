@@ -5,9 +5,12 @@
 prefix tc: </user/corby/home/AData/template/spintc/>
 
 template st:start {
-  st:boolean(st:apply-templates-with-all(st:spintcbody))
+  us:boolean(st:apply-templates-with-all(st:spintcbody))
 }
 where {
 }
 
 
+function us:boolean(?x) {
+    return (! contains(?x, "false"))
+}

@@ -2533,24 +2533,11 @@ public class Eval implements ExpType, Plugin {
         return ! (q.isFun() && local.containsKey(name));
     }
 
-    Object[] toArray(Object o1, Object o2, Object o3) {
-        Object[] res = evaluator.getProxy().createParam(3); //new Object[3];
-        res[0] = o1;
-        res[1] = o2;
-        res[2] = o3;
-        return res;
-    }
-
-    Object[] toArray(Object o1, Object o2) {
-        Object[] res = evaluator.getProxy().createParam(2);
-        res[0] = o1;
-        res[1] = o2;
-        return res;
-    }
-
-    public Object[] toArray(Object o1) {
-        Object[] res = evaluator.getProxy().createParam(1);;
-        res[0] = o1;
+    public Object[] toArray(Object... ldt) {
+        Object[] res = evaluator.getProxy().createParam(ldt.length);;
+        for (int i = 0; i<res.length; i++) {
+            res[i] = ldt[i];
+        }
         return res;
     }
 

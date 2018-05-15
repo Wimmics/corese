@@ -55,7 +55,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
         plugin = p;
     }
 
-    @Override
     public IDatatype function(Expr exp, Environment env, Producer p) {
 
         switch (exp.oper()) {
@@ -104,7 +103,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
         return null;
     }
 
-    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
 
         switch (exp.oper()) {
@@ -191,7 +189,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
     
     
-    @Override
         public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
             switch(exp.oper()){
                 
@@ -254,7 +251,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     
     
     
-    @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
 //        switch (exp.oper()){
 //            
@@ -371,7 +367,6 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
               
     
-    @Override
     public IDatatype format(IDatatype... par){
         String f = getFormat(par[0]);
         Object [] arr = new Object[par.length-1];
@@ -984,23 +979,8 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }
 
     @Override
-    public ComputerProxy getComputerPlugin() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public ComputerProxy getComputerTransform() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IDatatype hash(Expr exp, IDatatype dt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public GraphProcessor getGraphProcessor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return plugin;
     }
      
 }

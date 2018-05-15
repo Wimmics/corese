@@ -1,5 +1,6 @@
 package fr.inria.corese.core.extension.core;
 
+import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -50,7 +51,7 @@ public class Core implements FunctionEvaluator {
     }
 
     public PluginTransform getPluginTransform() {
-        return (PluginTransform) eval.getComputerTransform();
+        return (PluginTransform) ((Interpreter)eval).getComputerTransform();
     }
 
     String javaName(IDatatype dt) {

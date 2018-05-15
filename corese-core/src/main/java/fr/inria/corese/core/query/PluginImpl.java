@@ -1,6 +1,5 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.sparql.api.ComputerProxy;
 import fr.inria.corese.core.approximate.ext.AppxSearchPlugin;
 import java.util.Hashtable;
 

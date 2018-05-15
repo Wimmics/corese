@@ -8,6 +8,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.LOAD;
 import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
+import static fr.inria.corese.kgram.api.core.ExprType.STL_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
@@ -69,7 +70,10 @@ public class GraphSpecificFunction extends TermEval {
                   return proc.approximate(this, env, p, param);
                   
              case APP_SIM:
-                  return proc.approximate(this, env, p);      
+                  return proc.approximate(this, env, p);
+                  
+             case STL_INDEX: 
+                 return proc.index(env, p);
                 
             case DEPTH:
                 return proc.depth(env, p, param[0]);

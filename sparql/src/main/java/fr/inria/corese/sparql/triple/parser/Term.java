@@ -381,6 +381,7 @@ public class Term extends Expression {
                 return new Iterate(name);
 
             case ExprType.DEBUG:
+            case ExprType.SLICE:
                 return new SystemFunction(name);
 
             case ExprType.INDEX:
@@ -472,7 +473,8 @@ public class Term extends Expression {
             case ExprType.XT_OPTIONAL:
             case ExprType.XT_UNION:
             case ExprType.XT_ENTAILMENT:    
-            case ExprType.KGRAM:    
+            case ExprType.KGRAM: 
+            case ExprType.STL_INDEX:    
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALUE:

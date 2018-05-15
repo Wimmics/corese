@@ -24,6 +24,8 @@ public interface GraphProcessor {
     IDatatype approximate (Expr exp, Environment env, Producer p, IDatatype[] param);
     
     IDatatype depth(Environment env, Producer p, IDatatype dt);
+    
+    IDatatype index(Environment env, Producer p);
 
     IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     

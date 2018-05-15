@@ -57,8 +57,6 @@ public interface Evaluator {
         
         Object eval(Expr f, Environment e, Producer p, Object[] values);
                         
-        Object eval(Expr f, Environment e, Producer p, Object value);
-
         Expr getDefine(Expr exp, Environment env, Producer p, int n);
                               
         Expr getDefine(Environment env, String name, int n);

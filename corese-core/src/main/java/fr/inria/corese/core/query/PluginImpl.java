@@ -110,6 +110,8 @@ public class PluginImpl
     private static IStorage storageMgr;
     private AppxSearchPlugin pas;
     HashMap<String, Query> queryCache;
+    
+    int index = 0;
 
     public PluginImpl() {
         init();
@@ -223,6 +225,9 @@ public class PluginImpl
                  
              case XT_ENTAILMENT:
                  return entailment(env, p, null);
+                 
+             case STL_INDEX:
+                return index(env, p);    
                    
             default: 
                 return pt.function(exp, env, p);
@@ -685,6 +690,11 @@ public class PluginImpl
      */
     public PluginTransform getPluginTransform () {
         return pt;
+    }
+    
+    @Override
+    public IDatatype index(Environment env, Producer p) {
+        return getValue(index++);
     }
        
     @Override

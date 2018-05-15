@@ -17,7 +17,6 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.compiler.api.ProxyPlugin;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprLabel;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -36,11 +35,8 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.filter.Proxy;
 import fr.inria.corese.sparql.api.GraphProcessor;
-import fr.inria.corese.sparql.api.TransformProcessor;
-import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.datatype.function.StringHelper;
 import fr.inria.corese.sparql.datatype.function.VariableResolverImpl;
-import fr.inria.corese.sparql.triple.parser.Context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,7 +50,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
+public class ProxyInterpreter implements Proxy,  ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
     private static Logger logger = LoggerFactory.getLogger(ProxyInterpreter.class);
@@ -126,12 +122,14 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return plugin;
     }
     
-    @Override
-    public ComputerProxy getComputerPlugin() {
+    public ProxyInterpreter getComputerPlugin() {
         return castPlugin;
     }
     
-    @Override
+    public GraphProcessor getGraphProcessor() {
+        return castPlugin.getGraphProcessor();
+    }
+    
     public ComputerProxy getComputerTransform() {
         return castPlugin.getComputerTransform();
     }
@@ -407,7 +405,6 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return function(exp, env, p, (IDatatype)o1);
     }
     
-    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt) {
         switch (exp.oper()) {
 
@@ -635,7 +632,6 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
         return function(exp, env, p, (IDatatype)o1, (IDatatype)o2);
     }
     
-    @Override
     public IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         boolean b;
 
@@ -751,7 +747,6 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
 
    
     
-    @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param) {
         switch (exp.oper()) {
 
@@ -2067,40 +2062,5 @@ public class ProxyInterpreter implements Proxy, ComputerProxy, ExprType {
      @Override
     public IDatatype eval(Expr exp, Environment env, Producer p, Object[] args) {
         return eval(exp, env, p, (IDatatype[])args);
-    }
-  
-    @Override
-    public Context getContext(Environment env, Producer p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public NSManager getNSM(Environment env, Producer p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-  
-    @Override
-    public IDatatype format(IDatatype[] ldt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TransformVisitor getVisitor(Environment env, Producer prod) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TransformProcessor getTransformer(Environment env, Producer p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TransformProcessor getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype dtgname) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public GraphProcessor getGraphProcessor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

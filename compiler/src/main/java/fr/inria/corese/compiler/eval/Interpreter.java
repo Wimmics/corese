@@ -102,17 +102,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return proxy;
     }
 
-    @Override
     public ProxyInterpreter getComputerProxy() {
         return proxy;
     }
 
-    @Override
-    public ComputerProxy getComputerPlugin() {
+    
+    public ProxyInterpreter getComputerPlugin() {
         return proxy.getComputerPlugin();
     }
 
-    @Override
     public ComputerProxy getComputerTransform() {
         return proxy.getComputerTransform();
     }
@@ -661,13 +659,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     /**
      * Use case: st:process() overloaded by an extension function
      */
-    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] values, Extension ext) {
-        Expr def = ext.get(exp, values);
-        if (def == null) {
-            return null;
-        }
-        return call(exp, env, p, values, def);
-    }
+//    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] values, Extension ext) {
+//        Expr def = ext.get(exp, values);
+//        if (def == null) {
+//            return null;
+//        }
+//        return call(exp, env, p, values, def);
+//    }
 
     public static boolean isDefined(Expr exp) {
         return extension.isDefined(exp);
@@ -754,15 +752,19 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return extension;
     }
 
+    /**
+     * use case:  Eval funcall LDScript function
+     * 
+     */
     @Override
     public IDatatype eval(Expr f, Environment e, Producer p, Object[] values) {
         return eval(f, e, p, (IDatatype[]) values);
     }
 
-    @Override
-    public IDatatype eval(Expr f, Environment e, Producer p, Object value) {
-        return eval(f, e, p, (IDatatype) value);
-    }
+//    @Override
+//    public IDatatype eval(Expr f, Environment e, Producer p, Object value) {
+//        return eval(f, e, p, (IDatatype) value);
+//    }
 
     @Override
     public Expr getDefineMethod(Environment env, String name, Object type, Object[] values) {

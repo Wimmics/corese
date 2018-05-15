@@ -457,9 +457,6 @@ public class Term extends Expression {
             case ExprType.STL_ERRORS:
             case ExprType.STL_VISITED_GRAPH:               
                 return new TemplateVisitor(name);            
-
-//            case ExprType.XT_EXISTS:
-//                return new GraphGenericFunction(name);
                 
             case ExprType.LOAD:
             case ExprType.WRITE:
@@ -1679,7 +1676,7 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-       // System.out.println("********* eval: " + this);
+        //System.out.println("********* eval: " + this);
         return eval.function((Expr) this, env, p);
     }
 }

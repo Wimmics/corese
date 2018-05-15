@@ -11,20 +11,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
  * @author corby
  */
 public interface ComputerProxy {
-    
-    ComputerProxy getComputerPlugin();
-    ComputerProxy getComputerTransform();
-    
-    IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] param);
-    
-    IDatatype function(Expr exp, Environment env, Producer p);
-    IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt);
-    IDatatype function(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
         
-    IDatatype format(IDatatype[] ldt);
-    
-    IDatatype hash(Expr exp, IDatatype dt);
-
     TransformProcessor getTransformer(Environment env, Producer p);
     
     TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname);

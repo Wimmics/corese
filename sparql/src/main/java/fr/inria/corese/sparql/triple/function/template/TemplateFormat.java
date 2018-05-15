@@ -33,7 +33,7 @@ public class TemplateFormat extends TemplateFunction {
             return null;
         }
         
-        return eval.getComputerTransform().format(param);
+        return eval.getGraphProcessor().format(param);
     }   
        
 }

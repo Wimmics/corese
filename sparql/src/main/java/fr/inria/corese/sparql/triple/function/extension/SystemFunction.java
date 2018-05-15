@@ -27,14 +27,22 @@ public class SystemFunction extends TermEval {
         if (param == null) return null;
         
         switch (oper()) {
-            case ExprType.DEBUG: debug(param[0], eval, b, env, p);
+            case ExprType.DEBUG: return debug(param[0], eval, b, env, p);
+            
+            case ExprType.SLICE: return slice(param[0], env);           
         }
         
         return TRUE;
     }
     
-    void debug(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) {
+    IDatatype debug(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) {
         b.setDebug(dt.booleanValue());
+        return TRUE;
+    }
+    
+    IDatatype slice (IDatatype dt, Environment env){
+        env.getQuery().setSlice(dt.intValue());
+        return TRUE;
     }
     
 }

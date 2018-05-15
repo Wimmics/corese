@@ -4590,7 +4590,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(t1);
         int size = map.getTemplateResult().getLabel().length();
-        assertEquals(3934, size);
+        assertEquals(4355, size);
 
     }
 

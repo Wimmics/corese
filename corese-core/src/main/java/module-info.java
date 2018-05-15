@@ -15,7 +15,7 @@ module fr.inria.corese.corese_core {
 	requires transitive fr.inria.corese.compiler;
 	requires org.slf4j;
 	requires java.logging;
-	requires java.xml;
+	//requires java.xml;
 	requires jsonld.java;
 	requires arp;
 	requires java.ws.rs;

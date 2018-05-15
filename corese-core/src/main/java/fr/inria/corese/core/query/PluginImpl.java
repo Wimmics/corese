@@ -24,7 +24,6 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.compiler.api.ProxyPlugin;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -159,8 +158,9 @@ public class PluginImpl
         setMethodHandler(p, env);
     }
     
+    
     @Override
-    public ComputerProxy getComputerTransform(){
+    public PluginTransform getComputerTransform(){
         return pt;
     }
     
@@ -440,6 +440,11 @@ public class PluginImpl
                 return pt.eval(exp, env, p, param);  
         }
 
+    }
+    
+    @Override
+    public IDatatype format(IDatatype[] ldt) {
+        return pt.format(ldt);
     }
     
     @Override
@@ -1162,7 +1167,6 @@ public class PluginImpl
         return pt.getTransformer(env, p);
     } 
     
-    @Override
     public TemplateVisitor getVisitor(Environment env, Producer p){
         return pt.getVisitor(env, p);
     }
@@ -1273,7 +1277,6 @@ public class PluginImpl
         storageMgr.enable(true);
     }
     
-     @Override
     public GraphProcessor getGraphProcessor() {
         return this;
     }

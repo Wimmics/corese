@@ -1,5 +1,6 @@
 package fr.inria.corese.core.transform;
 
+import fr.inria.corese.compiler.eval.Interpreter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +36,9 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.sparql.api.TransformProcessor;
+import fr.inria.corese.sparql.triple.function.script.Funcall;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.slf4j.Logger;
@@ -1180,11 +1184,24 @@ public class Transformer implements TransformProcessor {
             if (ext != null) {
                 Expr function = ext.get(name, (dt == null) ? 0 : 1);
                 if (function != null) {
-                    return (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt);
+                    
+                    Environment en = getEnvironment(env, q);
+                    IDatatype dt1 = new Funcall(name).call((Interpreter) exec.getEvaluator(),
+                        (Binding) en.getBind(), en, exec.getProducer(), (Function) function, param(dt));
+                    
+                    //IDatatype dt2 =  (IDatatype) exec.getEvaluator().eval(function, getEnvironment(env, q), exec.getProducer(), dt);
+                    
+                    return dt1;
                 }
             }
         }
         return def;
+    }
+    
+    IDatatype[] param(IDatatype dt) {
+        IDatatype[] param = new IDatatype[(dt == null) ? 0 : 1];
+        if (dt != null) param[0] = dt;
+        return param;
     }
     
     
@@ -1192,6 +1209,7 @@ public class Transformer implements TransformProcessor {
         if (env == null){
             Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
             mem.init(q);
+            mem.setBind(Binding.create());
             return mem;
         }
         return env;

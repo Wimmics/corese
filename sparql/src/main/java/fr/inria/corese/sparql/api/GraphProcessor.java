@@ -13,6 +13,8 @@ public interface GraphProcessor {
     IDatatype load(IDatatype dtfile, IDatatype format);
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
+    
+    IDatatype format(IDatatype[] ldt);
         
     IDatatype similarity(Environment env, Producer p);
     

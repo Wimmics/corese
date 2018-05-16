@@ -209,10 +209,6 @@ public class EdgeFactory {
         return ee;
     }
     
-//    public Edge copy(Node node, Node pred, Edge ent) {
-//        return copy(node, pred, ent);
-//    }
-    
     public Edge copy(Node node, Node pred, Edge ent) {
         if (ent instanceof EdgeImpl) {
             EdgeImpl ee = ((EdgeImpl)ent).copy();

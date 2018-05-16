@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -90,8 +91,11 @@ public class Mapper {
              case Pointerable.CONTEXT_POINTER:
                  return map(nodes, (Context) obj);
                  
-              case Pointerable.METADATA_POINTER:
-                 return map(nodes, (Metadata) obj);    
+             case Pointerable.METADATA_POINTER:
+                 return map(nodes, (Metadata) obj); 
+                 
+             case Pointerable.DATAPRODUCER_POINTER:
+                 return map(nodes, (DataProducer) obj);                  
         }
         
         return map(nodes, (Object) obj);
@@ -116,7 +120,7 @@ public class Mapper {
                 nodeArray(ent, nodes);
             }
             else {
-                nodes[0] = DatatypeMap.createObject(ent);
+                nodes[0] = DatatypeMap.createObject(g.getEdgeFactory().copy(ent));
             }
             map.add(Mapping.create(qNodes, nodes));           
         }
@@ -161,6 +165,10 @@ public class Mapper {
     
     Mappings map(List<Node> varList, Metadata m){
         return map(varList, m.getList().getValues());
+    } 
+    
+    Mappings map(List<Node> varList, DataProducer d){        
+        return map(varList, d.getList().getValues());
     } 
     
     Mappings mapListOfList(List<Node> varList, List<IDatatype> listOfList){

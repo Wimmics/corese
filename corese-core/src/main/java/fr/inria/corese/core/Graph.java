@@ -62,6 +62,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  *
  */
 public class Graph extends GraphObject implements 
+        Iterable<Edge>,
         fr.inria.corese.sparql.api.Graph, 
         Graphable, TripleStore {
   
@@ -343,9 +344,41 @@ public class Graph extends GraphObject implements
         return this;
     }
     
+    /**
+     * Return edges in specific objects
+     * @return 
+     */
     @Override
-    public Iterable getLoop(){
-        return getEdges();
+    public Iterable<Edge> getLoop() {
+
+        Iterator<Edge> it = iterator();
+
+        return () -> new Iterator<Edge>() {
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+            
+            @Override
+            public Edge next() {
+                Edge edge = it.next();
+                if (edge == null) {
+                    return null;
+                }
+                return getEdgeFactory().copy(edge);
+            }           
+        };
+    }
+
+    /**
+     * Return successive edges in the "same physical" object
+     * It may be necessary to make copy using 
+     * g.getEdgeFactory().copy(edge)
+     * @return 
+     */
+    @Override
+    public Iterator<Edge> iterator() {
+        return getEdges().iterator();
     }
     
     @Override 

@@ -338,8 +338,9 @@ public interface ExprType {
         public static int XT_TRACE       = 448;
         public static int XT_PRETTY      = 449;
         public static int XT_EXISTS      = 450;
-        public static int XT_REMOVE      = 451;
-        public static int XT_NAME        = 452;
+        public static int XT_REMOVE_INDEX= 451;
+        public static int XT_REMOVE      = 452;        
+        public static int XT_NAME        = 453;
      
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

@@ -33,7 +33,7 @@ import java.util.List;
  * ands its marker set.
  * <br>
  *
- * @author Olivier Savoie
+ * @author Olivier Corby, Olivier Savoie
  */
 public class DatatypeMap implements Cst, RDF {
 
@@ -562,13 +562,6 @@ public class DatatypeMap implements Cst, RDF {
         return res;
     }
 
-    public static IDatatype createObject(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        return createObject(Integer.toString(obj.hashCode()), obj);
-    }
-
     public static IDatatype castObject(Object obj) {
         if (obj == null) {
             return null;
@@ -579,6 +572,10 @@ public class DatatypeMap implements Cst, RDF {
         }
         return createObject(obj);
     }
+    
+    public static IDatatype createObject(Object obj) {
+        return createObject(null, obj);
+    }
 
     public static IDatatype createObject(String name, Object obj) {
         if (obj == null) {
@@ -588,9 +585,10 @@ public class DatatypeMap implements Cst, RDF {
             return (IDatatype) ((Node) obj).getDatatypeValue();
         }
         if (obj instanceof Pointerable) {
-            return new CoresePointer(name, (Pointerable) obj);
+            Pointerable ptr = (Pointerable) obj;            
+            return new CoresePointer(name==null?ptr.getDatatypeLabel():name, ptr);
         }
-        IDatatype dt = createLiteral(name, XMLLITERAL, null);
+        IDatatype dt = createLiteral(name==null?Integer.toString(obj.hashCode()):name, XMLLITERAL, null);
         dt.setObject(obj);
         return dt;
     }
@@ -613,6 +611,14 @@ public class DatatypeMap implements Cst, RDF {
 
     public static IDatatype newList(IDatatype... ldt) {
         return new CoreseList(ldt);
+    }
+    
+    public static IDatatype newList(Object... ldt) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Object obj :  ldt) {
+            list.add(getValue(obj));
+        }
+        return new CoreseList(list);
     }
 
     public static IDatatype newIterate(int start, int end) {
@@ -895,32 +901,32 @@ public class DatatypeMap implements Cst, RDF {
     }
 
     // DRAFT
-    public static IDatatype result(IDatatype dt) {
-        switch (dt.getCode()) {
-            // return a copy to prevent side effects with cached IDatatype
-            // use case: parallel threads
-            case IDatatype.INTEGER:
-                if (dt.intValue() < INTMAX) {
-                    dt = newInstance(dt.intValue());
-                }
-                break;
-
-            case IDatatype.BOOLEAN:
-                dt = newInstance(dt.booleanValue());
-                break;
-        }
-        dt.setIndex(IDatatype.RESULT);
-        return dt;
-    }
-
-    public static boolean isResult(IDatatype dt) {
-        return dt.getIndex() == IDatatype.RESULT;
-    }
-
-    public static IDatatype getResultValue(IDatatype dt) {
-        dt.setIndex(IDatatype.VALUE);
-        return dt;
-    }
+//    public static IDatatype result(IDatatype dt) {
+//        switch (dt.getCode()) {
+//            // return a copy to prevent side effects with cached IDatatype
+//            // use case: parallel threads
+//            case IDatatype.INTEGER:
+//                if (dt.intValue() < INTMAX) {
+//                    dt = newInstance(dt.intValue());
+//                }
+//                break;
+//
+//            case IDatatype.BOOLEAN:
+//                dt = newInstance(dt.booleanValue());
+//                break;
+//        }
+//        dt.setIndex(IDatatype.RESULT);
+//        return dt;
+//    }
+//
+//    public static boolean isResult(IDatatype dt) {
+//        return dt.getIndex() == IDatatype.RESULT;
+//    }
+//
+//    public static IDatatype getResultValue(IDatatype dt) {
+//        dt.setIndex(IDatatype.VALUE);
+//        return dt;
+//    }
 
     public static boolean isBound(IDatatype dt) {
         return dt != UNBOUND;
@@ -1018,7 +1024,15 @@ public class DatatypeMap implements Cst, RDF {
         return val;
     }
     
-    public static IDatatype remove(IDatatype list, IDatatype n) {
+    public static IDatatype remove(IDatatype list, IDatatype elem) {
+        if (!list.isList()) {
+            return null;
+        }
+        list.getList().remove(elem);
+        return list;
+    }
+    
+    public static IDatatype remove(IDatatype list, int n) {
         if (!list.isList()) {
             return null;
         }

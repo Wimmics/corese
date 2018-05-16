@@ -38,6 +38,8 @@ public class ListBinary extends BinaryFunction {
                 return DatatypeMap.append(dt1, dt2);
             case ExprType.XT_REMOVE:
                 return DatatypeMap.remove(dt1, dt2);
+            case ExprType.XT_REMOVE_INDEX:
+                return DatatypeMap.remove(dt1, dt2.intValue());                
         }
         return null;
     }

@@ -2,11 +2,15 @@ package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
-import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
- *
+ * Extension IDatatype that contains LDScript Pointerable object
+ * These objects implement an API that enables them to be processed by LDScript
+ * statements such as for (?e in ?g), xt:gget(?e, "?x", 0) mainly speaking they are iterable
+ * Pointerable objects have specific extension datatypes
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
@@ -20,11 +24,12 @@ public class CoresePointer extends CoreseUndefLiteral {
     private static final IDatatype nsmanager_dt = getGenericDatatype(IDatatype.NSM_DATATYPE);
     private static final IDatatype annotation_dt= getGenericDatatype(IDatatype.METADATA_DATATYPE);
     private static final IDatatype expression_dt= getGenericDatatype(IDatatype.EXPRESSION_DATATYPE);
+    private static final IDatatype producer_dt  = getGenericDatatype(IDatatype.DATAPRODUCER_DATATYPE);
 
     Pointerable pobject;
     
     CoresePointer (Pointerable obj){
-        this("pointer", obj);
+        this(obj.getDatatypeLabel(), obj);
     }
         
     CoresePointer (String name, Pointerable obj){
@@ -43,6 +48,7 @@ public class CoresePointer extends CoreseUndefLiteral {
             case Pointerable.NSMANAGER_POINTER: return nsmanager_dt;
             case Pointerable.METADATA_POINTER:  return annotation_dt;
             case Pointerable.EXPRESSION_POINTER:return expression_dt;
+            case Pointerable.DATAPRODUCER_POINTER:return producer_dt;
             default: return dt;
         }
     }
@@ -63,7 +69,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     }
     
     @Override
-    public Object getObject(){
+    public Pointerable getObject(){
         return pobject;
     }
     
@@ -93,6 +99,17 @@ public class CoresePointer extends CoreseUndefLiteral {
         sb.append("\"").append(getContent()).append("\"");
         sb.append("^^").append(nsm.toPrefix(getDatatypeURI()));
         return sb.toString();
+    }
+    
+     @Override
+    public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
+        if (dt.getCode() != UNDEF || getDatatype()!= dt.getDatatype()) {
+            return super.equalsWE(dt);
+        }
+        if (getObject() == null || dt.getObject() == null) {
+            return getObject() == dt.getObject();
+        }
+        return getObject().equals(dt.getObject());
     }
 
 }

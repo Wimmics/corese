@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -33,6 +34,9 @@ public class UnaryExtension extends TermEval {
         switch (oper()) {
             case ExprType.INDEX:
                 return index(dt, p);
+                
+            case ExprType.XT_CONTENT:
+                return content(dt);
         }
 
         return null;
@@ -45,5 +49,12 @@ public class UnaryExtension extends TermEval {
             return null;
         }
         return value(n.getIndex());
+    }
+    
+    IDatatype content(IDatatype dt){
+        if (dt.getObject() != null){
+            return DatatypeMap.newInstance(dt.getContent());
+        }
+        return dt;
     }
 }

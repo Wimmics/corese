@@ -74,6 +74,7 @@ public interface IDatatype
     public static final String NSM_DATATYPE      = ExpType.DT + "nsmanager";
     public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
     public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
+    public static final String DATAPRODUCER_DATATYPE = ExpType.DT + "producer";
       
     boolean isSkolem();
 

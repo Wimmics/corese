@@ -365,18 +365,23 @@ public class Term extends Expression {
                 return new ListTerm(name);
             case ExprType.XT_COUNT:
                 return new Size(name);
+                
             case ExprType.XT_APPEND:
             case ExprType.XT_CONS:
             case ExprType.XT_MEMBER:
             case ExprType.XT_REMOVE:   
+            case ExprType.XT_REMOVE_INDEX:   
                 return new ListBinary(name);
+                
             case ExprType.XT_SET:
             case ExprType.XT_ADD:
             case ExprType.XT_MERGE:
             case ExprType.IOTA:
                 return new ListNary(name);
+                
             case ExprType.XT_SWAP:
                 return new Swap(name);
+                
             case ExprType.XT_ITERATE:
                 return new Iterate(name);
 
@@ -385,7 +390,9 @@ public class Term extends Expression {
                 return new SystemFunction(name);
 
             case ExprType.INDEX:
+            case ExprType.XT_CONTENT:
                 return new UnaryExtension(name);
+                
             case ExprType.XT_FOCUS:
                 return new Focus(name);
 

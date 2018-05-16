@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.IDatatypeList;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,6 +101,23 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
         return toString();
+    }
+    
+    @Override
+    public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
+        if (dt.isList()) {
+            if (size() != dt.size()) {
+                return false;
+            }
+            int i = 0;
+            for (IDatatype val : this) {
+                if (! val.equals(dt.getValues().get(i++))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return super.equalsWE(dt);
     }
 
     @Override
@@ -300,11 +318,17 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
     
     // modify
     @Override
-    public IDatatype remove(IDatatype n) {
-        if (n.intValue() >= list.size()) {
+    public IDatatype remove(IDatatype dt) {
+        list.remove(dt);
+        return this;
+    }
+    
+    @Override
+    public IDatatype remove(int n) {
+        if (n >= list.size()) {
             return null;
         }
-        list.remove(n.intValue());
+        list.remove(n);
         return this;
     }
     

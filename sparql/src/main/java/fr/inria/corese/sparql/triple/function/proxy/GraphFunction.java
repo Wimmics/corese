@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.function.proxy;
 
 import fr.inria.corese.kgram.api.core.Edge;
-import static fr.inria.corese.kgram.api.core.ExprType.INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
@@ -48,12 +47,12 @@ public class GraphFunction extends TermEval {
                     return DatatypeMap.createObject(p.getGraph());
                 }
                 else {
-                    return access(param[0]);
+                    return access(param[0], p);
                 }
 
             default:
                 switch (param.length) {
-                    case 1: return access(param[0]);
+                    case 1: return access(param[0], p);
                     default: return null;
                 }
                 
@@ -61,9 +60,12 @@ public class GraphFunction extends TermEval {
         }
     }
     
-    IDatatype access(IDatatype dt) {
+    IDatatype access(IDatatype dt, Producer p) {
         if (!(dt.isPointer() && dt.pointerType() == Pointerable.EDGE_POINTER)) {
-            return null;
+            switch (oper()) {
+                case XT_INDEX: return index(dt, p);
+                default: return null;
+            }
         }
         Edge edge = dt.getPointerObject().getEdge();
         switch (oper()) {
@@ -83,6 +85,14 @@ public class GraphFunction extends TermEval {
                 return DatatypeMap.newInstance(edge.getIndex());
         }
         return null;
+    }
+    
+    IDatatype index(IDatatype dt, Producer p) {
+        Node n = p.getNode(dt);
+        if (n == null) {
+            return null;
+        }
+        return value(n.getIndex());
     }
 
 }

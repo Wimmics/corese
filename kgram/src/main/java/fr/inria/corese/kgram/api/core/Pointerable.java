@@ -21,6 +21,7 @@ public interface Pointerable extends Loopable {
     public static final int METADATA_POINTER = 8;
     public static final int DATASET_POINTER  = 9;
     public static final int EXPRESSION_POINTER  = 10;
+    public static final int DATAPRODUCER_POINTER  = 11;
     
     int pointerType();
     
@@ -40,5 +41,9 @@ public interface Pointerable extends Loopable {
     Object getValue(String var, int n);
     
     int size();
+    
+    default String getDatatypeLabel() {
+        return Integer.toString(hashCode());
+    }
    
 }

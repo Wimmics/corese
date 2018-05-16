@@ -22,6 +22,11 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public static Edge create(Node source, Node subject, Node predicate, Node objet) {
         return null;
     }
+    
+    @Override
+    public String getDatatypeLabel() {
+        return toString();
+    }
 
     @Override
     public Node getEdgeNode() {

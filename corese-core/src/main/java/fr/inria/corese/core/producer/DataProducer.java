@@ -9,7 +9,9 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphObject;
 import fr.inria.corese.core.edge.EdgeTop;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
 
 /**
@@ -25,7 +27,7 @@ import java.util.ArrayList;
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  */
-public class DataProducer implements Iterable<Edge>, Iterator<Edge> {
+public class DataProducer extends GraphObject implements Iterable<Edge>, Iterator<Edge> {
 
     static final List<Edge> empty     = new ArrayList<Edge>(0);
     
@@ -241,6 +243,42 @@ public class DataProducer implements Iterable<Edge>, Iterator<Edge> {
         last = null;
         glast = null;
         return this;
+    }
+    
+    @Override
+    public Iterable getLoop() {
+        return this;
+    }
+    
+    @Override
+    public int pointerType() {
+        return DATAPRODUCER_POINTER;
+    }
+    
+    public IDatatype getList() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : this) {
+            if (edge != null) {
+                list.add(DatatypeMap.createObject(graph.getEdgeFactory().copy(edge)));
+            }
+        }
+        return DatatypeMap.newInstance(list);
+    }
+    
+    @Override
+    public IDatatype getValue(String var, int n){
+        if (n >= 0) {
+            int i = 0;
+            for (Edge edge : this) {
+                if (i++ == n) {
+                    if (edge != null) {
+                        IDatatype dt = DatatypeMap.createObject(graph.getEdgeFactory().copy(edge));
+                        return dt;
+                    } 
+                }
+            }
+        }
+        return null;
     }
 
     @Override

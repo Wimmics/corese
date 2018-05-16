@@ -734,21 +734,19 @@ public class PluginImpl
      */
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
-       return DatatypeMap.createObject("tmp", getLoop(p, subj, pred, obj));        
+       return DatatypeMap.createObject(getDataProducer(p, subj, pred, obj));        
     }
     
     public IDatatype edge(IDatatype subj, IDatatype pred) {   
-       return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, null));        
+       return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, null));        
     }
     
     public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) {   
-       return DatatypeMap.createObject(getLoop(getProducer(), subj, pred, obj));        
+       return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, obj));        
     }
           
-    Loopable getLoop(Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
-       DataProducer dp = new DataProducer(getGraph(p)).iterate(subj, pred, obj);
-       Loopable loop = () -> dp;
-       return loop;
+    DataProducer getDataProducer(Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
+       return new DataProducer(getGraph(p)).iterate(subj, pred, obj);       
     } 
     
   

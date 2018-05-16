@@ -203,7 +203,7 @@ public class EdgeManagerIndexer
     @Override
     public Iterable<Edge> getEdges() {
         MetaIterator<Edge> meta = new MetaIterator<Edge>();
-        for (Node pred : getProperties()) {
+        for (Node pred : getSortedProperties()) {
             Iterable<Edge> it = extGet(pred);
             meta.next(it);
         }

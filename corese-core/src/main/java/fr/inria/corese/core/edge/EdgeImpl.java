@@ -6,6 +6,8 @@ import fr.inria.corese.core.Graph;
 import java.util.Arrays;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.api.IDatatype;
+import java.util.ArrayList;
 
 /**
  * Graph Edge with n nodes (not only triple)
@@ -274,6 +276,35 @@ public class EdgeImpl extends EdgeTop
      */
     public void setMetadata(boolean metadata) {
         this.metadata = metadata;
+    }
+    
+    @Override
+    ArrayList<IDatatype> getNodeList() {
+        ArrayList<IDatatype> list = new ArrayList();
+        for (int i = 0; i <= nodes.length+1; i++) {
+            list.add(getValue(null, i));
+        }
+        return list;
+    }
+    
+    /**
+     * return s p o v1 .. vn g
+     */
+    @Override
+    public IDatatype getValue(String var, int n) {
+        switch (n) {
+            case 0:
+                return nodeValue(getNode(0));
+            case 1:
+                return nodeValue(getEdgeNode());            
+            default: 
+                if (n <= nodes.length) {
+                    return nodeValue(getNode(n-1));
+                }
+                else {
+                    return nodeValue(getGraph());
+                }
+        }
     }
     
 }

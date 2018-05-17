@@ -1706,15 +1706,15 @@ public class ProxyInterpreter implements Proxy,  ExprType {
     }
     
     IDatatype result(IDatatype dt){
-        return DatatypeMap.result(dt);
+        return dt;
     }
     
     boolean isReturn(IDatatype dt){
-        return dt == null || DatatypeMap.isResult(dt);
+        return dt == null ;
     }
     
     public IDatatype getResultValue(IDatatype dt){
-        return DatatypeMap.getResultValue(dt);
+        return dt;
     }
      
     @Override

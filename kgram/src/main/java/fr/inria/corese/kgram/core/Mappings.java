@@ -96,6 +96,11 @@ public class Mappings extends PointerObject
     public Iterable getLoop() {
         return this;
     }
+    
+    @Override
+    public String getDatatypeLabel() {
+       return String.format("[Mappings: size=%s]", size());
+    }
 
     public void init(Query q) {
         init(q, false);
@@ -260,7 +265,7 @@ public class Mappings extends PointerObject
     }
     
     public String toString(boolean all) {
-        return toString(all, true);     
+        return toString(all, false);     
     }
 
     public String toString(boolean all, boolean ptr) {

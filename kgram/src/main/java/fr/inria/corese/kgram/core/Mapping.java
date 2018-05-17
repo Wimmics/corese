@@ -464,23 +464,24 @@ public class Mapping
     public String toString() {
         return toString("\n");
     }
-        
+     
     String toString(String sep) {    
-        String str = "";
+        StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Node e : nodes) {
-            str += qNodes[i] + "[" + qNodes[i].getIndex() + "]";
-            str += " = " + e + sep;
+            sb.append(qNodes[i]).append("[").append(qNodes[i].getIndex()).append("]");
+            sb.append(" = ").append(e).append(sep);
             if (isPath(qNodes[i])) {
-                str += qNodes[i] + " : " + lPath[i] + sep;
+                sb.append(qNodes[i]).append(" : ").append(lPath[i]).append(sep);
 
-            } else if (e != null && e.getObject() != null) {
-                str += sep + e.getObject() + sep;
             } 
+//            else if (e != null && e.getObject() != null && e.getObject() != this) {
+//                sb.append(sep).append(e.getObject()).append(sep);
+//            } 
             i++;
         }
 
-        return str;
+        return sb.toString();
     }
 
     public List<Node> getNodes(Node var) {

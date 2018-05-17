@@ -97,6 +97,9 @@ public class CoreseDatatype
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
         String value = getLabel();
+        if (isPointer() && getPointerObject() != null){
+            value = getPointerObject().getDatatypeLabel();
+        }
         if (getCode() == INTEGER && !xsd && getDatatypeURI().equals(XSD.xsdinteger)
                 && (! (value.startsWith("0") && value.length() > 1))) {
             // display integer value as is (without datatype)
@@ -111,7 +114,8 @@ public class CoreseDatatype
             String datatype = getDatatype().getLabel();
 
             if (prefix && (datatype.startsWith(RDF.XSD))
-                    || datatype.startsWith(RDF.RDF)) {
+                    || datatype.startsWith(RDF.RDF)
+                    || datatype.startsWith(NSManager.DT)) {
                 datatype = nsm.toPrefix(datatype);
             } else {
                 datatype = "<" + datatype + ">";

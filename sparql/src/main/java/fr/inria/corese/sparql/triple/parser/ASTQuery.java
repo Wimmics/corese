@@ -1340,14 +1340,6 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         }
         return new Let(fst, new Let(snd, rest));
     }
-     
-//    Term let2(ExpressionList expList, Expression exp, Expression body, int n) {            
-//        Variable var = new Variable(LET_VAR + nbd++);
-//        Term fst = defGet(var, exp, n);
-//        ExpressionList list = expList.getList().get(n) ;
-//        Term snd = defLet(list, var);       
-//        return new Let(fst, new Let(snd, body));
-//    }
 
     public Term defLet(Variable var, Constant type, Expression exp) {
         return Term.create("=", var, exp);
@@ -1373,7 +1365,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
      */
     void processMatch(Let term) {
         Expression match = term.getVariableDefinition().getArg(0);
-        Expression list = term.getDefinition();
+        Expression list  = term.getDefinition();
 
         if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
             ExpressionList l = new ExpressionList();
@@ -1387,9 +1379,19 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
                 l.add(defLet(var, list));
             }
 
-            int j = 0;
-            for (Expression arg : match.getArgs()) {
-                l.add(defGenericGet(arg.getVariable(), var, j++));
+            //int j = 0;
+           // for (Expression arg : match.getArgs()) {
+           boolean isRest = match.getTerm().getNestedList() != null && 
+                   match.getTerm().getNestedList().isRest();
+                      
+            for (int i = 0; i<match.getArgs().size(); i++) { 
+                Expression arg = match.getArg(i);
+                if (isRest && i == match.getArgs().size() -1) {
+                    l.add(defRest(arg.getVariable(), var, i));
+                }
+                else {
+                    l.add(defGenericGet(arg.getVariable(), var, i)); //j++));
+                } 
             }
 
             Term let = defineLet(l, term.getBody(), 0);
@@ -1498,6 +1500,12 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
     Term defGenericGet(Variable var, Expression exp, int i) {
         Term fun = createFunction(createQName(Processor.FUN_XT_GGET), exp);
         fun.add(Constant.createString(var.getLabel()));
+        fun.add(Constant.create(i));
+        return defLet(var, fun);
+    }
+    
+    Term defRest(Variable var, Expression exp, int i) {
+        Term fun = createFunction(createQName(Processor.FUN_XT_GREST), exp);
         fun.add(Constant.create(i));
         return defLet(var, fun);
     }

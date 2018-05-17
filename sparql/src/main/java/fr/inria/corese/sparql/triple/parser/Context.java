@@ -411,6 +411,11 @@ public class Context extends ASTObject {
         }
         return DatatypeMap.createList(list);
     }
+    
+     @Override
+    public String getDatatypeLabel() {
+       return String.format("[Context: size=%s]", size());
+    }
 
     /**
      * @return the context

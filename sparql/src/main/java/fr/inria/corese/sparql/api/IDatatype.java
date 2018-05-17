@@ -68,6 +68,7 @@ public interface IDatatype
     public static final String POINTER           = ExpType.DT + "pointer";
     public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";
     public static final String TRIPLE_DATATYPE   = ExpType.DT + "triple";
+    public static final String QUERY_DATATYPE    = ExpType.DT + "query";
     public static final String MAPPINGS_DATATYPE = ExpType.DT + "mappings";
     public static final String MAPPING_DATATYPE  = ExpType.DT + "mapping";
     public static final String CONTEXT_DATATYPE  = ExpType.DT + "context";

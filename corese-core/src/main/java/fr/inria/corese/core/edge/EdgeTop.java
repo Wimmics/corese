@@ -106,4 +106,28 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public TripleStore getTripleStore() {
         return getNode(0).getTripleStore();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Edge) {
+            return equals((Edge) obj);
+        }
+        return false;
+    }
+    
+    boolean equals(Edge edge) {
+        if (nbNode() != edge.nbNode()) {
+            return false;
+        }
+        if (! getEdgeNode().equals(edge.getEdgeNode()) ||
+            ! getGraph().equals(edge.getGraph())) {
+            return false;
+        }
+        for (int i = 0; i<nbNode() ; i++) {
+            if (! getNode(i).equals(edge.getNode(i))){
+                return false;
+            }
+        }
+        return true;
+    }
 }

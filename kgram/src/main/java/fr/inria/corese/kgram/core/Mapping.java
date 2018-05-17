@@ -454,20 +454,29 @@ public class Mapping
     public void setPath(Path[] lp) {
         lPath = lp;
     }
+    
+    @Override
+    public String getDatatypeLabel() {
+        return toString(" ");
+    }
 
     @Override
     public String toString() {
+        return toString("\n");
+    }
+        
+    String toString(String sep) {    
         String str = "";
         int i = 0;
         for (Node e : nodes) {
             str += qNodes[i] + "[" + qNodes[i].getIndex() + "]";
-            str += " = " + e + "\n";
+            str += " = " + e + sep;
             if (isPath(qNodes[i])) {
-                str += qNodes[i] + " : " + lPath[i] + "\n";
+                str += qNodes[i] + " : " + lPath[i] + sep;
 
             } else if (e != null && e.getObject() != null) {
-                str += "\n" + e.getObject() + "\n";
-            }
+                str += sep + e.getObject() + sep;
+            } 
             i++;
         }
 
@@ -711,12 +720,12 @@ public class Mapping
         return n.getDatatypeValue();
     }
 
-    public Object getValue(Node qn) {
+    public DatatypeValue getValue(Node qn) {
         Node n = (qn.isVariable()) ? getNodeValue(qn.getLabel()) : getNode(qn);
         if (n == null) {
             return null;
         }
-        return n.getValue();
+        return n.getDatatypeValue();
     }
 
     @Override

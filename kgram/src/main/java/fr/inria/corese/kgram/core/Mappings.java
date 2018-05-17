@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -306,7 +307,7 @@ public class Mappings extends PointerObject
         return select;
     }
 
-    public Object getValue(Node qNode) {
+    public DatatypeValue getValue(Node qNode) {
         if (size() == 0) {
             return null;
         }
@@ -345,12 +346,12 @@ public class Mappings extends PointerObject
         return map.getQueryNode(var);
     }
 
-    public Object getValue(String var) {
+    public DatatypeValue getValue(String var) {
         Node node = getNode(var);
         if (node == null) {
             return null;
         }
-        return node.getValue();
+        return node.getDatatypeValue();
     }
 
     @Override

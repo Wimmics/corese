@@ -576,7 +576,11 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype createObject(Object obj) {
         return createObject(null, obj);
     }
-
+   
+    static String defaultName(Object obj) {
+        return Integer.toString(obj.hashCode());
+    }
+    
     public static IDatatype createObject(String name, Object obj) {
         if (obj == null) {
             return null;
@@ -586,9 +590,9 @@ public class DatatypeMap implements Cst, RDF {
         }
         if (obj instanceof Pointerable) {
             Pointerable ptr = (Pointerable) obj;            
-            return new CoresePointer(name==null?ptr.getDatatypeLabel():name, ptr);
+            return new CoresePointer(name==null?defaultName(ptr):name, ptr);
         }
-        IDatatype dt = createLiteral(name==null?Integer.toString(obj.hashCode()):name, XMLLITERAL, null);
+        IDatatype dt = createLiteral(name==null?defaultName(obj):name, XMLLITERAL, null);
         dt.setObject(obj);
         return dt;
     }
@@ -951,6 +955,13 @@ public class DatatypeMap implements Cst, RDF {
             return null;
         }
         return dt.getList().rest();
+    }
+    
+    public static IDatatype rest(IDatatype dt, IDatatype index) {
+        if (!dt.isList()) {
+            return null;
+        }
+        return dt.getList().rest(index);
     }
 
     // modify

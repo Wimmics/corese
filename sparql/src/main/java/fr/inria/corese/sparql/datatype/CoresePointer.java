@@ -106,10 +106,10 @@ public class CoresePointer extends CoreseUndefLiteral {
         if (dt.getCode() != UNDEF || getDatatype()!= dt.getDatatype()) {
             return super.equalsWE(dt);
         }
-        if (getObject() == null || dt.getObject() == null) {
-            return getObject() == dt.getObject();
-        }
-        return getObject().equals(dt.getObject());
+        if (getPointerObject() == null || dt.getPointerObject() == null) {
+            return getPointerObject() == dt.getPointerObject();
+        }        
+        return getPointerObject().equals(dt.getPointerObject());
     }
 
 }

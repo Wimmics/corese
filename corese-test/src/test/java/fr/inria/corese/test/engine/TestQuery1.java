@@ -139,6 +139,283 @@ public class TestQuery1 {
 
         return graph;
     }
+    
+    
+    @Test
+    public void testextequal() throws EngineException {
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        String q = "select "
+                + "(kg:equals('ete', 'été') as ?eq)"
+                + "(kg:contains('un été', 'ete') as ?ct)"
+                + "where {}";
+        Mappings map = exec.query(q);
+        IDatatype dt1 = (IDatatype) map.getValue("?eq");
+        IDatatype dt2 = (IDatatype) map.getValue("?ct");
+        assertEquals(true, dt1.booleanValue()&&dt2.booleanValue());
+    }
+    
+      @Test 
+ public void testgraphit() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+        
+        String i = "insert data { "
+                + "graph us:g1 { us:John us:age 10, 20 } "
+                + "graph us:g2 { us:John us:knows us:Jack }"
+                + "}";
+        
+        String q = "select * (xt:toList(xt:graph()) as ?list) "
+                + "(let ((?e1) = ?list) {?e1} as ?t1)"             
+                + "(let ((?e1, ?e2) = ?list) {?e2} as ?t2)"
+                + "(let ((?s, ?p, ?o) = ?t1) {?o} as ?v1)"             
+                + "(let ((?s, ?p, ?o) = ?t2) {?o} as ?v2)"             
+                + "where {"                
+                + "}"           
+               ;        
+        exec.query(i);       
+        Mappings map = exec.query(q);
+        IDatatype dt1 = (IDatatype) map.getValue("?v1");
+        IDatatype dt2 = (IDatatype) map.getValue("?v2");
+        assertEquals(true, dt1.intValue() == 10 && dt2.intValue() == 20);
+}
+    
+       @Test 
+ public void testedge() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+        
+        String i = "insert data { "
+                + "graph us:g1 { us:John us:age 10, 20 } "
+                + "graph us:g2 { us:John us:knows us:Jack }"
+                + "}";
+        
+        String q = "select * "             
+                + "where {"
+                + "values ?t { unnest(xt:edge(us:age)) }"
+                + "}"
+            
+               ;
+        
+        exec.query(i);
+        
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+        IDatatype v1 = (IDatatype) map.get(0).getValue("?t");
+        IDatatype v2 = (IDatatype) map.get(1).getValue("?t");
+        assertEquals(10, v1.getPointerObject().getEdge().getNode(1).getDatatypeValue().intValue());
+        assertEquals(20, v2.getPointerObject().getEdge().getNode(1).getDatatypeValue().intValue());
+        
+}
+    
+    
+       @Test 
+ public void testvalue() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+        
+        String i = "insert data { "
+                + "graph us:g1 { us:John us:age 10 } "
+                + "graph us:g2 { us:John us:knows us:Jack }"
+                + "}";
+        
+        String q = "select * (xt:index(?x) as ?i) (xt:index(?a) as ?j) (xt:index(us:age) as ?k) "               
+                + "where {"
+                + "?x us:age ?a "
+                + "filter (?a = xt:value(?x, us:age))"
+                + "filter (?a = xt:value(?x, us:age, 1))"
+                + "filter (?x = xt:value(?x, us:age, 0))"
+                
+                + "}"
+                + ""
+               ;
+        
+        exec.query(i);
+        
+        Mappings map = exec.query(q);
+        assertEquals(1, map.size()); 
+        
+}
+    
+        @Test
+ public void testLList() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+             
+        String q = "select "
+                + "(xt:reverse(xt:iota(5)) as ?list)"
+                + "(xt:member(xt:iota(5), 5) as ?member)"
+                + "(xt:sort(xt:reverse(xt:iota(5))) as ?sort)"
+                + "(xt:remove(xt:iota(5), 5) as ?remove) "
+                + "(xt:removeindex(xt:iota(5), 0) as ?remindex) "
+                + "(xt:swap(xt:iota(5), 0, 1) as ?swap)"
+                + "where {"
+                + "}"
+                + ""
+               ;
+                
+        Mappings map = exec.query(q);
+        IDatatype rev  = DatatypeMap.newList(5, 4, 3, 2, 1);
+        IDatatype sort = DatatypeMap.newList(1, 2, 3, 4, 5);
+        IDatatype rem   = DatatypeMap.newList(1, 2, 3, 4);
+        IDatatype remi   = DatatypeMap.newList(2, 3, 4, 5);
+        IDatatype sw   = DatatypeMap.newList(2, 1, 3, 4, 5);
+        
+        IDatatype list = (IDatatype) map.getValue("?list");
+        assertEquals(true, list.eq(rev).booleanValue());
+        
+        IDatatype sorted = (IDatatype) map.getValue("?sort");
+        assertEquals(true, sort.eq(sorted).booleanValue());
+        
+        IDatatype remove = (IDatatype) map.getValue("?remove");
+        assertEquals(true, rem.eq(remove).booleanValue());
+        
+        IDatatype remindex = (IDatatype) map.getValue("?remindex");
+        assertEquals(true, remi.eq(remindex).booleanValue());
+        
+        IDatatype swap = (IDatatype) map.getValue("?swap");
+        assertEquals(true, sw.eq(swap).booleanValue());
+
+   }
+ 
+@Test
+    public void testList() throws EngineException {
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        String q = "select "
+                + "(xt:list() as ?nil)"
+                + "(xt:list(1, 2) as ?list)"
+                + "(xt:cons(0, ?list) as ?res)"
+                + "(xt:first(?res) as ?fst)"
+                + "(xt:rest(?res) as ?rst)"
+                + "(us:copy(xt:list(1, 2)) as ?cp)"
+                + "(us:append(xt:list(1, 2), xt:list(3, 4)) as ?app)"
+                + "(xt:list(1, 3) as ?ll) (xt:set(?ll, 1, 2) as ?set)"
+                + "where {}"
+                + "function us:copy(?list) { maplist(xt:self, ?list) }"
+                + ""
+                + "function us:append(?l1, ?l2) {"
+                + "if (xt:size(?l1) = 0, us:copy(?l2),"
+                + "xt:cons(xt:first(?l1), us:append(xt:rest(?l1), ?l2)))}"
+                + "";
+
+        Mappings map = exec.query(q);
+        IDatatype res = (IDatatype) map.getValue("?res");
+        assertEquals(true, res.eq(DatatypeMap.newList(0, 1, 2)).booleanValue());
+        
+        IDatatype fst = (IDatatype) map.getValue("?fst");
+        assertEquals(true, fst.eq(DatatypeMap.ZERO).booleanValue()); 
+        
+        IDatatype rst = (IDatatype) map.getValue("?rst");
+        assertEquals(true, rst.eq(DatatypeMap.newList(1, 2)).booleanValue()); 
+        
+        IDatatype app = (IDatatype) map.getValue("?app");
+        assertEquals(true, app.eq(DatatypeMap.newList(1, 2, 3, 4)).booleanValue()); 
+        
+        IDatatype ll = (IDatatype) map.getValue("?ll");
+        assertEquals(true, ll.eq(DatatypeMap.newList(1, 2)).booleanValue()); 
+    }    
+     
+ 
+    
+        @Test
+ public void testIterate() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+              
+        
+        String q = "select (us:test() as ?s) "
+                + "where {"
+                + "}"
+                + ""
+                + "function us:test() {"
+                + "let (?list = xt:list(), ?sum = 0){"
+                + "for (?i in xt:iterate(1, 10)) {"
+                + "set(?sum = ?sum + ?i)"
+                + "};"
+                + "?sum"
+                + "}"
+                + "}";
+        
+        
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?s");
+        assertEquals(55, dt.intValue());
+}
+    
+        @Test
+ public void testGName() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+                
+        String q = "select (st:cget(st:test1, st:value) as ?b1)  (st:cget(st:test2, st:value) as ?b2) "
+                + "where {"
+                + "bind (st:cset(st:test1, st:value, 10) as ?v1)"
+                + "bind (st:cset(st:test2, st:value, 20) as ?v2)"
+                + "}";
+                
+        
+        Mappings map = exec.query(q);
+        IDatatype v1 = (IDatatype) map.getValue("?b1");
+        IDatatype v2 = (IDatatype) map.getValue("?b2");
+        assertEquals(true, v1.intValue() == 10 && v2.intValue() == 20);
+}
+    
+    
+    @Test
+ public void testGName2() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+        
+        String i = "insert data { "
+                + "graph us:g1 { us:John us:age 10 } "
+                + "graph us:g2 { us:John us:knows us:Jack }"
+                + "}";
+        
+        String q = "select * where {"
+                + "graph ?g { "
+                + "?s ?p ?o bind (xt:name() as ?g1) optional { ?s ?q ?r  bind(xt:name() as ?g2)  } "
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        
+        Mappings map = exec.query(q);
+        for (Mapping m : map) {
+            IDatatype g1 = (IDatatype) m.getValue("?g1");
+            IDatatype g2 = (IDatatype) m.getValue("?g2");
+            assertEquals(true, g1.equals(g2));
+        }
+ }
+    
+    @Test
+ public void testAccess() throws LoadException, EngineException{
+        Graph gg = Graph.create();
+        QueryProcess exec = QueryProcess.create(gg);
+        
+        String i = "insert data { us:John us:age 10 }";
+        
+        String q = "select "
+                + "(xt:subject(?t) as ?s) (xt:property(?t) as ?p) "
+                + "(xt:object(?t) as ?o)  (xt:graph(?t) as ?g) "
+                + "where {"
+                + "values ?t { unnest( xt:graph() )}"
+                + "}";
+        
+        exec.query(i);
+        
+        Mappings map = exec.query(q);
+        IDatatype s = (IDatatype) map.getValue("?s");
+        IDatatype p = (IDatatype) map.getValue("?p");
+        IDatatype o = (IDatatype) map.getValue("?o");
+        IDatatype g = (IDatatype) map.getValue("?g");
+        
+        assertEquals(NSManager.USER+"John", s.getLabel());
+        assertEquals(NSManager.USER+"age",  p.getLabel());
+        assertEquals(10,  o.intValue());
+        assertEquals(NSManager.KGRAM+"default",  g.getLabel());
+ }
+ 
+    
+    
 
     
 @Test
@@ -3447,29 +3724,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
-    public void testList() throws EngineException {
-        QueryProcess exec = QueryProcess.create(Graph.create());
-        String q = "select "
-                + "(xt:list() as ?nil)"
-                + "(xt:list(1, 2) as ?list)"
-                + "(xt:cons(0, ?list) as ?res)"
-                + "(xt:reverse(?res) as ?rev)"
-                + "(xt:first(?res) as ?fst)"
-                + "(xt:rest(?res) as ?rst)"
-                + "(xt:copy(xt:list(1, 2)) as ?cp)"
-                + "(xt:append(xt:list(1, 2), xt:list(3, 4)) as ?app)"
-                + "where {}"
-                + "function xt:copy(?list) { maplist(xt:self, ?list) }"
-                + ""
-                + "function xt:append(?l1, ?l2) {"
-                + "if (xt:size(?l1) = 0, xt:copy(?l2),"
-                + "xt:cons(xt:first(?l1), xt:append(xt:rest(?l1), ?l2)))}"
-                + "";
-
-        Mappings map = exec.query(q);
-        assertEquals(true, true);
-    }
+   
 
     @Test
     public void testExtFun10() throws EngineException {
@@ -4590,7 +4845,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(t1);
         int size = map.getTemplateResult().getLabel().length();
-        assertEquals(4355, size);
+        assertEquals(3934, size);
 
     }
 

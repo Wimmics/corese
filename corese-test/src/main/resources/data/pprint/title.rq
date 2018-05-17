@@ -1,0 +1,4 @@
+prefix dc: <http://purl.org/dc/elements/1.1/>
+select  (group_concat(?t ; separator  = "\n") as ?tt) where {
+?doc dc:title ?t ; dc:creator []
+}

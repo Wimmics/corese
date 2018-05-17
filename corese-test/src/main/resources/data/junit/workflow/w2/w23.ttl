@@ -1,0 +1,30 @@
+[] a sw:Workflow ;
+
+sw:body ( 
+
+[ a sw:Parallel ; sw:body (
+
+
+[ a sw:Workflow ; sw:body (
+  [ a sw:Load ; sw:path <../../../test/mooc/> ]
+  [ a sw:RuleBase ; sw:uri sw:owlrl ]
+ )
+]
+
+[ a sw:Workflow ; sw:body (
+  [ a sw:Load ; sw:path <../../../test/mooc/> ]
+#  [ a sw:RuleBase ; sw:uri sw:rdfs ]
+ )
+]
+
+)]
+
+[ a sw:Query ; sw:body """
+ select * where {
+  values (?g1 ?g2) { unnest(xt:list(st:get(st:graphs))) }
+  graph ?g1 {?x ?p ?y} 
+  filter not exists  {graph ?g2 {?x ?p ?y}}
+ }     
+"""]
+
+)

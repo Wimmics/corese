@@ -1,0 +1,18 @@
+@base <http://www.inria.fr/test/> .
+@prefix c: <http://www.inria.fr/test/> .
+
+graph <g1> {
+   tuple(c:name _:b1  'John' 1)
+   tuple(c:name []  'Jim' 2)
+
+   }
+   
+graph <g2> {
+   tuple(c:name _:b1  'John' 2)
+   }  
+   
+   tuple(c:name _:b1  'John' [])
+    
+  <g1> c:then <g2>
+  <g1> a c:State
+  <g2> a c:State

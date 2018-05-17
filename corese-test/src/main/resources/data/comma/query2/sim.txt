@@ -1,0 +1,5 @@
+SELECT (pSimilarity(?p1, ?p2)  as ?s) WHERE
+{
+ ?p1 rdf:type rdf:Property
+?p2 rdf:type rdf:Property
+}

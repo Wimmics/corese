@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select     *  where {
+?x c:age ?a 
+graph ?g { ?x a ?c }
+}
+

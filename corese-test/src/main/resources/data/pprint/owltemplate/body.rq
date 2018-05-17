@@ -1,0 +1,27 @@
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# kg:pprintAll() run all templates on each value 
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template  kg:body  {
+    
+   kg:pprintAll(?t ; separator = "\n") 
+   ; separator = "\n\n"
+    
+}
+where {
+
+  ?in a owl:Ontology 
+
+  {select distinct ?t where {
+    { ?t ?p ?y 
+    filter (
+      (isURI(?t) && ?y != owl:Ontology && ?p != owl:imports) ||
+      # owl:AllDisjointClasses owl:NegativePropertyAssertion
+      (isBlank(?t) && not exists { ?x ?q ?t } )
+    ) }    
+  }
+  order by ?t}
+        
+}
+

@@ -1,0 +1,7 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT check * WHERE
+{
+ ?x rdf:type c:Person
+?x c:hasCreate ?doc
+?doc a c:Book
+}

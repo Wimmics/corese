@@ -1,0 +1,12 @@
+[] a sw:Workflow ;
+sw:body (
+
+  [ a sw:Update ; sw:body "insert data { us:John foaf:name 'Jon' }" ]
+  
+  [ a sw:Probe  ; sw:debug true ; 
+   sw:exp [ a sw:Query ; sw:display true ;
+    sw:body "select * where { ?x ?p ?y }" ]]
+    
+    [a sw:Dataset ; sw:mode sw:test]
+)
+.

@@ -1,5 +1,5 @@
 module fr.inria.corese.sparql {
-	requires transitive fr.inria.corese.kgram;
+	requires fr.inria.corese.kgram;
 	requires org.slf4j;
 	requires java.sql;
 	exports fr.inria.corese.sparql.triple.parser;

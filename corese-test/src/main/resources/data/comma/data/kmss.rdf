@@ -1,0 +1,20 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:c="http://www.inria.fr/acacia/comma#"> 
+
+<c:Lecture rdf:about='http://www.knowledgeboard.com/cgi-bin/library.cgi?action=detail&amp;id=1235'>
+	<c:Designation>Knowledge Management Summer School</c:Designation>
+	<c:Concern><c:KnowledgeManagementTopic/></c:Concern>
+	<c:OrganizedBy>
+		<rdf:Description  rdf:about='http://www.knowledgeboard.com'>
+			<c:Designation>Knowledge Board</c:Designation>
+		</rdf:Description>
+	</c:OrganizedBy>
+	<c:Situated><c:Location><c:Address>Sophia Antipolis</c:Address></c:Location>
+	</c:Situated>
+</c:Lecture>
+
+
+
+</rdf:RDF>

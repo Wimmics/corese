@@ -1,0 +1,27 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?t 
+  if (bound(?fr), 
+     (concat( "_{", ?v, "=", ?fr, "}^{", ?to, "}\\,")), "")
+    
+    if (bound(?p), "(", "")
+    ?e 
+    if (bound(?p), ")", "")
+
+    "\\," 
+  if (?t = m:Integral, concat("d", ?v), "")
+}
+where {
+  ?in a ?t ;
+      m:args (?e)
+      
+  filter(?t in (m:Integral, m:Sigma, m:Prod))
+  
+  optional { ?in m:var  ?v }
+  optional { ?in m:from ?fr ; m:to ?to }
+  optional { ?e a ?p filter(?p = m:Plus) }
+  
+}
+
+

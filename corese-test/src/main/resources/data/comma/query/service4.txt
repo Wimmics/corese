@@ -1,0 +1,10 @@
+prefix p: <http://fr.dbpedia.org/property/>
+insert {?x p:succ ?y }
+
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+ ?x p:succ ?y .
+}
+
+}

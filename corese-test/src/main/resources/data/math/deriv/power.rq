@@ -1,0 +1,16 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+template {
+  "[a m:Mult ; m:args("
+      ?n 
+      if (?n = 1, ?x,
+       concat("[a m:Power ; m:args(",
+	    ?x,
+	    ?n - 1,
+	    ")]")
+  ")]"
+}
+where {
+  ?in a m:Power ;
+      m:args(?x ?n)
+  filter(isLiteral(?n))
+}

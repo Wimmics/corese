@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4039.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nicolas.magaud">
+         <c:FamilyName>Magaud</c:FamilyName>
+         <c:FirstName>Nicolas</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/yves.bertot">
+         <c:FamilyName>Bertot</c:FamilyName>
+         <c:FirstName>Yves</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/lemme.en.html">
+         <c:Designation>Lemme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-2000</c:CreationDate>
+   <c:Title>Changements de représentation des données dans le calcul des constructions inductives </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

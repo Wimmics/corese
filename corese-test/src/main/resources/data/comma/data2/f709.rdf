@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3126.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/pascal.morin">
+         <c:FamilyName>MORIN</c:FamilyName>
+         <c:FirstName>Pascal</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/claude.samson">
+         <c:FamilyName>SAMSON</c:FamilyName>
+         <c:FirstName>Claude</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1997</c:CreationDate>
+   <c:Title>Control of Nonlinear Chained Systems. From the Routh-Hurwitz Stability  Criterion to Time-Varying  Exponential Stabilizers </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

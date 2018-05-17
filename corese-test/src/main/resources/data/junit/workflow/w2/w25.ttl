@@ -1,0 +1,17 @@
+[] a sw:Workflow ;
+sw:body (
+
+[a sw:Query ; sw:body "construct where {}" ]
+
+[a sw:Test ; 
+sw:if "xt:size(st:get(st:graph)) = 0" ;
+sw:then 
+[ a sw:Query ; sw:body "construct where {}" ]
+]
+
+[a sw:Test ; 
+sw:if "xt:size(st:get(st:graph)) = 0" ;
+sw:then 
+[ a sw:Query ; sw:body "construct {us:John foaf:name 'Jon' } where {}" ]
+]
+)

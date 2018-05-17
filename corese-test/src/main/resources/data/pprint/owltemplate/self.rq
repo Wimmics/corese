@@ -1,0 +1,7 @@
+template {
+  "ObjectHasSelf(" kg:uri(?y) ")"  
+}
+where {
+  ?in owl:hasSelf true ;
+    owl:onProperty ?y 
+}

@@ -1,0 +1,21 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2012
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+
+template {
+  group_concat( 
+    if (?exp = "*" || ?exp = "distinct" || ?exp = "reduced", 
+    concat("<span class='keyword'>", xsd:string(?exp), "</span>"), 
+    ?exp)
+    )
+}
+where {
+  ?q ast:select ?in
+  ?in rdf:rest*/rdf:first ?exp
+  
+}
+
+
+

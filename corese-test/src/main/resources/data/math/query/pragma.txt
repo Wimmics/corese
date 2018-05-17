@@ -1,0 +1,7 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+select  ?x (kg:pprint(?x) as ?pp)
+where {
+?x a ?t 
+filter(?t in (m:Matrix, m:Integral, m:Sigma))
+}
+pragma {kg:display kg:template pp:math.rul}

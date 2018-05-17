@@ -1,0 +1,43 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+@prefix pp: <ftp://ftp-sop.inria.fr/wimmics/soft/pprint/>
+
+m:ex1 
+  m:label "My favourite equation";
+  m:author "JL";
+  m:problems (m:InverseProblem) ;
+  m:applications (m:Engineering) ;
+  m:kind (m:Algebraic);
+  
+  
+a m:Integral  ;
+m:from 0 ;
+m:to   1 ;
+
+m:args (
+
+# 3x^2 + 2x + 1
+
+# plus(
+#   mult(3 power(x 2)) 
+#   mult(2 x) 
+#   1)
+
+[a m:Plus ; m:args(
+
+  [a m:Mult ; m:args(3 [a m:Power ;  m:args ([m:name "x"] 2)])]
+
+  [a m:Plus ; m:args(
+  
+    [a m:Mult ; m:args(2 [m:name "x"] )]
+
+    1
+  
+  )]
+
+)]
+
+) ;
+m:var [m:name "x"] 
+
+
+

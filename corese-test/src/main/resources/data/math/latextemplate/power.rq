@@ -1,0 +1,9 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+   ?f "^{" ?r "}"
+}
+where {
+  ?in a m:Power ;
+      m:args(?f ?r)
+}

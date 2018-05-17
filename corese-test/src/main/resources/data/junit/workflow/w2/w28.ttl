@@ -1,0 +1,13 @@
+@base </home/corby/AAServer/data/>
+
+[] owl:imports <profile.ttl>
+[] owl:imports <tutorial/workflow.ttl>
+
+sw:main a sw:Workflow ;
+  sw:body ( 
+  st:tutocontent 
+  ) 
+.
+
+ 
+        

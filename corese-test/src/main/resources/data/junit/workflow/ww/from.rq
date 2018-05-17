@@ -1,0 +1,6 @@
+select *
+from <data/data.ttl>
+from <data/data2.ttl>
+where {
+  ?x ?p ?y
+}

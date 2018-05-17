@@ -1,0 +1,11 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+select *
+where
+{
+?x a m:Integral ;
+m:vars ([m:name ?var]) ;
+m:term*
+[a m:Power; m:args([m:name ?var] ?n)]
+
+?x m:author ?y ; m:label ?l
+}

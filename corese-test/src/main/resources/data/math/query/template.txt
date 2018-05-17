@@ -1,0 +1,6 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+construct 
+where {?x ?p ?y}
+pragma {
+kg:display kg:template </home/corby/workspace/kgengine/src/test/resources/data/math/template>
+}

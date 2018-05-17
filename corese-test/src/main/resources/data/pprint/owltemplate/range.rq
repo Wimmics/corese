@@ -1,0 +1,9 @@
+template {
+    if (bound(?t) || bound(?dt), "Data", "Object")
+    "PropertyRange(" kg:uri(?in) " " kg:uri(?d) ")"
+}
+where {
+  ?in rdfs:range ?d 
+  optional { ?in a ?t  filter(?t  = owl:DatatypeProperty) }
+  optional { ?d a ?dt  filter(?dt = rdfs:Datatype) }
+}

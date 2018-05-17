@@ -1,0 +1,23 @@
+@prefix sp: <http://spinrdf.org/sp#> .
+[ a sp:Select ;
+ sp:star "true"^^xsd:boolean ;
+ sp:where (
+  [ 
+   sp:subject _:sb0 ;
+   sp:predicate _:sb1 ;
+   sp:object _:sb2
+  ]
+
+ ) ;
+ sp:values 
+ [ a sp:Values ;
+  sp:variables (_:sb0 _:sb2 ) ;
+  sp:values (
+   (1 2 )
+   (3 4 )
+  ) ;
+ ]
+]
+_:sb1 sp:varName "p" .
+_:sb0 sp:varName "x" .
+_:sb2 sp:varName "y" .

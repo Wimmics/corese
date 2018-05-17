@@ -206,12 +206,6 @@
                 <version>3.6.1</version>
             </dependency>
             <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>1.4.01</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.graphstream</groupId>
                 <artifactId>gs-core</artifactId>
                 <version>1.2</version>
@@ -395,12 +389,12 @@
                 <version>2.2.b</version>
             </dependency>
             <dependency>
-		<groupId>${semargl.groupId}</groupId>
+                <groupId>${semargl.groupId}</groupId>
                 <artifactId>semargl-core</artifactId>
                 <version>${semargl.version}</version>
             </dependency>
             <dependency>
-		<groupId>${semargl.groupId}</groupId>
+                <groupId>${semargl.groupId}</groupId>
                 <artifactId>semargl-rdfa</artifactId>
                 <version>${semargl.version}</version>
             </dependency>
@@ -450,6 +444,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${surefire.version}</version>
                     <configuration>
+                        <trimStackTrace>false</trimStackTrace>
                         <testFailureIgnore>true</testFailureIgnore>
                         <properties>
                             <property>
@@ -484,7 +479,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-		<version>1.0.1</version> 
+                <version>1.0.1</version>
                 <configuration>
                     <flattenMode>ossrh</flattenMode>
                     <updatePomFile>true</updatePomFile>
@@ -526,7 +521,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.4.201502262128</version>
+                <version>0.8.1</version>
                 <configuration>
                     <destFile>${sonar.jacoco.reportPath}</destFile>
                     <append>true</append>
@@ -640,11 +635,11 @@
         </profile>
         <profile>
             <id>java9</id>
-	    <activation>
-		    <property>
-			    <name>!skip.java9</name> 
-		    </property>
-	    </activation>
+            <activation>
+                <property>
+                    <name>!skip.java9</name>
+                </property>
+            </activation>
             <properties>
             </properties>
             <build>
@@ -677,7 +672,6 @@
                                 <goals>
                                     <goal>compile</goal>
                                 </goals>
-                                <!-- recompile everything for target VM except the module-info.java -->
                             </execution>
                         </executions>
                         <!-- defaults for compile and testCompile -->

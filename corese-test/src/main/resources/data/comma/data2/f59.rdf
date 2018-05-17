@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2622.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/helmut.alt">
+         <c:FamilyName>Alt</c:FamilyName>
+         <c:FirstName>Helmut</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/michael.godau">
+         <c:FamilyName>Godau</c:FamilyName>
+         <c:FirstName>Michael</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/sue.whitesides">
+         <c:FamilyName>Whitesides</c:FamilyName>
+         <c:FirstName>Sue</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1995</c:CreationDate>
+   <c:Title>Universal 3-Dimensional Visibility Representations for Graphs </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

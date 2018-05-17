@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs99 "http://www.w3.org/TR/1999/PR-rdf-schema-19990303#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY ci     "http://www.inria.fr/acacia/comma/instance#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"
+  xmlns:c="&c;" xmlns:ci="&ci;" xmlns:xsd='&xsd;' xmlns:cos='&cos;' >
+  
+  
+  
+
+
+  <c:LegalCorporation rdf:about="http://www.inria.fr/"/>
+  <c:NationalOrganizationGroup rdf:about="http://www.inria.fr/">
+  	<c:Designation>Institut National de Recherche en Informatique et Automatique</c:Designation>
+  	<c:Designation rdf:resource='http://www.inria.fr' />
+	<c:Designation>http://www.inria.fr</c:Designation>
+	<c:Designation rdf:datatype='&xsd;string'>http://www.inria.fr</c:Designation>
+  	<c:Designation rdf:datatype='&rdf;XMLLiteral'>http://www.inria.fr</c:Designation>
+  	<c:Designation xml:lang='en'>http://www.inria.fr</c:Designation>
+  	<c:Designation xml:lang='fr'>http://www.inria.fr</c:Designation>
+
+
+  	<c:Designation rdf:datatype='&xsd;integer'>2</c:Designation>
+  	<c:Designation rdf:datatype='&xsd;long'>2</c:Designation>
+
+  	<rdfs:comment rdf:datatype='&xsd;float'>2</rdfs:comment>
+  	<rdfs:comment rdf:datatype='&xsd;double'>2.0</rdfs:comment>
+
+
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:MathematicsTopic rdf:about="&ci;MathematicsTopic"/></c:IsInterestedBy>
+  	<c:Include><c:LocalOrganizationGroup rdf:about="http://www-sop.inria.fr/"/></c:Include>
+  	<c:Include><c:LocalOrganizationGroup rdf:about="http://www.loria.fr/INRIA/"/></c:Include>
+  	<c:Include><c:LocalOrganizationGroup rdf:about="http://www.irisa.fr/"/></c:Include>
+  	<c:Include><c:LocalOrganizationGroup rdf:about="http://www.inrialpes.fr/"/></c:Include>
+  	<c:Include><c:LocalOrganizationGroup rdf:about="http://www-rocq.inria.fr/"/></c:Include>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Siège de l'INRIA, Domaine de Voluceau - Rocquencourt - B.P. 105, 78153 Le Chesnay Cedex, France</c:Address>
+        <c:PhoneNumber>(33) 1 39 63 55 11</c:PhoneNumber>
+        <c:FaxNumber>(33) 1 39 63 53 30</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+  </c:NationalOrganizationGroup>
+
+
+  
+ 
+   <c:LocalOrganizationGroup rdf:about="http://www-sop.inria.fr/">
+  	<c:Designation>UR Sophia Antipolis de l'INRIA: Institut National de Recherche en Informatique et Automatique</c:Designation>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:MathematicsTopic rdf:about="&ci;MathematicsTopic"/></c:IsInterestedBy>
+  	<c:Include><c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/acacia.en.html"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/tropics/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/cafe/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/caiman/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/comore/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/epidaure/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/icare/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-imagis.imag.fr/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/lemme/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/sloop/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/miaou/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/mistral/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/oasis/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/omega/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/orion/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/prisme/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/robotvis/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/saga/"/></c:Include>
+  	<c:Include><c:ProjectGroup rdf:about="http://www-sop.inria.fr/sinus/"/></c:Include>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Unité de Recherche de Sophia Antipolis, 2004 route des Lucioles - BP 93, 06902 Sophia Antipolis, France</c:Address>
+  		</c:Location>
+  	</c:Situated>
+  </c:LocalOrganizationGroup>
+ 
+  
+ 
+  <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/acacia.en.html">
+  	<c:Designation>Projet Acquisition des Connaissances pour l'Assistance �la Conception par Interaction entre Agents</c:Designation>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:HCITopic rdf:about="&ci;HCITopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:WebTopic rdf:about="&ci;WebTopic"/></c:IsInterestedBy>
+  	<c:Situated>
+  		<c:Location>
+        <c:PhoneNumber>(33) 4 92 38 77 80</c:PhoneNumber>
+        <c:FaxNumber>(33) 4 92 38 77 83</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Researcher rdf:about="http://www.inria.fr/rose.dieng"/></c:Include>
+    <c:Include><c:Researcher rdf:about="http://www.inria.fr/olivier.corby"/></c:Include>
+    <c:Include><c:Researcher rdf:about="http://www.inria.fr/alain.giboin"/></c:Include>
+    <c:Include><c:PhDStudent rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/"/></c:Include>
+    <c:Include><c:PhDStudent rdf:about="http://www-sop.inria.fr/acacia/personnel/Alexandre.Delteil/"/></c:Include>
+    <c:Include><c:PhDStudent rdf:about="http://www-sop.inria.fr/acacia/personnel/Carolina.Medina/"/></c:Include>
+  </c:ProjectGroup>
+
+<c:Organization rdf:about='http://www.a.fr'>
+    <c:Include><c:Researcher rdf:about="http://www.inria.fr/olivier.corby"/></c:Include>
+</c:Organization>
+
+ 
+
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/ariana/">
+    <c:Designation>ARIANA: Project Inverse problems in Earth observation and CartographyTopic</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ImageProcessingTopic rdf:about="&ci;ImageProcessingTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:MarkovianModelsTopic rdf:about="&ci;MarkovianModelsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:CartographyTopic rdf:about="&ci;CartographyTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:EarthObservationTopic rdf:about="&ci;EarthObservationTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)  4 92 38 78 57  </c:PhoneNumber>
+        <c:FaxNumber>  (33)  4 92 38 76 43  </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/cafe/">
+    <c:Designation>CAFE: Projet Computer AlgebraTopic and Functional Equations</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:MathematicsTopic rdf:about="&ci;MathematicsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerAlgebraMethodsTopic rdf:about="&ci;ComputerAlgebraMethodsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:FunctionalEquationsTopic rdf:about="&ci;FunctionalEquationsTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 78 24 </c:PhoneNumber>
+        <c:FaxNumber>(33)4 92 38 78 58  </c:FaxNumber>
+      </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/caiman/">
+    <c:Designation>CAIMAN: Projet commun CERMICS/INRIA de mod�isation et Simulation num�ique de ph�om�es physiques</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+     <c:IsInterestedBy> <c:SimulationTopic rdf:about="&ci;SimulationTopic"/>      </c:IsInterestedBy>
+     <c:IsInterestedBy> <c:WavePropagationTopic rdf:about="&ci;WavePropagationTopic"/> </c:IsInterestedBy>
+     <c:IsInterestedBy> <c:LiquidMechanicsTopic rdf:about="&ci;LiquidMechanicsTopic"/>  </c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 79 03   </c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 77 40   </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/comore/">
+    <c:Designation>COMORE: Modelling and Control of  Renewable Resources</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:AquacultureTopic rdf:about="&ci;AquacultureTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:BiologyTopic rdf:about="&ci;BiologyTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)  4 92 38 78 24   </c:PhoneNumber>
+        <c:FaxNumber>  (33)  4 92 38 78 58   </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+   <c:ProjectGroup rdf:about="http://www-sop.inria.fr/epidaure/">
+    <c:Designation>EPIDAURE: Projet Images, Diagnostic AUtomatique, RobotiquE</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ComputerAnalysisTopic rdf:about="&ci;ComputerAnalysisTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:MedicalImagesProcessingTopic rdf:about="&ci;MedicalImagesProcessingTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)  4 92 38 76 60  </c:PhoneNumber>
+        <c:FaxNumber>  (33)  4 92 38 76 69  </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+   <c:ProjectGroup rdf:about="http://www-sop.inria.fr/icare/">
+    <c:Designation>ICARE: Instrumentation, Control and Architecture of Advanced  Robots</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:RoboticsTopic rdf:about="&ci;RoboticsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NonlinearSystemsTopic rdf:about="&ci;NonlinearSystemsTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 77 38</c:PhoneNumber>
+        <c:FaxNumber>(33) 4 92 38 76 43</c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+   <c:ProjectGroup rdf:about="http://www-imagis.imag.fr/">
+    <c:Designation>IMAGIS: Models, Algorithms, GeometryTopic for Graphics and Image Synthesis</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ComputerGraphicsTopic rdf:about="&ci;ComputerGraphicsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:SimulationTopic rdf:about="&ci;SimulationTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:InteractivityTopic rdf:about="&ci;InteractivityTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:VirtualRealitySimulationTopic rdf:about="&ci;VirtualRealitySimulationTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 76 61 54 26</c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 76 61 54 40</c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+   <c:ProjectGroup rdf:about="http://www-sop.inria.fr/lemme/">
+    <c:Designation>LEMME: Projet Logiciel et Matematiques</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:MathematicsTopic rdf:about="&ci;MathematicsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 76 00  </c:PhoneNumber>
+        <c:FaxNumber>(33) 4 92 38 79 78   </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+ 
+   <c:ProjectGroup rdf:about="http://www-sop.inria.fr/sloop/">
+    <c:Designation>MASCOTTE: Projet Simulation, Object Oriented Languages, Parallelism</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:DiscreteEventSimulationTopic rdf:about="&ci;DiscreteEventSimulationTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ParallelObjectProgrammingTopic rdf:about="&ci;ParallelObjectProgrammingTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)4 92 38 76 75 </c:PhoneNumber>
+        <c:FaxNumber>(33) 4 92 38 79 71 </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/miaou/">
+    <c:Designation>MIAOU: Mathematics and Computing in Automatic Control and Optimization for the User</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:DynamicSystemsTopic rdf:about="&ci;DynamicSystemsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NonlinearSystemsTopic rdf:about="&ci;NonlinearSystemsTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)    </c:PhoneNumber>
+        <c:FaxNumber>  (33)    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/mistral/">
+    <c:Designation>MISTRAL: Projet Mod�isation en Informatique et Syst�es de T��ommunication, Recherche et Applications Logicielles.</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:MathematicalModellingTopic rdf:about="&ci;MathematicalModellingTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 76 75</c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 79 71 </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/oasis/">
+    <c:Designation>OASIS: Projet Active Objects, Semantics, Internet and Security</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ObjectProgrammingTopic rdf:about="&ci;ObjectProgrammingTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:InternetTopic rdf:about="&ci;InternetTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 79 10</c:PhoneNumber>
+        <c:FaxNumber>(33) 4 92 38 76 44</c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/omega/omega-fra.html">
+    <c:Designation>OMEGA: Probabilistic Numerical Methods</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ProbabilitiesTopic rdf:about="&ci;ProbabilitiesTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NumericalAnalysisTopic rdf:about="&ci;NumericalAnalysisTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)  4 92 38 79 32    </c:PhoneNumber>
+        <c:FaxNumber>  (33)  4 92 38 75 50    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>  
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/orion/">
+    <c:Designation>ORION: Smart Problem Solving Environments for Autonomous Systems</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ComputerVisionTopic rdf:about="&ci;ComputerVisionTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:KnowledgeBasedSystemsTopic rdf:about="&ci;KnowledgeBasedSystemsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:SoftwareEngineeringTopic rdf:about="&ci;SoftwareEngineeringTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 76 57    </c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 79 39    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/prisme/">
+    <c:Designation>PRISME: computational Geometry and its applications.</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:MathematicsTopic rdf:about="&ci;MathematicsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:GeometryTopic rdf:about="&ci;GeometryTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 77 38    </c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 76 43    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/robotvis/">
+    <c:Designation>ROBOTVIS : Robotique et Vision par Ordinateur</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:VisualPerceptionTopic rdf:about="&ci;VisualPerceptionTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerVisionTopic rdf:about="&ci;ComputerVisionTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 78 30    </c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 78 45    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/saga/">
+    <c:Designation>SAGA: Syst�es Alg�riques, G�m�rie et Applications</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:AlgebraTopic rdf:about="&ci;AlgebraTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:GeometryTopic rdf:about="&ci;GeometryTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33) 4 92 38 78 57   </c:PhoneNumber>
+        <c:FaxNumber>  (33) 4 92 38 76 43   </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>  
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/sinus/">
+    <c:Designation>SINUS: Simulation Num�ique pour les Sciences de l'ing�ieur</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:SimulationTopic rdf:about="&ci;SimulationTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NumericalAnalysisTopic rdf:about="&ci;NumericalAnalysisTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)  4 92 38 77 90   </c:PhoneNumber>
+        <c:FaxNumber>  (33)  4 92 38 79 80   </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/mefisto/">
+    <c:Designation>SYSDYS : Dynamical Stochastic System</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:StochasticDynamicSystemsTopic rdf:about="&ci;StochasticDynamicSystemsTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NonlinearFilteringTopic rdf:about="&ci;NonlinearFilteringTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:StatisticsTopic rdf:about="&ci;StatisticsTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)    </c:PhoneNumber>
+        <c:FaxNumber>  (33)    </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+ 
+   
+  <c:ProjectGroup rdf:about="http://www-sop.inria.fr/tropics/">
+    <c:Designation>TROPICS: Projet Program Transformations for Scientific Computing</c:Designation>
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:SoftwareEngineeringTopic rdf:about="&ci;SoftwareEngineeringTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ProgrammingTopic rdf:about="&ci;ProgrammingTopic"/></c:IsInterestedBy>
+    <c:Situated>
+      <c:Location>
+        <c:PhoneNumber>(33)</c:PhoneNumber>
+        <c:FaxNumber>(33) </c:FaxNumber>
+       </c:Location>
+    </c:Situated>
+  </c:ProjectGroup>
+
+
+
+ 
+ 
+ 
+
+  <c:Consortium rdf:about="http://www.ii.atos-group.com/sophia/comma/HomePage.htm">
+    <c:Include><c:OrganizationGroup rdf:about="http://www.lirmm.fr/"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.atos-group.com/"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.cselt.it/"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.inria.fr/recherche/equipes/acacia.en.html"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.t-online.de/"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.ce.wunipr.it/"/></c:Include>
+    <c:Include><c:OrganizationGroup rdf:about="http://www.cstb.fr/"/></c:Include>
+
+  </c:Consortium>
+
+ 
+
+  <c:LegalCorporation rdf:about="http://www.cstb.fr/"/>
+
+  <c:LocalOrganizationGroup rdf:about="http://www.cstb.fr/">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:BuildingTopic rdf:about="&ci;BuildingTopic"/></c:IsInterestedBy>
+	  <c:Designation>CSTB - Centre Scientifique et Technique du Batiment</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>4, avenue du Recteur Poincare, 75782 PARIS cedex 16</c:Address>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Researcher rdf:about="http://www.cstb.fr/Bruno.Fies/"/></c:Include>
+
+
+  </c:LocalOrganizationGroup>
+
+ <c:Researcher rdf:about="http://www.cstb.fr/Bruno.Fies/">
+  	<c:FamilyName>Fiès</c:FamilyName>
+  	<c:FirstName>Bruno</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+
+ 
+
+  <c:LegalCorporation rdf:about="http://www.cstb.fr/implantations/sophia.htm"/>
+
+  <c:LocalOrganizationGroup rdf:about="http://www.cstb.fr/implantations/sophia.htm">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:BuildingTopic rdf:about="&ci;BuildingTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:EnergeticEngineeringTopic rdf:about="&ci;EnergeticEngineeringTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:HomeAutomationTopic rdf:about="&ci;HomeAutomationTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+	  <c:Designation>CSTB - Sophia Antipolis</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>290, route des Lucioles, BP 209, 06904 Sophia Antipolis Cedex</c:Address>
+        <c:PhoneNumber>(33) (0)4 93 95 67 00</c:PhoneNumber>
+        <c:FaxNumber>(33) 04 93 95 67 33</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+  </c:LocalOrganizationGroup>
+
+ 
+
+  <c:LegalCorporation rdf:about="http://www.lirmm.fr/"/>
+
+  <c:LocalOrganizationGroup rdf:about="http://www.lirmm.fr/">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:BuildingTopic rdf:about="&ci;BuildingTopic"/></c:IsInterestedBy>
+	  <c:Designation>Laboratoire d'Informatique, de Robotique et de Micro�ectronique de Montpellier</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>161 rue Ada, 34392 Montpellier, France</c:Address>
+        <c:FaxNumber>(33) 467 418 500</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Researcher rdf:about="http://www.lirmm.fr/Joel.Quinqueton/"/></c:Include>
+    <c:Include><c:PhDStudent rdf:about="http://www.lirmm.fr/Adorjan.Kiss/"/></c:Include>
+  </c:LocalOrganizationGroup>
+
+  
+  <c:Researcher rdf:about="http://www.lirmm.fr/Joel.Quinqueton/">
+  	<c:FamilyName>Quinqueton</c:FamilyName>
+  	<c:FirstName>Joel</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:SymbolicLearningTopic rdf:about="&ci;SymbolicLearningTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+
+  
+  <c:PhDStudent rdf:about="http://www.lirmm.fr/Adorjan.Kiss/">
+  	<c:FamilyName>Kiss</c:FamilyName>
+  	<c:FirstName>Adorjan</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:SymbolicLearningTopic rdf:about="&ci;SymbolicLearningTopic"/></c:IsInterestedBy>
+  </c:PhDStudent>
+
+  <c:Manager rdf:about="http://www.lirmm.fr/Joel.Quinqueton/">
+  	<c:Manage><c:Person rdf:about="http://www.lirmm.fr/Adorjan.Kiss/"/></c:Manage>
+  </c:Manager>  
+
+ 
+ 
+  <c:LegalCorporation rdf:about="http://www.telecom-italia.com/"/>
+  <c:NationalOrganizationGroup rdf:about="http://www.telecom-italia.com/">
+    <c:HasForActivity><c:Business rdf:about="&ci;Business"/></c:HasForActivity>
+    <c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+	  <c:Designation>Telecom Italia</c:Designation>
+    <c:Include><c:NationalOrganizationGroup rdf:about="http://www.cselt.it/"/></c:Include>
+  </c:NationalOrganizationGroup>
+
+ 
+
+  <c:LegalCorporation rdf:about="http://www.cselt.it/"/>
+  <c:NationalOrganizationGroup rdf:about="http://www.cselt.it/">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+	  <c:Designation>C-SELT IT System</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Via Reiss Romoli, 274, 10148 Torino, Italia</c:Address>
+        <c:FaxNumber>(39 011) 228 7185</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Engineer rdf:about="http://www.cselt.it/fietta/"/></c:Include>
+  </c:NationalOrganizationGroup>
+
+  
+  <c:Engineer rdf:about="http://www.cselt.it/fietta/">
+  	<c:FamilyName>Fietta</c:FamilyName>
+  	<c:FirstName>Claudio </c:FirstName>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+
+ 
+ <c:LegalCorporation rdf:about="http://www.t-online.de/"/>
+  <c:NationalOrganizationGroup rdf:about="http://www.t-online.de/">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+	  <c:Designation>T-Nova</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Technologiezentrum TZ/FE14, Am Kavalleriesand 3, D-64295 Darmstadt, Germany</c:Address>
+        <c:FaxNumber>(4) 61 51 83 41 24</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+  	<c:Include><c:Engineer rdf:about="http://www.t-online.de/Joachim.Hackstein/"/></c:Include>
+  </c:NationalOrganizationGroup>
+
+ 
+
+  <c:LegalCorporation rdf:about="http://www.deutsch-telekom.com/"/>
+  <c:NationalOrganizationGroup rdf:about="http://www.deutsch-telekom.com/">
+    <c:HasForActivity><c:Business rdf:about="&ci;Business"/></c:HasForActivity>
+    <c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+	  <c:Designation>Deutsch Telekom</c:Designation>
+    <c:Include><c:NationalOrganizationGroup rdf:about="http://www.t-online.de/"/></c:Include>
+  </c:NationalOrganizationGroup>
+
+
+ 
+ 
+
+  
+  <c:Engineer rdf:about="http://www.t-online.de/Joachim.Hackstein/">
+  	<c:FamilyName>Hackstein</c:FamilyName>
+  	<c:FirstName>Joachim</c:FirstName>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:TelecommunicationsTopic rdf:about="&ci;TelecommunicationsTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+ 
+   
+  <c:LegalCorporation rdf:about="http://www.ii.atos-group.com/sophia/"/>
+  <c:InternationalOrganizationGroup rdf:about="http://www.atos-group.com/">
+    <c:HasForActivity><c:Business rdf:about="&ci;Business"/></c:HasForActivity>
+    <c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+	  <c:Designation>Atos Integration Agency of Sophia Antipolis</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Thalassa B, 444 route des Dolines - BP 67, 06902 Sophia Antipolis, France</c:Address>
+        <c:PhoneNumber>+33 4 92 96 88 48</c:PhoneNumber>
+        <c:FaxNumber>+33 4 92 96 88 49</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Engineer rdf:about="http://www.atos-group.com/karp/"/></c:Include>
+    <c:Include><c:Engineer rdf:about="http://www.atos-group.com/perez/"/></c:Include>
+  </c:InternationalOrganizationGroup>
+
+  
+  <c:Engineer rdf:about="http://www.atos-group.com/karp/">
+  	<c:FamilyName>Karp</c:FamilyName>
+  	<c:FirstName>Herve</c:FirstName>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:HasForActivity><c:Administration rdf:about="&ci;Administration"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:SoftwareEngineeringTopic rdf:about="&ci;SoftwareEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:NetworkTopic rdf:about="&ci;NetworkTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+  
+  <c:Engineer rdf:about="http://www.atos-group.com/perez/">
+  	<c:FamilyName>Perez</c:FamilyName>
+  	<c:FirstName>Philippe </c:FirstName>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:SoftwareEngineeringTopic rdf:about="&ci;SoftwareEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:JavaProgrammingTopic rdf:about="&ci;JavaProgrammingTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:NetworkTopic rdf:about="&ci;NetworkTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+  <c:Manager rdf:about="http://www.atos-group.com/karp/">
+  	<c:Manage><c:Person rdf:about="http://www.atos-group.com/perez/"/></c:Manage>
+  </c:Manager>  
+
+ 
+   
+  <c:LegalCorporation rdf:about="http://www.ce.wunipr.it/"/>
+  <c:LocalOrganizationGroup rdf:about="http://www.ce.wunipr.it/">
+    <c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+    <c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+    <c:HasForActivity><c:Academic rdf:about="&ci;Academic"/></c:HasForActivity>
+    <c:IsInterestedBy><c:ObjectProgrammingTopic rdf:about="&ci;ObjectProgrammingTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:NetworkTopic rdf:about="&ci;NetworkTopic"/></c:IsInterestedBy>
+    <c:IsInterestedBy><c:MultiAgentSystemTopic rdf:about="&ci;MultiAgentSystemTopic"/></c:IsInterestedBy>
+	  <c:Designation>University of Parma</c:Designation>
+  	<c:Situated>
+  		<c:Location>
+  			<c:Address>Parco Area delle Scienze, 181A,43100 Parma,Italia</c:Address>
+        <c:PhoneNumber>39 0521 905800</c:PhoneNumber>
+        <c:FaxNumber>39 0521 905723</c:FaxNumber>
+  		</c:Location>
+  	</c:Situated>
+    <c:Include><c:Researcher rdf:about="http://www.ce.wunipr.it/Agostino.Poggi/"/></c:Include>
+    <c:Include><c:PhDStudent rdf:about="http://www.ce.wunipr.it/Giovanni.Rimassa/"/></c:Include>
+  </c:LocalOrganizationGroup>
+
+  
+  <c:Researcher rdf:about="http://www.ce.wunipr.it/Agostino.Poggi/">
+  	<c:FamilyName>Poggi</c:FamilyName>
+  	<c:FirstName>Agostino</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:MultiAgentSystemTopic rdf:about="&ci;MultiAgentSystemTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+
+  
+  <c:PhDStudent rdf:about="http://www.ce.wunipr.it/Giovanni.Rimassa/">
+  	<c:FamilyName>Rimassa</c:FamilyName>
+  	<c:FirstName>Giovanni</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:MultiAgentSystemTopic rdf:about="&ci;MultiAgentSystemTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:JavaProgrammingTopic rdf:about="&ci;JavaProgrammingTopic"/></c:IsInterestedBy>
+  </c:PhDStudent>
+
+  <c:Manager rdf:about="http://www.ce.wunipr.it/Agostino.Poggi/">
+  	<c:Manage><c:Person rdf:about="http://www.ce.wunipr.it/Giovanni.Rimassa/"/></c:Manage>
+  </c:Manager>  
+
+
+ 
+ 
+ 
+
+  <c:Engineer rdf:about="http://www-sop.inria.fr/acacia/personnel/Alexandre.Delteil/">
+  	<c:FamilyName>Delteil</c:FamilyName>
+  	<c:FirstName>Alexandre</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:JavaProgrammingTopic rdf:about="&ci;JavaProgrammingTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:XMLTopic rdf:about="&ci;XMLTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+
+ 
+
+  <c:Researcher rdf:about="http://www.inria.fr/alain.giboin"> 
+  	<c:FamilyName>Giboin</c:FamilyName>
+  	<c:FirstName>Alain</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:HCITopic rdf:about="&ci;HCITopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:CognitiveSciencesTopic rdf:about="&ci;CognitiveSciencesTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+  
+  <c:Employee rdf:about="http://www.inria.fr/alain.giboin">
+  	<c:EmployedBy><c:LocalOrganizationGroup rdf:about="http://www-sop.inria.fr/"/></c:EmployedBy>
+    <c:EmploymentContract><c:FullTime/></c:EmploymentContract>
+  </c:Employee>
+
+  <c:Manager rdf:about="http://www.inria.fr/alain.giboin/">
+  	<c:Manage><c:Person rdf:about="http://www-sop.inria.fr/acacia/personnel/Jerome.Leytier/"/></c:Manage>
+  </c:Manager>
+
+
+ 
+
+  <c:Engineer rdf:about="http://www-sop.inria.fr/acacia/personnel/Carolina.Medina/">
+  	<c:FamilyName>MEDINA</c:FamilyName>
+  	<c:FirstName>Carolina</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:JavaProgrammingTopic rdf:about="&ci;JavaProgrammingTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:XMLTopic rdf:about="&ci;XMLTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+
+
+ 
+
+  <c:Engineer rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/">
+  	<c:FamilyName>Gandon</c:FamilyName>
+  	<c:FirstName>Fabien</c:FirstName>
+  	<c:date>1975-07-31</c:date>
+  	<c:BirthDate>31-07-1975</c:BirthDate>
+  	<c:BirthDate rdf:datatype='&xsd;dateTime'>1975-07-31T12:08:34.9999</c:BirthDate>
+
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Development rdf:about="&ci;Development"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:MultiAgentSystemTopic rdf:about="&ci;MultiAgentSystemTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:JavaProgrammingTopic rdf:about="&ci;JavaProgrammingTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:XMLTopic rdf:about="&ci;XMLTopic"/></c:IsInterestedBy>
+  </c:Engineer>
+  
+  <c:Employee rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/">
+  	<c:EmployedBy><c:LocalOrganizationGroup rdf:about="http://www.ac-nice.fr/"/></c:EmployedBy>
+    <c:EmploymentContract><c:Temporary/></c:EmploymentContract>
+  </c:Employee>
+
+
+  <rdf:Description rdf:about=''  >
+	<rdfs:seeAlso rdf:resource='' />
+	<c:age2  rdf:datatype='&xsd;integer'>1</c:age2>
+	<c:test  rdf:datatype='&xsd;boolean'>true</c:test>
+	<c:test2 rdf:datatype='&xsd;boolean'>false</c:test2>
+	<c:test3></c:test3>
+	
+ </rdf:Description>
+ 
+ 
+<!--<rdf:Description  cos:graph='&c;test' >
+	<c:test4 rdf:resource='' />
+</rdf:Description>
+-->
+
+
+
+  <c:Researcher rdf:about="http://www.inria.fr/olivier.corby">
+  	<c:FamilyName>Corby</c:FamilyName>
+  	<c:date>1959-10-16</c:date>
+	<!-- <c:lang>fr</c:lang> -->
+	
+<c:height rdf:datatype='&xsd;long'>1</c:height>
+<c:height rdf:datatype='&xsd;integer'>2</c:height>
+<c:height rdf:datatype='&xsd;float'>3</c:height>
+<c:height rdf:datatype='&xsd;double'>4</c:height>
+  	<c:FirstName>Olivier</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:ObjectProgrammingTopic rdf:about="&ci;ObjectProgrammingTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:XMLTopic rdf:about="&ci;XMLTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+  
+  <c:Employee rdf:about="http://www.inria.fr/olivier.corby">
+  	<c:EmployedBy><c:LocalOrganizationGroup rdf:about="http://www-sop.inria.fr/"/></c:EmployedBy>
+    <c:EmploymentContract><c:FullTime/></c:EmploymentContract>
+  </c:Employee>
+  
+  <c:Manager rdf:about="http://www.inria.fr/olivier.corby">
+  	<c:Manage><c:Person rdf:about="http://www-sop.inria.fr/acacia/personnel/Laurent.Berthelot/"/></c:Manage>
+  </c:Manager>
+
+
+ 
+ 
+  <c:Researcher rdf:about="http://www.inria.fr/rose.dieng">
+  	<c:date>1959-10-16</c:date>
+
+  	<c:FamilyName>Dieng</c:FamilyName>
+  	<c:FirstName>Rose</c:FirstName>
+  	<c:HasForActivity><c:Research rdf:about="&ci;Research"/></c:HasForActivity>
+  	<c:HasForActivity><c:Education rdf:about="&ci;Education"/></c:HasForActivity>
+  	<c:IsInterestedBy><c:KnowledgeEngineeringTopic rdf:about="&ci;KnowledgeEngineeringTopic"/></c:IsInterestedBy>
+  	<c:IsInterestedBy><c:ComputerScienceTopic rdf:about="&ci;ComputerScienceTopic"/></c:IsInterestedBy>
+  </c:Researcher>
+  
+  <c:Employee rdf:about="http://www.inria.fr/rose.dieng">
+  	<c:EmployedBy><c:LocalOrganizationGroup rdf:about="http://www-sop.inria.fr/"/></c:EmployedBy>
+    <c:EmploymentContract><c:FullTime/></c:EmploymentContract>
+  </c:Employee>
+
+  <c:Manager rdf:about="http://www.inria.fr/rose.dieng">
+  	<c:Manage><c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/acacia.en.html"/></c:Manage>
+  </c:Manager>
+
+
+
+
+</rdf:RDF>

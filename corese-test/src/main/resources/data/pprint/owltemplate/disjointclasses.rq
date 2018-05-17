@@ -1,0 +1,7 @@
+template {
+    "DisjointClasses("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointClasses ;
+    owl:members ?l
+}

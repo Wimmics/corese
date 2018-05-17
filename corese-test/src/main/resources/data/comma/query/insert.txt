@@ -1,0 +1,5 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+insert data {
+<John> a c:Person;
+c:FirstName 'John'
+}

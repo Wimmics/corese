@@ -1,0 +1,15 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+construct {
+?s p:succ ?e
+?s rdfs:label ?l
+}
+ WHERE
+{
+
+<http://fr.dbpedia.org/resource/Auguste> p:succ* ?s ?s p:succ ?e
+?s rdfs:label ?l
+
+}
+

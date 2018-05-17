@@ -1,0 +1,11 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>
+@prefix ex:  <http://www.example.org#>
+
+
+
+
+ex:Man owl:intersectionOf (ex:Human ex:Male)
+
+
+
+

@@ -1,0 +1,51 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+
+<latex.rul> a m:PrettyPrinter
+
+m:pi rdfs:label "\\pi"
+
+m:infinity rdfs:label "\\infty"
+
+m:phi rdfs:label "\\phi"
+
+
+
+m:Integral rdfs:label "\\int"
+
+m:Sigma rdfs:label "\\sum"
+
+m:Prod rdfs:label "\\prod"
+
+m:Plus  rdfs:label "+"
+
+m:Minus rdfs:label "-"
+
+m:Mult  rdfs:label "\\,"
+
+m:Div   rdfs:label "\\frac"
+
+m:Power rdfs:label "^"
+
+m:Sqrt  rdfs:label "\\sqrt"
+
+
+m:Le  rdfs:label "\\le"
+
+m:Lt  rdfs:label "<"
+
+m:Eq  rdfs:label "="
+
+m:Ne rdfs:label "\\ne"
+
+m:Ge  rdfs:label "\\ge"
+
+m:Gt  rdfs:label ">"
+
+
+
+
+
+
+
+

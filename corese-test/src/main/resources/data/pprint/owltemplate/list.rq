@@ -1,0 +1,7 @@
+template {
+  kg:uri(?e) 
+  }
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+pragma {kg:query kg:priority 1}

@@ -1,0 +1,22 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" > 
+  <rdf:Description rdf:nodeID="A0">
+    <foaf:mbox rdf:resource="mailto:eve@work.example"/>
+    <foaf:name>Eve</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <foaf:mbox rdf:resource="mailto:alice@work.example"/>
+    <foaf:name>Alice</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <foaf:name>Fred</foaf:name>
+    <foaf:mbox rdf:resource="mailto:fred@work.example"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

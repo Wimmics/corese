@@ -1,0 +1,2478 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.cs.manchester.ac.uk/substance.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://www.cs.manchester.ac.uk/substance.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="PO4">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="K"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="H2O"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="CO2"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NO3"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Na"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="InorganicSubstance"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Adenine">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Guanine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Purine"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#K">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#H2O"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#PO4"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CO2"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NO3"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Na"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Lactose">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Sucrose"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Disaccharide"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Maltose"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Negative">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Positive"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Neutral"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Charge"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Disaccharide">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Polysaccharide"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Oligosaccharide"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Carbohydrate"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Monosaccharide"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Oligosaccharide">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Carbohydrate"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Monosaccharide"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Disaccharide"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Polysaccharide"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Neutral">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Positive"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Charge"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Negative"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Uracil">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Pyrimidine"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Thymine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cytosine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Alanine">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Methionine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Isoleucine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Hydrophobic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cysteine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Hydrophobic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Lysine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Threonine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Valine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Aromatic">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aliphatic"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SideChainStructure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Hydrophilic">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Hydrophobicity"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Hydrophobic"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Fructose">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Ribose"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glucose"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Monosaccharide"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Carbohydrate">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="AminoAcid"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OrganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Lipid"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="VitaminA">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="DerivedLipid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="FattyAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="FattyAldehide"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="FattyAlcohol"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Lipid">
+    <owl:disjointWith rdf:resource="#Carbohydrate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#AminoAcid"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OrganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Leucine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Hydrophobic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Hydrophobic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Methionine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Hydrophobic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Hydrophobic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Purine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AliphaticAminoAcid">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#AminoAcid"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#Aliphatic"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#FattyAldehide">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#DerivedLipid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#FattyAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#VitaminA"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#FattyAlcohol"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#DerivedLipid">
+    <rdfs:subClassOf rdf:resource="#Lipid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ConjugatedLipid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="SimpleLipid"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Starch">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Polysaccharide"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Chitin"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cellulose"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#CO2">
+    <owl:disjointWith rdf:resource="#K"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#H2O"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NO3"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#PO4"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Na"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Monosaccharide">
+    <owl:disjointWith rdf:resource="#Oligosaccharide"/>
+    <rdfs:subClassOf rdf:resource="#Carbohydrate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Polysaccharide"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Disaccharide"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sucrose">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Maltose"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lactose"/>
+    <rdfs:subClassOf rdf:resource="#Disaccharide"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Guanine">
+    <owl:disjointWith rdf:resource="#Adenine"/>
+    <rdfs:subClassOf rdf:resource="#Purine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AromaticAminoAcid">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#AminoAcid"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Aromatic"/>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Charge">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ValuePartition"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Positive"/>
+          <owl:Class rdf:about="#Neutral"/>
+          <owl:Class rdf:about="#Negative"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Hydrophobic">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Hydrophobicity"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Hydrophilic"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Phenylalanine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Aromatic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Aromatic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Cytosine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Thymine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Uracil"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Pyrimidine"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Pyrimidine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#SideChainStructure">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Aromatic"/>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#ValuePartition"/>
+  </owl:Class>
+  <owl:Class rdf:about="#FattyAlcohol">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#FattyAcid"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#DerivedLipid"/>
+    <owl:disjointWith rdf:resource="#FattyAldehide"/>
+    <owl:disjointWith rdf:resource="#VitaminA"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Trygliceride">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SimpleLipid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Wax"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Na">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NO3"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#K"/>
+    <owl:disjointWith rdf:resource="#CO2"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#H2O"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#PO4"/>
+  </owl:Class>
+  <owl:Class rdf:about="#NO3">
+    <owl:disjointWith rdf:resource="#PO4"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#H2O"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#CO2"/>
+    <owl:disjointWith rdf:resource="#Na"/>
+    <owl:disjointWith rdf:resource="#K"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Serine">
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Polysaccharide">
+    <rdfs:subClassOf rdf:resource="#Carbohydrate"/>
+    <owl:disjointWith rdf:resource="#Monosaccharide"/>
+    <owl:disjointWith rdf:resource="#Disaccharide"/>
+    <owl:disjointWith rdf:resource="#Oligosaccharide"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Threonine">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Hydrophobicity">
+    <rdfs:subClassOf rdf:resource="#ValuePartition"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Hydrophobic"/>
+          <owl:Class rdf:about="#Hydrophilic"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#ConjugatedLipid">
+    <rdfs:subClassOf rdf:resource="#Lipid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#SimpleLipid"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#DerivedLipid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#AminoAcid">
+    <owl:disjointWith rdf:resource="#Lipid"/>
+    <owl:disjointWith rdf:resource="#Carbohydrate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OrganicSubstance"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Lysine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Positive"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Positive"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#NucleicAcid">
+    <owl:disjointWith rdf:resource="#AminoAcid"/>
+    <owl:disjointWith rdf:resource="#Lipid"/>
+    <owl:disjointWith rdf:resource="#Carbohydrate"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OrganicSubstance"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Tyrosine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Aromatic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Aromatic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Cerebroside">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Sulfolipid"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#ConjugatedLipid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Phospholipid"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#H2O">
+    <owl:disjointWith rdf:resource="#K"/>
+    <owl:disjointWith rdf:resource="#Na"/>
+    <owl:disjointWith rdf:resource="#NO3"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#CO2"/>
+    <owl:disjointWith rdf:resource="#PO4"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Glucose">
+    <owl:disjointWith rdf:resource="#Fructose"/>
+    <rdfs:subClassOf rdf:resource="#Monosaccharide"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ribose"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Ribose">
+    <rdfs:subClassOf rdf:resource="#Monosaccharide"/>
+    <owl:disjointWith rdf:resource="#Fructose"/>
+    <owl:disjointWith rdf:resource="#Glucose"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sulfolipid">
+    <rdfs:subClassOf rdf:resource="#ConjugatedLipid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phospholipid"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cerebroside"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Glutamine">
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SpecificAminoAcid"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#SpecificAminoAcid">
+    <rdfs:subClassOf rdf:resource="#AminoAcid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Asparagine">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Proline">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Chitin">
+    <rdfs:subClassOf rdf:resource="#Polysaccharide"/>
+    <owl:disjointWith rdf:resource="#Starch"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cellulose"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Cellulose">
+    <rdfs:subClassOf rdf:resource="#Polysaccharide"/>
+    <owl:disjointWith rdf:resource="#Chitin"/>
+    <owl:disjointWith rdf:resource="#Starch"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Aspartate">
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Positive"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Positive"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Phospholipid">
+    <rdfs:subClassOf rdf:resource="#ConjugatedLipid"/>
+    <owl:disjointWith rdf:resource="#Sulfolipid"/>
+    <owl:disjointWith rdf:resource="#Cerebroside"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Cysteine">
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OrganicSubstance">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Manchester Ontology of Biology subontology; rough classification of substances</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InorganicSubstance"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Tryptophan">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Aromatic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Aromatic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Thymine">
+    <rdfs:subClassOf rdf:resource="#Pyrimidine"/>
+    <owl:disjointWith rdf:resource="#Cytosine"/>
+    <owl:disjointWith rdf:resource="#Uracil"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Positive">
+    <owl:disjointWith rdf:resource="#Neutral"/>
+    <rdfs:subClassOf rdf:resource="#Charge"/>
+    <owl:disjointWith rdf:resource="#Negative"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Arginine">
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Positive"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Positive"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Isoleucine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Wax">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SimpleLipid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Trygliceride"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Isoleucine">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Histidine">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Aromatic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Positive"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Positive"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamate"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Aromatic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#FattyAcid">
+    <rdfs:subClassOf rdf:resource="#DerivedLipid"/>
+    <owl:disjointWith rdf:resource="#VitaminA"/>
+    <owl:disjointWith rdf:resource="#FattyAldehide"/>
+    <owl:disjointWith rdf:resource="#FattyAlcohol"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Glutamate">
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Negative"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Negative"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophilic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Valine">
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#Aliphatic"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="NegativeChargedAminoAcid">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#AminoAcid"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasCharge"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Negative"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#SimpleLipid">
+    <rdfs:subClassOf rdf:resource="#Lipid"/>
+    <owl:disjointWith rdf:resource="#DerivedLipid"/>
+    <owl:disjointWith rdf:resource="#ConjugatedLipid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Aliphatic">
+    <owl:disjointWith rdf:resource="#Aromatic"/>
+    <rdfs:subClassOf rdf:resource="#SideChainStructure"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Glycine">
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Neutral"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Threonine"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasCharge"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Neutral"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Aliphatic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <rdfs:subClassOf rdf:resource="#SpecificAminoAcid"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Hydrophobic"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasHydrophobicity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#hasAromacity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Aliphatic"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="PositiveChargedAminoAcid">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#AminoAcid"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Positive"/>
+            <owl:onProperty>
+              <owl:FunctionalProperty rdf:about="#hasCharge"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#InorganicSubstance">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Manchester Ontology of Biology subontology; rough classification of substances</rdfs:comment>
+    <owl:disjointWith rdf:resource="#OrganicSubstance"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Maltose">
+    <owl:disjointWith rdf:resource="#Lactose"/>
+    <rdfs:subClassOf rdf:resource="#Disaccharide"/>
+    <owl:disjointWith rdf:resource="#Sucrose"/>
+  </owl:Class>
+  <owl:FunctionalProperty rdf:about="#hasHydrophobicity">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+          <owl:Class rdf:about="#AminoAcid"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Hydrophobicity"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="#hasAromacity">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+          <owl:Class rdf:about="#AminoAcid"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#SideChainStructure"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="#hasCharge">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+          <owl:Class rdf:about="#AminoAcid"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Charge"/>
+  </owl:FunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2 beta, Build 288)  http://protege.stanford.edu -->

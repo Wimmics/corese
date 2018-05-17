@@ -1,0 +1,6 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+select   distinct   ?y  where {
+?x c:FirstName "Olivier"
+?x (!rdf:type)@[a c:OrganizationalEntity] + :: $path ?y
+}
+

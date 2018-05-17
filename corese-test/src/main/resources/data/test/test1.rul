@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+<!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY rdfs99 "http://www.w3.org/TR/1999/PR-rdf-schema-19990303#">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY ci     "http://www.inria.fr/acacia/comma/instance#">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY rul   "http://ns.inria.fr/edelweiss/2011/rule#">
+]>
+
+<rdf:RDF xmlns:rdfs="&rdfs;" xmlns:rdf="&rdf;"
+  xmlns:c="&c;" xmlns:ci="&ci;" xmlns:xsd='&xsd;' xmlns:rul='&rul;' 
+  xmlns='&rul;'
+  >
+  
+  
+<rul:rule>
+  <rdfs:comment>Rule test
+  </rdfs:comment>
+
+<rul:body>
+<![CDATA[
+prefix c: <http://www.inria.fr/test/> 
+construct {
+graph ?g {
+  tuple(c:name ?x  'JohnJohn' ?v)
+}
+}
+where {
+graph ?g {   
+  tuple(c:name ?x  'John' ?v)
+}
+}  
+]]>
+</rul:body>
+</rul:rule>
+
+
+</rdf:RDF>

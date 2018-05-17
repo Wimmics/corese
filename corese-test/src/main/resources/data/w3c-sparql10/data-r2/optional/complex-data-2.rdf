@@ -1,0 +1,39 @@
+<rdf:RDF
+    xmlns:ex="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">27</ex:empId>
+    <foaf:name>Fred</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <ex:healthplan rdf:resource="http://example.org/things#HealthPlanA"/>
+    <ex:department>DeptA</ex:department>
+    <foaf:name>Bert</foaf:name>
+    <ex:ssn>000000000</ex:ssn>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <ex:healthplan rdf:resource="http://example.org/things#HealthPlanD"/>
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">29</ex:empId>
+    <foaf:name>Alice</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</ex:empId>
+    <foaf:name>Eve</foaf:name>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <ex:healthplan rdf:resource="http://example.org/things#HealthPlanB"/>
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</ex:empId>
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <ex:healthplan rdf:resource="http://example.org/things#HealthPlanC"/>
+    <ex:empId rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">23</ex:empId>
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

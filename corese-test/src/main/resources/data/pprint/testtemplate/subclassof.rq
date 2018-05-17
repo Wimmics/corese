@@ -1,0 +1,13 @@
+template {
+  group_concat( 
+    "SubClassOf", "(", 
+      kg:uri(?in), " ",  kg:uri(?y),    
+    ")" 
+    ; separator = "\n"
+  )
+  "\n"
+?in
+}
+where {
+  ?in rdfs:subClassOf  ?y 
+}

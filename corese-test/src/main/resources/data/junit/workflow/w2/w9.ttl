@@ -1,0 +1,35 @@
+[] a sw:Workflow ;
+
+sw:param [ st:value true ] ;
+
+sw:body (
+
+   [ a sw:Function ; sw:body 
+      """
+      @export package {
+	function us:if()  { st:get(st:value) }
+	function us:then(){ true }
+	function us:else(){ false }	
+      }
+      """
+    ]
+
+  [ a sw:Test ; 
+     
+    sw:if  "st:set(st:value, false) ; us:if()" ;
+    
+    sw:then 
+      [ a sw:Function ; sw:body 
+	"""
+	  function xt:main(){ us:then() }
+	"""
+      ] ;
+      
+     sw:else 
+      [ a sw:Function ; sw:body 
+	"""
+	  function xt:main(){ us:else() }
+	"""
+      ]
+   ]
+)

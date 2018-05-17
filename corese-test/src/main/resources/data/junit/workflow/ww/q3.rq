@@ -1,0 +1,6 @@
+insert {
+  ?x a foaf:Person
+}
+where {
+  ?x foaf:name ?n
+}

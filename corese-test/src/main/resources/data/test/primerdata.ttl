@@ -1,0 +1,5 @@
+@prefix f: <http://example.com/owl/families/>
+
+us:John a f:Man, f:Woman 
+us:Jack a f:Man, f:Woman 
+.

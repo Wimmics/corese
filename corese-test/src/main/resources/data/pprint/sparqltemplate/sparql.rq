@@ -1,0 +1,40 @@
+prefix h: <http://www.inria.fr/2007/09/11/humans.rdfs#>
+template {
+"<sparql xmlns='http://www.w3.org/2005/sparql-results#'>" "\n"
+"<head>"  "\n"
+"<variable name='x'/>" "\n"
+"<variable name='p'/>" "\n"
+"<variable name='y'/>" "\n"
+"</head>" "\n"
+"<results>" "\n"
+
+group {
+"<result>" "\n"
+
+"<binding name='x'>"
+if (isURI(?x), concat("<uri>",   ?x, "</uri>"),
+  concat("<bnode>", ?x, "</bnode>"))
+"</binding>" "\n"
+
+"<binding name='p'>"
+"<uri>" ?p "</uri>"
+"</binding>" "\n"
+
+"<binding name='y'>"
+if (isURI(?y),   concat("<uri>", ?y, "</uri>"),
+if (isBlank(?y), concat("<bnode>", ?y, "</bnode>"),
+  concat("<literal datatype='", datatype(?y), "'>", ?y, "</literal>")))
+"</binding>" "\n"
+
+"</result>" 
+}
+
+"</results>" "\n"
+"</sparql>" "\n"
+}
+where {
+  select *
+  where {
+    ?x a h:Person ; ?p ?y
+  }
+}

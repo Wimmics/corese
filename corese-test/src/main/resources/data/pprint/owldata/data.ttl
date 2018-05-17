@@ -1,0 +1,57 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>
+@prefix ex:  <http://www.example.org#>
+
+ex:test a owl:Ontology
+
+ex:name rdfs:domain [
+  owl:unionOf (
+  [owl:intersectionOf (ex:Male ex:Human) ; ] 
+  ex:Woman)
+]
+
+ex:Man   owl:disjointWith ex:Woman
+
+ex:Human owl:disjointUnion (ex:Man ex:Woman)
+
+ex:Man owl:equivalentClass [
+  owl:intersectionOf (ex:Human ex:Male)
+]
+
+ex:Human rdfs:subClassOf 
+[ owl:intersectionOf (
+
+[
+  a owl:Restriction ;
+  owl:onProperty ex:hasParent ;
+  owl:maxQualifiedCardinality 1 ;
+  owl:onClass [ owl:intersectionOf (ex:Human ex:Male) ] 
+] 
+
+[
+  a owl:Restriction ;
+  owl:onProperty ex:hasParent ;
+  owl:maxQualifiedCardinality 1 ;
+  owl:onClass ex:Woman 
+]
+
+[
+  a owl:Restriction ;
+  owl:onProperty ex:hasFather ;
+  owl:allValuesFrom [ owl:intersectionOf (ex:Human ex:Male) ] 
+]
+)
+] ;
+
+owl:equivalentClass
+
+[
+  a owl:Restriction ;
+  owl:onProperty ex:hasParent ;
+  owl:maxCardinality 2 
+] 
+
+
+
+
+
+

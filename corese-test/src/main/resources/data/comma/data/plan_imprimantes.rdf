@@ -1,0 +1,13 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+  <CoMMA:Map rdf:about="http://www-sop.inria.fr/semir/impression/DR:I/localisation.html">
+  	<CoMMA:Title>Localisation des imprimantes</CoMMA:Title>
+    <CoMMA:HasForPerceptionMode><CoMMA:VisualPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForRepresentationSystem><CoMMA:GraphicRepresentation/></CoMMA:HasForRepresentationSystem>
+  	<CoMMA:Target>
+  		<CoMMA:Newcomer/>
+    </CoMMA:Target>
+  </CoMMA:Map>
+</rdf:RDF>

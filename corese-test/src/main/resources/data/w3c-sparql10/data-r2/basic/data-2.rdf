@@ -1,0 +1,35 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://example.org/ns#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">11</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">333</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#x">
+    <list3 rdf:nodeID="A4"/>
+    <list2 rdf:nodeID="A0"/>
+    <list1 rdf:nodeID="A2"/>
+    <list0 rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">222</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">22</rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">111</rdf:first>
+  </rdf:Description>
+</rdf:RDF>

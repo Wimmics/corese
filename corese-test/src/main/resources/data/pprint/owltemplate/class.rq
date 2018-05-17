@@ -1,0 +1,9 @@
+template {
+    "Declaration(Class(" kg:uri(?in)  "))"   
+}
+where {
+  ?in a owl:Class 
+  filter(isURI(?in))
+}
+pragma { kg:template kg:priority 1 }
+

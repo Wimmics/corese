@@ -1,0 +1,15 @@
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix f: <http://xmlns.com/foaf/0.1/> . 
+[ a sp:Select ;
+ sp:star "true"^^xsd:boolean ;
+ sp:where   (
+  [ 
+   sp:subject _:sb0 ;
+   sp:predicate rdfs:subClassOf ;
+   sp:object _:sb1
+  ]
+  )
+ ;
+]
+_:sb0 sp:varName "x" .
+_:sb1 sp:varName "y" .

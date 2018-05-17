@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/p">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x2">
+    <x rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</x>
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</r>
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x3">
+    <t rdf:resource="http://example/s"/>
+    <s rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</s>
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</q>
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x1">
+    <z rdf:resource="http://example/p"/>
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</r>
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p>
+  </rdf:Description>
+</rdf:RDF>

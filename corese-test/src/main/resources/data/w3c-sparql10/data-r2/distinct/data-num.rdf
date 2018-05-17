@@ -1,0 +1,51 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/z2">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0e0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0e0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y3">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">01.0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">01.0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/z3">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.3e0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.3e0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x4">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">+1</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">+1</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x2">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x1">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x3">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">01</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">01</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/z5">
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.3e0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y1">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/z4">
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.3e0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/z1">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0e0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0e0</p1>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/y2">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">+1.0</p2>
+    <p1 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">+1.0</p1>
+  </rdf:Description>
+</rdf:RDF>

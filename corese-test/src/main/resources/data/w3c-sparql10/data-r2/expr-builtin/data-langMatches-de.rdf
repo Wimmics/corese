@@ -1,0 +1,9 @@
+<rdf:RDF
+    xmlns="http://example.org/#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" > 
+  <rdf:Description rdf:about="http://example.org/#x">
+    <p5 xml:lang="de-latn-de">abc</p5>
+    <p4 xml:lang="de-de">abc</p4>
+    <p3 xml:lang="de">abc</p3>
+  </rdf:Description>
+</rdf:RDF>

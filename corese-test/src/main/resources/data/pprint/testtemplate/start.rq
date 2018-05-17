@@ -1,0 +1,11 @@
+template {
+  group_concat(?in ; separator = "\n")  
+}
+where {
+  select distinct ?in where {
+    ?in ?p ?y
+    filter (isURI(?in))
+  }
+}
+
+pragma { kg:query kg:priority 1 }

@@ -1,0 +1,6 @@
+prefix f: <http://example.com/owl/families/>
+select *
+(kg:pprint(?x, </home/corby/AData/pprint/owltemplate>) as ?t)
+where {
+?x a owl:Class
+}

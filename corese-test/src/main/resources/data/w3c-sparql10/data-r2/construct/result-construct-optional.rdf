@@ -1,0 +1,8 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/x">
+    <p2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</p2>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,10 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+select *
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+<http://fr.dbpedia.org/resource/Auguste> p:succ ?s
+?s ?p ?v filter(?p != o:wikiPageWikiLink)
+}
+}

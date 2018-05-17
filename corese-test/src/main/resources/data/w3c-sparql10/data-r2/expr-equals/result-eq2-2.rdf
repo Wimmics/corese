@@ -1,0 +1,167 @@
+<rdf:RDF
+    xmlns="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>v2</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>v1</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:binding rdf:nodeID="A7"/>
+    <rs:binding rdf:nodeID="A8"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:solution rdf:nodeID="A6"/>
+    <rs:solution rdf:nodeID="A10"/>
+    <rs:solution rdf:nodeID="A11"/>
+    <rs:solution rdf:nodeID="A12"/>
+    <rs:resultVariable>v1</rs:resultVariable>
+    <rs:solution rdf:nodeID="A13"/>
+    <rs:resultVariable>v2</rs:resultVariable>
+    <rs:solution rdf:nodeID="A14"/>
+    <rs:solution rdf:nodeID="A15"/>
+    <rs:solution rdf:nodeID="A16"/>
+    <rs:solution rdf:nodeID="A17"/>
+    <rs:solution rdf:nodeID="A18"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rs:solution rdf:nodeID="A19"/>
+    <rs:solution rdf:nodeID="A20"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <rs:binding rdf:nodeID="A2"/>
+    <rs:binding rdf:nodeID="A21"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rs:variable>v1</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <rs:variable>v1</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rs:binding rdf:nodeID="A25"/>
+    <rs:binding rdf:nodeID="A26"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <rs:variable>v2</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <rs:variable>v1</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rs:binding rdf:nodeID="A29"/>
+    <rs:binding rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rs:binding rdf:nodeID="A31"/>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:variable>v2</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <rs:variable>v1</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rs:binding rdf:nodeID="A32"/>
+    <rs:binding rdf:nodeID="A4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <rs:variable>v1</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rs:binding rdf:nodeID="A23"/>
+    <rs:binding rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rs:binding rdf:nodeID="A0"/>
+    <rs:binding rdf:nodeID="A30"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <rs:variable>v2</rs:variable>
+    <rs:value>1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rs:binding rdf:nodeID="A33"/>
+    <rs:binding rdf:nodeID="A22"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rs:binding rdf:nodeID="A34"/>
+    <rs:binding rdf:nodeID="A24"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rs:variable>v2</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:datatype="http://example.org/things#myType">zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <rs:variable>v1</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rs:binding rdf:nodeID="A35"/>
+    <rs:binding rdf:nodeID="A28"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <rs:variable>v2</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rs:variable>v2</rs:variable>
+    <rs:value>zzz</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rs:binding rdf:nodeID="A36"/>
+    <rs:binding rdf:nodeID="A27"/>
+  </rdf:Description>
+</rdf:RDF>

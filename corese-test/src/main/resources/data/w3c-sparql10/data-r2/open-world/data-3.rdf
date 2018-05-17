@@ -1,0 +1,32 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/d6">
+    <s rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-23</s>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d2">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-23Z</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d1">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-23</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d3">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-23+00:00</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d4">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2001-01-01</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d5">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2001-01-01Z</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/dt1">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2006-08-23T09:00:00+01:00</r>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d8">
+    <s rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2000-01-01</s>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/d7">
+    <s rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-24Z</s>
+  </rdf:Description>
+</rdf:RDF>

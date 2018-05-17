@@ -1,0 +1,12 @@
+prefix r: <http://dbpedia.org/resource/>
+SELECT debug  ?x WHERE
+{
+ service <http://dbpedia.org/sparql> {
+select distinct ?x where {
+r:Arthur_Rimbaud  (!r:test ) + ?x 
+?x ?p r:Charles_Baudelaire
+}
+}
+}
+order by ?x  
+pragma {kg:path kg:expand 5}

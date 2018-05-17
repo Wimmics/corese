@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1682.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/sylvie.icart">
+         <c:FamilyName>Icart</c:FamilyName>
+         <c:FirstName>Sylvie</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/juliette.leblond">
+         <c:FamilyName>Leblond</c:FamilyName>
+         <c:FirstName>Juliette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/claude.samson">
+         <c:FamilyName>Samson</c:FamilyName>
+         <c:FirstName>Claude</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>Some results on feedback stabilization of a one-link flexible arm</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

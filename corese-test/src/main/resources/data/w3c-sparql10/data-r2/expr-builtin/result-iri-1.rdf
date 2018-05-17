@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>x</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#xu"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:solution rdf:nodeID="A3"/>
+    <rs:resultVariable>v</rs:resultVariable>
+    <rs:resultVariable>x</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:binding rdf:nodeID="A0"/>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+</rdf:RDF>

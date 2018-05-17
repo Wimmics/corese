@@ -1,0 +1,9 @@
+prefix c: <http://www.inria.fr/acacia/comma#>
+SELECT debug * 
+WHERE
+{
+{select distinct ?g where {graph ?g {?x a c:Person}}}
+
+{select (xpath(?g, '/rdf:RDF//*/c:FirstName/text()') as ?name) where {}}
+}
+order by ?name

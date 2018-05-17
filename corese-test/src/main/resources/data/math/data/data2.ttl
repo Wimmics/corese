@@ -1,0 +1,48 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+m:ex2 
+  m:label "My favourite equation";
+  m:author "JL";
+  m:problems (m:InverseProblem) ;
+  m:applications (m:Engineering) ;
+  m:kind (m:Algebraic);
+  
+  
+a m:Integral  ;
+m:from 0 ;
+m:to   m:pi ;
+
+m:args (
+
+# 3xy + 2x + 1 dxdy
+
+# plus(
+#   mult(3 x y) 
+#   mult(2 x) 
+#   1)
+[a m:Integral ;
+  m:from 0 ;
+  m:to   m:pi ;
+
+  m:args(
+
+  [a m:Plus ; m:args(
+
+    [a m:Mult ; m:args(3 
+      [a m:Mult ; m:args([m:name "x"] [m:name "y"])] )]
+
+    [a m:Plus ; m:args(
+    
+      [a m:Mult ; m:args(2 [m:name "x"] )]
+
+      1
+    )]
+  )] 
+) ;
+
+m:var  [m:name "x"]
+
+] 
+) ;
+
+m:var  [m:name "y"]

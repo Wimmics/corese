@@ -1,0 +1,14 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  if (?t = m:Plus, 
+    xsd:integer(kg:pprint(?f)) + xsd:integer(kg:pprint(?r)), 
+  if (?t = m:Mult,
+    xsd:integer(kg:pprint(?f)) * xsd:integer(kg:pprint(?r)), 
+  ""))
+}
+where {
+  ?in a ?t 
+  filter(?t in (m:Plus, m:Mult))
+  ?in m:args(?f ?r)
+}

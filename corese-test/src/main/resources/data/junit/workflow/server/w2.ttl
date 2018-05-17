@@ -1,0 +1,31 @@
+@base </home/corby/AAServer/data/>
+[] owl:imports <profile.ttl>
+
+us:test a sw:Workflow ;
+sw:param [
+  st:uri <http://fr.dbpedia.org/resource/Auguste> ;
+  st:profile st:dbpedia ;
+  st:service "template" ;
+  st:protocol st:ajax
+] ;
+
+sw:body ( st:dbpediawf 
+
+  [ a sw:Parallel ; sw:body (
+
+    [ a sw:Assert ; sw:value 50 ;
+      sw:exp "let ((?c) = select (count(*) as ?c) where { ?x ?p ?y }){ ?c }" ; ]
+      
+    [ a sw:Assert ; sw:value 2869 ;
+      sw:exp "let (?r = st:get(st:value)) { strlen(?r) }" ; ]
+      
+    [ a sw:Assert ; sw:value 50 ;
+      sw:exp "let (?g = st:get(st:graph)) { xt:size(?g) }" ; ]  
+      
+  )]  
+
+)
+.
+
+
+

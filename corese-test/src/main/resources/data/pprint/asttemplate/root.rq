@@ -1,0 +1,15 @@
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+prefix ast: <http://www.inria.fr/2012/ast#>
+template kg:start {
+  ?in 
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?in where {
+    ?in ?p ?y 
+    filter (isURI(?in) || not exists {?z ?q ?in})
+  }
+}

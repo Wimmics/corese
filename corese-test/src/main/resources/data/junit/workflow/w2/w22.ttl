@@ -1,0 +1,27 @@
+[] a sw:Workflow ;
+
+sw:param [ st:max 5 ] ;
+
+sw:body ( us:test )
+
+.
+
+us:test a sw:Workflow ;
+sw:body (
+
+  [ a sw:Test ; 
+  
+    sw:if 
+    """let ((?c) = select (count(*) as ?c) where {?x ?p ?y})
+    { ?c < st:get(st:max) }""" ;
+    
+    sw:then [ a sw:Workflow ; sw:body ( 
+    
+      [ a sw:Update ; sw:body "insert data { [] rdf:value [] }" ]
+	
+	us:test
+	
+    )] ;
+        
+  ]
+)

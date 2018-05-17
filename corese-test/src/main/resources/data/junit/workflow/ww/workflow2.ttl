@@ -1,0 +1,16 @@
+[] a sw:Workflow ;
+  sw:debug true ;
+
+sw:param [
+  sw:debug true ;
+  st:status true
+] ;
+
+sw:body (
+   # [ a sw:Update ; sw:uri <load.rq> ]
+   # [ a sw:Update ; sw:body "load <data/data2.ttl>" ]
+    [ a sw:Load   ; sw:rec true ; sw:path <data>, <data2> ; sw:name sw:test ]
+    [ a sw:Update ; sw:uri <q1.rq> ]
+    [ a sw:Query  ; sw:uri <from.rq> ]
+
+) .

@@ -1,0 +1,23 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+
+  <CoMMA:TransparencyShow rdf:about="http://www-sop.inria.fr/acacia/personnel/Fabien.Gandon/cstb.ppt">
+  	<CoMMA:Title>Presentation of CoMMA to the CSTB</CoMMA:Title>
+    <CoMMA:HasForPerceptionMode><CoMMA:VisualPerceptionMode/></CoMMA:HasForPerceptionMode>
+    <CoMMA:HasForRepresentationSystem><CoMMA:English/></CoMMA:HasForRepresentationSystem>
+    <CoMMA:HasForRepresentationSystem><CoMMA:DynamicImageRepresentation/></CoMMA:HasForRepresentationSystem>
+  	<CoMMA:Target>
+  		<CoMMA:OrganizationalEntity>
+  			<!--CoMMA:IsInterestedBy><CoMMA:KnowledgeManagementTopic/></CoMMA:IsInterestedBy-->
+  			<CoMMA:IsInterestedBy><CoMMA:MultiAgentSystemTopic/></CoMMA:IsInterestedBy>
+  			<CoMMA:IsInterestedBy><CoMMA:SymbolicLearningTopic/></CoMMA:IsInterestedBy>
+  		</CoMMA:OrganizationalEntity>
+    </CoMMA:Target>
+<CoMMA:Concern>
+<CoMMA:KnowledgeManagementTopic/>
+</CoMMA:Concern>
+
+  </CoMMA:TransparencyShow>
+</rdf:RDF>

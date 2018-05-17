@@ -1,0 +1,15 @@
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+prefix r: <http://dbpedia.org/resource/Mod_p_C3_p_A8le:>
+insert {
+?e ?p ?v
+}
+ WHERE
+{
+service <http://fr.dbpedia.org/sparql> {
+?e <http://fr.dbpedia.org/resource/Mod_p_C3_p_A8le:Infobox_Empereur_romain> ?w
+?e ?p ?v
+
+}
+
+}

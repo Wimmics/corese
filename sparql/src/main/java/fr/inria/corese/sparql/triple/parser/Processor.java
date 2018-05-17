@@ -101,15 +101,17 @@ public class Processor {
         public static final String XT_GET      = EXT + "get";
         public static final String XT_REMOVE   = EXT + "remove";
         public static final String XT_REMOVE_INDEX = EXT + "removeindex";
-        public static final String XT_GEN_GET  = EXT + "gget";
+        public static final String XT_GEN_REST  = EXT + "grest";
+        static final String FUN_XT_GREST        = EXT_PREF + "grest";
+        public static final String XT_GEN_GET   = EXT + "gget";
         static final String FUN_XT_GGET         = EXT_PREF + "gget";
         static final String FUN_XT_GET          = EXT_PREF + "get";
         private static final String XT_SET      = EXT + "set";
-        public static final String XT_CONS     = EXT + "cons";        
-        public static final String XT_ADD      = EXT + "add";
+        public static final String XT_CONS      = EXT + "cons";        
+        public static final String XT_ADD       = EXT + "add";
         private static final String XT_SWAP     = EXT + "swap";
         private static final String XT_MAPPING  = EXT + "mapping";
-        public static final String XT_SIZE     = EXT + "size";      
+        public static final String XT_SIZE      = EXT + "size";      
         private static final String XT_FOCUS    = EXT + "focus";
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
@@ -660,6 +662,7 @@ public class Processor {
 		defoper(XT_REMOVE_INDEX,ExprType.XT_REMOVE_INDEX);
 		defoper(XT_SWAP,        ExprType.XT_SWAP);
 		defoper(XT_GEN_GET,     ExprType.XT_GEN_GET);
+		defoper(XT_GEN_REST,    ExprType.XT_GEN_REST);
 		defoper(XT_SET,         ExprType.XT_SET);
  		defoper(XT_REJECT,      ExprType.XT_REJECT);
                

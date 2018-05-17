@@ -354,6 +354,10 @@ public class Term extends Expression {
 
             case ExprType.XT_GEN_GET:
                 return new GetGen(name);
+                
+            case ExprType.XT_GEN_REST:
+                return new Rest(name);
+                
             case ExprType.XT_GET:
                 return new Get(name);
             case ExprType.XT_REVERSE:

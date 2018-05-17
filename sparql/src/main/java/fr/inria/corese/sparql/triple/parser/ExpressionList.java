@@ -17,8 +17,9 @@ import java.util.List;
  */
 
 public class ExpressionList extends ArrayList<Expression> {
-   	
+      	
 	boolean isDistinct = false;
+        private boolean rest = false;
         private boolean nested = false;
 	String separator;
         Expression eseparator;
@@ -113,6 +114,20 @@ public class ExpressionList extends ArrayList<Expression> {
     
     public void add(ExpressionList l){
         list.add(l);
+    }
+    
+    /**
+     * @return the rest
+     */
+    public boolean isRest() {
+        return rest;
+    }
+
+    /**
+     * @param rest the rest to set
+     */
+    public void setRest(boolean rest) {
+        this.rest = rest;
     }
 
 }

@@ -21,8 +21,8 @@ PARSER_BEGIN(SparqlCorese)
   
   	package fr.inria.corese.sparql.triple.javacc1;
 
-	import org.apache.logging.log4j.Logger;
-        import org.apache.logging.log4j.LogManager;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
 	
 	import java.util.List;
 	import java.util.ArrayList;
@@ -63,8 +63,9 @@ PARSER_BEGIN(SparqlCorese)
     boolean printDeprecated = true;
 	
 	/** logger from log4j */
-	private static Logger logger = LogManager.getLogger(SparqlCorese.class);
-	
+	//private static Logger logger = LogManager.getLogger(SparqlCorese.class);
+	private static Logger logger = LoggerFactory.getLogger(SparqlCorese.class);
+
     /** To show some printings */
     boolean show = false;
     /** To show some printings about the part of the parser which deals with Expression */
@@ -2558,7 +2559,8 @@ Term Let (Exp stack) :
         <LPAREN> 
                { list = new ExpressionList(); }
                (
-                arg = LetDef(stack) { list.add(arg); }   ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*                
+                arg = LetDef(stack) { list.add(arg); }   
+                ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*   
                )
         <RPAREN>
         exp = Body(stack)
@@ -2712,6 +2714,7 @@ ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Const
                   <LPAREN>  { glist = new ExpressionList(); } 
                             list = VarList()  { glist.add(list); } <RPAREN>
         ( <COMMA> <LPAREN>  list = VarList()  { glist.add(list); } <RPAREN> )*
+
         { list = glist; }
     )
    <RPAREN>
@@ -2724,7 +2727,9 @@ ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Const
 ExpressionList VarList() : { ExpressionList list;  Variable var; }
 {
     { list = new ExpressionList(); }  
-    var = Var() { list.add(var);  }	 ( <COMMA>  var = Var() { list.add(var); } )* 
+    var = Var() { list.add(var);  }	 
+    ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+    ( <DOT>    var = Var() { list.add(var); list.setRest(true); } ) ?
     { return list; }
 }
 

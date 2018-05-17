@@ -16,6 +16,7 @@ public interface IDatatypeList {
     IDatatype first();
     
     IDatatype rest();
+    IDatatype rest(IDatatype ind);
     
     IDatatype get(IDatatype ind);
 

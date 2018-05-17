@@ -144,10 +144,12 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
         return this;
     }
 
+    @Override
     public Object getObject() {
          return dt.getObject();
     }
 
+    @Override
     public void setObject(Object o) {
         dt.setObject(o);
     }

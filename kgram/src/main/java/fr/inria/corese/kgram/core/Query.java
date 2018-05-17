@@ -18,7 +18,6 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * KGRAM Query
@@ -2606,6 +2605,15 @@ public class Query extends Exp implements Graphable {
         return getEdges();
     }
     
+     @Override
+    public Object getValue(String var, int n) {
+         List<Edge> list = getEdges();
+         if (n >= list.size()) {
+             return null;
+         }
+        return list.get(n);
+    }
+    
     public List<Edge> getEdges(){
         ArrayList<Edge> list = new ArrayList<Edge>();
         getBody().getEdgeList(list);
@@ -2617,6 +2625,11 @@ public class Query extends Exp implements Graphable {
         return QUERY_POINTER;
     }
 
+    @Override
+    public String getDatatypeLabel() {
+        return String.format("[Query]");
+    }
+    
     /**
      * @return the isUseBind
      */

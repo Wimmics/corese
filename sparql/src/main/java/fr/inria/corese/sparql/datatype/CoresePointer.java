@@ -18,6 +18,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     private static final IDatatype dt           = getGenericDatatype(IDatatype.POINTER);
     private static final IDatatype graph_dt     = getGenericDatatype(IDatatype.GRAPH_DATATYPE);
     private static final IDatatype triple_dt    = getGenericDatatype(IDatatype.TRIPLE_DATATYPE);
+    private static final IDatatype query_dt     = getGenericDatatype(IDatatype.QUERY_DATATYPE);
     private static final IDatatype mappings_dt  = getGenericDatatype(IDatatype.MAPPINGS_DATATYPE);
     private static final IDatatype mapping_dt   = getGenericDatatype(IDatatype.MAPPING_DATATYPE);
     private static final IDatatype context_dt   = getGenericDatatype(IDatatype.CONTEXT_DATATYPE);
@@ -40,7 +41,8 @@ public class CoresePointer extends CoreseUndefLiteral {
     @Override
     public IDatatype getDatatype() {
         switch (pointerType()){
-            case Pointerable.EDGE_POINTER:    return triple_dt;
+            case Pointerable.EDGE_POINTER:      return triple_dt;
+            case Pointerable.QUERY_POINTER:     return query_dt;
             case Pointerable.GRAPH_POINTER:     return graph_dt;
             case Pointerable.MAPPINGS_POINTER:  return mappings_dt;
             case Pointerable.MAPPING_POINTER:   return mapping_dt;

@@ -288,10 +288,11 @@ public class Metadata extends ASTObject
     }
     
     
+    @Override
+    public String getDatatypeLabel() {
+       return String.format("[Metadata: size=%s]", size());
+    }
     
-    
-    
-    
-    
+  
 
 }

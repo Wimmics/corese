@@ -820,6 +820,11 @@ public class NSManager extends ASTObject {
         }
         return DatatypeMap.createList(list);
     }
+    
+     @Override
+    public String getDatatypeLabel() {
+       return String.format("[NSManager: size=%s]", size());
+    }
 
     /**
      * @return the record

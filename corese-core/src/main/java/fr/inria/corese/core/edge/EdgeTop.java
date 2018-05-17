@@ -65,7 +65,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         return getNodeList();
     }
 
-    public ArrayList<IDatatype> getNodeList() {
+    ArrayList<IDatatype> getNodeList() {
         ArrayList<IDatatype> list = new ArrayList();
         for (int i = 0; i < 4; i++) {
             list.add(getValue(null, i));

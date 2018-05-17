@@ -344,6 +344,11 @@ public class Graph extends GraphObject implements
         return this;
     }
     
+    @Override
+    public String getDatatypeLabel() {
+       return String.format("[Graph: size=%s]", size());
+    }
+    
     /**
      * Return edges in specific objects
      * @return 

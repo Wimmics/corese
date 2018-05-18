@@ -18,10 +18,11 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.compiler.eval.Interpreter;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
+import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -36,6 +37,9 @@ import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
+import fr.inria.corese.sparql.api.Computer;
+import fr.inria.corese.sparql.triple.function.script.Funcall;
+import fr.inria.corese.sparql.triple.function.script.Function;
 
 
 
@@ -282,13 +286,24 @@ public class QuerySolver  implements SPARQLEngine {
 		events(kgram);
 		
 		pragma(kgram, query);
-		
-		Mappings map  = kgram.query(query, m);
+                kgram.setVisitor(new QuerySolverVisitor(this, kgram));
+                Mappings map  = kgram.query(query, m);
                 //TODO: check memory usage when storing Eval
                 map.setEval(kgram);
 		
 		return map;
 	}
+              
+        void funcall(String fun, IDatatype[] param, Eval kgram) {
+            funcall(fun, param, kgram.getEvaluator(), kgram.getEnvironment(), kgram.getProducer());
+        }
+        
+        void funcall(String name, IDatatype[] param, Evaluator eval, Environment env, Producer p) {
+            Function fun = (Function) eval.getDefine(env, name, param.length);
+            if (fun != null) {
+                new Funcall(name).call((Computer)eval, (Binding)env.getBind(), env, p, fun,  param);
+            }
+        }
         
         Eval makeEval(){
             Eval kgram = Eval.create(producer, evaluator, matcher);

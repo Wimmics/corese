@@ -863,6 +863,11 @@ public class Expression extends TopExp
     public List<String> getMetadataValues(String name) {
         return null;
     }
+    
+    @Override
+    public boolean hasMetadata(int type) {
+        return false;
+    }
 
     @Override
     public Expression getBody() {

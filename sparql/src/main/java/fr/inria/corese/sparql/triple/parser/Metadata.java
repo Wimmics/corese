@@ -40,6 +40,9 @@ public class Metadata extends ASTObject
     public static final int BOUNCE  = 24;
     public static final int SPARQL10  = 25;
     
+    public static final int BEFORE  = 50;
+    public static final int AFTER   = 51;
+
     // uncertainty triple metadata
     public static final int METADATA  = 50;
     public static final int VISITOR   = 51;
@@ -107,7 +110,10 @@ public class Metadata extends ASTObject
         define("@dbfactory",DB_FACTORY);      
         define("@bgp",      BGP); 
         define("@metadata", METADATA);      
-        define("@visitor",  VISITOR);      
+        define("@visitor",  VISITOR);  
+        define("@before",   BEFORE);  
+        define("@after",    AFTER);  
+        
     }
     
     static void define(String str, int type){

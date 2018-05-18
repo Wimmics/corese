@@ -131,6 +131,7 @@ public class Function extends Statement {
         return annot != null;
     }
     
+    @Override
     public boolean hasMetadata(int type) {
         return annot != null && annot.hasMetadata(type);
     }

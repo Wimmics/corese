@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Plugin;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.api.query.Results;
@@ -65,6 +66,7 @@ public class Eval implements ExpType, Plugin {
     public static int count = 0;
     ResultListener listener;
     EventManager manager;
+    private ProcessVisitor visitor;
     private SPARQLEngine sparqlEngine;            
     boolean hasEvent = false;
     // Edge and Node producer
@@ -134,9 +136,12 @@ public class Eval implements ExpType, Plugin {
         match = m;
         plugin = this;
         lPathFinder = new ArrayList<PathFinder>();
+        setVisitor(new DefaultProcessVisitor());
         e.setKGRAM(this);
         initCallback();
     }
+    
+    class DefaultProcessVisitor implements ProcessVisitor {}
     
     void initCallback(){
         local = new HashMap<>();
@@ -206,10 +211,6 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-//    Mappings eval(Query q) {
-//        return eval(null, q, null);
-//    }
-
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
         if (q.isValidate()){
@@ -220,6 +221,7 @@ public class Eval implements ExpType, Plugin {
             Object res = eval(getExpression(q, FUN_START), 
                     toArray(producer.getNode(q)));
         }
+        getVisitor().before();
         {
             if (q.isCheck()) {
                 // Draft
@@ -252,6 +254,7 @@ public class Eval implements ExpType, Plugin {
             debug();
         }
         evaluator.finish(memory);
+        getVisitor().after(results);
         return results;
     }
     
@@ -3168,5 +3171,21 @@ public class Eval implements ExpType, Plugin {
     public void setSPARQLEngine(SPARQLEngine sparqlEngine) {
         this.sparqlEngine = sparqlEngine;
     }
+    
+    /**
+     * @return the visitor
+     */
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
+    }
+
+   
 
 }

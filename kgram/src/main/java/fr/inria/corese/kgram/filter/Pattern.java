@@ -391,4 +391,9 @@ public class Pattern implements ExprType, Expr {
     public DatatypeValue[] getArguments(int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean hasMetadata(int type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

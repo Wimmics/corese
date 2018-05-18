@@ -1475,67 +1475,6 @@ public class Mappings extends PointerObject
         return this;
     }
 
-//
-//	public Solutions union(Solutions s){
-//		return union((Mappings) s);
-//	}
-//
-//	public Solutions join(Solutions s){
-//		return join((Mappings) s);
-//	}
-//
-//	public Solutions minus(Solutions s){
-//		return minus((Mappings) s);
-//	}
-//
-//	public Solutions option(Solutions s){
-//		return option((Mappings) s);
-//	}
-//	@Deprecated
-//	private	void aggregate2(Group group, Evaluator eval, Exp exp, Memory mem, int n){
-//		if (Group.test){
-//			aggregate2(group, eval, exp, mem, n);
-//			return;
-//		}
-//
-//		for (List<Mappings> lGroup :  group.values()){
-//			// lGroup is a list of groups (that share same value for first groupBy variable)
-//
-//			for (Mappings maps : lGroup){
-//				// eval aggregate filter for each group 
-//				// set memory current group
-//				// filter (e.g. count()) will consider this group
-//				if (hasEvent) maps.setEventManager(manager);
-//				mem.setGroup(maps);
-//				maps.apply(eval, exp, mem, n);
-//				mem.setGroup(null);
-//			}
-//		}
-//	}
-//	@Deprecated
-//	public void groupBy2(Group group){
-//		if (Group.test){
-//			groupBy2(group);
-//			return;
-//		}
-//		
-//		clear();
-//		for (List<Mappings> ll :  group.values()){
-//			for (Mappings lMap : ll){
-//				int start = 0;
-//				if (lMap.isValid()){
-//					// clause 'having' may have tagged first mapping as not valid
-//					start = 1;
-//					Mapping map = lMap.get(0);
-//					if (isListGroup && map != null){
-//						map.setMappings(lMap);
-//					}
-//					// add one element for current group
-//					add(map);
-//				}
-//			}
-//		}
-//	}
     /**
      * @return the eval
      */

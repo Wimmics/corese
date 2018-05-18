@@ -89,5 +89,6 @@ public interface Expr {
         DatatypeValue[] getArguments(int n);
         
         List<String> getMetadataValues(String name);
+        boolean hasMetadata(int type);
         	
 }

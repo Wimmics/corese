@@ -23,7 +23,18 @@ public class Extension {
     private String name;
     private Object pack;
     
-    public class FunMap extends HashMap<String, Expr> {}
+    public class FunMap extends HashMap<String, Expr> {
+        
+        Expr get(int metadata) {
+            for (Expr exp : values()) {
+                if (exp.hasMetadata(metadata)) {
+                    return exp;
+                }
+            }
+            return null;
+        }
+    }
+    
     // datatype -> Extension for methods of the datatype
     HashMap<String, Extension> method;
     // Embedding extension in case of method
@@ -174,6 +185,14 @@ public class Extension {
             return null;
         }
         return m.get(label);
+    }
+    
+    public Expr get(int metadata, int n) {
+        FunMap m = getMap(n);
+        if (m == null){
+            return null;
+        }
+        return m.get(metadata);
     }
     
     /**

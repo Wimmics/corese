@@ -725,6 +725,17 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return extension.get(name, n);
     }
+    
+    public Expr getDefine(Environment env, int metadata, int n) {
+        Extension ext = env.getExtension();
+        if (ext != null) {
+            Expr ee = ext.get(metadata, n);
+            if (ee != null) {
+                return ee;
+            }
+        }
+        return extension.get(metadata, n);
+    }
 
     /**
      * Retrieve a method with name and type

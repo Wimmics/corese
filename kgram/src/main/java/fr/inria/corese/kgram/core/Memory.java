@@ -21,7 +21,6 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import java.util.ArrayList;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Node and Edge binding stacks for KGRAM evaluator

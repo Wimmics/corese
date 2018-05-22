@@ -286,6 +286,7 @@ public interface ExprType {
 	public static int XT_SORT       = 330;
 	public static int JAVACALL      = 331;
 	public static int DSCALL        = 332;
+	public static int JAVACAST       = 333;
         
         public static int XT_MAPPING     = 400;
         public static int XT_ADD         = 401;

@@ -380,7 +380,7 @@ public class Transformer implements ExpType {
     void preprocess(ASTQuery ast) {
         if (ast.getFrom().size() == 1
                 && isSystemGraph(ast.getFrom().get(0).getLabel())) {
-            Source exp = Source.create(ast.getFrom().get(0), ast.getQuery());
+            Source exp = Source.create(ast.getFrom().get(0), ast.getQueryExp());
             ast.setQuery(BasicGraphPattern.create(exp));
         }
     }

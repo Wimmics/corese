@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -29,7 +30,10 @@ public class SystemFunction extends TermEval {
         switch (oper()) {
             case ExprType.DEBUG: return debug(param[0], eval, b, env, p);
             
-            case ExprType.SLICE: return slice(param[0], env);           
+            case ExprType.SLICE: return slice(param[0], env);    
+            
+            case ExprType.ENV: 
+                return DatatypeMap.createObject(env);
         }
         
         return TRUE;

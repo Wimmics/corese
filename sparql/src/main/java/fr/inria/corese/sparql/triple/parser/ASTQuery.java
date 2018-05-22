@@ -41,7 +41,9 @@ import java.util.UUID;
  *
  * @author Olivier Corby & Virginie Bottollier
  */
-public class ASTQuery implements Keyword, ASTVisitable, Graphable {
+public class ASTQuery 
+        extends ASTObject 
+        implements Keyword, ASTVisitable, Graphable {
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -893,7 +895,7 @@ public class ASTQuery implements Keyword, ASTVisitable, Graphable {
         base = ns;
     }
 
-    public Exp getQuery() {
+    public Exp getQueryExp() {
         return query;
     }
 

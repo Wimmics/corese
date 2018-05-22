@@ -17,6 +17,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -137,9 +138,22 @@ public class Function extends Statement {
     }
     
     @Override
+    public boolean hasMetadata(String type) {
+        return annot != null && annot.hasMetadata(type);
+    }
+    
+    @Override
     public List<String> getMetadataValues(String name){
         if (getMetadata() == null) return null;
         return getMetadata().getValues(name);
+    }
+    
+    @Override
+    public Collection<String> getMetadataList() {
+        if (hasMetadata()) {
+            return getMetadata().getMetadataList();
+        }
+        return null;
     }
     
     public void annotate(Metadata m){

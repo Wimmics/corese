@@ -26,6 +26,8 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p>Title: Corese</p>
@@ -864,8 +866,17 @@ public class Expression extends TopExp
         return null;
     }
     
-    @Override
     public boolean hasMetadata(int type) {
+        return false;
+    }
+    
+    @Override
+    public Collection<String> getMetadataList() {
+        return null;
+    }
+    
+     @Override
+    public boolean hasMetadata(String type) {
         return false;
     }
 

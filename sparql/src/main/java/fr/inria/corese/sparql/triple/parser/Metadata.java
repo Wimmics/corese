@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +41,12 @@ public class Metadata extends ASTObject
     public static final int BOUNCE  = 24;
     public static final int SPARQL10  = 25;
     
-    public static final int BEFORE  = 50;
-    public static final int AFTER   = 51;
+    public static final int EVENT   = 50;
+    public static final int BEFORE  = 51;
+    public static final int AFTER   = 52;
+    public static final int PRODUCE = 53;
+    public static final int RESULT  = 54;
+    public static final int STATEMENT= 55;
 
     // uncertainty triple metadata
     public static final int METADATA  = 50;
@@ -72,6 +77,13 @@ public class Metadata extends ASTObject
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
     public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
+    
+    public static final String META_BEFORE   = "@before";
+    public static final String META_AFTER    = "@after";
+    public static final String META_PRODUCE  = "@produce";
+    public static final String META_RESULT   = "@result";
+    public static final String META_STATEMENT= "@statement";
+    public static final String META_CANDIDATE= "@candidate";
         
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
@@ -110,10 +122,14 @@ public class Metadata extends ASTObject
         define("@dbfactory",DB_FACTORY);      
         define("@bgp",      BGP); 
         define("@metadata", METADATA);      
-        define("@visitor",  VISITOR);  
-        define("@before",   BEFORE);  
-        define("@after",    AFTER);  
+        define("@visitor",  VISITOR); 
         
+        define("@event",    EVENT);  
+        define(META_BEFORE, BEFORE);  
+        define(META_AFTER,  AFTER);  
+        define(META_PRODUCE,PRODUCE);  
+        define(META_RESULT, RESULT);         
+        define(META_STATEMENT, STATEMENT);  
     }
     
     static void define(String str, int type){
@@ -262,6 +278,10 @@ public class Metadata extends ASTObject
     @Override
     public Iterator<String> iterator(){
             return map.keySet().iterator();
+    }
+    
+    public Collection<String> getMetadataList(){
+            return map.keySet();
     }
     
     public int type(String name){

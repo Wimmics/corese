@@ -223,6 +223,7 @@ public class Variable extends Atom {
     public IDatatype getDatatypeValue() {
         if (dt == null) {
             dt = getConstant().getDatatypeValue();
+            dt.setVariable(true);
         }
         return dt;
     }
@@ -230,7 +231,7 @@ public class Variable extends Atom {
     @Override
     public Constant getConstant() {
         return Constant.createBlank(getLabel());
-    }
+     }
 
     @Override
     public Variable copy(Variable o, Variable n) {

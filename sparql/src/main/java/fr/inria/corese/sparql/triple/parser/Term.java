@@ -320,6 +320,10 @@ public class Term extends Expression {
             case ExprType.APPLY:        //return new Apply(name); 
             case ExprType.FUNCALL:
                 return new Funcall(name);
+            case ExprType.JAVACALL:
+                return new Javacall(name); 
+            case ExprType.DSCALL:
+                return new JavaDScall(name);     
             case ExprType.REDUCE:
                 return new Reduce(name);
             case ExprType.SELF:
@@ -391,6 +395,7 @@ public class Term extends Expression {
 
             case ExprType.DEBUG:
             case ExprType.SLICE:
+            case ExprType.ENV:    
                 return new SystemFunction(name);
 
             case ExprType.INDEX:

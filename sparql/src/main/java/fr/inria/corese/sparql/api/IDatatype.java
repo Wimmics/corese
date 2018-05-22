@@ -160,6 +160,8 @@ public interface IDatatype
     String getContent();
     
     IDatatype display();
+    
+    void setVariable(boolean b);
 
     /**
      * ************************************************************************
@@ -313,17 +315,7 @@ public interface IDatatype
     
     boolean isBoolean();
 
-//    double doubleValue();
-//
-//    float floatValue();
-//
-//    long longValue();
-//
-//    int intValue();
-//    
-//    String stringValue();
-//    
-//    boolean booleanValue();
+    Class getJavaClass();
 
     /**
      * ************************************************

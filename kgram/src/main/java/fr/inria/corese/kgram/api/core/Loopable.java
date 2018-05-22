@@ -6,8 +6,8 @@ package fr.inria.corese.kgram.api.core;
  * Interface for (var in exp) {}
  * @author Olivier Corby 2015
  */
-public interface Loopable {
+public interface Loopable<T> {
     
-    Iterable getLoop();
+    Iterable<T> getLoop();
     
 }

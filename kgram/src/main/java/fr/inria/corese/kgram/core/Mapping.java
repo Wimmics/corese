@@ -24,7 +24,6 @@ import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /*
  * An elementary result of a query or a subquery

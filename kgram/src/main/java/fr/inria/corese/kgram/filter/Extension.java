@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Hierarchy;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -25,13 +26,24 @@ public class Extension {
     
     public class FunMap extends HashMap<String, Expr> {
         
-        Expr get(int metadata) {
-            for (Expr exp : values()) {
-                if (exp.hasMetadata(metadata)) {
-                    return exp;
+        HashMap<String, Expr> metadata;
+        
+        FunMap() {
+            metadata = new HashMap<>();
+        }
+        
+        Expr getMetadata(String name) {           
+           return metadata.get(name);
+        }
+                    
+        // @before -> f1 ; @after -> f2
+        void setMetadata(Expr exp) {
+            Collection<String> list = exp.getMetadataList();
+            if (list != null) {
+                for (String name : list) {
+                    metadata.put(name, exp);
                 }
             }
-            return null;
         }
     }
     
@@ -85,14 +97,21 @@ public class Extension {
     void defineFunction(Expr exp) {       
         Expr fun = exp.getFunction(); 
         getMap(fun).put(fun.getLabel(), exp);
+        getMap(fun).setMetadata(exp);
     }
+    
+    void defineMethodFunction(Expr exp) {       
+        Expr fun = exp.getFunction(); 
+        getMap(fun).put(fun.getLabel(), exp);
+    }
+    
     
     /**
      * Record function as method of datatype(s)
      */
     void defineMethod(Expr exp) {   
          for (String type : exp.getMetadataValues(TYPE)){
-            getCreateMethodExtension(type).defineFunction(exp);
+            getCreateMethodExtension(type).defineMethodFunction(exp);
          }
     }
     
@@ -187,12 +206,12 @@ public class Extension {
         return m.get(label);
     }
     
-    public Expr get(int metadata, int n) {
+    public Expr getMetadata(String metadata, int n) {
         FunMap m = getMap(n);
         if (m == null){
             return null;
         }
-        return m.get(metadata);
+        return m.getMetadata(metadata);
     }
     
     /**

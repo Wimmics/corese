@@ -38,4 +38,6 @@ public interface DatatypeValue {
     boolean isNumber();
     
     boolean isBoolean();
+    
+    Object getObject();
 }

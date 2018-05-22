@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.core.Exp;
+import java.util.Collection;
 
 /**
  * Filter Exp Pattern Matcher
@@ -393,7 +394,12 @@ public class Pattern implements ExprType, Expr {
     }
 
     @Override
-    public boolean hasMetadata(int type) {
+    public boolean hasMetadata(String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<String> getMetadataList() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -89,6 +90,7 @@ public interface Expr {
         DatatypeValue[] getArguments(int n);
         
         List<String> getMetadataValues(String name);
-        boolean hasMetadata(int type);
+        Collection<String> getMetadataList();
+        boolean hasMetadata(String name);
         	
 }

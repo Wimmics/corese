@@ -51,16 +51,6 @@ import org.slf4j.LoggerFactory;
 public class Eval implements ExpType, Plugin {
 
     private static Logger logger = LoggerFactory.getLogger(Eval.class);
-    private static final String PREF = EXT;
-    private static final String FUN_CANDIDATE = PREF + "candidate";
-    private static final String FUN_SERVICE = PREF + "service";
-    private static final String FUN_MINUS   = PREF + "minus";
-    private static final String FUN_OPTIONAL= PREF + "optional";
-    private static final String FUN_RESULT  = PREF + "result";
-    private static final String FUN_SOLUTION= PREF + "solution";
-    private static final String FUN_START   = PREF + "start";
-    private static final String FUN_FINISH  = PREF + "finish";
-    private static final String FUN_PRODUCE = PREF + "produce";
     
     static final int STOP = -2;
     public static int count = 0;
@@ -112,15 +102,11 @@ public class Eval implements ExpType, Plugin {
     private boolean isPathType = false;
     boolean storeResult = true;
     private int nbResult;
-    private boolean hasService = false,
+    private boolean hasService = false,  
             hasCandidate = false,
-            hasOptional,
-            hasMinus,
+            hasStatement = false,
             hasResult   = false,
-            hasStart    = false,
-            hasFinish   = false,
-            hasProduce  = false,
-            hasSolution = false;
+            hasProduce  = false;
 
     //Edge previous;
     /**
@@ -145,7 +131,6 @@ public class Eval implements ExpType, Plugin {
     
     void initCallback(){
         local = new HashMap<>();
-        local.put(FUN_PRODUCE, true);
     }
 
     public static Eval create(Producer p, Evaluator e, Matcher m) {
@@ -185,68 +170,52 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             send(Event.BEGIN, q);
         }
+        initMemory(q);
         producer.start(q);
-
+        getVisitor().before(q);        
         Mappings map = eval(null, q, m);
+        getVisitor().after(map);
 
         producer.finish(q);
         if (hasEvent) {
             send(Event.END, q, map);
-        }
-        if (hasSolution) {
-            memory.setResults(map);
-            Object res = eval(getExpression(FUN_SOLUTION), 
-                    toArray(producer.getNode(q), producer.getNode(map)));
-            map.complete();
         }
 
         return map;
     }
     
     public void finish(Query q, Mappings map) {
-        if (hasFinish) {
-            memory.setResults(map);
-            Object res = eval(getExpression(FUN_FINISH),
-                    toArray(producer.getNode(q), producer.getNode(map)));
-        }
     }
 
     private Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
-        if (q.isValidate()){
+        if (q.isValidate()) {
             // just compile and complete query
             return results;
         }
-        if (hasStart && !q.isSubQuery()) {
-            Object res = eval(getExpression(q, FUN_START), 
-                    toArray(producer.getNode(q)));
+        if (q.isCheck()) {
+            // Draft
+            Checker check = Checker.create(this);
+            check.check(q);
         }
-        getVisitor().before();
-        {
-            if (q.isCheck()) {
-                // Draft
-                Checker check = Checker.create(this);
-                check.check(q);
-            }
 
-            if (map != null) {
-                bind(map);
-            }
-            if (!q.isFail()) {
-                query(gNode, q);
+        if (map != null) {
+            bind(map);
+        }
+        if (!q.isFail()) {
+            query(gNode, q);
 
-                if (q.getQueryProfile() == Query.COUNT_PROFILE) {
-                    countProfile();
-                } else {
-                    if (q.isAlgebra()){
-                        memory.setResults(results);
-                        completeSparql.complete(producer, results);
-                    }
-                    aggregate();
-                    // order by
-                    complete();
-                    template();
+            if (q.getQueryProfile() == Query.COUNT_PROFILE) {
+                countProfile();
+            } else {
+                if (q.isAlgebra()) {
+                    memory.setResults(results);
+                    completeSparql.complete(producer, results);
                 }
+                aggregate();
+                // order by
+                complete();
+                template();
             }
         }
 
@@ -254,7 +223,6 @@ public class Eval implements ExpType, Plugin {
             debug();
         }
         evaluator.finish(memory);
-        getVisitor().after(results);
         return results;
     }
     
@@ -465,6 +433,7 @@ public class Eval implements ExpType, Plugin {
         ev.setSPARQLEngine(getSPARQLEngine());
         ev.setMemory(m);
         ev.set(provider);
+        ev.setVisitor(getVisitor());
         ev.setPathType(isPathType);
         if (hasEvent) {
             ev.setEventManager(manager);
@@ -587,6 +556,12 @@ public class Eval implements ExpType, Plugin {
 
     // total init (for global query)
     public void init(Query q) {
+        initMemory(q);
+        start(q);
+        profile(q);
+    }
+    
+    void initMemory(Query q) {
         if (memory == null) {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
@@ -608,8 +583,6 @@ public class Eval implements ExpType, Plugin {
                 System.out.println(q);
             }
         }
-        start(q);
-        profile(q);
     }
     
     void complete(Query q){
@@ -656,18 +629,10 @@ public class Eval implements ExpType, Plugin {
     }
 
     void startExtFun() {
-        if (! query.hasDefinition()){
-            return;
-        }
-        hasCandidate= (getExpression(FUN_CANDIDATE) != null);
-        hasService  = (getExpression(FUN_SERVICE) != null);
-        hasOptional = (getExpression(FUN_OPTIONAL) != null);
-        hasMinus    = (getExpression(FUN_MINUS) != null);
-        hasProduce  = (getExpression(FUN_PRODUCE) != null);
-        hasResult   = (getExpression(FUN_RESULT) != null);
-        hasSolution = (getExpression(FUN_SOLUTION) != null);
-        hasStart    = (getExpression(FUN_START) != null);
-        hasFinish   = (getExpression(FUN_FINISH) != null);
+        hasResult       = getVisitor().result();
+        hasStatement    = getVisitor().statement();
+        hasProduce      = getVisitor().produce();
+        hasCandidate    = getVisitor().candidate();
     }
 
     private void complete() {
@@ -887,7 +852,11 @@ public class Eval implements ExpType, Plugin {
                             return backtrack;
                     } 
                 };
-                              
+                     
+            if (hasStatement) {
+                getVisitor().statement(this, exp);
+            }
+            
             switch (exp.type()) {
 
                 case NEXT:
@@ -1917,10 +1886,6 @@ public class Eval implements ExpType, Plugin {
             // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
             Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env, p);
 
-            if (hasService) {
-                callService(node, exp, lMap);
-            }
-
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
@@ -2408,17 +2373,13 @@ public class Eval implements ExpType, Plugin {
 //					}
 //				}
                 previous = edge;
-
-                boolean bmatch = match(qEdge, edge, gNode, graph, env);
-
-                if (hasCandidate) {
-                    DatatypeValue val = candidate(qEdge, edge, p.getValue(bmatch));
-                    if (val != null) {
-                        bmatch = val.booleanValue();
-                    }
-                }
+                boolean bmatch = match(qEdge, edge, gNode, graph, env);               
 
                 if (bmatch) {
+                    if (hasCandidate) {
+                        getVisitor().candidate(this, qEdge, edge);
+                    }
+ 
                     bmatch = push(qEdge, edge, gNode, graph, n);
                 }
 
@@ -2471,38 +2432,20 @@ public class Eval implements ExpType, Plugin {
     }
 
     Iterable<Edge> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
-        Expr exp = getExpression(FUN_PRODUCE);
-        if (exp != null) {
-            Object res = evaluator.eval(exp, memory, p, toArray(edge.getNode()));
-            if (res instanceof Loopable) {
-                Iterable loop = ((Loopable) res).getLoop();
-                if (loop != null) {
-                    Iterable<Edge> it = new IterableEntity(loop);
-                    return it;
-                }
+        DatatypeValue res = getVisitor().produce(this, edge);
+        if (res.getObject() != null && (res.getObject() instanceof Iterable)) {
+            return new IterableEntity((Iterable)res.getObject());
+        }
+        else if (res instanceof Loopable) {
+            Iterable loop = ((Loopable) res).getLoop();
+            if (loop != null) {
+                return new IterableEntity(loop);
             }
         }
         return null;
     }
-
-    DatatypeValue candidate(Edge q, Edge ent, Object match) {
-        Expr exp = getExpression(FUN_CANDIDATE);
-        if (exp != null) {
-            Object obj = eval(exp, 
-                    toArray(q.getNode().getValue(), ent.getNode().getValue(), match));
-            DatatypeValue val = producer.getDatatypeValue(obj);
-            return val;
-        }
-        return null;
-    }
-
-    void callService(Node node, Exp serv, Mappings m) {
-        Expr exp = getExpression(FUN_SERVICE);
-        if (exp != null) {
-            eval(exp, toArray(node.getValue(), producer.getNode(serv), producer.getNode(m)));
-        }
-    }
     
+
       /**
          * eval callback by name
          * Only with functions defined in the query 
@@ -2536,13 +2479,6 @@ public class Eval implements ExpType, Plugin {
         return ! (q.isFun() && local.containsKey(name));
     }
 
-    public Object[] toArray(Object... ldt) {
-        Object[] res = evaluator.getProxy().createParam(ldt.length);;
-        for (int i = 0; i<res.length; i++) {
-            res[i] = ldt[i];
-        }
-        return res;
-    }
 
 //    private int node(Node gNode, Exp exp, Stack stack, int n) {
 //        int backtrack = n - 1;
@@ -2996,7 +2932,7 @@ public class Eval implements ExpType, Plugin {
                 send(Event.RESULT, ans);
             }
             if (hasResult) {
-                Object res = evaluator.eval(getExpression(FUN_RESULT), memory, p, toArray(p.getNode(query), p.getNode(ans)));
+                getVisitor().result(this, ans);
             }
         }
         return -1;

@@ -60,7 +60,7 @@ public interface Evaluator {
         Expr getDefine(Expr exp, Environment env, Producer p, int n);
                               
         Expr getDefine(Environment env, String name, int n);
-        Expr getDefine(Environment env, int metadata, int n);
+        Expr getDefineMetadata(Environment env, String metadata, int n);
         
         Expr getDefineMethod(Environment env, String name, Object type, Object[] values);
 

@@ -29,7 +29,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  * @author Olivier Corby, Edelweiss, INRIA 2009
  *
  */
-public class Memory implements Environment {
+public class Memory extends PointerObject implements Environment {
 
     public static boolean IS_EDGE = !true;
     static final Edge[] emptyEdges = new Edge[0];

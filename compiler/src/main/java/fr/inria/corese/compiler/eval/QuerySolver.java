@@ -283,16 +283,23 @@ public class QuerySolver  implements SPARQLEngine {
 
 		Eval kgram = makeEval();
 
-		events(kgram);
-		
+		events(kgram);		
 		pragma(kgram, query);
-                kgram.setVisitor(new QuerySolverVisitor(this, kgram));
+                tune(kgram, query);
+                
                 Mappings map  = kgram.query(query, m);
                 //TODO: check memory usage when storing Eval
                 map.setEval(kgram);
 		
 		return map;
 	}
+        
+        void tune(Eval kgram, Query q) {
+            ASTQuery ast = (ASTQuery) q.getAST();
+            if (ast.hasMetadata(Metadata.EVENT)){
+                kgram.setVisitor(new QuerySolverVisitor(kgram));
+            }
+        }
               
         void funcall(String fun, IDatatype[] param, Eval kgram) {
             funcall(fun, param, kgram.getEvaluator(), kgram.getEnvironment(), kgram.getProducer());

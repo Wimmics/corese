@@ -614,6 +614,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Eval eval = Eval.create(p, in, kgram.getMatcher());
         eval.setSPARQLEngine(kgram.getSPARQLEngine());
         eval.set(kgram.getProvider());
+        eval.setVisitor(kgram.getVisitor());
         eval.init(q);
         eval.getMemory().setBind(env.getBind());
         return in;
@@ -726,15 +727,16 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return extension.get(name, n);
     }
     
-    public Expr getDefine(Environment env, int metadata, int n) {
+    @Override
+    public Expr getDefineMetadata(Environment env, String metadata, int n) {
         Extension ext = env.getExtension();
         if (ext != null) {
-            Expr ee = ext.get(metadata, n);
+            Expr ee = ext.getMetadata(metadata, n);
             if (ee != null) {
                 return ee;
             }
         }
-        return extension.get(metadata, n);
+        return extension.getMetadata(metadata, n);
     }
 
     /**

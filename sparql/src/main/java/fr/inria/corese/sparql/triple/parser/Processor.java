@@ -120,6 +120,7 @@ public class Processor {
         private static final String XT_OBJECT   = EXT + "object";
         private static final String XT_VALUE    = EXT + "value";
         private static final String XT_INDEX    = EXT + "index";
+        private static final String XT_CAST     = EXT + "cast";        
         private static final String XT_REJECT   = EXT + "reject";
         private static final String XT_VARIABLES= EXT + "variables";
         private static final String XT_EDGE     = EXT + "edge";
@@ -1004,6 +1005,9 @@ public class Processor {
             } 
             else if (name.startsWith(NSManager.DS)) {
                 n = ExprType.DSCALL;
+            } 
+             else if (name.startsWith(NSManager.CAST)) {
+                n = ExprType.JAVACAST;
             } 
             else {
                 n = ExprType.UNDEF;

@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -58,5 +59,5 @@ public class JavaDScall extends TermEval {
         return null;
 
     }
-    
+         
 }

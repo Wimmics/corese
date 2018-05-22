@@ -323,7 +323,9 @@ public class Term extends Expression {
             case ExprType.JAVACALL:
                 return new Javacall(name); 
             case ExprType.DSCALL:
-                return new JavaDScall(name);     
+                return new JavaDScall(name); 
+            case ExprType.JAVACAST:
+                return new JavaCast(name);         
             case ExprType.REDUCE:
                 return new Reduce(name);
             case ExprType.SELF:

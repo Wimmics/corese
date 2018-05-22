@@ -2201,7 +2201,11 @@ public class Graph extends GraphObject implements
 
 
     boolean isTopRelation(Node predicate) {
-        return predicate.getLabel().equals(TOPREL);
+        return isTopRelation(predicate.getLabel());
+    }
+    
+    boolean isTopRelation(String predicate) {
+        return predicate.equals(TOPREL);
     }
 
     // without duplicates 
@@ -2274,6 +2278,9 @@ public class Graph extends GraphObject implements
     public Iterable<Edge> getEdges(String p) {
         Node predicate = getPropertyNode(p);
         if (predicate == null) {
+            if (isTopRelation(p)) {
+                return getEdges();
+            }
             return EMPTY;
         }
         return getEdges(predicate);

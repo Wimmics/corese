@@ -58,8 +58,9 @@ public class NSManager extends ASTObject {
     public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
     public static final String STL_FORMAT = STL + "format/";
-    public static final String JAVA       = ExpType.EXT+"java";    
-    public static final String DS         = ExpType.EXT+"ds";    
+    public static final String JAVA       = ExpType.EXT+"java/";    
+    public static final String DS         = ExpType.EXT+"ds/";    
+    public static final String CAST       = ExpType.EXT+"cast/";    
     public static final String EXT        = ExpType.EXT;
     public static final String DT         = ExpType.DT;
     public static final String USER       = ExpType.UXT;
@@ -236,6 +237,7 @@ public class NSManager extends ASTObject {
         def.put("http://example.org/ns#", "ex");        
         def.put(JAVA, "java");
         def.put(DS, "ds");
+        def.put(CAST, "cast");
     }
 
     // add default namespaces

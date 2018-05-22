@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +52,37 @@ public class CoreseDatatype
     static int cindex = 0;
     static int code = -1;
     
+    static HashMap<Integer, Class> dtc;
+    
     private int index = IDatatype.VALUE;
+    
+    static { 
+        init();
+    }
+    
+    static void init() {
+        dtc = new HashMap<>();
+        define(IDatatype.INTEGER,   int.class);
+        define(IDatatype.DOUBLE,    double.class);
+        define(IDatatype.DECIMAL,   double.class);
+        define(IDatatype.FLOAT,     double.class);
+        define(IDatatype.STRING,    String.class);
+        define(IDatatype.LITERAL,   String.class);
+        define(IDatatype.URI,       String.class);
+        define(IDatatype.BOOLEAN,   Boolean.class);
+    }
+    
+    static void define(int i, Class c) {
+        dtc.put(i, c);
+    }
+    
+    @Override
+    public Class getJavaClass() {
+        if (getObject() != null) {
+            return getObject().getClass();
+        }
+        return dtc.get(getCode());
+    }
 
     /**
      * Default lang is "" for literals, But for URI which is null (see
@@ -1193,6 +1224,11 @@ public class CoreseDatatype
     @Override
     public boolean isVariable() {
         return false;
+    }
+    
+    @Override
+    public void setVariable(boolean b) {
+        
     }
 
     @Override

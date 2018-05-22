@@ -18,6 +18,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 public class CoreseBlankNode extends CoreseResource {
 	static int  code=BLANK;
+        boolean variable = false;
 	
 	
 	public CoreseBlankNode(String value) {
@@ -38,6 +39,16 @@ public class CoreseBlankNode extends CoreseResource {
 	public boolean isConstant() {
 		return false;
 	}
+        
+        @Override
+	public boolean isVariable() {
+            return variable;
+	}
+        
+        @Override
+        public void setVariable(boolean b){
+            variable = b;
+        }
 	
         @Override
 	public int compare(IDatatype iod) throws CoreseDatatypeException {

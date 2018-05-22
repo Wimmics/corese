@@ -77,6 +77,7 @@ public class Processor {
 	static final String SEPARATOR = "; separator=";
 	private static final String SAMPLE = "sample";
         
+	private static final String JAVACALL = "java";
 	private static final String FUNCALL  = "funcall";
 	private static final String EVAL  = "eval";
 	public static final String RETURN  = "return";
@@ -307,6 +308,7 @@ public class Processor {
 	static final String EXTCONT  = KGRAM + "contains";
 	static final String PROCESS  = KGRAM + "process";
 	static final String ENV  	 = KGRAM + "env";
+	static final String XT_ENV  	 = EXT + "env";
 	public static final String PATHNODE = KGRAM + "pathNode";
 	static final String SLICE       = KGRAM + "slice";
 	static final String DB          = KGRAM + "db";
@@ -634,6 +636,7 @@ public class Processor {
 		defoper(XT_SORT,        ExprType.XT_SORT);
                 
                 
+		defoper(JAVACALL,          ExprType.JAVACALL);                
 		defoper(FUNCALL,           ExprType.FUNCALL);                
 		defsysoper(EVAL,           ExprType.EVAL);                
 		defsysoper(REDUCE,         ExprType.REDUCE);
@@ -878,6 +881,7 @@ public class Processor {
 		defoper(EXTCONT, ExprType.EXTCONT);
 		defoper(PROCESS, ExprType.PROCESS);
 		defoper(ENV, 	 ExprType.ENV);
+		defoper(XT_ENV,  ExprType.ENV);
 		defoper(SLICE, 	 ExprType.SLICE);
 		defoper(DB, 	 ExprType.DB);
 
@@ -994,7 +998,14 @@ public class Processor {
                 n = ExprType.CUSTOM;
             } else if (name.startsWith(KeywordPP.CORESE_PREFIX)) {
                 n = ExprType.EXTERNAL;
-            } else {
+            } 
+            else if (name.startsWith(NSManager.JAVA)) {
+                n = ExprType.JAVACALL;
+            } 
+            else if (name.startsWith(NSManager.DS)) {
+                n = ExprType.DSCALL;
+            } 
+            else {
                 n = ExprType.UNDEF;
             }
         }

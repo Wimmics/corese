@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * Callback manager for LDScript functions with specific annotations Eval SPARQL
@@ -35,6 +36,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
  *
  */
 public class QuerySolverVisitor implements ProcessVisitor {
+    private static final String EVENT_METHOD = NSManager.USER+"event";
 
     Eval eval;
 
@@ -101,10 +103,43 @@ public class QuerySolverVisitor implements ProcessVisitor {
         Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_CANDIDATE, 2);
         return (exp != null);
     }
+    
+    @Override
+    public IDatatype optional(Eval eval, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_OPTIONAL, toArray(e, m1, m2));
+    }
+    
+    @Override
+    public IDatatype minus(Eval eval, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_MINUS, toArray(e, m1, m2));
+    }
+    
+     @Override
+    public IDatatype service(Eval eval, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_FEDERATE, toArray(e, m));
+    }
+    
+    @Override
+    public boolean filter(Eval eval, Expr e, boolean b) {       
+        IDatatype dt = callback(eval, Metadata.META_FILTER, toArray(e, DatatypeMap.newInstance(b)));
+        if (dt == null) {
+            return b;
+        }
+        return dt.booleanValue();
+    }
  
-    // metadata = @before
+    // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
         Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        if (exp != null) {
+            return call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+        }
+        return null;
+    }
+    
+    // @type us:before function us:event () {}
+    public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
+        Expr exp = eval.getEvaluator().getDefineMethod(getEnvironment(), name, DatatypeMap.newResource(type), param);
         if (exp != null) {
             return call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
         }

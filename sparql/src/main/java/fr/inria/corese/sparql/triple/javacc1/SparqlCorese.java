@@ -329,7 +329,7 @@
         case INSERT:
         case DELETE:
         case WITH:
-          UpdateQuery();
+          UpdateQuery(la);
           break;
         case TEMPLATE:
           stack = TemplateQuery(la);
@@ -618,11 +618,12 @@
 // *******************************************************************
 
 // Update
-  final public void UpdateQuery() throws ParseException {
+  final public void UpdateQuery(Metadata la) throws ParseException {
                 astq.setResultForm(ASTQuery.QT_UPDATE);
                 astq.set(astu);
                 astu.defProlog();
     UpdateQuery1();
+          astq.setAnnotation(la) ;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PRAGMA:
       Pragma();
@@ -7178,24 +7179,6 @@
     finally { jj_save(17, xla); }
   }
 
-  final private boolean jj_3R_211() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_230()) {
-    jj_scanpos = xsp;
-    if (jj_3R_231()) {
-    jj_scanpos = xsp;
-    if (jj_3R_232()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_236() {
-    if (jj_scan_token(MINUSP)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_89() {
     if (jj_3R_88()) return true;
     return false;
@@ -8078,17 +8061,6 @@
     return false;
   }
 
-  final private boolean jj_3R_139() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(62)) {
-    jj_scanpos = xsp;
-    if (jj_3R_162()) return true;
-    }
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_111() {
     Token xsp;
     xsp = jj_scanpos;
@@ -8101,6 +8073,17 @@
     if (jj_3R_151()) return true;
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_139() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(62)) {
+    jj_scanpos = xsp;
+    if (jj_3R_162()) return true;
+    }
+    if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
@@ -8904,6 +8887,24 @@
 
   final private boolean jj_3R_175() {
     if (jj_3R_191()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_211() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_230()) {
+    jj_scanpos = xsp;
+    if (jj_3R_231()) {
+    jj_scanpos = xsp;
+    if (jj_3R_232()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_236() {
+    if (jj_scan_token(MINUSP)) return true;
     return false;
   }
 

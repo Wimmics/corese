@@ -302,7 +302,7 @@ Exp Query() : { Exp stack; Metadata la = null;}
             | stack = ConstructQuery(la) 
             | stack = DescribeQuery()  
             | stack = AskQuery()        
-            | UpdateQuery()            	
+            | UpdateQuery(la)            	
             | stack = TemplateQuery(la)
             )  (Defun()) 
         //?       
@@ -380,7 +380,7 @@ void PrefixDecl() : { Token t1, t2; String s; Triple triple; }
  
 // Update
 
-void  UpdateQuery() : {  }
+void  UpdateQuery(Metadata la) : {  }
 {
 
 	{
@@ -390,6 +390,8 @@ void  UpdateQuery() : {  }
   	}	
 
 	UpdateQuery1()
+
+        { astq.setAnnotation(la) ;}
 	
 	( Pragma() ) ?
 	

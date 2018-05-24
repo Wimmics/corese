@@ -66,10 +66,10 @@ public class CoreseDatatype
         define(IDatatype.DOUBLE,    double.class);
         define(IDatatype.DECIMAL,   double.class);
         define(IDatatype.FLOAT,     double.class);
+        define(IDatatype.BOOLEAN,   boolean.class);
         define(IDatatype.STRING,    String.class);
         define(IDatatype.LITERAL,   String.class);
         define(IDatatype.URI,       String.class);
-        define(IDatatype.BOOLEAN,   Boolean.class);
     }
     
     static void define(int i, Class c) {

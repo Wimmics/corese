@@ -285,6 +285,7 @@ public class UpdateProcess {
 		ast.setPragma(ga.getPragma());
 		ast.setPrefixExp(ga.getPrefixExp());
                 ast.setDefine(ga.getDefine());
+                ast.setAnnotation(ga.getMetadata());
 		ast.setSelectAll(true);
 		// where {pat}
 		ast.setBody(ope.getBody());		

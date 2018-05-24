@@ -49,9 +49,9 @@ public class Metadata extends ASTObject
     public static final int STATEMENT= 55;
 
     // uncertainty triple metadata
-    public static final int METADATA  = 50;
-    public static final int VISITOR   = 51;
-    public static final int LOCAL     = 52;
+    public static final int METADATA  = 70;
+    public static final int VISITOR   = 71;
+    public static final int LOCAL     = 72;
       
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -84,6 +84,10 @@ public class Metadata extends ASTObject
     public static final String META_RESULT   = "@result";
     public static final String META_STATEMENT= "@statement";
     public static final String META_CANDIDATE= "@candidate";
+    public static final String META_OPTIONAL = "@optional";
+    public static final String META_MINUS    = "@minus";
+    public static final String META_FILTER   = "@filter";
+    public static final String META_FEDERATE = "@federate";
         
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

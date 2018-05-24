@@ -1421,7 +1421,10 @@ public class Eval implements ExpType, Plugin {
         
         MappingSet set1 = new MappingSet(map1);
         Exp rest = prepareRest(exp, set1);              
-        Mappings map2 = subEval(p, gNode, node2, rest, exp);                       
+        Mappings map2 = subEval(p, gNode, node2, rest, exp);  
+        
+        getVisitor().minus(this, exp, map1, map2);
+        
         MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
         set.setDebug(query.isDebug());
         set.start();
@@ -1885,7 +1888,8 @@ public class Eval implements ExpType, Plugin {
             // service delegated to provider
             // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
             Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env, p);
-
+            getVisitor().service(this, exp, lMap);
+            
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
@@ -2141,6 +2145,8 @@ public class Eval implements ExpType, Plugin {
         env.setGraphNode(gNode);
         boolean success = (exp.isPostpone()) ? true : evaluator.test(exp.getFilter(), env, p);
         env.setGraphNode(null);
+        
+        success = getVisitor().filter(this, exp.getFilter().getExp(), success);
 
         if (hasEvent) {
             send(Event.FILTER, exp, success);
@@ -2682,6 +2688,8 @@ public class Eval implements ExpType, Plugin {
          * if ?z is not bound in every map1, generate no values.
          */
         Mappings map2 = subEval(p, gNode, node1, rest, exp);
+        
+        getVisitor().optional(this, exp, map1, map2);
                        
         MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
         set.setDebug(query.isDebug());

@@ -2,6 +2,7 @@ package fr.inria.corese.kgram.api.query;
 
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
@@ -31,7 +32,13 @@ public interface ProcessVisitor {
 
     default DatatypeValue statement(Eval eval, Exp e) { return null; }
 
+    default DatatypeValue optional(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+       
+    default DatatypeValue minus(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
     
+    default DatatypeValue service(Eval eval, Exp e, Mappings m) { return null; }     
+    
+    default boolean filter(Eval eval, Expr e, boolean b) { return b; } 
 
     default boolean produce() { return false; }
         

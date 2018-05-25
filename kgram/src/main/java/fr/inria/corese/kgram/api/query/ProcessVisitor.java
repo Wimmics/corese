@@ -36,6 +36,8 @@ public interface ProcessVisitor {
        
     default DatatypeValue minus(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
     
+    default DatatypeValue union(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+
     default DatatypeValue service(Eval eval, Exp e, Mappings m) { return null; }     
     
     default boolean filter(Eval eval, Expr e, boolean b) { return b; } 

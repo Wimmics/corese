@@ -1249,17 +1249,21 @@ public class Eval implements ExpType, Plugin {
      * node : exp graph node
      */
     public Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
-        return subEval(p, gNode, node, exp, main, null, false);
+        return subEval(p, gNode, node, exp, main, null, null, false);
+    }
+    
+    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map) {
+        return subEval(p, gNode, node, exp, main, map, null, false);
     }
 
-    private Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mapping m, boolean bind) {
+    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) {
         Memory mem = new Memory(match, evaluator);
         getEvaluator().init(mem);
         mem.init(query);
         mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
         Eval eval = copy(mem, p, evaluator);
         graphNode(gNode, node, mem);
-        bind(mem, exp, main, m, bind);        
+        bind(mem, exp, main, map, m, bind);        
         Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
         return lMap;
     }
@@ -1268,54 +1272,73 @@ public class Eval implements ExpType, Plugin {
      * fresh memory mem inherits data from current memory to evaluate exp (in main)
      * 
      */
-    void bind(Memory mem, Exp exp, Exp main, Mapping m, boolean bind) {
+    void bind(Memory mem, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) {
         if (m != null) {
             mem.push(m, -1);
+        }      
+        if ((bind || main.isOptional() || main.isJoin() || main.isUnion()) && exp.getNodeList() != null) {           
+            // A optional B
+            // bind variables of A from environment
+            bindExpNodeList(mem, exp);
         }
-        if (main == null) {
-            // do nothing
-        } else {
-            if ((bind || main.isOptional() || main.isJoin()) && exp.getNodeList() != null) {
-                // A optional B
-                // bind variables of A from environment
-                bindExpNodeList(mem, exp);
-            }
-            joinMappings(mem, exp, main);
-        }
+        joinMappings(mem, exp, main, map);
     }
-       
+
     /**
-     * Use case: federated query
-     * Give Mappings evaluation context to exp
+     * Use case: federated query, service clause
+     * Eval exp in the context of partial solution Mappings
+     * join(A, B) optional(A, B) minus(A, B) union(A, B)
+     * A and/or B evaluated in the context of partial solution map
+     * map taken into account by service clause if any
      */
-    void joinMappings(Memory mem, Exp exp, Exp main) {
-         switch (main.type()) {
-                case Exp.JOIN:
-                    service(exp, mem);
-//                    mem.setJoinMappings(exp.getMappings());
-//                    break;
-                    // continue
-                case Exp.MINUS:
-                case Exp.OPTIONAL:
-                    // draft test
-                    if (memory.getJoinMappings() != null && exp == main.first()){
-                        // use case:
-                        // 1- join (and(service(s, exp)), and(optional(e1, e2)))
-                        // optional in rest of join inherits Mappings of first of join
-                        // 2- A optional { join (s1, s2) }
-                        // join in optional inherits Mappings
-                        mem.setJoinMappings(memory.getJoinMappings());
-                        // clean for statements after this main
-                        memory.setJoinMappings(null);
-                    }
-                    else {
-                        // pragma: exp == main.rest()
-                        mem.setJoinMappings(exp.getMappings());
-                    }
-                    break;
-                    
-            }
+    void joinMappings(Memory mem, Exp exp, Exp main, Mappings map) {
+        switch (main.type()) {
+            case Exp.JOIN:
+                service(exp, mem);
+        }
+        mem.setJoinMappings(map);
     }
+    
+    /**
+     * Use case: federated query, service clause
+     * Eval exp in the context of partial solution Mappings
+     * first case
+     * main = join(A, B) ; exp = B ; B contains service clause
+     * eval(A) = Mappings map
+     * eval(B) provided with map as partial solutions to be used by service in B
+     * Mapping map is provided to eval(B) by mem.setJoinMappings(map)
+     * other patterns:
+     * main = minus(A, B) ;  main = optional(A, B)
+     * 
+     * second case
+     * context : join (A, main) ; memory has joinMappings from A   
+     * main = optional(e1, e2) ;  exp = e1 ; mem provided with Mappings from memory
+     */
+//    void joinMappings(Memory mem, Exp exp, Exp main) {
+//        switch (main.type()) {
+//            case Exp.JOIN:
+//                service(exp, mem);
+//            // continue
+//            case Exp.MINUS:
+//            case Exp.OPTIONAL:
+//                // draft test
+//                if (memory.getJoinMappings() != null && exp == main.first()) {
+//                    // use case:
+//                    // 1- join (A, and(optional(s1, s2)))
+//                    // optional in rest of join inherits Mappings of first of join
+//                    // 2- A optional { join (s1, s2) }
+//                    // join in optional inherits Mappings
+//                    mem.setJoinMappings(memory.getJoinMappings());
+//                    // clean for statements after this main
+//                    memory.setJoinMappings(null);
+//                } else {
+//                    // pragma: exp == main.rest()                   
+//                    mem.setJoinMappings(exp.getMappings());
+//                }
+//                break;
+//
+//        }
+//    }
     
     void bindExpNodeList(Memory mem, Exp exp) {
         for (Node qnode : exp.getNodeList()) {
@@ -1413,7 +1436,7 @@ public class Eval implements ExpType, Plugin {
             node1 = qNode;
             node2 = exp.getGraphNode();
         }
-        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp, memory.getResetJoinMappings());
         
         if (map1.isEmpty()) {
             return backtrack;
@@ -1421,7 +1444,7 @@ public class Eval implements ExpType, Plugin {
         
         MappingSet set1 = new MappingSet(map1);
         Exp rest = prepareRest(exp, set1);              
-        Mappings map2 = subEval(p, gNode, node2, rest, exp);  
+        Mappings map2 = subEval(p, gNode, node2, rest, exp, set1.getJoinMappings());  
         
         getVisitor().minus(this, exp, map1, map2);
         
@@ -1450,38 +1473,52 @@ public class Eval implements ExpType, Plugin {
     }
     
     /**
-     * exp a Minus or Optional
+     * exp a Join, Minus or Optional
      */
     Exp prepareRest(Exp exp, MappingSet set1) {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();      
+        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();  
         if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
             // or impose irrelevant bindings 
-            Mappings map1dist = set1.getMappings().distinct(nodeListInScope);
-            if (exp.isJoin() 
-                    || memory.getQuery().getGlobalQuery().isFederate() // everybody is a service 
-                    || rest.size() == 1 && rest.get(0).isService() // rest is a service
-               ) {
+            Mappings map = set1.getMappings().distinct(nodeListInScope);
+            if (exp.isJoin() || isFederate(rest)) {
+//                    || memory.getQuery().getGlobalQuery().isFederate() // everybody is a service 
+//                    || rest.size() == 1 && rest.get(0).isService() // rest is a service
+//               ) {
                 // service clause in rest may take Mappings into account
                 // select distinct map1 wrt map2 inscope nodes  
-                exp.rest().setMappings(map1dist);
-            } else {
-                // inject Mappings in right arg of minus as a values clause            
+                //exp.rest().setMappings(map1dist);
+                set1.setJoinMappings(map);
+            } 
+            else {
+                // inject Mappings in right arg as a values clause            
                 // select distinct map1 wrt map2 inscope nodes 
-                Exp values = Exp.createValues(nodeListInScope, map1dist);
-                if (query.isDebug()) {
-                    System.out.println(exp.title());
-                    System.out.println(values);
-                }
-                rest = exp.rest().duplicate();
-                rest.getExpList().add(0, values);
+//                Exp values = Exp.createValues(nodeListInScope, map1dist);               
+//                rest = exp.rest().duplicate();
+//                rest.getExpList().add(0, values);
+                rest = complete(exp.rest(), map);
             }
         }
         return rest;
+    }
+    
+    boolean isFederate(Exp exp) {
+        return memory.getQuery().getGlobalQuery().isFederate()
+                || exp.size() == 1 && exp.get(0).isService();
+    }
+    
+    Exp complete(Exp exp, Mappings map) {
+        if (map == null || ! map.isNodeList()) {
+            return exp;
+        }
+        Exp values = Exp.createValues(map.getNodeList(), map);
+        Exp res = exp.duplicate();
+        res.getExpList().add(0, values);
+        return res;
     }
     
     private int minus1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
@@ -1543,22 +1580,16 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Memory env = memory;
         
-        Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp);
+        Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, memory.getResetJoinMappings());
         if (map1.size() == 0) {
-            exp.rest().setMappings(null);
+            //exp.rest().setMappings(null);
             return backtrack;
         }
+           
+        MappingSet set1 = new MappingSet(map1);
+        Exp rest = prepareRest(exp, set1);
         
-//        Mappings map = map1;        
-//        List<Node> nodeList = exp.rest().getRecordInScopeNodes();
-//        if (! nodeList.isEmpty()) {
-//            map = map1.distinct(nodeList);
-//        }
-//        exp.rest().setMappings(map);
-        
-        Exp rest = prepareRest(exp, new MappingSet(map1));
-        
-        Mappings map2 = subEval(p, gNode, gNode, rest, exp);
+        Mappings map2 = subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
 
         if (map2.size() == 0) {
             return backtrack;
@@ -1759,8 +1790,67 @@ public class Eval implements ExpType, Plugin {
         }
         return backtrack;
     }
-
+    
+    
+    
     private int union(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        if (query.isTest()) {
+            return union2(p, gNode, exp, stack, n);
+        }
+        else {
+            return union1(p, gNode, exp, stack, n);
+        }
+    }
+
+    
+
+    // new v2
+    private int union1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n - 1;
+        // join(A, union(B, C)) ; map = eval(A).distinct(inscopenodes())
+        Mappings map = memory.getResetJoinMappings();
+
+        Mappings map1 = union(p, gNode, exp.first(), exp, map);
+        Mappings map2 = union(p, gNode, exp.rest(),  exp, map);
+
+        getVisitor().union(this, exp, map1, map2);
+
+        int b1 = union(p, gNode, exp, stack, n, map1);
+        int b2 = union(p, gNode, exp, stack, n, map2);
+
+        return backtrack;
+    }
+    
+    
+    Mappings union(Producer p, Node gNode, Exp exp, Exp main, Mappings map) {      
+        if (isFederate(exp) || exp.isUnion()) {
+            return subEval(p, gNode, gNode, exp, main, map);
+        } else {
+            // exp += values (var) {map}
+            Exp ee = complete(exp, map);            
+            return subEval(p, gNode, gNode, ee, main);
+        }
+    }
+
+    
+    int union(Producer p, Node gNode, Exp exp, Stack stack, int n, Mappings map) {
+        int backtrack = n - 1;
+        Memory env = memory;
+        for (Mapping m : map) {
+            if (env.push(m, n)) {
+                backtrack = eval(p, gNode, stack, n+1 );
+                env.pop(m);
+                if (backtrack < n) {
+                    return backtrack;
+                }
+            }
+        }
+        return backtrack;
+    }
+    
+
+     // old
+    private int union2(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Stack nstack = stack.copy(exp.first(), n);
         int b1 = eval(p, gNode, nstack, n);
@@ -1790,6 +1880,7 @@ public class Eval implements ExpType, Plugin {
         //if (draft) edgeToDiffer = null;
         return backtrack;
     }
+    
 
     private int service2(Node gNode, Exp exp, Stack stack, int n) {
         stack = stack.and(exp.rest(), n);
@@ -1829,7 +1920,7 @@ public class Eval implements ExpType, Plugin {
      * Exp evaluated as a BGP, get result Mappings, push Mappings and continue
      * Use case: cache the Mappings
      */
-     private int bgpAble(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int bgpAble(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;      
         Mappings map = getMappings(p, gNode, exp);
         for (Mapping m : map) {
@@ -1858,13 +1949,13 @@ public class Eval implements ExpType, Plugin {
             if (n != null) {
                 Mappings m = exp.getMappings(n);
                 if (m == null) {
-                    m = subEval(p, gNode, gNode, exp, exp, null, true);
+                    m = subEval(p, gNode, gNode, exp, exp, null, null, true);
                     exp.cache(n, m);                      
                 }
                 return m;
             }
         }
-        return subEval(p, gNode, gNode, exp, exp, null, true);
+        return subEval(p, gNode, gNode, exp, exp, null, null, true);
     }
 
 
@@ -2672,7 +2763,7 @@ public class Eval implements ExpType, Plugin {
             node1 = qNode;
         }
 
-        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp);
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp, memory.getResetJoinMappings());
         if (map1.isEmpty()) {
             return backtrack;
         }
@@ -2687,7 +2778,7 @@ public class Eval implements ExpType, Plugin {
          * {?x p ?y optional { ?y q ?z }} optional { ?z r ?t } -> 
          * if ?z is not bound in every map1, generate no values.
          */
-        Mappings map2 = subEval(p, gNode, node1, rest, exp);
+        Mappings map2 = subEval(p, gNode, node1, rest, exp, set1.getJoinMappings());
         
         getVisitor().optional(this, exp, map1, map2);
                        
@@ -2771,7 +2862,7 @@ public class Eval implements ExpType, Plugin {
         for (Mapping r1 : map1) {
             boolean success = false;
 
-            Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, r1, false);
+            Mappings map2 = subEval(p, gNode, node1, exp.rest(), exp, null, r1, false);
             int nbsuc = 0;
             
             for (Mapping r2 : map2) {

@@ -1138,6 +1138,12 @@ public class Memory extends PointerObject implements Environment {
         return join;
     }
     
+    Mappings getResetJoinMappings() {
+        Mappings map = getJoinMappings();
+        setJoinMappings(null);
+        return map;
+    }
+    
     void setJoinMappings(Mappings m) {
         join = m;
     }

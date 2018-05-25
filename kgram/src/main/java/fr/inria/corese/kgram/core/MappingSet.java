@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class MappingSet {
 
-   
     Mappings map;
+    private Mappings targetMapping;
     Exp exp;
     MappingSet set1, set2;
     HashMap<String, String> 
@@ -248,6 +248,20 @@ public class MappingSet {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+    
+     /**
+     * @return the targetMapping
+     */
+    public Mappings getJoinMappings() {
+        return targetMapping;
+    }
+
+    /**
+     * @param targetMapping the targetMapping to set
+     */
+    public void setJoinMappings(Mappings targetMapping) {
+        this.targetMapping = targetMapping;
     }
     
 

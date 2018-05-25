@@ -45,6 +45,7 @@ public class Mappings extends PointerObject
     List<Mapping> list, reject;
     private List<Edge> insert;
     private List<Edge> delete;
+    private List<Node> nodeList;
     Group group, distinct;
     Node fake;
     Object object;
@@ -156,6 +157,7 @@ public class Mappings extends PointerObject
                 map.add(m);
             }
         }
+        map.setNodeList(list);
         return map;
     }
     
@@ -1502,4 +1504,24 @@ public class Mappings extends PointerObject
     public void setFake(boolean isFake) {
         this.isFake = isFake;
     }
+    
+    boolean isNodeList() {
+        return size() != 0 && getNodeList() != null && ! getNodeList().isEmpty();
+    }
+    
+        /**
+     * @return the nodeList
+     */
+    public List<Node> getNodeList() {
+        return nodeList;
+    }
+
+    /**
+     * @param nodeList the nodeList to set
+     */
+    public void setNodeList(List<Node> nodeList) {
+        this.nodeList = nodeList;
+    }
+
+
 }

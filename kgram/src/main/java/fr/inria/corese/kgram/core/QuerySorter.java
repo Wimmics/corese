@@ -200,10 +200,12 @@ public class QuerySorter implements ExpType {
 
         }
 
-        if (exp.isOptional()) {            
+        if (exp.isOptional()) {
             // A optional B
             // variables bound by A
             optional(exp);
+        } else if (exp.isUnion()) {
+            union(exp);
         } else if (exp.isJoin()) {
             exp.bindNodes();
         }
@@ -212,10 +214,14 @@ public class QuerySorter implements ExpType {
     }
     
     void optional(Exp exp){
-        //exp.first().setNodeList(exp.first().getNodes());
-        // for historical reasons it is stored by setNodeList()
         exp.first().setNodeList(exp.getInScopeNodes());
         exp.optional();
+    }
+    
+    // used by Eval subEval() bind()
+    void union(Exp exp){
+        exp.first().setNodeList(exp.first().getInScopeNodes());
+        exp.rest().setNodeList(exp.rest().getInScopeNodes());
     }
     
     void setBind(Query q, Exp exp){

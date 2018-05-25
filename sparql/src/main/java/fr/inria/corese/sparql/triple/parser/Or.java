@@ -71,6 +71,13 @@ public class Or extends Exp {
 	
         @Override
 	public ASTBuffer toString(ASTBuffer sb) {
+            get(0).toString(sb);
+            sb.nl().append(KeywordPP.UNION).append(" ");
+            get(1).pretty(sb);
+            return sb;
+	}
+        
+        public ASTBuffer toString2(ASTBuffer sb) {
             sb.append("{ ").incr();
             get(0).display(sb);
             sb.decr().nl().append("} ").append(KeywordPP.UNION).append(" ");

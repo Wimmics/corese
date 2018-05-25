@@ -114,6 +114,11 @@ public class QuerySolverVisitor implements ProcessVisitor {
         return callback(eval, Metadata.META_MINUS, toArray(e, m1, m2));
     }
     
+    @Override
+    public IDatatype union(Eval eval, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_UNION, toArray(e, m1, m2));
+    }
+    
      @Override
     public IDatatype service(Eval eval, Exp e, Mappings m) {       
         return callback(eval, Metadata.META_FEDERATE, toArray(e, m));

@@ -587,9 +587,19 @@ public class PluginImpl
          return load(dt, null);
     }
 
-    @Override
     public IDatatype load(IDatatype dt, IDatatype format) {
-         Graph g = Graph.create();
+        return load(dt, null, format);
+    }
+    
+    @Override
+    public IDatatype load(IDatatype dt, IDatatype dtg, IDatatype format) {
+         Graph g;
+         if (dtg == null || ! dtg.isPointer() || dtg.pointerType() != Pointerable.GRAPH_POINTER) {
+             g = Graph.create();
+         }
+         else {
+             g = (Graph) dtg.getPointerObject();
+         }
          Load ld = Load.create(g);
          try {
              if (readWriteAuthorized){

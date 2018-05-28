@@ -16,6 +16,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINUS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OPTIONAL;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_UNION;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -46,13 +47,7 @@ public class GraphSpecificFunction extends TermEval {
         
         switch (oper()) {
             case LOAD:
-                switch (param.length) {
-                    case 1:
-                        return proc.load(param[0], null);
-                    default:
-                        return proc.load(param[0], param[1]);
-                            
-                }
+                return load(proc, param);
                 
             case WRITE:
                 return proc.write(param[0], param[1]);
@@ -105,6 +100,20 @@ public class GraphSpecificFunction extends TermEval {
                 
         }
         
+    }
+    
+    IDatatype load(GraphProcessor proc, IDatatype[] param) {
+        switch (param.length) {
+            case 1:
+                return proc.load(param[0], null, null);
+            default:
+                IDatatype dt = param[1];
+                if (dt.isPointer() && dt.pointerType() == Pointerable.GRAPH_POINTER) {
+                    return proc.load(param[0], dt, (param.length == 2) ? null : param[2]);
+                } else {
+                    return proc.load(param[0], null, dt);
+                }
+        }
     }
     
     IDatatype entailment(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {

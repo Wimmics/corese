@@ -46,7 +46,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+					<!--<skip>true</skip>-->
 				</configuration>
 			</plugin>
 			<!--			<plugin>
@@ -90,8 +90,6 @@
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 			</plugin>
-
-
 		</plugins>
 	</build>
 

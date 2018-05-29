@@ -42,9 +42,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
@@ -71,9 +69,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 
-    static String data  = TestQuery1.class.getClassLoader().getResource("data").getPath() + "/";
-    static String QUERY = TestQuery1.class.getClassLoader().getResource("query").getPath() + "/";
-    static String text  = TestQuery1.class.getClassLoader().getResource("text").getPath() + "/";
+    static String data  = Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/";
+    static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query").getPath() + "/";
+    static String text  = Thread.currentThread().getContextClassLoader().getResource("text").getPath() + "/";
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
     private static final String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
@@ -115,8 +113,10 @@ public class TestQuery1 {
     }
 
     static void init(Graph g, Load ld) throws LoadException {
-        ld.parse(data + "comma/comma.rdfs");
-        ld.parse(data + "comma/model.rdf");
+        ld.parse( Thread.currentThread().getContextClassLoader().getResourceAsStream( "data/comma/comma.rdfs" ) );
+//        ld.parse(data + "comma/comma.rdfs");
+        ld.parse( Thread.currentThread().getContextClassLoader().getResourceAsStream( "data/comma/model.rdf" ) );
+//        ld.parse(data + "comma/model.rdf");
         ld.parseDir(data + "comma/data");
     }
 
@@ -2217,24 +2217,25 @@ public class TestQuery1 {
     public void testrdfxml() throws LoadException, IOException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.parse("/home/corby/AAServer/data/primer.owl");
+        ld.parse( data + "/test/primer.owl" );
+//        ld.parse("/home/corby/AAServer/data/primer.owl");
         g.init();
 
         Transformer t = Transformer.create(g, Transformer.RDFXML);
-        t.write("/home/corby/tmp.rdf");
+        t.write("./tmp.rdf");
 
         Graph g1 = Graph.create();
         Load ld1 = Load.create(g1);
-        ld1.parse("/home/corby/tmp.rdf");
+        ld1.parse("./tmp.rdf");
         g1.init();
 
 
         Transformer t2 = Transformer.create(g1, Transformer.TURTLE);
-        t2.write("/home/corby/tmp.ttl");
+        t2.write("./tmp.ttl");
 
         Graph g2 = Graph.create();
         Load ld2 = Load.create(g2);
-        ld2.parse("/home/corby/tmp.ttl");
+        ld2.parse("./tmp.ttl");
         g2.init();
 
         //System.out.println(g.compare(g2));

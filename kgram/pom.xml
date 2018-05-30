@@ -14,6 +14,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.openclover</groupId> 
+			<artifactId>clover</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
@@ -47,11 +52,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<sourceEncoding>utf-8</sourceEncoding>
-					<targetJdk>${jdk.version}</targetJdk>
-				</configuration>
 			</plugin>
 			
 			<plugin>
@@ -64,23 +64,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles> 
-		<profile> 
-			<id>jenkins</id> 
-			<activation> 
-				<property> 
-					<name>env.BUILD_NUMBER</name> 
-				</property> 
-			</activation> 
-			<build> 
-				<plugins> 
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>cobertura-maven-plugin</artifactId>
-					</plugin> 
-				</plugins> 
-			</build> 
-		</profile> 
-	</profiles>
 </project>

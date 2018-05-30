@@ -9,7 +9,7 @@
 	Contact: olivier.corby@inria.fr
 	-->
     <prerequisites>
-      <maven>3.5.0</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
 
     <!-- metadata: human readable informations for central -->
@@ -117,8 +117,9 @@
         <jersey.version>2.27</jersey.version>
         <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>
         <semargl.version>0.7.1</semargl.version>
-	<maven.test.skip>true</maven.test.skip>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- to prevent "[WARNING] Using platform encoding..."  -->
+        <maven.test.skip>true</maven.test.skip>
+        <project.build.sourceEncoding>UTF-8
+        </project.build.sourceEncoding> <!-- to prevent "[WARNING] Using platform encoding..."  -->
     </properties>
 
     <dependencyManagement>
@@ -464,17 +465,17 @@
                     <version>3.0.0-M1</version>
                     <executions>
                         <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.0</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.0</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -631,23 +632,23 @@
             </activation>
             <build>
                 <plugins>
-			<plugin>
-				<groupId>org.openclover</groupId>
-				<artifactId>clover-maven-plugin</artifactId>
-				<version>4.2.1</version>
-				<configuration>
-					<excludes>
-						<exclude>**/module-info.java</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+                   <!-- <plugin>
+                        <groupId>org.openclover</groupId>
+                        <artifactId>clover-maven-plugin</artifactId>
+                        <version>4.2.1</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/module-info.java</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>instrument</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>-->
                 </plugins>
             </build>
         </profile>

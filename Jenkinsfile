@@ -8,7 +8,8 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh './gradlew check'
+        sh '''export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+./gradlew check'''
         junit(testResults: 'build/reports/**/*.xml', allowEmptyResults: true, healthScaleFactor: 50)
       }
     }

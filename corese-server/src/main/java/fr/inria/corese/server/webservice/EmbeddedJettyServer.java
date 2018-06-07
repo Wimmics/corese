@@ -101,10 +101,12 @@ public class EmbeddedJettyServer extends ResourceConfig {
         // Checking if Log4j is overriden by system property
         String overrideLog4j = System.getProperty("log4j.configurationFile");
         URL log4jfile = null;
-        if (overrideLog4j != null && overrideLog4j != "")
+        if (overrideLog4j != null && !overrideLog4j.isEmpty() ) {
             log4jfile = new URL(overrideLog4j);
-        else
-            log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
+        } else
+        {
+            log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource( "log4j.properties" );
+        }
         logger.info("Loading log4j configuration: " + log4jfile);
         logger.info("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
 

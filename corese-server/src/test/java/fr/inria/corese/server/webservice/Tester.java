@@ -43,7 +43,7 @@ public class Tester {
     @AfterClass
     public static void shutdown()
     {
-//        server.destroy();
+        server.destroy();
     }
 
     @Test

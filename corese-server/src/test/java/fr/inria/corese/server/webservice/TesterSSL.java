@@ -39,7 +39,7 @@ public class TesterSSL {
                 "-lh",
                 "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl",
                 "-ssl",
-                "-jks corese.inria.fr.jks",
+                "-jks", "corese.inria.fr.jks",
                 "-pwd", "coreseatwimmics"
         ).start();
         Thread.sleep( 5000 );
@@ -48,7 +48,7 @@ public class TesterSSL {
     @AfterClass
     public static void shutdown()
     {
-//        server.destroy();
+        server.destroy();
     }
 
     @Test

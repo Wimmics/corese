@@ -111,7 +111,7 @@ public class SPARQLRestAPI {
         Profile.setProfile(mprofile);
         if (localProfile != null) {
             localProfile = NSManager.toURI(localProfile);
-            System.out.println("Load: " + localProfile);
+            logger.info( "Load: " + localProfile);
         }
         mprofile.initServer(PROFILE_DEFAULT, localProfile);
     }

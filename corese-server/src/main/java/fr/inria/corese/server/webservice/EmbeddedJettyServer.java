@@ -68,7 +68,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 @ApplicationPath("resources")
 public class EmbeddedJettyServer extends ResourceConfig {
 
-    private static Logger logger = null;
+    private static final Logger logger = LogManager.getLogger(EmbeddedJettyServer.class);
     static int port = 8080;
     private static boolean entailments = false;
     private static boolean owlrl = false;
@@ -105,10 +105,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
             log4jfile = new URL(overrideLog4j);
         else
             log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
-        System.out.println("Loading log4j configuration: " + log4jfile);
-        System.out.println("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
+        logger.info("Loading log4j configuration: " + log4jfile);
+        logger.info("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
 
-        logger = LogManager.getLogger(EmbeddedJettyServer.class);
 
         HOME_PAGE = SPARQLRestAPI.isAjax ? "demo_new.html" : "demo.html";
 
@@ -175,7 +174,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
             if (cmd.hasOption("l")) {
                 // deprecated load
                 dataPaths = cmd.getOptionValues("l");
-                System.out.println("Server: " + String.join(" ", dataPaths));
+                logger.info("Server: " + String.join(" ", dataPaths));
             }
             if (cmd.hasOption("lp")) {
                 // load st:default server content into SPARQL endpoint
@@ -203,19 +202,19 @@ public class EmbeddedJettyServer extends ResourceConfig {
             if (cmd.hasOption("pp")) {
                 // user defined profile.ttl to define additional servers
                 localProfile = cmd.getOptionValue("pp");
-                System.out.println("Profile: " + localProfile);
+                logger.info("Profile: " + localProfile);
             }
             if (cmd.hasOption("lh")) {
                 // user defined profile.ttl to define additional servers
                 isLocalHost = true;
-                System.out.println("localhost");
+                logger.info("localhost");
             }
             if (cmd.hasOption("debug")) {
-                System.out.println("debug");
+                logger.info("debug");
                 setDebug(true);
             }
             if (cmd.hasOption("protect")) {
-                System.out.println("protect");
+                logger.info("protect");
                 SPARQLRestAPI.isProtected = true;
             }
 
@@ -261,25 +260,29 @@ public class EmbeddedJettyServer extends ResourceConfig {
             // === SSL Connector begin ====
             if (enableSsl) {
                 SslContextFactory sslContextFactory = new SslContextFactory();
-              /*  SslSocketConnector sslConnector = new SslSocketConnector();
-                sslConnector.setPort(portSsl);
+                sslContextFactory.setKeyStorePath( webappUri.getRawPath() + "/keystore/" + keystore );
+                sslContextFactory.setKeyStorePassword( password );
+                sslContextFactory.setKeyManagerPassword( password );
+                sslContextFactory.setTrustStorePath( webappUri.getRawPath() + "/keystore/" + keystore );
+                sslContextFactory.setTrustStorePassword( password );
+
+              /*X  SslSocketConnector sslConnector = new SslSocketConnector();
+                X  sslConnector.setPort(portSsl);
                 sslConnector.setServer(server);
-                sslConnector.setKeystore(webappUri.getRawPath() + "/keystore/" + keystore);
-                sslConnector.setKeyPassword(password);
-                sslConnector.setPassword(password);
-                sslConnector.setTruststore(webappUri.getRawPath() + "/keystore/" + keystore);
-                sslConnector.setTrustPassword(password);
+                X sslConnector.setKeystore(webappUri.getRawPath() + "/keystore/" + keystore);
+                X sslConnector.setKeyPassword(password);
+                X sslConnector.setPassword(password);
+                X sslConnector.setTruststore(webappUri.getRawPath() + "/keystore/" + keystore);
+                X sslConnector.setTrustPassword(password);
 
                 server.addConnector(sslConnector);*/
 
                 HttpConfiguration httpsConfiguration = new HttpConfiguration();
-                httpsConfiguration.setSecureScheme("https");
-//                httpsConfiguration.addCustomizer(src);
                 ServerConnector https = new ServerConnector(server,
                         new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
                         new HttpConnectionFactory(httpsConfiguration));
                 https.setPort(portSsl);
-                server.setConnectors(new Connector[] { https });
+                server.addConnector( https );
 
                 logger.info("Corese SSL connection https://localhost:" + portSsl);
             }

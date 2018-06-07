@@ -16,6 +16,7 @@ import fr.inria.corese.core.load.LoadException;
 import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -26,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class Manager {
-
+    private final static Logger logger = LogManager.getLogger(Manager.class);
     static final String STCONTEXT = Context.STL_CONTEXT;
     static String DEFAULT = NSManager.STL + "default";
     private static String CONTENT = NSManager.STL + "content";
@@ -67,7 +68,7 @@ public class Manager {
         for (Service s : p.getServers()) {
             if (!s.getName().equals(DEFAULT)) {
                 // default if the sparql endpoint
-                System.out.println("Load: " + s.getName());
+                logger.info("Load: " + s.getName());
                 try {
                     initTripleStore(p, s);
                 } catch (LoadException ex) {

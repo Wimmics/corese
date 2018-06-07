@@ -1,12 +1,9 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
-
-import static fr.inria.corese.core.load.Service.QUERY;
-
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,17 +12,22 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-
 import java.io.IOException;
 
+import static fr.inria.corese.core.load.Service.QUERY;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
-public class Tester {
+public class TesterSSL {
     private boolean isDebug;
     private static Process server;
+    private static final String SERVER_URL = "https://localhost:8443/";
+    private static final String SPARQL_ENDPOINT_URL = SERVER_URL + "sparql";
+    private static final String TEMPLATE_URL = SERVER_URL + "template";
+    private static final String CDN_URL = SERVER_URL + "tutorial/cdn";
+    private static final String ORLRL_URL = SERVER_URL + "process/owlrl";
 
     @BeforeClass
     public static void init() throws InterruptedException, IOException
@@ -35,7 +37,10 @@ public class Tester {
                 "/usr/bin/java",
                 "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
                 "-lh",
-                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl"
+                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl",
+                "-ssl",
+                "-jks corese.inria.fr.jks",
+                "-pwd", "coreseatwimmics"
         ).start();
         Thread.sleep( 5000 );
     }
@@ -49,7 +54,7 @@ public class Tester {
     @Test
     public void test() throws LoadException
     {
-        Service serv = new Service( "http://localhost:8080/sparql" );
+        Service serv = new Service( SPARQL_ENDPOINT_URL);
         String q = "select * where {?x ?p ?y} limit 10";
         Mappings map = serv.select( q );
         for (Mapping m: map) {
@@ -61,7 +66,7 @@ public class Tester {
     @Test
     public void test2()
     {
-        String service = "http://localhost:8080/template";
+        String service = TEMPLATE_URL;
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target( service );
         String res = target.queryParam( "profile", "st:dbedit" ).request().get( String.class );
@@ -74,7 +79,7 @@ public class Tester {
     @Test
     public void test3()
     {
-        String service = "http://localhost:8080/template";
+        String service = TEMPLATE_URL;
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target( service );
         String res = target.queryParam( "profile", "st:dbpedia" )
@@ -87,17 +92,18 @@ public class Tester {
     @Test
     public void test4()
     {
-        String service = "http://localhost:8080/tutorial/cdn";
+        String service = CDN_URL;
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target( service );
         String res = target.request().get( String.class );
         assertEquals( true, res.contains( "Siècle" ) );
     }
 
+
     @Test
     public void test5()
     {
-        String service = "http://localhost:8080/process/owlrl";
+        String service = ORLRL_URL;
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target( service );
         String res = target.queryParam( "uri", "/data/primer.owl" ).request().get( String.class );

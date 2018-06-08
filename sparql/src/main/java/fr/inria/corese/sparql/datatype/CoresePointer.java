@@ -26,6 +26,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     private static final IDatatype annotation_dt= getGenericDatatype(IDatatype.METADATA_DATATYPE);
     private static final IDatatype expression_dt= getGenericDatatype(IDatatype.EXPRESSION_DATATYPE);
     private static final IDatatype producer_dt  = getGenericDatatype(IDatatype.DATAPRODUCER_DATATYPE);
+    private static final IDatatype path_dt      = getGenericDatatype(IDatatype.PATH_DATATYPE);
 
     Pointerable pobject;
     
@@ -51,6 +52,7 @@ public class CoresePointer extends CoreseUndefLiteral {
             case Pointerable.METADATA_POINTER:  return annotation_dt;
             case Pointerable.EXPRESSION_POINTER:return expression_dt;
             case Pointerable.DATAPRODUCER_POINTER:return producer_dt;
+            case Pointerable.PATH_POINTER:      return path_dt;
             default: return dt;
         }
     }
@@ -62,6 +64,9 @@ public class CoresePointer extends CoreseUndefLiteral {
     
     @Override
     public int pointerType(){
+        if (pobject == null) {
+            return Pointerable.UNDEF_POINTER;
+        }
         return pobject.pointerType();
     }
     
@@ -73,6 +78,13 @@ public class CoresePointer extends CoreseUndefLiteral {
     @Override
     public Pointerable getObject(){
         return pobject;
+    }
+    
+    @Override
+    public void setObject(Object obj) {
+        if (obj instanceof Pointerable) {
+            pobject = (Pointerable) obj;
+        }
     }
     
     @Override

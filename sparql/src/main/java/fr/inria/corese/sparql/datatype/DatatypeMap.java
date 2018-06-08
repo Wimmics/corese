@@ -596,6 +596,10 @@ public class DatatypeMap implements Cst, RDF {
         dt.setObject(obj);
         return dt;
     }
+    
+    public static IDatatype createPointer(String name) {
+        return new CoresePointer(name, null);
+    }
 
     public static IDatatype createObject(String name, Object obj, String datatype) {
         IDatatype dt = createUndef(name, datatype);

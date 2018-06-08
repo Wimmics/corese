@@ -356,7 +356,8 @@ public class Term extends Expression {
                 return new SetFunction(name);
 
             case ExprType.LENGTH:
-                return new ZeroAry(name);
+                //return new ZeroAry(name);
+                return new PathLength(name);
 
             case ExprType.XT_GEN_GET:
                 return new GetGen(name);

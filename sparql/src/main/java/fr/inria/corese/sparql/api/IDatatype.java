@@ -76,6 +76,7 @@ public interface IDatatype
     public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
     public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
     public static final String DATAPRODUCER_DATATYPE = ExpType.DT + "producer";
+    public static final String PATH_DATATYPE       = ExpType.DT + "path";
       
     boolean isSkolem();
 

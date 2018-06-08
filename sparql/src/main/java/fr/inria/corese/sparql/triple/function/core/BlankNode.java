@@ -31,7 +31,9 @@ public class BlankNode extends TermEval {
             return bnode(eval, b, env, p);
         }
         switch (oper()){
-            case ExprType.PATHNODE: return DatatypeMap.createBlank(name + count());
+            case ExprType.PATHNODE: 
+                return DatatypeMap.createPointer(name + count());
+                //return DatatypeMap.createBlank(name + count());
             default: return DatatypeMap.createBlank();                   
         }
     }

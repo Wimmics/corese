@@ -84,11 +84,18 @@ public class Metadata extends ASTObject
     public static final String META_RESULT   = "@result";
     public static final String META_STATEMENT= "@statement";
     public static final String META_CANDIDATE= "@candidate";
+    public static final String META_PATH     = "@path";
+    public static final String META_STEP     = "@step";
     public static final String META_OPTIONAL = "@optional";
     public static final String META_MINUS    = "@minus";
     public static final String META_UNION    = "@union";
     public static final String META_FILTER   = "@filter";
+    public static final String META_SELECT   = "@select";
     public static final String META_FEDERATE = "@federate";
+    public static final String META_QUERY    = "@query";
+    public static final String META_GRAPH    = "@graph";
+    public static final String META_AGGREGATE= "@aggregate";
+    public static final String META_HAVING   = "@having";
         
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

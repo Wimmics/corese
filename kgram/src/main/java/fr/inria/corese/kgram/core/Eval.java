@@ -684,7 +684,7 @@ public class Eval implements ExpType, Plugin {
                 return pf;
             }
         }
-        PathFinder pathFinder = PathFinder.create(p, match, evaluator, query);
+        PathFinder pathFinder = PathFinder.create(this, p, query);
         //pathFinder.setDefaultBreadth(false);
         if (hasEvent) {
             pathFinder.set(manager);
@@ -884,26 +884,29 @@ public class Eval implements ExpType, Plugin {
                     backtrack = service(p, gNode, exp, stack, n);
                     break;
 
-                case GRAPH:                   
-                    if (env.isPath(exp.getGraphName())) {
-                        // graph $path { }
-                        // switch Producer to path
-                        backtrack
-                                = inGraph(p, memory.getPath(exp.getGraphName()),
+                case GRAPH:  
+                    if (!true) {
+                        backtrack = genGraph(p, gNode, exp, stack, n);
+                    } else {
+//                        if (env.isPath(exp.getGraphName())) {
+//                            // graph $path { }
+//                            // switch Producer to path
+//                            backtrack
+//                                    = inGraph(p, memory.getPath(exp.getGraphName()),
+//                                            gNode, exp, stack, n);
+//                        } else 
+//                        {
+                            Node gg = getNode(exp.getGraphName());
+                            if (gg != null && p.isProducer(gg)) {
+                                // graph $path { }
+                                // named graph in GraphStore 
+                                // switch Producer  
+                                backtrack = inGraph(p, p.getProducer(gg, memory),
                                         gNode, exp, stack, n);
-                    } 
-                    else {
-                        Node gg = getNode(exp.getGraphName());
-                        if (gg != null && p.isProducer(gg)) {
-                            // graph $path { }
-                            // named graph in GraphStore 
-                            // switch Producer  
-                            backtrack = inGraph(p, p.getProducer(gg, memory),
-                                    gNode, exp, stack, n);
-                        }                        
-                        else {
-                            backtrack = graph(gNode, exp, stack, n);
-                        }
+                            } else {
+                                backtrack = graph(gNode, exp, stack, n);
+                            }
+//                        }
                     }
                     break;
 
@@ -1392,7 +1395,7 @@ public class Eval implements ExpType, Plugin {
      */
     private void graphNode(Node gNode, Node node, Memory mem) {
         if (gNode != null && memory.isBound(gNode)) {
-            mem.push(node, memory.getNode(gNode));
+            mem.push((node == null)?gNode:node, memory.getNode(gNode));
         }
     }
 
@@ -1475,7 +1478,7 @@ public class Eval implements ExpType, Plugin {
     /**
      * exp a Join, Minus or Optional
      */
-    Exp prepareRest(Exp exp, MappingSet set1) {
+     Exp prepareRest(Exp exp, MappingSet set1) {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
@@ -1484,27 +1487,51 @@ public class Eval implements ExpType, Plugin {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
             // or impose irrelevant bindings 
+            // map = select distinct map1 wrt exp inscope nodes 
             Mappings map = set1.getMappings().distinct(nodeListInScope);
             if (exp.isJoin() || isFederate(rest)) {
-//                    || memory.getQuery().getGlobalQuery().isFederate() // everybody is a service 
-//                    || rest.size() == 1 && rest.get(0).isService() // rest is a service
-//               ) {
                 // service clause in rest may take Mappings into account
-                // select distinct map1 wrt map2 inscope nodes  
-                //exp.rest().setMappings(map1dist);
                 set1.setJoinMappings(map);
             } 
             else {
-                // inject Mappings in right arg as a values clause            
-                // select distinct map1 wrt map2 inscope nodes 
-//                Exp values = Exp.createValues(nodeListInScope, map1dist);               
-//                rest = exp.rest().duplicate();
-//                rest.getExpList().add(0, values);
+                // inject Mappings in copy of rest as a values clause            
                 rest = complete(exp.rest(), map);
             }
         }
         return rest;
     }
+     
+    
+//    Exp prepareRest2(Exp exp, MappingSet set1) {
+//        Exp rest = exp.rest();
+//        // in-scope variables in rest
+//        // except those that are only in right arg of an optional in rest
+//        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();  
+//        if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
+//            // generate values when at least one variable in-subscope is always 
+//            // bound in map1, otherwise it would generate duplicates in map2
+//            // or impose irrelevant bindings 
+//            Mappings map = set1.getMappings().distinct(nodeListInScope);
+//            if (exp.isJoin() || isFederate(rest)) {
+////                    || memory.getQuery().getGlobalQuery().isFederate() // everybody is a service 
+////                    || rest.size() == 1 && rest.get(0).isService() // rest is a service
+////               ) {
+//                // service clause in rest may take Mappings into account
+//                // select distinct map1 wrt map2 inscope nodes  
+//                //exp.rest().setMappings(map1dist);
+//                set1.setJoinMappings(map);
+//            } 
+//            else {
+//                // inject Mappings in right arg as a values clause            
+//                // select distinct map1 wrt map2 inscope nodes 
+////                Exp values = Exp.createValues(nodeListInScope, map1dist);               
+////                rest = exp.rest().duplicate();
+////                rest.getExpList().add(0, values);
+//                rest = complete(exp.rest(), map);
+//            }
+//        }
+//        return rest;
+//    }
     
     boolean isFederate(Exp exp) {
         return memory.getQuery().getGlobalQuery().isFederate()
@@ -1804,36 +1831,46 @@ public class Eval implements ExpType, Plugin {
 
     
 
-    // new v2
+    // new 
     private int union1(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         // join(A, union(B, C)) ; map = eval(A).distinct(inscopenodes())
         Mappings map = memory.getResetJoinMappings();
 
-        Mappings map1 = union(p, gNode, exp.first(), exp, map);
-        Mappings map2 = union(p, gNode, exp.rest(),  exp, map);
+        Mappings map1 = unionBranch(p, gNode, exp.first(), exp, map);
+        Mappings map2 = unionBranch(p, gNode, exp.rest(),  exp, map);
 
         getVisitor().union(this, exp, map1, map2);
 
-        int b1 = union(p, gNode, exp, stack, n, map1);
-        int b2 = union(p, gNode, exp, stack, n, map2);
+        int b1 = unionPush(p, gNode, exp, stack, n, map1);
+        int b2 = unionPush(p, gNode, exp, stack, n, map2);
 
         return backtrack;
     }
     
-    
-    Mappings union(Producer p, Node gNode, Exp exp, Exp main, Mappings map) {      
+    /**
+     * Eval one exp of union main
+     * map is partial solution Mappings resulting from previous statement evaluation,
+     * typically eval(A) in join(A, union(B, C))
+     * In federated case (or if exp is itself a union), 
+     * map is passed to subEval(exp, map), it may be taken into account by service in exp
+     * In non federated case, map is included in copy of exp as a values(var, map) clause
+     */
+    Mappings unionBranch(Producer p, Node gNode, Exp exp, Exp main, Mappings map) {
+        Node ggNode = (gNode == null) ? null : query.getGraphNode();
         if (isFederate(exp) || exp.isUnion()) {
-            return subEval(p, gNode, gNode, exp, main, map);
+            return subEval(p, gNode, ggNode, exp, main, map);
         } else {
-            // exp += values (var) {map}
-            Exp ee = complete(exp, map);            
-            return subEval(p, gNode, gNode, ee, main);
+            // exp += values(var, map)
+            Exp ee = complete(exp, map);
+            return subEval(p, gNode, ggNode, ee, main);
         }
     }
 
-    
-    int union(Producer p, Node gNode, Exp exp, Stack stack, int n, Mappings map) {
+    /**
+     * Push Mappings of branch of union in the stack   
+     */
+    int unionPush(Producer p, Node gNode, Exp exp, Stack stack, int n, Mappings map) {
         int backtrack = n - 1;
         Memory env = memory;
         for (Mapping m : map) {
@@ -1847,6 +1884,121 @@ public class Eval implements ExpType, Plugin {
         }
         return backtrack;
     }
+    
+    private int genGraph(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        int backtrack = n -1;
+        Producer np = p;
+        Node name = exp.getGraphName();
+        Node gg = getNode(name);
+        Node ggNode = query.getGraphNode();        
+        Mappings map = memory.getResetJoinMappings();
+        Mappings res;
+        
+        if (gg != null && p.isProducer(gg)) {
+            // graph ?g { }
+            // named graph in GraphStore 
+            np = p.getProducer(gg, memory);                             
+            np.setGraphNode(name);  // the new gNode
+            ggNode = null;           
+            res = graph(np, p, ggNode,  exp, stack, map, n);    
+        }
+        else if (memory.isBound(name)) {
+            res = graph(p, p, ggNode,  exp, stack, map, n);          
+        }
+        else {
+            res = genGraphNodes(ggNode, exp, stack, map, n);
+        }
+                        
+        if (res == null) {
+            return backtrack;        
+        }
+        Memory env = memory;
+        
+        for (Mapping m : res) { 
+            Node val1 = null, val2 = null;
+            if (ggNode != null) {
+                val1 = m.getNode(ggNode);
+                val2 = m.getNode(name);
+                if (val1 != null && val2 != null && ! val1.equals(val2)) {
+                    continue;
+                }
+            }
+            if (env.push(m, n)) {
+                boolean pop = false;
+                if (val1 != null) {
+                    env.pop(ggNode);
+                    if (val2 == null) {
+                        if (env.push(name, val1)) {
+                            pop = true;
+                        }
+                        else {
+                            env.pop(m);
+                            continue;
+                        }
+                    }
+                }
+                
+                backtrack = eval(p, gNode, stack, n + 1);
+                env.pop(m);
+                if (pop) {
+                    env.pop(name);
+                }
+                if (backtrack < n) {
+                    return backtrack;
+                }
+            }
+        }
+
+        return backtrack;
+    }
+    
+    
+    private Mappings genGraphNodes(Node ggNode, Exp exp, Stack stack, Mappings map, int n) {
+        Memory env = memory;
+        Producer prod = producer;
+        Query qq = query;
+        Matcher mm = match;
+        int backtrack = n - 1;
+        Node name = exp.getGraphName();        
+        Mappings res = null;
+        
+        for (Node graph : prod.getGraphNodes(name, qq.getFrom(name), env)) {
+            if (mm.match(name, graph, env)
+                    && env.push(name, graph, n)) {
+                Mappings m = graph(prod, prod, ggNode, exp, stack, map, n);
+                if (res == null) {
+                    res = m;
+                }
+                else {
+                    res.add(m);
+                }
+                env.pop(name);            
+            }
+        }
+        return res;
+    }
+    
+    private Mappings graph(Producer np, Producer p, Node ggNode,  Exp exp, Stack stack, Mappings map, int n) {
+        int backtrack = n - 1;
+        // join(A, union(B, C)) ; map = eval(A).distinct(inscopenodes())
+        
+        Exp main = exp;
+        Exp body = exp.rest();
+        Mappings res;
+        Node name   = exp.getGraphName();
+       
+        if (isFederate(exp)) {
+            res = subEval(np, name, ggNode, body, main, map);
+        } 
+        else {
+            // exp += values(var, map)
+            Exp ee = complete(body, map);           
+            res = subEval(np, name, ggNode, ee, main);
+        }
+        return res;      
+    }
+
+    
     
 
      // old
@@ -2666,6 +2818,8 @@ public class Eval implements ExpType, Plugin {
                 exp.setObject(lMap);
             }
         }
+        
+        getVisitor().query(this, exp, lMap);
         
         // enumerate the result of the sub query
         // bind the select nodes into the stack

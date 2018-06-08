@@ -5,6 +5,7 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.filter.Proxy;
@@ -97,9 +98,9 @@ public interface Evaluator {
         
         void setProducer(Producer p);
         
-        void setKGRAM(Object o);
+        void setKGRAM(Eval o);
         
-        Object getEval();
+        Eval getEval();
 
         void addResultListener(ResultListener rl);
         

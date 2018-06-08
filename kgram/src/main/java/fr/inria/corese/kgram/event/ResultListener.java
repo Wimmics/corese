@@ -2,12 +2,10 @@ package fr.inria.corese.kgram.event;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.path.Path;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Result Listener to process KGRAM result on the fly

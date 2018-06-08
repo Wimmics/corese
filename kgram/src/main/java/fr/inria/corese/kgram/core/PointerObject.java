@@ -11,51 +11,51 @@ import java.util.ArrayList;
  *
  */
 public abstract class PointerObject implements Pointerable {
-    static final ArrayList empty = new ArrayList(0);
-
-    @Override
-    public int pointerType() {
-        return UNDEF_POINTER;
-    }
-
-    @Override
-    public Mappings getMappings() {
-        return null;    
-    }
-
-    @Override
-    public Mapping getMapping() {
-        return null;
-    }
-
-    @Override
-    public Edge getEdge() {
-        return null;
-    }
-    
-     @Override
-    public Query getQuery() {
-        return null;
-    }
-    
-    @Override
-    public TripleStore getTripleStore(){
-        return null;
-    }
-    
-    @Override
-    public int size(){
-        return 0;
-    }
-    
-    @Override
-    public Object getValue(String var, int n){
-        return null;
-    }
-    
-    @Override
-    public Iterable getLoop(){
-        return empty;
-    }
+//    static final ArrayList empty = new ArrayList(0);
+//
+//    @Override
+//    public int pointerType() {
+//        return UNDEF_POINTER;
+//    }
+//
+//    @Override
+//    public Mappings getMappings() {
+//        return null;    
+//    }
+//
+//    @Override
+//    public Mapping getMapping() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Edge getEdge() {
+//        return null;
+//    }
+//    
+//     @Override
+//    public Query getQuery() {
+//        return null;
+//    }
+//    
+//    @Override
+//    public TripleStore getTripleStore(){
+//        return null;
+//    }
+//    
+//    @Override
+//    public int size(){
+//        return 0;
+//    }
+//    
+//    @Override
+//    public Object getValue(String var, int n){
+//        return null;
+//    }
+//    
+//    @Override
+//    public Iterable getLoop(){
+//        return empty;
+//    }
 
 }

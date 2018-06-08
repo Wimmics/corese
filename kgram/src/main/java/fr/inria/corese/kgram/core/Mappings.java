@@ -878,8 +878,8 @@ public class Mappings extends PointerObject
         boolean res = true;
 
         if (n == HAVING) {
-            res = eval.test(exp.getFilter(), memory);
-
+            res = eval.test(exp.getFilter(), memory);            
+            eval.getEval().getVisitor().having(eval.getEval(), exp.getFilter().getExp(), res);
             if (hasEvent) {
                 Event event = EventImpl.create(Event.FILTER, exp, res);
                 manager.send(event);
@@ -892,6 +892,9 @@ public class Mappings extends PointerObject
                 node = memory.getNode(exp.getNode());
             } else {
                 node = eval.eval(exp.getFilter(), memory, p);
+                eval.getEval().getVisitor()
+                        .aggregate(eval.getEval(), exp.getFilter().getExp(), 
+                                (node == null) ? null : node.getDatatypeValue());
             }
 
             if (hasEvent) {

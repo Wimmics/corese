@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -1416,6 +1415,13 @@ public class Exp extends PointerObject
                 }
                 break;
                 
+            case GRAPH: 
+                add(nodeList, getGraphName(), blank);
+                if (size() > 1) {
+                    rest().getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                }
+                break;
+                
             case UNION:
                 if (inSubScope) {
                     // in-subscope record nodes that are surely bound
@@ -1454,7 +1460,7 @@ public class Exp extends PointerObject
                 // BGP, service, union, named graph pattern
                 for (Exp ee : this) {
                     ee.getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
-                    if (inSubScope && (ee.isMinus() || ee.isOptional() || ee.isUnion())) {
+                    if (inSubScope && (ee.isMinus() || ee.isOptional() || ee.isUnion() || ee.isGraph())) {
                         // skip statements after optional/minus/union for in-subscope nodes
                         break;
                     }                    

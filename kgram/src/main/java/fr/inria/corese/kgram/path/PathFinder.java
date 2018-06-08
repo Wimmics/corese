@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
@@ -22,12 +23,10 @@ import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.Visit.TTable;
 import fr.inria.corese.kgram.tool.EdgeInv;
-import fr.inria.corese.kgram.tool.NodeImpl;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * ********************************************************
@@ -84,6 +83,7 @@ public class PathFinder {
     private Environment memory;
     private EventManager manager;
     private ResultListener listener;
+    private Eval kgram;
     private Producer producer;
     private Matcher matcher;
     private Evaluator evaluator;
@@ -196,7 +196,17 @@ public class PathFinder {
     public static PathFinder create(Producer p, Matcher match, Evaluator eval, Query q) {
         return new PathFinder(p, match, eval, q);
     }
-
+    
+     public static PathFinder create(Eval eval, Producer p, Query q) {
+        PathFinder pf = new PathFinder(p, eval.getMatcher(), eval.getEvaluator(), q);
+        pf.setEval(eval);
+        return pf;
+    }
+    
+    void setEval(Eval ev) {
+        kgram = ev;
+    }
+     
     public void setDefaultBreadth(boolean b) {
         defaultBreadth = b;
     }
@@ -559,13 +569,14 @@ public class PathFinder {
 
         Mapping map = Mapping.create(qNodes, tNodes);
         if (isStorePath) {
-            tNodes[ip] = getPathNode();
             Path edges = path.copy(producer);
             if (isReverse) {
                 edges.reverse();
             }
             Path[] lp = new Path[length];
             lp[ip] = edges;
+            tNodes[ip] = getPathNode();
+            tNodes[ip].setObject(edges);         
             map.setPath(lp);
         }
 
@@ -603,63 +614,7 @@ public class PathFinder {
         }
         return true;
     }
-
-    /**
-     * List of starting nodes for path TODO: check start memberOf src
-     */
-//    private Iterable<Entity> getStart(Node cstart, Node csrc) {
-//        if (cstart != null) {
-//            // start is bound
-//            ArrayList<Entity> vec = new ArrayList<Entity>();
-//            if (csrc != null) {
-//                // check graph src contains start
-//                //System.out.println("** PF should check: " + csrc + " contains " + cstart);
-//            }
-//            vec.add(EntityImpl.create(csrc, cstart));
-//            return vec;
-//        } else {
-//            return getNodes(csrc, edge, from, null);
-//        }
-//    }
-
-//    public Iterable<Entity> getNodes(Node csrc, final Edge edge, List<Node> from, List<Regex> list) {
-//
-//        Iterable<Entity> iter = producer.getNodes(gNode, from, edge, memory, list, index);
-//
-//        if (filter == null) {
-//            return iter;
-//        }
-//
-//        final Iterator<Entity> it = iter.iterator();
-//
-//        return () -> new Iterator<Entity>() {
-//            @Override
-//            public boolean hasNext() {
-//                return it.hasNext();
-//            }
-//            
-//            @Override
-//            public Entity next() {
-//                while (hasNext()) {
-//                    Entity entity = it.next();
-//                    if (entity == null) {
-//                        return null;
-//                    }
-//                    Node node = entity.getNode();
-//                    if (test(node)) {
-//                        return entity;
-//                    }
-//                }
-//                return null;
-//            }
-//            
-//            @Override
-//            public void remove() {
-//                // TODO Auto-generated method stub
-//            }
-//        };
-//    }
-    
+   
     /**
      * cstart is bound when edge node is a bound variable 
      * cstart is not bound when edge node is a constant, this case
@@ -935,11 +890,15 @@ public class PathFinder {
                         handler.enter(ent, exp, size);
                     }
 
-                    path.add(ent, eweight);
+                    boolean suc = kgram.getVisitor().step(kgram, ee, path, ent);
+                    
+                    if (suc) {
+                        path.add(ent, eweight);
 
-                    eval(stack, path, rel.getNode(oo), src);
+                        eval(stack, path, rel.getNode(oo), src);
 
-                    path.remove(ent, eweight);
+                        path.remove(ent, eweight);
+                    }
 
                     if (hasHandler) {
                         handler.leave(ent, exp, size);
@@ -1161,27 +1120,6 @@ public class PathFinder {
     }
     
     
-//    void resultNodeEntity(Record stack, Path path, Node start, Node src) {
-//        for (Entity ent : getStart(start, src)) {
-//
-//            if (isStop) {
-//                return;
-//            }
-//
-//            if (ent != null) {
-//                Node node = ent.getNode();
-//                if (gNode != null) {
-//                    src = ent.getGraph();
-//                }
-//                Mapping m = result(path, gNode, src, node, isReverse);
-//
-//                if (m != null) {
-//                    result(m);
-//                }
-//            }
-//        }
-//    }
-    
      void resultNode(Record stack, Path path, Node start, Node src) {
         for (Node node : getNodeIterator(start, src)) {
 
@@ -1203,6 +1141,7 @@ public class PathFinder {
     }
 
     void result(Mapping map) {
+        kgram.getVisitor().path(kgram, edge, map);
         if (isList) {
             lMap.add(map);
         } else {

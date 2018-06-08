@@ -420,9 +420,9 @@ public class Mapping
         return lPath[n];
     }
 
-    public Path[] getPaths() {
-        return lPath;
-    }
+//    public Path[] getPaths() {
+//        return lPath;
+//    }
 
     public Node getQueryPathNode() {
         if (!isPath()) {

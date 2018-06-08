@@ -6,11 +6,11 @@ import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.tool.EdgeInv;
 import fr.inria.corese.kgram.tool.ProducerDefault;
-import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  *
@@ -20,7 +20,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public class Path extends ProducerDefault {
+public class Path extends ProducerDefault implements Pointerable {
 
     boolean loopNode = true,
             isShort = false,
@@ -47,6 +47,27 @@ public class Path extends ProducerDefault {
 
     public ArrayList<Edge> getEdges() {
         return path;
+    }
+    
+    @Override
+    public Path getPathObject() {
+        return this;
+    }
+    
+    @Override
+    public String getDatatypeLabel() {
+        if (path.size() == 1) {
+            return String.format("(1)[%s]", path.get(0));
+        }
+        if (path.size() > 1) {
+            return String.format("(%s)[%s ...]", path.size(), path.get(0));
+        }
+        return "(0)[]";
+    }
+    
+    @Override
+    public int pointerType() {
+        return PATH_POINTER;
     }
 
     void setIsShort(boolean b) {
@@ -169,6 +190,7 @@ public class Path extends ProducerDefault {
         return path.size();
     }
 
+    @Override
     public int size() {
         return path.size();
     }
@@ -202,62 +224,6 @@ public class Path extends ProducerDefault {
         }
         return this;
     }
-
-//    public Iterable<Entity> nodes() {
-//
-//        return () -> elements();
-//    }
-
-//    Entity entity(Node node) {
-//        return EntityImpl.create(null, node);
-//    }
-
-    /**
-     * Enumerate resources and properties of the path in order first and last
-     * included
-     */
-//    public Iterator<Entity> elements() {
-//
-//        return new Iterator<Entity>() {
-//            private int i = 0;
-//            private int j = 0;
-//            private int ii;
-//            private boolean hasNext = length() > 0 ? true : false;
-//
-//            @Override
-//            public boolean hasNext() {
-//                return hasNext;
-//            }
-//
-//            @Override
-//            public Entity next() {
-//                switch (j) {
-//                    case 0:
-//                        j = 1;
-//                        return entity(path.get(i).getEdge().getNode(0));
-//                    case 1:
-//                        ii = i;
-//                        if (i == path.size() - 1) {
-//                            j = 2;
-//                        } else {
-//                            j = 0;
-//                            i++;
-//                        }
-//                        return entity(path.get(ii).getEdge().getEdgeNode());
-//                    case 2:
-//                        hasNext = false;
-//                        j = -1;
-//                        return entity(path.get(i).getEdge().getNode(1));
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            public void remove() {
-//            }
-//        };
-//
-//    }
     
     public Iterator<Node> nodeIterator() {
 
@@ -330,10 +296,9 @@ public class Path extends ProducerDefault {
         return path;
     }
 
-//    @Override
-//    public Iterable<Entity> getNodes(Node gNode, List<Node> from, Node qNode,
-//            Environment env) {
-//        return nodes();
-//    }
+    @Override
+    public Iterable getLoop() {
+        return path;
+    }
     
 }

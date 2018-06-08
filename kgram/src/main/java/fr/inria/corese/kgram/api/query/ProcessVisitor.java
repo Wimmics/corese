@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.path.Path;
 
 /**
  *
@@ -27,20 +28,40 @@ public interface ProcessVisitor {
     default DatatypeValue produce(Eval eval, Edge edge) { return null; }
     
     default DatatypeValue candidate(Eval eval, Edge q, Edge e) { return null;}
+    
+    default DatatypeValue path(Eval eval, Edge q, Mapping m) { return null;}
+    
+    default boolean step(Eval eval, Edge q, Path p, Edge e) { return true;}
 
     default DatatypeValue result(Eval eval, Mapping m) { return null; }
 
     default DatatypeValue statement(Eval eval, Exp e) { return null; }
+    
 
     default DatatypeValue optional(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
        
     default DatatypeValue minus(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
     
     default DatatypeValue union(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+    
+    default DatatypeValue graph(Eval eval, Exp e, Mappings m) { return null; }
+    
+    default DatatypeValue query(Eval eval, Exp e, Mappings m) { return null; }    
 
-    default DatatypeValue service(Eval eval, Exp e, Mappings m) { return null; }     
+    default DatatypeValue service(Eval eval, Exp e, Mappings m) { return null; }  
+       
     
     default boolean filter(Eval eval, Expr e, boolean b) { return b; } 
+    
+    default boolean having(Eval eval, Expr e, boolean b) { return b; } 
+    
+    
+    default DatatypeValue bind(Eval eval, Exp e, DatatypeValue val) { return val; }  
+
+    default DatatypeValue select(Eval eval, Expr e, DatatypeValue val) { return val; } 
+    
+    default DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue val) { return val; } 
+    
 
     default boolean produce() { return false; }
         

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1287,4 +1288,61 @@ public class Memory extends PointerObject implements Environment {
     public void setAppxSearchEnv(ApproximateSearchEnv appxEnv) {
         this.appxSearchEnv = appxEnv;
     }
+    
+    
+    
+       /**
+     * List of variable binding
+     * @return 
+     */
+    @Override
+    public Iterable getLoop() {
+        return getList();
+    }
+        
+    List<List<DatatypeValue>> getList() {    
+        ArrayList<List<DatatypeValue>> list = new ArrayList<>();
+        int i = 0;
+        for (Node n : getQueryNodes()) {
+            Node val = getNode(i++);
+            if (n!= null && val != null){
+                ArrayList<DatatypeValue> l = new ArrayList<>(2);
+                l.add(n.getDatatypeValue());
+                l.add(val.getDatatypeValue());
+                list.add(l);
+            }
+        }
+        return list;
+    }
+    
+      /**
+     * Use case:
+     * let (((?var, ?val)) = ?m)
+     * let ((?x, ?y) = ?m) 
+     */
+    @Override
+    public Object getValue(String var, int n) {
+        if (var == null){
+            // let (((?var, ?val)) = ?m)  -- ?m : Mapping
+            // compiled as: let (?vv = xt:get(?m, 0), (?var, ?val) = ?vv)
+            // xt:get(?m, 0) evaluated as xt:gget(?m, null, 0)
+            // hence var == null
+            return getBinding(n);
+        }
+        // let ((?x, ?y) = ?m) -- ?m : Mapping
+        Node node = getNode(var);
+        if (node == null) {
+            return null;
+        }
+        return node.getDatatypeValue();
+    }
+
+    List<DatatypeValue> getBinding(int n){
+        List<List<DatatypeValue>> l = getList();
+        if (n < l.size()){
+            return l.get(n);
+        }
+        return null;
+    }
+    
 }

@@ -1,5 +1,6 @@
 package fr.inria.corese.compiler.eval;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
@@ -11,6 +12,7 @@ import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -99,6 +101,20 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
+    public IDatatype path(Eval eval, Edge q, Mapping m) {       
+        return callback(eval, Metadata.META_PATH, toArray(q, m));
+    }
+    
+    @Override
+    public boolean step(Eval eval, Edge q, Path p, Edge e) {       
+         IDatatype dt = callback(eval, Metadata.META_STEP, toArray(q, p, e));
+         if (dt == null) {
+             return true;
+         }
+         return dt.booleanValue();
+    }
+    
+    @Override
     public boolean candidate() {
         Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_CANDIDATE, 2);
         return (exp != null);
@@ -120,8 +136,19 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
      @Override
+    public IDatatype graph(Eval eval, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_GRAPH, toArray(e, m));
+    }
+    
+    
+    @Override
     public IDatatype service(Eval eval, Exp e, Mappings m) {       
         return callback(eval, Metadata.META_FEDERATE, toArray(e, m));
+    }
+    
+    @Override
+    public IDatatype query(Eval eval, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_QUERY, toArray(e, m));
     }
     
     @Override
@@ -131,6 +158,27 @@ public class QuerySolverVisitor implements ProcessVisitor {
             return b;
         }
         return dt.booleanValue();
+    }
+    
+    @Override
+    public boolean having(Eval eval, Expr e, boolean b) {       
+        IDatatype dt = callback(eval, Metadata.META_HAVING, toArray(e, DatatypeMap.newInstance(b)));
+        if (dt == null) {
+            return b;
+        }
+        return dt.booleanValue();
+    }
+    
+    @Override
+    public DatatypeValue select(Eval eval, Expr e, DatatypeValue dt) {       
+        IDatatype val = callback(eval, Metadata.META_SELECT, toArray(e, dt));
+        return dt;
+    }
+    
+     @Override
+    public DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue dt) {       
+        IDatatype val = callback(eval, Metadata.META_AGGREGATE, toArray(e, dt));
+        return dt;
     }
  
     // @before function us:before(?q) {}

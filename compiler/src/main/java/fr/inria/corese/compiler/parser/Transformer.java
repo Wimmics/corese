@@ -1847,7 +1847,7 @@ public class Transformer implements ExpType {
     }
     
     private boolean isJoinableBasic(fr.inria.corese.sparql.triple.parser.Exp ee) {
-        return ee.isBGP() || ee.isUnion();
+        return ee.isBGP() || ee.isUnion() ; // || ee.isGraph();
     }
     
     private boolean isJoinableAlgebra(Exp exp, fr.inria.corese.sparql.triple.parser.Exp ee) {

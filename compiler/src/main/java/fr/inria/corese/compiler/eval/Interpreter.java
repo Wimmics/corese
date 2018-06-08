@@ -81,10 +81,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public void setKGRAM(Object o) {
-        if (o instanceof Eval) {
-            kgram = (Eval) o;
-        }
+    public void setKGRAM(Eval o) {
+        kgram = o;
     }
 
     @Override

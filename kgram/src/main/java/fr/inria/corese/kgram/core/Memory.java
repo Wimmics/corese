@@ -921,13 +921,13 @@ public class Memory extends PointerObject implements Environment {
     }
 
     public void pushPath(Node qNode, Path path) {
-        lPath[qNode.getIndex()] = path;
+        //lPath[qNode.getIndex()] = path;
     }
 
     public void popPath(Node qNode) {
-        if (nbNodes[qNode.getIndex()] == 0) {
-            lPath[qNode.getIndex()] = null;
-        }
+//        if (nbNodes[qNode.getIndex()] == 0) {
+//            lPath[qNode.getIndex()] = null;
+//        }
     }
 
     Node getNode(int n) {
@@ -1179,7 +1179,7 @@ public class Memory extends PointerObject implements Environment {
 
     @Override
     public int pathLength(Node qNode) {
-        Path path = lPath[qNode.getIndex()];
+        Path path = getPath(qNode);
         if (path == null) {
             return 0;
         }
@@ -1188,7 +1188,7 @@ public class Memory extends PointerObject implements Environment {
 
     @Override
     public int pathWeight(Node qNode) {
-        Path path = lPath[qNode.getIndex()];
+        Path path = getPath(qNode);
         if (path == null) {
             return 0;
         }
@@ -1197,20 +1197,26 @@ public class Memory extends PointerObject implements Environment {
 
     @Override
     public Path getPath(Node qNode) {
-        return lPath[qNode.getIndex()];
+        Node node =  getNode(qNode);
+        if (node == null) {
+            return null;
+        }
+        return node.getPath();
+        //return lPath[qNode.getIndex()];
     }
 
-    public Path getPath() {
-        for (int i = 0; i < lPath.length; i++) {
-            if (lPath[i] != null) {
-                return lPath[i];
-            }
-        }
-        return null;
-    }
+//    public Path getPath() {
+//        for (int i = 0; i < lPath.length; i++) {
+//            if (lPath[i] != null) {
+//                return lPath[i];
+//            }
+//        }
+//        return null;
+//    }
 
     boolean isPath(Node qNode) {
-        return lPath[qNode.getIndex()] != null;
+        return getPath(qNode) != null;
+        //return lPath[qNode.getIndex()] != null;
     }
 
     @Override

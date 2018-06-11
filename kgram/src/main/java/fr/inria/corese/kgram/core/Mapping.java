@@ -364,7 +364,12 @@ public class Mapping
 
     @Override
     public Path getPath(Node qNode) {
-        return getPath(getIndex(qNode));
+        Node node = getNode(qNode);
+        if (node == null) {
+            return null;
+        }
+        return node.getPath();
+        //return getPath(getIndex(qNode));
     }
 
     public Path getPath(String name) {
@@ -372,7 +377,8 @@ public class Mapping
         if (qNode == null) {
             return null;
         }
-        return getPath(getIndex(qNode));
+        return getPath(qNode);
+        //return getPath(getIndex(qNode));
     }
 
     /**
@@ -391,18 +397,28 @@ public class Mapping
 
     @Override
     public int pathLength(Node qNode) {
-        if (lPath == null) {
+//        if (lPath == null) {
+//            return -1;
+//        }
+//        return getPath(qNode).length();
+        Path path = getPath(qNode);
+        if (path == null){
             return -1;
         }
-        return getPath(qNode).length();
+        return path.length();
     }
 
     @Override
     public int pathWeight(Node qNode) {
-        if (lPath == null) {
+//        if (lPath == null) {
+//            return -1;
+//        }
+//        return getPath(qNode).weight();
+        Path path = getPath(qNode);
+        if (path == null){
             return -1;
         }
-        return getPath(qNode).weight();
+        return path.weight();
     }
 
     boolean isPath() {
@@ -410,37 +426,43 @@ public class Mapping
     }
 
     boolean isPath(int n) {
-        return lPath != null && lPath[n] != null;
+        return  getPath(n) != null;
+        //return lPath != null && lPath[n] != null;
     }
 
     public Path getPath(int n) {
-        if (lPath == null) {
+        if (nodes[n] == null) {
             return null;
         }
-        return lPath[n];
+        return nodes[n].getPath();
+//        if (lPath == null) {
+//            return null;
+//        }
+//        return lPath[n];
     }
 
 //    public Path[] getPaths() {
 //        return lPath;
 //    }
 
-    public Node getQueryPathNode() {
-        if (!isPath()) {
-            return null;
-        }
-
-        int n = 0;
-        for (Path pp : lPath) {
-            if (pp != null) {
-                return qNodes[n];
-            }
-            n++;
-        }
-        return null;
-    }
+//    public Node getQueryPathNode() {
+//        if (!isPath()) {
+//            return null;
+//        }
+//
+//        int n = 0;
+//        for (Path pp : lPath) {
+//            if (pp != null) {
+//                return qNodes[n];
+//            }
+//            n++;
+//        }
+//        return null;
+//    }
 
     boolean isPath(Node qNode) {
-        return lPath != null && isPath(getIndex(qNode));
+        return  isPath(getIndex(qNode));
+        //return lPath != null && isPath(getIndex(qNode));
     }
 
     void setPath(int n, Path p) {

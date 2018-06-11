@@ -575,8 +575,8 @@ public class PathFinder {
             }
             Path[] lp = new Path[length];
             lp[ip] = edges;
-            tNodes[ip] = getPathNode();
-            tNodes[ip].setObject(edges);         
+            tNodes[ip] = getPathNode(edges);
+            //tNodes[ip].setObject(edges);         
             map.setPath(lp);
         }
 
@@ -587,9 +587,10 @@ public class PathFinder {
      * Generate a unique Blank Node wrt query that represents the path Use a
      * predefined filter pathNode()
      */
-    Node getPathNode() {
+    Node getPathNode(Path p) {
         Filter f = query.getGlobalFilter(Query.PATHNODE);
         Node node = evaluator.eval(f, memory, producer);
+        node.setObject(p);
         return node;
     }
 
@@ -677,7 +678,9 @@ public class PathFinder {
         mem.push(qNode, node);
         if (varNode != null) {
             // TODO: fix it
-            mem.push(varNode, varNode);
+            Node pathNode = getPathNode(path);
+            mem.push(varNode, pathNode);
+            //mem.push(varNode, varNode);
             mem.pushPath(varNode, path);
         }
         boolean test = evaluator.test(filter, mem);
@@ -755,7 +758,7 @@ public class PathFinder {
                 // exp @[ ?this != <John> ]
 
                 boolean b = true;
-
+                
                 if (start != null) {
                     //ctest ++;
                     b = test(exp.getExpr().getFilter(), path, regexNode, start);
@@ -889,16 +892,16 @@ public class PathFinder {
                     if (hasHandler) {
                         handler.enter(ent, exp, size);
                     }
+                   
+                    path.add(ent, eweight);
 
-                    boolean suc = kgram.getVisitor().step(kgram, ee, path, ent);
+                    boolean suc = kgram.getVisitor().step(kgram, ee, path, path.firstNode(), path.lastNode());
                     
                     if (suc) {
-                        path.add(ent, eweight);
-
                         eval(stack, path, rel.getNode(oo), src);
-
-                        path.remove(ent, eweight);
                     }
+                    
+                    path.remove(ent, eweight);
 
                     if (hasHandler) {
                         handler.leave(ent, exp, size);
@@ -1141,7 +1144,7 @@ public class PathFinder {
     }
 
     void result(Mapping map) {
-        kgram.getVisitor().path(kgram, edge, map);
+        kgram.getVisitor().path(kgram, edge, map.getPath(2), map.getNode(0), map.getNode(1));
         if (isList) {
             lMap.add(map);
         } else {

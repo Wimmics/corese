@@ -3,6 +3,7 @@ package fr.inria.corese.kgram.tool;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.path.Path;
 
 public class NodeImpl implements Node {
     
@@ -115,6 +116,11 @@ public class NodeImpl implements Node {
 
     @Override
     public void setProperty(int p, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Path getPath() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

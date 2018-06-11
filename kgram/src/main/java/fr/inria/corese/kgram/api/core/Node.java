@@ -1,5 +1,7 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.kgram.path.Path;
+
 /**
  * Interface of Node provided by graph implementation
  * and also by KGRAM query Node
@@ -69,6 +71,8 @@ public interface Node {
         Node getNode();
 	
 	Object getObject();
+        
+        Path getPath();
         
         TripleStore getTripleStore();
 	

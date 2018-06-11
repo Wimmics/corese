@@ -3,6 +3,7 @@ package fr.inria.corese.kgram.api.query;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
@@ -29,9 +30,9 @@ public interface ProcessVisitor {
     
     default DatatypeValue candidate(Eval eval, Edge q, Edge e) { return null;}
     
-    default DatatypeValue path(Eval eval, Edge q, Mapping m) { return null;}
+    default DatatypeValue path(Eval eval, Edge q, Path p, Node s, Node o) { return null;}
     
-    default boolean step(Eval eval, Edge q, Path p, Edge e) { return true;}
+    default boolean step(Eval eval, Edge q, Path p, Node s, Node o) { return true;}
 
     default DatatypeValue result(Eval eval, Mapping m) { return null; }
 

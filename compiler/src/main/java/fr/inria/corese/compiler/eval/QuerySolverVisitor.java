@@ -3,6 +3,7 @@ package fr.inria.corese.compiler.eval;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
@@ -101,13 +102,13 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
-    public IDatatype path(Eval eval, Edge q, Mapping m) {       
-        return callback(eval, Metadata.META_PATH, toArray(q, m));
+    public IDatatype path(Eval eval, Edge q, Path p, Node s, Node o) {       
+        return callback(eval, Metadata.META_PATH, toArray(q, p, s.getDatatypeValue(), o.getDatatypeValue()));
     }
     
     @Override
-    public boolean step(Eval eval, Edge q, Path p, Edge e) {       
-         IDatatype dt = callback(eval, Metadata.META_STEP, toArray(q, p, e));
+    public boolean step(Eval eval, Edge q, Path p, Node s, Node o) {       
+         IDatatype dt = callback(eval, Metadata.META_STEP, toArray(q, p, s, o));
          if (dt == null) {
              return true;
          }
@@ -221,7 +222,7 @@ public class QuerySolverVisitor implements ProcessVisitor {
         IDatatype[] param = new IDatatype[lobj.length];
         int i = 0;
         for (Object obj : lobj) {
-            param[i++] = DatatypeMap.createObject(obj);
+            param[i++] = DatatypeMap.getValue(obj);
         }
         return param;
     }

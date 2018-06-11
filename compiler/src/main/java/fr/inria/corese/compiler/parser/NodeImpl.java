@@ -6,7 +6,9 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.path.Path;
 
 public class NodeImpl implements Node {
 
@@ -171,6 +173,11 @@ public class NodeImpl implements Node {
     @Override
     public void setObject(Object o) {
         // TODO Auto-generated method stub
+    }
+    
+    @Override
+    public Path getPath() {       
+        return atom.getDatatypeValue().getPath();
     }
 
     @Override

@@ -18,6 +18,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.kgram.path.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -462,6 +463,11 @@ public class CoreseDatatype
 
     @Override
     public Object getObject() {
+        return null;
+    }
+    
+    @Override
+    public Path getPath() {
         return null;
     }
 

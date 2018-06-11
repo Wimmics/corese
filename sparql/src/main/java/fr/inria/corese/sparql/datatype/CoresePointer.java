@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.datatype;
 import fr.inria.corese.sparql.api.IDatatype;
 import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
@@ -78,6 +79,14 @@ public class CoresePointer extends CoreseUndefLiteral {
     @Override
     public Pointerable getObject(){
         return pobject;
+    }
+    
+    @Override
+    public Path getPath() {
+        if (pointerType() != Pointerable.PATH_POINTER || getPointerObject() == null) {
+            return null;
+        }
+        return getPointerObject().getPathObject();
     }
     
     @Override

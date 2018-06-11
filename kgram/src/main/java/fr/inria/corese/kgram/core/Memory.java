@@ -43,10 +43,6 @@ public class Memory extends PointerObject implements Environment {
     Edge[] qEdges;
     Edge[] result;
     Node[] qNodes, nodes;
-    // path result stored in Mapping (enumerate edges, pathLength)
-    // $path node is in qNodes, associated Path is in lPath at $path index
-    // lPath[$path.getIndex()] = $path path edgges
-    Path[] lPath;
     Evaluator eval;
     Matcher match;
     Eval kgram;
@@ -190,7 +186,7 @@ public class Memory extends PointerObject implements Environment {
 
         nodes = new Node[nmax];
         qNodes = new Node[nmax];
-        lPath = new Path[nmax];
+        //lPath = new Path[nmax];
 
         start();
     }
@@ -203,7 +199,7 @@ public class Memory extends PointerObject implements Environment {
             nodes[i] = null;
             nbNodes[i] = 0;
             stackIndex[i] = -1;
-            lPath[i] = null;
+           // lPath[i] = null;
         }
         if (isEdge) {
             for (int i = 0; i < nbEdges.length; i++) {
@@ -226,9 +222,9 @@ public class Memory extends PointerObject implements Environment {
                 String num = "(" + qNode.getIndex() + ") ";
                 String nb = nbNodes[qNode.getIndex()] + " ";
                 str += num + nb + qNode + " = " + getNode(qNode);
-                if (isPath(qNode)) {
-                    str += " " + lPath[qNode.getIndex()];
-                }
+//                if (isPath(qNode)) {
+//                    str += " " + lPath[qNode.getIndex()];
+//                }
             }
         }
         return str;
@@ -351,9 +347,9 @@ public class Memory extends PointerObject implements Environment {
                 Node tNode = getNode(qnode);
                 if (tNode != null) {
                     mem.push(subNode, tNode, -1);
-                    if (getPath(qnode) != null) {
-                        mem.setPath(subNode.getIndex(), getPath(qnode));
-                    }
+//                    if (getPath(qnode) != null) {
+//                        mem.setPath(subNode.getIndex(), getPath(qnode));
+//                    }
                 }
             }
         }
@@ -364,16 +360,16 @@ public class Memory extends PointerObject implements Environment {
             Node tNode = getNode(outNode);
             if (tNode != null) {
                 mem.push(subNode, tNode, -1);
-                if (getPath(outNode) != null) {
-                    mem.setPath(subNode.getIndex(), getPath(outNode));
-                }
+//                if (getPath(outNode) != null) {
+//                    mem.setPath(subNode.getIndex(), getPath(outNode));
+//                }
             }
         }
     }
 
-    void setPath(int n, Path p) {
-        lPath[n] = p;
-    }
+//    void setPath(int n, Path p) {
+//        lPath[n] = p;
+//    }
 
     /**
      * Store a new result: take a picture of the stack as a Mapping
@@ -436,15 +432,6 @@ public class Memory extends PointerObject implements Environment {
             if (node != null) {
                 qnode[n] = node;
                 tnode[n] = nodes[i];
-
-                if (lPath[i] != null) {
-                    // node is a $path, store the path in the Mapping lp
-                    if (lp == null) {
-                        lp = new Path[nb];
-                    }
-                    lp[n] = lPath[i];
-                }
-
                 n++;
             }
             i++;
@@ -517,7 +504,7 @@ public class Memory extends PointerObject implements Environment {
         }
         Mapping map = new Mapping(qedge, tedge, qnode, tnode);
         map.init();
-        map.setPath(lp);
+        //map.setPath(lp);
         map.setOrderBy(snode);
         map.setGroupBy(gnode);
         clear();
@@ -921,13 +908,9 @@ public class Memory extends PointerObject implements Environment {
     }
 
     public void pushPath(Node qNode, Path path) {
-        //lPath[qNode.getIndex()] = path;
     }
 
     public void popPath(Node qNode) {
-//        if (nbNodes[qNode.getIndex()] == 0) {
-//            lPath[qNode.getIndex()] = null;
-//        }
     }
 
     Node getNode(int n) {
@@ -1202,21 +1185,10 @@ public class Memory extends PointerObject implements Environment {
             return null;
         }
         return node.getPath();
-        //return lPath[qNode.getIndex()];
     }
-
-//    public Path getPath() {
-//        for (int i = 0; i < lPath.length; i++) {
-//            if (lPath[i] != null) {
-//                return lPath[i];
-//            }
-//        }
-//        return null;
-//    }
 
     boolean isPath(Node qNode) {
         return getPath(qNode) != null;
-        //return lPath[qNode.getIndex()] != null;
     }
 
     @Override

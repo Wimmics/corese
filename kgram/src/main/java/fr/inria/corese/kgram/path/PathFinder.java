@@ -573,11 +573,7 @@ public class PathFinder {
             if (isReverse) {
                 edges.reverse();
             }
-            Path[] lp = new Path[length];
-            lp[ip] = edges;
             tNodes[ip] = getPathNode(edges);
-            //tNodes[ip].setObject(edges);         
-            map.setPath(lp);
         }
 
         return map;

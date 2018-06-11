@@ -45,8 +45,6 @@ public class Mapping
     static final Node[] emptyNode = new Node[0];
     Edge[] qEdges;
     Edge[] edges;
-    // path edges when Mapping has a path result
-    Path[] lPath;
     Node[] qNodes, nodes,
             // select nodes
             sNodes,
@@ -66,8 +64,6 @@ public class Mapping
         this.qEdges = emptyEdge;;
         this.edges = emptyEntity;
         init(emptyNode, emptyNode);
-//		this.qNodes = emptyNode;
-//		this.nodes = qNodes;
     }
 
     Mapping(Edge[] query, Edge[] result, Node[] qnodes, Node[] nodes) {
@@ -202,10 +198,10 @@ public class Mapping
         this.nodes = tn;
     }
 
-    void init(List<Path> lp) {
-        lPath = new Path[lp.size()];
-        lPath = lp.toArray(lPath);
-    }
+//    void init(List<Path> lp) {
+//        lPath = new Path[lp.size()];
+//        lPath = lp.toArray(lPath);
+//    }
 
     void init(Node[] qnodes, Node[] nodes) {
         this.qNodes = qnodes;
@@ -262,24 +258,15 @@ public class Mapping
     public void project(Query q) {
         ArrayList<Node> lqNodes = new ArrayList<Node>();
         ArrayList<Node> ltNodes = new ArrayList<Node>();
-        ArrayList<Path> paths = new ArrayList<Path>();
 
         for (Node qNode : q.getSelect()) {
             Node tNode = getNode(qNode);
             if (tNode != null) {
                 lqNodes.add(qNode);
                 ltNodes.add(tNode);
-                if (isPath()) {
-                    paths.add(getPath(qNode));
-                }
             }
         }
-
         init(lqNodes, ltNodes);
-
-        if (isPath()) {
-            init(paths);
-        }
     }
 
     public void setRead(boolean b) {
@@ -346,10 +333,6 @@ public class Mapping
         return sNodes;
     }
 
-    public void setPath(Node qNode, Path path) {
-        setPath(getIndex(qNode), path);
-    }
-
     @Deprecated
     public void rename(Node oName, Node nName) {
         int i = 0;
@@ -397,10 +380,6 @@ public class Mapping
 
     @Override
     public int pathLength(Node qNode) {
-//        if (lPath == null) {
-//            return -1;
-//        }
-//        return getPath(qNode).length();
         Path path = getPath(qNode);
         if (path == null){
             return -1;
@@ -410,10 +389,6 @@ public class Mapping
 
     @Override
     public int pathWeight(Node qNode) {
-//        if (lPath == null) {
-//            return -1;
-//        }
-//        return getPath(qNode).weight();
         Path path = getPath(qNode);
         if (path == null){
             return -1;
@@ -421,13 +396,8 @@ public class Mapping
         return path.weight();
     }
 
-    boolean isPath() {
-        return lPath != null;
-    }
-
     boolean isPath(int n) {
         return  getPath(n) != null;
-        //return lPath != null && lPath[n] != null;
     }
 
     public Path getPath(int n) {
@@ -435,45 +405,10 @@ public class Mapping
             return null;
         }
         return nodes[n].getPath();
-//        if (lPath == null) {
-//            return null;
-//        }
-//        return lPath[n];
     }
-
-//    public Path[] getPaths() {
-//        return lPath;
-//    }
-
-//    public Node getQueryPathNode() {
-//        if (!isPath()) {
-//            return null;
-//        }
-//
-//        int n = 0;
-//        for (Path pp : lPath) {
-//            if (pp != null) {
-//                return qNodes[n];
-//            }
-//            n++;
-//        }
-//        return null;
-//    }
 
     boolean isPath(Node qNode) {
         return  isPath(getIndex(qNode));
-        //return lPath != null && isPath(getIndex(qNode));
-    }
-
-    void setPath(int n, Path p) {
-        if (lPath == null) {
-            lPath = new Path[qNodes.length];
-        }
-        lPath[n] = p;
-    }
-
-    public void setPath(Path[] lp) {
-        lPath = lp;
     }
     
     @Override
@@ -492,13 +427,9 @@ public class Mapping
         for (Node e : nodes) {
             sb.append(qNodes[i]).append("[").append(qNodes[i].getIndex()).append("]");
             sb.append(" = ").append(e).append(sep);
-            if (isPath(qNodes[i])) {
-                sb.append(qNodes[i]).append(" : ").append(lPath[i]).append(sep);
-
+            if (e != null && e.getObject() != null && e.getObject() != this) {
+                sb.append(sep).append(e.getObject()).append(sep);
             } 
-//            else if (e != null && e.getObject() != null && e.getObject() != this) {
-//                sb.append(sep).append(e.getObject()).append(sep);
-//            } 
             i++;
         }
 
@@ -1127,10 +1058,10 @@ public class Mapping
         List<Node> t = new ArrayList<Node>();
 
         List<Path> p = null;
-        boolean isPath = isPath() || m.isPath();
-        if (isPath) {
-            p = new ArrayList<Path>();
-        }
+//        boolean isPath = isPath() || m.isPath();
+//        if (isPath) {
+//            p = new ArrayList<Path>();
+//        }
 
         int n = 0;
         for (Node qn : getQueryNodes()) {
@@ -1139,9 +1070,9 @@ public class Mapping
                 if (tn != null) {
                     q.add(qn);
                     t.add(tn);
-                    if (isPath) {
-                        p.add(getPath(n));
-                    }
+//                    if (isPath) {
+//                        p.add(getPath(n));
+//                    }
                 }
             }
             n++;
@@ -1154,18 +1085,18 @@ public class Mapping
                 if (tn != null && getNodeValue(qn.getLabel()) == null) {
                     q.add(qn);
                     t.add(tn);
-                    if (isPath) {
-                        p.add(m.getPath(n));
-                    }
+//                    if (isPath) {
+//                        p.add(m.getPath(n));
+//                    }
                 }
             }
             n++;
         }
 
         Mapping map = new Mapping(q, t);
-        if (isPath) {
-            map.init(p);
-        }
+//        if (isPath) {
+//            map.init(p);
+//        }
         return map;
     }
 

@@ -54,7 +54,7 @@ import static org.junit.Assert.assertEquals;
 public class RestEndpointTest {
 
     private static Logger logger = LogManager.getLogger(EmbeddedJettyServer.class);
-    private static int port = 9080;
+    private static int port = 8080;
     private static Server server;
 
     public RestEndpointTest() {

@@ -30,12 +30,17 @@ public class Service {
     public static final String QUERY = "query";
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     static final String ENCODING = "UTF-8";
+    private ClientBuilder clientBuilder;
 
     boolean isDebug = !true;
     String service;
 
     public Service(String serv) {
+        this(serv, ClientBuilder.newBuilder());
+    }
+    public Service(String serv, ClientBuilder builder) {
         service = serv;
+        this.clientBuilder = builder;
     }
 
 
@@ -80,7 +85,7 @@ public class Service {
         if (isDebug) {
             System.out.println(query);
         }
-        Client client = ClientBuilder.newClient();
+        Client client = clientBuilder.build();
         WebTarget target = client.target(service);
         Form form = new Form();
         form.param(QUERY, query);

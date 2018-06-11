@@ -8,30 +8,52 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import static fr.inria.corese.core.load.Service.QUERY;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
 public class TesterSSL {
-    private boolean isDebug;
+    private boolean isDebug = true;
     private static Process server;
     private static final String SERVER_URL = "https://localhost:8443/";
     private static final String SPARQL_ENDPOINT_URL = SERVER_URL + "sparql";
     private static final String TEMPLATE_URL = SERVER_URL + "template";
     private static final String CDN_URL = SERVER_URL + "tutorial/cdn";
     private static final String ORLRL_URL = SERVER_URL + "process/owlrl";
-
+    private static ClientBuilder clientBuilder;
     @BeforeClass
-    public static void init() throws InterruptedException, IOException
+    public static void init() throws InterruptedException, IOException, Exception
     {
+        SSLContext sslcontext = SSLContext.getInstance("TLS");
+
+        sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0];}
+        }}, new java.security.SecureRandom());
+
+        clientBuilder = ClientBuilder.newBuilder()
+                .sslContext(sslcontext)
+                .hostnameVerifier((s1, s2) -> true);
         System.out.println( "starting in " + System.getProperty( "user.dir" ) );
         server = new ProcessBuilder().inheritIO().command(
                 "/usr/bin/java",
@@ -52,22 +74,60 @@ public class TesterSSL {
     }
 
     @Test
-    public void test() throws LoadException
+    public void test() throws Exception
     {
-        Service serv = new Service( SPARQL_ENDPOINT_URL);
+        Service serv = new Service( SPARQL_ENDPOINT_URL , clientBuilder );
+
         String q = "select * where {?x ?p ?y} limit 10";
         Mappings map = serv.select( q );
-        for (Mapping m: map) {
-            System.out.println(map);
+        for ( Mapping m : map )
+        {
+            System.out.println( map );
         }
         assertEquals( 10, map.size() );
     }
 
+    public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
+
+    public static ClientBuilder ignoreSSLClientBuilder() throws Exception
+    {
+
+        SSLContext sslcontext = SSLContext.getInstance( "TLS" );
+
+        sslcontext.init( null, new TrustManager[] {new X509TrustManager()
+        {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+            {
+            }
+
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
+            {
+            }
+
+            public X509Certificate[] getAcceptedIssuers()
+            {
+                return new X509Certificate[0];
+            }
+        }}, new java.security.SecureRandom() );
+
+        return ClientBuilder.newBuilder()
+                .sslContext( sslcontext )
+                .hostnameVerifier( (s1, s2) -> true );
+    }
+    @Test
+    public void testGarbage() throws Exception {
+	   Client client = ignoreSSLClientBuilder().build();
+        WebTarget target = client.target( "https://localhost:8443/sparql/" );
+        Form form = new Form();
+        form.param( "query", "SELECT * WHERE { ?s ?p ?o } LIMIT 3" );
+        String res = target.request( MIME_TYPE ).post( Entity.entity( form, MediaType.APPLICATION_FORM_URLENCODED_TYPE ), String.class );
+        System.out.println( res ); 
+    } 
     @Test
     public void test2()
     {
         String service = TEMPLATE_URL;
-        Client client = ClientBuilder.newClient();
+        Client client = clientBuilder.build();
         WebTarget target = client.target( service );
         String res = target.queryParam( "profile", "st:dbedit" ).request().get( String.class );
         assertEquals( true, res.length() > 17000 );
@@ -80,7 +140,7 @@ public class TesterSSL {
     public void test3()
     {
         String service = TEMPLATE_URL;
-        Client client = ClientBuilder.newClient();
+        Client client = clientBuilder.build();
         WebTarget target = client.target( service );
         String res = target.queryParam( "profile", "st:dbpedia" )
                 .queryParam( "uri", "http://fr.dbpedia.org/resource/Jimmy_Page" )
@@ -93,7 +153,7 @@ public class TesterSSL {
     public void test4()
     {
         String service = CDN_URL;
-        Client client = ClientBuilder.newClient();
+        Client client = clientBuilder.build();
         WebTarget target = client.target( service );
         String res = target.request().get( String.class );
         assertEquals( true, res.contains( "Siècle" ) );
@@ -104,7 +164,7 @@ public class TesterSSL {
     public void test5()
     {
         String service = ORLRL_URL;
-        Client client = ClientBuilder.newClient();
+        Client client = clientBuilder.build();
         WebTarget target = client.target( service );
         String res = target.queryParam( "uri", "/data/primer.owl" ).request().get( String.class );
         assertEquals( true, res.contains( "Statement not supported in an Equivalent Class Expression" ) );

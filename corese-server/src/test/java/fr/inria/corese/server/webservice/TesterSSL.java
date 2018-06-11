@@ -87,42 +87,6 @@ public class TesterSSL {
         assertEquals( 10, map.size() );
     }
 
-    public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
-
-    public static ClientBuilder ignoreSSLClientBuilder() throws Exception
-    {
-
-        SSLContext sslcontext = SSLContext.getInstance( "TLS" );
-
-        sslcontext.init( null, new TrustManager[] {new X509TrustManager()
-        {
-            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
-            {
-            }
-
-            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
-            {
-            }
-
-            public X509Certificate[] getAcceptedIssuers()
-            {
-                return new X509Certificate[0];
-            }
-        }}, new java.security.SecureRandom() );
-
-        return ClientBuilder.newBuilder()
-                .sslContext( sslcontext )
-                .hostnameVerifier( (s1, s2) -> true );
-    }
-    @Test
-    public void testGarbage() throws Exception {
-	   Client client = ignoreSSLClientBuilder().build();
-        WebTarget target = client.target( "https://localhost:8443/sparql/" );
-        Form form = new Form();
-        form.param( "query", "SELECT * WHERE { ?s ?p ?o } LIMIT 3" );
-        String res = target.request( MIME_TYPE ).post( Entity.entity( form, MediaType.APPLICATION_FORM_URLENCODED_TYPE ), String.class );
-        System.out.println( res ); 
-    } 
     @Test
     public void test2()
     {

@@ -134,6 +134,10 @@
             <version>${log4j2.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
     </dependencies>
 
     <repositories>

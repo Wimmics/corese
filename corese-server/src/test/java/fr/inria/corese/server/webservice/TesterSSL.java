@@ -1,6 +1,5 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -8,30 +7,24 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.logging.Logger;
 
-import static fr.inria.corese.core.load.Service.QUERY;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
 public class TesterSSL {
+    private static final Logger logger = Logger.getLogger(TesterSSL.class.getName());
     private boolean isDebug = true;
     private static Process server;
     private static final String SERVER_URL = "https://localhost:8443/";
@@ -54,7 +47,7 @@ public class TesterSSL {
         clientBuilder = ClientBuilder.newBuilder()
                 .sslContext(sslcontext)
                 .hostnameVerifier((s1, s2) -> true);
-        System.out.println( "starting in " + System.getProperty( "user.dir" ) );
+        logger.info( "starting in " + System.getProperty( "user.dir" ) );
         server = new ProcessBuilder().inheritIO().command(
                 "/usr/bin/java",
                 "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
@@ -64,6 +57,7 @@ public class TesterSSL {
                 "-jks", "corese.inria.fr.jks",
                 "-pwd", "coreseatwimmics"
         ).start();
+	logger.info("server = "+server.toString());
         Thread.sleep( 5000 );
     }
 
@@ -82,7 +76,7 @@ public class TesterSSL {
         Mappings map = serv.select( q );
         for ( Mapping m : map )
         {
-            System.out.println( map );
+            logger.info( m.toString() );
         }
         assertEquals( 10, map.size() );
     }
@@ -96,7 +90,7 @@ public class TesterSSL {
         String res = target.queryParam( "profile", "st:dbedit" ).request().get( String.class );
         assertEquals( true, res.length() > 17000 );
         assertEquals( true, res.contains( "Front yougoslave de la Seconde Guerre mondiale" ) );
-        System.out.println( res.length() );
+        logger.info( "" + res.length() );
     }
 
 

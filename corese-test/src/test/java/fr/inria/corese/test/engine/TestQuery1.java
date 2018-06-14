@@ -2690,7 +2690,7 @@ public class TestQuery1 {
                 + "}"
                 + "@produce function xt:produce(?t){xt:list(?t)} "
                 + "@before function xt:start(?q){ st:set(st:count, 0) ; us:count() } "
-                + "@result function xt:result(?m){us:count()}"
+                + "@result function xt:result(?map, ?m){us:count()}"
                 + "@after function xt:finish(?m){us:count()}"
                 + "function us:count(){st:set(st:count, 1 + st:get(st:count))}";
 

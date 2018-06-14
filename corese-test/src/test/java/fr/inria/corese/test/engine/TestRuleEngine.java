@@ -37,11 +37,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestRuleEngine {
 	
-//	static String data = "/user/corby/home/workspace/coreseV2/src/test/resources/data/";
-        static String data = TestRuleEngine.class.getClassLoader().getResource("data").getPath()+"/";
-//	static String root = "/user/corby/home/workspace/kgengine/src/test/resources/data/";
-        static String root = TestRuleEngine.class.getClassLoader().getResource("data").getPath()+"/";
-
+        static String data  = Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/";
 	static Graph graph;
 	static Engine rengine;
 	static RuleEngine fengine;
@@ -439,7 +435,7 @@ public class TestRuleEngine {
 
 		Graph g = createGraph();
 		Pipe pipe = Pipe.create(g);
-		pipe.load(root + "pipe/pipe.rdf");
+		pipe.load(data + "pipe/pipe.rdf");
 		pipe.process();
 		
 		QueryProcess exec = QueryProcess.create(g);

@@ -1,13 +1,14 @@
 package fr.inria.corese.kgram.filter;
 
 import java.util.stream.IntStream;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-class MatchBindTest {
+public class MatchBindTest {
 
-    @org.junit.jupiter.api.Test
-    void clean()
+    @Test
+    public void clean()
     {
         MatchBind m = new MatchBind();
         IntStream.range( 0, 10 ).forEach(

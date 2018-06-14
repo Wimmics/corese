@@ -103,30 +103,6 @@
             </resource>
         </resources>
         <plugins>
-		<!--		<plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-surefire-plugin</artifactId> -->
-                    <!--<version>${surefire.version}</version>-->
-                    <!--<configuration>-->
-                        <!--<testFailureIgnore>true</testFailureIgnore>-->
-                        <!--<properties>-->
-                            <!--<property>-->
-                                <!--<name>junit</name>-->
-                                <!--<value>false</value>-->
-                            <!--</property>-->
-                        <!--</properties>-->
-                        <!--<threadCount>1</threadCount>-->
-                    <!--</configuration>-->
-                    <!--<dependencies>-->
-                        <!--<dependency>-->
-                            <!--<groupId>org.apache.maven.surefire</groupId>-->
-                            <!--<artifactId>surefire-junit47</artifactId>-->
-                            <!--<version>${surefire.version}</version>-->
-                        <!--</dependency>-->
-                    <!--</dependencies>
-                </plugin>-->
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

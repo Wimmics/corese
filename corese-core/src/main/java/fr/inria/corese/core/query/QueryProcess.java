@@ -156,6 +156,10 @@ public class QueryProcess extends QuerySolver {
         return updateManager;
     }
 
+    public static QueryProcess create() {
+        return create(Graph.create());
+    }
+    
     public static QueryProcess create(Graph g) {
         return create(g, false);
     }

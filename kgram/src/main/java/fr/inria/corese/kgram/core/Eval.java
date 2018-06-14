@@ -629,7 +629,6 @@ public class Eval implements ExpType, Plugin {
     }
 
     void startExtFun() {
-        hasResult       = getVisitor().result();
         hasStatement    = getVisitor().statement();
         hasProduce      = getVisitor().produce();
         hasCandidate    = getVisitor().candidate();
@@ -3179,24 +3178,28 @@ public class Eval implements ExpType, Plugin {
         }
         if (storeResult && store) {
             Mapping ans = memory.store(query, p, isSubEval);
-            submit(ans);
-            if (hasEvent) {
-                //send(Event.RESULT, query, ans);
-                send(Event.RESULT, ans);
-            }
-            if (hasResult) {
-                getVisitor().result(this, ans);
+            if (ans != null && acceptable(ans)) {
+                //submit(ans);
+                if (hasEvent) {
+                    send(Event.RESULT, ans);
+                }
+                boolean b = getVisitor().result(this, results, ans);
+                if (b) {
+                    results.add(ans);
+                }
             }
         }
         return -1;
+    }
+    
+    boolean acceptable(Mapping m) {
+        return query.getGlobalQuery().isAlgebra() || results.acceptable(m);
     }
 
     void submit(Mapping map) {
         if (query.getGlobalQuery().isAlgebra()){
             // eval distinct later
-            if (map != null){
-                results.add(map);
-            }
+            results.add(map);
         }
         else {
             results.submit(map);

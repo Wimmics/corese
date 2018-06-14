@@ -34,7 +34,7 @@ public interface ProcessVisitor {
     
     default boolean step(Eval eval, Edge q, Path p, Node s, Node o) { return true;}
 
-    default DatatypeValue result(Eval eval, Mapping m) { return null; }
+    default boolean result(Eval eval, Mappings map, Mapping m) { return true; }
 
     default DatatypeValue statement(Eval eval, Exp e) { return null; }
     
@@ -65,9 +65,7 @@ public interface ProcessVisitor {
     
 
     default boolean produce() { return false; }
-        
-    default boolean result() { return false; }
-        
+                
     default boolean statement() { return false; }
         
     default boolean candidate() { return false;}

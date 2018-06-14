@@ -412,9 +412,13 @@ public class Mappings extends PointerObject
         if (a == null) {
             return;
         }
-        if (query.isAggregate() || accept(a)) {
+        if (acceptable(a)) {
             add(a);
         }
+    }
+    
+    boolean acceptable(Mapping m) {
+        return query.isAggregate() || accept(m);
     }
 
     /**

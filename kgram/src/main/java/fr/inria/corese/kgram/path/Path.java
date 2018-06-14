@@ -301,4 +301,9 @@ public class Path extends ProducerDefault implements Pointerable {
         return path;
     }
     
+    @Override
+    public Edge getValue(String var, int n){
+        return path.get(n);
+    }
+    
 }

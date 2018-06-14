@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE rdf:RDF [
-  <!ENTITY rule   "http://ns.inria.fr/corese/2008/rule"> 
+  <!ENTITY rule   "http://ns.inria.fr/corese/rule/"> 
   <!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns">
   <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema">
   <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
@@ -25,19 +25,19 @@
     xmlns:rule = "&rule;#"
     xmlns:owl  = "&owl;"
     xmlns:sp   = "&spin;"
-    xmlns      = "&rule;#"  
+    xmlns      = "&rule;"  
 >
 
 
 <rule>
-<value>  <!--  cls-thing -->
+<body>  <!--  cls-thing -->
 CONSTRUCT {
 	owl:Thing a owl:Class .
 	owl:Nothing a owl:Class .
 }
 WHERE {}
 
-</value>
+</body>
 </rule>
 
 
@@ -46,7 +46,7 @@ WHERE {}
 
 
 <rule>
-<value>  <!--  eq-diff1 -->
+<body>  <!--  eq-diff1 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -59,13 +59,13 @@ WHERE {
     ?x owl:differentFrom ?y .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  eq-diff2 -->
+<body>  <!--  eq-diff2 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -82,13 +82,13 @@ WHERE {
     ?list3 rdf:first ?zj .
     ?zi owl:sameAs ?zj .
 }
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  eq-diff3 -->
+<body>  <!--  eq-diff3 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -105,13 +105,13 @@ WHERE {
     ?list3 rdf:first ?zj .
     ?zi owl:sameAs ?zj .
 }
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  prp-dom -->
+<body>  <!--  prp-dom -->
 CONSTRUCT {
     ?x a ?c .
 }
@@ -119,13 +119,13 @@ WHERE {
     ?p rdfs:domain ?c .
     ?x ?p ?y .
 }
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  prp-rng -->
+<body>  <!--  prp-rng -->
 CONSTRUCT {
     ?y a ?c .
 }
@@ -133,11 +133,11 @@ WHERE {
     ?p rdfs:range ?c .
     ?x ?p ?y . filter(! isLiteral(?y))
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-fp -->
+<body>  <!--  prp-fp -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
 }
@@ -147,11 +147,11 @@ WHERE {
     ?x ?p ?y2 .
  FILTER (?y1 != ?y2) . <!-- ?  does this filter optimize the query time ? -->
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-ifp -->
+<body>  <!--  prp-ifp -->
 CONSTRUCT {
     ?x1 owl:sameAs ?x2 .
 }
@@ -161,11 +161,11 @@ WHERE {
     ?x2 ?p ?y .
    FILTER (?x1 != ?x2) . 
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-irp -->
+<body>  <!--  prp-irp -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -177,11 +177,11 @@ WHERE {
     ?p a owl:IrreflexiveProperty .
     ?x ?p ?x .
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-symp -->
+<body>  <!--  prp-symp -->
 CONSTRUCT {
     ?y ?p ?x .
 }
@@ -189,11 +189,11 @@ WHERE {
     ?p a owl:SymmetricProperty .
     ?x ?p ?y .
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-asyp -->
+<body>  <!--  prp-asyp -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -206,13 +206,13 @@ WHERE {
     ?x ?p ?y .
     ?y ?p ?x .
 }
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  prp-trp -->
+<body>  <!--  prp-trp -->
 CONSTRUCT {
     ?x ?p ?z .
 }
@@ -221,13 +221,13 @@ WHERE {
     ?x ?p ?y .
     ?y ?p ?z .
 }
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  prp-spo1 -->
+<body>  <!--  prp-spo1 -->
 CONSTRUCT {
     ?x ?p2 ?y .
 }
@@ -236,13 +236,13 @@ WHERE {
     ?x ?p1 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>   <!--  prp-spo2 -->
+<body>   <!--  prp-spo2 -->
 prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
 CONSTRUCT {
 	?u ?p ?v .
@@ -259,13 +259,13 @@ WHERE {
 	{select (unnest(kg:sparql(?query)) as (?u, ?v)) where {}}
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--   prp  eqp1 -->
+<body>  <!--   prp  eqp1 -->
 CONSTRUCT {
     ?x ?p2 ?y .
 }
@@ -274,11 +274,11 @@ WHERE {
     ?x ?p1 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--   prp  eqp2 -->
+<body>  <!--   prp  eqp2 -->
 CONSTRUCT {
     ?x ?p1 ?y .
 }
@@ -287,11 +287,11 @@ WHERE {
     ?x ?p2 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-pdw -->
+<body>  <!--  prp-pdw -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -305,11 +305,11 @@ WHERE {
     ?x ?p2 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-adp -->
+<body>  <!--  prp-adp -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -329,11 +329,11 @@ WHERE {
     ?u ?pj ?v .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-inv1 -->
+<body>  <!--  prp-inv1 -->
 CONSTRUCT {
     ?y ?p2 ?x .
 }
@@ -342,11 +342,11 @@ WHERE {
     ?x ?p1 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-inv2 -->
+<body>  <!--  prp-inv2 -->
 CONSTRUCT {
     ?y ?p1 ?x .
 }
@@ -355,11 +355,11 @@ WHERE {
     ?x ?p2 ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-npa1 -->
+<body>  <!--  prp-npa1 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -374,11 +374,11 @@ WHERE {
     ?i1 ?p ?i2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  prp-npa2 -->
+<body>  <!--  prp-npa2 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -393,13 +393,13 @@ WHERE {
     ?i ?p ?lt .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  cls-nothing2 -->
+<body>  <!--  cls-nothing2 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -410,12 +410,12 @@ WHERE {
     ?x a owl:Nothing .
 }
 
-</value>
+</body>
 </rule>
 
 
 <rule>
-<value>  <!--  cls-int1 -->
+<body>  <!--  cls-int1 -->
 prefix c: &lt;http://www.inria.fr/acacia/comma#&gt;
 CONSTRUCT {
 	?y a ?c .
@@ -430,11 +430,11 @@ WHERE {
     }
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-int2 -->
+<body>  <!--  cls-int2 -->
 CONSTRUCT {
     ?y a ?ci .
 }
@@ -444,13 +444,13 @@ WHERE {
     ?y a ?c .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  cls-uni -->
+<body>  <!--  cls-uni -->
 CONSTRUCT {
     ?y a ?c .
 }
@@ -460,13 +460,13 @@ WHERE {
     ?y a ?ci .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--  cls-com -->
+<body>  <!--  cls-com -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -481,11 +481,11 @@ WHERE {
     ?x a ?c2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-svf1 -->
+<body>  <!--  cls-svf1 -->
 CONSTRUCT {
     ?u a ?x .
 }
@@ -496,11 +496,11 @@ WHERE {
     ?v a ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-svf2 -->
+<body>  <!--  cls-svf2 -->
 CONSTRUCT {
     ?u a ?x .
 }
@@ -510,11 +510,11 @@ WHERE {
     ?u ?p ?v .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-avf -->
+<body>  <!--  cls-avf -->
 CONSTRUCT {
     ?v a ?y .
 }
@@ -525,11 +525,11 @@ WHERE {
     ?u ?p ?v .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-hv1 -->
+<body>  <!--  cls-hv1 -->
 CONSTRUCT {
     ?u ?p ?y .
 }
@@ -539,11 +539,11 @@ WHERE {
     ?u a ?x .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-hv2 -->
+<body>  <!--  cls-hv2 -->
 CONSTRUCT {
     ?u a ?x .
 }
@@ -553,11 +553,11 @@ WHERE {
     ?u ?p ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxc1 -->
+<body>  <!--  cls-maxc1 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -573,11 +573,11 @@ WHERE {
     ?u ?p ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxc2 -->
+<body>  <!--  cls-maxc2 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
 }
@@ -589,11 +589,11 @@ WHERE {
     ?u ?p ?y2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxqc1 -->
+<body>  <!--  cls-maxqc1 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -611,11 +611,11 @@ WHERE {
     ?y a ?c .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxqc2 -->
+<body>  <!--  cls-maxqc2 -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -632,11 +632,11 @@ WHERE {
     ?u ?p ?y .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxqc3 -->
+<body>  <!--  cls-maxqc3 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
 }
@@ -651,11 +651,11 @@ WHERE {
     ?y2 a ?c .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-maxqc4 -->
+<body>  <!--  cls-maxqc4 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
 }
@@ -668,11 +668,11 @@ WHERE {
     ?u ?p ?y2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cls-oo -->
+<body>  <!--  cls-oo -->
 CONSTRUCT {
     ?yi a ?c .
 }
@@ -681,7 +681,7 @@ WHERE {
     ?x rdf:rest*/rdf:first ?yi .
 }
 
-</value>
+</body>
 </rule>
 
 
@@ -689,7 +689,7 @@ WHERE {
 
 
 <rule><!--  cax-sco -->
-<value>  
+<body>  
 CONSTRUCT {
     ?x a ?c2 .
 }
@@ -697,11 +697,11 @@ WHERE {
     ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
     ?x a ?c1 .
 }
-</value>
+</body>
 </rule>
 
 <rule>
-<value>
+<body>
 CONSTRUCT {
     ?x a ?c2 .
 }
@@ -710,11 +710,11 @@ WHERE {
     ?x a ?c1 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--   cax eqc2  -->
+<body>  <!--   cax eqc2  -->
 CONSTRUCT {
     ?x a ?c1 .
 }
@@ -723,11 +723,11 @@ WHERE {
     ?x a ?c2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cax-dw -->
+<body>  <!--  cax-dw -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -742,11 +742,11 @@ WHERE {
     ?x a ?c2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  cax-adc -->
+<body>  <!--  cax-adc -->
 prefix sp:   &lt;http://spinrdf.org/spin#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
@@ -767,13 +767,13 @@ WHERE {
 }
 
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?c rdfs:subClassOf ?c .
     ?c owl:equivalentClass ?c .
@@ -784,12 +784,12 @@ WHERE {
     ?c a owl:Class .
 }
 
-</value>
+</body>
 </rule>
 
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c3 .
 }
@@ -798,13 +798,13 @@ WHERE {
     ?c2 rdfs:subClassOf ?c3 .
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  <!--   scm eqc1 -->
+<body>  <!--   scm eqc1 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
     ?c2 rdfs:subClassOf ?c1 .
@@ -813,11 +813,11 @@ WHERE {
     ?c1 owl:equivalentClass ?c2 . filter(?c1 != ?c2)
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--   scm eqc2 -->
+<body>  <!--   scm eqc2 -->
 CONSTRUCT {
     ?c1 owl:equivalentClass ?c2 .
 }
@@ -826,11 +826,11 @@ WHERE {
     ?c2 rdfs:subClassOf ?c1 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-op -->
+<body>  <!--  scm-op -->
 CONSTRUCT {
     ?p rdfs:subPropertyOf ?p .
     ?p owl:equivalentProperty ?p .
@@ -839,11 +839,11 @@ WHERE {
     ?p a owl:ObjectProperty .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-dp -->
+<body>  <!--  scm-dp -->
 CONSTRUCT {
     ?p owl:equivalentProperty ?p .
 }
@@ -851,11 +851,11 @@ WHERE {
     ?p a owl:DatatypeProperty .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--   scm eqp1 -->
+<body>  <!--   scm eqp1 -->
 CONSTRUCT {
     ?p1 rdfs:subPropertyOf ?p2 .
     ?p2 rdfs:subPropertyOf ?p1 .
@@ -864,11 +864,11 @@ WHERE {
     ?p1 owl:equivalentProperty ?p2 . filter(?p1 != ?p2)
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--   scm eqp2  -->
+<body>  <!--   scm eqp2  -->
 CONSTRUCT {
     ?p1 owl:equivalentProperty ?p2 .
 }
@@ -877,11 +877,11 @@ WHERE {
     ?p2 rdfs:subPropertyOf ?p1 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!-- scm-spo    -->
+<body>  <!-- scm-spo    -->
 CONSTRUCT {
     ?p1 rdfs:subPropertyOf ?p3 .
 }
@@ -890,12 +890,12 @@ WHERE {
     ?p2 rdfs:subPropertyOf ?p3 .
 }
 
-</value>
+</body>
 </rule>
 
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?p rdfs:domain ?c2 .
 }
@@ -904,11 +904,11 @@ WHERE {
     ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?p1 rdfs:domain ?c .
 }
@@ -917,13 +917,13 @@ WHERE {
 	?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?p rdfs:range ?c2 .
 }
@@ -932,13 +932,13 @@ WHERE {
     ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
 }
 
-</value>
+</body>
 </rule>
 
 
 
 <rule>
-<value>  
+<body>  
 CONSTRUCT {
     ?p1 rdfs:range ?c .
 }
@@ -947,14 +947,14 @@ WHERE {
     ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
 }
 
-</value>
+</body>
 </rule>
 
 
 
 
 <rule>
-<value>  <!--  scm-hv -->
+<body>  <!--  scm-hv -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
@@ -965,11 +965,11 @@ WHERE {
     ?c2 owl:onProperty ?p2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-svf1 -->
+<body>  <!--  scm-svf1 -->
 CONSTRUCT  {
     ?c1 rdfs:subClassOf ?c2 .
 }
@@ -982,11 +982,11 @@ WHERE {
     ?c2 owl:onProperty ?p .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-svf2 -->
+<body>  <!--  scm-svf2 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
@@ -998,11 +998,11 @@ WHERE {
     ?c2 owl:onProperty ?p2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-avf1 -->
+<body>  <!--  scm-avf1 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
@@ -1014,11 +1014,11 @@ WHERE {
     ?c2 owl:onProperty ?p .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-avf2 -->
+<body>  <!--  scm-avf2 -->
 CONSTRUCT {
     ?c2 rdfs:subClassOf ?c1 .
 }
@@ -1030,11 +1030,11 @@ WHERE {
     ?c2 owl:onProperty ?p2 .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-int -->
+<body>  <!--  scm-int -->
 CONSTRUCT {
     ?c rdfs:subClassOf ?ci .
 }
@@ -1043,11 +1043,11 @@ WHERE {
     ?x rdf:rest*/rdf:first ?ci .
 }
 
-</value>
+</body>
 </rule>
 
 <rule>
-<value>  <!--  scm-uni -->
+<body>  <!--  scm-uni -->
 CONSTRUCT {
     ?ci rdfs:subClassOf ?c .
 }
@@ -1055,7 +1055,7 @@ WHERE {
     ?c owl:unionOf ?x .
     ?x rdf:rest*/rdf:first ?ci .
 }
-</value>
+</body>
 </rule>
 
 </rdf:RDF>

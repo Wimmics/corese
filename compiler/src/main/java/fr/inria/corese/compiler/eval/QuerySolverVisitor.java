@@ -40,7 +40,8 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
  */
 public class QuerySolverVisitor implements ProcessVisitor {
     private static final String EVENT_METHOD = NSManager.USER+"event";
-
+    boolean active = false;
+    
     Eval eval;
 
     QuerySolverVisitor(Eval e) {
@@ -75,14 +76,16 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
-    public IDatatype result(Eval eval, Mapping m) {       
-        return callback(eval, Metadata.META_RESULT, toArray(m));
+    public boolean result(Eval eval, Mappings map, Mapping m) {       
+        return result(callback(eval, Metadata.META_RESULT, toArray(map, m)));
+        
     }
     
-    @Override
-    public boolean result() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_RESULT, 1);
-        return (exp != null);
+    boolean result(IDatatype dt) {
+        if (dt == null) {
+            return true;
+        }
+        return dt.booleanValue();
     }
     
     @Override
@@ -103,16 +106,12 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     @Override
     public IDatatype path(Eval eval, Edge q, Path p, Node s, Node o) {       
-        return callback(eval, Metadata.META_PATH, toArray(q, p, s.getDatatypeValue(), o.getDatatypeValue()));
+        return callback(eval, Metadata.META_PATH, toArray(q, p, s, o));
     }
     
     @Override
-    public boolean step(Eval eval, Edge q, Path p, Node s, Node o) {       
-         IDatatype dt = callback(eval, Metadata.META_STEP, toArray(q, p, s, o));
-         if (dt == null) {
-             return true;
-         }
-         return dt.booleanValue();
+    public boolean step(Eval eval, Edge q, Path p, Node s, Node o) {  
+         return result(callback(eval, Metadata.META_STEP, toArray(q, p, s, o)));         
     }
     
     @Override
@@ -176,7 +175,7 @@ public class QuerySolverVisitor implements ProcessVisitor {
         return dt;
     }
     
-     @Override
+    @Override
     public DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue dt) {       
         IDatatype val = callback(eval, Metadata.META_AGGREGATE, toArray(e, dt));
         return dt;
@@ -184,9 +183,16 @@ public class QuerySolverVisitor implements ProcessVisitor {
  
     // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
+        if (active) {
+            return null;
+        }
         Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
         if (exp != null) {
-            return call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            // prevent infinite loop in case where there is a query in the function
+            active = true;
+            IDatatype dt = call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            active = false;
+            return dt;
         }
         return null;
     }

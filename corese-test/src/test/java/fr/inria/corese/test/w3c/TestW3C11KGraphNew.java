@@ -199,6 +199,13 @@ public class TestW3C11KGraphNew {
     public static void main(String[] args) {
         new TestW3C11KGraphNew().process();
     }
+    
+    @Test
+    public  void mytest() {
+        new TestW3C11KGraphNew().process();
+    }
+    
+    
 
     /**
      * SPARQL 1.0

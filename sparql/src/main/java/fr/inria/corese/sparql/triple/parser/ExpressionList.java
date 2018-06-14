@@ -17,10 +17,12 @@ import java.util.List;
  */
 
 public class ExpressionList extends ArrayList<Expression> {
-      	
+        	
 	boolean isDistinct = false;
         private boolean rest = false;
         private boolean nested = false;
+        private int subList = -1;
+        private int lastElement = -1;
 	String separator;
         Expression eseparator;
         HashMap<String, Constant> table;
@@ -128,6 +130,39 @@ public class ExpressionList extends ArrayList<Expression> {
      */
     public void setRest(boolean rest) {
         this.rest = rest;
+        setSubListIndex(size() - 1);
+    }
+    
+    public void setLast(boolean last) {
+        setLastElementIndex(size() - 1);
+    }
+    
+     /**
+     * @return the lastElement
+     */
+    public int getLastElementIndex() {
+        return lastElement;
+    }
+
+    /**
+     * @param lastElement the lastElement to set
+     */
+    public void setLastElementIndex(int lastElement) {
+        this.lastElement = lastElement;
+    }
+
+    /**
+     * @return the subList
+     */
+    public int getSubListIndex() {
+        return subList;
+    }
+
+    /**
+     * @param subList the subList to set
+     */
+    public void setSubListIndex(int subList) {
+        this.subList = subList;
     }
 
 }

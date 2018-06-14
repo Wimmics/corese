@@ -159,7 +159,7 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
     public IDatatype get(int n) {
         return list.get(n);
     }
-
+    
     @Override
     public int size() {
         if (list == null) {
@@ -199,20 +199,22 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
 
     @Override
     public IDatatype rest() {
-        ArrayList<IDatatype> res = new ArrayList(list.size() - 1);
-        int i = 0;
-        for (IDatatype val : list) {
-            if (i++ > 0) {
-                res.add(val);
-            }
-        }
-        return new CoreseList(res);
+        return rest(1, list.size());
     }
     
     @Override
     public IDatatype rest(IDatatype index) {
+        return rest(index.intValue(), list.size());
+    }
+    
+    @Override
+    public IDatatype rest(IDatatype index, IDatatype last) {
+        return rest(index.intValue(), list.size() - last.intValue());        
+    }
+       
+    IDatatype rest(int index, int size) {
         ArrayList<IDatatype> res = new ArrayList(list.size());
-        for (int i = index.intValue(); i<list.size(); i++) {
+        for (int i = index; i<size; i++) {
             res.add(list.get(i));
         }
         return new CoreseList(res);
@@ -305,6 +307,15 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
             return null;
         }
         return list.get(n.intValue());
+    }
+    
+    @Override
+    public IDatatype last(IDatatype n) {
+        int i = list.size() - n.intValue() - 1;
+        if (i < 0) {
+            return null;
+        }
+        return list.get(i);
     }
 
     @Override

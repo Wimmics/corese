@@ -2486,7 +2486,7 @@ Term For (Exp stack) :
 
             <LPAREN> { el = new ExpressionList();  }
                 var = Var()  { el.add(var); } 
-                ( <COMMA> var = Var()  { el.add(var); } ) *					
+                ( (<COMMA>) ? var = Var()  { el.add(var); } ) *					
             <RPAREN>	    					     
         )
 
@@ -2731,7 +2731,10 @@ ExpressionList VarList() : { ExpressionList list;  Variable var; }
     { list = new ExpressionList(); }  
     var = Var() { list.add(var);  }	 
     ( (<COMMA>)?  var = Var() { list.add(var); } )* 
-    ( <DOT>    var = Var() { list.add(var); list.setRest(true); } ) ?
+    ( <BAR>       var = Var() { list.add(var); list.setRest(true); } ) ?
+    ( <DOT>       var = Var() { list.add(var); list.setLast(true); } 
+        ( var = Var() { list.add(var);} )*
+    ) ?
     { return list; }
 }
 

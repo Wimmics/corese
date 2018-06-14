@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
+import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -36,8 +37,16 @@ public class GetGen extends TermEval {
         if (dt == null || dtind == null) {
             return null;
         }
-              
-        return gget(dt, dtvar, dtind);
+          
+        switch (oper()) {
+            case ExprType.XT_GEN_GET:
+                return gget(dt, dtvar, dtind);
+                
+            case ExprType.XT_LAST:
+                return last(dt, dtind);
+        }
+        
+        return null;
     }
     
        
@@ -49,6 +58,13 @@ public class GetGen extends TermEval {
      */
     public static IDatatype gget(IDatatype dt, IDatatype var){
         return gget(dt, var, DatatypeMap.ZERO);
+    }
+    
+    static IDatatype last(IDatatype dt, IDatatype ind) {
+        if (! dt.isList()) {
+            dt = dt.toList();
+        }        
+        return getResult(DatatypeMap.last(dt, ind));   
     }
         
     public static IDatatype gget(IDatatype dt, IDatatype var, IDatatype ind){

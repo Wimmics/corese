@@ -105,6 +105,8 @@ public class Processor {
         public static final String XT_GEN_REST  = EXT + "grest";
         static final String FUN_XT_GREST        = EXT_PREF + "grest";
         public static final String XT_GEN_GET   = EXT + "gget";
+        static final String XT_LAST             = EXT + "last";  
+        static final String FUN_XT_LAST         = EXT_PREF + "last";       
         static final String FUN_XT_GGET         = EXT_PREF + "gget";
         static final String FUN_XT_GET          = EXT_PREF + "get";
         private static final String XT_SET      = EXT + "set";
@@ -664,7 +666,8 @@ public class Processor {
 		defoper(XT_GET,         ExprType.XT_GET);
 		defoper(XT_REMOVE,      ExprType.XT_REMOVE);
 		defoper(XT_REMOVE_INDEX,ExprType.XT_REMOVE_INDEX);
-		defoper(XT_SWAP,        ExprType.XT_SWAP);
+		defoper(XT_SWAP,        ExprType.XT_SWAP);               
+		defoper(XT_LAST,        ExprType.XT_LAST);
 		defoper(XT_GEN_GET,     ExprType.XT_GEN_GET);
 		defoper(XT_GEN_REST,    ExprType.XT_GEN_REST);
 		defoper(XT_SET,         ExprType.XT_SET);

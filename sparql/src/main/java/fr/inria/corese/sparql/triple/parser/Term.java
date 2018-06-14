@@ -360,6 +360,7 @@ public class Term extends Expression {
                 return new PathLength(name);
 
             case ExprType.XT_GEN_GET:
+            case ExprType.XT_LAST:
                 return new GetGen(name);
                 
             case ExprType.XT_GEN_REST:

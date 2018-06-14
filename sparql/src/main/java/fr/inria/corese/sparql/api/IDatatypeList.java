@@ -17,8 +17,10 @@ public interface IDatatypeList {
     
     IDatatype rest();
     IDatatype rest(IDatatype ind);
+    IDatatype rest(IDatatype ind, IDatatype last);
     
     IDatatype get(IDatatype ind);
+    IDatatype last(IDatatype ind);
 
     IDatatype set(IDatatype ind, IDatatype val);
 

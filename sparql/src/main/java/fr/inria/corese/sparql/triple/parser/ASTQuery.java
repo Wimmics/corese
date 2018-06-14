@@ -1381,20 +1381,41 @@ public class ASTQuery
                 l.add(defLet(var, list));
             }
 
-            //int j = 0;
-           // for (Expression arg : match.getArgs()) {
-           boolean isRest = match.getTerm().getNestedList() != null && 
-                   match.getTerm().getNestedList().isRest();
-                      
-            for (int i = 0; i<match.getArgs().size(); i++) { 
-                Expression arg = match.getArg(i);
-                if (isRest && i == match.getArgs().size() -1) {
-                    l.add(defRest(arg.getVariable(), var, i));
-                }
-                else {
-                    l.add(defGenericGet(arg.getVariable(), var, i)); //j++));
-                } 
+            ExpressionList nestedList =  match.getTerm().getNestedList();
+            boolean isRest  = nestedList != null && nestedList.isRest();
+            int subList     = nestedList.getSubListIndex();
+            int lastElement = nestedList.getLastElementIndex();
+            int nbLast      = 0;
+            if (subList >= 0 && lastElement >= 0) {
+                nbLast = nestedList.size() - lastElement;
             }
+            int last = nestedList.size() - 1;
+            /**
+             * (?a ?b | ?l . ?c ?d)
+             * subList = 2  -- index of ?l subList variable
+             * lastElem = 3 -- index of last elements variable ?c            /**
+             * (?a ?b | ?l . ?c ?d)
+             * subList = 2  -- index of ?l subList variable
+             * lastElem = 3 -- index of last elements variable ?c
+             */
+
+            for (int i = 0; i < match.getArgs().size(); i++) {
+                Expression arg = match.getArg(i);
+                
+                if (i == subList) {
+                    l.add(defRest(arg.getVariable(), var, i, nbLast));
+                }
+                else if (lastElement >= 0 && i >= lastElement) {
+                    l.add(defGenericGetLast(arg.getVariable(), var, last - i));
+                }
+                
+//                if (isRest && i == match.getArgs().size() - 1) {
+//                    l.add(defRest(arg.getVariable(), var, i));
+//                } 
+                else {
+                    l.add(defGenericGet(arg.getVariable(), var, i));
+                }
+            }                        
 
             Term let = defineLet(l, term.getBody(), 0);
             term.setArgs(let.getArgs());
@@ -1506,9 +1527,31 @@ public class ASTQuery
         return defLet(var, fun);
     }
     
+    /**
+     * ith element of the target list in reverse order
+     * i = 0 => last element
+     * 
+     */
+    Term defGenericGetLast(Variable var, Expression exp, int i) {
+        Term fun = createFunction(createQName(Processor.FUN_XT_LAST), exp);
+        fun.add(Constant.create(i));
+        return defLet(var, fun);
+    }
+    
     Term defRest(Variable var, Expression exp, int i) {
         Term fun = createFunction(createQName(Processor.FUN_XT_GREST), exp);
         fun.add(Constant.create(i));
+        return defLet(var, fun);
+    }
+    
+    /**
+     * Generate a subList starting at ith element of target list
+     * nbLast is the number of last elements of target list not to include in the subList
+     */
+    Term defRest(Variable var, Expression exp, int i, int nbLast) {
+        Term fun = createFunction(createQName(Processor.FUN_XT_GREST), exp);
+        fun.add(Constant.create(i));
+        fun.add(Constant.create(nbLast));
         return defLet(var, fun);
     }
     

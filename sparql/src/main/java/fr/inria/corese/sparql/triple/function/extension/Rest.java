@@ -32,18 +32,32 @@ public class Rest extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt    = getBasicArg(0).eval(eval, b, env, p);
-        IDatatype index   = getBasicArg(1).eval(eval, b, env, p);
+        IDatatype dt     = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype index  = getBasicArg(1).eval(eval, b, env, p);
+        IDatatype last   = null;
+        if (arity()>2) {
+           last   = getBasicArg(2).eval(eval, b, env, p); 
+        }
         
         if (dt == null || index == null) {
             return null;
         }
         
         if (dt.isList()) {
-            return DatatypeMap.rest(dt, index);
+            if (last == null) {
+                return DatatypeMap.rest(dt, index);
+            }
+            else {
+                return DatatypeMap.rest(dt, index, last);
+            }           
         }
         else if (dt.isPointer() && dt.isLoop()) {
-            return rest(dt, index);
+            if (last == null) {
+                return rest(dt, index);
+            }
+            else {
+                return DatatypeMap.rest(dt.toList(), index, last);
+            }
         }
         return null;
     }

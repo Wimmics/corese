@@ -967,6 +967,13 @@ public class DatatypeMap implements Cst, RDF {
         }
         return dt.getList().rest(index);
     }
+    
+    public static IDatatype rest(IDatatype dt, IDatatype index, IDatatype last) {
+        if (!dt.isList()) {
+            return null;
+        }
+        return dt.getList().rest(index, last);
+    }
 
     // modify
     public static IDatatype add(IDatatype list, IDatatype elem) {
@@ -1029,6 +1036,13 @@ public class DatatypeMap implements Cst, RDF {
             return null;
         }
         return list.getList().get(n);
+    }
+    
+     public static IDatatype last(IDatatype list, IDatatype n) {
+        if (!list.isList()) {
+            return null;
+        }
+        return list.getList().last(n);
     }
 
     public static IDatatype set(IDatatype list, IDatatype n, IDatatype val) {

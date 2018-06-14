@@ -50,6 +50,7 @@ public class TesterSSL {
         logger.info( "starting in " + System.getProperty( "user.dir" ) );
         server = new ProcessBuilder().inheritIO().command(
                 "/usr/bin/java",
+		System.getProperty("jacocoArgLine") == null ? "" : System.getProperty("jacocoArgLine"),
                 "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
                 "-lh",
                 "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl",

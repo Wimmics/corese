@@ -456,6 +456,7 @@ public class Memory extends PointerObject implements Environment {
 
                         if (!e.isAggregate()) {
                             node = eval.eval(f, this, p);
+                            kgram.getVisitor().select(kgram, f.getExp(), node.getDatatypeValue());
                             // bind fun(?x) as ?y
                             boolean success = push(e.getNode(), node);
                             if (success) {
@@ -837,10 +838,7 @@ public class Memory extends PointerObject implements Environment {
                 Node tNode = list.get(qNode.getLabel());
                 if (tNode != null) {
                     Node node = map.getNode(k);
-                    if (push(tNode, node, n)) {
-                        if (map.isPath(k)) {
-                            pushPath(tNode, map.getPath(k));
-                        }
+                    if (push(tNode, node, n)) {                       
                     } else {
                         // pop
                         for (int i = 0; i < k; i++) {
@@ -848,10 +846,7 @@ public class Memory extends PointerObject implements Environment {
                             if (qq != null) {
                                 Node tt = list.get(qq.getLabel());
                                 if (tt != null) {
-                                    pop(tt);
-                                    if (map.isPath(i)) {
-                                        popPath(tt);
-                                    }
+                                    pop(tt);                                   
                                 }
                             }
                         }
@@ -870,10 +865,7 @@ public class Memory extends PointerObject implements Environment {
             if (qNode != null) {
                 Node tNode = list.get(qNode.getLabel());
                 if (tNode != null) {
-                    pop(tNode);
-                    if (map.isPath(n)) {
-                        popPath(tNode);
-                    }
+                    pop(tNode);                  
                 }
             }
             n++;

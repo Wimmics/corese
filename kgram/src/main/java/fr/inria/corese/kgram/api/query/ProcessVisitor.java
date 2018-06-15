@@ -51,12 +51,12 @@ public interface ProcessVisitor {
 
     default DatatypeValue service(Eval eval, Node g, Exp e, Mappings m) { return null; }  
        
+    default DatatypeValue values(Eval eval, Node g, Exp e, Mappings m) { return null; }  
     
     default boolean filter(Eval eval, Node g, Expr e, boolean b) { return b; } 
     
     default boolean having(Eval eval, Expr e, boolean b) { return b; } 
-    
-    
+       
     default DatatypeValue bind(Eval eval, Node g, Exp e, DatatypeValue val) { return val; }  
 
     default DatatypeValue select(Eval eval, Expr e, DatatypeValue val) { return val; } 

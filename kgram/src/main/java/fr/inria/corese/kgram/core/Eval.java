@@ -2164,6 +2164,7 @@ public class Eval implements ExpType, Plugin {
      * after
      */
     private int graph(Node gNode, Exp exp, Stack stack, int n) {
+        getVisitor().graph(this, exp.getGraphName(), exp, null);
         int backtrack = n - 1;
         // set GRAPHNODE
         stack.set(n, exp.first());
@@ -2326,12 +2327,14 @@ public class Eval implements ExpType, Plugin {
         env.setGraphNode(gNode);
         Node node = evaluator.eval(exp.getFilter(), env, p);
         env.setGraphNode(null);
+        
+        getVisitor().bind(this, getGraphNode(gNode), exp, node==null?null:node.getDatatypeValue());
 
         if (node == null) {
             backtrack = eval(p, gNode, stack, n + 1);
         } else if (memory.push(exp.getNode(), node, n)) {
-            backtrack = eval(p, gNode, stack, n + 1);
-            memory.pop(exp.getNode());
+              backtrack = eval(p, gNode, stack, n + 1);
+              memory.pop(exp.getNode());
         }
 
         return backtrack;
@@ -2341,7 +2344,7 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Memory env = memory;
         Mappings map = evaluator.eval(exp.getFilter(), env, exp.getNodeList());
-        
+        getVisitor().values(this, getGraphNode(gNode), exp, map);
         if (map != null) {
             HashMap<String, Node>  tab =  toMap(exp.getNodeList());
             for (Mapping m : map) {
@@ -2478,7 +2481,8 @@ public class Eval implements ExpType, Plugin {
 
     private int values(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
-
+        getVisitor().values(this, getGraphNode(gNode), exp, exp.getMappings());
+        
         for (Mapping map : exp.getMappings()) {
 
             if (binding(exp.getNodeList(), map, n)) {

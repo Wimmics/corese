@@ -127,11 +127,21 @@ public class QuerySolverVisitor implements ProcessVisitor {
         return callback(eval, Metadata.META_VALUES, toArray(g, e, m));    
     }  
     
-     @Override
+    @Override
     public IDatatype bind(Eval eval, Node g, Exp e, DatatypeValue dt) { 
         return callback(eval, Metadata.META_BIND, toArray(g, e, dt));    
     } 
-     
+    
+    @Override
+    public IDatatype bgp(Eval eval, Node g, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_BGP, toArray(g, e, m));
+    }
+    
+    @Override
+    public IDatatype join(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_JOIN, toArray(g, e, m1, m2));
+    }
+    
     @Override
     public IDatatype optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
         return callback(eval, Metadata.META_OPTIONAL, toArray(g, e, m1, m2));

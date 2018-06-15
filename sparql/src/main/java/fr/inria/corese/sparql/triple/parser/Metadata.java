@@ -86,6 +86,8 @@ public class Metadata extends ASTObject
     public static final String META_CANDIDATE= "@candidate";
     public static final String META_PATH     = "@path";
     public static final String META_STEP     = "@step";
+    public static final String META_VALUES   = "@values";
+    public static final String META_BIND     = "@bind";
     public static final String META_OPTIONAL = "@optional";
     public static final String META_MINUS    = "@minus";
     public static final String META_UNION    = "@union";

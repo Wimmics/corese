@@ -26,38 +26,38 @@ public interface ProcessVisitor {
     default DatatypeValue after(Mappings map) { return null; }
     
     
-    default DatatypeValue produce(Eval eval, Edge edge) { return null; }
+    default DatatypeValue produce(Eval eval, Node g, Edge edge) { return null; }
     
-    default DatatypeValue candidate(Eval eval, Edge q, Edge e) { return null;}
+    default DatatypeValue candidate(Eval eval, Node g, Edge q, Edge e) { return null;}
     
-    default DatatypeValue path(Eval eval, Edge q, Path p, Node s, Node o) { return null;}
+    default DatatypeValue path(Eval eval, Node g, Edge q, Path p, Node s, Node o) { return null;}
     
-    default boolean step(Eval eval, Edge q, Path p, Node s, Node o) { return true;}
+    default boolean step(Eval eval, Node g, Edge q, Path p, Node s, Node o) { return true;}
 
     default boolean result(Eval eval, Mappings map, Mapping m) { return true; }
 
-    default DatatypeValue statement(Eval eval, Exp e) { return null; }
+    default DatatypeValue statement(Eval eval, Node g, Exp e) { return null; }
     
 
-    default DatatypeValue optional(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+    default DatatypeValue optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 
        
-    default DatatypeValue minus(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+    default DatatypeValue minus(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 
     
-    default DatatypeValue union(Eval eval, Exp e, Mappings m1, Mappings m2) { return null; } 
+    default DatatypeValue union(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 
     
-    default DatatypeValue graph(Eval eval, Exp e, Mappings m) { return null; }
+    default DatatypeValue graph(Eval eval, Node g, Exp e, Mappings m) { return null; }
     
-    default DatatypeValue query(Eval eval, Exp e, Mappings m) { return null; }    
+    default DatatypeValue query(Eval eval, Node g, Exp e, Mappings m) { return null; }    
 
-    default DatatypeValue service(Eval eval, Exp e, Mappings m) { return null; }  
+    default DatatypeValue service(Eval eval, Node g, Exp e, Mappings m) { return null; }  
        
     
-    default boolean filter(Eval eval, Expr e, boolean b) { return b; } 
+    default boolean filter(Eval eval, Node g, Expr e, boolean b) { return b; } 
     
     default boolean having(Eval eval, Expr e, boolean b) { return b; } 
     
     
-    default DatatypeValue bind(Eval eval, Exp e, DatatypeValue val) { return val; }  
+    default DatatypeValue bind(Eval eval, Node g, Exp e, DatatypeValue val) { return val; }  
 
     default DatatypeValue select(Eval eval, Expr e, DatatypeValue val) { return val; } 
     
@@ -68,5 +68,7 @@ public interface ProcessVisitor {
                 
     default boolean statement() { return false; }
         
-    default boolean candidate() { return false;}
+    default boolean candidate() { return false; }
+    
+    default boolean filter() { return false; }
 }

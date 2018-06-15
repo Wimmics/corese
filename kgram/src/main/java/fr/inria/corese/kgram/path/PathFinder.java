@@ -891,7 +891,7 @@ public class PathFinder {
                    
                     path.add(ent, eweight);
 
-                    boolean suc = kgram.getVisitor().step(kgram, ee, path, path.firstNode(), path.lastNode());
+                    boolean suc = kgram.getVisitor().step(kgram, src, ee, path, path.firstNode(), path.lastNode());
                     
                     if (suc) {
                         eval(stack, path, rel.getNode(oo), src);
@@ -1110,7 +1110,7 @@ public class PathFinder {
             if (store) {
                 Mapping map = result(path, gNode, src, start, isReverse);
                 if (map != null) {
-                    result(map);
+                    result(src, map);
                 }
             }
         } else {
@@ -1133,14 +1133,14 @@ public class PathFinder {
                 Mapping m = result(path, gNode, src, node, isReverse);
 
                 if (m != null) {
-                    result(m);
+                    result(src, m);
                 }
             }
         }
     }
 
-    void result(Mapping map) {
-        kgram.getVisitor().path(kgram, edge, map.getPath(2), map.getNode(0), map.getNode(1));
+    void result(Node src, Mapping map) {
+        kgram.getVisitor().path(kgram, src, edge, map.getPath(2), map.getNode(0), map.getNode(1));
         if (isList) {
             lMap.add(map);
         } else {

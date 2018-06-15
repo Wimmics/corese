@@ -39,7 +39,7 @@ import java.util.Set;
 public class Mapping
         extends EnvironmentImpl
         implements Result, Environment, Pointerable {
-
+ 
     static final Edge[] emptyEdge = new Edge[0];
     static final Edge[] emptyEntity = new Edge[0];
     static final Node[] emptyNode = new Node[0];
@@ -59,6 +59,7 @@ public class Mapping
     Map bnode;
     boolean read = false;
     private Binder bind;
+    private Node graphNode;
 
     Mapping() {
         this.qEdges = emptyEdge;;
@@ -1285,5 +1286,20 @@ public class Mapping
     @Override
     public TripleStore getTripleStore() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+      /**
+     * @return the graphNode
+     */
+    @Override
+    public Node getGraphNode() {
+        return graphNode;
+    }
+
+    /**
+     * @param graphNode the graphNode to set
+     */
+    public void setGraphNode(Node graphNode) {
+        this.graphNode = graphNode;
     }
 }

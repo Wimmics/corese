@@ -14,19 +14,17 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.openclover</groupId> 
-			<artifactId>clover</artifactId>
-			<version>4.2.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.0.1</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -45,11 +43,24 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+<!--				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>jacocoArgLine</propertyName>
+						</configuration>
+					</execution>
+				</executions>-->
+			</plugin>
+
+			<!--			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 			</plugin>
@@ -57,11 +68,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
 				<configuration>
 					<xmlOutput>true</xmlOutput>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 </project>

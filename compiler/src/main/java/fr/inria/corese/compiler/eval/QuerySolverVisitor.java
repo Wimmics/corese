@@ -121,6 +121,16 @@ public class QuerySolverVisitor implements ProcessVisitor {
     public boolean step(Eval eval, Node g, Edge q, Path p, Node s, Node o) {  
          return result(callback(eval, Metadata.META_STEP, toArray(g, q, p, s, o)));         
     }
+       
+    @Override
+    public IDatatype values(Eval eval, Node g, Exp e, Mappings m) { 
+        return callback(eval, Metadata.META_VALUES, toArray(g, e, m));    
+    }  
+    
+     @Override
+    public IDatatype bind(Eval eval, Node g, Exp e, DatatypeValue dt) { 
+        return callback(eval, Metadata.META_BIND, toArray(g, e, dt));    
+    } 
      
     @Override
     public IDatatype optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       

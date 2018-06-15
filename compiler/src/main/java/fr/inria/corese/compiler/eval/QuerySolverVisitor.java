@@ -3,6 +3,7 @@ package fr.inria.corese.compiler.eval;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
@@ -64,17 +65,28 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
-    public IDatatype produce(Eval eval, Edge edge) {       
-        IDatatype dt = callback(eval, Metadata.META_PRODUCE, toArray(edge));
+    public boolean produce() {
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_PRODUCE, 2);
+        return (exp != null);
+    }
+          
+    @Override
+    public IDatatype produce(Eval eval, Node g, Edge q) {       
+        IDatatype dt = callback(eval, Metadata.META_PRODUCE, toArray(g, q));
         return dt;
     }
     
     @Override
-    public boolean produce() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_PRODUCE, 1);
+    public boolean candidate() {
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_CANDIDATE, 3);
         return (exp != null);
     }
-    
+   
+    @Override
+    public IDatatype candidate(Eval eval, Node  g, Edge q, Edge e) {       
+        return callback(eval, Metadata.META_CANDIDATE, toArray(g, q, e));
+    }
+        
     @Override
     public boolean result(Eval eval, Mappings map, Mapping m) {       
         return result(callback(eval, Metadata.META_RESULT, toArray(map, m)));
@@ -89,71 +101,67 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
-    public IDatatype statement(Eval eval, Exp e) {       
-        return callback(eval, Metadata.META_STATEMENT, toArray(e));
+    public IDatatype statement(Eval eval, Node g, Exp e) { 
+        return callback(eval, Metadata.META_STATEMENT, toArray(g, e));
     }
     
     @Override
     public boolean statement() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_STATEMENT, 1);
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_STATEMENT, 2);
         return (exp != null);
     }
     
+ 
     @Override
-    public IDatatype candidate(Eval eval, Edge q, Edge e) {       
-        return callback(eval, Metadata.META_CANDIDATE, toArray(q, e));
+    public IDatatype path(Eval eval, Node g, Edge q, Path p, Node s, Node o) {       
+        return callback(eval, Metadata.META_PATH, toArray(g, q, p, s, o));
     }
     
     @Override
-    public IDatatype path(Eval eval, Edge q, Path p, Node s, Node o) {       
-        return callback(eval, Metadata.META_PATH, toArray(q, p, s, o));
+    public boolean step(Eval eval, Node g, Edge q, Path p, Node s, Node o) {  
+         return result(callback(eval, Metadata.META_STEP, toArray(g, q, p, s, o)));         
+    }
+     
+    @Override
+    public IDatatype optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_OPTIONAL, toArray(g, e, m1, m2));
     }
     
     @Override
-    public boolean step(Eval eval, Edge q, Path p, Node s, Node o) {  
-         return result(callback(eval, Metadata.META_STEP, toArray(q, p, s, o)));         
+    public IDatatype minus(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_MINUS, toArray(g, e, m1, m2));
     }
     
     @Override
-    public boolean candidate() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_CANDIDATE, 2);
-        return (exp != null);
-    }
-    
-    @Override
-    public IDatatype optional(Eval eval, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_OPTIONAL, toArray(e, m1, m2));
-    }
-    
-    @Override
-    public IDatatype minus(Eval eval, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_MINUS, toArray(e, m1, m2));
-    }
-    
-    @Override
-    public IDatatype union(Eval eval, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_UNION, toArray(e, m1, m2));
+    public IDatatype union(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
+        return callback(eval, Metadata.META_UNION, toArray(g, e, m1, m2));
     }
     
      @Override
-    public IDatatype graph(Eval eval, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_GRAPH, toArray(e, m));
+    public IDatatype graph(Eval eval, Node g, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_GRAPH, toArray(g, e, m));
     }
     
     
     @Override
-    public IDatatype service(Eval eval, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_FEDERATE, toArray(e, m));
+    public IDatatype service(Eval eval, Node g, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_FEDERATE, toArray(g, e, m));
     }
     
     @Override
-    public IDatatype query(Eval eval, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_QUERY, toArray(e, m));
+    public IDatatype query(Eval eval, Node g, Exp e, Mappings m) {       
+        return callback(eval, Metadata.META_QUERY, toArray(g, e, m));
     }
     
     @Override
-    public boolean filter(Eval eval, Expr e, boolean b) {       
-        IDatatype dt = callback(eval, Metadata.META_FILTER, toArray(e, DatatypeMap.newInstance(b)));
+    public boolean filter() {      
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_FILTER, 3);
+        return (exp != null);
+    } 
+    
+    @Override
+    public boolean filter(Eval eval, Node g, Expr e, boolean b) {       
+        IDatatype dt = callback(eval, Metadata.META_FILTER, toArray(g, e, DatatypeMap.newInstance(b)));
         if (dt == null) {
             return b;
         }

@@ -39,6 +39,10 @@ public interface ProcessVisitor {
     default DatatypeValue statement(Eval eval, Node g, Exp e) { return null; }
     
 
+    default DatatypeValue bgp(Eval eval, Node g, Exp e, Mappings m) { return null; } 
+
+    default DatatypeValue join(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 
+
     default DatatypeValue optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 
        
     default DatatypeValue minus(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) { return null; } 

@@ -456,7 +456,7 @@ public class Memory extends PointerObject implements Environment {
 
                         if (!e.isAggregate()) {
                             node = eval.eval(f, this, p);
-                            kgram.getVisitor().select(kgram, f.getExp(), node.getDatatypeValue());
+                            kgram.getVisitor().select(kgram, f.getExp(), node==null?null:node.getDatatypeValue());
                             // bind fun(?x) as ?y
                             boolean success = push(e.getNode(), node);
                             if (success) {

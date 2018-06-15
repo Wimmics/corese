@@ -870,6 +870,7 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case AND:
+                        getVisitor().bgp(this, getGraphNode(gNode), exp, null);
                         stack = stack.and(exp, n);
                         backtrack = eval(p, gNode, stack, n);
                     break;
@@ -1564,6 +1565,7 @@ public class Eval implements ExpType, Plugin {
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, memory.getResetJoinMappings());
         if (map1.size() == 0) {
             //exp.rest().setMappings(null);
+            getVisitor().join(this, getGraphNode(gNode), exp, map1, map1);
             return backtrack;
         }
            
@@ -1571,6 +1573,8 @@ public class Eval implements ExpType, Plugin {
         Exp rest = prepareRest(exp, set1);
         
         Mappings map2 = subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
+        
+        getVisitor().join(this, getGraphNode(gNode), exp, map1, map2);
 
         if (map2.size() == 0) {
             return backtrack;

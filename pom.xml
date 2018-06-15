@@ -120,7 +120,7 @@
 		<!--<maven.test.skip>true</maven.test.skip>-->
 		<project.build.sourceEncoding>UTF-8
 		</project.build.sourceEncoding> <!-- to prevent "[WARNING] Using platform encoding..."  -->
-		<!--<jacocoArgLine>-javaagent:/Users/edemairy/.m2/repository/org/jacoco/org.jacoco.agent/0.8.1/org.jacoco.agent-0.8.1-runtime.jar=destfile=/Users/edemairy/Developpement/corese/kgram/target/jacoco.exec</jacocoArgLine>-->
+		<jacocoArgLine></jacocoArgLine>
 	</properties>
 
 	<dependencyManagement>

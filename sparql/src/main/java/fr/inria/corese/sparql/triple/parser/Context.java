@@ -188,7 +188,7 @@ public class Context extends ASTObject {
         return getContext(name.getLabel());
     }
     
-    Context getContext(String name){
+    public Context getContext(String name){
         if (getNamedContext() == null){
             setNamedContext(new HashMap<String, Context>());
         }
@@ -204,6 +204,24 @@ public class Context extends ASTObject {
         return DatatypeMap.createObject(this);
     }
     
+    public IDatatype getNamedContextList() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        if (getNamedContext() != null) {
+            for (String name : getNamedContext().keySet()) {
+                list.add(DatatypeMap.newResourceOrLiteral(name));
+            }
+        }
+        return DatatypeMap.newInstance(list);
+    }
+    
+    public IDatatype getNamedContextDatatypeValue(String name) {
+        if (getNamedContext() == null || getContext(name) == null) {
+            return null;
+        }
+        Context c = getContext(name);
+        return c.getDatatypeValue();
+    }
+    
     public IDatatype cget(IDatatype name, IDatatype slot){
         return getContext(name).get(slot.getLabel());
     }
@@ -211,6 +229,10 @@ public class Context extends ASTObject {
     public IDatatype cset(IDatatype name, IDatatype slot, IDatatype value){
         getContext(name).set(slot.getLabel(), value);
         return value;
+    }
+    
+    public Context set(IDatatype name, IDatatype value) {
+        return set(name.getLabel(), value);
     }
     
     public Context set(String name, IDatatype value) {
@@ -232,6 +254,7 @@ public class Context extends ASTObject {
         export.put(name, true);
         return this;
     }
+    
     public Context exportName(String name, IDatatype value) {
         return export(NSManager.STL+name, value);
     }
@@ -357,6 +380,11 @@ public class Context extends ASTObject {
     public IDatatype get(String name) {
         return table.get(name);
     }
+    
+    public IDatatype get(IDatatype name) {
+        return table.get(name.getLabel());
+    }
+    
     
     public boolean hasValue(String name, String value) {
         IDatatype dt = table.get(name);

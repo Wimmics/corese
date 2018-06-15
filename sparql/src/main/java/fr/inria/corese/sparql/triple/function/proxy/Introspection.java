@@ -49,7 +49,7 @@ public class Introspection extends TermEval {
                 return DatatypeMap.createObject(ast.getMetadata());
                 
             case XT_CONTEXT:
-                return DatatypeMap.createObject(eval.getContext(env, p));
+                return eval.getContext(env, p).getDatatypeValue();
                 
             case XT_FROM:
             case XT_NAMED:

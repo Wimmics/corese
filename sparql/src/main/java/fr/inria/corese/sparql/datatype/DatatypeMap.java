@@ -457,6 +457,13 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype newResource(String result) {
         return new CoreseURI(result);
     }
+    
+    public static IDatatype newResourceOrLiteral(String result) {
+        if (result.startsWith("http://")) {
+            return newResource(result);
+        }
+        return new CoreseString(result);
+    }
 
     public static IDatatype newResource(String ns, String name) {
         return newResource(ns + name);
@@ -579,6 +586,11 @@ public class DatatypeMap implements Cst, RDF {
    
     static String defaultName(Object obj) {
         return Integer.toString(obj.hashCode());
+    }
+    
+     static String defaultName(Pointerable obj) {
+        return Integer.toString(obj.hashCode());
+        //return obj.getDatatypeLabel();
     }
     
     public static IDatatype createObject(String name, Object obj) {

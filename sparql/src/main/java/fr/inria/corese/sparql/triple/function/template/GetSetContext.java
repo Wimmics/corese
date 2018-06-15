@@ -32,9 +32,9 @@ public class GetSetContext extends TemplateFunction {
             case ExprType.STL_GET:
                 switch (param.length) {
                     case 1:
-                        return c.get(param[0].getLabel());
+                        return c.get(param[0]);
                     case 2:
-                        IDatatype dt = c.get(param[0].getLabel());
+                        IDatatype dt = c.get(param[0]);
                         if (dt == null) {
                             return FALSE;
                         }
@@ -46,11 +46,11 @@ public class GetSetContext extends TemplateFunction {
                 
             case ExprType.STL_SET:
                 if (param.length == 2) {
-                    c.set(param[0].getLabel(), param[1]);
+                    c.set(param[0], param[1]);
                     return param[1];
                 }
                 else {
-                    c.set(param[0].getLabel(), (IDatatype)null);
+                    c.set(param[0], (IDatatype)null);
                     return TRUE;
                 }
                                 

@@ -720,7 +720,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
     
     // LDScript Java compiling
     public IDatatype get(IDatatype dt) {
-        return getContext().get(dt.getLabel());
+        return getContext().get(dt);
     }
     
     public IDatatype get(IDatatype dt1, IDatatype dt2) {
@@ -791,7 +791,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
      public IDatatype set(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {                  
         Context c = getContext(env, p);
         if (exp.oper() == STL_SET){
-          c.set(dt1.getLabel(), dt2);
+          c.set(dt1, dt2);
         }
         else {
            c.export(dt1.getLabel(), dt2); 
@@ -800,7 +800,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
     }  
      
     public IDatatype set(IDatatype dt1, IDatatype dt2) {  
-        getContext().set(dt1.getLabel(), dt2);
+        getContext().set(dt1, dt2);
         return dt2;
     } 
        

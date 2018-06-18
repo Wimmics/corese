@@ -121,7 +121,7 @@ public class DataShape {
         System.out.println("</html>");
     }
 
-    public static void main() throws LoadException, EngineException, IOException {
+    public static void main(String [] args) throws LoadException, EngineException, IOException {
         new DataShape().testSimple();
     }
     

@@ -142,6 +142,182 @@ public class TestQuery1 {
         return graph;
     }
     
+    @Test
+    public void testMap3() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        String q =                 
+                 "select  "
+                + "(xt:size(us:test(5))   as ?a)"
+                + "(xt:size(us:test(10))  as ?b)"
+                + "(xt:size(us:test(15))  as ?c)"
+                + "(xt:size(us:test2(5))  as ?d)"
+                + "(xt:size(us:test2(10)) as ?e)"
+                + "(xt:size(us:test2(15)) as ?f)"
+                + "where {}"
+                                
+                + "function us:test(?n) {"
+                + "maplist(lambda(?x, ?y) { xt:list(?x, ?y) }, xt:iota(?n), us:map())"
+                + "}"
+                
+                + "function us:test2(?n) {"
+                + "maplist(lambda(?x, ?y) { xt:list(?x, ?y) }, us:map(),xt:iota(?n))"
+                + "}"
+                
+                + "function us:map() {"
+                + "let (?m = xt:map()) {"
+                + "xt:set(?m, 1, 1) ;"
+                + "xt:set(?m, 01, 01) ;"
+                + "xt:set(?m, 1.0, 1.0) ;"
+                + "xt:set(?m, 1.0e0, 1.0e0) ;"
+                + "xt:set(?m, '1'^^xsd:int, '1'^^xsd:int) ;"
+                + "xt:set(?m, 1, 1) ;"
+                + "xt:set(?m, 01, 01) ;"
+                + "xt:set(?m, true, true) ;"
+                + "xt:set(?m, st:test, st:test) ;"
+                + "xt:set(?m, 'test', 'test') ;"
+                + "xt:set(?m, 'test'@fr, 'test'@fr) ;"
+                + "xt:set(?m, 'test', 'test') ;"
+                + "xt:set(?m, bnode(), bnode()) ;"
+                + "return (?m)"
+                + "}"
+                + "}"                             
+                ;       
+                
+        Mappings map = exec.query(q);
+        assertEquals(5,  map.getValue("?a").intValue());
+        assertEquals(10, map.getValue("?b").intValue());
+        assertEquals(15, map.getValue("?c").intValue());
+        assertEquals(10, map.getValue("?d").intValue());
+        assertEquals(10, map.getValue("?e").intValue());
+        assertEquals(10, map.getValue("?f").intValue());
+    }
+    
+     @Test
+    public void testMap2() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+      
+        String q =                 
+                 "function xt:main() {"
+                + "let (?m = xt:map()) {"
+                + "xt:set(?m, 1, 1) ;"
+                + "xt:set(?m, 01, 01) ;"
+                + "xt:set(?m, 1.0, 1.0) ;"
+                + "xt:set(?m, 1.0e0, 1.0e0) ;"
+                + "xt:set(?m, '1'^^xsd:int, '1'^^xsd:int) ;"
+                + "xt:set(?m, 1, 1) ;"
+                + "xt:set(?m, 01, 01) ;"
+                + "xt:set(?m, true, true) ;"
+                + "xt:set(?m, st:test, st:test) ;"
+                + "xt:set(?m, 'test', 'test') ;"
+                + "xt:set(?m, 'test'@fr, 'test'@fr) ;"
+                + "xt:set(?m, 'test', 'test') ;"
+                + "xt:set(?m, bnode(), bnode()) ;"
+                + "return (?m)"
+                + "}"
+                + "}"                             
+                ;
+                        
+        IDatatype dt = exec.eval(q);
+        assertEquals(10, dt.size());
+    }
+    
+     @Test
+    public void testMap() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+
+        String i = "insert data {"
+                + "graph us:g1 { us:Jack foaf:name 'Jack'    ; foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jim foaf:knows us:James . us:James foaf:name 'James' }"
+                + "}";
+
+        String q = "@event "
+                + "select *  "
+                + "where {"
+                + "graph ?g { ?x ?p ?y }"
+                + "}"
+                
+                + "@before "
+                + "function us:before(?q) {"
+                + "st:set(st:map, xt:map())"
+                + "}"
+                
+                + "@candidate "
+                + "function us:candidate(?g, ?q, ?t) {"
+                + "us:record(us:map(), ?t) "
+                + "}"
+                
+                + "@after "
+                + "function us:after(?m) {"
+                + "java:setResult(?m, cast:node(reduce(rq:plus, maplist(lambda((?key, ?value)) { ?value }, us:map()))))"
+                + "}"
+                
+                + "function us:record(?m, ?t) {"
+                + "let ((?s ?p ?o) = ?t) {"
+                + "xt:set(?m, ?p, coalesce(xt:get(?m, ?p) + 1, 1))"
+                + "}"
+                + "}"
+                
+                + "function us:map() {"
+                + "st:get(st:map)"
+                + "}"
+                ;
+        
+        
+        exec.query(i);
+        
+        Mappings map = exec.query(q);
+        assertEquals(4, map.getResult().getDatatypeValue().intValue());
+    }
+    
+    @Test
+    public void testNGExist() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+
+        String i = "insert data {"
+                + "graph us:g1 { us:Jack foaf:name 'Jack' ; foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jack foaf:knows us:James . us:James foaf:name 'James' }"
+                + "}";
+
+        String q = "select * "
+                + "where {"
+                + "graph ?g {  "
+                + "?x foaf:name ?n optional { ?x foaf:name ?nn filter exists { ?z foaf:name 'Jack' } }"
+                + "}"
+                + "}";
+
+        exec.query(i);
+        Mappings map = exec.query(q);
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?g");
+            DatatypeValue val = m.getValue("?nn");
+            assertEquals(dt.stringValue().contains("g2"), val == null);
+        }
+    }
+    
+    
+    @Test
+    public void testNG() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+
+        String i = "insert data {"
+                + "graph us:g1 { us:Jack foaf:name 'Jack' ; foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jack foaf:knows us:James . us:James foaf:name 'James' }"
+                + "}";
+
+        String q = "select * "
+                + "where {"
+                + "graph ?g {  ?x foaf:name ?n  "
+                + "{ ?x foaf:knows ?y } union { ?y foaf:knows ?x } "
+                + "}"
+                + "}";
+
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+    }
+
+    
+    
      @Test
       public void testEvent() throws EngineException {
           String i = "insert data {"
@@ -153,7 +329,7 @@ public class TestQuery1 {
                   + "select * (st:get(us:count) as ?c) "
                   + "where { ?x foaf:knows+ ?y }"
                   
-                  + "@step function us:step(?q, ?p, ?s, ?o) {"
+                  + "@step function us:step(?g, ?q, ?p, ?s, ?o) {"
                   + "st:set(us:count, coalesce(st:get(us:count), 0) + 1)"
                   + "}"
                   ;
@@ -2688,7 +2864,7 @@ public class TestQuery1 {
         String q = "@event select * where {"
                 + "?x ?p ?y"
                 + "}"
-                + "@produce function xt:produce(?t){xt:list(?t)} "
+                + "@produce function xt:produce(?g, ?t){xt:list(?t)} "
                 + "@before function xt:start(?q){ st:set(st:count, 0) ; us:count() } "
                 + "@result function xt:result(?map, ?m){us:count()}"
                 + "@after function xt:finish(?m){us:count()}"
@@ -3417,7 +3593,7 @@ public class TestQuery1 {
         String qe = "@event select * where {"
                 + "?x ?p ?y"
                 + "}"
-                + "@produce function xt:produce(?q){"
+                + "@produce function xt:produce(?g, ?q){"
                 + "let (?g = construct where {?x rdfs:label ?y}){"
                 + "?g"
                 + "}}";
@@ -3544,7 +3720,7 @@ public class TestQuery1 {
                 + "?y foaf:name 'John' "
                 + "filter  exists {?x foaf:knows ?y} "
                 + "}"
-                + "@produce function xt:produce(?q){"
+                + "@produce function xt:produce(?g, ?q){"
                 + "xt:list(?q)"
                 + "}";
 
@@ -3554,7 +3730,7 @@ public class TestQuery1 {
                 + "?y foaf:name 'John' "
                 + "filter not exists {?x foaf:knows ?y} "
                 + "}"
-                + "@produce function xt:produce(?q){"
+                + "@produce function xt:produce(?g, ?q){"
                 + "xt:list(?q)"
                 + "}";
 

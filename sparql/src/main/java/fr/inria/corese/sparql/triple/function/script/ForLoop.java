@@ -74,27 +74,14 @@ public class ForLoop extends Statement {
         Expression body = getBody();
         IDatatype res = null;
         b.set(this, var, TRUE);
-
-        if (list.isList()) {
-            for (IDatatype dt : list.getValues()) {
-                b.bind(this, var, dt);
-                res = body.eval(eval, b, env, p);
-                if (b.isResult()) { 
-                    b.unset(this, var, dt);
-                    return res;
-                }
-            }
-        } else {
-            for (IDatatype dt : list) {
-                b.bind(this, var, dt);
-                res = body.eval(eval, b, env, p);
-                if (b.isResult()) { 
-                    b.unset(this, var, dt);
-                    return res;
-                }
+        for (IDatatype dt : list) {
+            b.bind(this, var, dt);
+            res = body.eval(eval, b, env, p);
+            if (b.isResult()) {
+                b.unset(this, var, dt);
+                return res;
             }
         }
-
         b.unset(this, var, TRUE);
         return TRUE;
     }

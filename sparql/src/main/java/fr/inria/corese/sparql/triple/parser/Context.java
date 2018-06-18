@@ -223,11 +223,11 @@ public class Context extends ASTObject {
     }
     
     public IDatatype cget(IDatatype name, IDatatype slot){
-        return getContext(name).get(slot.getLabel());
+        return getContext(name).get(slot);
     }
     
     public IDatatype cset(IDatatype name, IDatatype slot, IDatatype value){
-        getContext(name).set(slot.getLabel(), value);
+        getContext(name).set(slot, value);
         return value;
     }
     

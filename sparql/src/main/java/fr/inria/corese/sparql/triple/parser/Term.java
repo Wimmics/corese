@@ -375,6 +375,8 @@ public class Term extends Expression {
                 return new ListUnary(name);
             case ExprType.LIST:
                 return new ListTerm(name);
+            case ExprType.XT_MAP:
+                return new MapTerm(name);
             case ExprType.XT_COUNT:
                 return new Size(name);
                 

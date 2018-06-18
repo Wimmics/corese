@@ -43,6 +43,9 @@ public class Rest extends TermEval {
             return null;
         }
         
+        if (dt.isMap()) {
+            dt = dt.toList();
+        }
         if (dt.isList()) {
             if (last == null) {
                 return DatatypeMap.rest(dt, index);

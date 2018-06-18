@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -61,6 +62,8 @@ public class DatatypeMap implements Cst, RDF {
     public static final IDatatype LITERAL_DATATYPE = newResource(IDatatype.LITERAL_DATATYPE);
     static final String alpha = "abcdefghijklmnoprstuvwxyz";
     static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static final String POINTER = "Pointer_";
+    static long nbObject = 0;
 
     private static Hashtable<String, Mapping> ht;
     private static HashMap<String, Integer> dtCode;
@@ -585,21 +588,22 @@ public class DatatypeMap implements Cst, RDF {
     }
    
     static String defaultName(Object obj) {
-        return Integer.toString(obj.hashCode());
+        return Long.toString(obj.hashCode());
     }
     
-     static String defaultName(Pointerable obj) {
-        return Integer.toString(obj.hashCode());
-        //return obj.getDatatypeLabel();
+    static String defaultName(Pointerable obj) {
+        //return obj.getDatatypeLabel();      
+        //return Long.toString(obj.hashCode());
+        return Long.toString(obj.getDatatypeLabel().hashCode());
     }
     
     public static IDatatype createObject(String name, Object obj) {
-        if (obj == null) {
+       if (obj == null) {
             return null;
         }
         if (obj instanceof Node) {
             return (IDatatype) ((Node) obj).getDatatypeValue();
-        }
+        }      
         if (obj instanceof Pointerable) {
             Pointerable ptr = (Pointerable) obj;            
             return new CoresePointer(name==null?defaultName(ptr):name, ptr);
@@ -623,6 +627,10 @@ public class DatatypeMap implements Cst, RDF {
         IDatatype dt = new CoreseUndefLiteral(label);
         dt.setDatatype(datatype);
         return dt;
+    }
+    
+    public static IDatatype map() {
+        return new CoreseMap();
     }
 
     public static IDatatype createList(IDatatype... ldt) {

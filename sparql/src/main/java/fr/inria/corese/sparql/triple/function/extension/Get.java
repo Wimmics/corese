@@ -44,6 +44,9 @@ public class Get extends BinaryFunction {
         if (dt.isList()) {
             return dt.get(ind.intValue());
         }
+        if (dt.isMap()) {
+            return dt.get(ind);
+        }
         if (dt.isPointer()){
             Object res = dt.getPointerObject().getValue(null, ind.intValue());
             if (res == null) {                

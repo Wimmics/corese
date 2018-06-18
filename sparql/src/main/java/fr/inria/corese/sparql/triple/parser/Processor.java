@@ -37,6 +37,7 @@ public class Processor {
 	public static final String BOUND    = "bound";
 	public static final String COUNT    = "count";
 	public static final String INLIST   = Term.LIST;
+	public static final String XT_MAP      = EXT+"map";
 	public static final String XT_LIST     = EXT+"list";
 	public static final String XT_TOLIST   = EXT+"toList";
 	public static final String XT_IOTA     = EXT+"iota";
@@ -629,6 +630,7 @@ public class Processor {
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
+		defoper(XT_MAP,         ExprType.XT_MAP);
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_TOLIST,      ExprType.XT_TOLIST);
 		defoper(XT_IOTA,        ExprType.IOTA);

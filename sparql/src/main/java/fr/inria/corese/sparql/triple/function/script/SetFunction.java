@@ -22,7 +22,7 @@ public class SetFunction extends TermEval {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {       
         IDatatype val = getBasicArg(1).eval(eval, b, env, p);
         if (val == null) {
             return null;

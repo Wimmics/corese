@@ -63,6 +63,7 @@ public interface IDatatype
     public static final String EXTENDED_DATATYPE = ExpType.DT + "extended";
     
     public static final String ITERATE_DATATYPE  = ExpType.DT + "iterate";   
+    public static final String MAP_DATATYPE      = ExpType.DT + "map";   
     public static final String LIST_DATATYPE     = ExpType.DT + "list";   
     public static final String SYSTEM            = ExpType.DT + "system";
     public static final String POINTER           = ExpType.DT + "pointer";
@@ -87,6 +88,7 @@ public interface IDatatype
     boolean isArray();
     
     boolean isList();
+    boolean isMap();
     
     boolean isLoop();
 
@@ -98,6 +100,9 @@ public interface IDatatype
     Iterable getLoop();
 
     IDatatype get(int n);
+    IDatatype get(IDatatype name);
+    IDatatype set(IDatatype name, IDatatype value);
+   
 
     int size();
          

@@ -359,6 +359,11 @@ public class CoreseDatatype
     public boolean isList() {
         return false;
     }
+    
+    @Override
+    public boolean isMap() {
+        return false;
+    }
 
     @Override
     public boolean isLoop() {
@@ -370,6 +375,7 @@ public class CoreseDatatype
         return null;
     }
     
+    @Override
     public IDatatypeList getList() {
         return null;
     }
@@ -430,6 +436,16 @@ public class CoreseDatatype
     @Override
     public IDatatype get(int n) {
         return null;
+    }
+    
+    @Override
+    public IDatatype get(IDatatype name) {
+        return null;
+    }
+    
+    @Override
+    public IDatatype set(IDatatype name, IDatatype value) {
+        return value;
     }
 
     @Override

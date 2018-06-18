@@ -41,9 +41,7 @@ public class MapFunction extends Funcall {
         if (function == null) {
             return null;
         }
-        
-       //return eval.map(name, args, this, env, p);
-        
+                
         Expr exp = this;
         boolean maplist     = exp.oper() == MAPLIST; 
         boolean mapmerge    = exp.oper() == MAPMERGE; 
@@ -72,7 +70,6 @@ public class MapFunction extends Funcall {
                 }
                 else {
                     // list + loop || loop + loop
-                    // loop.toList()
                     param[k] = dt.toList();
                 }
             }
@@ -83,9 +80,8 @@ public class MapFunction extends Funcall {
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
-        ArrayList<IDatatype> res = (hasList)     ? new ArrayList<IDatatype>() : null;
-        ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<IDatatype>() : null;
-        int size = 0; 
+        ArrayList<IDatatype> res = (hasList)     ? new ArrayList<>() : null;
+        ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<>() : null;
         
         for (int i = 0;  (isList) ? i< list.size() : loop.hasNext(); i++){ 
             IDatatype elem = null;
@@ -104,7 +100,6 @@ public class MapFunction extends Funcall {
                     }
                 }
                 else if (isLoop && dt.isLoop()){
-                    // TODO: track several dt Loop
                     if (loop.hasNext()){
                        value[j] = loop.next(); 
                        if (mapfind && elem == null){
@@ -127,12 +122,6 @@ public class MapFunction extends Funcall {
             }           
                        
             if (hasList) {
-                if (val.isList()){
-                    size += val.size();
-                }
-                else {
-                    size += 1;
-                }
                res.add(val);
             }
             else if (mapfindelem && val.booleanValue()){
@@ -148,7 +137,7 @@ public class MapFunction extends Funcall {
         
         if (mapmerge || mapappend){
             int i = 0;
-            ArrayList<IDatatype> mlist = new ArrayList<IDatatype>();
+            ArrayList<IDatatype> mlist = new ArrayList<>();
             for (IDatatype dt : res){
                 if (dt.isList()){
                     for (IDatatype v : dt.getValues()){

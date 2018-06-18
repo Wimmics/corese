@@ -9,7 +9,7 @@ package fr.inria.corese.sparql.api;
  *
  * @author corby
  */
-public interface IDatatypeList {
+public interface IDatatypeList extends IDatatype {
     
     IDatatype length();
     

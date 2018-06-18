@@ -71,6 +71,9 @@ public class GetGen extends TermEval {
         if (dt.isList()) {
             return getResult(DatatypeMap.get(dt, ind));           
         }
+        if (dt.isMap()) {
+            return getResult(DatatypeMap.get(dt.toList(), ind));    
+        }
         if (dt.isPointer()){
             Object res = dt.getPointerObject().getValue((var == null) ? null : var.getLabel(), ind.intValue());
             if (res == null) {                

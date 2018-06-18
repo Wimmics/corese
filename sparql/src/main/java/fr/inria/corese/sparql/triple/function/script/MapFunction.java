@@ -51,70 +51,62 @@ public class MapFunction extends Funcall {
         boolean mapfind     = mapfindelem || mapfindlist;
         boolean hasList     = maplist || mapmerge || mapappend;
 
-        IDatatype list = null;
-        IDatatype ldt = null;
-        Iterator<IDatatype> loop = null ;
+        Iterable<IDatatype> iter = null;
         boolean isList = false, isLoop = false;
         
         int k = 0;
         for (IDatatype dt : param){  
             if (dt.isList() && ! isList && ! isLoop){
                 isList = true;
-                list = dt;
+                iter = dt;
             }
             else if (dt.isLoop()) {
                 if (! isList && ! isLoop) {
                     isLoop = true;
-                    ldt = dt;
-                    loop = ldt.iterator();
+                    iter = dt;
                 }
                 else {
                     // list + loop || loop + loop
+                    // additional Loop -> toList()
                     param[k] = dt.toList();
                 }
             }
             
             k++;
         }               
-        if (list == null && ldt == null){
+        if (iter == null){
             return null;
         }
         IDatatype[] value = new IDatatype[param.length];
         ArrayList<IDatatype> res = (hasList)     ? new ArrayList<>() : null;
         ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<>() : null;
+        int i = 0;
         
-        for (int i = 0;  (isList) ? i< list.size() : loop.hasNext(); i++){ 
+        // there may be several List, but at most one Loop
+        for (IDatatype dtValue : iter){ 
             IDatatype elem = null;
             
             for (int j = 0; j<value.length; j++){
                 IDatatype dt = param[j];
-                if (dt.isList()){                   
-                    /**
-                     * if list size is <= i,  focus on last element of the list
-                     * use case: maplist(?fun, ?list, xt:list(?lst))
-                     * The second ?lst argument is itself a list and we do not want to iterate this one
-                     */  
-                    value[j] = (i < dt.size()) ? dt.get(i) : dt.get(dt.size()-1);
+                if (dt.isList()){                                        
+                    value[j] = getValue(dt, i);
                     if (mapfind && elem == null){
                         elem = value[j];
                     }
                 }
-                else if (isLoop && dt.isLoop()){
-                    if (loop.hasNext()){
-                       value[j] = loop.next(); 
-                       if (mapfind && elem == null){
-                         elem = value[j];
-                       }
-                    }
-                    else {
-                        return null;
+                else if (dt.isLoop()) {
+                    value[j] = dtValue;
+                    if (mapfind && elem == null) {
+                        elem = value[j];
                     }
                 }
                 else {
                     value[j] = dt;
                 }
             }
-                        
+            
+            i++;
+           
             // call function on value parameter list
             IDatatype val = call(eval, b, env, p, function, value);                      
             if (val == null){
@@ -131,12 +123,10 @@ public class MapFunction extends Funcall {
                     // select elem whose predicate is true
                     // mapselect (xt:prime, xt:iota(1, 100))
                     sub.add(elem);
-            }
-            
+            }            
         }
         
         if (mapmerge || mapappend){
-            int i = 0;
             ArrayList<IDatatype> mlist = new ArrayList<>();
             for (IDatatype dt : res){
                 if (dt.isList()){
@@ -160,6 +150,13 @@ public class MapFunction extends Funcall {
             return null;
         }
         return TRUE;
+    }
+    
+    // if list size is <= i,  focus on last element of the list
+    // use case: maplist(?fun, ?list, xt:list(?lst))
+    // The second ?lst argument is itself a list and we do not want to iterate this one
+    IDatatype getValue(IDatatype dt, int i) {
+        return (i < dt.size()) ? dt.get(i) : dt.get(dt.size() - 1);
     }
     
     void add(List<IDatatype> list, IDatatype dt, boolean merge){

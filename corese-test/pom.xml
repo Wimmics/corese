@@ -23,7 +23,20 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>compiler</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>corese-core</artifactId>
+		</dependency>
+		<!--		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>corese-gui</artifactId>
+		</dependency> -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>corese-server</artifactId>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>

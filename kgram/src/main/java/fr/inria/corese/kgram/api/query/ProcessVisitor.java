@@ -67,6 +67,8 @@ public interface ProcessVisitor {
     
     default DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue val) { return val; } 
     
+    default DatatypeValue function(Eval eval, Expr funcall, Expr fundef) { return null; }     
+    
 
     default boolean produce() { return false; }
                 

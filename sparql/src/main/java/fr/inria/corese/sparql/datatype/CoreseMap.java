@@ -5,6 +5,7 @@ import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -55,6 +56,15 @@ public class CoreseMap extends CoreseUndefLiteral {
         return true;
     }
     
+    @Override
+    public Map getObject() {
+        return map;
+    }
+    
+    public Map getMap() {
+        return map;
+    }
+        
     @Override
     public IDatatype set(IDatatype key, IDatatype value) {
         map.put(key, value);

@@ -100,6 +100,7 @@ public class Metadata extends ASTObject
     public static final String META_GRAPH    = "@graph";
     public static final String META_AGGREGATE= "@aggregate";
     public static final String META_HAVING   = "@having";
+    public static final String META_FUNCTION = "@function";
         
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

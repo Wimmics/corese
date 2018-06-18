@@ -29,6 +29,7 @@ public class Extension extends TermEval {
     Term signature;
     List<Expr> arguments;
     Computer cc;
+    boolean visit = true;
 
     public Extension() {}
     
@@ -55,7 +56,6 @@ public class Extension extends TermEval {
         } else {
             arguments = function.getSignature().getExpList();
         }
-        // tr();
     }
 
 
@@ -70,7 +70,7 @@ public class Extension extends TermEval {
                 init();
             }
         }
-        
+                
         if (isUnary) {
             IDatatype value1 = exp1.eval(eval, b, env, p);
             if (value1 == null) {
@@ -79,9 +79,15 @@ public class Extension extends TermEval {
             IDatatype dt;
             if (tailRecursion) {
                 b.setTailRec(function, var1, value1);
+                if (visit) {
+                    eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                }
                 dt = body.eval(eval, b, env, p);
             } else {
                 b.set(function, var1, value1);
+                if (visit) {
+                    eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                }               
                 dt = body.eval(eval, b, env, p);
                 b.unset(function);
             }
@@ -96,6 +102,9 @@ public class Extension extends TermEval {
                 return null;
             }
             b.set(function, var1, value1, var2, value2);
+            if (visit) {
+                eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+            }               
             IDatatype dt = body.eval(eval, b, env, p);
             b.unset(function);
             if (dt == null) {
@@ -108,6 +117,9 @@ public class Extension extends TermEval {
                 return null;
             }
             b.set(function, arguments, param);
+            if (visit) {
+                eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+            }
             IDatatype dt = null;
             if (isSystem) {
                 Computer cc = eval.getComputer(env, p, function);

@@ -279,6 +279,11 @@ public class Expression extends TopExp
     public String getLang() {
         return null;
     }
+    
+    @Override
+    public String getDatatypeLabel() {
+        return toString();
+    }
 
     public String getDatatype() {
         return null;

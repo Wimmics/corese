@@ -1712,7 +1712,7 @@ public class Graph extends GraphObject implements
     }
 
     Node getNode(String key, String name) {
-        return (Node) individual.get(key);
+        return individual.get(key);
     }
 
     void addNode(IDatatype dt, Node node) {
@@ -1720,7 +1720,7 @@ public class Graph extends GraphObject implements
     }
 
     public Node getBlankNode(String name) {
-        return (Node) blank.get(name);
+        return blank.get(name);
     }
 
     void addBlankNode(IDatatype dt, Node node) {
@@ -1887,14 +1887,14 @@ public class Graph extends GraphObject implements
                  
     // return same datatype value with possibly different label (e.g. 10 vs 1e1)
     public Node getExtLiteralNode(IDatatype dt) {
-        return (Node) sliteral.get(dt);    
+        return sliteral.get(dt);    
     }
 
     public Node getLiteralNode(String key, IDatatype dt) {
         if (valueOut) {
-            return (Node) vliteral.get(key);
+            return vliteral.get(key);
         } else {
-            return (Node) literal.get(dt);
+            return literal.get(dt);
         }
     }
 

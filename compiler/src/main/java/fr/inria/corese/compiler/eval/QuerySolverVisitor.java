@@ -189,6 +189,13 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
+    public IDatatype function(Eval eval, Expr funcall, Expr fundef) {       
+        IDatatype dt = callback(eval, Metadata.META_FUNCTION, toArray(funcall, fundef));       
+        return dt;
+    }
+    
+    
+    @Override
     public boolean having(Eval eval, Expr e, boolean b) {       
         IDatatype dt = callback(eval, Metadata.META_HAVING, toArray(e, DatatypeMap.newInstance(b)));
         if (dt == null) {

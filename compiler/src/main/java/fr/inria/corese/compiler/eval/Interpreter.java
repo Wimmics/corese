@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Bind;
 import fr.inria.corese.kgram.core.Eval;
@@ -84,7 +85,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public void setKGRAM(Eval o) {
         kgram = o;
     }
-
+    
     @Override
     public void setDebug(boolean b) {
         isDebug = b;

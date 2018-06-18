@@ -29,7 +29,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public class Mappings extends PointerObject
         implements Comparator<Mapping>, Iterable<Mapping> {
-
+    
     private static final String NL = System.getProperty("line.separator");    
     private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
@@ -63,6 +63,7 @@ public class Mappings extends PointerObject
     private boolean isFake = false;
     private Mapping sm1;
     private Mapping sm2;
+    private Node result;
 
     public Mappings() {
         list = new ArrayList<Mapping>();
@@ -1528,6 +1529,20 @@ public class Mappings extends PointerObject
      */
     public void setNodeList(List<Node> nodeList) {
         this.nodeList = nodeList;
+    }
+    
+    /**
+     * @return the result
+     */
+    public Node getResult() {
+        return result;
+    }
+
+    /**
+     * @param result the result to set
+     */
+    public void setResult(Node result) {
+        this.result = result;
     }
 
 

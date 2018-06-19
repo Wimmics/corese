@@ -3,7 +3,6 @@ package fr.inria.corese.compiler.eval;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
@@ -22,8 +21,6 @@ import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * Callback manager for LDScript functions with specific annotations Eval SPARQL
@@ -40,10 +37,41 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
  *
  */
 public class QuerySolverVisitor implements ProcessVisitor {
-    private static final String EVENT_METHOD = NSManager.USER+"event";
-    boolean active = false;
+    
+    public static final String BEFORE   = "@before";
+    public static final String AFTER    = "@after";
+    public static final String PRODUCE  = "@produce";
+    public static final String RESULT   = "@result";
+    public static final String STATEMENT= "@statement";
+    public static final String CANDIDATE= "@candidate";
+    public static final String PATH     = "@path";
+    public static final String STEP     = "@step";
+    public static final String VALUES   = "@values";
+    public static final String BIND     = "@bind";
+    public static final String BGP      = "@bgp";
+    public static final String JOIN     = "@join";
+    public static final String OPTIONAL = "@optional";
+    public static final String MINUS    = "@minus";
+    public static final String UNION    = "@union";
+    public static final String FILTER   = "@filter";
+    public static final String SELECT   = "@select";
+    public static final String FEDERATE = "@federate";
+    public static final String QUERY    = "@query";
+    public static final String GRAPH    = "@graph";
+    public static final String AGGREGATE= "@aggregate";
+    public static final String HAVING   = "@having";
+    public static final String FUNCTION = "@function";
+    
+    static final String[] EVENT_LIST = {
+        BEFORE, AFTER, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
+        BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, FEDERATE, QUERY, GRAPH, 
+        AGGREGATE, HAVING, FUNCTION
+    };
+    boolean active = false, select = false;
     
     Eval eval;
+    Query query;
+    ASTQuery ast;
 
     QuerySolverVisitor(Eval e) {
         eval = e;
@@ -53,43 +81,51 @@ public class QuerySolverVisitor implements ProcessVisitor {
     public void setProcessor(Eval e) {
         eval = e;
     }
-
+    
+    @Override
+    public void init(Query q) {
+        query = q;
+        ast = (ASTQuery) q.getAST();
+        for (String name : EVENT_LIST) {
+            if (ast.getMetadata().hasMetadata(name)) {
+                select = true;
+                break;
+            }
+        }
+    }
+    
+    boolean accept(String name) {
+        if (select) {
+            return ast.getMetadata().hasMetadata(name) ;
+        }
+        return true;
+    }
+   
+   
+      
     @Override
     public IDatatype before(Query q) {
-        return callback(eval, Metadata.META_BEFORE, toArray(q));
+        return callback(eval, BEFORE, toArray(q));
     }
 
     @Override
     public IDatatype after(Mappings map) {
-        return callback(eval, Metadata.META_AFTER, toArray(map));
+        return callback(eval, AFTER, toArray(map));
     }
     
     @Override
-    public boolean produce() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_PRODUCE, 2);
-        return (exp != null);
+    public IDatatype produce(Eval eval, Node g, Edge q) {  
+        return callback(eval, PRODUCE, toArray(g, q));
     }
-          
+      
     @Override
-    public IDatatype produce(Eval eval, Node g, Edge q) {       
-        IDatatype dt = callback(eval, Metadata.META_PRODUCE, toArray(g, q));
-        return dt;
-    }
-    
-    @Override
-    public boolean candidate() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_CANDIDATE, 3);
-        return (exp != null);
-    }
-   
-    @Override
-    public IDatatype candidate(Eval eval, Node  g, Edge q, Edge e) {       
-        return callback(eval, Metadata.META_CANDIDATE, toArray(g, q, e));
+    public IDatatype candidate(Eval eval, Node  g, Edge q, Edge e) {  
+        return callback(eval, CANDIDATE, toArray(g, q, e));
     }
         
     @Override
     public boolean result(Eval eval, Mappings map, Mapping m) {       
-        return result(callback(eval, Metadata.META_RESULT, toArray(map, m)));
+        return result(callback(eval, RESULT, toArray(map, m)));
         
     }
     
@@ -102,86 +138,79 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     @Override
     public IDatatype statement(Eval eval, Node g, Exp e) { 
-        return callback(eval, Metadata.META_STATEMENT, toArray(g, e));
+        return callback(eval, STATEMENT, toArray(g, e));
     }
-    
-    @Override
-    public boolean statement() {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_STATEMENT, 2);
-        return (exp != null);
-    }
-    
- 
+       
     @Override
     public IDatatype path(Eval eval, Node g, Edge q, Path p, Node s, Node o) {       
-        return callback(eval, Metadata.META_PATH, toArray(g, q, p, s, o));
+        return callback(eval, PATH, toArray(g, q, p, s, o));
     }
     
     @Override
     public boolean step(Eval eval, Node g, Edge q, Path p, Node s, Node o) {  
-         return result(callback(eval, Metadata.META_STEP, toArray(g, q, p, s, o)));         
+         return result(callback(eval, STEP, toArray(g, q, p, s, o)));         
     }
        
     @Override
     public IDatatype values(Eval eval, Node g, Exp e, Mappings m) { 
-        return callback(eval, Metadata.META_VALUES, toArray(g, e, m));    
+        return callback(eval, VALUES, toArray(g, e, m));    
     }  
     
     @Override
     public IDatatype bind(Eval eval, Node g, Exp e, DatatypeValue dt) { 
-        return callback(eval, Metadata.META_BIND, toArray(g, e, dt));    
+        return callback(eval, BIND, toArray(g, e, dt));    
     } 
     
     @Override
     public IDatatype bgp(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_BGP, toArray(g, e, m));
+        return callback(eval, BGP, toArray(g, e, m));
     }
     
     @Override
     public IDatatype join(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_JOIN, toArray(g, e, m1, m2));
+        return callback(eval, JOIN, toArray(g, e, m1, m2));
     }
     
     @Override
     public IDatatype optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_OPTIONAL, toArray(g, e, m1, m2));
+        return callback(eval, OPTIONAL, toArray(g, e, m1, m2));
     }
     
     @Override
     public IDatatype minus(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_MINUS, toArray(g, e, m1, m2));
+        return callback(eval, MINUS, toArray(g, e, m1, m2));
     }
     
     @Override
     public IDatatype union(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {       
-        return callback(eval, Metadata.META_UNION, toArray(g, e, m1, m2));
+        return callback(eval, UNION, toArray(g, e, m1, m2));
     }
     
      @Override
     public IDatatype graph(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_GRAPH, toArray(g, e, m));
+        return callback(eval, GRAPH, toArray(g, e, m));
     }
     
     
     @Override
     public IDatatype service(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_FEDERATE, toArray(g, e, m));
+        return callback(eval, FEDERATE, toArray(g, e, m));
     }
     
     @Override
     public IDatatype query(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, Metadata.META_QUERY, toArray(g, e, m));
+        return callback(eval, QUERY, toArray(g, e, m));
     }
     
     @Override
     public boolean filter() {      
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), Metadata.META_FILTER, 3);
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), FILTER, 3);
         return (exp != null);
     } 
     
     @Override
     public boolean filter(Eval eval, Node g, Expr e, boolean b) {       
-        IDatatype dt = callback(eval, Metadata.META_FILTER, toArray(g, e, DatatypeMap.newInstance(b)));
+        IDatatype dt = callback(eval, FILTER, toArray(g, e, DatatypeMap.newInstance(b)));
         if (dt == null) {
             return b;
         }
@@ -190,14 +219,14 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     @Override
     public IDatatype function(Eval eval, Expr funcall, Expr fundef) {       
-        IDatatype dt = callback(eval, Metadata.META_FUNCTION, toArray(funcall, fundef));       
+        IDatatype dt = callback(eval, FUNCTION, toArray(funcall, fundef));       
         return dt;
     }
     
     
     @Override
     public boolean having(Eval eval, Expr e, boolean b) {       
-        IDatatype dt = callback(eval, Metadata.META_HAVING, toArray(e, DatatypeMap.newInstance(b)));
+        IDatatype dt = callback(eval, HAVING, toArray(e, DatatypeMap.newInstance(b)));
         if (dt == null) {
             return b;
         }
@@ -206,19 +235,41 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     @Override
     public DatatypeValue select(Eval eval, Expr e, DatatypeValue dt) {       
-        IDatatype val = callback(eval, Metadata.META_SELECT, toArray(e, dt));
+        IDatatype val = callback(eval, SELECT, toArray(e, dt));
         return dt;
     }
     
     @Override
     public DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue dt) {       
-        IDatatype val = callback(eval, Metadata.META_AGGREGATE, toArray(e, dt));
+        IDatatype val = callback(eval, AGGREGATE, toArray(e, dt));
         return dt;
     }
+    
+    
+    @Override
+    public boolean produce() {
+        return accept(PRODUCE) && define(PRODUCE, 2);
+    }
+    
+    @Override
+    public boolean candidate() {
+        return accept(CANDIDATE) && define(CANDIDATE, 3);
+    }
+    
+    @Override
+    public boolean statement() {
+        return accept(STATEMENT) && define(STATEMENT, 2);
+    }
+    
+    boolean define(String name, int arity) {
+        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), name, arity);
+        return (exp != null);
+    }
+    
  
     // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
-        if (active) {
+        if (active || ! accept(metadata)) {
             return null;
         }
         Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);

@@ -353,8 +353,8 @@ public class Transformer implements ExpType {
     }
     
     void annotateLocal(ASTQuery ast){
-        if (ast.hasMetadata(Metadata.BGP)){
-            // @bgp use case with @db
+        if (ast.hasMetadata(Metadata.ALGEBRA)){
+            // @algebra use case with @db
             setBGP(true);
             setAlgebra(true);
         }

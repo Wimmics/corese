@@ -172,6 +172,7 @@ public class Eval implements ExpType, Plugin {
         }
         initMemory(q);
         producer.start(q);
+        getVisitor().init(q);
         getVisitor().before(q);        
         Mappings map = eval(null, q, m);
         getVisitor().after(map);
@@ -431,7 +432,7 @@ public class Eval implements ExpType, Plugin {
         ev.setMemory(m);
         ev.set(provider);
         ev.setVisitor(getVisitor());
-        ev.startExtFun();
+        ev.startExtFun(q);
         ev.setPathType(isPathType);
         if (hasEvent) {
             ev.setEventManager(manager);
@@ -620,13 +621,13 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             results.setEventManager(manager);
         }
-        startExtFun();
+        startExtFun(q);
         // set new results in case of sub query (for aggregates)
         memory.setEval(this);
         memory.setResults(results);
     }
 
-    void startExtFun() {
+    void startExtFun(Query q) {
         hasStatement    = getVisitor().statement();
         hasProduce      = getVisitor().produce();
         hasCandidate    = getVisitor().candidate();
@@ -2687,6 +2688,9 @@ public class Eval implements ExpType, Plugin {
 
     Iterable<Edge> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
         DatatypeValue res = getVisitor().produce(this, gNode, edge);
+        if (res == null) {
+            return null;
+        }
         if (res.getObject() != null && (res.getObject() instanceof Iterable)) {
             return new IterableEntity((Iterable)res.getObject());
         }
@@ -3231,7 +3235,7 @@ public class Eval implements ExpType, Plugin {
         if (!match.match(qEdge, edge, memory)) {
             return false;
         }
-        if (gNode == null) {
+        if (gNode == null || graphNode == null) {
             return true;
         }
         return match.match(gNode, graphNode, memory);

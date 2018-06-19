@@ -20,6 +20,7 @@ public interface ProcessVisitor {
     
     default void setProcessor(Eval e) {}
     
+    default void init(Query q) {}
     
     default DatatypeValue before(Query q) { return null; }
     

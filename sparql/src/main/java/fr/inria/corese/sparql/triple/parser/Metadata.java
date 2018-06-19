@@ -37,16 +37,16 @@ public class Metadata extends ASTObject
     public static final int ENCODING= 20;
     public static final int DB      = 21;
     public static final int DB_FACTORY = 22;
-    public static final int BGP     = 23;
+    public static final int ALGEBRA     = 23;
     public static final int BOUNCE  = 24;
     public static final int SPARQL10  = 25;
     
     public static final int EVENT   = 50;
-    public static final int BEFORE  = 51;
-    public static final int AFTER   = 52;
-    public static final int PRODUCE = 53;
-    public static final int RESULT  = 54;
-    public static final int STATEMENT= 55;
+//    public static final int BEFORE  = 51;
+//    public static final int AFTER   = 52;
+//    public static final int PRODUCE = 53;
+//    public static final int RESULT  = 54;
+//    public static final int STATEMENT= 55;
 
     // uncertainty triple metadata
     public static final int METADATA  = 70;
@@ -77,31 +77,7 @@ public class Metadata extends ASTObject
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
     public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
-    
-    public static final String META_BEFORE   = "@before";
-    public static final String META_AFTER    = "@after";
-    public static final String META_PRODUCE  = "@produce";
-    public static final String META_RESULT   = "@result";
-    public static final String META_STATEMENT= "@statement";
-    public static final String META_CANDIDATE= "@candidate";
-    public static final String META_PATH     = "@path";
-    public static final String META_STEP     = "@step";
-    public static final String META_VALUES   = "@values";
-    public static final String META_BIND     = "@bind";
-    public static final String META_BGP      = "@bgp";
-    public static final String META_JOIN     = "@join";
-    public static final String META_OPTIONAL = "@optional";
-    public static final String META_MINUS    = "@minus";
-    public static final String META_UNION    = "@union";
-    public static final String META_FILTER   = "@filter";
-    public static final String META_SELECT   = "@select";
-    public static final String META_FEDERATE = "@federate";
-    public static final String META_QUERY    = "@query";
-    public static final String META_GRAPH    = "@graph";
-    public static final String META_AGGREGATE= "@aggregate";
-    public static final String META_HAVING   = "@having";
-    public static final String META_FUNCTION = "@function";
-        
+             
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
     
@@ -137,16 +113,16 @@ public class Metadata extends ASTObject
         define("@skip",     SKIP);      
         define("@db",       DB);      
         define("@dbfactory",DB_FACTORY);      
-        define("@bgp",      BGP); 
+        define("@algebra",  ALGEBRA); 
         define("@metadata", METADATA);      
         define("@visitor",  VISITOR); 
         
         define("@event",    EVENT);  
-        define(META_BEFORE, BEFORE);  
-        define(META_AFTER,  AFTER);  
-        define(META_PRODUCE,PRODUCE);  
-        define(META_RESULT, RESULT);         
-        define(META_STATEMENT, STATEMENT);  
+//        define(META_BEFORE, BEFORE);  
+//        define(META_AFTER,  AFTER);  
+//        define(META_PRODUCE,PRODUCE);  
+//        define(META_RESULT, RESULT);         
+//        define(META_STATEMENT, STATEMENT);  
     }
     
     static void define(String str, int type){

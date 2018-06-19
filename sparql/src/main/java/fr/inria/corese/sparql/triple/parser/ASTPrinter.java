@@ -294,11 +294,11 @@ public class ASTPrinter {
             sb.nl();
         }
         
-        for (Expression fun : ast.getDefineLambda().getFunList()) {
-            sb.nl();
-            fun.toString(sb);
-            sb.nl();
-        }
+//        for (Expression fun : ast.getDefineLambda().getFunList()) {
+//            sb.nl();
+//            fun.toString(sb);
+//            sb.nl();
+//        }
     }
 
     /**

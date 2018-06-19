@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 
 /**
  *
@@ -26,7 +27,10 @@ public class Sequence extends TermEval {
         IDatatype res = TRUE;
         for (Expression exp : getArgs()) {
             res = exp.eval(eval, b, env, p);
-                if (b.isResult()) { 
+            if (res == null) {
+                return null;
+            }
+            if (b.isResult()) {
                 return res;
             }
         }
@@ -38,6 +42,19 @@ public class Sequence extends TermEval {
         if (getArity() > 0){
             getArg(getArity() - 1).tailRecursion(fun);
         }
+    }
+    
+    @Override
+    public ASTBuffer toString(ASTBuffer sb) {
+        int i = 0;
+        for (Expression exp : getArgs()) {
+            if (i++ > 0) {
+                sb.append(" ;");
+                sb.nl();
+            }
+            exp.toString(sb);
+        }
+        return sb;
     }
    
 }

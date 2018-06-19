@@ -680,17 +680,14 @@ public class Term extends Expression {
     String paren(String s) {
         return "(" + s + ")";
     }
-
+    
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
 
         if (getName() == null) {
             return sb;
         }
-        if (getName().equals(Processor.SEQUENCE)) {
-            return funSequence(sb);
-        }
-
+        
         if (getName().equals(EXIST)) {
             return funExist(sb);
         }
@@ -766,19 +763,7 @@ public class Term extends Expression {
         sb.append(")");
         return sb;
     }
-
-    ASTBuffer funSequence(ASTBuffer sb) {
-        if (getArgs().size() >= 1) {
-            getArg(0).toString(sb);
-        }
-        for (int i = 1; i < getArgs().size(); i++) {
-            sb.append(";");
-            sb.append(NL);
-            getArg(i).toString(sb);
-        }
-        return sb;
-    }
-
+    
     public String javaName() {
         return NSManager.nstrip(getName());
     }

@@ -253,7 +253,7 @@ public class Expression extends TopExp
     public boolean isFunction() {
         return false;
     }
-
+        
     @Override
     public boolean isFuncall() {
         return false;

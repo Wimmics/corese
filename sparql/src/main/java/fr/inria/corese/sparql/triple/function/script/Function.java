@@ -105,8 +105,7 @@ public class Function extends Statement {
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
         if (isLambda()) {
-            sb.append(getLabel(), " ");
-            getFunction().toString(sb);
+           lambda(sb);
         } else {
             sb.append(getLabel(), " ");
             getFunction().toString(sb);
@@ -115,6 +114,19 @@ public class Function extends Statement {
         sb.nlincr();
         getBody().toString(sb);
         sb.nldecr().append("}");
+        return sb;
+    }
+    
+    ASTBuffer lambda(ASTBuffer sb) {
+        sb.append("lambda(");
+        int i = 0;
+        for (Expression var : getSignature().getArgs()) {
+            if (i++ > 0) {
+                sb.append(", ");
+            }
+            sb.append(var);
+        }
+        sb.append(")");
         return sb;
     }
     

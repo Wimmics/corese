@@ -6,72 +6,71 @@ import java.util.ArrayList;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 
 /**
- * 
+ *
  * @author corby
  *
  */
 public class Values extends Exp {
-	
-	private List<Variable> lvar;
-	private List<List<Constant>> lval;
-        private Expression exp;
-        Exp bind;
-        private boolean moved = false;
-	
-	Values(List<Variable> var, List<List<Constant>> lval){
-		
-	}
-	
-	Values(){
-		lval = new ArrayList ();
-	}
-	
-	
-	public static Values create(List<Variable> var, List<Constant> val){
-		Values vv = new Values();
-		vv.setVariables(var);
-		vv.addValues(val);
-		return vv;
-	}
-        
-        public static Values create(Variable var, List<Constant> val){
-		Values vv = new Values();
-                
-                ArrayList<Variable> varList = new ArrayList<>();
-                varList.add(var);
-		vv.setVariables(varList);
-                
-                for (Constant cst : val){
-                    ArrayList<Constant> list = new ArrayList<>();
-                    list.add(cst);
-                    vv.addValues(list);
-                }
-                
-		return vv;
-	}
-        
-        public static Values create(Variable var, Constant val){
-		Values vv = new Values();
-                ArrayList<Variable> lvar = new ArrayList<>();
-                lvar.add(var);
-                ArrayList<Constant> lval = new ArrayList<>();
-                lval.add(val);
-		vv.setVariables(lvar);
-		vv.addValues(lval);
-		return vv;
-	}
-	
-	public static Values create(){
-		return new Values();
-	}
-        
-        @Override
-        public Values copy() {
-            return this;
+
+    private List<Variable> lvar;
+    private List<List<Constant>> lval;
+    private Expression exp;
+    Exp bind;
+    private boolean moved = false;
+
+    Values(List<Variable> var, List<List<Constant>> lval) {
+
+    }
+
+    Values() {
+        lval = new ArrayList();
+    }
+
+    public static Values create(List<Variable> var, List<Constant> val) {
+        Values vv = new Values();
+        vv.setVariables(var);
+        vv.addValues(val);
+        return vv;
+    }
+
+    public static Values create(Variable var, List<Constant> val) {
+        Values vv = new Values();
+
+        ArrayList<Variable> varList = new ArrayList<>();
+        varList.add(var);
+        vv.setVariables(varList);
+
+        for (Constant cst : val) {
+            ArrayList<Constant> list = new ArrayList<>();
+            list.add(cst);
+            vv.addValues(list);
         }
-	
-        @Override
-	   public ASTBuffer toString(ASTBuffer sb) {
+
+        return vv;
+    }
+
+    public static Values create(Variable var, Constant val) {
+        Values vv = new Values();
+        ArrayList<Variable> lvar = new ArrayList<>();
+        lvar.add(var);
+        ArrayList<Constant> lval = new ArrayList<>();
+        lval.add(val);
+        vv.setVariables(lvar);
+        vv.addValues(lval);
+        return vv;
+    }
+
+    public static Values create() {
+        return new Values();
+    }
+
+    @Override
+    public Values copy() {
+        return this;
+    }
+
+    @Override
+    public ASTBuffer toString(ASTBuffer sb) {
         String SPACE = " ";
         String NL = ASTQuery.NL;
 
@@ -86,75 +85,80 @@ public class Values extends Exp {
         sb.append(KeywordPP.CLOSE_PAREN);
 
         sb.append(KeywordPP.OPEN_BRACKET);
-        sb.incr();
+        if (exp == null) {
+            sb.incr();
+            for (List<Constant> list : getValues()) {
+                sb.nl();
+                sb.append(KeywordPP.OPEN_PAREN);
 
-        for (List<Constant> list : getValues()) {
-            sb.nl();
-            sb.append(KeywordPP.OPEN_PAREN);
-
-            for (Constant value : list) {
-                if (value == null) {
-                    sb.append(KeywordPP.UNDEF);
-                } else {
-                    sb.append(value);
+                for (Constant value : list) {
+                    if (value == null) {
+                        sb.append(KeywordPP.UNDEF);
+                    } else {
+                        sb.append(value);
+                    }
+                    sb.append(SPACE);
                 }
-                sb.append(SPACE);
+                sb.append(KeywordPP.CLOSE_PAREN);
             }
-            sb.append(KeywordPP.CLOSE_PAREN);
+            sb.nldecr();
+
+        } else {
+            sb.append(SPACE);
+            exp.toString(sb);
+            sb.append(SPACE);
         }
-        sb.nldecr();
         sb.append(KeywordPP.CLOSE_BRACKET);
-        //sb.nl();
         return sb;
     }
-        
-        @Override
-        void getVariables(List<Variable> list) {
-            for (Variable var : getVariables()) {
-                add(var, list);
+
+    @Override
+    void getVariables(List<Variable> list) {
+        for (Variable var : getVariables()) {
+            add(var, list);
+        }
+    }
+
+    @Override
+    public boolean isValues() {
+        return true;
+    }
+
+    public void setVariables(List<Variable> lvar) {
+        this.lvar = lvar;
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        return lvar;
+    }
+
+    void setValues(List<List<Constant>> lval) {
+        this.lval = lval;
+    }
+
+    public void addValues(List<Constant> l) {
+        lval.add(l);
+    }
+
+    public void addExp(Expression exp) {
+        setExp(exp);
+    }
+
+    public List<List<Constant>> getValues() {
+        return lval;
+    }
+
+    @Override
+    public boolean validate(ASTQuery ast, boolean exist) {
+        for (Variable var : getVariables()) {
+            ast.bind(var);
+            if (!exist) {
+                ast.defSelect(var);
             }
         }
-	
-        @Override
-	public boolean isValues(){
-		return true;
-	}
-
-	public void setVariables(List<Variable> lvar) {
-		this.lvar = lvar;
-	}
-
-        @Override
-	public List<Variable> getVariables() {
-		return lvar;
-	}
-
-	void setValues(List<List<Constant>> lval) {
-		this.lval = lval;
-	}
-	
-	public void addValues(List<Constant> l) {
-		lval.add(l);
-	}
-        
-        public void addExp(Expression exp) {
-            setExp(exp);
-	}
-
-	public List<List<Constant>> getValues() {
-		return lval;
-	}
-	
-        @Override
-	public boolean validate(ASTQuery ast, boolean exist){
-		for (Variable var : getVariables()){
-			ast.bind(var);
-			if (! exist){
-				ast.defSelect(var);
-			}
-		}
-		return true;
-	}
+        return true;
+    }
 
     /**
      * @return the moved
@@ -183,8 +187,8 @@ public class Values extends Exp {
     public void setExp(Expression exp) {
         this.exp = exp;
     }
-    
-    public boolean hasExpression(){
+
+    public boolean hasExpression() {
         return exp != null;
     }
 
@@ -201,6 +205,5 @@ public class Values extends Exp {
     public void setBind(Exp bind) {
         this.bind = bind;
     }
-
 
 }

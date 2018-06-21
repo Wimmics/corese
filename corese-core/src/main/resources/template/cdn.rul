@@ -153,13 +153,13 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  cn:date(?date, ?topic) {
 
-  group { ?uri ; separator = "<br/>" } 
+  group { ?uri  ; separator = "<br/>" } 
 
 }
 where {
 
  graph ?g { [] cn:topic ?topic . 
-	    { ?uri cn:date ?date } union { ?uri cn:begin ?date }
+	    {  ?uri cn:date ?date } union {  ?uri cn:begin ?date }
 	  }
  
 }
@@ -331,11 +331,11 @@ template cn:row(?d) {
 
 }
 where {  
-  bind (unnest(st:get(st:topic)) as ?topicList)
+  values ?topicList { unnest(st:get(st:topic)) }
   bind (kg:number() as ?n)
-  bind (unnest(?topicList) as ?topic) 
+  values ?topic  { unnest(?topicList) }
 }
-group by ?topicList
+group by ?n
 order by ?n
 ]]>
 </body>

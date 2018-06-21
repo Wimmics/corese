@@ -424,7 +424,7 @@ sw:body (
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/hturtle#result>]
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/rdfxml#result>]
     [a sw:Transformation ; sw:uri <http://ns.inria.fr/sparql-template/json#result>]
-    [a sw:Template       ; sw:uri <query/tabletemplategraph.rq>]
+    #[a sw:Template       ; sw:uri <query/tabletemplategraph.rq>]
     )
   ]
   

@@ -15,9 +15,9 @@ template cn:row(?d) {
 
 }
 where {  
-  bind (unnest(st:get(st:topic)) as ?topicList)
+  values ?topicList { unnest(st:get(st:topic)) }
   bind (kg:number() as ?n)
-  bind (unnest(?topicList) as ?topic) 
+  values ?topic  { unnest(?topicList) }
 }
 group by ?topicList
 order by ?n

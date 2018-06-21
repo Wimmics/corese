@@ -86,17 +86,11 @@ public class Group implements Comparator<Mappings> {
             if (isDistinct) {
                 return compareDistinct(m1, m2);
             }
-            for (int i = 0; i < size; i++) {
-                Node qNode = list.get(i);
-                int res = compare(m1.getGroupBy(qNode, i), m2.getGroupBy(qNode, i));
-                if (res != 0) {
-                    return res;
-                }
-            }
-            return 0;
+            
+            return compareGroup(m1, m2);
         }
 
-        public int compareExtend(Mapping m1, Mapping m2) {
+        int compareExtend(Mapping m1, Mapping m2) {
             Node[] g1 = m1.getGroupNodes();
             Node[] g2 = m2.getGroupNodes();
 
@@ -109,9 +103,20 @@ public class Group implements Comparator<Mappings> {
             return 0;
         }
 
-        public int compareDistinct(Mapping m1, Mapping m2) {
+        int compareDistinct(Mapping m1, Mapping m2) {
             for (int i = 0; i < size; i++) {
                 int res = compare(m1.getDistinctNode(i), m2.getDistinctNode(i));
+                if (res != 0) {
+                    return res;
+                }
+            }
+            return 0;
+        }
+        
+        int compareGroup(Mapping m1, Mapping m2) {
+            for (int i = 0; i < size; i++) {
+                Node qNode = list.get(i);
+                int res = compare(m1.getGroupBy(qNode, i), m2.getGroupBy(qNode, i));
                 if (res != 0) {
                     return res;
                 }

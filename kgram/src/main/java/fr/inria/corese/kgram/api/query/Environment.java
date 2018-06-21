@@ -106,23 +106,6 @@ public interface Environment {
 	
 	int count();
 	
-
-	/**
-	 * Return the max value of query node in every mapping.
-	 * Take group by into account if any
-	 * @param qNode
-	 * @return
-	 */
-	//Node max(Node qNode);
-	
-	/**
-	 * Return the min value of query node in every mapping.
-	 * Take group by into account if any
-	 * @param qNode
-	 * @return
-	 */
-	//Node min(Node qNode);
-	
 	/**
 	 * Run the eval function of the evaluator with filter f on every Mapping 
 	 * use case: select sum(?x) as ?sum
@@ -153,6 +136,8 @@ public interface Environment {
         Node[] getQueryNodes();
         
         Mappings getMappings();
+        
+        Mapping getMapping();
         
         Iterable<Mapping> getAggregate();
         

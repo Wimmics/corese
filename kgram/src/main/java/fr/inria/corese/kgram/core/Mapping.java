@@ -39,7 +39,7 @@ import java.util.Set;
 public class Mapping
         extends EnvironmentImpl
         implements Result, Environment, Pointerable {
- 
+
     static final Edge[] emptyEdge = new Edge[0];
     static final Edge[] emptyEntity = new Edge[0];
     static final Node[] emptyNode = new Node[0];
@@ -52,6 +52,7 @@ public class Mapping
             oNodes,
             // group by
             gNodes;
+    private Node result;
     Node[] distinct, group;
     Mappings lMap;
     HashMap<String, Node> values;
@@ -1302,4 +1303,20 @@ public class Mapping
     public void setGraphNode(Node graphNode) {
         this.graphNode = graphNode;
     }
+    
+     /**
+     * @return the result
+     */
+    public Node getResult() {
+        return result;
+    }
+
+    /**
+     * @param result the result to set
+     */
+    public void setResult(Node result) {
+        this.result = result;
+    }
+ 
+ 
 }

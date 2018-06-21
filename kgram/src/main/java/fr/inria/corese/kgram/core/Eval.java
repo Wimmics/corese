@@ -3200,7 +3200,10 @@ public class Eval implements ExpType, Plugin {
                 if (hasEvent) {
                     send(Event.RESULT, ans);
                 }
-                boolean b = getVisitor().result(this, results, ans);
+                boolean b = true;
+                if (! isSubEval) {
+                    b = getVisitor().result(this, results, ans);
+                }
                 if (b) {
                     results.add(ans);
                 }

@@ -57,6 +57,7 @@ public class Memory extends PointerObject implements Environment {
     Node gNode;
     // to evaluate aggregates such as count(?x)
     Mappings results, group, join;
+    Mapping mapping;
     // true when processing aggregate at the end 
     boolean isAggregate = false;
     private boolean isFake = false,
@@ -396,7 +397,7 @@ public class Memory extends PointerObject implements Environment {
         Node[] qnode = new Node[nb], tnode = new Node[nb];
         // order by
         Node[] snode = new Node[q.getOrderBy().size()],
-                gnode = new Node[q.getGroupBy().size()];
+               gnode = new Node[q.getGroupBy().size()];
 
         int n = 0, i = 0;
         if (isEdge) {
@@ -423,10 +424,12 @@ public class Memory extends PointerObject implements Environment {
             }
             i++;
         }
-
+        
+        Mapping map = null;
+        
         if (complete) {
             if (subEval) {
-                if (func) {
+                if (func) {                    
                     orderGroup(q.getOrderBy(), snode, p);
                     orderGroup(q.getGroupBy(), gnode, p);
                 }
@@ -441,7 +444,10 @@ public class Memory extends PointerObject implements Environment {
                         Node node = null;
                         boolean isBound = isBound(e.getNode());
 
-                        if (!e.isAggregate()) {
+                        if (e.isAggregate()) {
+                            // do nothing
+                        }
+                        else {
                             node = eval.eval(f, this, p);
                             kgram.getVisitor().select(kgram, f.getExp(), node==null?null:node.getDatatypeValue());
                             // bind fun(?x) as ?y
@@ -478,6 +484,10 @@ public class Memory extends PointerObject implements Environment {
                     }
                 }
 
+                map = new Mapping(qedge, tedge, qnode, tnode);
+                mapping = map;
+                map.init();   
+                // order/group by may access mapping with xt:result()
                 orderGroup(q.getOrderBy(), snode, p);
                 orderGroup(q.getGroupBy(), gnode, p);
 
@@ -490,12 +500,26 @@ public class Memory extends PointerObject implements Environment {
                 }
             }
         }
-        Mapping map = new Mapping(qedge, tedge, qnode, tnode);
-        map.init();
+        
+        if (map == null) {
+            map = new Mapping(qedge, tedge, qnode, tnode);
+            mapping = map;
+        }
         map.setOrderBy(snode);
         map.setGroupBy(gnode);
         clear();
+        mapping = null;
         return map;
+    }
+    
+    @Override
+    public Mapping getMapping() {
+        return mapping;
+    }
+    
+    @Override
+    public int size() {
+        return nbNode;
     }
 
     /**

@@ -47,6 +47,7 @@ public class Processor {
 	public static final String XT_MEMBER   = EXT+"member";
 	public static final String XT_MERGE    = EXT+"merge";
 	public static final String XT_SORT     = EXT+"sort";
+	public static final String XT_RESULT   = EXT+"result";
         
 	public static final String IN  	 = "in";
 
@@ -639,6 +640,7 @@ public class Processor {
 		defoper(XT_APPEND,      ExprType.XT_APPEND);
 		defoper(XT_MERGE,       ExprType.XT_MERGE);
 		defoper(XT_SORT,        ExprType.XT_SORT);
+		defoper(XT_RESULT,      ExprType.XT_RESULT);
                 
                 
 		defoper(JAVACALL,          ExprType.JAVACALL);                

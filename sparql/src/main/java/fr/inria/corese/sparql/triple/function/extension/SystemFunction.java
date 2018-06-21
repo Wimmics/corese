@@ -34,6 +34,9 @@ public class SystemFunction extends TermEval {
             
             case ExprType.ENV: 
                 return DatatypeMap.createObject(env);
+                
+            case ExprType.XT_RESULT: 
+                return DatatypeMap.createObject(env.getMapping());   
         }
         
         return TRUE;

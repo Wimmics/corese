@@ -31,8 +31,7 @@ public class ListUnary extends TermEval {
         }
         switch (oper()){
             case ExprType.XT_FIRST:    return DatatypeMap.first(list);
-            case ExprType.XT_REST:     return DatatypeMap.rest(list);
-            case ExprType.XT_SORT:     return DatatypeMap.sort(list);
+            case ExprType.XT_REST:     return DatatypeMap.rest(list);           
             case ExprType.XT_REVERSE:  return DatatypeMap.reverse(list);                          
         }
         return null;

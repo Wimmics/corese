@@ -369,10 +369,11 @@ public class Term extends Expression {
             case ExprType.XT_GET:
                 return new Get(name);
             case ExprType.XT_REVERSE:
-            case ExprType.XT_SORT:
             case ExprType.XT_FIRST:
             case ExprType.XT_REST:
                 return new ListUnary(name);
+            case ExprType.XT_SORT:
+                return new ListSort(name);
             case ExprType.LIST:
                 return new ListTerm(name);
             case ExprType.XT_MAP:
@@ -402,6 +403,7 @@ public class Term extends Expression {
             case ExprType.DEBUG:
             case ExprType.SLICE:
             case ExprType.ENV:    
+            case ExprType.XT_RESULT:    
                 return new SystemFunction(name);
 
             case ExprType.INDEX:

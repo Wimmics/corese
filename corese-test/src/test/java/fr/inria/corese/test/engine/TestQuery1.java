@@ -70,9 +70,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 
-    static String data  = Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/";
-    static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query").getPath() + "/";
-    static String text  = Thread.currentThread().getContextClassLoader().getResource("text").getPath() + "/";
+    static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
+    static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query/").getPath() ;
+    static String text  = Thread.currentThread().getContextClassLoader().getResource("text/").getPath() ;
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
@@ -141,6 +141,133 @@ public class TestQuery1 {
 
         return graph;
     }
+    
+    
+      @Test 
+    public void testDistinct() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+        String i = "insert data {"
+                + "us:Jack owl:sameAs us:John ."
+                + "us:John owl:sameAs us:Jack ."
+                + "us:Jack foaf:knows us:Jim, us:Jesse ."
+                + "us:John foaf:knows us:James, us:Jesse ."
+                + "}";
+        
+          String q = "@event "
+                  + "select * "
+                  + "where {"
+                  + "  ?a owl:sameAs ?b"
+                  + "  {?a foaf:knows ?x} union {?b foaf:knows ?x}"
+                  + "}"
+
+                  + "@distinct "
+                  + "function us:distinct(?m) {"
+                  + "    let ((?a ?b ?x) = ?m) {"
+                  + "        us:key(xt:add(xt:sort(xt:list(?a, ?b)), ?x))"
+                  + "    }"
+                  + "}"
+                                
+                  + "function us:key(?l) {"
+                  + "    reduce(rq:concat, maplist(lambda(?e) { concat(xt:index(?e), '.') }, ?l))"
+                  + "}"
+                  + "";
+
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(3, map.size());
+    }
+     
+    
+       @Test
+    public void testOrderby() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        
+         String i = "insert data {"
+                 + "graph us:g1 { "
+                 + "us:Jack foaf:name 'Jack'    ; "
+                 + "foaf:knows us:Jim, us:Jesse "
+                 + "}"
+                 + "graph us:g2 { "
+                 + "us:Jim foaf:knows us:Jack, us:James . "
+                 + "us:James foaf:name 'James' ; foaf:knows us:Jesse "
+                 + "}"
+                 + "}";
+        
+        String q = "@event "
+                + "select *"
+                + "where {"
+                + "  ?a foaf:knows ?y optional {?y foaf:name ?n}"
+                + "}"
+               
+                + "@orderby  "
+                + "function us:comparemap2(?m1, ?m2) {"
+                + "    us:revcompare(xt:size(?m1) , xt:size(?m2))"
+                + "}"
+                              
+                + "function us:compare(?x, ?y) {"
+                + "    if (?x < ?y, -1, if (?x = ?y, 0, 1))"
+                + "}"
+
+                + "function us:revcompare(?x, ?y) {"
+                + "    if (?x < ?y, 1, if (?x = ?y, 0, -1))"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int j = 1;
+        for (Mapping m : map) {
+            assertEquals( (j++ > 2) ? 2 : 3, m.size());
+        }
+    }
+     
+    @Test
+    public void testOrderby2() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        
+         String i = "insert data {"
+                 + "graph us:g1 { "
+                 + "us:Jack foaf:name 'Jack'    ; "
+                 + "foaf:knows us:Jim, us:Jesse "
+                 + "}"
+                 + "graph us:g2 { "
+                 + "us:Jim foaf:knows us:Jack, us:James . "
+                 + "us:James foaf:name 'James' ; foaf:knows us:Jesse "
+                 + "}"
+                 + "}";
+        
+        String q = "@event "
+                + "select *"
+                + "where {"
+                + "  ?a foaf:knows ?y optional {?y foaf:name ?n}"
+                + "}"
+               
+                + "@after "
+                + "function us:after(?map){"
+                + "xt:sort(?map, us:comparemap2)"
+                + "}  "
+                
+                + "function us:comparemap2(?m1, ?m2) {"
+                + "    us:revcompare(xt:size(?m1) , xt:size(?m2))"
+                + "}"
+                              
+                + "function us:compare(?x, ?y) {"
+                + "    if (?x < ?y, -1, if (?x = ?y, 0, 1))"
+                + "}"
+
+                + "function us:revcompare(?x, ?y) {"
+                + "    if (?x < ?y, 1, if (?x = ?y, 0, -1))"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int j = 1;
+        for (Mapping m : map) {
+            assertEquals( (j++ > 2) ? 2 : 3, m.size());
+        }
+    }
+
     
     @Test
     public void testMap3() throws EngineException, LoadException {

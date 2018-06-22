@@ -174,7 +174,8 @@ public class Eval implements ExpType, Plugin {
         producer.start(q);
         getVisitor().init(q);
         getVisitor().before(q);        
-        Mappings map = eval(null, q, m);
+        Mappings map = eval(null, q, m);        
+        getVisitor().orderby(map);
         getVisitor().after(map);
 
         producer.finish(q);
@@ -3202,7 +3203,10 @@ public class Eval implements ExpType, Plugin {
                 }
                 boolean b = true;
                 if (! isSubEval) {
-                    b = getVisitor().result(this, results, ans);
+                    b = getVisitor().distinct(ans);
+                    if (b) {
+                        b = getVisitor().result(this, results, ans);
+                    }
                 }
                 if (b) {
                     results.add(ans);

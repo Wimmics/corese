@@ -348,6 +348,7 @@ public interface ExprType {
         public static int XT_LAST        = 455;
         public static int XT_MAP         = 456;
         public static int XT_RESULT      = 457;
+        public static int XT_COMPARE     = 458;
      
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

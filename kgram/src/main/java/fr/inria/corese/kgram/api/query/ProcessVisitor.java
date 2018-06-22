@@ -26,7 +26,10 @@ public interface ProcessVisitor {
     
     default DatatypeValue after(Mappings map) { return null; }
     
+    default DatatypeValue orderby(Mappings map) { return null; }
     
+    default boolean distinct(Mapping map) { return true; }
+
     default DatatypeValue produce(Eval eval, Node g, Edge edge) { return null; }
     
     default DatatypeValue candidate(Eval eval, Node g, Edge q, Edge e) { return null;}

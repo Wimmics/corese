@@ -222,6 +222,10 @@ public class Mappings extends PointerObject
     public Mapping get(int n) {
         return list.get(n);
     }
+    
+    public Mapping set(int n, Mapping m) {
+        return list.set(n, m);
+    }
 
     void remove(int n) {
         list.remove(n);

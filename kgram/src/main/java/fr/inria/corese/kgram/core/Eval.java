@@ -2115,26 +2115,15 @@ public class Eval implements ExpType, Plugin {
 
         if (serv.isVariable()) {
             node = env.getNode(serv);
-//            if (node == null) {
-//                logger.error("Service variable unbound: " + serv);
-//                return backtrack;
-//            }
         }
 
         if (provider != null) {
-//            StopWatch sw = new StopWatch();
-//            sw.start();
             // service delegated to provider
-            // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
-            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env, p);
-            getVisitor().service(this, getGraphNode(gNode), exp, lMap);
+            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), this);
             
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
-                // draft test:
-                //submit(map);
-                // remove comment:
                 if (env.push(map, n, false)) {
                     backtrack = eval(gNode, stack, n + 1);
                     env.pop(map, false);
@@ -2143,8 +2132,6 @@ public class Eval implements ExpType, Plugin {
                     }
                 }
             }
-//            sw.stop();
-//            logger.info("\n\tSERVICE in " + sw.getTime() + "ms.  \n\tFOR " + exp.rest().getExpList() + "\n");
         } else {
             Query q = exp.rest().getQuery();
             return query(p, gNode, q, stack, n);
@@ -2158,9 +2145,6 @@ public class Eval implements ExpType, Plugin {
         for (Node node : map.getQueryNodes()) {
             Node out = q.getOuterNode(node);
             map.getQueryNodes()[i] = out;
-//            if (out != null) {
-//                map.getQueryNodes()[i] = out;
-//            }
             i++;
         }
     }

@@ -57,7 +57,7 @@ public interface ProcessVisitor {
     
     default DatatypeValue query(Eval eval, Node g, Exp e, Mappings m) { return null; }    
 
-    default DatatypeValue service(Eval eval, Node g, Exp e, Mappings m) { return null; }  
+    default DatatypeValue service(Eval eval, Node s, Exp e, Mappings m) { return null; }  
        
     default DatatypeValue values(Eval eval, Node g, Exp e, Mappings m) { return null; }  
     

@@ -217,8 +217,8 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     
     @Override
-    public IDatatype service(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, FEDERATE, toArray(g, e, m));
+    public IDatatype service(Eval eval, Node s, Exp e, Mappings m) {       
+        return callback(eval, FEDERATE, toArray(s, e, m));
     }
     
     @Override

@@ -651,6 +651,15 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype newList(List<IDatatype> l) {
         return new CoreseList(l);
     }
+    
+    public static IDatatype toList(List<Node> list) {
+        ArrayList<IDatatype> l = new ArrayList<>();
+        for (Node node : list) {
+            l.add((IDatatype) node.getDatatypeValue());
+        }
+        return DatatypeMap.newList(l);
+    }
+    
 
     public static IDatatype newIterate(int start, int end) {
         return newIterate(start, end, 1);

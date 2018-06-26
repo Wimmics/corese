@@ -152,8 +152,9 @@ public class Metadata extends ASTObject
         return sb.toString();
     }
        
-    public void add(String str){
+    public Metadata add(String str){
         map.put(str, str);
+        return this;
     }
     
     public Metadata add(int type){
@@ -285,7 +286,7 @@ public class Metadata extends ASTObject
         return i;
     }
     
-    String name(int type){
+    public String name(int type){
         return  back.get(type);       
     }
     

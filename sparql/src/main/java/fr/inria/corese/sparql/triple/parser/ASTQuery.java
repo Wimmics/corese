@@ -348,6 +348,10 @@ public class ASTQuery
     public void setDefine(ASTExtension define) {
         this.define = define;
     }
+    
+     public void setDefineLambda(ASTExtension define) {
+        this.lambdaDefine = define;
+    }
 
     /**
      * @return the undefined

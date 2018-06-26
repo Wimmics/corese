@@ -242,8 +242,10 @@ public class ProviderImpl implements Provider {
             
             sol = null;
         }
-                
-        eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
+        
+        if (list.size() > 1) {
+            eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
+        }
         g.getEventManager().finish(Event.Service);
         return res;
     }
@@ -330,7 +332,9 @@ public class ProviderImpl implements Provider {
                     res.add(sol);
                 }
             }
-            eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
+            if (list.size() > 1) {
+                eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
+            }
             g.getEventManager().finish(Event.Service);
             return res;
         }

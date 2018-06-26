@@ -37,7 +37,7 @@ public class MapFunction extends Funcall {
         if (name == null || param == null) {
             return null;
         }
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        Function function = getFunction(eval, env, name.stringValue(), param.length);
         if (function == null) {
             return null;
         }

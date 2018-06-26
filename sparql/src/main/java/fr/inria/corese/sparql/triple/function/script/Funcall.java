@@ -40,11 +40,23 @@ public class Funcall extends TermEval {
             param = (IDatatype[]) param[0].getValueList().toArray();
         }
 
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        Function function = getFunction(eval, env, name.stringValue(), param.length);
         if (function == null) {
             return null;
         }
         return call(eval, b, env, p, function, param);
+    }
+    
+    Function getFunction(Computer eval, Environment env, String name, int n) {
+        Function function = (Function) eval.getDefineGenerate(this, env, name, n);
+        if (function == null) {
+            eval.getEval().getSPARQLEngine().getLinkedFunction(name);
+            function = (Function) eval.getDefineGenerate(this, env, name, n);
+            if (function == null) {
+                logger.error("Undefined function: " + name);
+            }
+        }
+        return function;
     }
 
     public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param) {

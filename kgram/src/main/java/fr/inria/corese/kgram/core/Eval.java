@@ -189,7 +189,7 @@ public class Eval implements ExpType, Plugin {
     public void finish(Query q, Mappings map) {
     }
 
-    private Mappings eval(Node gNode, Query q, Mapping map) {
+    public Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
         if (q.isValidate()) {
             // just compile and complete query
@@ -1258,47 +1258,6 @@ public class Eval implements ExpType, Plugin {
         }
         mem.setJoinMappings(map);
     }
-    
-    /**
-     * Use case: federated query, service clause
-     * Eval exp in the context of partial solution Mappings
-     * first case
-     * main = join(A, B) ; exp = B ; B contains service clause
-     * eval(A) = Mappings map
-     * eval(B) provided with map as partial solutions to be used by service in B
-     * Mapping map is provided to eval(B) by mem.setJoinMappings(map)
-     * other patterns:
-     * main = minus(A, B) ;  main = optional(A, B)
-     * 
-     * second case
-     * context : join (A, main) ; memory has joinMappings from A   
-     * main = optional(e1, e2) ;  exp = e1 ; mem provided with Mappings from memory
-     */
-//    void joinMappings(Memory mem, Exp exp, Exp main) {
-//        switch (main.type()) {
-//            case Exp.JOIN:
-//                service(exp, mem);
-//            // continue
-//            case Exp.MINUS:
-//            case Exp.OPTIONAL:
-//                // draft test
-//                if (memory.getJoinMappings() != null && exp == main.first()) {
-//                    // use case:
-//                    // 1- join (A, and(optional(s1, s2)))
-//                    // optional in rest of join inherits Mappings of first of join
-//                    // 2- A optional { join (s1, s2) }
-//                    // join in optional inherits Mappings
-//                    mem.setJoinMappings(memory.getJoinMappings());
-//                    // clean for statements after this main
-//                    memory.setJoinMappings(null);
-//                } else {
-//                    // pragma: exp == main.rest()                   
-//                    mem.setJoinMappings(exp.getMappings());
-//                }
-//                break;
-//
-//        }
-//    }
     
     void bindExpNodeList(Memory mem, Exp exp) {
         for (Node qnode : exp.getNodeList()) {
@@ -2722,54 +2681,6 @@ public class Eval implements ExpType, Plugin {
         return ! (q.isFun() && local.containsKey(name));
     }
 
-
-//    private int node(Node gNode, Exp exp, Stack stack, int n) {
-//        int backtrack = n - 1;
-//        // enumerate candidate nodes
-//        Node qNode = exp.getNode();
-//        Memory env = memory;
-//
-//        //if (qNode == null) break;
-//        if (exp.hasArg()) {
-//            // target nodes to bind to this qnode
-//            for (Exp ee : exp) {
-//                Node node = ee.getNode();
-//                if (match.match(qNode, node, env) && env.push(qNode, node, n)) {
-//                    backtrack = eval(gNode, stack, n + 1);
-//                    env.pop(qNode);
-//                    if (backtrack < n) {
-//                        return backtrack;
-//                    }
-//                }
-//            }
-//        } else {
-//            for (Entity entity : producer.getNodes(gNode, query.getFrom(gNode), qNode, env)) {
-//
-//                if (entity != null) {
-//                    Node node = entity.getNode();
-//                    Node graph = entity.getGraph();
-//
-//                    if (match(qNode, node, gNode, graph) && push(qNode, node, gNode, graph, n)) {
-//
-//                        backtrack = eval(gNode, stack, n + 1);
-//
-//                        if (gNode != null) {
-//                            env.pop(gNode);
-//                        }
-//                        env.pop(qNode);
-//
-//                        if (backtrack < n) {
-//                            return backtrack;
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//        return backtrack;
-//    }
-
     /**
      * select * where {{select distinct ?y where {?x p ?y}} . ?y q ?z} new eval,
      * new memory, share only sub query select variables
@@ -2778,6 +2689,15 @@ public class Eval implements ExpType, Plugin {
     private int query(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         return query(p, p, gNode, exp, stack, n);
     }
+    
+    // gNode = subQuery.getGraphNode(gNode);
+    public Mappings query(Node gNode, Node node, Query query) {
+        if (gNode != null && node != null) {
+            getMemory().push(gNode, node);
+        }
+        return eval(gNode, query, null);
+    }
+    
     
     private int query(Producer p1, Producer p2, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1, evENUM = Event.ENUM;

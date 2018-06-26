@@ -14,4 +14,6 @@ public interface SPARQLEngine {
     
     Query load(String path);
     
+    void getLinkedFunction(String uri);
+    
 }

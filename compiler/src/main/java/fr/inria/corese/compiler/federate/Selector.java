@@ -188,6 +188,12 @@ public class Selector {
         
         Service service = Service.create(serv, bgp);
         aa.setBody(BasicGraphPattern.create(values, service));
+        if (ast.hasMetadata(Metadata.EVENT)) {
+            Metadata m = new Metadata().add(Metadata.EVENT);
+            aa.setMetadata(m);
+            aa.setDefine(ast.getDefine());
+            aa.setDefineLambda(ast.getDefineLambda());
+        }
         return aa;
     }
     

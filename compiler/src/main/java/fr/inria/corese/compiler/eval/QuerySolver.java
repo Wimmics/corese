@@ -871,5 +871,9 @@ public class QuerySolver  implements SPARQLEngine {
     public void setBGP(boolean BGP) {
         this.isBGP = BGP;
     }
+
+    @Override
+    public void getLinkedFunction(String uri) {
+    }
 	
 }

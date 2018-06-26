@@ -565,7 +565,7 @@ public class Transformer implements ExpType {
                 return;
             } else {
                 ok = !ast.isUserQuery()
-                        && (isLoadFunction || ast.hasMetadata(Metadata.IMPORT))
+                        && (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
                         && importFunction(q, exp);
                 if (!ok) {
                     ast.addError("undefined expression: " + exp);
@@ -576,25 +576,52 @@ public class Transformer implements ExpType {
 
     /**
      */
+//    boolean importFunction2(Query q, Expression exp) {
+//        String path = NSManager.namespace(exp.getLabel());
+//        if (loaded.containsKey(path)) {
+//            return true;
+//        }
+//        loaded.put(path, path);
+//        if (q.isDebug()) {
+//            System.out.println("Transformer: load " + exp.getLabel());
+//        }
+//
+//        Query imp = sparql.load(exp.getLabel());
+//
+//        if (imp != null && imp.hasDefinition()) {
+//            // loaded functions are exported in Interpreter  
+//            definePublic(imp.getExtension(), imp);
+//            return Interpreter.isDefined(exp);
+//        }
+//        return false;
+//    }
+    
     boolean importFunction(Query q, Expression exp) {
-        String path = NSManager.namespace(exp.getLabel());
-        if (loaded.containsKey(path)) {
-            return true;
-        }
-        loaded.put(path, path);
-        if (q.isDebug()) {
-            System.out.println("Transformer: load " + exp.getLabel());
-        }
-
-        Query imp = sparql.load(exp.getLabel());
-
-        if (imp != null && imp.hasDefinition()) {
-            // loaded functions are exported in Interpreter  
-            definePublic(imp.getExtension(), imp);
+        boolean b = getLinkedFunction(exp.getLabel());
+        if (b) {
             return Interpreter.isDefined(exp);
         }
         return false;
     }
+    
+    public boolean getLinkedFunction(String label) {
+        if (! isLinkedFunction()){
+            return false;
+        }
+        String path = NSManager.namespace(label);
+        if (loaded.containsKey(path)) {
+            return true;
+        }
+        loaded.put(path, path);
+        Query imp = sparql.load(label);
+        if (imp != null && imp.hasDefinition()) {
+            // loaded functions are exported in Interpreter  
+            definePublic(imp.getExtension(), imp);
+            return true;
+        }
+        return false;
+    }
+    
 
     /**
      * Define function into Extension Export into Interpreter

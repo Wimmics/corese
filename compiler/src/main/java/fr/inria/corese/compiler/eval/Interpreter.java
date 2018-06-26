@@ -391,6 +391,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 } else {
                     // let (?m = select where)
                     map = eval.subEval(qq, gNode, Stack.create(sub), 0);
+                    //eval.query(qq.getGraphNode(gNode), env.getNode(gNode), qq);
                 }
             } else {
                 // never happen
@@ -655,18 +656,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public int compare(Environment env, Producer p, Node n1, Node n2) {
         return proxy.compare(env, p, n1, n2);
     }
-
-    /**
-     * Use case: st:process() overloaded by an extension function
-     */
-//    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] values, Extension ext) {
-//        Expr def = ext.get(exp, values);
-//        if (def == null) {
-//            return null;
-//        }
-//        return call(exp, env, p, values, def);
-//    }
-
+  
     public static boolean isDefined(Expr exp) {
         return extension.isDefined(exp);
     }

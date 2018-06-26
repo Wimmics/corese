@@ -3,7 +3,6 @@ package fr.inria.corese.sparql.triple.function.aggregate;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.function.aggregate.Distinct.TreeData;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;

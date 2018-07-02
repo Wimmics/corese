@@ -144,6 +144,32 @@ public class TestQuery1 {
     
     
       @Test 
+    public void testApply() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);               
+         String q = "function xt:main() {"
+                 + "apply(us:test, xt:list()) + apply(us:test, xt:list(1)) + apply (us:test, xt:list(2, 3))"
+                 + "}"
+                 
+                 + "function us:test() {"
+                 + "10"
+                 + "}" 
+                 
+                 + "function us:test(?x) {"
+                 + "?x"
+                 + "}"
+                 
+                 + "function us:test(?x, ?y) {"
+                 + "?x + ?y "
+                 + "}"
+                 
+                 ;
+         
+         IDatatype dt = exec.eval(q);
+         assertEquals(16, dt.intValue());
+    }
+    
+      @Test 
     public void testDistinct() throws EngineException, LoadException {
         QueryProcess exec = QueryProcess.create();
         QueryLoad ql = QueryLoad.create();
@@ -3447,7 +3473,7 @@ public class TestQuery1 {
         String q =
                 "prefix ex: <http://ns.inria.fr/sparql-extension/aggregate#>"
                         + "select * "
-                        + "(ex:median(xt:iota(5)) as ?m)"
+                        + "(funcall(ex:median, xt:iota(5)) as ?m)"
                         + "(ex:sigma(xt:iota(5)) as ?s)"
                         + ""
                         + "where {}";
@@ -3684,14 +3710,12 @@ public class TestQuery1 {
                 + "us:test()"
                 + "}"
                 + "function us:test(){"
-                + "let ((?m) = select ?x (us:surface(?x) as ?s) where {?x a ?t}){"
-                + "let ((?s, ?x) = ?m){"
+                + "let (select ?x (us:surface(?x) as ?s) where {?x a ?t} ) {"
                // + "kg:display(?x); kg:display(?s);"
                 + "?s"
-                + "}"
                 + "}}"
                 + "function us:surface(?x){"
-                + "let ((?m) =  select * where {?x us:length ?l ; us:width ?w }, (?l, ?w) = ?m){"
+                + "let (select * where {?x us:length ?l ; us:width ?w }){"
                 + "?l * ?w}"
                 + "}";
 
@@ -3703,6 +3727,7 @@ public class TestQuery1 {
 //        IDatatype dt = (IDatatype) m.getValue("?s");
 
         IDatatype dt = exec.eval(q);
+        //System.out.println(dt);
         assertEquals(6, dt.intValue());
     }
 

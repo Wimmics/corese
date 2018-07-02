@@ -13,7 +13,7 @@ pipeline {
     }
     stage('Report') {
       steps {
-        junit(testResults: 'target/surefire-reports/*.xml', healthScaleFactor: 50)
+        junit(testResults: '**/target/surefire-reports/*.xml', healthScaleFactor: 50)
       }
     }
   }

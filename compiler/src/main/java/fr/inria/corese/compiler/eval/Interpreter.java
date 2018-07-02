@@ -391,7 +391,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 } else {
                     // let (?m = select where)
                     map = eval.subEval(qq, gNode, Stack.create(sub), 0);
-                    //eval.query(qq.getGraphNode(gNode), env.getNode(gNode), qq);
+                    // PB: below, memory is initialized with outer query, not with qq
+//                    eval.setSubEval(false);
+//                    map = eval.query(gNode==null?null:qq.getGraphNode(gNode), gNode==null?null:env.getNode(gNode), qq);
                 }
             } else {
                 // never happen

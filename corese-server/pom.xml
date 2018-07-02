@@ -107,9 +107,7 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-surefire-plugin</artifactId>
 			<configuration>
-				<systemPropertyVariables>
-					<jacocoArgLine>${jacocoArgLine}</jacocoArgLine>
-				</systemPropertyVariables>
+					<argLine>${jacocoArgLine}</argLine>
 			</configuration>
 		</plugin>
 		<plugin>

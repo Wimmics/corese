@@ -9,7 +9,7 @@ pipeline {
     stage('Test') {
       steps {
         sh 'mvn test jacoco:report-aggregate -Dmaven.test.skip=false'
-        junit(testResults: 'build/reports/**/*.xml', allowEmptyResults: true, healthScaleFactor: 50)
+        junit(testResults: 'target/surefire-reports/**/*.xml', allowEmptyResults: true, healthScaleFactor: 50)
       }
     }
   }

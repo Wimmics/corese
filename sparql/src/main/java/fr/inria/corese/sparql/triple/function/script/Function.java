@@ -60,12 +60,12 @@ public class Function extends Statement {
     }
     
     public Term getSignature(){
-        return signature; //getArg(0).getTerm();
+        return signature; 
     }
     
     @Override
     public Expression getBody() {
-        return body; //getArg(1);
+        return body; 
     }
     
     @Override

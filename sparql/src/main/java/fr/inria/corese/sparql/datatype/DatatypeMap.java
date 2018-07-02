@@ -660,6 +660,12 @@ public class DatatypeMap implements Cst, RDF {
         return DatatypeMap.newList(l);
     }
     
+    
+    public static IDatatype[] toArray(IDatatype dt) {
+        List<IDatatype> list = dt.getValueList();
+        IDatatype[] args = new IDatatype[list.size()];
+        return list.toArray(args);
+    }
 
     public static IDatatype newIterate(int start, int end) {
         return newIterate(start, end, 1);

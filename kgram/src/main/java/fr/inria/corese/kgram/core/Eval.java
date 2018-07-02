@@ -383,6 +383,19 @@ public class Eval implements ExpType, Plugin {
         //memory.setResults(save);
         return results;
     }
+    
+    /**
+     * gNode = subQuery.getGraphNode(graphName);
+     * node = env.getNode(graphName)
+     * 
+     */
+    public Mappings query(Node gNode, Node node, Query query) {
+        if (gNode != null && node != null) {
+            getMemory().push(gNode, node);
+        }
+        return eval(gNode, query, null);
+    }
+    
 
     // draft for processing EXTERN expression
     public void add(Plugin p) {
@@ -2689,15 +2702,6 @@ public class Eval implements ExpType, Plugin {
     private int query(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         return query(p, p, gNode, exp, stack, n);
     }
-    
-    // gNode = subQuery.getGraphNode(gNode);
-    public Mappings query(Node gNode, Node node, Query query) {
-        if (gNode != null && node != null) {
-            getMemory().push(gNode, node);
-        }
-        return eval(gNode, query, null);
-    }
-    
     
     private int query(Producer p1, Producer p2, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1, evENUM = Event.ENUM;

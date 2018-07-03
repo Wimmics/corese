@@ -221,8 +221,8 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             // ok
         }       
         else if (isFunctionDefinition()) {
-            ast.addError("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
-            ast.addFail(true);
+//            ast.addError("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
+//            ast.addFail(true);
             var.undef();
         }
     }

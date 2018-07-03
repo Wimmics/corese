@@ -10,7 +10,9 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -37,16 +39,20 @@ public class Binding implements Binder {
     ArrayList<Integer> level;
     int currentLevel = 0, count = 0;
     Expr current;
+    HashMap<String, IDatatype> globalValue;
+    HashMap<String, Variable>  globalVariable;
 
     private boolean debug = false;
 
-    private static Logger logger = LoggerFactory.getLogger(fr.inria.corese.kgram.core.Bind.class);
+    private static Logger logger = LoggerFactory.getLogger(Binding.class);
     private boolean result;
 
     Binding() {
         varList = new ArrayList();
         valList = new ArrayList();
         level = new ArrayList();
+        globalValue    = new HashMap<>();
+        globalVariable = new HashMap<>();
     }
 
     public static Binding create() {
@@ -69,6 +75,12 @@ public class Binding implements Binder {
             sb.append("(").append(i).append(") ");
             sb.append(varList.get(i)).append(" = ").append(valList.get(i));
             sb.append(NL);
+        }
+        if (! getGlobalVariableNames().isEmpty()) {
+            sb.append("Global:").append(NL);
+        }
+        for (String name : getGlobalVariableNames().keySet()) {
+            sb.append(name).append(" = ").append(getGlobalVariableValues().get(name)).append(NL);
         }
         return sb.toString();
     }
@@ -236,17 +248,6 @@ public class Binding implements Binder {
             push(null, null);
         }
     }
-    
-//    public void set2(Expr exp, List<Expr> lvar, IDatatype[] value) {
-//        // Parameters and local variables of this function are above level
-//        count++;
-//        allocate(exp);
-//        int i = 0;
-//        for (Expr var : lvar) {
-//            // push parameter value
-//            set(var, value[i++]);
-//        }        
-//    }
 
     void push(Expr var, IDatatype val) {
         varList.add(var);
@@ -274,9 +275,15 @@ public class Binding implements Binder {
      */
     @Override
     public IDatatype get(Expr var) {
-//        System.out.println("B: " + var);
-//        System.out.println(this);
-        return valList.get(getIndex(var));
+        switch (var.getIndex()) {
+            case UNBOUND: 
+                IDatatype dt = globalValue.get(var.getLabel());
+                if (dt == null) {
+                    logger.warn("Variable unbound: " + var);
+                }
+                return dt;
+            default:      return valList.get(getIndex(var));
+        }
     }
 
     void trace(Expr exp, IDatatype[] value) {
@@ -321,7 +328,13 @@ public class Binding implements Binder {
      * set(?x = exp) ?x is already bound, assign variable
      */
     public void bind(Expr exp, Expr var, IDatatype val) {
-        valList.set(getIndex(var), val);
+        switch (var.getIndex()) {
+            case UNBOUND:
+                globalValue.put(var.getLabel(), val); 
+                globalVariable.put(var.getLabel(), (Variable) var);
+                break;
+            default: valList.set(getIndex(var), val);
+        }       
     }
 
     @Override
@@ -350,7 +363,38 @@ public class Binding implements Binder {
                 list.add(varList.get(i));
             }
         }
+        for (Variable var : globalVariable.values()) {
+            if (! list.contains(var)) {
+                list.add(var);
+            }
+        }
         return list;
+    }
+    
+    @Override
+    public void share(Binder b) {
+        share((Binding) b);
+    }
+    
+    void share(Binding b) {
+        setGlobalVariableNames(b.getGlobalVariableNames());
+        setGlobalVariableValues(b.getGlobalVariableValues());
+    }
+    
+    public HashMap<String, Variable> getGlobalVariableNames() {
+        return globalVariable;
+    }
+    
+    public HashMap<String, IDatatype> getGlobalVariableValues() {
+        return globalValue;
+    }
+    
+    void setGlobalVariableNames(HashMap<String, Variable> m) {
+        globalVariable = m;
+    }
+    
+    void setGlobalVariableValues(HashMap<String, IDatatype> m) {
+        globalValue = m;
     }
 
     /**

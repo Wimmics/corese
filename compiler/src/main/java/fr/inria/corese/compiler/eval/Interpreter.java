@@ -7,7 +7,6 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
-import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Bind;
 import fr.inria.corese.kgram.core.Eval;
@@ -364,7 +363,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         } else {
             return null;
         }
-
+        
         Eval eval = kgram.copy(memory, p, this);
         eval.setSubEval(true);
         Mappings map = null;
@@ -416,7 +415,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     Mapping getMapping(Environment env, Query q) {
         if (env.hasBind()) {
-            return getMapping(env.getBind(), q);
+            Mapping map = getMapping(env.getBind(), q);
+            map.setBind(env.getBind());
+            return map;
         }
         return null;
     }
@@ -490,7 +491,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public Binder getBinder() {
-        return (testNewEval) ? Binding.create() : Bind.create();
+        return Binding.create() ;
     }
 
     @Override
@@ -565,7 +566,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     /**
      * Extension function call
      */
-
+    @Deprecated
     public IDatatype call(Expr exp, Environment env, Producer p, IDatatype[] values, Expr function) {
         Expr fun = function.getFunction();
         env.set(function, fun.getExpList(), values);
@@ -642,6 +643,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      *
      * @param exp function ex:name() {}
      */
+    @Deprecated
     IDatatype funEval(Expr exp, Query q, Environment env, Producer p) {
         //System.out.println("FunEval: " + exp.getFunction());
         Interpreter in = new Interpreter(proxy);

@@ -125,6 +125,7 @@ public class QuerySolver  implements SPARQLEngine {
 	static boolean test = true;
         private int planner = QUERY_PLAN;
         private boolean isUseBind;
+        Eval current;
 	
 	public QuerySolver (){
 	}
@@ -282,6 +283,7 @@ public class QuerySolver  implements SPARQLEngine {
 		}
 
 		Eval kgram = makeEval();
+                setEval(kgram);
 
 		events(kgram);		
 		pragma(kgram, query);
@@ -293,6 +295,14 @@ public class QuerySolver  implements SPARQLEngine {
 		
 		return map;
 	}
+        
+        public Eval getCurrentEval() {
+            return current;
+        }
+        
+        void setEval(Eval e) {
+            current = e;
+        }
         
         void tune(Eval kgram, Query q) {
             ASTQuery ast = (ASTQuery) q.getAST();
@@ -346,8 +356,9 @@ public class QuerySolver  implements SPARQLEngine {
         
         IDatatype eval(String q, String name, Dataset ds) throws EngineException{
             setGenerateMain(false);
-            Eval eval = createEval(q, ds);
-            IDatatype dt = (IDatatype) eval.eval(name, new IDatatype[0]);
+            Eval kgram = createEval(q, ds);
+            setEval(kgram);
+            IDatatype dt = (IDatatype) kgram.eval(name, new IDatatype[0]);
             return dt;
         }
 

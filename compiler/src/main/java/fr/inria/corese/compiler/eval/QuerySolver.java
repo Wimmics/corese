@@ -300,6 +300,15 @@ public class QuerySolver  implements SPARQLEngine {
             return current;
         }
         
+        public Binding getBinding() {
+            if (getCurrentEval() == null 
+                    || getCurrentEval().getEnvironment() == null 
+                    || getCurrentEval().getEnvironment().getBind() == null) {
+                return  Binding.create();
+            }
+            return (Binding) getCurrentEval().getEnvironment().getBind();
+        }
+        
         void setEval(Eval e) {
             current = e;
         }

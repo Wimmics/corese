@@ -3,14 +3,17 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn clean install -Pjenkins'
+        sh 'mvn clean install -Pjenkins -Dmaven.test.skip=true'
       }
     }
     stage('Test') {
       steps {
-        sh '''export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
-/builds/gradlew check'''
-        junit(testResults: 'build/reports/**/*.xml', allowEmptyResults: true, healthScaleFactor: 50)
+        sh 'mvn test jacoco:report-aggregate -Dmaven.test.skip=false'
+      }
+    }
+    stage('Report') {
+      steps {
+        junit(testResults: '**/target/surefire-reports/*.xml', healthScaleFactor: 50)
       }
     }
   }

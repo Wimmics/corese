@@ -487,7 +487,7 @@
 					<configuration>
 						<!--<forkMode>once</forkMode>-->
 						<!--<forkCount>1</forkCount>-->
-						<argLine>@{jacocoArgLine} -Xmx2048m</argLine> 
+						<argLine>${jacocoArgLine} -Xmx2048m</argLine> 
 						<reuseForks>true</reuseForks> 
 						<trimStackTrace>false</trimStackTrace>
 						<testFailureIgnore>true</testFailureIgnore>

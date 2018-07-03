@@ -379,6 +379,10 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, Mapping map) throws EngineException {
         return query(squery, map, null);
     }
+    
+    public Mappings query(String squery, Binding b) throws EngineException {
+        return query(squery, Mapping.create(b), null);
+    }
 
     /**
 	 * defaut and named specify a Dataset if the query has no from/using

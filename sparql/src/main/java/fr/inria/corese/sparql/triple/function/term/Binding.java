@@ -323,6 +323,20 @@ public class Binding implements Binder {
     int getCurrentLevel() {
         return (level.isEmpty()) ? 0 : getLevel();
     }
+    
+    public IDatatype getVariable(String name) {
+        return getGlobalVariableValues().get(name);
+    }
+   
+    public Binding setVariable(String var, IDatatype val) {
+        return bind(new Variable(var), val);
+    }
+    
+    
+    public Binding bind(Variable var, IDatatype val) {
+        bind(null, var, val);
+        return this;
+    }
 
     /**
      * set(?x = exp) ?x is already bound, assign variable
@@ -388,7 +402,7 @@ public class Binding implements Binder {
     public HashMap<String, IDatatype> getGlobalVariableValues() {
         return globalValue;
     }
-    
+      
     void setGlobalVariableNames(HashMap<String, Variable> m) {
         globalVariable = m;
     }

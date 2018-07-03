@@ -171,6 +171,9 @@ public class Eval implements ExpType, Plugin {
             send(Event.BEGIN, q);
         }
         initMemory(q);
+        if (m != null && m.getBind() != null && memory.getBind() != null) {
+            memory.getBind().share(m.getBind());
+        }
         producer.start(q);
         getVisitor().init(q);
         getVisitor().before(q);        

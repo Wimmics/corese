@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
-public class TesterSSL {
-    private static final Logger logger = Logger.getLogger(TesterSSL.class.getName());
+public class TesterSslIT {
+    private static final Logger logger = Logger.getLogger(TesterSslIT.class.getName());
     private boolean isDebug = true;
     private static Process server;
     private static final String SERVER_URL = "https://localhost:8443/";

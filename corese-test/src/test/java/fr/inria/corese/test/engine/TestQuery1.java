@@ -50,6 +50,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -140,6 +141,79 @@ public class TestQuery1 {
         }
 
         return graph;
+    }
+    
+    @Test
+    public void testGlobal2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+        Load ld = Load.create(g);
+        String qq = "@event select (us:fun() as ?t) where {} "
+                + "@before function us:before(?q) { set(?zz = 4) }"
+                + "function us:fun() {let (select (us:test() as ?t) where {}) { ?t }}"
+                + "function us:test() { set(?yy = 2 * ?zz + ?var + ?test) }";
+
+        //exec.query(i);
+        Binding b = Binding.create()
+                .setVariable("?var",  DatatypeMap.ONE)
+                .setVariable("?test", DatatypeMap.TWO);
+        Mappings map = exec.query(qq, b);
+        assertEquals(11, b.getVariable("?yy").intValue());
+        assertEquals(11, map.getValue("?t").intValue());
+    }
+    
+    
+     @Test
+      public void testGlobal() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+         QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+         String q = "@event \n"
+                 + "select (us:test() as ?t) where {\n"
+                 + "\n"
+                 + "}\n"
+                 
+                 + "function us:test() {\n"
+                 + "    let (?g = \n"
+                 + "        construct {us:John rdfs:label 'John'} \n"
+                 + "        where { \n"
+                 + "        bind (set(?var = 0) as ?tt)\n"
+                 + "        bind (us:global() as ?gg) \n"
+                 + "        bind (us:fun() as ?hh)\n"
+                 + "        }\n"
+                 + "    )  {\n"
+                 + "        ?g\n"
+                 + "    }\n"
+                 + "}\n"
+                 
+                 + "function us:fun() {\n"
+                 + "    let (select  (aggregate(us:global()) as ?agg) \n"
+                 + "         where {\n"
+                 + "         values ?x { unnest(xt:iota(3)) } }\n"
+                 + "         ) {\n"
+                 + "        ?agg\n"
+                 + "    }\n"
+                 + "}\n"
+                 
+                 + "function us:global() {\n"
+                 + "    set(?var = if (bound(?var), ?var + 1, 0)) ;"
+                 + "    ?var\n"
+                 + "}\n"
+                 
+                 + "@beforee\n"
+                 + "function us:before(?q) {\n"
+                 + "    set(?var = 0)\n"
+                 + "}\n"
+                 ;
+           
+         //exec.query(i);
+         Mappings map = exec.query(q);
+         DatatypeValue dt = map.getValue("?t");
+         Binding b =  exec.getBinding();
+         assertEquals(4, b.getVariable("?var").intValue());
     }
     
     

@@ -99,6 +99,12 @@ public class Mapping
     public static Mapping create() {
         return new Mapping();
     }
+    
+     public static Mapping create(Binder b) {
+        Mapping m = new Mapping();
+        m.setBind(b);
+        return m;
+    }
 
     public static Mapping create(Node[] qnodes, Node[] nodes) {
         return simpleCreate(qnodes, nodes);

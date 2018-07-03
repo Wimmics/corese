@@ -1106,8 +1106,8 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        ////System.out.println(map);
-        Assert.assertEquals(0, map.size());
+        //System.out.println(map);
+        Assert.assertEquals(1, map.size());
     }
 
     @Test

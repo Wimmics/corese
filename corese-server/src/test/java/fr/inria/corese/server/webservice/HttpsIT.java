@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
-public class TesterSslIT {
-    private static final Logger logger = Logger.getLogger(TesterSslIT.class.getName());
+public class HttpsIT {
+    private static final Logger logger = Logger.getLogger(HttpsIT.class.getName());
     private boolean isDebug = true;
     private static Process server;
     private static final String SERVER_URL = "https://localhost:8443/";
@@ -48,24 +48,10 @@ public class TesterSslIT {
                 .sslContext(sslcontext)
                 .hostnameVerifier((s1, s2) -> true);
         logger.info( "starting in " + System.getProperty( "user.dir" ) );
-        server = new ProcessBuilder().inheritIO().command(
-                "/usr/bin/java",
-		System.getProperty("jacocoArgLine") == null ? "" : System.getProperty("jacocoArgLine"),
-                "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
-                "-lh",
-                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl",
-                "-ssl",
-                "-jks", "corese.inria.fr.jks",
-                "-pwd", "coreseatwimmics"
-        ).start();
-	logger.info("server = "+server.toString());
-        Thread.sleep( 5000 );
-    }
 
-    @AfterClass
-    public static void shutdown()
-    {
-        server.destroy();
+	// The server is launched using a bash script in src/test/resources/launch_ssl_server.sh
+	// The launch and shutdown operations are done by maven (see corese_server/pom.xml).
+        Thread.sleep( 5000 );
     }
 
     @Test

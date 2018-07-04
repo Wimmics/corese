@@ -8,7 +8,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'mvn test jacoco:report-aggregate -Dmaven.test.skip=false'
+        sh 'mvn verify jacoco:report-aggregate -Dmaven.test.skip=false'
       }
     }
     stage('Report') {

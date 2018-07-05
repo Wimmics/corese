@@ -568,6 +568,9 @@ public class Transformer implements TransformProcessor {
             logger.error("No templates");
         }
 
+        Mapping m = Mapping.create();
+        share(m, env);
+        
         for (Query qq : list) {
 
             if (!nsm.isUserDefine()) {
@@ -585,7 +588,7 @@ public class Transformer implements TransformProcessor {
             } else {
                 context.set(STL_START, (String) null);
             }
-            Mappings map = exec.query(qq);
+            Mappings map = exec.query(qq, m);
 
             query = null;
             IDatatype res = getResult(map);
@@ -721,7 +724,7 @@ public class Transformer implements TransformProcessor {
         }
         // Mapping of tq or default Mapping ?in = dt
         Mapping m = tmap.getMapping(tq, args, dt);
-
+        share(m, env);
         for (Query qq : templateList) {
 
             Mapping bm = m;
@@ -750,6 +753,7 @@ public class Transformer implements TransformProcessor {
                 if (qq != tq && qq.getArgList() != null) {
                     // std template has arg list: create appropriate Mapping
                     bm = tmap.getMapping(qq, args, dt);
+                    share(bm, env);
                 }
 
                 Mappings map = exec.query(qq, bm);
@@ -802,9 +806,16 @@ public class Transformer implements TransformProcessor {
 
         // return a default result (may be dt)
         // may be overloaded by function st:default(?x) { st:turtle(?x) }
-        //return defaut(dt, q);
         return eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
 
+    }
+    
+    // share global variables and ProcessVisitor
+    Mapping share(Mapping m, Environment env) {
+        if (env != null && env.getBind() != null) {
+            m.setBind(env.getBind());
+        }
+        return m;
     }
 
     IDatatype result(IDatatype dt1, IDatatype dt2) {

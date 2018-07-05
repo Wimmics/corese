@@ -180,7 +180,7 @@ public class TestQuery1 {
                  + "    let (?g = \n"
                  + "        construct {us:John rdfs:label 'John'} \n"
                  + "        where { \n"
-                 + "        bind (set(?var = 0) as ?tt)\n"
+                // + "        bind (set(?var = 0) as ?tt)\n"
                  + "        bind (us:global() as ?gg) \n"
                  + "        bind (us:fun() as ?hh)\n"
                  + "        }\n"
@@ -203,7 +203,7 @@ public class TestQuery1 {
                  + "    ?var\n"
                  + "}\n"
                  
-                 + "@beforee\n"
+                 + "@before\n"
                  + "function us:before(?q) {\n"
                  + "    set(?var = 0)\n"
                  + "}\n"

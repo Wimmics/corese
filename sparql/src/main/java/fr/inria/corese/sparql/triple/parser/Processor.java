@@ -49,6 +49,7 @@ public class Processor {
 	public static final String XT_SORT     = EXT+"sort";
 	public static final String XT_RESULT   = EXT+"result";
  	public static final String XT_COMPARE  = EXT+"compare";
+ 	public static final String XT_VISITOR  = EXT+"visitor";
        
 	public static final String IN  	 = "in";
 
@@ -643,6 +644,7 @@ public class Processor {
 		defoper(XT_SORT,        ExprType.XT_SORT);
 		defoper(XT_RESULT,      ExprType.XT_RESULT);
  		defoper(XT_COMPARE,     ExprType.XT_COMPARE);
+ 		defoper(XT_VISITOR,     ExprType.XT_VISITOR);
                
                 
 		defoper(JAVACALL,          ExprType.JAVACALL);                

@@ -405,6 +405,7 @@ public class Term extends Expression {
             case ExprType.SLICE:
             case ExprType.ENV:    
             case ExprType.XT_RESULT:    
+            case ExprType.XT_VISITOR:    
                 return new SystemFunction(name);
 
             case ExprType.INDEX:

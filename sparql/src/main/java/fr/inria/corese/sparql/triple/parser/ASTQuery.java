@@ -1224,6 +1224,10 @@ public class ASTQuery
         return metadata != null && metadata.hasMetadata(type);
     }
     
+    public boolean hasMetadata(String type) {
+        return metadata != null && metadata.hasMetadata(type);
+    }
+    
     public boolean hasMetadata(int type, String value) {
         return metadata != null && metadata.hasValue(type, value);
     }

@@ -28,6 +28,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     private static final IDatatype expression_dt= getGenericDatatype(IDatatype.EXPRESSION_DATATYPE);
     private static final IDatatype producer_dt  = getGenericDatatype(IDatatype.DATAPRODUCER_DATATYPE);
     private static final IDatatype path_dt      = getGenericDatatype(IDatatype.PATH_DATATYPE);
+    private static final IDatatype visitor_dt   = getGenericDatatype(IDatatype.VISITOR_DATATYPE);
 
     Pointerable pobject;
     

@@ -14,7 +14,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  */
 public class VariableLocal extends Variable {
     
-    VariableLocal(String name){
+    public VariableLocal(String name){
         super(name);
         setSubtype(ExprType.LOCAL);
     }

@@ -78,6 +78,7 @@ public interface IDatatype
     public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
     public static final String DATAPRODUCER_DATATYPE = ExpType.DT + "producer";
     public static final String PATH_DATATYPE       = ExpType.DT + "path";
+    public static final String VISITOR_DATATYPE    = ExpType.DT + "visitor";
       
     boolean isSkolem();
 

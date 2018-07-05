@@ -10,7 +10,9 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +29,7 @@ import org.slf4j.Logger;
  *
  */
 public class Binding implements Binder {
-
+   
     static final String NL = System.getProperty("line.separator");
     static final int UNBOUND = ExprType.UNBOUND;
 
@@ -39,8 +41,10 @@ public class Binding implements Binder {
     ArrayList<Integer> level;
     int currentLevel = 0, count = 0;
     Expr current;
+    
     HashMap<String, IDatatype> globalValue;
     HashMap<String, Variable>  globalVariable;
+    private ProcessVisitor visitor;
 
     private boolean debug = false;
 
@@ -328,11 +332,11 @@ public class Binding implements Binder {
         return getGlobalVariableValues().get(name);
     }
    
-    public Binding setVariable(String var, IDatatype val) {
-        return bind(new Variable(var), val);
+    public Binding setVariable(String name, IDatatype val) {
+        return bind(new VariableLocal(name), val);
     }
     
-    
+    // must be LocalVariable
     public Binding bind(Variable var, IDatatype val) {
         bind(null, var, val);
         return this;
@@ -342,13 +346,23 @@ public class Binding implements Binder {
      * set(?x = exp) ?x is already bound, assign variable
      */
     public void bind(Expr exp, Expr var, IDatatype val) {
-        switch (var.getIndex()) {
-            case UNBOUND:
-                globalValue.put(var.getLabel(), val); 
-                globalVariable.put(var.getLabel(), (Variable) var);
+        switch (var.subtype()) {
+            case ExprType.GLOBAL:
                 break;
-            default: valList.set(getIndex(var), val);
-        }       
+            default:
+                switch (var.getIndex()) {
+                    case UNBOUND:
+                        define((Variable) var, val);
+                        break;
+                    default:
+                        valList.set(getIndex(var), val);
+                }
+        }
+    }
+    
+    void define(Variable var, IDatatype val) {
+        globalValue.put(var.getLabel(), val);
+        globalVariable.put(var.getLabel(), var);
     }
 
     @Override
@@ -480,5 +494,15 @@ public class Binding implements Binder {
         result = false;
         return dt;
     }
+    
+    @Override
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
 
+    @Override
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
+    }
+    
 }

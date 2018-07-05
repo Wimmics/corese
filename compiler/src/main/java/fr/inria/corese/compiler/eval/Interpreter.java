@@ -330,6 +330,35 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return args;
     }
+    
+     /**
+     * function.isSystem() == true
+     * function contains nested query or exists
+     * use case: exists { exists { } }  the inner exists need outer exists
+     * BGP to be bound // hence we need a fresh Memory to start
+     */
+    @Override
+    public Interpreter getComputer(Environment env, Producer p, Expr function) {
+        Query q = getQuery(env, function);
+        Interpreter in = new Interpreter(proxy);
+        in.setProducer(p);
+        Eval eval = Eval.create(p, in, kgram.getMatcher());
+        eval.setSPARQLEngine(kgram.getSPARQLEngine());
+        eval.set(kgram.getProvider());
+        eval.init(q);
+        eval.setVisitor(kgram.getVisitor());
+        eval.getMemory().setBind(env.getBind());
+        return in;
+    }
+
+    Query getQuery(Environment env, Expr function) {
+        if (function.isPublic() && env.getQuery() != function.getPattern()) {
+            // function is public and contains query or exists
+            // use function definition global query 
+            return (Query) function.getPattern();
+        }
+        return env.getQuery();
+    }
 
 
     /**
@@ -364,7 +393,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             return null;
         }
         
-        Eval eval = kgram.copy(memory, p, this);
+        Eval eval = kgram.copy(memory, p, this, exp.isSystem());
         eval.setSubEval(true);
         Mappings map = null;
 
@@ -416,6 +445,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     Mapping getMapping(Environment env, Query q) {
         if (env.hasBind()) {
             Mapping map = getMapping(env.getBind(), q);
+            // share global variables and ProcessVisitor
             map.setBind(env.getBind());
             return map;
         }
@@ -601,35 +631,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         // keep this:
         return proxy.getResultValue(res);
-    }
-
-    /**
-     * function.isSystem() == true
-     * function contains nested query or exists
-     * use case: exists { exists { } }  the inner exists need outer exists
-     * BGP to be bound // hence we need a fresh Memory to start
-     */
-    @Override
-    public Interpreter getComputer(Environment env, Producer p, Expr function) {
-        Query q = getQuery(env, function);
-        Interpreter in = new Interpreter(proxy);
-        in.setProducer(p);
-        Eval eval = Eval.create(p, in, kgram.getMatcher());
-        eval.setSPARQLEngine(kgram.getSPARQLEngine());
-        eval.set(kgram.getProvider());
-        eval.setVisitor(kgram.getVisitor());
-        eval.init(q);
-        eval.getMemory().setBind(env.getBind());
-        return in;
-    }
-
-    Query getQuery(Environment env, Expr function) {
-        if (function.isPublic() && env.getQuery() != function.getPattern()) {
-            // function is public and contains query or exists
-            // use function definition global query 
-            return (Query) function.getPattern();
-        }
-        return env.getQuery();
     }
 
     @Override

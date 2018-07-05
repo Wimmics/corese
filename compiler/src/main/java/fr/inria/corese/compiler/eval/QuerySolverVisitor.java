@@ -12,6 +12,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.PointerObject;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.sparql.api.Computer;
@@ -37,10 +38,13 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class QuerySolverVisitor implements ProcessVisitor {
-    
+public class QuerySolverVisitor extends PointerObject implements ProcessVisitor {
+
+    public static final String SHARE    = "@share";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
+    public static final String START    = "@start";
+    public static final String FINISH   = "@finish";    
     public static final String ORDERBY  = "@orderby";
     public static final String DISTINCT = "@distinct";
     public static final String PRODUCE  = "@produce";
@@ -66,11 +70,12 @@ public class QuerySolverVisitor implements ProcessVisitor {
     public static final String FUNCTION = "@function";
     
     static final String[] EVENT_LIST = {
-        BEFORE, AFTER, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
+        BEFORE, AFTER, START, FINISH, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
         BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, FEDERATE, QUERY, GRAPH, 
         AGGREGATE, HAVING, FUNCTION, ORDERBY, DISTINCT
     };
     boolean active = false, select = false;
+    private boolean shareable = false;
     
     Eval eval;
     Query query;
@@ -88,15 +93,25 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     @Override
     public void init(Query q) {
-        query = q;
-        ast = (ASTQuery) q.getAST();
-        for (String name : EVENT_LIST) {
-            if (ast.getMetadata().hasMetadata(name)) {
-                select = true;
-                break;
+        // Visitor may be reused by let (?g = construct where)
+        if (query == null) {
+            query = q;
+            ast = (ASTQuery) q.getAST();
+            setSelect();
+            distinct = DatatypeMap.map();
+        }
+    }
+    
+    void setSelect() {
+        setShareable(ast.hasMetadata(SHARE));  
+        if (ast.getMetadata() != null) {
+            for (String name : EVENT_LIST) {
+                if (ast.getMetadata().hasMetadata(name)) {
+                    select = true;
+                    break;
+                }
             }
         }
-        distinct = DatatypeMap.map();
     }
     
     boolean accept(String name) {
@@ -105,17 +120,33 @@ public class QuerySolverVisitor implements ProcessVisitor {
         }
         return true;
     }
-   
-   
-      
+        
     @Override
     public IDatatype before(Query q) {
-        return callback(eval, BEFORE, toArray(q));
+        if (query == q) {
+            return callback(eval, BEFORE, toArray(q));
+        }
+        // special case: let(construct where)
+        return start(q);
+    }
+    
+    @Override
+    public IDatatype after(Mappings map) {
+        if (map.getQuery() == query) {
+            return callback(eval, AFTER, toArray(map));
+        }
+        // special case: let(construct where)
+        return finish(map);
+    }
+    
+    @Override
+    public IDatatype start(Query q) {
+        return callback(eval, START, toArray(q));
     }
 
     @Override
-    public IDatatype after(Mappings map) {
-        return callback(eval, AFTER, toArray(map));
+    public IDatatype finish(Mappings map) {
+        return callback(eval, FINISH, toArray(map));
     }
     
     @Override
@@ -365,12 +396,15 @@ public class QuerySolverVisitor implements ProcessVisitor {
         return eval.getEnvironment();
     }
 
-    Query getQuery() {
-        return getEnvironment().getQuery();
+       
+    @Override
+    public boolean isShareable() {
+        return shareable;
     }
 
-    ASTQuery getAST() {
-        return (ASTQuery) getQuery().getAST();
+    public void setShareable(boolean shareable) {
+        this.shareable = shareable;
     }
+    
 
 }

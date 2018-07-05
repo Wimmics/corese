@@ -26,6 +26,7 @@ public interface Pointerable extends Loopable {
     public static final int EXPRESSION_POINTER  = 10;
     public static final int DATAPRODUCER_POINTER  = 11;
     public static final int PATH_POINTER  = 12;
+    public static final int VISITOR_POINTER  = 13;
     
      
     default int pointerType() {

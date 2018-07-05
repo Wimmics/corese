@@ -171,11 +171,10 @@ public class Eval implements ExpType, Plugin {
             send(Event.BEGIN, q);
         }
         initMemory(q);
-        if (m != null && m.getBind() != null && memory.getBind() != null) {
-            memory.getBind().share(m.getBind());
-        }
+        share(m);
         producer.start(q);
         getVisitor().init(q);
+        share(getVisitor());      
         getVisitor().before(q);        
         Mappings map = eval(null, q, m);        
         getVisitor().orderby(map);
@@ -187,6 +186,28 @@ public class Eval implements ExpType, Plugin {
         }
 
         return map;
+    }
+    
+    // share global variables and ProcessVisitor
+    void share(Mapping m) {
+        if (m != null && m.getBind() != null) {
+            if (memory.getBind() != null) {
+                memory.getBind().share(m.getBind());
+            }
+            if (m.getBind().getVisitor() != null) {
+                // use case: let (?g = construct where)
+                // see Interpreter exist() getMapping()
+                setVisitor(m.getBind().getVisitor());
+            }
+        }       
+    }
+    
+    // store ProcessVisitor into Bind for future sharing by
+    // Transformer and Interpreter exist
+    void share(ProcessVisitor vis) {
+        if (vis.isShareable() && getMemory().getBind().getVisitor() == null) {
+           getMemory().getBind().setVisitor(vis);
+        }
     }
     
     public void finish(Query q, Mappings map) {
@@ -436,11 +457,17 @@ public class Eval implements ExpType, Plugin {
      */
    
     public Eval copy(Memory m, Producer p, Evaluator e) {
-        return copy(m, p, e, query);
+        return copy(m, p, e, query, false);
     }
-    
+
+    // extern = true if the statement to evaluate is LDScript query:
+    // let (select where)
+    public Eval copy(Memory m, Producer p, Evaluator e, boolean extern) {
+        return copy(m, p, e, query, extern);
+    }
+
     // q may be the subQuery
-    Eval copy(Memory m, Producer p, Evaluator e, Query q) {
+    Eval copy(Memory m, Producer p, Evaluator e, Query q, boolean extern) {
         Eval ev = create(p, e, match);
         if (q != null){
             ev.complete(q);
@@ -448,7 +475,9 @@ public class Eval implements ExpType, Plugin {
         ev.setSPARQLEngine(getSPARQLEngine());
         ev.setMemory(m);
         ev.set(provider);
-        ev.setVisitor(getVisitor());
+        if (! extern || getVisitor().isShareable()) {
+            ev.setVisitor(getVisitor());
+        }
         ev.startExtFun(q);
         ev.setPathType(isPathType);
         if (hasEvent) {
@@ -457,43 +486,6 @@ public class Eval implements ExpType, Plugin {
         return ev;
     }
 
-    void setLevel(int n) {
-        level = n;
-    }
-
-    void setDebug(boolean b) {
-        debug = b;
-    }
-
-    public void setSubEval(boolean b) {
-        isSubEval = b;
-    }
-
-    /**
-     * copy memory for sub query 
-     * copy sub query select variables that are
-     * already bound in current memory
-     * Use case: subquery and exists
-     */
-    private Memory copyMemory(Memory memory, Query query, Query sub, Exp exp) {
-        Memory mem = new Memory(match, evaluator);
-        getEvaluator().init(mem);
-        if (sub == null) {
-            mem.init(query);
-        } else {
-            mem.init(sub);
-        }
-        memory.copyInto(sub, mem, exp);
-        if (hasEvent) {
-            memory.setEventManager(manager);
-        }
-        return mem;
-    }
-
-    
-//    public Memory getMemory(Exp exp) {
-//        return getMemory(memory, exp);
-//    }
 
     /**
      * copy of Memory may be stored in exp. 
@@ -518,8 +510,9 @@ public class Eval implements ExpType, Plugin {
         }
         return mem;
     }
-
-    /**
+    
+    
+     /**
      * use case: exists {} in aggregate select (count(if (exists { BGP }, ?x,
      * ?y)) as ?c) Env is a Mapping Copy Mapping into fresh Memory in order to
      * evaluate exists {} in Memory TODO: optimize by storing mem
@@ -533,6 +526,43 @@ public class Eval implements ExpType, Plugin {
         mem.copy(map, exp);
         return mem;
     }
+    
+    
+    /**
+     * copy memory for sub query 
+     * copy sub query select variables that are
+     * already bound in current memory
+     * Use case: subquery and exists
+     */
+    private Memory copyMemory(Memory memory, Query query, Query sub, Exp exp) {
+        Memory mem = new Memory(match, evaluator);
+        getEvaluator().init(mem);
+        if (sub == null) {
+            mem.init(query);
+        } else {
+            mem.init(sub);
+        }
+        memory.copyInto(sub, mem, exp);
+        if (hasEvent) {
+            memory.setEventManager(manager);
+        }
+        return mem;
+    }
+
+  
+        void setLevel(int n) {
+        level = n;
+    }
+
+    void setDebug(boolean b) {
+        debug = b;
+    }
+
+    public void setSubEval(boolean b) {
+        isSubEval = b;
+    }
+
+    
 
     public Memory getMemory() {
         return memory;
@@ -2424,7 +2454,7 @@ public class Eval implements ExpType, Plugin {
                 isSuccess = true;
                 backtrack = eval(p, gNode, stack, n + 1);
                 env.pop(map);
-                map.setRead(true);
+                //map.setRead(true);
 
                 if (backtrack < n) {
                     path.stop();
@@ -2712,7 +2742,7 @@ public class Eval implements ExpType, Plugin {
         Query subQuery = exp.getQuery();
         Memory env = memory;
         Mappings lMap;
-
+        getVisitor().start(subQuery);
         if (exp.getObject() != null && !isBound(subQuery, env) && gNode == null) {
             // result is cached, can reuse it
             lMap = (Mappings) exp.getObject();
@@ -2720,7 +2750,7 @@ public class Eval implements ExpType, Plugin {
         {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
-            Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery);
+            Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);
             // draft federated query
             ev.getMemory().setJoinMappings(memory.getJoinMappings());
             Node subNode = null;
@@ -2739,8 +2769,8 @@ public class Eval implements ExpType, Plugin {
                 exp.setObject(lMap);
             }
         }
-        
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
+        getVisitor().finish(lMap);
         
         // enumerate the result of the sub query
         // bind the select nodes into the stack

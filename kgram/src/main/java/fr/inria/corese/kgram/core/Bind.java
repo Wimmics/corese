@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -291,5 +292,14 @@ public class Bind implements Binder {
     public void share(Binder b) {
     }
 
+    @Override
+    public void setVisitor(ProcessVisitor vis) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ProcessVisitor getVisitor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

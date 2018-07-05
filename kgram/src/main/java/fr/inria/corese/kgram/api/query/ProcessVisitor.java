@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
@@ -16,7 +17,9 @@ import fr.inria.corese.kgram.path.Path;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public interface ProcessVisitor {
+public interface ProcessVisitor extends Pointerable {
+    
+    default boolean isShareable() { return false; }
     
     default void setProcessor(Eval e) {}
     
@@ -25,6 +28,10 @@ public interface ProcessVisitor {
     default DatatypeValue before(Query q) { return null; }
     
     default DatatypeValue after(Mappings map) { return null; }
+    
+    default DatatypeValue start(Query q) { return null; }
+    
+    default DatatypeValue finish(Mappings map) { return null; }
     
     default DatatypeValue orderby(Mappings map) { return null; }
     

@@ -58,7 +58,7 @@ public class Mapping
     HashMap<String, Node> values;
     Query query;
     Map bnode;
-    boolean read = false;
+    //boolean read = false;
     private Binder bind;
     private Node graphNode;
 
@@ -277,13 +277,13 @@ public class Mapping
         init(lqNodes, ltNodes);
     }
 
-    public void setRead(boolean b) {
-        read = b;
-    }
-
-    public boolean isRead() {
-        return read;
-    }
+//    public void setRead(boolean b) {
+//        read = b;
+//    }
+//
+//    public boolean isRead() {
+//        return read;
+//    }
 
     void setOrderBy(Node[] nodes) {
         oNodes = nodes;

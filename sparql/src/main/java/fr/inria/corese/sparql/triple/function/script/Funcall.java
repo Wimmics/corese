@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.List;
 
@@ -56,8 +57,8 @@ public class Funcall extends TermEval {
         if (function == null) {
             if (dt.pointerType() == Pointerable.EXPRESSION_POINTER) {
                 // lambda expression, arity is not correct                
-            } else {
-                eval.getEval().getSPARQLEngine().getLinkedFunction(name);
+            } else if (env.getEval() != null) {
+                env.getEval().getSPARQLEngine().getLinkedFunction(name);
                 function = (Function) eval.getDefineGenerate(this, env, name, n);
 
                 if (function == null) {
@@ -73,8 +74,8 @@ public class Funcall extends TermEval {
         b.set(function, fun.getExpList(), param);
         IDatatype dt = null;
         if (function.isSystem()) {
-            Computer cc = eval.getComputer(env, p, function);
-            dt = function.getBody().eval(cc, b, cc.getEnvironment(), p);
+            ComputerEval cc = eval.getComputerEval(env, p, function);
+            dt = function.getBody().eval(cc.getComputer(), b, cc.getEnvironment(), p);
         } else {
             dt = function.getBody().eval(eval, b, env, p);
         }

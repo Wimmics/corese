@@ -66,6 +66,7 @@ public class Aggregate extends TermEval {
        
         for (Mapping map : env.getAggregate()) {
             env.aggregate(map, n++);
+            map.setEval(env.getEval());
             if (map.getBind() == null) {
                 //map.setBind(Binding.create());
                 map.setBind(b);

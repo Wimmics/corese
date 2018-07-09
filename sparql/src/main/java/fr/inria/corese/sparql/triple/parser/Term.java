@@ -1689,7 +1689,6 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        //System.out.println("********* eval: " + this);
         return eval.function((Expr) this, env, p);
     }
 }

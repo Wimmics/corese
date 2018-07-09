@@ -39,7 +39,10 @@ public class SystemFunction extends TermEval {
                 return DatatypeMap.createObject(env.getMapping()); 
                 
             case ExprType.XT_VISITOR:
-                return DatatypeMap.createObject(eval.getEval().getVisitor());
+                if (env.getEval() == null) {
+                    return null;
+                }
+                return DatatypeMap.createObject(env.getEval().getVisitor());
         }
         
         return TRUE;

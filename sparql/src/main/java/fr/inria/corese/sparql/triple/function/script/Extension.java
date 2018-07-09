@@ -9,6 +9,8 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.api.ComputerEval;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -80,13 +82,13 @@ public class Extension extends TermEval {
             if (tailRecursion) {
                 b.setTailRec(function, var1, value1);
                 if (visit) {
-                    eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                    visit(env);
                 }
                 dt = body.eval(eval, b, env, p);
             } else {
                 b.set(function, var1, value1);
                 if (visit) {
-                    eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                    visit(env);
                 }               
                 dt = body.eval(eval, b, env, p);
                 b.unset(function);
@@ -103,7 +105,7 @@ public class Extension extends TermEval {
             }
             b.set(function, var1, value1, var2, value2);
             if (visit) {
-                eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                visit(env);
             }               
             IDatatype dt = body.eval(eval, b, env, p);
             b.unset(function);
@@ -118,13 +120,13 @@ public class Extension extends TermEval {
             }
             b.set(function, arguments, param);
             if (visit) {
-                eval.getEval().getVisitor().function(eval.getEval(), this, function.getSignature());
+                visit(env);
             }
             IDatatype dt = null;
             if (isSystem) {
-                Computer cc = eval.getComputer(env, p, function);
+                ComputerEval cc = eval.getComputerEval(env, p, function);
                 // PRAGMA: b = cc.getEnvironment().getBind()
-                dt = body.eval(cc, b, cc.getEnvironment(), p);
+                dt = body.eval(cc.getComputer(), b, cc.getEnvironment(), p);
             } else {
                 dt = body.eval(eval, b, env, p);
             }
@@ -136,6 +138,12 @@ public class Extension extends TermEval {
 
         }
 
+    }
+    
+    void visit(Environment env) {
+        if (env.getEval() != null) {
+            env.getEval().getVisitor().function(env.getEval(), this, function.getSignature());
+        }
     }
 
     /**
@@ -162,9 +170,9 @@ public class Extension extends TermEval {
         IDatatype dt;
         b.set(function, fun.getExpList(), param);
         if (function.isSystem()) {
-            Computer cc = eval.getComputer(env, p, function);
+            ComputerEval cc = eval.getComputerEval(env, p, function);
             // PRAGMA: b = cc.getEnvironment().getBind()
-            dt = function.getBody().eval(cc, b, cc.getEnvironment(), p);
+            dt = function.getBody().eval(cc.getComputer(), b, cc.getEnvironment(), p);
         } else {
             dt = function.getBody().eval(eval, b, env, p);
         }

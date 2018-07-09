@@ -7,15 +7,13 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Eval;
 
 /**
- *
+ * Interface for Interpreter
  * @author corby
  */
 public interface Computer extends ComputerProxy {
     
-    Computer getComputer(Environment env, Producer p, Expr function); 
-    Environment getEnvironment();  
-    Eval getEval();     
-    
+    ComputerEval getComputerEval(Environment env, Producer p, Expr function); 
+        
     IDatatype function(Expr exp, Environment env, Producer p);
     IDatatype exist(Expr exp, Environment env, Producer p);
         

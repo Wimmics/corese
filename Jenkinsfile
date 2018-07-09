@@ -12,8 +12,17 @@ pipeline {
       }
     }
     stage('Report') {
-      steps {
-        junit(testResults: '**/target/*-reports/*.xml', healthScaleFactor: 50)
+      parallel {
+        stage('Report') {
+          steps {
+            junit(testResults: '**/target/*-reports/*.xml', healthScaleFactor: 50)
+          }
+        }
+        stage('deployment on maven.inria.fr') {
+          steps {
+            sh 'mvn deploy -Pmaven-inria-fr-release'
+          }
+        }
       }
     }
   }

@@ -13,7 +13,7 @@ pipeline {
     }
     stage('deployment on maven.inria.fr') {
       steps {
-        sh 'mvn deploy -Pmaven-inria-fr-release'
+        sh 'mvn deploy -Pmaven-inria-fr-release -Dmaven.test.skip=true'
       }
     }
     stage('test on artefacts at maven.inria.fr') {

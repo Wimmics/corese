@@ -605,7 +605,7 @@ public class Transformer implements TransformProcessor {
         query = null;
 
         if (all) {
-            IDatatype dt2 = result(null, nodes);
+            IDatatype dt2 = result(env, nodes);
             return dt2;
         }
 
@@ -787,7 +787,7 @@ public class Transformer implements TransformProcessor {
             // gather results of several templates
             if (nodes.size() > 0) {
                 // IDatatype res = result(result, separator(sep));
-                IDatatype mres = result((env == null) ? null : env.getQuery(), nodes);
+                IDatatype mres = result(env, nodes);
                 return mres;
             }
         }
@@ -885,10 +885,15 @@ public class Transformer implements TransformProcessor {
      * get the st:profile of this transformation to get the appropriate
      * st:aggregate definition if any
      */
-    IDatatype result(Query q, List<Node> list) {
+    IDatatype result(Environment env, List<Node> list) {
+        Query q = (env == null) ? null : env.getQuery();
         Query tq = (q != null && contains(q)) ? q : qe.getTemplate();
         Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
         exec.getEvaluator().init(mem);
+        if (env != null){ 
+            mem.share(mem.getBind(), env.getBind());
+            mem.setEval(env.getEval());
+        }
         mem.init(tq);
         Node out = tq.getExtNode(OUT, true);
         Mappings map = Mappings.create(tq);
@@ -1041,10 +1046,8 @@ public class Transformer implements TransformProcessor {
             if (ext != null) {
                 Expr function = ext.get(name, (dt == null) ? 0 : 1);
                 if (function != null) {
-
-                    Environment en = getEnvironment(env, q);
                     IDatatype dt1 = new Funcall(name).call((Interpreter) exec.getEvaluator(),
-                            (Binding) en.getBind(), en, exec.getProducer(), (Function) function, param(dt));
+                            (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
 
                     return dt1;
                 }
@@ -1061,15 +1064,15 @@ public class Transformer implements TransformProcessor {
         return param;
     }
 
-    Environment getEnvironment(Environment env, Query q) {
-        if (env == null) {
-            Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
-            mem.init(q);
-            mem.setBind(Binding.create());
-            return mem;
-        }
-        return env;
-    }
+//    Environment getEnvironment(Environment env, Query q) {
+//        if (env == null) {
+//            Memory mem = new Memory(exec.getMatcher(), exec.getEvaluator());
+//            mem.init(q);
+//            exec.getEvaluator().init(mem);
+//            return mem;
+//        }
+//        return env;
+//    }
 
     /**
      * Display when all templates fail Default is to return IDatatype as is,

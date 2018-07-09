@@ -875,7 +875,9 @@ public class PluginImpl
         Graph g = getGraph(p);
         if (dt1.getLabel().equals(LISTEN)){  
             if (dt2.booleanValue()){
-                g.addListener(new GraphListen(getEval()));
+                if (env.getEval() != null){
+                    g.addListener(new GraphListen(env.getEval()));
+                }
             }
             else {
                 g.removeListener();

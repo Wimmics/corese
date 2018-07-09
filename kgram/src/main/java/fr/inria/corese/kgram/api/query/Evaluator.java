@@ -100,7 +100,7 @@ public interface Evaluator {
         
         void setKGRAM(Eval o);
         
-        Eval getEval();
+        //Eval getEval();
 
         void addResultListener(ResultListener rl);
         

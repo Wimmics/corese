@@ -109,13 +109,16 @@ public class Eval implements ExpType, Plugin {
             hasProduce  = false;
 
     //Edge previous;
+    
+    public Eval() {}
+    
     /**
      *
      * @param p edge and node producer
      * @param e filter evaluator, given an environment (access to variable
      * binding)
      */
-    Eval(Producer p, Evaluator e, Matcher m) {
+    public Eval(Producer p, Evaluator e, Matcher m) {
         producer = p;
         saveProducer = producer;
         evaluator = e;
@@ -449,6 +452,32 @@ public class Eval implements ExpType, Plugin {
             }
         }
     }
+    
+    
+        /**
+     * Eval exp alone in a fresh new Memory Node gNode : actual graph node Node
+     * node : exp graph node
+     */
+    public Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
+        return subEval(p, gNode, node, exp, main, null, null, false);
+    }
+    
+    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map) {
+        return subEval(p, gNode, node, exp, main, map, null, false);
+    }
+
+    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) {
+        Memory mem = new Memory(match, evaluator);
+        getEvaluator().init(mem);
+        mem.share(memory);
+        mem.init(query);
+        mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
+        Eval eval = copy(mem, p);
+        graphNode(gNode, node, mem);
+        bind(mem, exp, main, map, m, bind);        
+        Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
+        return lMap;
+    }
 
     /**
      *
@@ -456,14 +485,14 @@ public class Eval implements ExpType, Plugin {
      * exp stack
      */
    
-    public Eval copy(Memory m, Producer p, Evaluator e) {
-        return copy(m, p, e, query, false);
+    public Eval copy(Memory m, Producer p) {
+        return copy(m, p, getEvaluator(), query, false);
     }
 
     // extern = true if the statement to evaluate is LDScript query:
     // let (select where)
-    public Eval copy(Memory m, Producer p, Evaluator e, boolean extern) {
-        return copy(m, p, e, query, extern);
+    public Eval copy(Memory m, Producer p, boolean extern) {
+        return copy(m, p, getEvaluator(), query, extern);
     }
 
     // q may be the subQuery
@@ -1251,30 +1280,6 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * Eval exp alone in a fresh new Memory Node gNode : actual graph node Node
-     * node : exp graph node
-     */
-    public Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main) {
-        return subEval(p, gNode, node, exp, main, null, null, false);
-    }
-    
-    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map) {
-        return subEval(p, gNode, node, exp, main, map, null, false);
-    }
-
-    Mappings subEval(Producer p, Node gNode, Node node, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) {
-        Memory mem = new Memory(match, evaluator);
-        getEvaluator().init(mem);
-        mem.init(query);
-        mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
-        Eval eval = copy(mem, p, evaluator);
-        graphNode(gNode, node, mem);
-        bind(mem, exp, main, map, m, bind);        
-        Mappings lMap = eval.subEval(query, node, Stack.create(exp), 0);
-        return lMap;
-    }
-
-    /**
      * fresh memory mem inherits data from current memory to evaluate exp (in main)
      * 
      */
@@ -2044,7 +2049,8 @@ public class Eval implements ExpType, Plugin {
     private Mappings service(Node serv, Exp exp) {
         Memory mem = new Memory(match, evaluator);
         mem.init(query);
-        Eval eval = copy(mem, producer, evaluator);
+        mem.share(memory);
+        Eval eval = copy(mem, producer);
         Mappings lMap = eval.subEval(query, null, Stack.create(exp), 0);
         return lMap;
     }
@@ -2941,7 +2947,8 @@ public class Eval implements ExpType, Plugin {
                 map.setQuery(query);
                 map.setMap(memory.getMap());
                 map.setBind(memory.getBind());
-                map.setGraphNode(proxyGraphNode);   
+                map.setGraphNode(proxyGraphNode); 
+                map.setEval(this);
                 boolean b = evaluator.test(f.getFilter(), map);
                 map.setGraphNode(null);  
                 if (hasFilter) {

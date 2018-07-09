@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.core.Eval;
 
 /**
  * Interface of the binding environment provided by KGRAM
@@ -160,5 +161,8 @@ public interface Environment {
         Extension getExtension();
         
         ApproximateSearchEnv getAppxSearchEnv();
-
+                
+        Eval getEval();
+        
+        void setEval(Eval e);
 }

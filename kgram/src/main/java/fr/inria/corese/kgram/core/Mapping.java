@@ -61,6 +61,7 @@ public class Mapping
     //boolean read = false;
     private Binder bind;
     private Node graphNode;
+    private Eval eval;
 
     Mapping() {
         this.qEdges = emptyEdge;;
@@ -1323,6 +1324,22 @@ public class Mapping
     public void setResult(Node result) {
         this.result = result;
     }
+    
+        /**
+     * @return the eval
+     */
+    @Override
+    public Eval getEval() {
+        return eval;
+    }
+
+    /**
+     * @param eval the eval to set
+     */
+    public void setEval(Eval eval) {
+        this.eval = eval;
+    }
+
  
  
 }

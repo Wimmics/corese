@@ -272,6 +272,9 @@ public class PathFinder {
         mem.init(env.getQuery());
         mem.init(env);
         mem.setFake(true);
+        evaluator.init(mem);
+        mem.share(mem.getBind(), env.getBind());
+        mem.setEval(kgram);
     }
 
     boolean match(Edge edge, List<String> lVar, int index) {

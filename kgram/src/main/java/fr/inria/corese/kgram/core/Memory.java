@@ -98,7 +98,8 @@ public class Memory extends PointerObject implements Environment {
         return (manager != null);
     }
 
-    void setEval(Eval e) {
+    @Override
+    public void setEval(Eval e) {
         kgram = e;
     }
 
@@ -272,7 +273,8 @@ public class Memory extends PointerObject implements Environment {
                 copyInto(outNode, subNode, mem, n);
                 n++;
             }
-            share(mem.getBind(), getBind());
+            //share(mem.getBind(), getBind());
+            mem.share(this);
         }
         return mem;
     }
@@ -297,14 +299,19 @@ public class Memory extends PointerObject implements Environment {
         if (hasBind()) {
             mem.copy(bind, exp);
         } 
-        share(mem.getBind(), getBind());
+        //share(mem.getBind(), getBind());
+        mem.share(this);
         copyInto(mem);
     }
     
-    void share(Binder target, Binder source) {
+    public void share(Binder target, Binder source) {
         if (source != null && target != null) {
             target.share(source);
         }
+    }
+    
+    void share(Memory source) {
+        share(getBind(), source.getBind());
     }
     
     /**

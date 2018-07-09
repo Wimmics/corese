@@ -100,9 +100,9 @@ public class ProxyInterpreter implements Proxy,  ExprType {
         return eval;
     }
     
-    public Eval getEval(){
-        return (Eval) getEvaluator().getEval();
-    }
+//    public Eval getEval(){
+//        return (Eval) getEvaluator().getEval();
+//    }
         
     public void setPlugin(ProxyPlugin p) {
         plugin = p;

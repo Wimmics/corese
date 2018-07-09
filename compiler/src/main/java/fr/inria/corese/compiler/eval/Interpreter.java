@@ -8,7 +8,6 @@ import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.core.Bind;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
@@ -35,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -54,7 +52,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     Eval kgram;
     IDatatype TRUE, FALSE;
     ResultListener listener;
-    static HashMap<String, Extension> extensions;
+    //static HashMap<String, Extension> extensions;
     static Extension extension;
     int mode = KGRAM_MODE;
     boolean hasListener = false;
@@ -82,7 +80,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public void setKGRAM(Eval o) {
-        kgram = o;
+        //kgram = o;
     }
     
     @Override
@@ -90,11 +88,18 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         isDebug = b;
     }
 
-    @Override
-    public Eval getEval() {
-        return kgram;
+//    Eval getEval() {
+//        return kgram;
+//    }
+    
+    Eval getEval(Environment env) {
+        if (env.getEval() == null) {
+            logger.warn("env.getEval() = null");
+           // return getEval();
+        }
+        return env.getEval();
     }
-
+    
     @Override
     public ProxyInterpreter getProxy() {
         return proxy;
@@ -219,6 +224,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p) {
+        if (env.getEval() == null) {
+            logger.error("Environment getEval() = null in: ");
+            logger.info(exp.toString());
+        }
         return ((Expression) exp).eval(this, (Binding) env.getBind(), env, p);
     }
 
@@ -337,18 +346,25 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * use case: exists { exists { } }  the inner exists need outer exists
      * BGP to be bound // hence we need a fresh Memory to start
      */
+    public Computer getComputer(Environment env, Producer p, Expr function) {
+        InterpreterEval eval = getComputerEval(env, p, function);
+        return eval.getComputer();
+    }
+    
     @Override
-    public Interpreter getComputer(Environment env, Producer p, Expr function) {
+    public InterpreterEval getComputerEval(Environment env, Producer p, Expr function) {
         Query q = getQuery(env, function);
-        Interpreter in = new Interpreter(proxy);
-        in.setProducer(p);
-        Eval eval = Eval.create(p, in, kgram.getMatcher());
-        eval.setSPARQLEngine(kgram.getSPARQLEngine());
-        eval.set(kgram.getProvider());
+//        Interpreter in = new Interpreter(proxy);
+//        // original Producer, for cast purpose
+//        in.setProducer(producer);
+        Eval currentEval = getEval(env);
+        InterpreterEval eval = new InterpreterEval(p, this, currentEval.getMatcher());
+        eval.setSPARQLEngine(currentEval.getSPARQLEngine());
+        eval.set(currentEval.getProvider());
         eval.init(q);
-        eval.setVisitor(kgram.getVisitor());
+        eval.setVisitor(currentEval.getVisitor());
         eval.getMemory().setBind(env.getBind());
-        return in;
+        return eval;
     }
 
     Query getQuery(Environment env, Expr function) {
@@ -359,7 +375,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return env.getQuery();
     }
-
 
     /**
      * filter exists { } exists statement is also used to embed LDScript nested
@@ -383,17 +398,23 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Exp pat = q.getPattern(exp);
         Node gNode = env.getGraphNode();
         Memory memory = null;
+        Eval currentEval = getEval(env);
 
         // push env Bind stack into new memory
         if (env instanceof Memory) {
-            memory = kgram.getMemory((Memory) env, pat);
+            //memory = kgram .getMemory((Memory) env, pat);
+            memory = currentEval.getMemory((Memory) env, pat);
         } else if (env instanceof Mapping) {
-            memory = kgram.getMemory((Mapping) env, pat);
+            memory = currentEval.getMemory((Mapping) env, pat);
         } else {
             return null;
         }
         
-        Eval eval = kgram.copy(memory, p, this, exp.isSystem());
+        //Eval eval = kgram .copy(memory, p, this, exp.isSystem());
+        //Interpreter in = new Interpreter(proxy);
+        // producer below must be original Producer, it is used for cast purpose
+        //in.setProducer(producer);
+        Eval eval = currentEval.copy(memory, p, exp.isSystem());
         eval.setSubEval(true);
         Mappings map = null;
 
@@ -409,13 +430,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 qq.setFun(true);
                 if (qq.isConstruct()) {
                     // let (?g =  construct where)
-                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
-                    return (IDatatype) producer.getValue(m.getGraph());
+                    Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
+                    //return (IDatatype) producer.getValue(m.getGraph());
+                    return DatatypeMap.createObject(m.getGraph());
                 }
                 if (qq.getService() != null) {
                     // @service <uri> let (?m = select where)
-                    Mappings m = kgram.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
-                    return (IDatatype) producer.getValue(m);
+                    Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
+                    //return (IDatatype) producer.getValue(m);
+                    return DatatypeMap.createObject(m);
                 } else {
                     // let (?m = select where)
                     map = eval.subEval(qq, gNode, Stack.create(sub), 0);
@@ -436,7 +459,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         boolean b = map.size() > 0;
 
         if (exp.isSystem()) {
-            return (IDatatype) producer.getValue(map);
+            //return (IDatatype) producer.getValue(map);
+            return DatatypeMap.createObject(map);
         } else {
             return proxy.getValue(b);
         }
@@ -633,11 +657,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return proxy.getResultValue(res);
     }
 
-    @Override
-    public Environment getEnvironment() {
-        return kgram.getEnvironment();
-    }
-
     /**
      * Eval a function in new kgram with function's query use case: function
      * with exists or nested query
@@ -647,14 +666,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Deprecated
     IDatatype funEval(Expr exp, Query q, Environment env, Producer p) {
         //System.out.println("FunEval: " + exp.getFunction());
-        Interpreter in = new Interpreter(proxy);
-        in.setProducer(p);
-        Eval eval = Eval.create(p, in, kgram.getMatcher());
-        eval.setSPARQLEngine(kgram.getSPARQLEngine());
+//        Interpreter in = new Interpreter(proxy);
+//        in.setProducer(p);
+        Eval eval = Eval.create(p, this, getEval(env).getMatcher());
+        eval.setSPARQLEngine(getEval(env).getSPARQLEngine());
         eval.init(q);
         eval.getMemory().setBind(env.getBind());
 
-        return in.eval(exp.getBody(), eval.getMemory(), p);
+        return this.eval(exp.getBody(), eval.getMemory(), p);
     }
 
     @Override

@@ -29,7 +29,7 @@ mvn -U test verify -Pmaven-inria-fr-release'''
     }
     stage('Deploy on maven ossrh (maven central)') {
       steps {
-        sh 'mvn deploy -Pmaven-central-release'
+        sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
       }
     }
   }

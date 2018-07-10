@@ -45,6 +45,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String AFTER    = "@after";
     public static final String START    = "@start";
     public static final String FINISH   = "@finish";    
+    public static final String LIMIT    = "@limit";
+    public static final String TIMEOUT  = "@timeout";
     public static final String ORDERBY  = "@orderby";
     public static final String DISTINCT = "@distinct";
     public static final String PRODUCE  = "@produce";
@@ -62,7 +64,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String UNION    = "@union";
     public static final String FILTER   = "@filter";
     public static final String SELECT   = "@select";
-    public static final String FEDERATE = "@federate";
+    public static final String SERVICE  = "@service";
     public static final String QUERY    = "@query";
     public static final String GRAPH    = "@graph";
     public static final String AGGREGATE= "@aggregate";
@@ -71,10 +73,11 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     static final String[] EVENT_LIST = {
         BEFORE, AFTER, START, FINISH, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
-        BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, FEDERATE, QUERY, GRAPH, 
+        BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, SERVICE, QUERY, GRAPH, 
         AGGREGATE, HAVING, FUNCTION, ORDERBY, DISTINCT
     };
-    boolean active = false, select = false;
+    private boolean active = false;
+    boolean select = false;
     private boolean shareable = false;
     
     Eval eval;
@@ -168,6 +171,21 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return false;
     }
     
+    @Override
+    public boolean limit(Mappings map) {
+        IDatatype dt = callback(eval, LIMIT, toArray(map));
+        return dt == null || dt.booleanValue();
+    }
+    
+    @Override
+    public int timeout(Node serv) {
+        IDatatype dt = callback(eval, TIMEOUT, toArray(serv));
+        if (dt == null) {
+            return 0;
+        }
+        return dt.intValue();
+    }
+    
     
     @Override
     public IDatatype produce(Eval eval, Node g, Edge q) {  
@@ -249,7 +267,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     @Override
     public IDatatype service(Eval eval, Node s, Exp e, Mappings m) {       
-        return callback(eval, FEDERATE, toArray(s, e, m));
+        return callback(eval, SERVICE, toArray(s, e, m));
     }
     
     @Override
@@ -324,15 +342,15 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
  
     // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
-        if (active || ! accept(metadata)) {
+        if (isActive() || ! accept(metadata)) {
             return null;
         }
         Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
-            active = true;
+            setActive(true);
             IDatatype dt = call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
-            active = false;
+            setActive(false);
             return dt;
         }
         return null;
@@ -340,17 +358,17 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     // param = Mappings map
     IDatatype sort(Eval ev, String metadata, IDatatype[] param) {
-        if (active || ! accept(metadata)) {
+        if (isActive() || ! accept(metadata)) {
             return null;
         }
         // function us:compare(?m1, ?m2)
         Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, 2);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
-            active = true;
+            setActive(true);
             IDatatype dt = new ListSort("sort").sort((Computer) ev.getEvaluator(), (Binding) ev.getEnvironment().getBind(), ev.getEnvironment(), 
                     ev.getProducer(),  function, param[0] );
-            active = false;
+            setActive(false);
             return dt;
         }
         return null;
@@ -404,6 +422,24 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
 
     public void setShareable(boolean shareable) {
         this.shareable = shareable;
+    }
+    
+     /**
+     * @return the active
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * @param active the active to set
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    public void sleep(boolean b) {
+        setActive(b);
     }
     
 

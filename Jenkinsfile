@@ -41,7 +41,7 @@ mvn -U test verify -Pmaven-inria-fr-release'''
     }
     stage('Deploy on maven ossrh (maven central)') {
 	    if (env.DEPLOY_TO_CENTRAL == 'true') {
-		    echo "deploying"
+		    echo 'deploying'
 		    steps {
 			    sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
 		    }

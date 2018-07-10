@@ -801,11 +801,12 @@ public class Eval implements ExpType, Plugin {
         }
         if (results.size() >= limit) {
             clean();
-//			if (hasEvent){
-//				send(Event.LIMIT, query, map);
-//			}
             // backjump to send finish events to listener
             // and perform 'close instructions' if any
+            return STOP;
+        }
+        if (! getVisitor().limit(results)) {
+            clean();
             return STOP;
         }
         if (backjump != -1) {

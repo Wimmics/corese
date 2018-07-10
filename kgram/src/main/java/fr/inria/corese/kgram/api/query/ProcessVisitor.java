@@ -36,6 +36,10 @@ public interface ProcessVisitor extends Pointerable {
     default DatatypeValue orderby(Mappings map) { return null; }
     
     default boolean distinct(Mapping map) { return true; }
+    
+    default boolean limit(Mappings map) { return true;}
+    
+    default int timeout(Node serv) { return 0; }
 
     default DatatypeValue produce(Eval eval, Node g, Edge edge) { return null; }
     

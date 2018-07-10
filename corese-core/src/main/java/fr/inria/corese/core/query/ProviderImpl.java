@@ -387,10 +387,10 @@ public class ProviderImpl implements Provider {
         return null;
     }
     
-    int getTimeout(Query q) {
+    int getTimeout(Query q, Node serv, Environment env) {
         Integer time = (Integer) q.getGlobalQuery().getPragma(Pragma.TIMEOUT);
         if (time == null) {
-            return 0;
+            return env.getEval().getVisitor().timeout(serv);
         }
         return time;
     }
@@ -399,7 +399,7 @@ public class ProviderImpl implements Provider {
         if (isDB(serv)){
             return db(q, serv);
         }
-        return send(q, serv);
+        return send(q, serv,env);
     }
     
     /**
@@ -415,10 +415,10 @@ public class ProviderImpl implements Provider {
         return serv.getLabel().startsWith(DB);
     }
     
-    Mappings send(Query q, Node serv) throws IOException, ParserConfigurationException, SAXException {
+    Mappings send(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getAST();
         String query = ast.toString();
-        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q));
+        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q, serv, env));
         return parse(stream);
     }
 

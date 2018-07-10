@@ -27,7 +27,7 @@ public class Metadata extends ASTObject
     // Query
     public static final int RELAX   = 11;
     public static final int MORE    = 12;
-    public static final int SERVICE = 13;
+    public static final int FEDERATE = 13;
     public static final int DISPLAY = 14;
     public static final int BIND    = 15;
     public static final int TYPE    = 16;
@@ -99,7 +99,7 @@ public class Metadata extends ASTObject
         define("@public",   PUBLIC);      
         define("@more",     MORE);      
         define("@relax",    RELAX);      
-        define("@service",  SERVICE);      
+        define("@federate",  FEDERATE);      
         define("@local",    LOCAL);      
         define("@bounce",   BOUNCE);      
         define("@sparqlzero", SPARQL10);      

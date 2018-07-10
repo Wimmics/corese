@@ -1255,7 +1255,7 @@ public class ASTQuery
                 case Metadata.DEBUG:
                     setDebug(true);
                     break;
-                case Metadata.SERVICE:
+                case Metadata.FEDERATE:
                     defService(meta.getValues(m));
                     break;
             }

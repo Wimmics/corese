@@ -49,7 +49,6 @@ mvn -U test verify -Pmaven-inria-fr-release'''
 		    echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
 	    }
     }
-*/
   stage('Example') {
         if (env.BRANCH_NAME == 'master') {
             echo 'I only execute on the master branch'
@@ -57,5 +56,6 @@ mvn -U test verify -Pmaven-inria-fr-release'''
             echo 'I execute elsewhere'
         }
     }
+*/
   }
 }

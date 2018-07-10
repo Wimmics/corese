@@ -23,8 +23,17 @@ mvn -U test verify -Pmaven-inria-fr-release'''
       }
     }
     stage('Report') {
-      steps {
-        junit(testResults: '**/target/*-reports/*.xml', healthScaleFactor: 50)
+      parallel {
+        stage('Report') {
+          steps {
+            junit(testResults: '**/target/*-reports/*.xml', healthScaleFactor: 50)
+          }
+        }
+        stage('') {
+          steps {
+            jacoco(classPattern: '**/classes', execPattern: '**/**.exec', inclusionPattern: '**/*.class', sourcePattern: '**/src/main/java')
+          }
+        }
       }
     }
     stage('Deploy on maven ossrh (maven central)') {

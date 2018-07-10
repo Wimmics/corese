@@ -642,6 +642,7 @@ public class Eval implements ExpType, Plugin {
             // assign stack index to EDGE and NODE
             q.complete(producer);//service while1 / Query
             memory = new Memory(match, evaluator); 
+            memory.setEval(this);
             getEvaluator().init(memory);
             // create memory bind stack
             memory.init(q);
@@ -3152,7 +3153,7 @@ public class Eval implements ExpType, Plugin {
                 }
                 boolean b = true;
                 if (! isSubEval) {
-                    b = getVisitor().distinct(ans);
+                    b = getVisitor().distinct(query, ans);
                     if (b) {
                         b = getVisitor().result(this, results, ans);
                     }

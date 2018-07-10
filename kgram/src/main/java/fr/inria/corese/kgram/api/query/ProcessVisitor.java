@@ -35,7 +35,7 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue orderby(Mappings map) { return null; }
     
-    default boolean distinct(Mapping map) { return true; }
+    default boolean distinct(Query q, Mapping map) { return true; }
     
     default boolean limit(Mappings map) { return true;}
     

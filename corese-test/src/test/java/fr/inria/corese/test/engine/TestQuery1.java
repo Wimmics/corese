@@ -143,6 +143,38 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+     @Test
+    public void testGlobalVar() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { us:John rdf:value 1, 2, 3 }";
+        
+        String q = "@event select "
+                + "(aggregate(exists { "
+                + "select (aggregate(exists {?x rdf:value ?v }) as ?vv)  where {?x rdf:value ?f  }"
+                + "}) as ?l) "
+                + "where {"
+                + "?x rdf:value ?w"
+                + "}"
+                                
+                + "@statement "
+                + "function us:stmt(?g, ?e) { funcall(?fun, 'test') }"
+                
+                + "@before "
+                + "function us:before(?q) { "
+                + "set(?fun = lambda(?x) { set(?count = 1 + ?count) } ) "
+                + "}"
+                ;
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Binding b = Binding.create().setVariable("?count", DatatypeMap.ZERO);
+        Mappings map = exec.query(q, b);
+        assertEquals(22, b.getVariable("?count").intValue());
+    }
+    
+    
     @Test
     public void testGlobal2() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -2497,8 +2529,8 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         String q =
-                "@service <http://fr.dbpedia.org/sparql> "
-                        + "@service <http://dbpedia.org/sparql> "
+                "@federate <http://fr.dbpedia.org/sparql> "
+                        + " <http://dbpedia.org/sparql> "
                         + "select distinct ?l where { "
                         + "?x rdfs:label 'Paris'@fr, ?l "
                         + "filter langMatches(lang(?l), 'en') "
@@ -2516,8 +2548,8 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         String q =
-                "@service <http://fr.dbpedia.org/sparql> "
-                        + "@service <http://dbpedia.org/sparql> "
+                "@federate <http://fr.dbpedia.org/sparql> "
+                        + " <http://dbpedia.org/sparql> "
                         + "select distinct ?g ?l "
                         + "from <http://dbpedia.org> "
                         + "from <http://fr.dbpedia.org> "
@@ -5313,7 +5345,7 @@ public class TestQuery1 {
 
     @Test
     public void testPPOWL() throws EngineException, LoadException {
-        Graph g = createGraph();
+        Graph g = Graph.create();
         Load ld = Load.create(g);
         ////System.out.println("Load");
         ld.parse(data + "template/owl/data/primer.owl");
@@ -8246,7 +8278,7 @@ public class TestQuery1 {
     @Test
     public void testSparqlInriaAccess() throws EngineException {
         String query = "prefix h: <http://www.inria.fr/2015/humans#>\n" +
-                "@service <http://corese.inria.fr/sparql>  \n" +
+                "@federate <http://corese.inria.fr/sparql>  \n" +
                 "select  * {\n" +
                 " ?x h:name ?n \n" +
                 "}";

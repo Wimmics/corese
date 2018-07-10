@@ -23,6 +23,8 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Callback manager for LDScript functions with specific annotations Eval SPARQL
@@ -39,7 +41,8 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
  *
  */
 public class QuerySolverVisitor extends PointerObject implements ProcessVisitor {
-
+    private static Logger logger = LoggerFactory.getLogger(QuerySolverVisitor.class);
+   
     public static final String SHARE    = "@share";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
@@ -79,6 +82,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     private boolean active = false;
     boolean select = false;
     private boolean shareable = false;
+    private boolean debug = false;
     
     Eval eval;
     Query query;
@@ -129,7 +133,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         if (query == q) {
             return callback(eval, BEFORE, toArray(q));
         }
-        // special case: let(construct where)
+        // subquery
         return start(q);
     }
     
@@ -138,7 +142,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         if (map.getQuery() == query) {
             return callback(eval, AFTER, toArray(map));
         }
-        // special case: let(construct where)
+        // subquery
         return finish(map);
     }
     
@@ -158,7 +162,10 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     @Override
-    public boolean distinct(Mapping map) {
+    public boolean distinct(Query q, Mapping map) {
+        if (q != query) {
+            return true;
+        }
         IDatatype key = callback(eval, DISTINCT, toArray(map));
         if (key == null) {
             return true;
@@ -339,9 +346,16 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return (exp != null);
     }
     
+    void trace(Eval ev, String metadata, IDatatype[] param) {
+        if (isDebug()) {
+            logger.info(String.format("SolverVisitor: %s", metadata));
+        }
+    }
+    
  
     // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
+        trace(ev, metadata, param);
         if (isActive() || ! accept(metadata)) {
             return null;
         }
@@ -440,6 +454,20 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     public void sleep(boolean b) {
         setActive(b);
+    }
+    
+    /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
     
 

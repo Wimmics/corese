@@ -40,14 +40,14 @@ mvn -U test verify -Pmaven-inria-fr-release'''
       }
     }
     stage('Deploy on maven ossrh (maven central)') {
-        steps {
-		if (env.DEPLOY_TO_CENTRAL == 'true') {
-			echo "deploying"
-				sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
-		} else {
-			echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
-		}
-	}
+	    if (env.DEPLOY_TO_CENTRAL == 'true') {
+		    echo "deploying"
+		    steps {
+			    sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
+		    }
+	    } else {
+		    echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
+	    }
     }
   }
 }

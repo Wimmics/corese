@@ -1,5 +1,8 @@
 pipeline {
   agent any
+	  environment {
+		  DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
+	  }
   stages {
     stage('Build') {
       steps {
@@ -35,9 +38,6 @@ mvn -U test verify -Pmaven-inria-fr-release'''
           }
         }
       }
-    }
-    environment {
-      DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
     }
     stage('Deploy on maven ossrh (maven central)') {
         steps {

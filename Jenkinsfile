@@ -37,9 +37,17 @@ mvn -U test verify -Pmaven-inria-fr-release'''
       }
     }
     stage('Deploy on maven ossrh (maven central)') {
-      steps {
-        sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
-      }
+	    pom = readMavenPom file: "pom.xml"
+		    deployment = pom.deployOnMavenCentral == null ? false : pom.deployOnMavenCentral
+		    if (deployment) {
+			    steps {
+				    sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
+			    }
+		    } else {
+			    steps {
+				    echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
+			    }
+		    }
     }
   }
 }

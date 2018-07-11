@@ -1,12 +1,18 @@
 pipeline {
   agent any
-	  environment {
-		  DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
-	  }
   stages {
     stage('Build') {
-      steps {
-        sh 'mvn clean install -Pjenkins -Dmaven.test.skip=true'
+      parallel {
+        stage('Build') {
+          steps {
+            sh 'mvn clean install -Pjenkins -Dmaven.test.skip=true'
+          }
+        }
+        stage('') {
+          steps {
+            sh 'echo "env.DEPLOY_TO_CENTRAL = " + env.DEPLOY_TO_CENTRAL'
+          }
+        }
       }
     }
     stage('Test') {
@@ -32,7 +38,7 @@ mvn -U test verify -Pmaven-inria-fr-release'''
             junit(testResults: '**/target/*-reports/*.xml', healthScaleFactor: 50)
           }
         }
-        stage('') {
+        stage('error') {
           steps {
             jacoco(classPattern: '**/classes', execPattern: '**/**.exec', inclusionPattern: '**/*.class', sourcePattern: '**/src/main/java')
           }
@@ -40,18 +46,22 @@ mvn -U test verify -Pmaven-inria-fr-release'''
       }
     }
     stage('Deploy on maven ossrh (maven central)') {
-	steps {
-		script {
-			if (env.DEPLOY_TO_CENTRAL == 'true') {
-				echo 'deploying'
-					steps {
-						sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
-					}
-			} else {
-				echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
-			}
-		}
-	}
-    } 
+      steps {
+        script {
+          if (env.DEPLOY_TO_CENTRAL == 'true') {
+            echo 'deploying'
+            steps {
+              sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
+            }
+          } else {
+            echo 'not deploying since property deployOnMavenCentral is not set in the root pom.xml'
+          }
+        }
+
+      }
+    }
+  }
+  environment {
+    DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
   }
 }

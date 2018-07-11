@@ -101,7 +101,7 @@
 	</distributionManagement>
 
 	<properties>
-		<deployOnMavenCentral>false</deployOnMavenCentral>
+		<deployOnMavenCentral>true</deployOnMavenCentral>
 		<!-- Unique entry point for version number management -->
 		<revision>4.0.2-SNAPSHOT</revision>
 		<!-- To ignore errors in javadoc usage. -->

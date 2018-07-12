@@ -10,7 +10,7 @@ pipeline {
         }
         stage('') {
           steps {
-            sh 'echo "env.DEPLOY_TO_CENTRAL = " + env.DEPLOY_TO_CENTRAL'
+            sh 'echo "env.DEPLOY_TO_CENTRAL = " + ${env.DEPLOY_TO_CENTRAL}'
           }
         }
       }
@@ -48,7 +48,7 @@ mvn -U test verify -Pmaven-inria-fr-release'''
     stage('Deploy on maven ossrh (maven central)') {
       steps {
         script {
-          if (env.DEPLOY_TO_CENTRAL == 'true') {
+          if (${env.DEPLOY_TO_CENTRAL} == 'true') {
             echo 'deploying'
             steps {
               sh 'mvn deploy -Pmaven-central-release -Dmaven.test.skip=true'
@@ -62,6 +62,6 @@ mvn -U test verify -Pmaven-inria-fr-release'''
     }
   }
   environment {
-    DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
+    DEPLOY_TO_CENTRAL = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
   }
 }

@@ -8,9 +8,9 @@ pipeline {
             sh 'mvn clean install -Pjenkins -Dmaven.test.skip=true'
           }
         }
-        stage('') {
+        stage('display value') {
           steps {
-            sh 'echo "env.DEPLOY_TO_CENTRAL = " + ${env.DEPLOY_TO_CENTRAL}'
+            sh 'echo "env.DEPLOY_TO_CENTRAL = ${env.DEPLOY_TO_CENTRAL}"'
           }
         }
       }

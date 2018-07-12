@@ -10,7 +10,7 @@ pipeline {
         }
         stage('display value') {
           steps {
-            sh 'echo "env.DEPLOY_TO_CENTRAL = ${env.DEPLOY_TO_CENTRAL}"'
+            sh "echo \"env.DEPLOY_TO_CENTRAL = ${env.DEPLOY_TO_CENTRAL}\""
           }
         }
       }

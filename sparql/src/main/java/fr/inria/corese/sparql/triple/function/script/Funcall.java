@@ -6,8 +6,11 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.util.List;
 
 /**
  * funcall(fun, exp) apply(fun, list)
@@ -37,14 +40,32 @@ public class Funcall extends TermEval {
             if (param.length == 0) {
                 return null;
             }
-            param = (IDatatype[]) param[0].getValueList().toArray();
+            param = DatatypeMap.toArray(param[0]);
         }
 
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        Function function = getFunction(eval, env, name, param.length);
         if (function == null) {
             return null;
         }
         return call(eval, b, env, p, function, param);
+    }
+    
+    Function getFunction(Computer eval, Environment env, IDatatype dt, int n) {
+        String name = dt.stringValue();
+        Function function = (Function) eval.getDefineGenerate(this, env, name, n);
+        if (function == null) {
+            if (dt.pointerType() == Pointerable.EXPRESSION_POINTER) {
+                // lambda expression, arity is not correct                
+            } else {
+                eval.getEval().getSPARQLEngine().getLinkedFunction(name);
+                function = (Function) eval.getDefineGenerate(this, env, name, n);
+
+                if (function == null) {
+                    logger.error("Undefined function: " + name);
+                }
+            }
+        }
+        return function;
     }
 
     public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param) {

@@ -171,10 +171,14 @@ public class Eval implements ExpType, Plugin {
             send(Event.BEGIN, q);
         }
         initMemory(q);
+        if (m != null && m.getBind() != null && memory.getBind() != null) {
+            memory.getBind().share(m.getBind());
+        }
         producer.start(q);
         getVisitor().init(q);
         getVisitor().before(q);        
-        Mappings map = eval(null, q, m);
+        Mappings map = eval(null, q, m);        
+        getVisitor().orderby(map);
         getVisitor().after(map);
 
         producer.finish(q);
@@ -188,7 +192,7 @@ public class Eval implements ExpType, Plugin {
     public void finish(Query q, Mappings map) {
     }
 
-    private Mappings eval(Node gNode, Query q, Mapping map) {
+    public Mappings eval(Node gNode, Query q, Mapping map) {
         init(q);
         if (q.isValidate()) {
             // just compile and complete query
@@ -382,6 +386,19 @@ public class Eval implements ExpType, Plugin {
         //memory.setResults(save);
         return results;
     }
+    
+    /**
+     * gNode = subQuery.getGraphNode(graphName);
+     * node = env.getNode(graphName)
+     * 
+     */
+    public Mappings query(Node gNode, Node node, Query query) {
+        if (gNode != null && node != null) {
+            getMemory().push(gNode, node);
+        }
+        return eval(gNode, query, null);
+    }
+    
 
     // draft for processing EXTERN expression
     public void add(Plugin p) {
@@ -1258,47 +1275,6 @@ public class Eval implements ExpType, Plugin {
         mem.setJoinMappings(map);
     }
     
-    /**
-     * Use case: federated query, service clause
-     * Eval exp in the context of partial solution Mappings
-     * first case
-     * main = join(A, B) ; exp = B ; B contains service clause
-     * eval(A) = Mappings map
-     * eval(B) provided with map as partial solutions to be used by service in B
-     * Mapping map is provided to eval(B) by mem.setJoinMappings(map)
-     * other patterns:
-     * main = minus(A, B) ;  main = optional(A, B)
-     * 
-     * second case
-     * context : join (A, main) ; memory has joinMappings from A   
-     * main = optional(e1, e2) ;  exp = e1 ; mem provided with Mappings from memory
-     */
-//    void joinMappings(Memory mem, Exp exp, Exp main) {
-//        switch (main.type()) {
-//            case Exp.JOIN:
-//                service(exp, mem);
-//            // continue
-//            case Exp.MINUS:
-//            case Exp.OPTIONAL:
-//                // draft test
-//                if (memory.getJoinMappings() != null && exp == main.first()) {
-//                    // use case:
-//                    // 1- join (A, and(optional(s1, s2)))
-//                    // optional in rest of join inherits Mappings of first of join
-//                    // 2- A optional { join (s1, s2) }
-//                    // join in optional inherits Mappings
-//                    mem.setJoinMappings(memory.getJoinMappings());
-//                    // clean for statements after this main
-//                    memory.setJoinMappings(null);
-//                } else {
-//                    // pragma: exp == main.rest()                   
-//                    mem.setJoinMappings(exp.getMappings());
-//                }
-//                break;
-//
-//        }
-//    }
-    
     void bindExpNodeList(Memory mem, Exp exp) {
         for (Node qnode : exp.getNodeList()) {
             // Node node = memory.getNode(qnode);
@@ -2114,26 +2090,15 @@ public class Eval implements ExpType, Plugin {
 
         if (serv.isVariable()) {
             node = env.getNode(serv);
-//            if (node == null) {
-//                logger.error("Service variable unbound: " + serv);
-//                return backtrack;
-//            }
         }
 
         if (provider != null) {
-//            StopWatch sw = new StopWatch();
-//            sw.start();
             // service delegated to provider
-            // Mappings lMap = provider.service(node, exp, exp.getMappings(), env);
-            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), env, p);
-            getVisitor().service(this, getGraphNode(gNode), exp, lMap);
+            Mappings lMap = provider.service(node, exp, env.getJoinMappings(), this);
             
             for (Mapping map : lMap) {
                 // push each Mapping in memory and continue
                 complete(query, map);
-                // draft test:
-                //submit(map);
-                // remove comment:
                 if (env.push(map, n, false)) {
                     backtrack = eval(gNode, stack, n + 1);
                     env.pop(map, false);
@@ -2142,8 +2107,6 @@ public class Eval implements ExpType, Plugin {
                     }
                 }
             }
-//            sw.stop();
-//            logger.info("\n\tSERVICE in " + sw.getTime() + "ms.  \n\tFOR " + exp.rest().getExpList() + "\n");
         } else {
             Query q = exp.rest().getQuery();
             return query(p, gNode, q, stack, n);
@@ -2157,9 +2120,6 @@ public class Eval implements ExpType, Plugin {
         for (Node node : map.getQueryNodes()) {
             Node out = q.getOuterNode(node);
             map.getQueryNodes()[i] = out;
-//            if (out != null) {
-//                map.getQueryNodes()[i] = out;
-//            }
             i++;
         }
     }
@@ -2737,54 +2697,6 @@ public class Eval implements ExpType, Plugin {
         return ! (q.isFun() && local.containsKey(name));
     }
 
-
-//    private int node(Node gNode, Exp exp, Stack stack, int n) {
-//        int backtrack = n - 1;
-//        // enumerate candidate nodes
-//        Node qNode = exp.getNode();
-//        Memory env = memory;
-//
-//        //if (qNode == null) break;
-//        if (exp.hasArg()) {
-//            // target nodes to bind to this qnode
-//            for (Exp ee : exp) {
-//                Node node = ee.getNode();
-//                if (match.match(qNode, node, env) && env.push(qNode, node, n)) {
-//                    backtrack = eval(gNode, stack, n + 1);
-//                    env.pop(qNode);
-//                    if (backtrack < n) {
-//                        return backtrack;
-//                    }
-//                }
-//            }
-//        } else {
-//            for (Entity entity : producer.getNodes(gNode, query.getFrom(gNode), qNode, env)) {
-//
-//                if (entity != null) {
-//                    Node node = entity.getNode();
-//                    Node graph = entity.getGraph();
-//
-//                    if (match(qNode, node, gNode, graph) && push(qNode, node, gNode, graph, n)) {
-//
-//                        backtrack = eval(gNode, stack, n + 1);
-//
-//                        if (gNode != null) {
-//                            env.pop(gNode);
-//                        }
-//                        env.pop(qNode);
-//
-//                        if (backtrack < n) {
-//                            return backtrack;
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//        return backtrack;
-//    }
-
     /**
      * select * where {{select distinct ?y where {?x p ?y}} . ?y q ?z} new eval,
      * new memory, share only sub query select variables
@@ -3202,7 +3114,10 @@ public class Eval implements ExpType, Plugin {
                 }
                 boolean b = true;
                 if (! isSubEval) {
-                    b = getVisitor().result(this, results, ans);
+                    b = getVisitor().distinct(ans);
+                    if (b) {
+                        b = getVisitor().result(this, results, ans);
+                    }
                 }
                 if (b) {
                     results.add(ans);

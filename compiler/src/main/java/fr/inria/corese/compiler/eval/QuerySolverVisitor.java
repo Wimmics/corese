@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 
 /**
@@ -40,6 +41,8 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
+    public static final String ORDERBY  = "@orderby";
+    public static final String DISTINCT = "@distinct";
     public static final String PRODUCE  = "@produce";
     public static final String RESULT   = "@result";
     public static final String STATEMENT= "@statement";
@@ -65,13 +68,14 @@ public class QuerySolverVisitor implements ProcessVisitor {
     static final String[] EVENT_LIST = {
         BEFORE, AFTER, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
         BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, FEDERATE, QUERY, GRAPH, 
-        AGGREGATE, HAVING, FUNCTION
+        AGGREGATE, HAVING, FUNCTION, ORDERBY, DISTINCT
     };
     boolean active = false, select = false;
     
     Eval eval;
     Query query;
     ASTQuery ast;
+    IDatatype distinct;
 
     QuerySolverVisitor(Eval e) {
         eval = e;
@@ -92,6 +96,7 @@ public class QuerySolverVisitor implements ProcessVisitor {
                 break;
             }
         }
+        distinct = DatatypeMap.map();
     }
     
     boolean accept(String name) {
@@ -114,6 +119,26 @@ public class QuerySolverVisitor implements ProcessVisitor {
     }
     
     @Override
+    public IDatatype orderby(Mappings map) {
+        return sort(eval, ORDERBY, toArray(map));
+    }
+    
+    @Override
+    public boolean distinct(Mapping map) {
+        IDatatype key = callback(eval, DISTINCT, toArray(map));
+        if (key == null) {
+            return true;
+        }
+        IDatatype res = distinct.get(key);
+        if (res == null) {
+            distinct.set(key, key);
+            return true;
+        }
+        return false;
+    }
+    
+    
+    @Override
     public IDatatype produce(Eval eval, Node g, Edge q) {  
         return callback(eval, PRODUCE, toArray(g, q));
     }
@@ -125,8 +150,7 @@ public class QuerySolverVisitor implements ProcessVisitor {
         
     @Override
     public boolean result(Eval eval, Mappings map, Mapping m) {       
-        return result(callback(eval, RESULT, toArray(map, m)));
-        
+        return result(callback(eval, RESULT, toArray(map, m)));       
     }
     
     boolean result(IDatatype dt) {
@@ -193,8 +217,8 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     
     @Override
-    public IDatatype service(Eval eval, Node g, Exp e, Mappings m) {       
-        return callback(eval, FEDERATE, toArray(g, e, m));
+    public IDatatype service(Eval eval, Node s, Exp e, Mappings m) {       
+        return callback(eval, FEDERATE, toArray(s, e, m));
     }
     
     @Override
@@ -272,11 +296,29 @@ public class QuerySolverVisitor implements ProcessVisitor {
         if (active || ! accept(metadata)) {
             return null;
         }
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
-        if (exp != null) {
+        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             active = true;
-            IDatatype dt = call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            IDatatype dt = call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            active = false;
+            return dt;
+        }
+        return null;
+    }
+    
+    // param = Mappings map
+    IDatatype sort(Eval ev, String metadata, IDatatype[] param) {
+        if (active || ! accept(metadata)) {
+            return null;
+        }
+        // function us:compare(?m1, ?m2)
+        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, 2);
+        if (function != null) {
+            // prevent infinite loop in case where there is a query in the function
+            active = true;
+            IDatatype dt = new ListSort("sort").sort((Computer) ev.getEvaluator(), (Binding) ev.getEnvironment().getBind(), ev.getEnvironment(), 
+                    ev.getProducer(),  function, param[0] );
             active = false;
             return dt;
         }
@@ -285,9 +327,9 @@ public class QuerySolverVisitor implements ProcessVisitor {
     
     // @type us:before function us:event () {}
     public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
-        Expr exp = eval.getEvaluator().getDefineMethod(getEnvironment(), name, DatatypeMap.newResource(type), param);
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, DatatypeMap.newResource(type), param);
         if (exp != null) {
-            return call((Function) exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            return call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
         }
         return null;
     }

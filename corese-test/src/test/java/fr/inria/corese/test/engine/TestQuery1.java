@@ -50,6 +50,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,9 +71,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestQuery1 {
 
-    static String data  = Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/";
-    static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query").getPath() + "/";
-    static String text  = Thread.currentThread().getContextClassLoader().getResource("text").getPath() + "/";
+    static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
+    static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query/").getPath() ;
+    static String text  = Thread.currentThread().getContextClassLoader().getResource("text/").getPath() ;
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
@@ -141,6 +142,232 @@ public class TestQuery1 {
 
         return graph;
     }
+    
+    @Test
+    public void testGlobal2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+        Load ld = Load.create(g);
+        String qq = "@event select (us:fun() as ?t) where {} "
+                + "@before function us:before(?q) { set(?zz = 4) }"
+                + "function us:fun() {let (select (us:test() as ?t) where {}) { ?t }}"
+                + "function us:test() { set(?yy = 2 * ?zz + ?var + ?test) }";
+
+        //exec.query(i);
+        Binding b = Binding.create()
+                .setVariable("?var",  DatatypeMap.ONE)
+                .setVariable("?test", DatatypeMap.TWO);
+        Mappings map = exec.query(qq, b);
+        assertEquals(11, b.getVariable("?yy").intValue());
+        assertEquals(11, map.getValue("?t").intValue());
+    }
+    
+    
+     @Test
+      public void testGlobal() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+         QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+         String q = "@event \n"
+                 + "select (us:test() as ?t) where {\n"
+                 + "\n"
+                 + "}\n"
+                 
+                 + "function us:test() {\n"
+                 + "    let (?g = \n"
+                 + "        construct {us:John rdfs:label 'John'} \n"
+                 + "        where { \n"
+                 + "        bind (set(?var = 0) as ?tt)\n"
+                 + "        bind (us:global() as ?gg) \n"
+                 + "        bind (us:fun() as ?hh)\n"
+                 + "        }\n"
+                 + "    )  {\n"
+                 + "        ?g\n"
+                 + "    }\n"
+                 + "}\n"
+                 
+                 + "function us:fun() {\n"
+                 + "    let (select  (aggregate(us:global()) as ?agg) \n"
+                 + "         where {\n"
+                 + "         values ?x { unnest(xt:iota(3)) } }\n"
+                 + "         ) {\n"
+                 + "        ?agg\n"
+                 + "    }\n"
+                 + "}\n"
+                 
+                 + "function us:global() {\n"
+                 + "    set(?var = if (bound(?var), ?var + 1, 0)) ;"
+                 + "    ?var\n"
+                 + "}\n"
+                 
+                 + "@beforee\n"
+                 + "function us:before(?q) {\n"
+                 + "    set(?var = 0)\n"
+                 + "}\n"
+                 ;
+           
+         //exec.query(i);
+         Mappings map = exec.query(q);
+         DatatypeValue dt = map.getValue("?t");
+         Binding b =  exec.getBinding();
+         assertEquals(4, b.getVariable("?var").intValue());
+    }
+    
+    
+      @Test 
+    public void testApply() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);               
+         String q = "function xt:main() {"
+                 + "apply(us:test, xt:list()) + apply(us:test, xt:list(1)) + apply (us:test, xt:list(2, 3))"
+                 + "}"
+                 
+                 + "function us:test() {"
+                 + "10"
+                 + "}" 
+                 
+                 + "function us:test(?x) {"
+                 + "?x"
+                 + "}"
+                 
+                 + "function us:test(?x, ?y) {"
+                 + "?x + ?y "
+                 + "}"
+                 
+                 ;
+         
+         IDatatype dt = exec.eval(q);
+         assertEquals(16, dt.intValue());
+    }
+    
+      @Test 
+    public void testDistinct() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        QueryLoad ql = QueryLoad.create();
+        // Other Test Sources src/test/resources/test.query
+        String i = "insert data {"
+                + "us:Jack owl:sameAs us:John ."
+                + "us:John owl:sameAs us:Jack ."
+                + "us:Jack foaf:knows us:Jim, us:Jesse ."
+                + "us:John foaf:knows us:James, us:Jesse ."
+                + "}";
+        
+          String q = "@event "
+                  + "select * "
+                  + "where {"
+                  + "  ?a owl:sameAs ?b"
+                  + "  {?a foaf:knows ?x} union {?b foaf:knows ?x}"
+                  + "}"
+
+                  + "@distinct "
+                  + "function us:distinct(?m) {"
+                  + "    let ((?a ?b ?x) = ?m) {"
+                  + "        us:key(xt:add(xt:sort(xt:list(?a, ?b)), ?x))"
+                  + "    }"
+                  + "}"
+                                
+                  + "function us:key(?l) {"
+                  + "    reduce(rq:concat, maplist(lambda(?e) { concat(xt:index(?e), '.') }, ?l))"
+                  + "}"
+                  + "";
+
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(3, map.size());
+    }
+     
+    
+       @Test
+    public void testOrderby() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        
+         String i = "insert data {"
+                 + "graph us:g1 { "
+                 + "us:Jack foaf:name 'Jack'    ; "
+                 + "foaf:knows us:Jim, us:Jesse "
+                 + "}"
+                 + "graph us:g2 { "
+                 + "us:Jim foaf:knows us:Jack, us:James . "
+                 + "us:James foaf:name 'James' ; foaf:knows us:Jesse "
+                 + "}"
+                 + "}";
+        
+        String q = "@event "
+                + "select *"
+                + "where {"
+                + "  ?a foaf:knows ?y optional {?y foaf:name ?n}"
+                + "}"
+               
+                + "@orderby  "
+                + "function us:comparemap2(?m1, ?m2) {"
+                + "    us:revcompare(xt:size(?m1) , xt:size(?m2))"
+                + "}"
+                              
+                + "function us:compare(?x, ?y) {"
+                + "    if (?x < ?y, -1, if (?x = ?y, 0, 1))"
+                + "}"
+
+                + "function us:revcompare(?x, ?y) {"
+                + "    if (?x < ?y, 1, if (?x = ?y, 0, -1))"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int j = 1;
+        for (Mapping m : map) {
+            assertEquals( (j++ > 2) ? 2 : 3, m.size());
+        }
+    }
+     
+    @Test
+    public void testOrderby2() throws EngineException, LoadException {
+        QueryProcess exec = QueryProcess.create();
+        
+         String i = "insert data {"
+                 + "graph us:g1 { "
+                 + "us:Jack foaf:name 'Jack'    ; "
+                 + "foaf:knows us:Jim, us:Jesse "
+                 + "}"
+                 + "graph us:g2 { "
+                 + "us:Jim foaf:knows us:Jack, us:James . "
+                 + "us:James foaf:name 'James' ; foaf:knows us:Jesse "
+                 + "}"
+                 + "}";
+        
+        String q = "@event "
+                + "select *"
+                + "where {"
+                + "  ?a foaf:knows ?y optional {?y foaf:name ?n}"
+                + "}"
+               
+                + "@after "
+                + "function us:after(?map){"
+                + "xt:sort(?map, us:comparemap2)"
+                + "}  "
+                
+                + "function us:comparemap2(?m1, ?m2) {"
+                + "    us:revcompare(xt:size(?m1) , xt:size(?m2))"
+                + "}"
+                              
+                + "function us:compare(?x, ?y) {"
+                + "    if (?x < ?y, -1, if (?x = ?y, 0, 1))"
+                + "}"
+
+                + "function us:revcompare(?x, ?y) {"
+                + "    if (?x < ?y, 1, if (?x = ?y, 0, -1))"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int j = 1;
+        for (Mapping m : map) {
+            assertEquals( (j++ > 2) ? 2 : 3, m.size());
+        }
+    }
+
     
     @Test
     public void testMap3() throws EngineException, LoadException {
@@ -953,8 +1180,8 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        ////System.out.println(map);
-        Assert.assertEquals(0, map.size());
+        //System.out.println(map);
+        Assert.assertEquals(1, map.size());
     }
 
     @Test
@@ -3320,7 +3547,7 @@ public class TestQuery1 {
         String q =
                 "prefix ex: <http://ns.inria.fr/sparql-extension/aggregate#>"
                         + "select * "
-                        + "(ex:median(xt:iota(5)) as ?m)"
+                        + "(funcall(ex:median, xt:iota(5)) as ?m)"
                         + "(ex:sigma(xt:iota(5)) as ?s)"
                         + ""
                         + "where {}";
@@ -3557,14 +3784,12 @@ public class TestQuery1 {
                 + "us:test()"
                 + "}"
                 + "function us:test(){"
-                + "let ((?m) = select ?x (us:surface(?x) as ?s) where {?x a ?t}){"
-                + "let ((?s, ?x) = ?m){"
+                + "let (select ?x (us:surface(?x) as ?s) where {?x a ?t} ) {"
                // + "kg:display(?x); kg:display(?s);"
                 + "?s"
-                + "}"
                 + "}}"
                 + "function us:surface(?x){"
-                + "let ((?m) =  select * where {?x us:length ?l ; us:width ?w }, (?l, ?w) = ?m){"
+                + "let (select * where {?x us:length ?l ; us:width ?w }){"
                 + "?l * ?w}"
                 + "}";
 
@@ -3576,6 +3801,7 @@ public class TestQuery1 {
 //        IDatatype dt = (IDatatype) m.getValue("?s");
 
         IDatatype dt = exec.eval(q);
+        //System.out.println(dt);
         assertEquals(6, dt.intValue());
     }
 

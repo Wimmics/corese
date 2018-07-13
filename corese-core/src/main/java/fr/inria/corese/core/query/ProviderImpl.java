@@ -31,6 +31,9 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -110,17 +113,16 @@ public class ProviderImpl implements Provider {
      * If there is a QueryProcess for this URI, use it Otherwise send query to
      * spaql endpoint If endpoint fails, use default QueryProcess if it exists
      */
-    @Override
-    public Mappings service(Node serv, Exp exp, Environment env) {
-        return service(serv, exp, null, env);
-    }
-    
-    @Override    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
-        return service(serv, exp, lmap, env, null);
-    }
+//    public Mappings service(Node serv, Exp exp, Environment env) {
+//        return service(serv, exp, null, env);
+//    }
+//    
+//    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
+//        return service(serv, exp, lmap, env, null);
+//    }
 
     @Override
-    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env, Producer p) {
+    public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) {
         Exp body = exp.rest();
         Query q = body.getQuery();
 
@@ -132,7 +134,7 @@ public class ProviderImpl implements Provider {
 
         if (exec == null) {
             
-            Mappings map = globalSend(serv, q, exp, lmap, env, getGraph(p));
+            Mappings map = globalSend(serv, q, exp, lmap, eval);
             if (map != null) {
                 return map;
             }
@@ -161,7 +163,7 @@ public class ProviderImpl implements Provider {
     /**
      * Take Mappings into account when sending service to remote endpoint
      */
-    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Environment env, Graph g) {
+    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Eval eval) {
         CompileService compiler = new CompileService(this);
 
         // share prefix
@@ -173,13 +175,13 @@ public class ProviderImpl implements Provider {
         boolean hasValues = ast.getValues() != null;
         boolean skipBind = ast.getGlobalAST().hasMetadata(Metadata.BIND, Metadata.SKIP_STR);
         Mappings res = null;
-
+        Graph g = getGraph(eval.getProducer());
         if (map == null || slice == 0 || hasValues || skipBind) {
             // if query has its own values {}, do not include Mappings
-            return basicSend(g, compiler, serv, q, exp, (skipBind)?null:map, env, 0, 0);
+            return basicSend(g, compiler, serv, q, exp, (skipBind)?null:map, eval, 0, 0);
         }         
         else {          
-            res = sliceSend(g, compiler, serv, q, exp, map, env, slice);            
+            res = sliceSend(g, compiler, serv, q, exp, map, eval, slice);            
         } 
 
         if (!hasValues) {
@@ -196,48 +198,58 @@ public class ProviderImpl implements Provider {
      * Split Mappings into buckets with size = slice
      * Iterate service on each bucket
      */
-    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Environment env, int slice) {
+    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int slice) {
         
-        List<Node> list = getServerList(exp, map, env);
+        List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
        
         if (list.isEmpty()) {
             logger.error("Undefined service: " + exp.getServiceNode());
         }
-        Mappings res = null;
+        Mappings res = null, sol = null;
         
         for (Node service : list) {
             g.getEventManager().process(Event.Service, service);
 
             // select appropriate subset of distinct Mappings with service URI 
-            Mappings mappings = getMappings(exp.getServiceNode(), service, map, env);
+            Mappings mappings = getMappings(exp.getServiceNode(), service, map, eval.getEnvironment());
             if (mappings != null && mappings.size() > 0) {
                 g.getEventManager().process(Event.Service, mappings.toString(true));
             }
             int size = 0;
+            
             while (size < mappings.size()) {
                 // consider subset of Mappings of size slice
                 // it may produce bindings for target service
-                Mappings sol = send(compiler, service, q, mappings, env, size, size + slice);
+                Mappings mm = send(compiler, service, q, mappings, eval.getEnvironment(), size, size + slice);
                 // join (serviceNode = serviceURI)
-                complete(exp.getServiceNode(), service, sol,  env);
-                if (res == null) {
-                    res = sol;
-                } else if (sol != null) {
-                    res.add(sol);
+                complete(exp.getServiceNode(), service, mm,  eval.getEnvironment());
+                if (sol == null) {
+                    sol = mm;
+                } else if (mm != null) {
+                    sol.add(mm);
                 }
                 size += slice;
             }
+            
+            eval.getVisitor().service(eval, service, exp, sol);
+            
+            if (res == null) {
+                res = sol;
+            } else if (sol != null) {
+                res.add(sol);
+            }
+            
+            sol = null;
         }
         
-        if (res != null && list.size() > 1){  
-            // Eliminate duplicates when several service URI (federated query)
-            //res = res.distinct();
+        if (list.size() > 1) {
+            eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
         }
         g.getEventManager().finish(Event.Service);
         return res;
     }
-    
+       
     /**
      * service ?s { BGP }
      * When ?s is unbound, join (?s = URI) to Mappings, reject those that are incompatible 
@@ -299,28 +311,29 @@ public class ProviderImpl implements Provider {
     
    
 
-    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Environment env, int min, int max) {
-        List<Node> list = getServerList(exp, map, env);
+    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int min, int max) {
+        List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
-        if (list.size() == 1) { //(exp.getNodeSet() == null) {
-            Mappings res = send(compiler, list.get(0), q, map, env, min, max);
+        if (list.size() == 1) { 
+            Mappings res = send(compiler, list.get(0), q, map, eval.getEnvironment(), min, max);
+            eval.getVisitor().service(eval, list.get(0), exp, res);
             g.getEventManager().finish(Event.Service);
             return res;
         } else {
             Mappings res = null;
             for (Node service : list) {
                 g.getEventManager().process(Event.Service, service);
-                Mappings sol = send(compiler, service, q, map, env, min, max);
-                complete(exp.getServiceNode(), serviceNode, sol, env);
+                Mappings sol = send(compiler, service, q, map, eval.getEnvironment(), min, max);
+                eval.getVisitor().service(eval, service, exp, sol);
+                complete(exp.getServiceNode(), serviceNode, sol, eval.getEnvironment());
                 if (res == null) {
                     res = sol;
                 } else if (sol != null) {
                     res.add(sol);
                 }
             }
-            if (res != null){            
-                // Eliminate duplicates when several service URI (federated query) 
-                //res = res.distinct();
+            if (list.size() > 1) {
+                eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
             }
             g.getEventManager().finish(Event.Service);
             return res;

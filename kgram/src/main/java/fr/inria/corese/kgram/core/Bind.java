@@ -287,5 +287,9 @@ public class Bind implements Binder {
         return m;
     }
 
+    @Override
+    public void share(Binder b) {
+    }
+
 
 }

@@ -71,6 +71,7 @@ public class QueryProcess extends QuerySolver {
     static  HashMap<String, Producer> dbmap;
     private Manager updateManager;
     private GraphManager graphManager;
+    Transformer transformer;
     Loader load;
     Eval eval;
     ReentrantReadWriteLock lock;
@@ -378,6 +379,10 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, Mapping map) throws EngineException {
         return query(squery, map, null);
     }
+    
+    public Mappings query(String squery, Binding b) throws EngineException {
+        return query(squery, Mapping.create(b), null);
+    }
 
     /**
 	 * defaut and named specify a Dataset if the query has no from/using
@@ -488,6 +493,19 @@ public class QueryProcess extends QuerySolver {
 			logger.error(ex.getMessage());
         }
         return null;
+    }
+    
+    @Override
+    public void getLinkedFunction(String label) {
+        getTransformer().getLinkedFunction(label);
+    }
+    
+    Transformer getTransformer() {
+        if (transformer == null) {
+            transformer = Transformer.create();
+            transformer.setSPARQLEngine(this);
+        }
+        return transformer;
     }
 
     public Mappings qquery(Query q, Mapping map, Dataset ds) {

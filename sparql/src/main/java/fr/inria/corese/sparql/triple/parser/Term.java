@@ -309,6 +309,7 @@ public class Term extends Expression {
             case ExprType.EXTCONT:
             case ExprType.EXTEQUAL:
             case ExprType.XPATH:
+            case ExprType.XT_COMPARE:
                 return new BinaryExtension(name);
                 
             case ExprType.UNDEF:
@@ -412,7 +413,7 @@ public class Term extends Expression {
                 
             case ExprType.XT_FOCUS:
                 return new Focus(name);
-
+                          
             case ExprType.STL_CONCAT:
                 return new Concat(name);
                      

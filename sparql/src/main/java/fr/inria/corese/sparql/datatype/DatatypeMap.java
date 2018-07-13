@@ -10,7 +10,6 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
-import fr.inria.corese.sparql.triple.parser.Variable;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -651,6 +650,21 @@ public class DatatypeMap implements Cst, RDF {
     
     public static IDatatype newList(List<IDatatype> l) {
         return new CoreseList(l);
+    }
+    
+    public static IDatatype toList(List<Node> list) {
+        ArrayList<IDatatype> l = new ArrayList<>();
+        for (Node node : list) {
+            l.add((IDatatype) node.getDatatypeValue());
+        }
+        return DatatypeMap.newList(l);
+    }
+    
+    
+    public static IDatatype[] toArray(IDatatype dt) {
+        List<IDatatype> list = dt.getValueList();
+        IDatatype[] args = new IDatatype[list.size()];
+        return list.toArray(args);
     }
 
     public static IDatatype newIterate(int start, int end) {

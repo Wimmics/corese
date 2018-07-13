@@ -21,4 +21,5 @@ public interface Binder {
     void set(Expr exp, List<Expr> lvar, Node[] value);
     void unset(Expr exp, Expr var, Node value);
     void unset(Expr exp, List<Expr> lvar);
+    void share(Binder b);
 }

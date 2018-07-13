@@ -272,6 +272,7 @@ public class Memory extends PointerObject implements Environment {
                 copyInto(outNode, subNode, mem, n);
                 n++;
             }
+            share(mem.getBind(), getBind());
         }
         return mem;
     }
@@ -284,16 +285,9 @@ public class Memory extends PointerObject implements Environment {
         if (map.hasBind()) {
             copy(map.getBind(), exp);
         } 
+        share(getBind(), map.getBind());
         push(map, -1);
     }
-
-//    void copy2(Mapping map, Exp exp) {
-//        if (map.hasBind()) {
-//            copy(map.getBind(), exp);
-//        } else {
-//            push(map, -1);
-//        }
-//    }
     
     /**
      * exists { }  
@@ -303,7 +297,14 @@ public class Memory extends PointerObject implements Environment {
         if (hasBind()) {
             mem.copy(bind, exp);
         } 
+        share(mem.getBind(), getBind());
         copyInto(mem);
+    }
+    
+    void share(Binder target, Binder source) {
+        if (source != null && target != null) {
+            target.share(source);
+        }
     }
     
     /**
@@ -1246,6 +1247,7 @@ public class Memory extends PointerObject implements Environment {
         bind.unset(exp, lvar);
     }
 
+    @Override
     public void setBind(Binder b) {
         bind = b;
     }

@@ -48,7 +48,8 @@ public class Processor {
 	public static final String XT_MERGE    = EXT+"merge";
 	public static final String XT_SORT     = EXT+"sort";
 	public static final String XT_RESULT   = EXT+"result";
-        
+ 	public static final String XT_COMPARE  = EXT+"compare";
+       
 	public static final String IN  	 = "in";
 
 	private static final String SAMETERM = "sameTerm";
@@ -641,7 +642,8 @@ public class Processor {
 		defoper(XT_MERGE,       ExprType.XT_MERGE);
 		defoper(XT_SORT,        ExprType.XT_SORT);
 		defoper(XT_RESULT,      ExprType.XT_RESULT);
-                
+ 		defoper(XT_COMPARE,     ExprType.XT_COMPARE);
+               
                 
 		defoper(JAVACALL,          ExprType.JAVACALL);                
 		defoper(FUNCALL,           ExprType.FUNCALL);                

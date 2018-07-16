@@ -27,11 +27,11 @@ import org.junit.Test;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class DataShape {
+public class DataShapeTest {
 
     //static String data = "/user/corby/home/AATest/data-shapes/data-shapes-test-suite/tests/";
     static final String data = 
-       DataShape.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
+       DataShapeTest.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
     
     static String[] names = {
         "core/property", "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports"
@@ -82,7 +82,7 @@ public class DataShape {
     boolean benchmark = false, repeat = false;
     HashMap<String, Double> tjava, tlds;
 
-    public DataShape() {
+    public DataShapeTest() {
         tjava = new HashMap<String, Double>();
         tlds = new HashMap<String, Double>();
 
@@ -122,7 +122,7 @@ public class DataShape {
     }
 
     public static void main(String [] args) throws LoadException, EngineException, IOException {
-        new DataShape().testSimple();
+        new DataShapeTest().testSimple();
     }
     
       @Test
@@ -184,7 +184,7 @@ public class DataShape {
         }
 
         //report.write("/home/corby/AATest/data-shapes/earl-report-test.ttl");
-        report.write("/user/corby/home/NetBeansProjects/corese-github-v4/corese-test/src/test/resources/data/data-shapes/earl-report-test.ttl");
+        report.write("earl-report-test.ttl");
         System.out.println((error == 0) ? "No error" : ("*** ERRORS: " + error));
     }
 
@@ -237,7 +237,7 @@ public class DataShape {
         IDatatype shapedt = (IDatatype) map.getValue("?shape");
 //        System.out.println(datadt.getLabel());
 //        System.out.println(shapedt.getLabel());
-        ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), true, lds);
+        ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), false, lds);
         Data res = wf.process();
 
 

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
-public class Tester {
+public class HttpIT {
     private boolean isDebug;
     private static Process server;
 
@@ -31,20 +31,20 @@ public class Tester {
     public static void init() throws InterruptedException, IOException
     {
         System.out.println( "starting in " + System.getProperty( "user.dir" ) );
-        server = new ProcessBuilder().inheritIO().command(
-                "/usr/bin/java",
-                "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
-                "-lh",
-                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl"
-        ).start();
+//        server = new ProcessBuilder().inheritIO().command(
+//                "/usr/bin/java",
+//                "-jar", "./target/corese-server-4.0.1-SNAPSHOT-jar-with-dependencies.jar",
+//                "-lh",
+//                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl"
+//        ).start();
         Thread.sleep( 5000 );
     }
 
-    @AfterClass
-    public static void shutdown()
-    {
-        server.destroy();
-    }
+//    @AfterClass
+//    public static void shutdown()
+//    {
+//        server.destroy();
+//    }
 
     @Test
     public void test() throws LoadException

@@ -105,7 +105,40 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
         return b;
 
     }
+    
+    
+    
+    @Override
+    public boolean less(IDatatype iod) throws CoreseDatatypeException {
+        return result(iod, getLabel().compareTo(iod.getLabel()) < 0);
+    }
 
+    @Override
+    public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
+        return result(iod, getLabel().compareTo(iod.getLabel()) <= 0);
+    }
+
+    @Override
+    public boolean greater(IDatatype iod) throws CoreseDatatypeException {
+        return result(iod, getLabel().compareTo(iod.getLabel()) > 0);
+    }
+
+    @Override
+    public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
+        return result(iod, getLabel().compareTo(iod.getLabel()) >= 0);
+    }
+    
+    boolean result(IDatatype dt, boolean b) throws CoreseDatatypeException {
+        if (isCompatible(dt)) {
+            return b;
+        }
+        throw failure();
+    }
+    
+    boolean isCompatible(IDatatype dt) {
+        return dt.isUndefined() && getDatatypeURI().equals(dt.getDatatypeURI());
+    }
+   
     /**
      * @return the object
      */

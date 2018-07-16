@@ -65,26 +65,26 @@ public class DatatypeHierarchy implements Hierarchy {
 
     @Override
     public List<String> getSuperTypes(DatatypeValue value, DatatypeValue type) {
-        List<String> list = getSuperTypes((IDatatype) value);
+        List<String> list = getSuperTypes((IDatatype) value, (IDatatype) type);
         if (isDebug()) System.out.println("DH: " + value + " " + list);
         return list;
     }
       
-    List<String> getSuperTypes(IDatatype dt) {
-        String name = xt_kind(dt).stringValue();
+    List<String> getSuperTypes(IDatatype dt, IDatatype type) {
+        String name = (type == null) ? xt_kind(dt).stringValue() : type.stringValue();
         List<String> list = hierarchy.get(name);
         if (list != null) {
             return list;
         }
         if (name.startsWith(XSD.XSD)) {
             defLiteral(name, IDatatype.STANDARD_DATATYPE);
-            return getSuperTypes(dt);
+            return getSuperTypes(dt, type);
         }
         if (name.startsWith(NSManager.DT)) {
             defLiteral(name, IDatatype.EXTENDED_DATATYPE);            
-            return getSuperTypes(dt);
+            return getSuperTypes(dt, type);
         }
-        return list;
+        return new ArrayList<>(0);
     }
     
     void defResource(String name){
@@ -101,13 +101,7 @@ public class DatatypeHierarchy implements Hierarchy {
     }
    
     IDatatype xt_kind(IDatatype dt) {
-        if (dt.isLiteral()) {
-            return dt.getDatatype();
-        }
-        if (dt.isURI()) {
-            return DatatypeMap.URI_DATATYPE;
-        }
-        return DatatypeMap.BNODE_DATATYPE;
+       return DatatypeMap.kind(dt);
     }
     
      /**

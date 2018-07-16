@@ -892,6 +892,17 @@ public class DatatypeMap implements Cst, RDF {
                 || dt instanceof CoreseXMLLiteral
                 || dt instanceof CoreseString);
     }
+    
+    
+    public static IDatatype kind(IDatatype dt) {
+        if (dt.isLiteral()) {
+            return dt.getDatatype();
+        }
+        if (dt.isURI()) {
+            return URI_DATATYPE;
+        }
+        return BNODE_DATATYPE;
+    }
 
     /**
      * ***************************

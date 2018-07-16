@@ -32,7 +32,7 @@ public class PlusTerm extends BinaryFunction {
         if (dt1 == null || dt2 == null) {
             return null;
         }
-        return dt1.plus(dt2);
+        return overload(eval, b, env, p, dt1, dt2, dt1.plus(dt2));
     }
       
 }

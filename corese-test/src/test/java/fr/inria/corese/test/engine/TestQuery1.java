@@ -144,6 +144,224 @@ public class TestQuery1 {
     }
     
     
+       @Test
+    public void testExtDT() throws EngineException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q2
+                =  "prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>"
+                + "@event "
+                + "select   "
+                + "(spqr:digit(?res) as ?ope) "
+                + "(spqr:digit(?val) as ?dig) "
+                + ""
+                + "where {"
+                + ""
+                + "bind ('II'^^us:romain * 'X'^^us:romain + 'V'^^us:romain as ?res) "
+                + "bind (maplist(us:romain,  xt:iota(7)) as ?list)"
+                + "bind (reduce (lambda(?x, ?y) { ?x + ?y }, ?list) as ?val)"
+                + " "
+                + "}"
+                
+                + "@type us:romain function us:eq(?x, ?y)  { (spqr:digit(?x) = spqr:digit(?y))} "
+                + "@type us:romain function us:ne(?x, ?y)  { (spqr:digit(?x) != spqr:digit(?y))}"
+                + "@type us:romain function us:lt(?x, ?y)  { (spqr:digit(?x) < spqr:digit(?y))}"
+                + "@type us:romain function us:le(?x, ?y)  { (spqr:digit(?x) <= spqr:digit(?y))}"
+                + "@type us:romain function us:gt(?x, ?y)  { (spqr:digit(?x) > spqr:digit(?y))}"
+                + "@type us:romain function us:ge(?x, ?y)  { (spqr:digit(?x) >= spqr:digit(?y))} "
+                
+                + "@type us:romain function us:plus(?x, ?y)  { us:romain(spqr:digit(?x) + spqr:digit(?y))}"
+                + "@type us:romain function us:minus(?x, ?y) { us:romain(spqr:digit(?x) - spqr:digit(?y))}"
+                + "@type us:romain function us:mult(?x, ?y)  { us:romain(spqr:digit(?x) * spqr:digit(?y))}"
+                + "@type us:romain function us:divis(?x, ?y) { us:romain(spqr:digit(?x) / spqr:digit(?y))} "
+                
+                + "function us:romain(?x) { strdt(spqr:romain(?x), us:romain)}";
+
+        Mappings map = exec.query(q2);
+        assertEquals(28, map.getValue("?dig").intValue());
+        assertEquals(25, map.getValue("?ope").intValue());
+    }
+    
+    
+      @Test
+     public void testOverload5() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+                + "@eq "
+                + "function us:eq(?e, ?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+              
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+    
+     @Test
+     public void testOverload4() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+                + "@error "
+                + "function us:error(?e, ?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+              
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+   
+    
+    @Test
+     public void testOverload2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event "
+                + "select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                                    
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+              
+                    
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+       @Test
+     public void testOverload() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length ; us:weight '1 kg'^^us:weight, '2 kg'^^us:weight . "
+                + "us:t2 us:length '1000 m'^^us:length ; us:weight '1000 g'^^us:weight ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+            
+                                               
+                + "@type us:length "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:weight "
+                + "function us:eq(?a, ?b) {"
+                + "us:convertw(?a) = us:convertw(?b)"
+                + "}"
+                    
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(10, map.size());
+    }
+    
+    
      @Test
     public void testGlobalVar() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -295,7 +513,7 @@ public class TestQuery1 {
                   + "}"
 
                   + "@distinct "
-                  + "function us:distinct(?m) {"
+                  + "function us:distinct(?q, ?m) {"
                   + "    let ((?a ?b ?x) = ?m) {"
                   + "        us:key(xt:add(xt:sort(xt:list(?a, ?b)), ?x))"
                   + "    }"
@@ -4182,78 +4400,7 @@ public class TestQuery1 {
 
     }
 
-    //@Test
-    public void testExtDT() throws EngineException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "prefix dt: <http://example.org/>"
-                + "prefix ex: <http://example.org/test#>"
-                + "select ?res where {"
-                + "bind ( "
-                + "'aa'^^dt:test <  'bb'^^dt:test &&"
-                + "'bb'^^dt:test <=  'bb'^^dt:test &&"
-                + "'cc'^^dt:test >  'bb'^^dt:test &&"
-                + "'aa'^^dt:test != 'bb'^^dt:test &&"
-                + "'aa'^^dt:test =  'aa'^^dt:test &&"
-                + "'cc'^^dt:test >= 'bb'^^dt:test && "
-                + " 'aa'^^dt:test not in ('bb'^^dt:test , 'cc'^^dt:test)"
-                + "as ?res)"
-                + "}"
-                + "export {"
-                + "function ex:equal(?x, ?y)   {  (str(?x) = str(?y))} "
-                + "function ex:diff(?x, ?y)    {  (str(?x) != str(?y))}"
-                + "function ex:less(?x, ?y)    {  (str(?x) < str(?y))}"
-                + "function ex:lessEqual(?x, ?y)  {  (str(?x) <=  str(?y))}"
-                + "function ex:greater(?x, ?y)   {  (str(?x) > str(?y))}"
-                + "function ex:greaterEqual(?x, ?y) {  (str(?x) >= str(?y))}"
-                + "}"
-                + ""
-                + "";
-
-        String q2 =
-                "prefix dt: <http://ns.inria.fr/sparql-datatype/>"
-                        + "prefix ex: <http://ns.inria.fr/sparql-datatype/romain#>"
-                        + "prefix rm: <http://ns.inria.fr/sparql-extension/spqr/>"
-                        + "select ?res ?val  (rm:digit(?val) as ?dig) "
-                        + ""
-                        + "where {"
-                        + ""
-                        + "bind (  'II'^^dt:romain * 'X'^^dt:romain + 'V'^^dt:romain as ?res) "
-                        + "bind (maplist(ex:romain,  xt:iota(7)) as ?list)"
-                        + "bind (reduce (rq:mult, ?list) as ?val)"
-                        + " "
-                        + "}"
-                        + "export {"
-                        + "function ex:equal(?x, ?y)   { (rm:digit(?x) = rm:digit(?y))} "
-                        + "function ex:diff(?x, ?y)    { (rm:digit(?x) != rm:digit(?y))}"
-                        + "function ex:less(?x, ?y)    { (rm:digit(?x) < rm:digit(?y))}"
-                        + "function ex:lessEqual(?x, ?y)  { (rm:digit(?x) <= rm:digit(?y))}"
-                        + "function ex:greater(?x, ?y)   { (rm:digit(?x) > rm:digit(?y))}"
-                        + "function ex:greaterEqual(?x, ?y) { (rm:digit(?x) >= rm:digit(?y))} "
-                        + "function ex:plus(?x, ?y)  { ex:romain(rm:digit(?x) + rm:digit(?y))}"
-                        + "function ex:minus(?x, ?y) { ex:romain(rm:digit(?x) - rm:digit(?y))}"
-                        + "function ex:mult(?x, ?y)  { ex:romain(rm:digit(?x) * rm:digit(?y))}"
-                        + "function ex:divis(?x, ?y) { ex:romain(rm:digit(?x) / rm:digit(?y))} "
-                        + "function ex:romain(?x) { strdt(rm:romain(?x), dt:romain)}"
-                        + "}";
-
-        String q3 = "prefix rm: <http://ns.inria.fr/sparql-extension/spqr/>"
-                + "select * where {"
-                + "bind (unnest(maplist(rm:romain, xt:reverse(xt:iota(5)))) as ?val)"
-                + "}"
-                + "order by ?val";
-
-        Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
-        assertEquals(dt.booleanValue(), true);
-
-        map = exec.query(q2);
-        dt = (IDatatype) map.getValue("?dig");
-        assertEquals(5040, dt.intValue());
-
-        map = exec.query(q3);
-        ////System.out.println(map);
-    }
+   
 
     public void testAgenda() throws EngineException {
         QueryLoad ql = QueryLoad.create();

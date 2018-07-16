@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.api.query.Binder;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Result;
 import fr.inria.corese.kgram.filter.Extension;
@@ -1331,6 +1332,11 @@ public class Mapping
     @Override
     public Eval getEval() {
         return eval;
+    }
+    
+    @Override
+    public ProcessVisitor getVisitor() {
+        return getEval().getVisitor();
     }
 
     /**

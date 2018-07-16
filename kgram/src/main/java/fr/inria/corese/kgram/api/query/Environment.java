@@ -163,6 +163,9 @@ public interface Environment {
         ApproximateSearchEnv getAppxSearchEnv();
                 
         Eval getEval();
-        
+                
         void setEval(Eval e);
+        
+        ProcessVisitor getVisitor();
+
 }

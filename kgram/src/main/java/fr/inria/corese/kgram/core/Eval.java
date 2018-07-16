@@ -3153,7 +3153,7 @@ public class Eval implements ExpType, Plugin {
                 }
                 boolean b = true;
                 if (! isSubEval) {
-                    b = getVisitor().distinct(query, ans);
+                    b = getVisitor().distinct(this, query, ans);
                     if (b) {
                         b = getVisitor().result(this, results, ans);
                     }

@@ -18,6 +18,7 @@ import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Eval;
 
 public class EnvironmentImpl implements Environment {
@@ -243,6 +244,11 @@ public class EnvironmentImpl implements Environment {
 
     @Override
     public void setEval(Eval e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ProcessVisitor getVisitor() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

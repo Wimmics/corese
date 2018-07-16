@@ -220,9 +220,9 @@ public class Extension {
      * ClassHierarchy extends DatatypeHierarchy (for literals only)
      * By default, return  function if there is no method
      */    
-    public Expr getMethod(String label, Object type, Object[] param) {
+    public Expr getMethod(String label, DatatypeValue type, Object[] param) {
         if (getActualHierarchy() != null && param.length > 0) {
-            for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0], (DatatypeValue) type)) {
+            for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0],  type)) {
                 Extension ext = getMethodExtension(atype);
                 if (isDebug()) {
                     System.out.println("Ext: " + atype + " " + ext);

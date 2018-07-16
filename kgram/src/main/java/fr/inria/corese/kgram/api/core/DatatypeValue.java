@@ -39,5 +39,7 @@ public interface DatatypeValue {
     
     boolean isBoolean();
     
+    boolean isUndefined();
+    
     Object getObject();
 }

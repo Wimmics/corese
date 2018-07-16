@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,9 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
     public static final String START    = "@start";
-    public static final String FINISH   = "@finish";    
+    public static final String FINISH   = "@finish"; 
+    public static final String OVERLOAD = "@overload"; 
+    
     public static final String LIMIT    = "@limit";
     public static final String TIMEOUT  = "@timeout";
     public static final String ORDERBY  = "@orderby";
@@ -74,6 +77,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String HAVING   = "@having";
     public static final String FUNCTION = "@function";
     
+
+    
     static final String[] EVENT_LIST = {
         BEFORE, AFTER, START, FINISH, PRODUCE, RESULT, STATEMENT, CANDIDATE, PATH, STEP, VALUES, BIND,
         BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, SERVICE, QUERY, GRAPH, 
@@ -87,10 +92,14 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     Eval eval;
     Query query;
     ASTQuery ast;
-    IDatatype distinct;
+    HashMap <Environment, IDatatype> distinct;
+    QuerySolverOverload overload;
+  
 
     QuerySolverVisitor(Eval e) {
         eval = e;
+        distinct = new HashMap<>();
+        overload = new QuerySolverOverload(this);
     }
 
     @Override
@@ -105,7 +114,6 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
             query = q;
             ast = (ASTQuery) q.getAST();
             setSelect();
-            distinct = DatatypeMap.map();
         }
     }
     
@@ -162,20 +170,34 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     @Override
-    public boolean distinct(Query q, Mapping map) {
-        if (q != query) {
-            return true;
-        }
-        IDatatype key = callback(eval, DISTINCT, toArray(map));
+    public boolean distinct(Eval eval, Query q, Mapping map) {
+        IDatatype key = callback(eval, DISTINCT, toArray(q, map));
         if (key == null) {
             return true;
-        }
-        IDatatype res = distinct.get(key);
+        }       
+        return distinct(eval, q, key);
+    }
+    
+    boolean distinct(Eval eval, Query q, IDatatype key) {
+        IDatatype res = getDistinct(eval, q).get(key);
         if (res == null) {
-            distinct.set(key, key);
+            getDistinct(eval, q).set(key, key);
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Query and subquery must have different table for distinct
+     * As they have different environment, we assign the table to the environment
+     */
+    IDatatype getDistinct(Eval eval, Query q) {
+        IDatatype dt = distinct.get(eval.getEnvironment());
+        if (dt == null) {
+            dt = DatatypeMap.map();
+            distinct.put(eval.getEnvironment(), dt);
+        }
+        return dt;
     }
     
     @Override
@@ -326,6 +348,32 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     
+    public void setOverload(boolean b) {
+        overload.setOverload(b);
+    }
+    
+    public boolean isOverload() {
+        return overload.isOverload();
+    }
+
+    
+    @Override
+    public IDatatype error(Eval eval, Expr exp, DatatypeValue[] args) {
+        return  overload.error(eval, exp, (IDatatype[]) args);
+    }
+    
+    @Override
+    public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
+        // prevent overload within in overload
+        return ! isActive() && overload.overload(exp, res, dt1, dt2);
+    }
+       
+   @Override
+    public IDatatype overload(Eval eval, Expr exp, DatatypeValue res, DatatypeValue[] args) {
+        return overload.overload(eval, exp, (IDatatype) res, (IDatatype[]) args);
+    } 
+    
+    
     @Override
     public boolean produce() {
         return accept(PRODUCE) && define(PRODUCE, 2);
@@ -348,17 +396,17 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     void trace(Eval ev, String metadata, IDatatype[] param) {
         if (isDebug()) {
-            logger.info(String.format("SolverVisitor: %s", metadata));
+            logger.info(String.format(metadata));
         }
     }
     
  
     // @before function us:before(?q) {}
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
-        trace(ev, metadata, param);
         if (isActive() || ! accept(metadata)) {
             return null;
         }
+        trace(ev, metadata, param);
         Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
@@ -390,9 +438,19 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     // @type us:before function us:event () {}
     public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, DatatypeMap.newResource(type), param);
+        return method(ev, name, DatatypeMap.newResource(type), param);
+    }
+        
+    public IDatatype method(Eval ev, String name, IDatatype type, IDatatype[] param) {
+        if (isActive()) {
+            return null;
+        }
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
-            return call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            setActive(true);
+            IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
+            setActive(false);
+            return dt;
         }
         return null;
     }
@@ -414,7 +472,9 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return null;
     }
     
-
+   
+    
+    
     IDatatype[] toArray(Object... lobj) {
         IDatatype[] param = new IDatatype[lobj.length];
         int i = 0;

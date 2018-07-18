@@ -5385,7 +5385,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(t1);
         int size = map.getTemplateResult().getLabel().length();
-        assertTrue("Result big enough", 3934 < size);
+        assertTrue("Result not big enough: size = "+size, 3934 <= size);
 
     }
 

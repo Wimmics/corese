@@ -64,41 +64,10 @@ function error(response, err, url) {
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
     var text = '<div class="container">' + response + '</div>';
-    $(content).html(text);
+    document.getElementById("contentOfSite").innerHTML=text;
     updateUrl(url); //2 change the url displayed in broswer url bar
-    correct();
 }
 
-//jquery.html() method auto close the htmls tags, even for the text value of <textarea>, which causes errors
-//this method change back the autoclosed tags using regex
-function correct() {
-    // var regex = /<.+\b[^>]*(><\/.+>)/gi;
-    // $(content + ' textarea').each(
-    //         function () {
-    //             //console.log('textarea: '+$(this).text());
-    //             //match pattern<???xxxxxx></???>
-    //             var found, newText = $(this).text();
-    //             //find match ></???>
-    //             while ((found = regex.exec($(this).text())) !== null) {
-    //                 newText = newText.replace(found[1], '/>');
-    //             }
-    //             $(this).text(newText);
-    //         }
-    // );
-    //
-    //     $(content + ' input').each(
-    //         function () {
-    //             //console.log('input: '+$(this).val());
-    //             //match pattern<???xxxxxx></???>
-    //             var found, newText = $(this).val();
-    //             //find match ></???>
-    //             while ((found = regex.exec($(this).val())) !== null) {
-    //                 newText = newText.replace(found[1], '/>');
-    //             }
-    //             $(this).val(newText);
-    //         }
-    // );
-}
 // store the browsering history and change the url in the browser url bar
 function updateUrl(url) {
     if (changeURL && url.trim() !== '') {

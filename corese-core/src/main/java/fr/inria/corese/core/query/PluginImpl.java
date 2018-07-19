@@ -174,7 +174,8 @@ public class PluginImpl
      */
     void setMethodHandler(Producer p, Environment env){
         Extension ext = env.getQuery().getActualExtension();
-        if (ext != null && ext.isMethod()){
+        ASTQuery ast  = (ASTQuery) env.getQuery().getAST();
+        if (ext != null && ext.isMethod() && ast.hasMetadata(Metadata.TEST)){
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
             if (env.getQuery().getGlobalQuery().isDebug()){
                 ch.setDebug(true);

@@ -144,6 +144,77 @@ public class TestQuery1 {
     }
     
     
+      @Test
+     public void testOverload6() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1'^^us:km "   
+                + "us:t2 us:length '1000'^^us:m " 
+                + "us:t3 us:length '1000 m'^^us:length, '1 km'^^us:length "              
+                + "}";
+        
+        String q = "prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/> "
+
+        + " @event select *  where {"
+                + "select *  where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                               
+                + "@init "
+                + "function us:init(?q){"
+                + "map(lambda((?x, ?y)) { us:datatype(?x, ?y) }, us:datatypes())"
+                + "}"
+                
+                + "function us:datatypes() {"
+                + "let (?list = @((us:km us:length)(us:m us:length))) {"
+                + "?list"
+                + "}"
+                + "}"
+               
+                + "function us:datatype(?dt, ?sup) {"
+                + "ds:datatype(xt:visitor(), ?dt, ?sup)"
+                + "}"  
+                
+                + "@type us:km "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:m "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+                + "@type us:length "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                   
+                + "function us:convert(?a) {"
+                + "if (datatype(?a) = us:km, 1000 * us:value(?a), "
+                + "if (datatype(?a) = us:m, us:value(?a),"
+                + "if (datatype(?a) = us:length, us:valueunit(?a), us:value(?a))))"
+                + "}"
+                                             
+                + "function us:value(?a) {"
+                + "if (contains(?a, ' '), xsd:integer(strbefore(?a, ' ')), xsd:integer(?a))"
+                + "}"
+                
+                + "function us:valueunit(?a) {"
+                + "if (strafter(?a, ' ') = 'km', 1000 * us:value(?a), us:value(?a))"
+                + "}"                              
+                ;
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(16, map.size());
+     }
+   
+    
+    
        @Test
     public void testExtDT() throws EngineException {
         Graph g = Graph.create();
@@ -1420,7 +1491,7 @@ public class TestQuery1 {
                 + "(us:test(3) as ?t) "
                 + "where {}"
 
-                + "function us:test(?n)  {xt:display('here') ;"
+                + "function us:test(?n)  {"
                 + "let (?n = ?z) {"
                 + "for (?x in (xt:iota(?n))) {"
                 + "if (?x > 1) {"

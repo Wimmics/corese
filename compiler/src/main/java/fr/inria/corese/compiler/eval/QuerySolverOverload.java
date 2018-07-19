@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.eval;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.core.Eval;
@@ -53,25 +52,33 @@ public class QuerySolverOverload {
     }
     
 
-    public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
+    public boolean overload(Expr exp, IDatatype res, IDatatype dt1, IDatatype dt2) {
         return overload && isOverload(dt1, dt2);
     }
 
-    boolean isOverload(DatatypeValue dt1, DatatypeValue dt2) {
+    boolean isOverload(IDatatype dt1, IDatatype dt2) {
         return datatypeOverload(dt1, dt2) || bnodeOverload(dt1, dt2);
     }
     
-    boolean bnodeOverload(DatatypeValue dt1, DatatypeValue dt2) {
+    boolean bnodeOverload(IDatatype dt1, IDatatype dt2) {
         return dt1.isBlank() && dt2.isBlank();
     }
     
-    boolean datatypeOverload(DatatypeValue dt1, DatatypeValue dt2) {
-        return dt1.isUndefined() && dt2.isUndefined()
-                && dt1.getDatatypeURI().equals(dt2.getDatatypeURI());
+    boolean datatypeOverload(IDatatype dt1, IDatatype dt2) {
+        return dt1.isUndefined() && dt2.isUndefined() 
+            && (dt1.getDatatypeURI().equals(dt2.getDatatypeURI()) || compatible(dt1, dt2));
+    }
+    
+    // placeholder to determine if datatypes are compatible
+    // length in km and length in m are compatible
+    boolean compatible(IDatatype dt1, IDatatype dt2) {
+        String t1 = visitor.getSuperType(dt1.getDatatype());
+        String t2 = visitor.getSuperType(dt2.getDatatype());  
+        return t1 != null && t2 != null && t1.equals(t2);
     }
 
 
-    public IDatatype error(Eval eval, Expr exp, DatatypeValue[] args) {
+    public IDatatype error(Eval eval, Expr exp, IDatatype[] args) {
         return overloadError(eval, exp, (IDatatype[]) args);
     }
 
@@ -138,7 +145,8 @@ public class QuerySolverOverload {
     }
     
     IDatatype kind(IDatatype dt) {
-       return DatatypeMap.kind(dt);
+       IDatatype kind = DatatypeMap.kind(dt);
+       return kind;
     }
 
     String getMethodName(Expr exp) {

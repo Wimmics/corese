@@ -6,6 +6,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Hierarchy;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Eval;
@@ -24,6 +25,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     private static Logger logger = LoggerFactory.getLogger(QuerySolverVisitor.class);
    
     public static final String SHARE    = "@share";
+    public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
     public static final String START    = "@start";
@@ -114,7 +117,46 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
             query = q;
             ast = (ASTQuery) q.getAST();
             setSelect();
+            initialize();
+            callback(eval, INIT, toArray(q));
         }
+    }
+    
+    void initialize() {
+    }
+    
+    Hierarchy getHierarchy() {
+        return getEnvironment().getExtension().getHierarchy();
+    }
+    
+    // datatype(us:km, us:length)
+    public IDatatype datatype(IDatatype type, IDatatype sup) {
+        getHierarchy().defSuperType(type, sup);
+        return type;
+    }
+    
+    List<String> getSuperTypes(IDatatype type) {
+        return getHierarchy().getSuperTypes(null, type);
+    }
+    
+    String getSuperType(DatatypeValue dt) {
+        return getSuperType ((IDatatype) dt);
+    }
+    
+    String getSuperType(IDatatype type) {
+        List<String> list = getSuperTypes(type);
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(list.size()-1);
+    }
+    
+    // Draft for testing
+    void test() {
+        IDatatype dt = DatatypeMap.map();
+        dt.set(DatatypeMap.newInstance("test"), DatatypeMap.newInstance(10));
+        Binding b = (Binding) getEnvironment().getBind();
+        b.setVariable("?global", dt);
     }
     
     void setSelect() {
@@ -365,14 +407,13 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     @Override
     public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
         // prevent overload within in overload
-        return ! isActive() && overload.overload(exp, res, dt1, dt2);
+        return ! isActive() && overload.overload(exp, (IDatatype)res, (IDatatype)dt1, (IDatatype)dt2);
     }
        
    @Override
     public IDatatype overload(Eval eval, Expr exp, DatatypeValue res, DatatypeValue[] args) {
         return overload.overload(eval, exp, (IDatatype) res, (IDatatype[]) args);
-    } 
-    
+    }     
     
     @Override
     public boolean produce() {

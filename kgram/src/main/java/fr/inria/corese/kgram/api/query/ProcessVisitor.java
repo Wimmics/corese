@@ -98,5 +98,7 @@ public interface ProcessVisitor extends Pointerable {
     default boolean filter() { return false; }
     
     default boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) { return false; }
+    
+    default int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) { return res ;}
 
 }

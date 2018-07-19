@@ -247,6 +247,7 @@ public class Term extends Expression {
             case ExprType.ISBLANK:
             case ExprType.ISNUMERIC:
             case ExprType.ISWELLFORMED:
+            case ExprType.ISUNDEFINED:
                 return new UnaryFunction(name);
 
             case ExprType.CONCAT:

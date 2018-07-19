@@ -54,10 +54,19 @@ public class DatatypeHierarchy implements Hierarchy {
         List<String> list = superTypes(name);
         if (list == null){
             list = new ArrayList<String>();
+            list.add(name);
             hierarchy.put(name, list);
         }
-        list.add(sup);
+        if (! list.contains(sup)) {
+            list.add(sup);
+        }
     }
+    
+    @Override
+    public void defSuperType(DatatypeValue name, DatatypeValue sup) {
+        defSuperType(name.stringValue(), sup.stringValue());       
+    }
+
     
     public List<String> superTypes(String name) {
         return hierarchy.get(name);
@@ -84,17 +93,19 @@ public class DatatypeHierarchy implements Hierarchy {
             defLiteral(name, IDatatype.EXTENDED_DATATYPE);            
             return getSuperTypes(dt, type);
         }
-        return new ArrayList<>(0);
+        ArrayList<String> res = new ArrayList<>(1);
+        res.add(name);
+        return res;
     }
     
     void defResource(String name){
-        defSuperType(name, name);
+        //defSuperType(name, name);
         defSuperType(name, IDatatype.RESOURCE_DATATYPE);
         defSuperType(name, IDatatype.ENTITY_DATATYPE);
     }
     
     void defLiteral(String name, String type) {
-        defSuperType(name, name);
+        //defSuperType(name, name);
         defSuperType(name, type);
         defSuperType(name, IDatatype.LITERAL_DATATYPE);
         defSuperType(name, IDatatype.ENTITY_DATATYPE);

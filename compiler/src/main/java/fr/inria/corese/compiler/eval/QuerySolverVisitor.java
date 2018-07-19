@@ -413,7 +413,15 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
    @Override
     public IDatatype overload(Eval eval, Expr exp, DatatypeValue res, DatatypeValue[] args) {
         return overload.overload(eval, exp, (IDatatype) res, (IDatatype[]) args);
-    }     
+    }   
+    
+    @Override
+    public int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) {
+        if (! isActive() && overload.overload((IDatatype)dt1, (IDatatype)dt2)) {
+            return overload.compare(eval, res, (IDatatype)dt1, (IDatatype)dt2);
+        }
+        return res;
+    }
     
     @Override
     public boolean produce() {
@@ -491,6 +499,16 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
             setActive(true);
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             setActive(false);
+            return dt;
+        }
+        return null;
+    }
+    
+    
+    public IDatatype methodBasic(Eval ev, String name, IDatatype type, IDatatype[] param) {       
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        if (exp != null) {
+            IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             return dt;
         }
         return null;

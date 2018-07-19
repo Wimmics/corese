@@ -35,6 +35,8 @@ public class QuerySolverOverload {
     public static final String MMULT = US + "mult";
     public static final String MDIVIS = US + "divis";
 
+    public static final String MCOMPARE = US + "compare";
+
     private boolean overload = true;
     QuerySolverVisitor visitor;
     
@@ -52,7 +54,11 @@ public class QuerySolverOverload {
     }
     
 
-    public boolean overload(Expr exp, IDatatype res, IDatatype dt1, IDatatype dt2) {
+    boolean overload(Expr exp, IDatatype res, IDatatype dt1, IDatatype dt2) {
+        return overload && isOverload(dt1, dt2);
+    }
+    
+     boolean overload(IDatatype dt1, IDatatype dt2) {
         return overload && isOverload(dt1, dt2);
     }
 
@@ -85,7 +91,7 @@ public class QuerySolverOverload {
     /**
      * Return error() if res == null && overload == null
      */
-    public IDatatype overload(Eval eval, Expr exp, IDatatype res, IDatatype[] param) {
+    IDatatype overload(Eval eval, Expr exp, IDatatype res, IDatatype[] param) {
         // 1) @type us:length function us:eq(?e, ?a, ?b) where datatype(?a) == us:lengtj
         // 2) function us:eq(?e, ?a, ?b)
         IDatatype dt = overloadMethod(eval, exp, param);
@@ -97,6 +103,14 @@ public class QuerySolverOverload {
             return  res;
         }
         return dt;
+    }
+    
+    int compare(Eval eval, int res, IDatatype... param) {
+        IDatatype dt =  visitor.methodBasic(eval, MCOMPARE, kind(param[0]), param);
+        if (dt == null) {
+            return res;
+        }
+        return dt.intValue();
     }
 
     /**

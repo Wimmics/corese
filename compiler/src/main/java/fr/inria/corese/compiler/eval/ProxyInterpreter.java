@@ -207,6 +207,7 @@ public class ProxyInterpreter implements Proxy,  ExprType {
      
      // TODO: check ExprLabel.COMPARE
     @Override
+    @Deprecated
      public int compare(Environment env, Producer p, Node o1, Node o2) {
         IDatatype dt1 = (IDatatype) o1.getValue();
         IDatatype dt2 = (IDatatype) o2.getValue();

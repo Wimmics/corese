@@ -1,6 +1,6 @@
 select 
 where {}
-export {
+@public {
 
 function xt:div(?a, ?b) {  xsd:integer(floor(?a / ?b)) }
 

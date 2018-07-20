@@ -13,7 +13,7 @@ select
 where {}
 
 
-export {
+@public {
 function xt:romain(?n) {  spqr:spqr(?n) }
 function xt:digit(?r)  { spqr:parse(?r) }
 

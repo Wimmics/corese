@@ -21,7 +21,7 @@ select
 
 where {}
 
-export {
+@public {
 
 function xt:today() {  
   xt:day(now())}

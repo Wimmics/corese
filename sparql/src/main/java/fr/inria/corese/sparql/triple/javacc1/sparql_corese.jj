@@ -305,11 +305,9 @@ Exp Query() : { Exp stack; Metadata la = null;}
             | UpdateQuery(la)            	
             | stack = TemplateQuery(la)
             )  (Defun()) 
-        //?       
         |  
-            (Function(la) | Package(la) | Export()) Defun()
+            ( Function(la) | Package(la) ) Defun()
         )
-     //   | Defun()     
   	     	
   ) ?
   
@@ -317,12 +315,9 @@ Exp Query() : { Exp stack; Metadata la = null;}
 }
 
 void Defun() : { Metadata la = null;} {
-    (
-    ( la = Annotate() (Function(la) | Package(la))) 
-    //@deprecated
-    | Export()  
+    ( 
+        la = Annotate() (Function(la) | Package(la)) 
     ) *
-    //+   
 }
 
 Exp LoadPattern() : {Exp stack;}
@@ -2777,16 +2772,6 @@ void Package(Metadata list) : { Function term; Metadata la; }
 }
 
 
-// @deprecated
-void Export() : { Term term; }
-{
-    <EXPORT> 
-    <LBRACE> 
-        ( term = Function(null) { astq.exportFunction(term); } ) +
-    <RBRACE>
-}
-
-
 ExpressionList ArgList(Exp stack) : { ExpressionList v; Token t; Expression expression1; String str;}
 {
   { 
@@ -3174,7 +3159,6 @@ TOKEN [IGNORE_CASE] :
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">
 | <QUERY: "query">
-| <EXPORT: "export">
 | <PACKAGE: "package">
 }
 

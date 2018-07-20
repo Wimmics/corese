@@ -135,6 +135,12 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return type;
     }
     
+    @Override
+    public DatatypeValue datatype(DatatypeValue type, DatatypeValue sup) {
+        getHierarchy().defSuperType(type, sup);
+        return type;
+    }
+    
     List<String> getSuperTypes(IDatatype type) {
         return getHierarchy().getSuperTypes(null, type);
     }
@@ -486,15 +492,15 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     // @type us:before function us:event () {}
-    public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
-        return method(ev, name, DatatypeMap.newResource(type), param);
-    }
+//    public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
+//        return method(ev, name, DatatypeMap.newResource(type), param);
+//    }
         
-    public IDatatype method(Eval ev, String name, IDatatype type, IDatatype[] param) {
+    public IDatatype method(Eval ev, String name,  IDatatype[] param) {
         if (isActive()) {
             return null;
         }
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, null, param);
         if (exp != null) {
             setActive(true);
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
@@ -505,8 +511,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     
-    public IDatatype methodBasic(Eval ev, String name, IDatatype type, IDatatype[] param) {       
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+    public IDatatype methodBasic(Eval ev, String name,  IDatatype[] param) {       
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, null, param);
         if (exp != null) {
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             return dt;

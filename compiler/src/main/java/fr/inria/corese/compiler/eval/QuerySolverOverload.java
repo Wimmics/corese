@@ -77,6 +77,8 @@ public class QuerySolverOverload {
     
     // placeholder to determine if datatypes are compatible
     // length in km and length in m are compatible
+    // use case: xt:datatype(us:km, us:length)
+    // use case: xt:datatype(us:m,  us:length)
     boolean compatible(IDatatype dt1, IDatatype dt2) {
         String t1 = visitor.getSuperType(dt1.getDatatype());
         String t2 = visitor.getSuperType(dt2.getDatatype());  
@@ -106,7 +108,7 @@ public class QuerySolverOverload {
     }
     
     int compare(Eval eval, int res, IDatatype... param) {
-        IDatatype dt =  visitor.methodBasic(eval, MCOMPARE, kind(param[0]), param);
+        IDatatype dt =  visitor.methodBasic(eval, MCOMPARE,  param);
         if (dt == null) {
             return res;
         }
@@ -155,7 +157,7 @@ public class QuerySolverOverload {
         if (name == null) {
             return null;
         }
-        return visitor.method(eval, name, kind(param[0]), param);
+        return visitor.method(eval, name,  param);
     }
     
     IDatatype kind(IDatatype dt) {

@@ -63,8 +63,13 @@ function error(response, err, url) {
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    var text = '<div class="container">' + response + '</div>';
-    document.getElementById("contentOfSite").innerHTML=text;
+    const text = '<div class="container">' + response + '</div>';
+    const range = document.createRange();
+    const contentNode = document.getElementById("contentOfSite");
+    range.selectNode(contentNode);
+    var documentFragment = range.createContextualFragment(text);
+    contentNode.innerHTML = "";
+    contentNode.appendChild(documentFragment);
     updateUrl(url); //2 change the url displayed in broswer url bar
 }
 

@@ -144,6 +144,79 @@ public class TestQuery1 {
     }
     
     
+    
+     @Test
+     public void testOverload7() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '2'^^us:km "   
+                + "us:t2 us:length '1000'^^us:m " 
+                + "us:t3 us:length '2000'^^us:m, '1'^^us:km "              
+                + "}";
+        
+        String q = "@event select *  where {"
+                + "graph ?g { ?x ?p ?v }"
+                + "}"
+                + "order by ?v "
+                
+                + "@init "
+                + "function us:init(?q){"
+                + "map(lambda(?list) {"
+                + "let ((?fst | ?rst) = ?list) { map(xt:datatype, ?rst, ?fst)  }"
+                + "}, us:datatypes())"
+                + "}"
+                
+                + "function us:datatypes() {"
+                + "let (?list = @((us:length us:m us:km))) "
+                + "{ ?list }"
+                + "}"
+                                                                    
+                + "function us:compare(?a, ?b) {"
+                + "if (?a < ?b, -1, if (?a = ?b, us:compare(datatype(?a), datatype(?b)), 1))"
+                + "}"
+                                                         
+                + "function us:lt(?a, ?b) {"
+                + "us:convert(?a) < us:convert(?b)"
+                + "}"
+                
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:km "
+                + "function us:lt(?a, ?b) {"
+                + "us:convert(?a) < us:convert(?b)"
+                + "}"
+                                                   
+                + "function us:convert(?a) {"
+                + "if (datatype(?a) = us:km, 1000 * us:value(?a), "
+                + "if (datatype(?a) = us:m, us:value(?a),"
+                + "if (datatype(?a) = us:length, us:valueunit(?a), us:value(?a))))"
+                + "}"
+                                             
+                + "function us:value(?a) {"
+                + "if (contains(?a, ' '), xsd:integer(strbefore(?a, ' ')), xsd:integer(?a))"
+                + "}"
+                
+                + "function us:valueunit(?a) {"
+                + "if (strafter(?a, ' ') = 'km', 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals("1",    map.get(0).getValue("?v").stringValue());
+    assertEquals("1000", map.get(1).getValue("?v").stringValue());
+    assertEquals("2",    map.get(2).getValue("?v").stringValue());
+    assertEquals("2000", map.get(3).getValue("?v").stringValue());
+     }
+   
+    
+    
+    
       @Test
      public void testOverload6() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -235,17 +308,19 @@ public class TestQuery1 {
                 + " "
                 + "}"
                 
-                + "@type us:romain function us:eq(?x, ?y)  { (spqr:digit(?x) = spqr:digit(?y))} "
-                + "@type us:romain function us:ne(?x, ?y)  { (spqr:digit(?x) != spqr:digit(?y))}"
-                + "@type us:romain function us:lt(?x, ?y)  { (spqr:digit(?x) < spqr:digit(?y))}"
-                + "@type us:romain function us:le(?x, ?y)  { (spqr:digit(?x) <= spqr:digit(?y))}"
-                + "@type us:romain function us:gt(?x, ?y)  { (spqr:digit(?x) > spqr:digit(?y))}"
-                + "@type us:romain function us:ge(?x, ?y)  { (spqr:digit(?x) >= spqr:digit(?y))} "
+                + "@type us:romain {"
+                + "function us:eq(?x, ?y)  { (spqr:digit(?x) = spqr:digit(?y))} "
+                + "function us:ne(?x, ?y)  { (spqr:digit(?x) != spqr:digit(?y))}"
+                + "function us:lt(?x, ?y)  { (spqr:digit(?x) < spqr:digit(?y))}"
+                + "function us:le(?x, ?y)  { (spqr:digit(?x) <= spqr:digit(?y))}"
+                + "function us:gt(?x, ?y)  { (spqr:digit(?x) > spqr:digit(?y))}"
+                + "function us:ge(?x, ?y)  { (spqr:digit(?x) >= spqr:digit(?y))} "
                 
-                + "@type us:romain function us:plus(?x, ?y)  { us:romain(spqr:digit(?x) + spqr:digit(?y))}"
-                + "@type us:romain function us:minus(?x, ?y) { us:romain(spqr:digit(?x) - spqr:digit(?y))}"
-                + "@type us:romain function us:mult(?x, ?y)  { us:romain(spqr:digit(?x) * spqr:digit(?y))}"
-                + "@type us:romain function us:divis(?x, ?y) { us:romain(spqr:digit(?x) / spqr:digit(?y))} "
+                + "function us:plus(?x, ?y)  { us:romain(spqr:digit(?x) + spqr:digit(?y))}"
+                + "function us:minus(?x, ?y) { us:romain(spqr:digit(?x) - spqr:digit(?y))}"
+                + "function us:mult(?x, ?y)  { us:romain(spqr:digit(?x) * spqr:digit(?y))}"
+                + "function us:divis(?x, ?y) { us:romain(spqr:digit(?x) / spqr:digit(?y))} "
+                + "}"
                 
                 + "function us:romain(?x) { strdt(spqr:romain(?x), us:romain)}";
 
@@ -3830,7 +3905,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         String i = "insert data { us:John rdfs:label 'John' }"
-                + "@export package {"
+                + "@public  {"
                 + "function us:test(){"
                 + "let ((?m) = select * where {?x ?p ?y}, (?y)=?m"
                 + "){?y}"
@@ -4161,7 +4236,7 @@ public class TestQuery1 {
                 + "}";
 
         String qe = "select where {}"
-                + "export {"
+                + "@public {"
                 + "function us:test(){"
                 + "if (exists {select * where {?x ?p ?y}}){"
                 + "let ((?m) = select * where {?x ?p ?y}, (?x, ?y)=?m){"

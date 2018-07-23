@@ -15,7 +15,7 @@ function trans(obj) {
 
 //get generated html from server by sending ajax 'GET' request
 function transGET(url) {
-    url = url.replace('#', '%23');//encode '#'
+    url = cleanUrl(url)
     $.ajax({
         type: 'GET',
         url: url,
@@ -23,8 +23,8 @@ function transGET(url) {
         success: function (response) {
             success(response, url);
         },
-        error: function (response, status, error) {
-            error(response, error);
+        error: function (response, status, cause) {
+            error(response, cause);
         }
     });
 }
@@ -52,6 +52,17 @@ function transPOST(form) {
             error(response, err, url);
         }
     });
+}
+
+function cleanUrl(url) {
+    let parts = url.split("?"); // search whether there are parameters.
+    if (parts.length === 1) { // no parameter to clean.
+        return url;
+    } else {
+        let search = new URLSearchParams(parts[1]);
+        let result = `${parts[0]}?${search.toString()}`; // parameters are written using encodeURIComponent
+        return result;
+    }
 }
 
 //return 500 error

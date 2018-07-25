@@ -1,7 +1,7 @@
 #
 # Listen Corese activity
 #
-# @service <http://localhost:8080/sparql>
+# @federate <http://localhost:8080/sparql>
 select where {}
 
 function xt:main() {

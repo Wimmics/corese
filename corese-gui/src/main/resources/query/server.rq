@@ -1,4 +1,4 @@
-@service <http://fr.dbpedia.org/sparql>
+@federate <http://fr.dbpedia.org/sparql>
 select * where {
   ?x rdfs:label ?y
 }

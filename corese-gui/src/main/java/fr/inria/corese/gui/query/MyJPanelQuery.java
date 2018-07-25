@@ -75,7 +75,7 @@ import org.graphstream.ui.swingViewer.Viewer;
 public final class MyJPanelQuery extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    static final String SERVICE = ""; //"@service <http://fr.dbpedia.org/sparql>";
+    static final String SERVICE = ""; //"@federate <http://fr.dbpedia.org/sparql>";
     static final String NL = System.getProperty("line.separator");
     static int FontSize = SparqlQueryEditor.FontSize;
     

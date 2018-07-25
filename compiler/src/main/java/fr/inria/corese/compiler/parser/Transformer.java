@@ -326,8 +326,8 @@ public class Transformer implements ExpType {
     
     /**
      * use case: 
-     * @service <s1> 
-     * @service <s2> 
+     * @federate <s1> 
+     * @federate <s2> 
      * select * where { }
      * Rewrite every triple t as: service <s1> <s2> { t }
      */

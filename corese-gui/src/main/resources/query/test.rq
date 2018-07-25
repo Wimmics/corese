@@ -2,7 +2,7 @@ select * where {
   
 }
 
-@service   <http://localhost:8080/sparql>
+@federate   <http://localhost:8080/sparql>
 function us:test(?x){
   let (?m = select * where {?x ?p ?y}){
     xt:display(?m)

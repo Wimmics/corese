@@ -102,7 +102,11 @@
 			<version>3.13.0</version>
 			<!--<scope>test</scope>-->
 		</dependency>
-
+	 <dependency>
+	  <groupId>org.jsoup</groupId>
+	  <artifactId>jsoup</artifactId>
+	  <version>1.11.3</version>
+	 </dependency>
 	</dependencies>
 
 	<build>

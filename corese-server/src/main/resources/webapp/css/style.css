@@ -53,6 +53,24 @@ h1,h2,h3,h4 { color: #00428C }
     color:green
 }
 
+.panel-heading { 
+    color: black;
+    background-color: lightgrey;
+}
+
+.panel {
+    flex: 1 1 auto;
+    border: 1px solid lightblue;
+}
+/*
+.navbar-inverse {
+    color: black;
+    background-color: lightgrey;
+    border-color: lightblue;
+}
+*/
+
+
 pre {
     font-size: 120%;
     font-weight: bold;

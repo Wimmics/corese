@@ -20,7 +20,7 @@
 <div class="row">
 
 <div class="col-md-4">
-<div class="panel panel-info">
+<div class="panel">
     <div class="panel-heading">
         <h3 class="panel-title">Data Shape</h3>
     </div>
@@ -31,7 +31,7 @@
             <label for='sel'>Shape URL: </label><br>
             <input type="text"  name='mode' class="form-control" id='sel2' value='/data/shape/shape4shape.ttl'/>               
             <br/>
-            <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+            <input type='submit' value='Validate test' class="btn btn-default" onClick="trans(this.form); return false;">
         </form>
 
     </div>
@@ -40,7 +40,7 @@
 
 
 <div class="col-md-4">
-<div class="panel panel-info">
+<div class="panel">
     <div class="panel-heading">
         <h3 class="panel-title">Data Shape</h3>
     </div>
@@ -65,7 +65,7 @@
             
             </textarea>  
             <br/>
-            <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+            <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
         </form>
         
     </div>
@@ -86,13 +86,12 @@
     
     
 	<div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
+            <div class="panel">
+                <div class="panel-heading" align="center"><strong>Music</strong><</div>
                 <div class="panel-body" align="center">
                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Jimmy_Page&profile=st:dbpedia');" >
                         <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jimmy_Page_at_the_Echo_music_award_2013.jpg" alt="Jimmy Page" height="150">
-                        <p><strong>Music</strong></p>
-                    </a>              
+                    </a>
                 </div>
             </div>
         </div>
@@ -111,13 +110,12 @@
     
         <!-- one example: france kings-->
         <div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
+            <div class="panel">
+                <div class="panel-heading" align="center"><strong>France</strong></div>
                 <div class="panel-body" align="center">
                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Louis_XIV&profile=st:dbpedia');" >
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Louis_XIV_of_France.jpg/200px-Louis_XIV_of_France.jpg" alt="France kings" height="150">
-                        <strong>France</strong>                           
-                    </a>              
+                    </a>
                 </div>
             </div>
         </div>
@@ -125,12 +123,11 @@
 
         <!-- one example: Auguste-->
         <div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
+            <div class="panel">
+                <div class="panel-heading" align="center"><strong>Rome</strong></div>
                 <div class="panel-body" align="center">
                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia');" >
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-Augustus.jpg/200px-Statue-Augustus.jpg" alt="Auguste" height="150">
-                        <strong>Rome</strong>
                         <br>
                     </a>              
                 </div>
@@ -175,25 +172,23 @@
         
         
          <div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
+            <div class="panel">
+                <div class="panel-heading" align="center"><strong>History</strong></div>
                 <div class="panel-body" align="center">
                     <a href="javascript:trans('/tutorial/cdn');" >
                         <img src="https://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG" alt="History" height="80">
-                        <p><strong>History</strong></p>
-                    </a>              
+                    </a>
                 </div>
             </div>
         </div>
         
          <div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
+            <div class="panel">
+                <div class="panel-heading" align="center"><strong>Place</strong></div>
                 <div class="panel-body" align="center">
                     <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia');" >
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Port_Of_Nice,_C%C3%B4te_d'Azur.jpg/200px-Port_Of_Nice,_C%C3%B4te_d'Azur.jpg" alt="Nice" height="80">                       
-                        <p> <strong>Place</strong></p>
-                    </a>              
+                    </a>
                 </div>
             </div>
         </div>
@@ -211,7 +206,7 @@
     <div class="row">
         <!-- Services: sparql query-->
         <div class="col-md-4">
-            <div class="panel panel-success">
+            <div class="panel">
                 <div class="panel-heading">
                     <h3 class="panel-title">SPARQL Query</h3>
                 </div>
@@ -232,14 +227,14 @@
                         </textarea>
                         <br/>
                         <input type='hidden' name='profile2' value='st:sparql' />
-                        <input type='submit' value='Query' class="btn btn-success"  onclick="trans(this.form); return false;">
+                        <input type='submit' value='Query' class="btn btn-default"  onclick="trans(this.form); return false;">
                     </form>
                 </div>
             </div>
         </div>
         <!--Services: DBPedia Query-->
         <div class="col-md-4 ">
-            <div class="panel panel-warning">
+            <div class="panel">
                 <div class="panel-heading">
                     <h3 class="panel-title">DBpedia Query</h3>
                 </div>
@@ -263,7 +258,7 @@
  offset 10
                                     </textarea>
                                     <br>
-                           <input type='submit' value='Query' class="btn btn-warning" onClick="trans(this.form);return false;">
+                           <input type='submit' value='Query' class="btn btn-default" onClick="trans(this.form);return false;">
                                     </form>
                                     </div>
 
@@ -279,7 +274,7 @@
     <div class="row">
                                     <!--Services: transformation self-services-->
                                     <div class="col-md-4">
-                                        <div class="panel panel-info">
+                                        <div class="panel">
                                             <div class="panel-heading">
                                                 <h3 class="panel-title">Transformation</h3>
                                             </div>
@@ -297,7 +292,7 @@
                                                     </select>
                                                     <br/><br><br>
                            <!--input type='button' value='Transform' class="btn btn-info" onclick="javascript:trans('/process/test',{transform:$('#transform').val(), uri:$('#uri').val()});"-->
-                           <input type='submit' value='Transform' class="btn btn-info" onClick="trans(this.form); return false;">
+                           <input type='submit' value='Transform' class="btn btn-default" onClick="trans(this.form); return false;">
                                                 </form>
 
                                             </div>
@@ -325,7 +320,7 @@
                                     </div> -->
                                     
                                      <div class="col-md-4">
-                                        <div class="panel panel-info">
+                                        <div class="panel">
                                             <div class="panel-heading">
                                                 <h3 class="panel-title">Data Shape</h3>
                                             </div>
@@ -336,7 +331,7 @@
                                                     <label for='sel'>Shape: </label><br>
                                                     <input type="text"  name='mode' class="form-control" id='sel2' value='/data/shape/shape4shape.ttl'/>                                                       
                                                     <br/><br><br>
-                                                    <input type='submit' value='Validate' class="btn btn-info" onClick="trans(this.form); return false;">
+                                                    <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
                                                 </form>
 
                                             </div>

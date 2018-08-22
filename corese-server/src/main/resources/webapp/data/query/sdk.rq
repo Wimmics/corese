@@ -121,10 +121,10 @@ template {
   </tr>
   </table>
 </div>
-   <button type="submit" name="submit" onclick="submitform(); trans(this.form); return false;" class="btn btn-info">Submit</button>
+   <button type="submit" name="submit" onclick="submitform(); trans(this.form); return false;" class="btn btn-default">Submit</button>
 
   <input id='value' name='value' type='hidden' value=''  />
-  <button id='reset' type='button' name='reset' onclick='clean();' class="btn btn-warning">Reset</button>
+  <button id='reset' type='button' name='reset' onclick='clean();' class="btn btn-default">Reset</button>
    
 </form>
 

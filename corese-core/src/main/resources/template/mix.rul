@@ -161,8 +161,8 @@ where {}
 <![CDATA[
 template st:button {
 
-  """<button type='button'  onClick='next(+1)'>next</button>"""
-  """<button type='button'  onClick='next(-1)'>prev</button>"""
+  """<button type='button' class='btn btn-default' onClick='next(+1)'>next</button>"""
+  """<button type='button' class='btn btn-default' onClick='next(-1)'>prev</button>"""
 }
 where {}
 ]]>

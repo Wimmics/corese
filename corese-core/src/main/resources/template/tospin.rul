@@ -192,7 +192,7 @@ format {
     <input type='hidden' name='transform' value='%s' />    
     <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
     <br/>           
-    <input type='submit' value='submit'"  class='btn btn-warning' onClick='trans(this.form); return false;'  />      
+    <input type='submit' value='submit'"  class='btn btn-default' onClick='trans(this.form); return false;'  />      
   </form>
   """
   
@@ -218,7 +218,7 @@ format {
     <input type='hidden' name='transform' value='%s' />    
     <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
     <br/>       
-    <input type='submit' value='submit' class='btn btn-warning' onClick='trans(this.form); return false;' />      
+    <input type='submit' value='submit' class='btn btn-default' onClick='trans(this.form); return false;' />      
   </form>
   """
   

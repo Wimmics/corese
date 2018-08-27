@@ -21,6 +21,12 @@ public class QuerySolverOverload {
     public static final String LT = "@lt";
     public static final String GE = "@ge";
     public static final String GT = "@gt";
+    
+    public static final String PLUS  = "@plus";
+    public static final String MINUS = "@minus";
+    public static final String MULT  = "@mult";
+    public static final String DIVIS = "@divis";
+
 
     public static final String US = NSManager.USER;
     public static final String MEQ = US + "eq";
@@ -207,6 +213,15 @@ public class QuerySolverOverload {
                 return GE;
             case ExprType.GT:
                 return GT;
+                
+            case ExprType.PLUS:
+                return PLUS;
+            case ExprType.MINUS:
+                return MINUS;
+            case ExprType.MULT:
+                return MULT;
+            case ExprType.DIV:
+                return DIVIS;    
         }
         return null;
     }

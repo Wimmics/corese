@@ -996,7 +996,7 @@ public class Expression extends TopExp
 
     @Override
     public int size() {
-        return (getArgs() == null) ? 1 : getArgs().size();
+        return (getArgs() == null) ? 0 : getArgs().size();
     }
 
     @Override
@@ -1007,11 +1007,11 @@ public class Expression extends TopExp
     public List<IDatatype> getValueList() {
         ArrayList<IDatatype> list = new ArrayList<>();
         if (getArgs() == null){
-            list.add(getDatatypeValue());
+            //list.add(getExpressionDatatypeValue());
         }
         else {
             for (Expression exp : getArgs()) {
-                list.add(DatatypeMap.createObject(exp));
+                list.add(exp.getExpressionDatatypeValue());
             }
         }
         return list;
@@ -1019,14 +1019,18 @@ public class Expression extends TopExp
     
     @Override
     public IDatatype getValue(String var, int n) {
-        if (n == 0 && getArgs() == null) {
-            return getDatatypeValue();
+        if (getArgs() == null) {
+            return null; //getExpressionDatatypeValue();
         }
         Expression exp = getArg(n);
         if (exp == null) {
             return null;
         }
-        return DatatypeMap.createObject(exp);
+        return exp.getExpressionDatatypeValue();
+    }
+    
+    IDatatype getExpressionDatatypeValue() {
+        return DatatypeMap.createObject(this);
     }
 
 }

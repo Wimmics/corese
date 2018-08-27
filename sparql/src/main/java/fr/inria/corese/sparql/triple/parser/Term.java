@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1365,7 +1366,7 @@ public class Term extends Expression {
         }
         return args.get(n);
     }
-
+       
     @Override
     public Expression getBasicArg(int n) {
         return args.get(n);

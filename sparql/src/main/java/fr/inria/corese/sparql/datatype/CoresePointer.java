@@ -5,6 +5,9 @@ import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extension IDatatype that contains LDScript Pointerable object
@@ -103,8 +106,22 @@ public class CoresePointer extends CoreseUndefLiteral {
             return false; 
         }
         switch (pobject.pointerType()){
+            // expression must not be loopable in map(fun, exp)
             case Pointerable.EXPRESSION_POINTER: return false;
             default: return true;
+        }
+    }
+    
+     @Override
+    public List<IDatatype> getValueList() {   
+         if (pobject == null){
+            return new ArrayList<>(); 
+        }
+        switch (pobject.pointerType()){
+            case Pointerable.EXPRESSION_POINTER: 
+               return ((Expression) pobject).getValueList();
+               
+            default: return super.getValueList();
         }
     }
            

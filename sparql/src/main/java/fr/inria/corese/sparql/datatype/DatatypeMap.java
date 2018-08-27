@@ -1215,5 +1215,14 @@ public class DatatypeMap implements Cst, RDF {
         IDatatype dt = DatatypeMap.createList(ldt);
         return dt;
     }
+    
+    public static IDatatype setPublicDatatypeValue(IDatatype dt) {
+        TRUE.setPublicDatatypeValue(dt);
+        return dt;
+    }
+    
+    public static IDatatype getPublicDatatypeValue() {
+        return TRUE.getPublicDatatypeValue();
+    }
 
 }

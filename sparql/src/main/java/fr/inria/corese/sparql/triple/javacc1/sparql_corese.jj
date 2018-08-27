@@ -2721,15 +2721,50 @@ ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Const
 
 
 
-ExpressionList VarList() : { ExpressionList list;  Variable var; }
+ExpressionList VarList2() : { ExpressionList list;  Variable var; }
 {
-    { list = new ExpressionList(); }  
-    var = Var() { list.add(var);  }	 
-    ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+    { list = new ExpressionList(); } 
+ 
+     var = Var() { list.add(var);  } ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+
     ( <BAR>       var = Var() { list.add(var); list.setRest(true); } ) ?
-    ( <DOT>       var = Var() { list.add(var); list.setLast(true); } 
-        ( var = Var() { list.add(var);} )*
-    ) ?
+
+    ( <DOT>       var = Var() { list.add(var); list.setLast(true); }  ( var = Var() { list.add(var);} )* ) ?
+
+    { return list; }
+}
+
+
+ExpressionList VarList() : { ExpressionList list; }
+{
+    { list = new ExpressionList(); } 
+ 
+    (
+    FstVar(list) (RstVar(list))? (LstVar(list))? 
+    |
+    RstVar(list) (LstVar(list))? 
+    |
+    LstVar(list)
+    )
+
+    { return list; }
+}
+
+ExpressionList FstVar(ExpressionList list) : {Variable var;}
+{
+    var = Var() { list.add(var);  } ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+    { return list; }
+}
+
+ExpressionList RstVar(ExpressionList list) : {Variable var;}
+{
+    <BAR>       var = Var() { list.add(var); list.setRest(true); } 
+    { return list; }
+}
+
+ExpressionList LstVar(ExpressionList list) : {Variable var;}
+{
+    <DOT>       var = Var() { list.add(var); list.setLast(true); }  ( var = Var() { list.add(var);} )* 
     { return list; }
 }
 

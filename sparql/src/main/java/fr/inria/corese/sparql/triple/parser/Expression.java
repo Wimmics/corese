@@ -26,6 +26,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -994,17 +995,38 @@ public class Expression extends TopExp
     }
 
     @Override
-    public Object getValue(String var, int n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (getArgs() == null) ? 1 : getArgs().size();
     }
 
     @Override
     public Iterable getLoop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getValueList();
     }
+    
+    public List<IDatatype> getValueList() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        if (getArgs() == null){
+            list.add(getDatatypeValue());
+        }
+        else {
+            for (Expression exp : getArgs()) {
+                list.add(DatatypeMap.createObject(exp));
+            }
+        }
+        return list;
+    }
+    
+    @Override
+    public IDatatype getValue(String var, int n) {
+        if (n == 0 && getArgs() == null) {
+            return getDatatypeValue();
+        }
+        Expression exp = getArg(n);
+        if (exp == null) {
+            return null;
+        }
+        return DatatypeMap.createObject(exp);
+    }
+
 }

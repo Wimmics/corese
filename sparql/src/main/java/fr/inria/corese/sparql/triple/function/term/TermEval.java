@@ -4,7 +4,6 @@
  */
 package fr.inria.corese.sparql.triple.function.term;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;

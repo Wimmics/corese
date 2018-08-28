@@ -380,6 +380,11 @@ public class Constant extends Atom {
     public boolean isBlank() {
         return dt.isBlank();
     }
+    
+    @Override
+    public boolean isURI() {
+        return dt.isURI();
+    }
 
     @Override
     public void setWeight(String w) {
@@ -483,8 +488,10 @@ public class Constant extends Atom {
      public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
         return dt;
     }
-     @Override
+     
+    @Override
      public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param){
         return getDatatypeValue();
     }
+
 }

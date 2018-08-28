@@ -224,6 +224,18 @@ public class Expression extends TopExp
     public boolean isConstant() {
         return false;
     }
+    
+    public boolean isURI() {
+        return false;
+    }
+    
+    public boolean isBlank() {
+        return false;
+    }
+    
+    public boolean isLiteral() {
+        return false;
+    }
 
     @Override
     public boolean isVariable() {
@@ -1007,7 +1019,6 @@ public class Expression extends TopExp
     public List<IDatatype> getValueList() {
         ArrayList<IDatatype> list = new ArrayList<>();
         if (getArgs() == null){
-            //list.add(getExpressionDatatypeValue());
         }
         else {
             for (Expression exp : getArgs()) {
@@ -1020,7 +1031,7 @@ public class Expression extends TopExp
     @Override
     public IDatatype getValue(String var, int n) {
         if (getArgs() == null) {
-            return null; //getExpressionDatatypeValue();
+            return null; 
         }
         Expression exp = getArg(n);
         if (exp == null) {

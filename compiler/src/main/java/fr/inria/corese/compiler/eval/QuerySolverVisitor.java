@@ -412,7 +412,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     @Override
     public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
-        // prevent overload within in overload
+        // prevent overload within overload
         return ! isActive() && overload.overload(exp, (IDatatype)res, (IDatatype)dt1, (IDatatype)dt2);
     }
        
@@ -456,7 +456,12 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
  
-    // @before function us:before(?q) {}
+    /**
+     * @before function us:before(?q)
+     * call function us:before
+     * set Visitor as inactive during function call to prevent loop and also in case where
+     * function execute a query (which would trigger Visitor recursively)
+     */
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
         if (isActive() || ! accept(metadata)) {
             return null;
@@ -469,6 +474,22 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
             IDatatype dt = call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             setActive(false);
             return dt;
+        }
+        return null;
+    }
+    
+    /**
+     * @eq    function us:eq(?e, ?x, ?y)
+     * @error function us:error(?e, ?x, ?y)
+     * Function call is performed even if Visitor is inactive
+     * use case: @select function execute ?a = ?b on extension datatype
+     * we want @eq function us:eq(?e, ?x, ?y) to handle ?a = ?b
+     */
+    public IDatatype callbackBasic(Eval ev, String metadata, IDatatype[] param) {       
+        trace(ev, metadata, param);
+        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        if (function != null) {
+            return call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
         }
         return null;
     }
@@ -491,11 +512,6 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return null;
     }
     
-    // @type us:before function us:event () {}
-//    public IDatatype method(Eval ev, String name, String type, IDatatype[] param) {
-//        return method(ev, name, DatatypeMap.newResource(type), param);
-//    }
-        
     public IDatatype method(Eval ev, String name,  IDatatype[] param) {
         if (isActive()) {
             return null;

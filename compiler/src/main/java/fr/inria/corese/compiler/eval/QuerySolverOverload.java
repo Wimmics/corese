@@ -129,11 +129,11 @@ public class QuerySolverOverload {
         String name = getName(exp, param);
         IDatatype[] values = toArray(param, exp);
         if (name == null) {
-            return visitor.callback(eval, ERROR, values);
+            return visitor.callbackBasic(eval, ERROR, values);
         }
-        IDatatype val = visitor.callback(eval, name, values);
+        IDatatype val = visitor.callbackBasic(eval, name, values);
         if (val == null) {
-            val = visitor.callback(eval, ERROR, values);
+            val = visitor.callbackBasic(eval, ERROR, values);
         }
         return val;
     }

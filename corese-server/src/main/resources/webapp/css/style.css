@@ -16,14 +16,18 @@ p { text-align: justify }
 }
 
 .center { 
-    margin-left: auto;
-    margin-right: auto; 
+    text-align:center; 
 }
 
 h1,h2,h3,h4 { color: #00428C }
 
 .s0 { background:lightgrey }
 .s1 { background:lightblue }
+
+.table tr:nth-child(even) { background:#fafafa }
+.table tr:nth-child(odd)  { background:#eeeeee }
+.table td { font-size: 13px }
+.table tr > th { font-size: 13px }
 
 .s1 {background-color:lightblue}
 .s2 {background-color:lightgreen}
@@ -88,3 +92,4 @@ pre {
     color: #00428C;
     background-color: #E4E5E7;
 }         
+

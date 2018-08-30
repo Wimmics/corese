@@ -1,0 +1,10 @@
+template st:nodes {
+  "\"nodes\":[\n"
+  group { "{\"id\": \"" str(?s) "\"}";separator=",\n"}
+  "\n]\n"
+} where {
+  select distinct ?s where {
+    { ?s ?p ?o } union { ?o ?p ?s }
+  }
+}
+

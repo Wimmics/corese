@@ -1,0 +1,9 @@
+template st:edges {
+  "\"edges\":[\n"
+  group { "{\"source\": \"" str(?s) "\", \"target\": \"" str(?o) "\"}";separator=",\n"}
+  "\n]\n"
+} where {
+  select distinct ?s ?o where {
+    { ?s ?p ?o }
+  }
+}

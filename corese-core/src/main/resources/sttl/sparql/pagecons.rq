@@ -2,6 +2,7 @@ template st:pagecons {
    format {
     us:format("construct.html")
     st:call-template(st:tablecons)
+    st:apply-templates-with(st:d3)
    }
 }
 where {

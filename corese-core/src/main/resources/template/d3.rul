@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+  <rule>
+    <body>
+<![CDATA[
+  template st:nodes {
+  "\"nodes\":[\n"
+  group { "{\"id\": \"" str(?s) "\"}";separator=",\n"}
+  "\n]\n"
+} where {
+  select distinct ?s where {
+    { ?s ?p ?o } union { ?o ?p ?s }
+  }
+}
+
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:start {
+  st:call-template(st:nodes)
+  ","
+  st:call-template(st:edges)
+} where {
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:edges {
+  "\"edges\":[\n"
+  group { "{\"source\": \"" str(?s) "\", \"target\": \"" str(?o) "\"}";separator=",\n"}
+  "\n]\n"
+} where {
+  select distinct ?s ?o where {
+    { ?s ?p ?o }
+  }
+}
+
+]]>
+    </body>
+  </rule>
+</rdf:RDF>

@@ -1,5 +1,6 @@
 package fr.inria.corese.compiler.eval;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
@@ -47,6 +48,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     private static Logger logger = LoggerFactory.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
+    public static int DEFAULT_MODE = KGRAM_MODE;
+    static final IDatatype[] EMPTY = new IDatatype[0];
     protected ProxyInterpreter proxy;
     Producer producer;
     Eval kgram;
@@ -54,7 +57,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     ResultListener listener;
     //static HashMap<String, Extension> extensions;
     static Extension extension;
-    int mode = KGRAM_MODE;
+    int mode = DEFAULT_MODE;
     boolean hasListener = false;
     boolean isDebug = false;
     public static int count = 0;
@@ -228,7 +231,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             logger.error("Environment getEval() = null in: ");
             logger.info(exp.toString());
         }
-        return ((Expression) exp).eval(this, (Binding) env.getBind(), env, p);
+        IDatatype dt = ((Expression) exp).eval(this, (Binding) env.getBind(), env, p);
+        if (dt == null) {
+            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
+            if (res != null) {
+                return (IDatatype) res;
+            }
+        }
+        return dt;
     }
 
     boolean isTrue(IDatatype dt) {

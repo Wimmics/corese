@@ -21,7 +21,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -320,7 +319,9 @@ public class Term extends Expression {
                 return new MethodCall(name);
             case ExprType.XT_METHOD_TYPE:
                 return new MethodTypeCall(name);
-            case ExprType.APPLY:        //return new Apply(name); 
+            case ExprType.EVAL:
+                return new Eval(name);    
+            case ExprType.APPLY:        
             case ExprType.FUNCALL:
                 return new Funcall(name);
             case ExprType.JAVACALL:
@@ -410,6 +411,7 @@ public class Term extends Expression {
             case ExprType.XT_VISITOR:    
             case ExprType.XT_DATATYPE:    
                 return new SystemFunction(name);
+                
 
             case ExprType.INDEX:
             case ExprType.XT_CONTENT:

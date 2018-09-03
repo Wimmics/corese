@@ -672,6 +672,9 @@ public class Transformer implements ExpType {
 
     void definePublic(Function fun, Query q, boolean isDefine) {
         if (isDefine) {
+            if (Interpreter.getExtension().getHierarchy() == null) {
+                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
+            }
             Interpreter.define(fun);
         }
         fun.setPublic(true);

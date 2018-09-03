@@ -1,5 +1,6 @@
 package fr.inria.corese.test.engine;
 
+import fr.inria.corese.compiler.eval.QuerySolver;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -51,9 +52,11 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.test.dev.TestUnit;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -98,7 +101,7 @@ public class TestQuery1 {
         try {
             init(graph, ld);
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
@@ -107,13 +110,152 @@ public class TestQuery1 {
 
         QueryProcess.testAlgebra(!true);
         //Graph.METADATA_DEFAULT = true;
+        
+        
+      //before3();  
 
     }
-
-    @AfterClass
+    
+     @AfterClass
     static public void finish() {
-        EdgeFactory.trace();
+       //after2();
     }
+    
+    
+    static void before3() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q = "@public {"
+                
+                + "@filter "
+                + "function us:filter(?g, ?e, ?v) {"
+                + "us:eval(?e)"
+                + "}"
+                
+                + "function us:eval(?e) {"
+                + "if (ds:isTerm(?e) && ds:getLabel(?e) != 'exists' ) {"
+                + "let ((|?lvar) = ?e, ?lval = maplist(us:eval, ?lvar)) {"
+                + "apply(ds:getLabel(?e), ?lval)"
+                + "}"
+                + "}"
+                + "else { eval(?e) }"
+                + "}"
+                
+                + "}"
+                                
+                ;
+
+        try {
+            Query qq = exec.compile(q);
+            //System.out.println(qq.getAST());
+        } catch (EngineException ex) {
+            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
+            System.out.println(ex);
+        }
+        
+        QuerySolver.setVisitorable(true);
+    }
+    
+    
+     static void before() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q = "@public {"
+                + "@error function us:error(?e, ?x , ?y) { "
+                + "xt:print('****************** error') ; "
+                + "xt:print(java:getAST(xt:query())) ;"
+                + "xt:display( ?e, ?x, ?y) ; "
+                + "error() "
+                + "}"
+                + "}";
+
+        try {
+            Query qq = exec.compile(q);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
+        QuerySolver.setVisitorable(true);
+    }
+     
+      static void before2() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        QuerySolver.setVisitorable(true);
+        IDatatype map = DatatypeMap.map();
+        map.set(DatatypeMap.newResource(NSManager.USER, "error"), DatatypeMap.newList());
+        DatatypeMap.setPublicDatatypeValue(map);
+
+        String q = "@public {"
+                
+                
+                + "@error "
+                + "function us:error(?e, ?x , ?y) { "
+                + "us:recerror(?e, ?x, ?y) ; "
+                + "error() "
+                + "}"
+                
+                + "@filter "
+                + "function us:filter(?g, ?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                
+                + "@select "
+                + "function us:select(?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                
+                + "function us:map() { ds:getPublicDatatypeValue(true) }"
+                               
+                + "function us:record(?e) {"
+                + "if (java:isTerm(?e)) {"
+                + "xt:set(us:map(), java:getLabel(?e), coalesce(1 + xt:get(us:map(), java:getLabel(?e)), 1)) ;"
+                + "let (( | ?l) = ?e) {"
+                + "for (?ee in ?e) {"
+                + "us:record(?ee)"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                
+                + "function us:recerror(?e, ?x, ?y) {"
+                + "xt:add(xt:get(us:map(), us:error), xt:list(?e, ?x, ?y))"               
+                + "}"
+                
+                + "}"
+                                              
+                ;
+
+        try {
+            Query qq = exec.compile(q);
+        } catch (EngineException ex) {
+            System.out.println(ex);
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    static void after2() {
+        System.out.println("After");
+        int i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue()) {
+            System.out.println(i++ + " " + dt.getValueList().get(0) + " " + dt.getValueList().get(1));
+        }
+        i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue().get(DatatypeMap.newResource(NSManager.USER, "error"))) {
+            System.out.println(i++ + " " + dt);
+        }
+    } 
+     
+
+   
 
     static void init(Graph g, Load ld) throws LoadException {
         ld.parse( Thread.currentThread().getContextClassLoader().getResourceAsStream( "data/comma/comma.rdfs" ) );
@@ -949,15 +1091,23 @@ public class TestQuery1 {
                   + "}";
           
           String q = "@event "
-                  + "select * (st:get(us:count) as ?c) "
+                  + "select * (us:getcount() as ?c) "
                   + "where { ?x foaf:knows+ ?y }"
                   
+                  + "@before "
+                  + "function us:before(?q) {"
+                  + "set(?count = 0)"
+                  + "}"
+                  
+                  + "function us:getcount(){ ?count }"
+                  
                   + "@step function us:step(?g, ?q, ?p, ?s, ?o) {"
-                  + "st:set(us:count, coalesce(st:get(us:count), 0) + 1)"
+                  + "set(?count = ?count + 1)"
                   + "}"
                   ;
           
           QueryProcess exec = QueryProcess.create(Graph.create());
+          exec.setListPath(true);
           exec.query(i);
           Mappings map  = exec.query(q);
           DatatypeValue dt = map.get(2).getValue("?c");
@@ -1480,7 +1630,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        ////System.out.println(map);
+        //System.out.println(map);
         assertEquals(2, map.size());
         Node s1 = map.get(0).getNode("?s");
         assertEquals("http://dbpedia.org/sparql", s1.getLabel());
@@ -4201,7 +4351,7 @@ public class TestQuery1 {
         assertEquals(6, dt.intValue());
     }
 
-    @Test
+    //@Test
     public void testConstruct() throws EngineException {
 
         GraphStore gs = GraphStore.create();

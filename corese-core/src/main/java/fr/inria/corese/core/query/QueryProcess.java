@@ -421,9 +421,8 @@ public class QueryProcess extends QuerySolver {
      * xt:method(us:start, us:Event, event, obj)
      */
     public void event(Event name, Event e, Object o) throws EngineException {
-        IDatatype[] param = new IDatatype[2];
-        param[0] = DatatypeMap.createObject(e);
-        param[1] = DatatypeMap.createObject((o == null) ? "null" : o);
+        IDatatype[] param = (o == null) ? param(DatatypeMap.createObject(e)) : 
+                param(DatatypeMap.createObject(e), DatatypeMap.createObject(o));       
         EventManager mgr = getGraph().getEventManager();
         boolean b = mgr.isVerbose();
         mgr.setVerbose(false);
@@ -432,8 +431,14 @@ public class QueryProcess extends QuerySolver {
 
     }
     
+    IDatatype[] param(IDatatype... ldt) {
+        return ldt;
+    }
+    
     public IDatatype method(String name, String type, IDatatype[] param) throws EngineException {
+        //System.out.println("QP: " + name + " " + type + " " + param[0] + " " + param[1]);
         Function function = getFunction(name, type, param);
+        //System.out.println("QP: " + function);
         if (function == null) {
             return null;
         }

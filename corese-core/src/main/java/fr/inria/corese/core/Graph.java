@@ -2679,6 +2679,7 @@ public class Graph extends GraphObject implements
             if (ee != null) {
                 res = new ArrayList<Edge>();
                 res.add(ee);
+                getEventManager().process(Event.Delete, ee);
             }
         }
 
@@ -2703,7 +2704,7 @@ public class Graph extends GraphObject implements
                     }
                     res.add(ent);
                     //setDelete(true);
-                    getEventManager().process(Event.Delete);
+                    getEventManager().process(Event.Delete, ent);
                 }
             }
         }
@@ -2728,7 +2729,7 @@ public class Graph extends GraphObject implements
             }
             if (ent != null) {
                 //setDelete(true);
-                getEventManager().process(Event.Delete);
+                //getEventManager().process(Event.Delete, ent);
                 res = ent;
             }
         }
@@ -2750,7 +2751,7 @@ public class Graph extends GraphObject implements
                 }
                 res.add(ent);
                 //setDelete(true);
-                getEventManager().process(Event.Delete);
+                getEventManager().process(Event.Delete, ent);
             }
         }
 
@@ -2828,7 +2829,7 @@ public class Graph extends GraphObject implements
 //            }
             if (gg != null) {
                 //setDelete(true);
-                getEventManager().process(Event.Delete);
+                getEventManager().process(Event.Delete, gg);
                 getIndex(IGRAPH).clear(gg);
             }
         }

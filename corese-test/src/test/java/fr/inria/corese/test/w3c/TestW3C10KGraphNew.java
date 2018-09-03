@@ -5,6 +5,12 @@
 
 package fr.inria.corese.test.w3c;
 
+import static fr.inria.corese.test.w3c.TestW3C11KGraphNew.before;
+import static fr.inria.corese.test.w3c.TestW3C11KGraphNew.after;
+import static fr.inria.corese.test.w3c.TestW3C11KGraphNew.after2;
+import static fr.inria.corese.test.w3c.TestW3C11KGraphNew.before2;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -16,6 +22,18 @@ public class TestW3C10KGraphNew {
    
     public static void main(String[] args) {
         new TestW3C11KGraphNew().process(0);
+    }
+    
+    
+     @BeforeClass
+    public static void setUpClass() throws Exception {
+       //before2(); 
+        
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        //after2();
     }
     
     @Test

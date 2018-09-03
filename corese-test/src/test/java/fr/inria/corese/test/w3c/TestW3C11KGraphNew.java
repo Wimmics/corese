@@ -1,5 +1,6 @@
 package fr.inria.corese.test.w3c;
 
+import fr.inria.corese.compiler.eval.QuerySolver;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,8 +56,10 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.core.print.TemplateFormat;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.test.dev.TestUnit;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
 
@@ -173,11 +176,129 @@ public class TestW3C11KGraphNew {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+       //before2(); 
+        
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        //after2();
     }
+    
+    static void before() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        QuerySolver.setVisitorable(true);
+        DatatypeMap.TRUE.setPublicDatatypeValue(DatatypeMap.newList());
+
+        String q = "@public @error "
+                + "function us:error(?e, ?x , ?y) { "
+                + "xt:print('****************** error') ; "
+                + "xt:print(java:getAST(xt:query())) ;"
+                + "xt:display( ?e, ?x, ?y) ; "
+                + "xt:add(ds:getPublicDatatypeValue(true), xt:list(?e, ?x, ?y)) ;"
+                + "error() "
+                + "}";
+
+        try {
+            Query qq = exec.compile(q);
+        } catch (EngineException ex) {
+            System.out.println(ex);
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    static void after() {
+        System.out.println("After");
+        int i = 0;
+        for (IDatatype dt : DatatypeMap.TRUE.getPublicDatatypeValue().getValues()) {
+            System.out.println(i++ + " " + dt);
+        }
+    }
+    
+      static void before2() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        QuerySolver.setVisitorable(true);
+        
+        IDatatype map = DatatypeMap.map();
+        map.set(DatatypeMap.newResource(NSManager.USER, "error"), DatatypeMap.newList());
+        DatatypeMap.setPublicDatatypeValue(map);
+
+        String q = "@public {"
+                
+                + "function us:start() {"
+                + "let (?map = xt:map()) {"
+                + "xt:set(?map, us:error, xt:list()) ;"
+                + "ds:setPublicDatatypeValue(true, ?map)"
+                + "}"
+                + "}"
+                
+                + "@error "
+                + "function us:error(?e, ?x , ?y) { "
+                + "us:recerror(?e, ?x, ?y) ; "
+                + "error() "
+                + "}"
+                
+                + "@filter "
+                + "function us:filter(?g, ?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                
+                + "@select "
+                + "function us:select(?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                               
+                + "function us:record(?e) {"
+                + "if (java:isTerm(?e)) {"
+                + "xt:set(ds:getPublicDatatypeValue(true), java:getLabel(?e), java:getLabel(?e)) ;"
+                + "let (( | ?l) = ?e) {"
+                + "for (?ee in ?e) {"
+                + "us:record(?ee)"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                
+                + "function us:recerror(?e, ?x, ?y) {"
+                + "xt:add(xt:get(ds:getPublicDatatypeValue(true), us:error), xt:list(?e, ?x, ?y))"               
+                + "}"
+                
+                + "}"
+                                              
+                ;
+
+        try {
+            Query qq = exec.compile(q);
+            //exec.funcall(NSManager.USER + "start", new IDatatype[0]);
+        } catch (EngineException ex) {
+            System.out.println(ex);
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    static void after2() {
+        System.out.println("After");
+        int i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue()) {
+            System.out.println(i++ + " " + dt.getValueList().get(1));
+        }
+        i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue().get(DatatypeMap.newResource(NSManager.USER, "error"))) {
+            System.out.println(i++ + " " + dt);
+        }
+    } 
+     
+     
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {

@@ -55,6 +55,11 @@ public class Path extends ProducerDefault implements Pointerable {
     }
     
     @Override
+    public Object getObject() {
+        return this;
+    }
+    
+    @Override
     public String getDatatypeLabel() {
         if (path.size() == 1) {
             return String.format("(1)[%s]", path.get(0));

@@ -430,6 +430,11 @@ public class Mapping
     public String toString() {
         return toString("\n");
     }
+    
+    @Override
+    public Object getObject() {
+        return this;
+    }
      
     String toString(String sep) {    
         StringBuilder sb = new StringBuilder();

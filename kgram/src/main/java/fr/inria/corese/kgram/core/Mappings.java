@@ -258,13 +258,13 @@ public class Mappings extends PointerObject
         query = q;
     }
 
-    public void setObject(Object o) {
-        object = o;
-    }
-
-    public Object getObject() {
-        return object;
-    }
+//    public void setObject(Object o) {
+//        object = o;
+//    }
+//
+//    public Object getObject() {
+//        return object;
+//    }
 
     @Override
     public String toString() {

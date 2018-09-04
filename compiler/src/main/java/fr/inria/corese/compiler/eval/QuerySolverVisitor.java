@@ -611,5 +611,10 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         this.debug = debug;
     }
     
+    @Override
+    public Object getObject() {
+        return this;
+    }
+    
 
 }

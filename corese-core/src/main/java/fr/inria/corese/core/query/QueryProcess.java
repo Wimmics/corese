@@ -40,6 +40,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -422,7 +423,7 @@ public class QueryProcess extends QuerySolver {
      */
     public void event(Event name, Event e, Object o) throws EngineException {
         IDatatype[] param = (o == null) ? param(DatatypeMap.createObject(e)) : 
-                param(DatatypeMap.createObject(e), DatatypeMap.createObject(o));       
+                param(DatatypeMap.createObject(e), DatatypeMap.createObject(o));
         EventManager mgr = getGraph().getEventManager();
         boolean b = mgr.isVerbose();
         mgr.setVerbose(false);

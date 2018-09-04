@@ -40,6 +40,8 @@ function drawRdf(results, svgId) {
 		.data(results.links)
 		.enter().append("line")
 		.attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+    link.append("title")
+        .text(function(d) { return d.label; });
 
 	var node = graph.append("g")
 		.attr("class", "nodes")
@@ -52,9 +54,8 @@ function drawRdf(results, svgId) {
 			.on("start", dragstarted)
 			.on("drag", dragged)
 			.on("end", dragended));
-
 	node.append("title")
-		.text(function(d) { return d.id; });
+		.text(function(d) { return d.label; });
 
 	simulation
 		.nodes(results.nodes)

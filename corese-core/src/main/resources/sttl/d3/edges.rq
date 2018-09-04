@@ -1,9 +1,9 @@
 template st:edges {
   "\"edges\":[\n"
-  group { "{\"source\": \"" str(?s) "\", \"target\": \"" str(?o) "\"}";separator=",\n"}
+  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" str(?p) "\" }";separator=",\n"}
   "\n]\n"
 } where {
-  select distinct ?s ?o where {
+  select distinct ?s ?p ?o where {
     { ?s ?p ?o }
   }
 }

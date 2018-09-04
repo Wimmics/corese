@@ -6,12 +6,20 @@
 <![CDATA[
   template st:nodes {
   "\"nodes\":[\n"
-  group { "{\"id\": \"" str(?s) "\"}";separator=",\n"}
+  group {
+    "{\"id\": \"" us:get(?s)  "\""
+    ",\"label\": \"" str(?s)  "\""
+    ",\"group\":" if ( isURI(?s), "\"1\"", if( isBlank(?s), "\"2\"", "\"3\"") )
+    "}";
+    separator=",\n"
+  }
   "\n]\n"
 } where {
-  select distinct ?s where {
+  bind (us:start() as ?start)
+  {select distinct ?s where {
     { ?s ?p ?o } union { ?o ?p ?s }
-  }
+  } order by ?s}
+  bind(us:record(?s) as ?tmp)
 }
 
 
@@ -36,12 +44,33 @@
 <![CDATA[
   template st:edges {
   "\"edges\":[\n"
-  group { "{\"source\": \"" str(?s) "\", \"target\": \"" str(?o) "\"}";separator=",\n"}
+  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" str(?p) "\" }";separator=",\n"}
   "\n]\n"
 } where {
-  select distinct ?s ?o where {
+  select distinct ?s ?p ?o where {
     { ?s ?p ?o }
   }
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:profile {}
+where {}
+
+function us:start() {
+    set(?map = xt:map())
+}
+
+function us:record(?s) {
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
+}
+
+function us:get(?s) {
+    xt:get(?map, ?s)
 }
 
 ]]>

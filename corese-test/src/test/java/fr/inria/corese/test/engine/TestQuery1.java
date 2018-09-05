@@ -43,6 +43,8 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.result.XMLResult;
+import fr.inria.corese.core.EventLogger;
+import fr.inria.corese.core.EventManager;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -113,7 +115,9 @@ public class TestQuery1 {
         
         
       //before3();  
-
+      
+//      EventLogger.DEFAULT_METHOD = true;
+//      EventManager.DEFAULT_VERBOSE = true;
     }
     
      @AfterClass

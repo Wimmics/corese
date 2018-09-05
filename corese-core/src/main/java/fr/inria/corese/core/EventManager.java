@@ -21,8 +21,9 @@ import org.slf4j.Logger;
 public class EventManager {
 
     private static Logger logger = LoggerFactory.getLogger(EventManager.class);
+    public static boolean DEFAULT_VERBOSE = false;
     Graph graph;
-    private boolean verbose    = !true;
+    private boolean verbose    = DEFAULT_VERBOSE;
     private boolean isEntail = true;
     private boolean isUpdate = false;
     private boolean isDelete = false;

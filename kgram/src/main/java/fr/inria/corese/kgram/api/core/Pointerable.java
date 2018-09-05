@@ -32,7 +32,10 @@ public interface Pointerable extends Loopable {
     default int pointerType() {
         return UNDEF_POINTER;
     }
-
+    
+    default Object getObject() {
+        return this;
+    }
     
     default Mappings getMappings() {
         return null;    

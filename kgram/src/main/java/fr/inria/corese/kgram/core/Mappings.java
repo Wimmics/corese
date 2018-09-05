@@ -258,13 +258,13 @@ public class Mappings extends PointerObject
         query = q;
     }
 
-    public void setObject(Object o) {
-        object = o;
-    }
-
-    public Object getObject() {
-        return object;
-    }
+//    public void setObject(Object o) {
+//        object = o;
+//    }
+//
+//    public Object getObject() {
+//        return object;
+//    }
 
     @Override
     public String toString() {
@@ -605,7 +605,15 @@ public class Mappings extends PointerObject
         return compare(n1, n2);
     }
     
-    int comparator(Node n1, Node n2) {
+    int comparator(Node n1, Node n2) {       
+        if (getEval() != null) {
+            return getEval().getVisitor().compare(getEval(), n1.compare(n2), n1.getDatatypeValue(), n2.getDatatypeValue());
+        }
+        return n1.compare(n2);
+    }
+    
+    
+    int comparator2(Node n1, Node n2) {       
         if (getEval() != null) {
             return getEval().compare(n1, n2);
         }

@@ -305,11 +305,9 @@ Exp Query() : { Exp stack; Metadata la = null;}
             | UpdateQuery(la)            	
             | stack = TemplateQuery(la)
             )  (Defun()) 
-        //?       
         |  
-            (Function(la) | Package(la) | Export()) Defun()
+            ( Function(la) | Package(la) ) Defun()
         )
-     //   | Defun()     
   	     	
   ) ?
   
@@ -317,12 +315,9 @@ Exp Query() : { Exp stack; Metadata la = null;}
 }
 
 void Defun() : { Metadata la = null;} {
-    (
-    ( la = Annotate() (Function(la) | Package(la))) 
-    //@deprecated
-    | Export()  
+    ( 
+        la = Annotate() (Function(la) | Package(la)) 
     ) *
-    //+   
 }
 
 Exp LoadPattern() : {Exp stack;}
@@ -2726,15 +2721,50 @@ ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Const
 
 
 
-ExpressionList VarList() : { ExpressionList list;  Variable var; }
+ExpressionList VarList2() : { ExpressionList list;  Variable var; }
 {
-    { list = new ExpressionList(); }  
-    var = Var() { list.add(var);  }	 
-    ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+    { list = new ExpressionList(); } 
+ 
+     var = Var() { list.add(var);  } ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+
     ( <BAR>       var = Var() { list.add(var); list.setRest(true); } ) ?
-    ( <DOT>       var = Var() { list.add(var); list.setLast(true); } 
-        ( var = Var() { list.add(var);} )*
-    ) ?
+
+    ( <DOT>       var = Var() { list.add(var); list.setLast(true); }  ( var = Var() { list.add(var);} )* ) ?
+
+    { return list; }
+}
+
+
+ExpressionList VarList() : { ExpressionList list; }
+{
+    { list = new ExpressionList(); } 
+ 
+    (
+    FstVar(list) (RstVar(list))? (LstVar(list))? 
+    |
+    RstVar(list) (LstVar(list))? 
+    |
+    LstVar(list)
+    )
+
+    { return list; }
+}
+
+ExpressionList FstVar(ExpressionList list) : {Variable var;}
+{
+    var = Var() { list.add(var);  } ( (<COMMA>)?  var = Var() { list.add(var); } )* 
+    { return list; }
+}
+
+ExpressionList RstVar(ExpressionList list) : {Variable var;}
+{
+    <BAR>       var = Var() { list.add(var); list.setRest(true); } 
+    { return list; }
+}
+
+ExpressionList LstVar(ExpressionList list) : {Variable var;}
+{
+    <DOT>       var = Var() { list.add(var); list.setLast(true); }  ( var = Var() { list.add(var);} )* 
     { return list; }
 }
 
@@ -2773,16 +2803,6 @@ void Package(Metadata list) : { Function term; Metadata la; }
     <LBRACE> 
         ( la = Annotate() term = Function(la) 
         { astq.annotate(term, list); } ) +
-    <RBRACE>
-}
-
-
-// @deprecated
-void Export() : { Term term; }
-{
-    <EXPORT> 
-    <LBRACE> 
-        ( term = Function(null) { astq.exportFunction(term); } ) +
     <RBRACE>
 }
 
@@ -3174,7 +3194,6 @@ TOKEN [IGNORE_CASE] :
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">
 | <QUERY: "query">
-| <EXPORT: "export">
 | <PACKAGE: "package">
 }
 

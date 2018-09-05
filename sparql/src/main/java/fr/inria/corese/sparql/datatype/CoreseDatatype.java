@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class CoreseDatatype
         implements IDatatype {
-
+  
     private static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
@@ -54,6 +54,7 @@ public class CoreseDatatype
     static int code = -1;
     
     static HashMap<Integer, Class> dtc;
+    private static IDatatype publicDatatypeValue;
     
     private int index = IDatatype.VALUE;
     
@@ -1272,35 +1273,16 @@ public class CoreseDatatype
     public void setProperty(int p, Object o) {
     }
 
-//    @Override
-//    public Edge getEdge() {
-//        return null;
-//    }
-
     @Override
     public Node getNode() {
         return this;
     }
 
-//    @Override
-//    public Node getNode(int i) {
-//        return null;
-//    }
 
     @Override
     public Node getGraph() {
         return null;
     }
-
-//    @Override
-//    public int nbNode() {
-//        return 0;
-//    }
-//    
-//     @Override
-//    public int nbGraphNode() {
-//        return 0;
-//    }
 
     @Override
     public String getKey() {
@@ -1319,39 +1301,29 @@ public class CoreseDatatype
             return getLabel();
         }
     }
-
-//    @Override
-//    public Object getProvenance() {
-//        return null;
-//    }
-//
-//    @Override
-//    public void setProvenance(Object obj) {
-//    }
-
-//    @Override
-//    public Mappings getMappings() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public Mapping getMapping() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-
-//    @Override
-//    public Object getValue(String var, int n) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-
-//    @Override
-//    public Query getQuery() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-
+    
     @Override
     public TripleStore getTripleStore() {
         // TODO Auto-generated method stub
         return null;
     }
+    
+     /**
+     * @return the globalDatatypeValue
+     */
+    @Override
+    public IDatatype getPublicDatatypeValue() {
+        return publicDatatypeValue;
+    }
+
+    /**
+     * @param aGlobalDatatypeValue the globalDatatypeValue to set
+     */
+    @Override
+    public IDatatype setPublicDatatypeValue(IDatatype aGlobalDatatypeValue) {
+        publicDatatypeValue = aGlobalDatatypeValue;
+        return publicDatatypeValue;
+    }
+
+    
 }

@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
@@ -103,8 +104,14 @@ public class Memory extends PointerObject implements Environment {
         kgram = e;
     }
 
+    @Override
     public Eval getEval() {
         return kgram;
+    }
+    
+    @Override
+    public ProcessVisitor getVisitor() {
+        return getEval().getVisitor();
     }
 
     void setGroup(Mappings lm) {

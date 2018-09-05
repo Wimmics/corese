@@ -52,8 +52,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
  */
 public class QuerySolver  implements SPARQLEngine {
 
-   
-	private static Logger logger = LoggerFactory.getLogger(QuerySolver.class);
+    	private static Logger logger = LoggerFactory.getLogger(QuerySolver.class);
         public static final String MAIN_FUN = NSManager.EXT + "main";
 	
 	public static final int STD_ENTAILMENT  = 0;
@@ -68,6 +67,7 @@ public class QuerySolver  implements SPARQLEngine {
         
         public static boolean BGP_DEFAULT = false;
         public static boolean ALGEBRA_DEFAULT = false;
+        private static boolean visitorable = false;
         
 	static String NAMESPACES;
 
@@ -315,7 +315,7 @@ public class QuerySolver  implements SPARQLEngine {
         
         void tune(Eval kgram, Query q) {
             ASTQuery ast = (ASTQuery) q.getAST();
-            if (ast.hasMetadata(Metadata.EVENT)){
+            if (ast.hasMetadata(Metadata.EVENT) || isVisitorable()){
                 kgram.setVisitor(new QuerySolverVisitor(kgram));
             }
         }
@@ -895,5 +895,22 @@ public class QuerySolver  implements SPARQLEngine {
     @Override
     public void getLinkedFunction(String uri) {
     }
+    
+    /**
+     * @return the visitorable
+     */
+    public static boolean isVisitorable() {
+        return visitorable;
+    }
+
+    /**
+     * @param aVisitorable the visitorable to set
+     */
+    public static void setVisitorable(boolean aVisitorable) {
+        visitorable = aVisitorable;
+    }
+
+   
+
 	
 }

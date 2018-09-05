@@ -43,6 +43,13 @@ public class SystemFunction extends TermEval {
                     return null;
                 }
                 return DatatypeMap.createObject(env.getEval().getVisitor());
+                
+                // PRAGMA: define extension datatype inside visitor context: @event select where
+                // for overloading operators for the extension datatype
+                // to be used in @init function
+            case ExprType.XT_DATATYPE:
+                if (param.length < 2) {return null;}
+                return (IDatatype) env.getVisitor().datatype(param[0], param[1]);
         }
         
         return TRUE;

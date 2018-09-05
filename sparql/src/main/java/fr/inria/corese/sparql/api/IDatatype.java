@@ -164,6 +164,9 @@ public interface IDatatype
 
     Object getObject();
     
+    IDatatype getPublicDatatypeValue();
+    IDatatype setPublicDatatypeValue(IDatatype dt);
+    
     String getContent();
     
     IDatatype display();

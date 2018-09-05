@@ -46,14 +46,6 @@ public class Atom extends Expression implements ElementClause{
 	boolean isAtom() {
 		return true;
 	}
-
-	public boolean isLiteral() {
-		return false;
-	}
-	
-	public boolean isBlank() {
-		return false;
-	}
 	
 	public boolean isResource() {
 		return false;

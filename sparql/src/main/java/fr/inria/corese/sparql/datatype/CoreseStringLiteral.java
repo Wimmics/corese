@@ -51,8 +51,8 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  case STRING:
 	  case BOOLEAN:
 	  case XMLLITERAL:
-	  case UNDEF:
-		  return getLabel().compareTo(iod.getLabel()) < 0;
+              return getLabel().compareTo(iod.getLabel()) < 0;
+	  //case UNDEF: return getLabel().compareTo(iod.getLabel()) < 0;
 	  }
 	  throw failure();
   }
@@ -64,8 +64,8 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  case STRING:
 	  case BOOLEAN:
 	  case XMLLITERAL:
-	  case UNDEF:
-		  return getLabel().compareTo(iod.getLabel()) <= 0;
+              return getLabel().compareTo(iod.getLabel()) <= 0;
+	  //case UNDEF: return getLabel().compareTo(iod.getLabel()) <= 0;
 	  }
 	  throw failure();
   }
@@ -77,8 +77,8 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  case STRING:
 	  case BOOLEAN:
 	  case XMLLITERAL:
-	  case UNDEF:
-		  return getLabel().compareTo(iod.getLabel()) > 0;
+              return getLabel().compareTo(iod.getLabel()) > 0;
+	  //case UNDEF: return getLabel().compareTo(iod.getLabel()) > 0;
 	  }
 	  throw failure();
   }
@@ -90,8 +90,8 @@ public class CoreseStringLiteral extends CoreseStringableImpl{
 	  case STRING:
 	  case BOOLEAN:
 	  case XMLLITERAL:
-	  case UNDEF:
-		  return getLabel().compareTo(iod.getLabel()) >= 0;
+              return getLabel().compareTo(iod.getLabel()) >= 0;
+	  //case UNDEF: return getLabel().compareTo(iod.getLabel()) >= 0;
 	  }
 	  throw failure();
   }

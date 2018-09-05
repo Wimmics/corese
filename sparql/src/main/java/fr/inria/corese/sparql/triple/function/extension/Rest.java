@@ -43,7 +43,7 @@ public class Rest extends TermEval {
             return null;
         }
         
-        if (dt.isMap()) {
+        if (dt.isMap() || dt.pointerType() == Pointerable.EXPRESSION_POINTER) {
             dt = dt.toList();
         }
         if (dt.isList()) {

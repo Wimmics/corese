@@ -536,9 +536,9 @@ public class DatatypeMap implements Cst, RDF {
         }
     }
 
-    public static IDatatype createObject(String name) {
-        return createLiteral(name, XMLLITERAL, null);
-    }
+//    public static IDatatype createObject(String name) {
+//        return createLiteral(name, XMLLITERAL, null);
+//    }
 
     public static IDatatype getValue(Object value) {
         if (value instanceof IDatatype) {
@@ -606,10 +606,19 @@ public class DatatypeMap implements Cst, RDF {
         if (obj instanceof Pointerable) {
             Pointerable ptr = (Pointerable) obj;            
             return new CoresePointer(name==null?defaultName(ptr):name, ptr);
-        }
+        }       
+        return genericPointer2(name, obj);
+    }
+    
+    @Deprecated
+    static IDatatype genericPointer1(String name, Object obj){
         IDatatype dt = createLiteral(name==null?defaultName(obj):name, XMLLITERAL, null);
         dt.setObject(obj);
         return dt;
+    }
+    
+    static IDatatype genericPointer2(String name, Object obj){
+        return new CoresePointer(name==null?defaultName(obj):name, new PointerObject(obj));
     }
     
     public static IDatatype createPointer(String name) {
@@ -891,6 +900,17 @@ public class DatatypeMap implements Cst, RDF {
                 || dt instanceof CoreseUndefLiteral
                 || dt instanceof CoreseXMLLiteral
                 || dt instanceof CoreseString);
+    }
+    
+    
+    public static IDatatype kind(IDatatype dt) {
+        if (dt.isLiteral()) {
+            return dt.getDatatype();
+        }
+        if (dt.isURI()) {
+            return URI_DATATYPE;
+        }
+        return BNODE_DATATYPE;
     }
 
     /**
@@ -1203,6 +1223,15 @@ public class DatatypeMap implements Cst, RDF {
         }
         IDatatype dt = DatatypeMap.createList(ldt);
         return dt;
+    }
+    
+    public static IDatatype setPublicDatatypeValue(IDatatype dt) {
+        TRUE.setPublicDatatypeValue(dt);
+        return dt;
+    }
+    
+    public static IDatatype getPublicDatatypeValue() {
+        return TRUE.getPublicDatatypeValue();
     }
 
 }

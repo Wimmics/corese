@@ -32,7 +32,7 @@ public class GT extends BinaryFunction {
         if (dt1 == null || dt2 == null) {
             return null;
         }
-        return dt1.gt(dt2);
+        return overload(eval, b, env, p, dt1, dt2, dt1.gt(dt2));
     }
-      
+
 }

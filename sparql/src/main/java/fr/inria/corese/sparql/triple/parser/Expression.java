@@ -26,6 +26,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -221,6 +222,18 @@ public class Expression extends TopExp
 
     @Override
     public boolean isConstant() {
+        return false;
+    }
+    
+    public boolean isURI() {
+        return false;
+    }
+    
+    public boolean isBlank() {
+        return false;
+    }
+    
+    public boolean isLiteral() {
         return false;
     }
 
@@ -994,17 +1007,41 @@ public class Expression extends TopExp
     }
 
     @Override
-    public Object getValue(String var, int n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (getArgs() == null) ? 0 : getArgs().size();
     }
 
     @Override
     public Iterable getLoop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getValueList();
     }
+    
+    public List<IDatatype> getValueList() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        if (getArgs() == null){
+        }
+        else {
+            for (Expression exp : getArgs()) {
+                list.add(exp.getExpressionDatatypeValue());
+            }
+        }
+        return list;
+    }
+    
+    @Override
+    public IDatatype getValue(String var, int n) {
+        if (getArgs() == null) {
+            return null; 
+        }
+        Expression exp = getArg(n);
+        if (exp == null) {
+            return null;
+        }
+        return exp.getExpressionDatatypeValue();
+    }
+    
+    IDatatype getExpressionDatatypeValue() {
+        return DatatypeMap.createObject(this);
+    }
+
 }

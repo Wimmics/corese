@@ -1,5 +1,6 @@
 package fr.inria.corese.test.engine;
 
+import fr.inria.corese.compiler.eval.QuerySolver;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -51,9 +52,11 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.test.dev.TestUnit;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -98,7 +101,7 @@ public class TestQuery1 {
         try {
             init(graph, ld);
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
@@ -107,13 +110,152 @@ public class TestQuery1 {
 
         QueryProcess.testAlgebra(!true);
         //Graph.METADATA_DEFAULT = true;
+        
+        
+      //before3();  
 
     }
-
-    @AfterClass
+    
+     @AfterClass
     static public void finish() {
-        EdgeFactory.trace();
+       //after2();
     }
+    
+    
+    static void before3() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q = "@public {"
+                
+                + "@filter "
+                + "function us:filter(?g, ?e, ?v) {"
+                + "us:eval(?e)"
+                + "}"
+                
+                + "function us:eval(?e) {"
+                + "if (ds:isTerm(?e) && ds:getLabel(?e) != 'exists' ) {"
+                + "let ((|?lvar) = ?e, ?lval = maplist(us:eval, ?lvar)) {"
+                + "apply(ds:getLabel(?e), ?lval)"
+                + "}"
+                + "}"
+                + "else { eval(?e) }"
+                + "}"
+                
+                + "}"
+                                
+                ;
+
+        try {
+            Query qq = exec.compile(q);
+            //System.out.println(qq.getAST());
+        } catch (EngineException ex) {
+            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
+            System.out.println(ex);
+        }
+        
+        QuerySolver.setVisitorable(true);
+    }
+    
+    
+     static void before() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q = "@public {"
+                + "@error function us:error(?e, ?x , ?y) { "
+                + "xt:print('****************** error') ; "
+                + "xt:print(java:getAST(xt:query())) ;"
+                + "xt:display( ?e, ?x, ?y) ; "
+                + "error() "
+                + "}"
+                + "}";
+
+        try {
+            Query qq = exec.compile(q);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
+        QuerySolver.setVisitorable(true);
+    }
+     
+      static void before2() {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        QuerySolver.setVisitorable(true);
+        IDatatype map = DatatypeMap.map();
+        map.set(DatatypeMap.newResource(NSManager.USER, "error"), DatatypeMap.newList());
+        DatatypeMap.setPublicDatatypeValue(map);
+
+        String q = "@public {"
+                
+                
+                + "@error "
+                + "function us:error(?e, ?x , ?y) { "
+                + "us:recerror(?e, ?x, ?y) ; "
+                + "error() "
+                + "}"
+                
+                + "@filter "
+                + "function us:filter(?g, ?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                
+                + "@select "
+                + "function us:select(?e, ?b) { "
+                //+ "xt:print(?e);"
+                + "us:record(?e) ;"
+                + "?b "
+                + "}"
+                
+                + "function us:map() { ds:getPublicDatatypeValue(true) }"
+                               
+                + "function us:record(?e) {"
+                + "if (java:isTerm(?e)) {"
+                + "xt:set(us:map(), java:getLabel(?e), coalesce(1 + xt:get(us:map(), java:getLabel(?e)), 1)) ;"
+                + "let (( | ?l) = ?e) {"
+                + "for (?ee in ?e) {"
+                + "us:record(?ee)"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                
+                + "function us:recerror(?e, ?x, ?y) {"
+                + "xt:add(xt:get(us:map(), us:error), xt:list(?e, ?x, ?y))"               
+                + "}"
+                
+                + "}"
+                                              
+                ;
+
+        try {
+            Query qq = exec.compile(q);
+        } catch (EngineException ex) {
+            System.out.println(ex);
+            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    static void after2() {
+        System.out.println("After");
+        int i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue()) {
+            System.out.println(i++ + " " + dt.getValueList().get(0) + " " + dt.getValueList().get(1));
+        }
+        i = 0;
+        for (IDatatype dt : DatatypeMap.getPublicDatatypeValue().get(DatatypeMap.newResource(NSManager.USER, "error"))) {
+            System.out.println(i++ + " " + dt);
+        }
+    } 
+     
+
+   
 
     static void init(Graph g, Load ld) throws LoadException {
         ld.parse( Thread.currentThread().getContextClassLoader().getResourceAsStream( "data/comma/comma.rdfs" ) );
@@ -141,6 +283,370 @@ public class TestQuery1 {
         }
 
         return graph;
+    }
+    
+    
+    
+     @Test
+     public void testOverload7() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '2'^^us:km "   
+                + "us:t2 us:length '1000'^^us:m " 
+                + "us:t3 us:length '2000'^^us:m, '1'^^us:km "              
+                + "}";
+        
+        String q = "@event select *  where {"
+                + "graph ?g { ?x ?p ?v }"
+                + "}"
+                + "order by ?v "
+                
+                + "@init "
+                + "function us:init(?q){"
+                + "map(lambda(?list) {"
+                + "let ((?fst | ?rst) = ?list) { map(xt:datatype, ?rst, ?fst)  }"
+                + "}, us:datatypes())"
+                + "}"
+                
+                + "function us:datatypes() {"
+                + "let (?list = @((us:length us:m us:km))) "
+                + "{ ?list }"
+                + "}"
+                                                                    
+                + "function us:compare(?a, ?b) {"
+                + "if (?a < ?b, -1, if (?a = ?b, us:compare(datatype(?a), datatype(?b)), 1))"
+                + "}"
+                                                         
+                + "function us:lt(?a, ?b) {"
+                + "us:convert(?a) < us:convert(?b)"
+                + "}"
+                
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:km "
+                + "function us:lt(?a, ?b) {"
+                + "us:convert(?a) < us:convert(?b)"
+                + "}"
+                                                   
+                + "function us:convert(?a) {"
+                + "if (datatype(?a) = us:km, 1000 * us:value(?a), "
+                + "if (datatype(?a) = us:m, us:value(?a),"
+                + "if (datatype(?a) = us:length, us:valueunit(?a), us:value(?a))))"
+                + "}"
+                                             
+                + "function us:value(?a) {"
+                + "if (contains(?a, ' '), xsd:integer(strbefore(?a, ' ')), xsd:integer(?a))"
+                + "}"
+                
+                + "function us:valueunit(?a) {"
+                + "if (strafter(?a, ' ') = 'km', 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals("1",    map.get(0).getValue("?v").stringValue());
+    assertEquals("1000", map.get(1).getValue("?v").stringValue());
+    assertEquals("2",    map.get(2).getValue("?v").stringValue());
+    assertEquals("2000", map.get(3).getValue("?v").stringValue());
+     }
+   
+    
+    
+    
+      @Test
+     public void testOverload6() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1'^^us:km "   
+                + "us:t2 us:length '1000'^^us:m " 
+                + "us:t3 us:length '1000 m'^^us:length, '1 km'^^us:length "              
+                + "}";
+        
+        String q = "prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/> "
+
+        + " @event select *  where {"
+                + "select *  where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                               
+                + "@init "
+                + "function us:init(?q){"
+                + "map(lambda((?x, ?y)) { us:datatype(?x, ?y) }, us:datatypes())"
+                + "}"
+                
+                + "function us:datatypes() {"
+                + "let (?list = @((us:km us:length)(us:m us:length))) {"
+                + "?list"
+                + "}"
+                + "}"
+               
+                + "function us:datatype(?dt, ?sup) {"
+                + "ds:datatype(xt:visitor(), ?dt, ?sup)"
+                + "}"  
+                
+                + "@type us:km "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:m "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+                + "@type us:length "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                   
+                + "function us:convert(?a) {"
+                + "if (datatype(?a) = us:km, 1000 * us:value(?a), "
+                + "if (datatype(?a) = us:m, us:value(?a),"
+                + "if (datatype(?a) = us:length, us:valueunit(?a), us:value(?a))))"
+                + "}"
+                                             
+                + "function us:value(?a) {"
+                + "if (contains(?a, ' '), xsd:integer(strbefore(?a, ' ')), xsd:integer(?a))"
+                + "}"
+                
+                + "function us:valueunit(?a) {"
+                + "if (strafter(?a, ' ') = 'km', 1000 * us:value(?a), us:value(?a))"
+                + "}"                              
+                ;
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(16, map.size());
+     }
+   
+    
+    
+       @Test
+    public void testExtDT() throws EngineException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        String q2
+                =  "prefix spqr: <http://ns.inria.fr/sparql-extension/spqr/>"
+                + "@event "
+                + "select   "
+                + "(spqr:digit(?res) as ?ope) "
+                + "(spqr:digit(?val) as ?dig) "
+                + ""
+                + "where {"
+                + ""
+                + "bind ('II'^^us:romain * 'X'^^us:romain + 'V'^^us:romain as ?res) "
+                + "bind (maplist(us:romain,  xt:iota(7)) as ?list)"
+                + "bind (reduce (lambda(?x, ?y) { ?x + ?y }, ?list) as ?val)"
+                + " "
+                + "}"
+                
+                + "@type us:romain {"
+                + "function us:eq(?x, ?y)  { (spqr:digit(?x) = spqr:digit(?y))} "
+                + "function us:ne(?x, ?y)  { (spqr:digit(?x) != spqr:digit(?y))}"
+                + "function us:lt(?x, ?y)  { (spqr:digit(?x) < spqr:digit(?y))}"
+                + "function us:le(?x, ?y)  { (spqr:digit(?x) <= spqr:digit(?y))}"
+                + "function us:gt(?x, ?y)  { (spqr:digit(?x) > spqr:digit(?y))}"
+                + "function us:ge(?x, ?y)  { (spqr:digit(?x) >= spqr:digit(?y))} "
+                
+                + "function us:plus(?x, ?y)  { us:romain(spqr:digit(?x) + spqr:digit(?y))}"
+                + "function us:minus(?x, ?y) { us:romain(spqr:digit(?x) - spqr:digit(?y))}"
+                + "function us:mult(?x, ?y)  { us:romain(spqr:digit(?x) * spqr:digit(?y))}"
+                + "function us:divis(?x, ?y) { us:romain(spqr:digit(?x) / spqr:digit(?y))} "
+                + "}"
+                
+                + "function us:romain(?x) { strdt(spqr:romain(?x), us:romain)}";
+
+        Mappings map = exec.query(q2);
+        assertEquals(28, map.getValue("?dig").intValue());
+        assertEquals(25, map.getValue("?ope").intValue());
+    }
+    
+    
+      @Test
+     public void testOverload5() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+                + "@eq "
+                + "function us:eq(?e, ?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+              
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+    
+     @Test
+     public void testOverload4() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+                + "@error "
+                + "function us:error(?e, ?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                                               
+              
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+   
+    
+    @Test
+     public void testOverload2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length  . "
+                + "us:t2 us:length '1000 m'^^us:length  ."
+                + "}";
+        
+        String q = "@event "
+                + "select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                                    
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+              
+                    
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(5, map.size());
+    }
+    
+    
+       @Test
+     public void testOverload() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        
+        String i = "insert data { "
+                + "us:t1 us:length '1 km'^^us:length, '2 km'^^us:length ; us:weight '1 kg'^^us:weight, '2 kg'^^us:weight . "
+                + "us:t2 us:length '1000 m'^^us:length ; us:weight '1000 g'^^us:weight ."
+                + "}";
+        
+        String q = "@event  select * where {"
+                + "select * where {"
+                + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
+                + "}"
+                + "}"
+                                                                                                     
+            
+                                               
+                + "@type us:length "
+                + "function us:eq(?a, ?b) {"
+                + "us:convert(?a) = us:convert(?b)"
+                + "}"
+                
+                + "@type us:weight "
+                + "function us:eq(?a, ?b) {"
+                + "us:convertw(?a) = us:convertw(?b)"
+                + "}"
+                    
+                + "function us:convert(?a) {"
+                + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:convertw(?a) {"
+                + "if (contains(?a, 'kg'), 1000 * us:value(?a), us:value(?a))"
+                + "}"
+                
+                + "function us:value(?a) {"
+                + "xsd:integer(strbefore(?a, ' '))"
+                + "}"
+                              
+                ;
+        
+    QueryProcess exec = QueryProcess.create(g);
+    exec.query(i);
+    Mappings map = exec.query(q);
+    assertEquals(10, map.size());
     }
     
     
@@ -295,7 +801,7 @@ public class TestQuery1 {
                   + "}"
 
                   + "@distinct "
-                  + "function us:distinct(?m) {"
+                  + "function us:distinct(?q, ?m) {"
                   + "    let ((?a ?b ?x) = ?m) {"
                   + "        us:key(xt:add(xt:sort(xt:list(?a, ?b)), ?x))"
                   + "    }"
@@ -585,15 +1091,23 @@ public class TestQuery1 {
                   + "}";
           
           String q = "@event "
-                  + "select * (st:get(us:count) as ?c) "
+                  + "select * (us:getcount() as ?c) "
                   + "where { ?x foaf:knows+ ?y }"
                   
+                  + "@before "
+                  + "function us:before(?q) {"
+                  + "set(?count = 0)"
+                  + "}"
+                  
+                  + "function us:getcount(){ ?count }"
+                  
                   + "@step function us:step(?g, ?q, ?p, ?s, ?o) {"
-                  + "st:set(us:count, coalesce(st:get(us:count), 0) + 1)"
+                  + "set(?count = ?count + 1)"
                   + "}"
                   ;
           
           QueryProcess exec = QueryProcess.create(Graph.create());
+          exec.setListPath(true);
           exec.query(i);
           Mappings map  = exec.query(q);
           DatatypeValue dt = map.get(2).getValue("?c");
@@ -1116,7 +1630,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        ////System.out.println(map);
+        //System.out.println(map);
         assertEquals(2, map.size());
         Node s1 = map.get(0).getNode("?s");
         assertEquals("http://dbpedia.org/sparql", s1.getLabel());
@@ -1202,7 +1716,7 @@ public class TestQuery1 {
                 + "(us:test(3) as ?t) "
                 + "where {}"
 
-                + "function us:test(?n)  {xt:display('here') ;"
+                + "function us:test(?n)  {"
                 + "let (?n = ?z) {"
                 + "for (?x in (xt:iota(?n))) {"
                 + "if (?x > 1) {"
@@ -3541,7 +4055,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         String i = "insert data { us:John rdfs:label 'John' }"
-                + "@export package {"
+                + "@public  {"
                 + "function us:test(){"
                 + "let ((?m) = select * where {?x ?p ?y}, (?y)=?m"
                 + "){?y}"
@@ -3837,7 +4351,7 @@ public class TestQuery1 {
         assertEquals(6, dt.intValue());
     }
 
-    @Test
+    //@Test
     public void testConstruct() throws EngineException {
 
         GraphStore gs = GraphStore.create();
@@ -3872,7 +4386,7 @@ public class TestQuery1 {
                 + "}";
 
         String qe = "select where {}"
-                + "export {"
+                + "@public {"
                 + "function us:test(){"
                 + "if (exists {select * where {?x ?p ?y}}){"
                 + "let ((?m) = select * where {?x ?p ?y}, (?x, ?y)=?m){"
@@ -4182,78 +4696,7 @@ public class TestQuery1 {
 
     }
 
-    //@Test
-    public void testExtDT() throws EngineException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "prefix dt: <http://example.org/>"
-                + "prefix ex: <http://example.org/test#>"
-                + "select ?res where {"
-                + "bind ( "
-                + "'aa'^^dt:test <  'bb'^^dt:test &&"
-                + "'bb'^^dt:test <=  'bb'^^dt:test &&"
-                + "'cc'^^dt:test >  'bb'^^dt:test &&"
-                + "'aa'^^dt:test != 'bb'^^dt:test &&"
-                + "'aa'^^dt:test =  'aa'^^dt:test &&"
-                + "'cc'^^dt:test >= 'bb'^^dt:test && "
-                + " 'aa'^^dt:test not in ('bb'^^dt:test , 'cc'^^dt:test)"
-                + "as ?res)"
-                + "}"
-                + "export {"
-                + "function ex:equal(?x, ?y)   {  (str(?x) = str(?y))} "
-                + "function ex:diff(?x, ?y)    {  (str(?x) != str(?y))}"
-                + "function ex:less(?x, ?y)    {  (str(?x) < str(?y))}"
-                + "function ex:lessEqual(?x, ?y)  {  (str(?x) <=  str(?y))}"
-                + "function ex:greater(?x, ?y)   {  (str(?x) > str(?y))}"
-                + "function ex:greaterEqual(?x, ?y) {  (str(?x) >= str(?y))}"
-                + "}"
-                + ""
-                + "";
-
-        String q2 =
-                "prefix dt: <http://ns.inria.fr/sparql-datatype/>"
-                        + "prefix ex: <http://ns.inria.fr/sparql-datatype/romain#>"
-                        + "prefix rm: <http://ns.inria.fr/sparql-extension/spqr/>"
-                        + "select ?res ?val  (rm:digit(?val) as ?dig) "
-                        + ""
-                        + "where {"
-                        + ""
-                        + "bind (  'II'^^dt:romain * 'X'^^dt:romain + 'V'^^dt:romain as ?res) "
-                        + "bind (maplist(ex:romain,  xt:iota(7)) as ?list)"
-                        + "bind (reduce (rq:mult, ?list) as ?val)"
-                        + " "
-                        + "}"
-                        + "export {"
-                        + "function ex:equal(?x, ?y)   { (rm:digit(?x) = rm:digit(?y))} "
-                        + "function ex:diff(?x, ?y)    { (rm:digit(?x) != rm:digit(?y))}"
-                        + "function ex:less(?x, ?y)    { (rm:digit(?x) < rm:digit(?y))}"
-                        + "function ex:lessEqual(?x, ?y)  { (rm:digit(?x) <= rm:digit(?y))}"
-                        + "function ex:greater(?x, ?y)   { (rm:digit(?x) > rm:digit(?y))}"
-                        + "function ex:greaterEqual(?x, ?y) { (rm:digit(?x) >= rm:digit(?y))} "
-                        + "function ex:plus(?x, ?y)  { ex:romain(rm:digit(?x) + rm:digit(?y))}"
-                        + "function ex:minus(?x, ?y) { ex:romain(rm:digit(?x) - rm:digit(?y))}"
-                        + "function ex:mult(?x, ?y)  { ex:romain(rm:digit(?x) * rm:digit(?y))}"
-                        + "function ex:divis(?x, ?y) { ex:romain(rm:digit(?x) / rm:digit(?y))} "
-                        + "function ex:romain(?x) { strdt(rm:romain(?x), dt:romain)}"
-                        + "}";
-
-        String q3 = "prefix rm: <http://ns.inria.fr/sparql-extension/spqr/>"
-                + "select * where {"
-                + "bind (unnest(maplist(rm:romain, xt:reverse(xt:iota(5)))) as ?val)"
-                + "}"
-                + "order by ?val";
-
-        Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
-        assertEquals(dt.booleanValue(), true);
-
-        map = exec.query(q2);
-        dt = (IDatatype) map.getValue("?dig");
-        assertEquals(5040, dt.intValue());
-
-        map = exec.query(q3);
-        ////System.out.println(map);
-    }
+   
 
     public void testAgenda() throws EngineException {
         QueryLoad ql = QueryLoad.create();

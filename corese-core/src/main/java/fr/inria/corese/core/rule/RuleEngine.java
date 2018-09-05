@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.printer.SPIN;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.core.Mappings;

@@ -123,4 +123,23 @@ public class TermEval extends Term {
     }
     
     
+    public IDatatype error(Computer eval, Binding b, Environment env, Producer p, IDatatype... param) {
+        return (IDatatype) env.getVisitor().error(env.getEval(), this, param);       
+    }
+    
+    public IDatatype overload(Computer eval, Binding b, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype res) {
+        if (env.getVisitor().overload(this, res, dt1, dt2)) {
+            return overload(env, res, dt1, dt2);
+        } 
+        if (res == null) {
+            // TODO: create a vector for each error !!!
+            return error(eval, b, env, p, dt1, dt2);
+        }
+        return res;
+    }
+    
+    public IDatatype overload(Environment env, IDatatype res, IDatatype... param) {
+        return (IDatatype) env.getVisitor().overload(env.getEval(), this, res, param);  
+    }
+      
 }

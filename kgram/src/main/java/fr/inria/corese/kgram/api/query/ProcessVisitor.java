@@ -35,7 +35,7 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue orderby(Mappings map) { return null; }
     
-    default boolean distinct(Query q, Mapping map) { return true; }
+    default boolean distinct(Eval eval, Query q, Mapping map) { return true; }
     
     default boolean limit(Mappings map) { return true;}
     
@@ -82,8 +82,12 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue val) { return val; } 
     
-    default DatatypeValue function(Eval eval, Expr funcall, Expr fundef) { return null; }     
+    default DatatypeValue function(Eval eval, Expr funcall, Expr fundef) { return null; }    
     
+    
+    default DatatypeValue error(Eval eval, Expr exp, DatatypeValue... param) { return null; }
+        
+    default DatatypeValue overload(Eval eval, Expr exp, DatatypeValue res, DatatypeValue... param) { return null; }
 
     default boolean produce() { return false; }
                 
@@ -92,4 +96,12 @@ public interface ProcessVisitor extends Pointerable {
     default boolean candidate() { return false; }
     
     default boolean filter() { return false; }
+    
+    default boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) { return false; }
+    
+    default int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) { return res ;}
+    
+    default DatatypeValue datatype(DatatypeValue type, DatatypeValue sup) { return type ;};
+
+
 }

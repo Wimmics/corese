@@ -17,10 +17,12 @@ import org.slf4j.Logger;
 public class EventLogger {
 
     private static Logger logger = LoggerFactory.getLogger(EventLogger.class);
+    public static boolean DEFAULT_METHOD = false;
+    
     EventManager mgr;
     QueryProcess exec;
     HashMap<Event, Event> show, hide;
-    private boolean method = false;
+    private boolean method = DEFAULT_METHOD;
 
     EventLogger(EventManager ev) {
         mgr = ev;       

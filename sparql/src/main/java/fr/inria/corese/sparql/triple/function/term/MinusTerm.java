@@ -31,14 +31,11 @@ public class MinusTerm extends BinaryFunction {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype dt1 = getExp1().eval(eval, b, env, p);
-        if (dt1 == null) {
-            return null;
-        }
         IDatatype dt2 = getExp2().eval(eval, b, env, p);
-        if (dt2 == null) {
+        if (dt1 == null || dt2 == null) {
             return null;
         }
-        return dt1.minus(dt2);
+        return overload(eval, b, env, p, dt1, dt2, dt1.minus(dt2));
     }
       
 }

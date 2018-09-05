@@ -23,6 +23,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.compiler.api.ProxyPlugin;
+import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -83,6 +84,7 @@ public class PluginImpl
    
     static int nbBufferedValue = 0;
     static final String EXT = ExpType.EXT;
+    public static final String VISITOR = EXT+"visitor";
     public static final String LISTEN = EXT+"listen";
     public static final String SILENT = EXT+"silent";
     public static final String DEBUG  = EXT+"debug";
@@ -174,7 +176,8 @@ public class PluginImpl
      */
     void setMethodHandler(Producer p, Environment env){
         Extension ext = env.getQuery().getActualExtension();
-        if (ext != null && ext.isMethod()){
+        ASTQuery ast  = (ASTQuery) env.getQuery().getAST();
+        if (ext != null && ext.isMethod() && ast.hasMetadata(Metadata.TEST)){
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
             if (env.getQuery().getGlobalQuery().isDebug()){
                 ch.setDebug(true);
@@ -873,7 +876,8 @@ public class PluginImpl
     @Override
     public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
-        if (dt1.getLabel().equals(LISTEN)){  
+        String label = dt1.getLabel();
+        if (label.equals(LISTEN)){  
             if (dt2.booleanValue()){
                 if (env.getEval() != null){
                     g.addListener(new GraphListen(env.getEval()));
@@ -883,38 +887,42 @@ public class PluginImpl
                 g.removeListener();
             }
         }
-        else if (dt1.getLabel().equals(DEBUG)){
+        else if (label.equals(DEBUG)){
             getEvaluator().setDebug(dt2.booleanValue());
         }
-        else if (dt1.getLabel().equals(EVENT)) {
+        else if (label.equals(EVENT)) {
             getEventManager(p).setVerbose(dt2.booleanValue());
             getGraph(p).setDebugMode(dt2.booleanValue());
         }
-        else if (dt1.getLabel().equals(EVENT_LOW)) {
+        else if (label.equals(EVENT_LOW)) {
             getEventManager(p).setVerbose(dt2.booleanValue());
             getEventManager(p).hide(Event.Insert);
             getEventManager(p).hide(Event.Construct);
             getGraph(p).setDebugMode(dt2.booleanValue());
         }
-        else if (dt1.getLabel().equals(METHOD)) {
+        else if (label.equals(METHOD)) {
             getEventManager(p).setMethod(dt2.booleanValue());
         }
-        else if (dt1.getLabel().equals(SHOW)) { 
+        else if (label.equals(SHOW)) { 
             getEventManager(p).setVerbose(true);
             Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).show(e);
             }            
         }
-        else if (dt1.getLabel().equals(HIDE)) {           
+        else if (label.equals(HIDE)) {           
             getEventManager(p).setVerbose(true);
             Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).hide(e);
             }             
         }
-        else if (dt1.getLabel().equals(NODE_MGR)) {     
+        else if (label.equals(NODE_MGR)) {     
             getGraph(p).tuneNodeManager(dt2.booleanValue());
+        }
+        else if (label.equals(VISITOR)) {
+            QuerySolver.setVisitorable(dt2.booleanValue());
+            System.out.println("QuerySolver visitorable: " + QuerySolver.isVisitorable());
         }
         return TRUE;
      }

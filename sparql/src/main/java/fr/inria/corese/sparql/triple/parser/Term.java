@@ -247,6 +247,7 @@ public class Term extends Expression {
             case ExprType.ISBLANK:
             case ExprType.ISNUMERIC:
             case ExprType.ISWELLFORMED:
+            case ExprType.ISUNDEFINED:
                 return new UnaryFunction(name);
 
             case ExprType.CONCAT:
@@ -318,7 +319,9 @@ public class Term extends Expression {
                 return new MethodCall(name);
             case ExprType.XT_METHOD_TYPE:
                 return new MethodTypeCall(name);
-            case ExprType.APPLY:        //return new Apply(name); 
+            case ExprType.EVAL:
+                return new Eval(name);    
+            case ExprType.APPLY:        
             case ExprType.FUNCALL:
                 return new Funcall(name);
             case ExprType.JAVACALL:
@@ -406,7 +409,9 @@ public class Term extends Expression {
             case ExprType.ENV:    
             case ExprType.XT_RESULT:    
             case ExprType.XT_VISITOR:    
+            case ExprType.XT_DATATYPE:    
                 return new SystemFunction(name);
+                
 
             case ExprType.INDEX:
             case ExprType.XT_CONTENT:
@@ -1363,7 +1368,7 @@ public class Term extends Expression {
         }
         return args.get(n);
     }
-
+       
     @Override
     public Expression getBasicArg(int n) {
         return args.get(n);

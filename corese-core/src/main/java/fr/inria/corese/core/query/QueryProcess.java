@@ -643,7 +643,7 @@ public class QueryProcess extends QuerySolver {
 
         pragma(q);
         if (q.getService() != null) {
-            //@service <http://dbpedia.org/sparql>
+            //@federate <http://dbpedia.org/sparql>
             //select where {}
             return service(q, m);
         }
@@ -762,7 +762,7 @@ public class QueryProcess extends QuerySolver {
     /**
      * Annotated query with a service send query to server
      *
-     * @service <http://dbpedia.org/sparql>
+     * @federate <http://dbpedia.org/sparql>
      * select where {}
      */
     Mappings service(Query q, Mapping m) throws EngineException {

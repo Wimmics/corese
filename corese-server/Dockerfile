@@ -1,16 +1,21 @@
-FROM fedora:latest
+FROM fedora:28
 MAINTAINER Erwan Demairy erwan.demairy@inria.fr
 
-ARG JAVA_VERSION=1.8.0
-ARG MAVEN_VERSION=3.3.9
+ARG JAVA_VERSION=11.0
+ARG MAVEN_VERSION=3.5.3
+ARG JAVA_HOME=/usr/lib/jvm/java-10/
 
 RUN dnf update -y 
 RUN dnf upgrade -y 
 RUN dnf install maven wget git -y 
-RUN dnf install -y java-$JAVA_VERSION-openjdk-devel git-core
-RUN git clone https://github.com/Wimmics/corese.git
+RUN dnf install -y java-openjdk-devel git-core
+RUN /usr/bin/java -version
+RUN echo 2 | update-alternatives --config java
+RUN /usr/bin/java --version
+RUN git clone https://github.com/Wimmics/corese.git -b feature/clean_hardcoded_paths
 WORKDIR corese/
 RUN mvn -Dmaven.test.skip=true package
 EXPOSE 8080
-ENTRYPOINT java -jar ./kgserver/target/corese-server-3.2.1p-SNAPSHOT-jar-with-dependencies.jar
+EXPOSE 8443
+ENTRYPOINT java -jar ./corese-server/target/corese-server-*-SNAPSHOT-jar-with-dependencies.jar -ssl -jks corese.inria.fr.jks -pwd coreseatwimmics  -p 8080 -ssl -pssl 8443
     

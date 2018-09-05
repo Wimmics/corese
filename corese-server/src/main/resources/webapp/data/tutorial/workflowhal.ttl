@@ -41,7 +41,7 @@ st:query
 """prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix dc:   <http://purl.org/dc/terms/>
 
-@service <https://data.archives-ouvertes.fr/sparql>
+@federate <https://data.archives-ouvertes.fr/sparql>
 
 construct {
     ?x foaf:name ?n .
@@ -73,7 +73,7 @@ st:query
 """prefix foaf: <http://xmlns.com/foaf/0.1/>
 prefix dc: <http://purl.org/dc/terms/>
 prefix w3: <http://www.w3.org/ns/org#>
-@service <https://data.archives-ouvertes.fr/sparql>
+@federate <https://data.archives-ouvertes.fr/sparql>
 
 construct {
   ?x   a w3:Organization ;
@@ -102,7 +102,7 @@ st:query
 prefix dc: <http://purl.org/dc/terms/>
 prefix de: <http://purl.org/dc/elements/1.1/> 
 prefix w3: <http://www.w3.org/ns/org#>
-@service <https://data.archives-ouvertes.fr/sparql>
+@federate <https://data.archives-ouvertes.fr/sparql>
 
 construct {
   ?x ?p ?y .
@@ -132,7 +132,7 @@ st:query
 prefix dc: <http://purl.org/dc/terms/>
 prefix de: <http://purl.org/dc/elements/1.1/> 
 prefix w3: <http://www.w3.org/ns/org#>
-@service <https://data.archives-ouvertes.fr/sparql>
+@federate <https://data.archives-ouvertes.fr/sparql>
 
 construct {
   ?x ?p ?y .

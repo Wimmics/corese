@@ -1,5 +1,8 @@
 pipeline {
   agent any
+	  environment {
+		  DEPLOYMENT = readMavenPom().getProperties().getProperty("deployOnMavenCentral")
+	  }
   stages {
     stage('Build') {
       parallel {

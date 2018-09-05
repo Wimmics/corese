@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 /**
  * Prototype for federated query
  *
- * @service <s1>
- * @service <s2> 
+ * @federate <s1>
+ * @federate <s2> 
  * select * where { } 
  * Recursively rewrite every triple t as:
  * service <s1> <s2> { t } Generalized service statement with several URI

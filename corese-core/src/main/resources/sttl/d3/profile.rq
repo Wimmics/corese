@@ -1,0 +1,14 @@
+template st:profile {}
+where {}
+
+function us:start() {
+    set(?map = xt:map())
+}
+
+function us:record(?s) {
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
+}
+
+function us:get(?s) {
+    xt:get(?map, ?s)
+}

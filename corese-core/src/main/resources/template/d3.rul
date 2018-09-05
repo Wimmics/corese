@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+  <rule>
+    <body>
+<![CDATA[
+  template st:nodes {
+  "\"nodes\":[\n"
+  group {
+    "{\"id\": \"" us:get(?s)  "\""
+    ",\"label\": \"" str(?s)  "\""
+    ",\"group\":" if ( isURI(?s), "\"1\"", if( isBlank(?s), "\"2\"", "\"3\"") )
+    "}";
+    separator=",\n"
+  }
+  "\n]\n"
+} where {
+  bind (us:start() as ?start)
+  {select distinct ?s where {
+    { ?s ?p ?o } union { ?o ?p ?s }
+  } order by ?s}
+  bind(us:record(?s) as ?tmp)
+}
+
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:start {
+  st:call-template(st:nodes)
+  ","
+  st:call-template(st:edges)
+} where {
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:edges {
+  "\"edges\":[\n"
+  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" str(?p) "\" }";separator=",\n"}
+  "\n]\n"
+} where {
+  select distinct ?s ?p ?o where {
+    { ?s ?p ?o }
+  }
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:profile {}
+where {}
+
+function us:start() {
+    set(?map = xt:map())
+}
+
+function us:record(?s) {
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
+}
+
+function us:get(?s) {
+    xt:get(?map, ?s)
+}
+
+]]>
+    </body>
+  </rule>
+</rdf:RDF>

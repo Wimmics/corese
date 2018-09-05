@@ -445,7 +445,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                     return DatatypeMap.createObject(m.getGraph());
                 }
                 if (qq.getService() != null) {
-                    // @service <uri> let (?m = select where)
+                    // @federate <uri> let (?m = select where)
                     Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
                     //return (IDatatype) producer.getValue(m);
                     return DatatypeMap.createObject(m);

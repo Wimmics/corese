@@ -163,7 +163,7 @@ where {
 <![CDATA[
 template st:bstyle { 
     
-      "class='btn btn-warning'" 
+      "class='btn btn-default'" 
         
 }
 where {

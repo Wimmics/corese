@@ -9,6 +9,8 @@ where {
   bind (
     if (exists { ?x a rs:ResultSet }, 
       if (exists { ?x rs:boolean ?b }, st:pageask, st:pageselect),
-      st:pagecons) 
-    as ?page)
+      st:pagecons
+    )
+    as ?page
+  )
 }

@@ -1,17 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-SPARQL Template Transformation
-Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:33 CEST 2018
--->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
+  <rule>
+    <body>
 <![CDATA[
-template st:tableconsuri {
-
- format {
+  template st:tableconsall {
+format {
         us:format("triple.html")
         
         st:number()
@@ -23,36 +17,255 @@ template st:tableconsuri {
     }
 }
 where {
-  bind (st:focus() as ?uri)
   ?x ?p ?y
-  filter (?uri in (?x, ?p, ?y))
 }
 order by ?x ?p ?y
 
 
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:link(?uri, ?title) {
+  template st:pagecons {
    format {
-#    us:format("link.html")
-"<a href='%s'>%s</a>"    str(?uri) str(?title)
+    us:format("construct.html")
+    st:call-template(st:tablecons)
+    format {
+      us:format("d3graph.html")
+      st:apply-templates-with(st:d3)
+   }
    }
 }
 where {
 }
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
+
+# utiliser prefix ft: <http:.... navlab> (cf display.rq dans navlab) et utiliser ft:link.html
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
+  prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:table {
+    format {
+        us:format("table.html")  
+        st:number()
+        st:apply-templates(?s)
+    }
+}
+where {
+  ?x rs:solution ?s 
+  ?s rs:index ?i  
+}
+order by ?i
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:pageask {
+format {
+  us:format("ask.html")
+  ?b
+}
+}
+where {
+  ?r rs:boolean ?b
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:pageselect {
+    format {
+        us:format("select.html")
+        st:call-template(st:variable)
+        st:call-template(st:table)
+    }    
+}
+where {
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template st:variable {
+ 
+    format {
+      us:format("variable.html") 
+      str(?v)
+    } 
+    ; separator = " "
+ 
+}
+where {
+  ?x rs:resultVariable ?v
+}
+order by ?v
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
 #
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:dataset {
+  str(?res)
+}
+where {  
+  graph eng:dataset {
+    bind (st:apply-templates-with(st:sparql) as ?res)
+  }
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Utility template to be used by another transformation to
+# integrate SPARQL Query Results without headings
+#
+template st:result {
+   
+  st:call-template(st:page)
+      
+}
+where {
+   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Trap select * where {} solution as there is no variable (see solution.rq)
+#
+template st:default {
+
+}
+where {
+
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# st:pplink search specific profile for URI wrt st:lodprofile() if any
+#
+template st:linkprofile(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, 
+      coalesce(st:pplink(?x), encode_for_uri(?x)),
+      ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:linkesc(?x) {
+
+  if (isURI(?x), 
+    st:call-template(st:link, ?x, ?e),
+    str(?e))
+    
+}
+where {
+
+  bind (st:call-template(st:esc, ?x) as ?e)
+    
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:all {
+
+  st:call-template(st:start)
+
+}
+where {
+    bind (st:set(st:all, true) as ?b)
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Utility template to be used by another transformation to
+# integrate SPARQL Query Results without headings
+#
+template st:test {
+  @<h2>{ "Test" } 
+  st:call-template(st:page)
+      
+}
+where {
+   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
 # Generate HTML from SPARQL Query Results
 # RDF is either construct where graph or 
 # select where in W3C DAWG result-set RDF vocabulary
@@ -68,29 +281,89 @@ template st:start {
 where {
 }
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
+  prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+
+template st:page {
+   
+  st:call-template(?page)
+      
+}
+where {
+  bind (
+    if (exists { ?x a rs:ResultSet }, 
+      if (exists { ?x rs:boolean ?b }, st:pageask, st:pageselect),
+      st:pagecons
+    )
+    as ?page
+  )
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
 #
-# Trap select * where {} solution as there is no variable (see solution.rq)
+# Olivier Corby - Wimmics Inria I3S - 2015
 #
-template st:default {
+
+template st:core {
+
+  st:call-template-with(st:server, st:header)
+    
+  st:call-template(st:page)
+    
+  st:call-template-with(st:server, st:tail)
 
 }
 where {
-
+  
 }
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:profile {
+  #
+# Generate HTML from SPARQL Query Results
+# RDF is either construct where graph or 
+# select where in W3C DAWG result-set RDF vocabulary
+#
+# Olivier Corby - Wimmics Inria I3S - 2015
+#
+
+template st:graph {
+
+  st:call-template(st:head)
+  
+  st:call-template(st:banner)
+ 
+  st:call-template(st:query, coalesce(st:get(st:query), ""))  
+  
+  st:call-template(st:pagecons)
+    
+  st:call-template(st:tail)
+}
+where {  
+  
+}
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  template st:profile {
   
 }
 where {}
@@ -132,32 +405,41 @@ function st:init(){
 }
 
 
+
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+  prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+template  {
 
-template st:pageask {
-format {
-  us:format("ask.html")
-  ?b
-}
+format { 
+    us:format("value.html")     
+    coalesce(st:display(?val), "&nbsp;")
+}  
+; separator = " "
+
 }
 where {
-  ?r rs:boolean ?b
+  ?x rs:solution ?in
+  ?x rs:resultVariable ?var 
+  
+  optional {
+    ?in rs:binding [ rs:variable ?var ; rs:value ?val ]
+  }
+  
 }
-]]>
-</body>
-</rule>
+order by ?var
 
-<rule>
-<body>
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:query(?q) {
+  template st:query(?q) {
 
 format {
 
@@ -172,85 +454,91 @@ where {
   bind (st:get(st:profile) as ?prof)
 
 }
+
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:esc(?x) {
-
-  str(?tt)
-    
+  template st:tableconslimit {
+format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
-   
-   bind (
-    let (?t = st:turtle(?x)) { replace(?t, "<", "&lt;") } 
-   as ?tt)
-       
+    select * where {
+        ?x ?p ?y
+    }
+    order by ?x ?p ?y
+    limit 100
 }
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
+
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:variable {
- 
-    format {
-      us:format("variable.html") 
-      str(?v)
-    } 
-    ; separator = " "
- 
+  template st:tableconsuri {
+
+ format {
+        us:format("triple.html")
+        
+        st:number()
+        st:call-template(st:show,    ?x)
+        st:display(?x) 
+        st:display(?p) 
+        st:display(?y) 
+        st:call-template(st:show,    ?y)
+    }
 }
 where {
-  ?x rs:resultVariable ?v
+  bind (st:focus() as ?uri)
+  ?x ?p ?y
+  filter (?uri in (?x, ?p, ?y))
 }
-order by ?v
-]]>
-</body>
-</rule>
+order by ?x ?p ?y
 
-<rule>
-<body>
+
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:pageselect {
-    format {
-        us:format("select.html")
-        st:call-template(st:variable)
-        st:call-template(st:table)
-    }    
+  #
+#  Get an optional icon from the dataset and display it
+#
+template st:show(?x) {
+    format { us:format("img.html")  str(?l) }
 }
 where {
+  bind (st:get(st:dataset) as ?g)
+  graph ?g { 
+    { ?x st:icon ?l }  
+    union { ?x a ?t . ?t st:icon ?l }  
+  }
 }
-]]>
-</body>
-</rule>
+limit 1
 
-<rule>
-<body>
-<![CDATA[
-template st:pagecons {
-   format {
-    us:format("construct.html")
-    st:call-template(st:tablecons)
-   }
-}
-where {
-}
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-template st:tablecons {
+  template st:tablecons {
   if (bound(?uri)) {
     st:call-template(st:tableconsuri)
   }
@@ -267,35 +555,48 @@ where {
 }
 
 
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-#
-#  Get an optional icon from the dataset and display it
-#
-template st:show(?x) {
-    format { us:format("img.html")  str(?l) }
+  template st:esc(?x) {
+
+  str(?tt)
+    
 }
 where {
-  bind (st:get(st:dataset) as ?g)
-  graph ?g { 
-    { ?x st:icon ?l }  
-    union { ?x a ?t . ?t st:icon ?l }  
-  }
+   
+   bind (
+    let (?t = st:turtle(?x)) { replace(?t, "<", "&lt;") } 
+   as ?tt)
+       
 }
-limit 1
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
 <![CDATA[
-#
+  template st:link(?uri, ?title) {
+   format {
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
+   }
+}
+where {
+}
+
+]]>
+    </body>
+  </rule>
+  <rule>
+    <body>
+<![CDATA[
+  #
 # Generate HTML from SPARQL Query Results
 # RDF is either construct where graph or 
 # select where in W3C DAWG result-set RDF vocabulary
@@ -319,313 +620,8 @@ template st:sparql {
 where {
   
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:graph {
-
-  st:call-template(st:head)
-  
-  st:call-template(st:banner)
- 
-  st:call-template(st:query, coalesce(st:get(st:query), ""))  
-  
-  st:call-template(st:pagecons)
-    
-  st:call-template(st:tail)
-}
-where {  
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Utility template to be used by another transformation to
-# integrate SPARQL Query Results without headings
-#
-template st:result {
-   
-  st:call-template(st:page)
-      
-}
-where {
-   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Utility template to be used by another transformation to
-# integrate SPARQL Query Results without headings
-#
-template st:test {
-  @<h2>{ "Test" } 
-  st:call-template(st:page)
-      
-}
-where {
-   bind (st:set(st:profile, coalesce(st:get(st:profile), st:sparql)) as ?p)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# st:pplink search specific profile for URI wrt st:lodprofile() if any
-#
-template st:linkprofile(?x) {
-
-  if (isURI(?x), 
-    st:call-template(st:link, 
-      coalesce(st:pplink(?x), encode_for_uri(?x)),
-      ?e),
-    str(?e))
-    
-}
-where {
-
-  bind (st:call-template(st:esc, ?x) as ?e)
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-
-template st:page {
-   
-  st:call-template(?page)
-      
-}
-where {
-  bind (
-    if (exists { ?x a rs:ResultSet }, 
-      if (exists { ?x rs:boolean ?b }, st:pageask, st:pageselect),
-      st:pagecons) 
-    as ?page)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:tableconsall {
-format {
-        us:format("triple.html")
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
-}
-where {
-  ?x ?p ?y
-}
-order by ?x ?p ?y
-
 
 ]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:tableconslimit {
-format {
-        us:format("triple.html")
-        
-        st:number()
-        st:call-template(st:show,    ?x)
-        st:display(?x) 
-        st:display(?p) 
-        st:display(?y) 
-        st:call-template(st:show,    ?y)
-    }
-}
-where {
-    select * where {
-        ?x ?p ?y
-    }
-    order by ?x ?p ?y
-    limit 100
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:core {
-
-  st:call-template-with(st:server, st:header)
-    
-  st:call-template(st:page)
-    
-  st:call-template-with(st:server, st:tail)
-
-}
-where {
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template st:table {
-    format {
-        us:format("table.html")  
-        st:number()
-        st:apply-templates(?s)
-    }
-}
-where {
-  ?x rs:solution ?s 
-  ?s rs:index ?i  
-}
-order by ?i
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:dataset {
-  str(?res)
-}
-where {  
-  graph eng:dataset {
-    bind (st:apply-templates-with(st:sparql) as ?res)
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate HTML from SPARQL Query Results
-# RDF is either construct where graph or 
-# select where in W3C DAWG result-set RDF vocabulary
-#
-# Olivier Corby - Wimmics Inria I3S - 2015
-#
-
-template st:all {
-
-  st:call-template(st:start)
-
-}
-where {
-    bind (st:set(st:all, true) as ?b)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:linkesc(?x) {
-
-  if (isURI(?x), 
-    st:call-template(st:link, ?x, ?e),
-    str(?e))
-    
-}
-where {
-
-  bind (st:call-template(st:esc, ?x) as ?e)
-    
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
-template  {
-
-format { 
-    us:format("value.html")     
-    coalesce(st:display(?val), "&nbsp;")
-}  
-; separator = " "
-
-}
-where {
-  ?x rs:solution ?in
-  ?x rs:resultVariable ?var 
-  
-  optional {
-    ?in rs:binding [ rs:variable ?var ; rs:value ?val ]
-  }
-  
-}
-order by ?var
-]]>
-</body>
-</rule>
-
+    </body>
+  </rule>
 </rdf:RDF>

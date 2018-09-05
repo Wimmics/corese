@@ -136,7 +136,7 @@ public class MyTest {
     
     private void process7() throws EngineException {
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
-                + "@service <http://corese.inria.fr/sparql>  "
+                + "@federate <http://corese.inria.fr/sparql>  "
                 + "<http://fr.dbpedia.org/sparql>"
                 + "@bounce <http://corese.inria.fr/sparql>"
                 + "@sparqlzero <http://corese.inria.fr/sparql>"
@@ -176,7 +176,7 @@ public class MyTest {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "@debug @type kg:verbose "
-                + "@service <http://dbpedia.org/sparql> <http://fr.dbpedia.org/sparql>"
+                + "@federate <http://dbpedia.org/sparql> <http://fr.dbpedia.org/sparql>"
                 + "select * "
                 + "from <http://fr.dbpedia.org> "
                 + "from <http://dbpedia.org> "
@@ -184,7 +184,7 @@ public class MyTest {
                 ;
 
         String q2 = "@debug @type kg:verbose "
-                + "@service <http://fr.dbpedia.org/sparql> "
+                + "@federate <http://fr.dbpedia.org/sparql> "
                 + "<http://dbpedia.org/sparql>"
                 + "select * "
                 + "from named <http://fr.dbpedia.org> "
@@ -194,7 +194,7 @@ public class MyTest {
 
         String q3 = "prefix h: <http://www.inria.fr/2015/humans#>"
                 + "@debug @type kg:verbose kg:exist "
-                + "@service <http://fr.dbpedia.org/sparql> "
+                + "@federate <http://fr.dbpedia.org/sparql> "
                 + "<http://corese.inria.fr/sparql>"
                 + "select * "
                 + "where { "
@@ -289,7 +289,7 @@ public class MyTest {
 
     private void process8() throws EngineException {
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
-                + "@service <http://corese.inria.fr/sparql>  <http://fr.dbpedia.org/sparql>"
+                + "@federate <http://corese.inria.fr/sparql>  <http://fr.dbpedia.org/sparql>"
                 + "@type kg:verbose kg:exist "
                 //+ "@skip kg:group kg:select "
                 + "@debug "

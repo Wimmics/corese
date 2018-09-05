@@ -15,7 +15,7 @@ function trans(obj) {
 
 //get generated html from server by sending ajax 'GET' request
 function transGET(url) {
-    url = url.replace('#', '%23');//encode '#'
+    url = cleanUrl(url)
     $.ajax({
         type: 'GET',
         url: url,
@@ -23,8 +23,8 @@ function transGET(url) {
         success: function (response) {
             success(response, url);
         },
-        error: function (response, status, error) {
-            error(response, error);
+        error: function (response, status, cause) {
+            error(response, cause);
         }
     });
 }
@@ -54,6 +54,17 @@ function transPOST(form) {
     });
 }
 
+function cleanUrl(url) {
+    let parts = url.split("?"); // search whether there are parameters.
+    if (parts.length === 1) { // no parameter to clean.
+        return url;
+    } else {
+        let search = new URLSearchParams(parts[1]);
+        let result = `${parts[0]}?${search.toString()}`; // parameters are written using encodeURIComponent
+        return result;
+    }
+}
+
 //return 500 error
 function error(response, err, url) {
     var text = '<div class="container"><h2>' + err + ' (error code: ' + response.status + ')</h2><br>' + response.responseText + '</div>';
@@ -63,42 +74,16 @@ function error(response, err, url) {
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    var text = '<div class="container">' + response + '</div>';
-    $(content).html(text);
+    const text = '<div class="container">' + response + '</div>';
+    const range = document.createRange();
+    const contentNode = document.getElementById("contentOfSite");
+    range.selectNode(contentNode);
+    var documentFragment = range.createContextualFragment(text);
+    contentNode.innerHTML = "";
+    contentNode.appendChild(documentFragment);
     updateUrl(url); //2 change the url displayed in broswer url bar
-    correct();
 }
 
-//jquery.html() method auto close the htmls tags, even for the text value of <textarea>, which causes errors
-//this method change back the autoclosed tags using regex
-function correct() {
-    var regex = /<.+\b[^>]*(><\/.+>)/gi;
-    $(content + ' textarea').each(
-            function () {
-                //console.log('textarea: '+$(this).text());
-                //match pattern<???xxxxxx></???>
-                var found, newText = $(this).text();
-                //find match ></???>
-                while ((found = regex.exec($(this).text())) !== null) {
-                    newText = newText.replace(found[1], '/>');
-                }
-                $(this).text(newText);
-            }
-    );
-    
-        $(content + ' input').each(
-            function () {
-                //console.log('input: '+$(this).val());
-                //match pattern<???xxxxxx></???>
-                var found, newText = $(this).val();
-                //find match ></???>
-                while ((found = regex.exec($(this).val())) !== null) {
-                    newText = newText.replace(found[1], '/>');
-                }
-                $(this).val(newText);
-            }
-    );
-}
 // store the browsering history and change the url in the browser url bar
 function updateUrl(url) {
     if (changeURL && url.trim() !== '') {

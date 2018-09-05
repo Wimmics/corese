@@ -2,12 +2,12 @@
 	<li class='active'>
 		<a data-toggle='tab' href='#table'>Table</a>
 	</li> 
-	<li>
+	<li class>
 		<a data-toggle='tab' href='#graph'>Graph</a>
 	</li>
 </ul>
 <div class='tab-content'>
-	<div id='home' class='tab-pane fade in active'> 
+	<div id='table' class='tab-pane fade in active'>
 		<table class='table'>
 			<tr>
 				<th></th><th></th><th>subject</th><th>property</th><th>object</th><th></th>
@@ -15,13 +15,7 @@
 			%s
 		</table>
 	</div>
-	<div id='graph' class='tab-pane'> 
-		<svg id='graph1' width='960' height='600'></svg> 
-		<script>
-			data = {
-				%s
-			};
-drawRdf(data, '#graph1');
-		</script>
+	<div id='graph' class='tab-pane'>
+		%s
 	</div> 
 </div>

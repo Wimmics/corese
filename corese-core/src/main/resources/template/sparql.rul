@@ -33,11 +33,17 @@ order by ?x ?p ?y
    format {
     us:format("construct.html")
     st:call-template(st:tablecons)
-    st:apply-templates-with(st:d3)
+    format {
+      us:format("d3graph.html")
+      st:apply-templates-with(st:d3)
+   }
    }
 }
 where {
 }
+
+
+# utiliser prefix ft: <http:.... navlab> (cf display.rq dans navlab) et utiliser ft:link.html
 
 ]]>
     </body>

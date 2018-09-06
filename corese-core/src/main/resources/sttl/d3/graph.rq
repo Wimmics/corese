@@ -1,0 +1,7 @@
+template st:graph {
+  st:call-template(st:nodes)
+  ","
+  st:call-template(st:edges)
+} 
+where {
+}

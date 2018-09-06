@@ -12,3 +12,10 @@ function us:record(?s) {
 function us:get(?s) {
     xt:get(?map, ?s)
 }
+
+function us:label(?s) {
+    if (isLiteral(?s), 
+        replace(str(?s), "\n", ""),
+        st:turtle(?s))
+}
+

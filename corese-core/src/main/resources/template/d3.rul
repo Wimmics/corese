@@ -8,7 +8,7 @@
   "\"nodes\":[\n"
   group {
     "{\"id\": \"" us:get(?s)  "\""
-    ",\"label\": \"" str(?s)  "\""
+    ",\"label\": \"" us:label(?s)  "\""
     ",\"group\":" if ( isURI(?s), "\"1\"", if( isBlank(?s), "\"2\"", "\"3\"") )
     "}";
     separator=",\n"
@@ -26,10 +26,11 @@
 ]]>
     </body>
   </rule>
+  
   <rule>
     <body>
 <![CDATA[
-  template st:start {
+  template st:graph {
   st:call-template(st:nodes)
   ","
   st:call-template(st:edges)
@@ -39,12 +40,33 @@
 ]]>
     </body>
   </rule>
+  
+ <rule>
+    <body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
+template st:start {
+  format {
+      ft:d3graph.html
+      st:call-template(st:graph)
+  }
+  
+} where {
+}
+
+]]>
+    </body>
+  </rule> 
+  
+  
   <rule>
     <body>
 <![CDATA[
   template st:edges {
   "\"edges\":[\n"
-  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" str(?p) "\" }";separator=",\n"}
+  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" us:label(?p) "\"" 
+  
+  ",\"group\":" if ( strstarts(?s, rdf:), "\"1\"", if( strstarts(?s, rdfs:), "\"2\"", "\"3\"") ) "}"  ;separator=",\n" }
   "\n]\n"
 } where {
   select distinct ?s ?p ?o where {
@@ -58,7 +80,7 @@
   <rule>
     <body>
 <![CDATA[
-  template st:profile {}
+template st:profile {}
 where {}
 
 function us:start() {
@@ -71,6 +93,12 @@ function us:record(?s) {
 
 function us:get(?s) {
     xt:get(?map, ?s)
+}
+
+function us:label(?s) {
+    if (isLiteral(?s), 
+        replace(str(?s), "\n", ""),
+        st:turtle(?s))
 }
 
 ]]>

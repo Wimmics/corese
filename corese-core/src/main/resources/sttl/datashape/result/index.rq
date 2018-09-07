@@ -9,7 +9,7 @@ template st:index {
 }
 where {
     select ?s (count(*) as ?c) where {
-        graph st:visitor { ?x a sh:ValidationResult ; sh:severity ?s }
+        graph st:visitor { ?x a sh:ValidationResult ; sh:resultSeverity ?s }
     } 
     group by ?s
     order by ?s

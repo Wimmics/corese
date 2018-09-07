@@ -1,6 +1,6 @@
 template st:edges {
   "\"edges\":[\n"
-  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" us:label(?p) "\" }";separator=",\n"}
+  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" str(?p) "\" }";separator=",\n"}
   "\n]\n"
 } where {
   select distinct ?s ?p ?o where {

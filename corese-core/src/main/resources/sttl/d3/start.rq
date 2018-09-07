@@ -1,9 +1,6 @@
-prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:start {
-  format {
-      ft:d3graph.html
-      st:call-template(st:graph)
-  }
-} 
-where {
+  st:call-template(st:nodes)
+  ","
+  st:call-template(st:edges)
+} where {
 }

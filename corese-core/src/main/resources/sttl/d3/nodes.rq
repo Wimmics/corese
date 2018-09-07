@@ -2,7 +2,7 @@ template st:nodes {
   "\"nodes\":[\n"
   group {
     "{\"id\": \"" us:get(?s)  "\""
-    ",\"label\": \"" str(?s)  "\""
+    ",\"label\": \"" us:label(?s)  "\""
     ",\"group\":" if ( isURI(?s), "\"1\"", if( isBlank(?s), "\"2\"", "\"3\"") )
     "}";
     separator=",\n"

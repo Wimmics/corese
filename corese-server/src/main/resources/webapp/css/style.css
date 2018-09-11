@@ -43,6 +43,16 @@
     color:green
 }
 
+.panel-heading {
+    color: black;
+    background-color: lightgrey;
+}
+
+.panel {
+    flex: 1 1 auto;
+    border: 1px solid lightblue;
+}
+
 pre {
     font-size: 120%;
     font-weight: bold;

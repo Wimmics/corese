@@ -24,6 +24,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
@@ -79,6 +80,9 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String AGGREGATE= "@aggregate";
     public static final String HAVING   = "@having";
     public static final String FUNCTION = "@function";
+    
+    static final String USER = NSManager.USER;
+    static final String PRODUCE_METHOD = USER + "produce";
     
 
     
@@ -264,16 +268,46 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     
+    /**
+     * @type us:surface
+     * function us:produce(?s, ?o) {
+     *  let (?g = construct { ?s us:surface ?r } 
+     *      where { ?s us:width ?w ; us:length ?l bind(?w * ?l as ?r) }) {
+     *      return (?g)
+     *  }
+     * }
+     */
+    public IDatatype produce2(Eval eval, Node g, Edge q) {  
+        if (q.getEdgeVariable() == null) {
+            IDatatype[] param = toArray(getValue(eval, q, 0), getValue(eval, q, 1));
+            IDatatype dt = method(eval, PRODUCE_METHOD, (IDatatype) q.getEdgeNode().getDatatypeValue(), param); 
+            return dt;
+        }
+        return produce1(eval, g, q);
+    }
+    
+    Node getValue(Eval eval, Edge q, int i) {
+        Node node = q.getNode(i);
+        if (node.isConstant()) {
+            return node;
+        }
+        return eval.getEnvironment().getNode(node);
+    }
+        
     @Override
     public IDatatype produce(Eval eval, Node g, Edge q) {  
+        return produce1(eval, g, q);
+    }
+    
+     public IDatatype produce1(Eval eval, Node g, Edge q) {  
         return callback(eval, PRODUCE, toArray(g, q));
     }
       
-    @Override
+   @Override
     public IDatatype candidate(Eval eval, Node  g, Edge q, Edge e) {  
         return callback(eval, CANDIDATE, toArray(g, q, e));
     }
-        
+            
     @Override
     public boolean result(Eval eval, Mappings map, Mapping m) {       
         return result(callback(eval, RESULT, toArray(map, m)));       
@@ -512,11 +546,15 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return null;
     }
     
-    public IDatatype method(Eval ev, String name,  IDatatype[] param) {
+    public IDatatype method(Eval ev, String name, IDatatype[] param) {
+        return method(ev, name, null, param);
+    }
+    
+    public IDatatype method(Eval ev, String name, IDatatype type, IDatatype[] param) {
         if (isActive()) {
             return null;
         }
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, null, param);
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             setActive(true);
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
@@ -560,7 +598,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         IDatatype[] param = new IDatatype[lobj.length];
         int i = 0;
         for (Object obj : lobj) {
-            param[i++] = DatatypeMap.getValue(obj);
+            param[i++] = (obj == null) ? null :  DatatypeMap.getValue(obj);
         }
         return param;
     }

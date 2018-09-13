@@ -1,7 +1,7 @@
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:start {
+template st:frame {
   format {
-      ft:graph.html
+      ft:frame.html
       st:call-template(st:graph)
   }
 } 

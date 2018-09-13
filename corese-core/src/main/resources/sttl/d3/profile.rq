@@ -15,6 +15,6 @@ function us:get(?s) {
 
 function us:label(?s) {
     if (isLiteral(?s), 
-        replace(str(?s), "\n", ""),
+        replace(replace(str(?s), "\n", ""), "\"", "'"),
         st:turtle(?s))
 }

@@ -1,0 +1,14 @@
+insert { }
+where {
+
+ bind (map(us:load, xt:iota(200, 250)) as ?tmp ) 
+
+}
+
+
+function us:load(?i) {
+let (?doc = concat("https://ci.mines-stetienne.fr/aqi/static/station/", ?i)) {
+    xt:print('load:', ?doc) ;
+    xt:load(?doc, xt:graph()) 
+}
+}

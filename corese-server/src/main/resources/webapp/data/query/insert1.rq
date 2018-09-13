@@ -1,0 +1,33 @@
+#
+# Try to link geo:Point with DBpedia resource using the rdfs:label
+#
+prefix o:    <http://dbpedia.org/ontology/>
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ex:   <http://example.org/> .
+
+@event
+insert {
+    ?in ex:dbpedia ?uri
+}
+where {
+
+    ?in a geo:Point ; rdfs:label ?l
+    
+    bind (uri(replace(concat("http://dbpedia.org/resource/", ?l), " ", "_")) as ?uri)
+    
+    service <http://dbpedia.org/sparql> {
+        ?uri rdfs:label ?ll filter langMatches(lang(?ll), "en")
+    }
+    
+}
+
+@before
+function us:before(?q) {
+    xt:print('Connect dbpedia')
+}
+
+@federate
+function us:service(?s, ?m) {
+    xt:print('service', ?m)
+}

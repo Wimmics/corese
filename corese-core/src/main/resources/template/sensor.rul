@@ -1,0 +1,611 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Wed Sep 12 11:11:03 CEST 2018
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map, given lat et long
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template st:gmap(?r, ?lat, ?lon, ?list) {
+  
+format {
+  <ft:map.html>
+  
+  str(?lat)
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/smarker.png")
+  
+  st:call-template(st:gmap2, ?list)
+          
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Retreive geo:Point, order by decreasing value of aqio:AirQualityIndexProperty,
+# apply transformation on each geo:Point URI (processed by template point.rq)
+#
+prefix o:    <http://dbpedia.org/ontology/>
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
+
+template st:resource {
+
+   st:apply-templates(?uri, st:number())
+    
+}
+where {
+    select distinct ?uri where {
+        filter xt:print('resource')
+        bind (st:focus() as ?uri)
+        ?uri a geo:Point .
+        ?mesure sosa:hasFeatureOfInterest ?uri ;
+            sosa:observedProperty ?p .
+        ?p a aqio:AirQualityIndexProperty .        
+        ?mesure sosa:hasSimpleResult ?value 
+        
+        # filter (us:value(?value) <= 30)
+    }
+    order by desc(us:value(?value))
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon, val))
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+prefix ex: <http://example.org/> .
+
+template st:gmap2(?list) {
+  format {
+    <ft:map2.html>
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    coalesce(us:icon(us:num(?val)), "/img/greenmarker.png")
+    st:plink(?r)
+  }
+}
+where {
+
+  values (?r ?lat ?lon ?val) { unnest(?list) }
+  
+}
+
+
+function us:num(?val) {
+    us:absolute(?val)
+}
+
+
+function us:absolute(?val) {
+    if (isNumeric(?val),
+        if (?val >= 60, 4, 
+        if (?val >= 30, 3, 
+        if (?val >= 15, 2, 1))),
+    0)
+}
+
+
+
+# 0 is good, greater is worse
+function us:icon(?n) {
+    let (?list = @(
+    "/img/bluemarker.png" "/img/bluemarker.png"  "/img/greenmarker.png" 
+    "/img/pinkmarker.png" "/img/blackmarker.png"
+    "https://cdn4.iconfinder.com/data/icons/48x48-free-object-icons/48/Red_pin.png" 
+    )) {
+        if (?n >= xt:size(?list),  us:icon(0), xt:get(?list, ?n))
+    }
+}
+
+
+
+# 0 <= val <= 100
+# 0 is good, 100 is bad
+
+function us:relative(?val) {
+    if (isNumeric(?val),
+        if (?val >= st:cget(st:quart3, ex:AirQualityIndex), 4, 
+        if (?val >= st:cget(st:median, ex:AirQualityIndex), 3, 
+        if (?val >= st:cget(st:quart1, ex:AirQualityIndex), 2, 1))),
+    0)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Compute aggregates (min, max, etc.)
+# Generate a map and spot geo:Point
+# Display sensor values
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+template st:main {
+
+    format { <ft:title.html> }
+    
+    # generate a map
+    st:call-template(st:place)
+
+    format  {
+        <ft:frame.html>
+        
+        st:call-template(st:header)
+        ?agg        
+        st:call-template(st:header)
+        st:call-template(st:resource)        
+    }    
+}
+where {
+    bind (st:call-template(st:aggregate)  as ?agg)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Data
+# Start template
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+#@share  
+@event
+template st:start {
+
+  st:call-template(st:main)
+  st:call-template-with(st:d3, st:frame)
+  
+}
+where {
+    # compute and record property list
+    bind (us:define()  as ?i)
+}
+
+
+
+
+
+@before
+function us:before(?q) {
+xt:print('start', ds:getAST(?q)) 
+}
+
+@afterr 
+function us:finish(?map) {
+xt:print('finish', let (((?out)) = ?map) { ?out }) 
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Spot geo:Point locations on a map, select value of a sensor
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix ex:   <http://example.org/> .
+prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
+
+template st:place {
+
+    st:call-template(st:gmap, ?in, ?lat, ?lon, ?list)  
+    
+}
+where {
+    filter xt:print('place')
+    ?in geo:lat ?lat ; geo:long ?lon .
+    
+    { select  (aggregate(xt:list(?x, ?lat, ?lon, us:value(?val))) as ?list) 
+    where {
+
+        ?x geo:lat ?lat ; geo:long ?lon  .
+        
+        ?mesure sosa:hasFeatureOfInterest ?x ;
+            sosa:observedProperty ?p .
+        ?p a aqio:AirQualityIndexProperty .
+        ?mesure sosa:hasSimpleResult ?val 
+    }}
+}
+limit 1
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display sensor property names
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+template st:header {
+    format  {
+        <ft:header.html>
+        group { format { "<th>%s. %s</th>" st:number() us:pretty(?pname)  } }
+    }
+}
+where {
+   values ?pname { unnest(us:plist()) }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Template used to define functions for the transformation
+#
+prefix cdt:  <http://w3id.org/lindt/custom_datatypes#> .
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template st:profile {}
+where {}
+
+
+function us:sort(?p, ?v) {
+    if (?p = rdf:type,          0,
+    if (strstarts(?p, rdfs:),   1, 
+    if (strstarts(?p, rdf:),    2, 
+    if (isLiteral(?v),          3, 4))))
+}
+
+
+function us:display(?t) {
+    us:clean(st:turtle(?t))
+}
+
+function us:displayLiteral(?t) {
+    if (strstarts(datatype(?t), cdt:) , str(?t), 
+    if (isNumeric(?t), 
+        if (datatype(?t) = xsd:double || datatype(?t) = xsd:decimal, st:format("%.2f", ?t), ?t), 
+        us:clean(st:turtle(?t))))
+}
+
+function us:clean(?str) {
+    replace(?str, "<", "&lt;")
+}
+
+function us:url(?x) {
+    if (coalesce(st:getprofile(?x) = st:lod, false), ?x, st:pplink(?x)) 
+}
+
+function us:protect(?url) {
+    replace (?url, "'", "%27")
+}
+
+function us:align(?n) {
+    if (?n < 10,  concat(00, ?n), 
+    if (?n < 100, concat(0, ?n),
+    ?n))
+}
+
+function us:pretty(?pname) {
+    strbefore(strafter(?pname, aqio:), "Property")
+}
+
+function us:show(?val) {
+    if (isLiteral(?val), 
+        us:displayLiteral(?val), 
+        st:format(<ft:link.html>, us:protect(st:url(?val)), us:display(?val)))
+}
+
+
+function us:value(?val) {
+    if (strstarts(datatype(?val), cdt:),
+        if (contains(str(?val), " "), 
+            xsd:double(strbefore(str(?val), " ")),
+            ?val), 
+        if (datatype(?val) = xsd:string, 0, ?val))
+}
+
+
+
+
+function us:index(?pname, ?plist) {
+    let (?i = 0) {
+        for (?p in ?plist) {
+            if (?p = ?pname) { 
+                return (?i)
+            } ;
+            set (?i = ?i + 1)
+        } 
+    } ;
+    return (-1)
+}
+
+
+# compute list of relevant measure properties
+function us:init() {
+    let (select 
+            (aggregate(distinct ?p) as ?l)
+            (xt:sort(us:splitWith(?l,    us:element())) as ?l1)
+            (xt:sort(us:splitWithout(?l, us:element())) as ?l2)
+            (xt:append(?l1, ?l2) as ?list) 
+        where {
+            ?x sosa:observedProperty ?q .
+            ?q a ?p
+        }) { 
+        xt:print("measure: ",  ?list) ;
+        return(?list)
+    }
+}
+
+function us:define() {
+    set(?plist = us:init()) 
+}
+
+function us:plist() {
+    return (?plist)
+}
+
+function us:element() {
+    xt:list("Wind", "Temperature", "Humidity", "Dew", "Air", "Atmospheric")
+}
+
+function us:splitWith(?list, ?code) {
+    mapfindlist(
+        lambda(?elem, ?code) 
+        { mapany (lambda(?key, ?elem) { contains(?elem, ?key) }, ?code, ?elem) },
+        ?list, xt:list(?code))
+}
+
+function us:splitWithout(?list, ?code) {
+    mapfindlist(
+        lambda(?elem, ?code) 
+        { mapevery (lambda(?key, ?elem) { ! contains(?elem, ?key) }, ?code, ?elem) },
+        ?list, xt:list(?code))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display sensor property aggregates
+#
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template  st:aggregate {
+
+    format { <ft:tripleagg.html>   "Min"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?min), "") us:unit(?val) }}}            
+          
+    format { <ft:tripleagg.html>   "Max"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?max), "") us:unit(?val) }}}
+                
+    format { <ft:tripleagg.html>   "Median"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?med), "") us:unit(?val) }}}           
+                
+    format { <ft:tripleagg.html>   "Average"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?avg), "") us:unit(?val) }}}  
+                                
+    format { <ft:tripleagg.html>   "Std Deviation"
+        group { format { "<td>%s</td>" coalesce(us:show(?stdev), "")  }}}   
+}
+where {
+    {select ?pname (sample(?y) as ?val)
+        (max(us:value(?y)) as ?max) (min(us:value(?y)) as ?min)
+        (avg(us:value(?y)) as ?avg) (xt:sort(aggregate(us:value(?y))) as ?list) 
+        (us:stdev(?list, ?avg) as ?stdev)
+        (us:quartile(?list, 0.25) as ?q1)
+        (us:quartile(?list, 0.5)  as ?med)
+        (us:quartile(?list, 0.75) as ?q3)
+    where { 
+        filter xt:print('aggregate')
+        ?in a geo:Point ; rdfs:label ?l .
+        
+        # iterate property names
+        values ?pname { unnest(us:plist()) }
+        
+        ?mesure sosa:hasFeatureOfInterest ?in ;
+            sosa:observedProperty ?p .
+        ?p a ?pname .   
+        ?mesure sosa:hasSimpleResult ?y   
+    } 
+    group by ?pname
+    order by us:index(?pname, us:plist())
+    }
+    
+    # record some aggregates 
+    bind (st:cset(st:max,    ?pname, ?max) as ?t1)
+    bind (st:cset(st:median, ?pname, ?med) as ?t2)
+    bind (st:cset(st:quart1, ?pname, ?q1)  as ?t3)
+    bind (st:cset(st:quart3, ?pname, ?q3)  as ?t4)
+}
+
+
+
+
+
+function us:median(?list) {
+    if (xt:size(?list) = 0, 0,
+        xt:get(xt:sort(?list), xt:size(?list) / 2))
+}
+
+function us:quartile(?list, ?n) {
+    if (xt:size(?list) = 0, 0,    
+        xt:get(?list, xt:size(?list) * ?n))
+}
+
+function us:stdev(?list, ?avg) {
+    let (?dev = maplist(lambda(?val, ?avg) { power(?val - ?avg, 2) }, ?list, ?avg)) {
+        power(reduce(rq:plus, ?dev) / xt:size(?list), 0.5)
+    }
+}
+
+function us:unit(?val) {
+    strafter(?val, " ")
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display sensors properties of geo:Point ?in
+#
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ex:   <http://example.org/> 
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template (?in, ?num) {
+    format {
+        <ft:point.html>
+               
+        # name
+        ?num 
+        str(?l) 
+        us:date(?date)
+        coalesce(us:link(?uri, ?l), "")
+        
+        # one row with property values of one Point
+        group { 
+            format {
+                # one cell with value ?val of property ?pname
+                format { 
+                    <ft:cell.html>  
+                    coalesce(us:color(?pname, ?val), "black")  "%s"    
+                }
+                coalesce(us:show(?val), "")
+            }
+        }
+    }
+    if (strends(?num, "0"), st:call-template(st:header), "")
+}
+where {
+    # ?in is the focus node
+    ?in a geo:Point ; rdfs:label ?l .
+    
+    # iterate property names
+    values ?pname { unnest(us:plist()) }
+    
+    optional {   
+        # some sensor properties have values, some have not
+        select distinct ?in ?pname ?val ?date where {
+            ?mesure sosa:hasFeatureOfInterest ?in ;
+                sosa:observedProperty ?p .
+            ?p a ?pname .
+            ?mesure sosa:hasSimpleResult ?val  ; 
+                sosa:resultTime ?date
+        }
+    }
+    
+    # some points may have a DBpedia URI
+    optional { ?in ex:dbpedia ?uri }
+}
+
+
+
+# color of property value depends on the quartile of the value
+function us:color(?pname, ?val) {
+    us:quartile(?pname, ?val)
+}
+
+
+
+function us:quartile(?pname, ?val) {
+    if (us:value(?val) >= st:cget(st:quart3, ?pname), "black",
+    if (us:value(?val) >= st:cget(st:median, ?pname), "red",
+    if (us:value(?val) >= st:cget(st:quart1, ?pname), "green",
+        "blue"  )))
+}
+
+
+function us:median(?pname, ?val) {
+    if (us:value(?val) =  st:cget(st:max, ?pname),    "red",
+    if (us:value(?val) >= st:cget(st:median, ?pname), "brown",
+        "black"))
+}
+
+
+
+function us:date(?date) {
+    if (contains(?date, "T"), strbefore(?date, "T"), ?date)
+}
+
+function us:link(?url, ?lab) {
+    st:format(<ft:link.html>, us:protect(st:url(?url)), ?lab)
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

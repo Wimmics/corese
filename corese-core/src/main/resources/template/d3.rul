@@ -44,19 +44,37 @@
  <rule>
     <body>
 <![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:start {
   format {
-      ft:d3graph.html
+      ft:graph.html
       st:call-template(st:graph)
   }
-  
-} where {
+} 
+where {
 }
 
 ]]>
     </body>
   </rule> 
+  
+<rule>
+    <body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:frame {
+  format {
+      ft:frame.html
+      st:call-template(st:graph)
+  }
+} 
+where {
+}
+
+]]>
+    </body>
+  </rule>   
+  
   
   
   <rule>
@@ -97,7 +115,7 @@ function us:get(?s) {
 
 function us:label(?s) {
     if (isLiteral(?s), 
-        replace(str(?s), "\n", ""),
+        replace(replace(str(?s), "\n", ""), "\"", "'"),
         st:turtle(?s))
 }
 

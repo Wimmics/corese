@@ -59,6 +59,7 @@ st:dbpediatestwf a sw:Workflow ;
 st:hal a st:Server ;
 st:service "hal" ;
 st:param [ 
+    st:sttl2 st:hturtle ;
     # export context parameters to subtransformation (st:profile, etc.):
     st:export true;
     # transformation does not focus on uri but display whole graph:
@@ -78,7 +79,8 @@ st:workflow [
     a sw:Workflow ;
     sw:body (
         <query/halquery.rq>
-        [ a sw:Transformation ; sw:uri st:hturtle ]
+        [ a sw:Transformation ; sw:uri st:combine ]
+        #[ a sw:Transformation ; sw:uri st:d3 ]
     )
 ]
 .
@@ -476,7 +478,8 @@ st:tutocheck a st:Profile ;
 
 st:tutorialhal a st:Server ;
   st:param [ st:lang 'en' ; 
-    st:sttl st:hturtle ; 
+    # st:sttl st:hturtle ; 
+    st:sttl st:combine ; 
     st:param "verbatim" ; 
     st:hyperlink true ; 
     st:number true ;
@@ -695,6 +698,49 @@ sw:body (
 )
 .
 
+
+
+st:sensor a st:Server ;
+st:service "sensor" ;
+
+st:param [
+    st:export true ;
+    st:hyperlink true ;
+    #st:uri <http://fr.dbpedia.org/resource/Antibes> ;
+    st:lodprofile (
+        (<http://fr.dbpedia.org/>   st:dbpedia)
+        ("*"                        st:lod)
+    ) ;
+    st:mapzoom 4 ;
+    st:mapsize "mapsmall" ;
+] ;
+st:workflow st:demoWorkflow ;
+
+st:content st:demoContent 
+.
+
+
+# process data:
+st:demoWorkflow a sw:Workflow ; 
+sw:body (
+    [ a sw:Transformation ; sw:uri st:sensor ]
+)
+
+
+
+# load data:
+st:demoContent a sw:Workflow ; sw:body (
+#    [ a sw:Query ; sw:uri <query/initialize.rq> ]
+    
+    [ a sw:Load ; sw:path <sensor/s1.ttl>, <sensor/s2.ttl>, <sensor/s3.ttl>, 
+<sensor/s4.ttl>, <sensor/s5.ttl>, <sensor/s6.ttl>, <sensor/s7.ttl>, <sensor/s8.ttl>, <sensor/s9.ttl>, <sensor/s10.ttl> ,
+<sensor/s11.ttl>, <sensor/s12.ttl>, <sensor/s13.ttl>, 
+<sensor/s14.ttl>, <sensor/s15.ttl>, <sensor/s16.ttl>,  <sensor/s18.ttl>, <sensor/s19.ttl>, <sensor/s20.ttl>, <sensor/s21.ttl>
+    ]
+      
+#    [ a sw:Query ;  sw:uri <query/insert1.rq> ]
+  )
+.
 
 
 

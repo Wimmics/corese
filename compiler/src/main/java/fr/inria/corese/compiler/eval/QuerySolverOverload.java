@@ -29,6 +29,8 @@ public class QuerySolverOverload {
 
 
     public static final String US = NSManager.USER;
+    public static final String MERROR = US + "error";
+    
     public static final String MEQ = US + "eq";
     public static final String MNE = US + "ne";
     public static final String MLE = US + "le";
@@ -42,6 +44,9 @@ public class QuerySolverOverload {
     public static final String MDIVIS = US + "divis";
 
     public static final String MCOMPARE = US + "compare";
+    
+    static final IDatatype ERROR_DATATYPE = DatatypeMap.newResource(IDatatype.ERROR_DATATYPE);
+    
 
     private boolean overload = true;
     QuerySolverVisitor visitor;
@@ -93,7 +98,7 @@ public class QuerySolverOverload {
 
 
     public IDatatype error(Eval eval, Expr exp, IDatatype[] args) {
-        return overloadError(eval, exp, (IDatatype[]) args);
+        return overloadError(eval, exp, args);
     }
 
     /**
@@ -119,6 +124,25 @@ public class QuerySolverOverload {
             return res;
         }
         return dt.intValue();
+    }
+    
+    
+    /**
+     * a = b return null 
+     * 1) try      @type dt:error function us:eq(?e, ?a, ?b) 
+     * 2) then try @type dt:error function us:error(?e, a, ?b)
+     */
+    IDatatype overloadErrorMethod(Eval eval, Expr exp, IDatatype[] param) {
+        String name = getMethodName(exp);
+        IDatatype[] values = toArray(param, exp);
+        if (name == null) {
+            return visitor.methodBasic(eval, MERROR, ERROR_DATATYPE, values);
+        }
+        IDatatype val = visitor.methodBasic(eval, name, ERROR_DATATYPE, values);
+        if (val == null) {
+            val = visitor.methodBasic(eval, MERROR, ERROR_DATATYPE, values);
+        }
+        return val;
     }
 
     /**

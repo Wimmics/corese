@@ -565,8 +565,12 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     
-    public IDatatype methodBasic(Eval ev, String name,  IDatatype[] param) {       
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, null, param);
+    public IDatatype methodBasic(Eval ev, String name, IDatatype[] param) { 
+        return methodBasic(ev, name, null, param);
+    }  
+    
+    public IDatatype methodBasic(Eval ev, String name, IDatatype type, IDatatype[] param) {       
+        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             return dt;
@@ -649,10 +653,5 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         this.debug = debug;
     }
     
-    @Override
-    public Object getObject() {
-        return this;
-    }
-    
-
+   
 }

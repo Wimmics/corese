@@ -61,6 +61,7 @@ public interface IDatatype
     public static final String LITERAL_DATATYPE  = ExpType.DT + "literal";
     public static final String STANDARD_DATATYPE = ExpType.DT + "standard";
     public static final String EXTENDED_DATATYPE = ExpType.DT + "extended";
+    public static final String ERROR_DATATYPE    = ExpType.DT + "error";
     
     public static final String ITERATE_DATATYPE  = ExpType.DT + "iterate";   
     public static final String MAP_DATATYPE      = ExpType.DT + "map";   

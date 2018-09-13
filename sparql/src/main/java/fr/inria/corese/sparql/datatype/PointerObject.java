@@ -28,7 +28,7 @@ public class PointerObject implements Pointerable {
     }
     
     @Override
-    public Object getObject() {
+    public Object getPointerObject() {
         return object;
     }
     

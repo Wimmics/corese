@@ -1,0 +1,29 @@
+#
+# Retreive geo:Point, order by decreasing value of aqio:AirQualityIndexProperty,
+# apply transformation on each geo:Point URI (processed by template point.rq)
+#
+prefix o:    <http://dbpedia.org/ontology/>
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
+
+template st:resource {
+
+   st:apply-templates(?uri, st:number())
+    
+}
+where {
+    select distinct ?uri where {
+        filter xt:print('resource')
+        bind (st:focus() as ?uri)
+        ?uri a geo:Point .
+        ?mesure sosa:hasFeatureOfInterest ?uri ;
+            sosa:observedProperty ?p .
+        ?p a aqio:AirQualityIndexProperty .        
+        ?mesure sosa:hasSimpleResult ?value 
+        
+        # filter (us:value(?value) <= 30)
+    }
+    order by desc(us:value(?value))
+}
+

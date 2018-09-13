@@ -1,0 +1,34 @@
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Data
+# Start template
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+#@share  
+@event
+template st:start {
+
+  st:call-template(st:main)
+  
+}
+where {
+    # compute and record property list
+    bind (us:define()  as ?i)
+}
+
+
+
+
+
+@before
+function us:before(?q) {
+xt:print('start', ds:getAST(?q)) 
+}
+
+@afterr 
+function us:finish(?map) {
+xt:print('finish', let (((?out)) = ?map) { ?out }) 
+}
+
+

@@ -1,0 +1,26 @@
+#
+# Compute aggregates (min, max, etc.)
+# Generate a map and spot geo:Point
+# Display sensor values
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+template st:main {
+
+    format { <ft:title.html> }
+    
+    # generate a map
+    st:call-template(st:place)
+
+    format  {
+        <ft:frame.html>
+        
+        st:call-template(st:header)
+        ?agg        
+        st:call-template(st:header)
+        st:call-template(st:resource)        
+    }    
+}
+where {
+    bind (st:call-template(st:aggregate)  as ?agg)
+}
+

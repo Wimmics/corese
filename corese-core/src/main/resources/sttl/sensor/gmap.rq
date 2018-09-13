@@ -1,0 +1,23 @@
+#
+# Geolocate resource on a map, given lat et long
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template st:gmap(?r, ?lat, ?lon, ?list) {
+  
+format {
+  <ft:map.html>
+  
+  str(?lat)
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/smarker.png")
+  
+  st:call-template(st:gmap2, ?list)
+          
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+}

@@ -1,0 +1,81 @@
+#
+# Display sensor property aggregates
+#
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template  st:aggregate {
+
+    format { <ft:tripleagg.html>   "Min"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?min), "") us:unit(?val) }}}            
+          
+    format { <ft:tripleagg.html>   "Max"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?max), "") us:unit(?val) }}}
+                
+    format { <ft:tripleagg.html>   "Median"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?med), "") us:unit(?val) }}}           
+                
+    format { <ft:tripleagg.html>   "Average"
+        group { format { "<td>%s %s</td>" coalesce(us:show(?avg), "") us:unit(?val) }}}  
+                                
+    format { <ft:tripleagg.html>   "Std Deviation"
+        group { format { "<td>%s</td>" coalesce(us:show(?stdev), "")  }}}   
+}
+where {
+    {select ?pname (sample(?y) as ?val)
+        (max(us:value(?y)) as ?max) (min(us:value(?y)) as ?min)
+        (avg(us:value(?y)) as ?avg) (xt:sort(aggregate(us:value(?y))) as ?list) 
+        (us:stdev(?list, ?avg) as ?stdev)
+        (us:quartile(?list, 0.25) as ?q1)
+        (us:quartile(?list, 0.5)  as ?med)
+        (us:quartile(?list, 0.75) as ?q3)
+    where { 
+        filter xt:print('aggregate')
+        ?in a geo:Point ; rdfs:label ?l .
+        
+        # iterate property names
+        values ?pname { unnest(us:plist()) }
+        
+        ?mesure sosa:hasFeatureOfInterest ?in ;
+            sosa:observedProperty ?p .
+        ?p a ?pname .   
+        ?mesure sosa:hasSimpleResult ?y   
+    } 
+    group by ?pname
+    order by us:index(?pname, us:plist())
+    }
+    
+    # record some aggregates 
+    bind (st:cset(st:max,    ?pname, ?max) as ?t1)
+    bind (st:cset(st:median, ?pname, ?med) as ?t2)
+    bind (st:cset(st:quart1, ?pname, ?q1)  as ?t3)
+    bind (st:cset(st:quart3, ?pname, ?q3)  as ?t4)
+}
+
+
+
+
+
+function us:median(?list) {
+    if (xt:size(?list) = 0, 0,
+        xt:get(xt:sort(?list), xt:size(?list) / 2))
+}
+
+function us:quartile(?list, ?n) {
+    if (xt:size(?list) = 0, 0,    
+        xt:get(?list, xt:size(?list) * ?n))
+}
+
+function us:stdev(?list, ?avg) {
+    let (?dev = maplist(lambda(?val, ?avg) { power(?val - ?avg, 2) }, ?list, ?avg)) {
+        power(reduce(rq:plus, ?dev) / xt:size(?list), 0.5)
+    }
+}
+
+function us:unit(?val) {
+    strafter(?val, " ")
+}
+
+
+

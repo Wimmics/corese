@@ -1,0 +1,86 @@
+#
+# Display sensors properties of geo:Point ?in
+#
+prefix sosa: <http://www.w3.org/ns/sosa/> 
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ex:   <http://example.org/> 
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+
+template (?in, ?num) {
+    format {
+        <ft:point.html>
+               
+        # name
+        ?num 
+        str(?l) 
+        us:date(?date)
+        coalesce(us:link(?uri, ?l), "")
+        
+        # one row with property values of one Point
+        group { 
+            format {
+                # one cell with value ?val of property ?pname
+                format { 
+                    <ft:cell.html>  
+                    coalesce(us:color(?pname, ?val), "black")  "%s"    
+                }
+                coalesce(us:show(?val), "")
+            }
+        }
+    }
+    if (strends(?num, "0"), st:call-template(st:header), "")
+}
+where {
+    # ?in is the focus node
+    ?in a geo:Point ; rdfs:label ?l .
+    
+    # iterate property names
+    values ?pname { unnest(us:plist()) }
+    
+    optional {   
+        # some sensor properties have values, some have not
+        select distinct ?in ?pname ?val ?date where {
+            ?mesure sosa:hasFeatureOfInterest ?in ;
+                sosa:observedProperty ?p .
+            ?p a ?pname .
+            ?mesure sosa:hasSimpleResult ?val  ; 
+                sosa:resultTime ?date
+        }
+    }
+    
+    # some points may have a DBpedia URI
+    optional { ?in ex:dbpedia ?uri }
+}
+
+
+
+# color of property value depends on the quartile of the value
+function us:color(?pname, ?val) {
+    us:quartile(?pname, ?val)
+}
+
+
+
+function us:quartile(?pname, ?val) {
+    if (us:value(?val) >= st:cget(st:quart3, ?pname), "black",
+    if (us:value(?val) >= st:cget(st:median, ?pname), "red",
+    if (us:value(?val) >= st:cget(st:quart1, ?pname), "green",
+        "blue"  )))
+}
+
+
+function us:median(?pname, ?val) {
+    if (us:value(?val) =  st:cget(st:max, ?pname),    "red",
+    if (us:value(?val) >= st:cget(st:median, ?pname), "brown",
+        "black"))
+}
+
+
+
+function us:date(?date) {
+    if (contains(?date, "T"), strbefore(?date, "T"), ?date)
+}
+
+function us:link(?url, ?lab) {
+    st:format(<ft:link.html>, us:protect(st:url(?url)), ?lab)
+}

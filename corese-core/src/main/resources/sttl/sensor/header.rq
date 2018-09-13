@@ -1,0 +1,14 @@
+#
+# Display sensor property names
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+template st:header {
+    format  {
+        <ft:header.html>
+        group { format { "<th>%s. %s</th>" st:number() us:pretty(?pname)  } }
+    }
+}
+where {
+   values ?pname { unnest(us:plist()) }
+}
+

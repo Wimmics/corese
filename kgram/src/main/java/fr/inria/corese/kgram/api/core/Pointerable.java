@@ -33,7 +33,7 @@ public interface Pointerable extends Loopable {
         return UNDEF_POINTER;
     }
     
-    default Object getObject() {
+    default Object getPointerObject() {
         return this;
     }
     

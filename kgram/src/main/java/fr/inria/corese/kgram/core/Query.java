@@ -358,7 +358,7 @@ public class Query extends Exp implements Graphable {
 
     public List<Query> getQueries() {
         return queries;
-    }
+    }     
 
     @Override
     public Object getObject() {

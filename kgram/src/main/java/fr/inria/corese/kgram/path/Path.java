@@ -55,7 +55,7 @@ public class Path extends ProducerDefault implements Pointerable {
     }
     
     @Override
-    public Object getObject() {
+    public Object getPointerObject() {
         return this;
     }
     

@@ -435,6 +435,11 @@ public class Mapping
     public Object getObject() {
         return this;
     }
+    
+    @Override
+    public Object getPointerObject() {
+        return this;
+    }
      
     String toString(String sep) {    
         StringBuilder sb = new StringBuilder();

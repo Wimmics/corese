@@ -10,7 +10,7 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 public abstract class PointerObject implements Pointerable {
     
     @Override
-    public Object getObject() {
+    public Object getPointerObject() {
         return this;
     }
 

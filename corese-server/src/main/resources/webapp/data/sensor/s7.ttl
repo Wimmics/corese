@@ -1,0 +1,51 @@
+@prefix geo:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix cdt:   <http://w3id.org/lindt/custom_datatypes#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix iter:  <http://w3id.org/sparql-generate/iter/> .
+@prefix sgfn:  <http://w3id.org/sparql-generate/fn/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix aqio:  <https://ci.mines-stetienne.fr/aqi/ontology#> .
+@prefix map:   <https://ci.mines-stetienne.fr/aqi/mapping#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix ssn:   <http://www.w3.org/ns/ssn/> .
+@prefix sosa:  <http://www.w3.org/ns/sosa/> .
+
+<https://ci.mines-stetienne.fr/aqi/data/7/observations/1527156000#aqi>
+        a                          aqio:AirQualityIndexObservation , sosa:Observation ;
+        sosa:hasFeatureOfInterest  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> ;
+        sosa:hasSimpleResult       27 ;
+        sosa:observedProperty      <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#aqi> ;
+        sosa:resultTime            "2018-05-24T10:00:00-05:00"^^xsd:dateTime .
+
+<https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#aqi>
+        a                 aqio:AirQualityIndexProperty ;
+        ssn:isPropertyOf  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> .
+
+<https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944>
+        a             sosa:FeatureOfInterest , geo:Point ;
+        rdfs:label    "Dorset, Ontario" ;
+        rdfs:seeAlso  <http://aqicn.org/city/canada/ontario/dorset/> ;
+        geo:lat       45.224278 ;
+        geo:long      -78.932944 .
+
+<https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#o3>
+        a                 aqio:OzoneProperty ;
+        ssn:isPropertyOf  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> .
+
+<https://ci.mines-stetienne.fr/aqi/station/7/observations/1527156000#pm25>
+        a                          sosa:Observation ;
+        sosa:hasFeatureOfInterest  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> ;
+        sosa:hasSimpleResult       "17.0 ug.m-3"^^cdt:ucum ;
+        sosa:observedProperty      <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#pm25> ;
+        sosa:resultTime            "2018-05-24T10:00:00-05:00"^^xsd:dateTime .
+
+<https://ci.mines-stetienne.fr/aqi/station/7/observations/1527156000#o3>
+        a                          sosa:Observation ;
+        sosa:hasFeatureOfInterest  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> ;
+        sosa:hasSimpleResult       "27.2 [ppb]"^^cdt:ucum ;
+        sosa:observedProperty      <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#o3> ;
+        sosa:resultTime            "2018-05-24T10:00:00-05:00"^^xsd:dateTime .
+
+<https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944#pm25>
+        a                 aqio:PM25ParticulatesProperty ;
+        ssn:isPropertyOf  <https://ci.mines-stetienne.fr/aqi/data/point?loc=45.224278,-78.932944> .

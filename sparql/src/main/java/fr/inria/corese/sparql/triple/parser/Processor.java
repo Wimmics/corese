@@ -1048,8 +1048,11 @@ public class Processor {
                 case ExprType.MAPFINDLIST:
                 case ExprType.MAPEVERY:
                 case ExprType.MAPANY:
-                    
-                case ExprType.APPLY:
+                   
+                // do not compile apply(rq:regex, ?list) now
+                // as apply(lambda(?a, ?b) { rq:regex(?a, ?b) }, ?list)
+                // because we don't know the arity yet 
+                //case ExprType.APPLY:
                 case ExprType.REDUCE:
                 case ExprType.FUNCALL:
                     
@@ -1130,7 +1133,8 @@ public class Processor {
 	 * boolean res = match.matches();
 	 */
 	void compileRegex(Term term){
-            if (term.getArg(1).isConstant() && (term.getArity() == 2 || term.getArg(2).isConstant())){
+            // use case: apply(rq:regex, ?list)
+            if (term.getArity() >= 2 && term.getArg(1).isConstant() && (term.getArity() == 2 || term.getArg(2).isConstant())){
                 isCompiled = true;           
 		String sflag = null;
                 if (term.getArity() == 3){

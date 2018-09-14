@@ -491,7 +491,7 @@ public class TestQuery1 {
                 + "}"
                 + "}"
                                                                                                      
-                + "@eq "
+                + "@type dt:error "
                 + "function us:eq(?e, ?a, ?b) {"
                 + "us:convert(?a) = us:convert(?b)"
                 + "}"
@@ -532,14 +532,13 @@ public class TestQuery1 {
                 + "select * where {"
                 + "graph ?g { ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) }"
                 + "}"
-                + "}"
+                + "}"                               
                                                                                                      
-                + "@error "
-                + "function us:error(?e, ?a, ?b) {"
+                + "@type dt:error "
+                + "function us:eq(?e, ?a, ?b) {"
                 + "us:convert(?a) = us:convert(?b)"
                 + "}"
-                                               
-              
+                                                            
                 + "function us:convert(?a) {"
                 + "if (contains(?a, 'km'), 1000 * us:value(?a), us:value(?a))"
                 + "}"

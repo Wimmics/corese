@@ -28,10 +28,11 @@ function drawRdf(results, svgId) {
 		height = +graph.attr("height");
 	var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-	simulation = d3.forceSimulation()
+	simulation = d3.forceSimulation(results.nodes)
 		.force("link", d3.forceLink().id(function(d) { return d.id; }))
 		.force("charge", d3.forceManyBody())
-		.force("center", d3.forceCenter(width / 2, height / 2));
+		.force("center", d3.forceCenter(width / 2, height / 2))
+        .on("tick", ticked);
 
 
 
@@ -59,10 +60,38 @@ function drawRdf(results, svgId) {
 			.on("end", dragended));
 	node.append("title")
 		.text(function(d) { return d.label; });
+    var textNodes = graph.append("g").selectAll("text")
+        .data(simulation.nodes())
+        .enter().append("text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .text(function(d) { return d.label; });
+    var textEdges = graph.append("g").selectAll("text")
+        .data(results.links)
+        .enter().append("text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .text(function(d) { return d.label; });
+    var displayEdgeLabels = true;
+    var displayNodeLabels = true;
+    d3.select("body")
+        .on("keydown", function() {
+        	console.log("coucou "+d3.event.keyCode)
+            switch (d3.event.keyCode) {
+				case 49: {
+                    displayNodeLabels = !displayNodeLabels;
+                    ticked();
+                    break;
+                }
+				case 50: {
+					displayEdgeLabels = !displayEdgeLabels;
+					ticked();
+					break;
+				}
+			}
+        }
+    );
 
-	simulation
-		.nodes(results.nodes)
-		.on("tick", ticked);
 
 	simulation.force("link")
 		.links(results.links); 
@@ -82,6 +111,18 @@ function drawRdf(results, svgId) {
 		node
 			.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) { return d.y; });
+        textNodes.attr("transform", d => "translate(" + d.x + "," + d.y + ")");
+        textEdges.attr("transform", d => "translate(" + (( d.source.x + d.target.x ) / 2) + "," + (( d.source.y + d.target.y ) / 2 ) + ")");
+        if (!displayNodeLabels) {
+        	textNodes.attr("visibility", "hidden");
+		} else {
+            textNodes.attr("visibility", "visible");
+		}
+		if (!displayEdgeLabels) {
+            textEdges.attr("visibility", "hidden");
+        } else {
+            textEdges.attr("visibility", "visible");
+		}
 	}
 	function zoomed() {
 		g.attr("transform", d3.event.transform)

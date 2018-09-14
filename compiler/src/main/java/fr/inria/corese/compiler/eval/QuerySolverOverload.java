@@ -38,9 +38,9 @@ public class QuerySolverOverload {
     public static final String MGE = US + "ge";
     public static final String MGT = US + "gt";
 
-    public static final String MPLUS = US + "plus";
+    public static final String MPLUS  = US + "plus";
     public static final String MMINUS = US + "minus";
-    public static final String MMULT = US + "mult";
+    public static final String MMULT  = US + "mult";
     public static final String MDIVIS = US + "divis";
 
     public static final String MCOMPARE = US + "compare";
@@ -98,19 +98,20 @@ public class QuerySolverOverload {
 
 
     public IDatatype error(Eval eval, Expr exp, IDatatype[] args) {
-        return overloadError(eval, exp, args);
+        return overloadErrorMethod(eval, exp, args);
     }
 
     /**
      * Return error() if res == null && overload == null
      */
     IDatatype overload(Eval eval, Expr exp, IDatatype res, IDatatype[] param) {
-        // 1) @type us:length function us:eq(?e, ?a, ?b) where datatype(?a) == us:lengtj
+        // 1) @type us:length function us:eq(?e, ?a, ?b) where datatype(?a) == us:length
         // 2) function us:eq(?e, ?a, ?b)
+        // 3) if res == null process as an error
         IDatatype dt = overloadMethod(eval, exp, param);
         if (dt == null) {
             if (res == null) {
-                return overloadError(eval, exp, param);
+                return error(eval, exp, param);
             }
             // std result
             return  res;
@@ -219,8 +220,12 @@ public class QuerySolverOverload {
                 return MMULT;
             case ExprType.DIV:
                 return MDIVIS;
+                
+            default:
+                // concat() -> us:concat()
+                return US.concat(exp.getLabel());
         }
-        return null;
+        //return null;
     }
    
     String getName(Expr exp, IDatatype[] param) {

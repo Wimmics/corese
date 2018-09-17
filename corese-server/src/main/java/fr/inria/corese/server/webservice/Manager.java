@@ -30,6 +30,7 @@ public class Manager {
     private final static Logger logger = LogManager.getLogger(Manager.class);
     static final String STCONTEXT = Context.STL_CONTEXT;
     static String DEFAULT = NSManager.STL + "default";
+    static String USER    = NSManager.STL + "user";
     private static String CONTENT = NSManager.STL + "content";
     private static String CONTENT_SHARE = NSManager.STL + "shareContent";
     private static String SCHEMA = NSManager.STL + "schema";
@@ -66,8 +67,8 @@ public class Manager {
         nsm = NSManager.create();
         Profile p = getProfile();
         for (Service s : p.getServers()) {
-            if (!s.getName().equals(DEFAULT)) {
-                // default if the sparql endpoint
+            if (!s.getName().equals(DEFAULT) && !s.getName().equals(USER)) {
+                // default/user if the sparql endpoint
                 logger.info("Load: " + s.getName());
                 try {
                     initTripleStore(p, s);
@@ -113,16 +114,25 @@ public class Manager {
 
     TripleStore createTripleStore(Profile p, Service s) throws LoadException, EngineException {
         GraphStore g = GraphStore.create(); //GraphStore.create(s.isRDFSEntailment());
-        if (s.getParam() != null) {
-            IDatatype dt = s.getParam().get(SKOLEM);
-            if (dt != null && dt.booleanValue()) {
-                g.setSkolem(true);
-            }
-        }
+//        if (s.getParam() != null) {
+//            IDatatype dt = s.getParam().get(SKOLEM);
+//            if (dt != null && dt.booleanValue()) {
+//                g.setSkolem(true);
+//            }
+//        }
         TripleStore store = new TripleStore(g, true);
         //store.setOWL(s.isOWLEntailment());
         init(store, s);
         return store;
+    }
+    
+    void tune(TripleStore ts, Service s) {
+        if (s.getParam() != null) {
+            IDatatype dt = s.getParam().get(SKOLEM);
+            if (dt != null && dt.booleanValue()) {
+                ts.getGraph().setSkolem(true);
+            }
+        }
     }
 
     /**
@@ -130,6 +140,7 @@ public class Manager {
      * Workflow is retrieved from the profile graph.
      */
     void init(TripleStore ts, Service service) throws LoadException, EngineException {
+        tune(ts, service);
         Graph g = getProfile().getProfileGraph();
         Node serv = g.getNode(service.getName());
         Node cont = g.getNode(CONTENT, serv);
@@ -179,7 +190,10 @@ public class Manager {
     }
 
     void init(TripleStore ts) {
-        Service s = getProfile().getServer(DEFAULT);
+        Service s = getProfile().getServer(USER);
+        if (s == null) {
+            s = getProfile().getServer(DEFAULT);
+        }
         if (s != null) {
             try {
                 init(ts, s);

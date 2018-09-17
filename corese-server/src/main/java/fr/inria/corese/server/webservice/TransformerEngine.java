@@ -94,19 +94,18 @@ public class TransformerEngine {
             if (query != null) {
                 logger.warn("Workflow skip query: " + query);
             }
-            if (isDebug()) {
-                logger.info("Parse workflow");
-            }
+            logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.parse(profile.getNode(swdt));
-        } else if (query != null) {
+        } else if (query != null) {          
             if (transform == null) {
-                // emulate sparql endpoint
+                logger.info("SPARQL endpoint");
                 wp.addQueryMapping(query);
                 wp.add(new ResultProcess());
                 return wp;
             } else {
                 // select where return Graph Mappings
+                logger.info("Transformation: " + transform);
                 wp.addQueryGraph(query);
             }
         }
@@ -125,6 +124,7 @@ public class TransformerEngine {
             transform = fr.inria.corese.core.transform.Transformer.SPARQL;
         }
         if (transform != null) {
+            logger.info("Default transformation: " + transform);
             wp.addTemplate(transform, isDefault);
             wp.getContext().setTransform(transform);
             wp.getContext().set(Context.STL_DEFAULT, true);

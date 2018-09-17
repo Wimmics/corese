@@ -628,6 +628,7 @@ public class Processor {
 		defoper(SAMPLE, 	ExprType.SAMPLE);
 		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
+		defoper("isSkolem",     ExprType.ISSKOLEM);
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);

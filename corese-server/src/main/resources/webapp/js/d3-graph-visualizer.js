@@ -23,6 +23,29 @@ function dragended(d) {
 // svgName : id of the svg element to draw the graph (do not forget the #).
 function drawRdf(results, svgId) {
 	results.links = results.edges;
+
+	var body = d3.select("body");
+	var confGraphModal = body
+		.append("div")
+		.attr("id", "configurationGraph")
+		.attr("class", "modal");
+	var divModal = confGraphModal
+		.append("div")
+		.attr("class", "modal-content");
+	divModal.append("span")
+		.attr("class", "close")
+		.text("×");
+	divModal.append("div").html("<label class=\"switch\">\n" +
+        "  <input id=\"nodesCheckbox\" type=\"checkbox\" > Nodes\n" +
+        "</label>\n" +
+        "<label class=\"switch\">\n" +
+        "  <input id=\"edgesCheckbox\" type=\"checkbox\" > Labels\n" +
+        "  <span class=\"slider\"></span>" +
+        "</label>");
+    d3.select("#nodesCheckbox").on("change", e => {displayNodeLabels = d3.select("#nodesCheckbox").property("checked"); ticked()});
+    d3.select("#edgesCheckbox").on("change", e => {displayEdgeLabels = d3.select("#edgesCheckbox").property("checked"); ticked()});
+	var confGraphModalClose = divModal.append("button").attr("class", "btn btn-default").text("Close");
+
 	var graph = d3.select(svgId),
 		width =  +graph.attr("width"),
 		height = +graph.attr("height");
@@ -60,23 +83,37 @@ function drawRdf(results, svgId) {
 			.on("end", dragended));
 	node.append("title")
 		.text(function(d) { return d.label; });
-    var textNodes = graph.append("g").selectAll("text")
+    var textNodes = g.append("g").selectAll("text")
         .data(simulation.nodes())
         .enter().append("text")
         .attr("x", 8)
         .attr("y", ".31em")
         .text(function(d) { return d.label; });
-    var textEdges = graph.append("g").selectAll("text")
+    var textEdges = g.append("g").selectAll("text")
         .data(results.links)
         .enter().append("text")
         .attr("x", 8)
         .attr("y", ".31em")
         .text(function(d) { return d.label; });
+    var fo = graph.append('foreignObject');
+    var button = fo.append("xhtml:button")
+		.attr("class", "btn btn-info")
+		.append("xhtml:span")
+		.attr("class", "glyphicon glyphicon-cog")
+		.on("click", e => {
+            d3.select("#nodesCheckbox").attr("checked", displayNodeLabels);
+            d3.select("#edgesCheckbox").attr("checked", displayEdgeLabels);
+            confGraphModal.attr("style", "display:block");
+		});
+    confGraphModalClose
+		.on("click", e => {
+            confGraphModal.attr("style", "display:none");
+		});
+
     var displayEdgeLabels = true;
     var displayNodeLabels = true;
     d3.select("body")
         .on("keydown", function() {
-        	console.log("coucou "+d3.event.keyCode)
             switch (d3.event.keyCode) {
 				case 49: {
                     displayNodeLabels = !displayNodeLabels;
@@ -100,7 +137,6 @@ function drawRdf(results, svgId) {
 		.on("zoom", zoomed);
 	zoom_handler( graph );
 
-
 	function ticked() {
 		link
 			.attr("x1", function(d) { return d.source.x; })
@@ -111,7 +147,9 @@ function drawRdf(results, svgId) {
 		node
 			.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) { return d.y; });
-        textNodes.attr("transform", d => "translate(" + d.x + "," + d.y + ")");
+        textNodes
+			.attr("x", d => d.x)
+			.attr("y", d => d.y);
         textEdges.attr("transform", d => "translate(" + (( d.source.x + d.target.x ) / 2) + "," + (( d.source.y + d.target.y ) / 2 ) + ")");
         if (!displayNodeLabels) {
         	textNodes.attr("visibility", "hidden");

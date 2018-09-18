@@ -1,48 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Tue Sep 18 18:04:35 CEST 2018
+-->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-  <rule>
-    <body>
+<rule>
+<body>
 <![CDATA[
-  template st:nodes {
-  "\"nodes\":[\n"
-  group {
-    "{\"id\": \"" us:get(?s)  "\""
-    ",\"label\": \"" us:label(?s)  "\""
-    ",\"group\":" if ( isURI(?s), "\"1\"", if( isBlank(?s), "\"2\"", "\"3\"") )
-    "}";
-    separator=",\n"
-  }
-  "\n]\n"
-} where {
-  bind (us:start() as ?start)
-  {select distinct ?s where {
-    { ?s ?p ?o } union { ?o ?p ?s }
-  } order by ?s}
-  bind(us:record(?s) as ?tmp)
-}
-
-
-]]>
-    </body>
-  </rule>
-  
-  <rule>
-    <body>
-<![CDATA[
-  template st:graph {
+template st:graph {
   st:call-template(st:nodes)
   ","
   st:call-template(st:edges)
-} where {
+} 
+where {
 }
-
 ]]>
-    </body>
-  </rule>
-  
- <rule>
-    <body>
+</body>
+</rule>
+
+<rule>
+<body>
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:start {
@@ -53,13 +32,12 @@ template st:start {
 } 
 where {
 }
-
 ]]>
-    </body>
-  </rule> 
-  
+</body>
+</rule>
+
 <rule>
-    <body>
+<body>
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:frame {
@@ -70,33 +48,38 @@ template st:frame {
 } 
 where {
 }
-
 ]]>
-    </body>
-  </rule>   
-  
-  
-  
-  <rule>
-    <body>
+</body>
+</rule>
+
+<rule>
+<body>
 <![CDATA[
-  template st:edges {
-  "\"edges\":[\n"
-  group { "{\"source\": \"" us:get(?s) "\", \"target\": \"" us:get(?o) "\", \"label\": \"" us:label(?p) "\"" 
-  
-  ",\"group\":" if ( strstarts(?s, rdf:), "\"1\"", if( strstarts(?s, rdfs:), "\"2\"", "\"3\"") ) "}"  ;separator=",\n" }
+template st:nodes {
+  "\"nodes\":[\n"
+  group {
+    format {
+        '{"id": "%s", "label": "%s", "group": "%s"}'
+        
+        us:get(?s) us:label(?s)
+        if (isURI(?s), 1, if (isBlank(?s), 2, 3))
+        }
+    ; separator = ",\n"
+  }
   "\n]\n"
 } where {
-  select distinct ?s ?p ?o where {
-    { ?s ?p ?o }
-  }
+  bind (us:start() as ?start)
+  {select distinct ?s where {
+    { ?s ?p ?o } union { ?o ?p ?s }
+  } order by ?s}
+  bind (us:record(?s) as ?tmp)
 }
-
 ]]>
-    </body>
-  </rule>
-  <rule>
-    <body>
+</body>
+</rule>
+
+<rule>
+<body>
 <![CDATA[
 template st:profile {}
 where {}
@@ -118,8 +101,32 @@ function us:label(?s) {
         replace(replace(str(?s), "\n", ""), "\"", "'"),
         st:turtle(?s))
 }
-
 ]]>
-    </body>
-  </rule>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:edges {
+  "\"edges\":[\n"
+  group { 
+  
+  format {
+    '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s" }'
+     us:get(?s) us:get(?o) us:label(?p) kg:number()
+  }
+  
+  ; separator = ",\n"
+  }
+  "\n]\n"
+} where {
+  select distinct ?s ?p ?o where {
+    { ?s ?p ?o }
+  }
+}
+]]>
+</body>
+</rule>
+
 </rdf:RDF>

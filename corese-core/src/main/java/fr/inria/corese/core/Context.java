@@ -72,7 +72,7 @@ public class Context implements Graphable {
      * @param queryNode the queryNode to set
      */
     public void setQuery(Query q) {
-        if (queryNodes.size() == max) {
+        while (queryNodes.size() >= max) {
             queryNodes.remove(0);
         }
         queryNodes.add(create("Query", q, IDatatype.QUERY));

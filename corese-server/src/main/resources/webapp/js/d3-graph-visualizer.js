@@ -23,10 +23,10 @@ function dragended(d) {
 // svgName : id of the svg element to draw the graph (do not forget the #).
 function drawRdf(results, svgId) {
 	results.links = results.edges;
-
-	if (d3.select("#configurationGraph").size() === 0) {
+    var confGraphModal;
+    if (d3.select("#configurationGraph").size() === 0) {
         var body = d3.select("body");
-        var confGraphModal = body
+        confGraphModal = body
             .append("div")
             .attr("id", "configurationGraph")
             .attr("class", "modal");
@@ -43,6 +43,10 @@ function drawRdf(results, svgId) {
         d3.select("#nodesCheckbox").on("change", e => {displayNodeLabels = d3.select("#nodesCheckbox").property("checked"); updateConfiguration(); ticked()});
         d3.select("#edgesCheckbox").on("change", e => {displayEdgeLabels = d3.select("#edgesCheckbox").property("checked"); updateConfiguration(); ticked()});
         var confGraphModalClose = divModal.append("button").attr("class", "btn btn-default").text("Close");
+        confGraphModalClose
+            .on("click", e => {
+                confGraphModal.attr("style", "display:none");
+            });
     }
 
 	var graph = d3.select(svgId),
@@ -102,14 +106,11 @@ function drawRdf(results, svgId) {
 		.on("click", e => {
             d3.select("#nodesCheckbox").property("checked", displayNodeLabels);
             d3.select("#edgesCheckbox").property("checked", displayEdgeLabels);
-            confGraphModal.attr("style", "display:block");
+            d3.select("#configurationGraph").attr("style","display:block");
 		});
     button.append("xhtml:span")
         .attr("class", "glyphicon glyphicon-cog");
-    confGraphModalClose
-		.on("click", e => {
-            confGraphModal.attr("style", "display:none");
-		});
+
 
     var displayEdgeLabels = false;
     var displayNodeLabels = false;

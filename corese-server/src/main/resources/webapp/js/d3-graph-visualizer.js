@@ -25,7 +25,7 @@ function drawRdf(results, svgId) {
 	results.links = results.edges;
     var confGraphModal;
     if (d3.select("#configurationGraph").size() === 0) {
-        var body = d3.select("body");
+        var body = d3.select( d3.select(svgId).node().parentNode );
         confGraphModal = body
             .append("div")
             .attr("id", "configurationGraph")
@@ -37,7 +37,7 @@ function drawRdf(results, svgId) {
             "  <input id=\"nodesCheckbox\" type=\"checkbox\" > Nodes\n" +
             "</label>\n" +
             "<label class=\"switch\">\n" +
-            "  <input id=\"edgesCheckbox\" type=\"checkbox\" > Labels\n" +
+            "  <input id=\"edgesCheckbox\" type=\"checkbox\" > Edges\n" +
             "  <span class=\"slider\"></span>" +
             "</label>");
         d3.select("#nodesCheckbox").on("change", e => {displayNodeLabels = d3.select("#nodesCheckbox").property("checked"); updateConfiguration(); ticked()});
@@ -53,6 +53,7 @@ function drawRdf(results, svgId) {
 		width =  +graph.attr("width"),
 		height = +graph.attr("height");
 	var color = d3.scaleOrdinal(d3.schemeCategory20);
+	graph.attr("style", "resize:both;overflow:auto;")
 
     simulation = d3.forceSimulation(results.nodes)
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -106,7 +107,10 @@ function drawRdf(results, svgId) {
 		.on("click", e => {
             d3.select("#nodesCheckbox").property("checked", displayNodeLabels);
             d3.select("#edgesCheckbox").property("checked", displayEdgeLabels);
-            d3.select("#configurationGraph").attr("style","display:block");
+            d3.select("#configurationGraph")
+				.style("display","block")
+				.style("top", d3.event.x+"px")
+				.style("left", d3.event.y+"px");
 		});
     button.append("xhtml:span")
         .attr("class", "glyphicon glyphicon-cog");
@@ -140,16 +144,8 @@ function drawRdf(results, svgId) {
 	zoom_handler( graph );
 
 	function updateConfiguration() {
-        if (!displayNodeLabels) {
-            textNodes.attr("visibility", "hidden");
-        } else {
-            textNodes.attr("visibility", "visible");
-        }
-        if (!displayEdgeLabels) {
-            textEdges.attr("visibility", "hidden");
-        } else {
-            textEdges.attr("visibility", "visible");
-        }
+            textNodes.attr("visibility", displayNodeLabels ? "visible" : "hidden");
+            textEdges.attr("visibility", displayEdgeLabels ? "visible" : "hidden");
 	}
 	function ticked() {
 		link

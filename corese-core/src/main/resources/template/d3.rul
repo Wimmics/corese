@@ -97,10 +97,23 @@ function us:get(?s) {
 }
 
 function us:label(?s) {
-    if (isLiteral(?s), 
-        replace(replace(str(?s), "\n", ""), "\"", "'"),
-        st:turtle(?s))
+    if (isLiteral(?s), us:literal(?s), us:uri(?s))
 }
+
+function us:uri(?u) {
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
+}
+
+function us:shorten(?l) {
+    let (?s = if (strlen(?l) > 20, concat(substr(?l, 1, 20), ".."), ?l)) { ?s }
+}
+
+function us:literal(?l) {
+    let (?s = us:shorten(?l)) {
+        replace(replace(str(?s), "\n", ""), "\"", "'")
+    }
+}
+
 ]]>
 </body>
 </rule>

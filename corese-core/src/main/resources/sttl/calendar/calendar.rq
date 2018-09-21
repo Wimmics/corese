@@ -1,7 +1,8 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:calendar(?year) {
 
 format {
-    us:format("calendar.html")
+    ft:calendar.html
 
     st:call-template(st:enum, ?year, 1, 3)  
     st:call-template(st:enum, ?year, 4, 6)  

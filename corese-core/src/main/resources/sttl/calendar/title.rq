@@ -1,5 +1,6 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:title {
-  format { us:format("title.html") str(?t) }
+  format { ft:title.html str(?t) }
   ; separator = ""
 }
 where {

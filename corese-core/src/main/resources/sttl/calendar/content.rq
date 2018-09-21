@@ -1,14 +1,16 @@
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
+prefix ut: <http://ns.inria.fr/sparql-template/format/util/>
 template st:content(?year) {
   format {
-    us:format("content.html")
+    ft:content.html
     
     str(?dd)
     str(?dd)
     group {
     
 	format {
-	  st:getFormat("util", "href.html") 
+	  ut:href.html
 	  
 	  st:plink(?x, st:dbpedia)
 	  str(?title)

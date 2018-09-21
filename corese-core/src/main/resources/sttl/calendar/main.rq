@@ -1,8 +1,9 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:main(?year) {
   st:call-template(st:head, ?year)
 
   format {
-    us:format("main.html")
+    ft:main.html
     st:call-template(st:calendar, ?year)
   }
 

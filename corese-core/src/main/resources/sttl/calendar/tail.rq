@@ -1,7 +1,8 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:tail {
 
 format {
-    us:format("tail.html")
+    ft:tail.html
     now()
 }
 

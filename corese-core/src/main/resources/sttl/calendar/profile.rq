@@ -4,10 +4,6 @@ template st:profile {
 }
 where {}
 
-function us:format(?name){
-    st:getFormat("calendar", ?name)
-}
-
   function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
        }

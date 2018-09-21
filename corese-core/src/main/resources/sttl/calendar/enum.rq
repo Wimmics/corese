@@ -1,9 +1,10 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:enum(?year, ?f, ?l) {
 format {
-  us:format("enum1.html")      
+  ft:enum1.html      
   group {
     format {
-      us:format("enum2.html")      
+      ft:enum2.html      
       st:call-template(st:monthtab, ?year, ?month)
      }
   }

@@ -1,6 +1,7 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:head(?year) {
 format {
-  us:format("head.html")
+  ft:head.html
   
   st:plink(concat(?uri,  (?year - 1)))
   us:display(?year - 1)

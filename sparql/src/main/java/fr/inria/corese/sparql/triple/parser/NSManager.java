@@ -382,10 +382,10 @@ public class NSManager extends ASTObject {
                 return true;
             }
         }
-        String name = strip(str);
-        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
-            return true;
-        }
+//        String name = strip(str);
+//        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
+//            return true;
+//        }
         
         return false;
     }

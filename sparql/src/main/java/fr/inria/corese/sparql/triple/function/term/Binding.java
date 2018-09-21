@@ -282,7 +282,7 @@ public class Binding implements Binder {
         switch (var.getIndex()) {
             case UNBOUND: 
                 IDatatype dt = globalValue.get(var.getLabel());
-                if (dt == null) {
+                if (dt == null && debug) {
                     logger.warn("Variable unbound: " + var);
                 }
                 return dt;

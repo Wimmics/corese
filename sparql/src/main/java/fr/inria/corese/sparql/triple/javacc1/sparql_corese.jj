@@ -3009,7 +3009,7 @@ TOKEN:
    
 | <QNAME_NS: (<NCNAME_PREFIX>)? ":" >
 
-| <QNAME: (<NCNAME_PREFIX>)? ":" (<NCNAME>)? >
+| <QNAME: (<NCNAME_PREFIX>)? ":" (["0"-"9"])* (<NCNAME>)? >
 
 //| <BLANK_NODE_LABEL:   "_:"   ( ["0"-"9"]  | <NCNAME> )   ( (<NCNAME> | ".")* <NCNAME> ) ?   >
 

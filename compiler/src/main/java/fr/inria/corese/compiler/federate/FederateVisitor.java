@@ -255,7 +255,18 @@ public class FederateVisitor implements QueryVisitor {
          return rwt;
      }
     
-   
+   /**
+    * graph ?g EXP
+    * when from named gi is provided:
+    * rewrite every triple t in EXP as UNION(i) graph gi t 
+    * otherwise graph ?g EXP is left as is and is evaluated 
+    * as is on each endpoint.
+    * graph URI EXP is rewritten as graph URI t for all t in EXP
+    * TODO: compute the remote dataset
+    * PB: some endpoints such as dbpedia/virtuoso do not evaluate correctly
+    * the optimized query that computes the dataset and we would be obliged to
+    * evaluate a query that enumerates all triples on remote endpoint ...
+    */
     Exp rewrite(Source exp) {
         if (distributeNamed) {
             return rewriteNamed(exp);
@@ -268,14 +279,13 @@ public class FederateVisitor implements QueryVisitor {
      * named graph sent as a whole in service clause    
      */
     Exp simpleNamed(Source exp) {
-        Exp res = exp;
         // send named graph as is to remote servers
         if (ast.getDataset().hasNamed()) {
             Query q = rwt.query(BasicGraphPattern.create(exp));
             q.getAST().getDataset().setNamed(ast.getNamed());
-            res = q;
+            return Service.create(ast.getServiceList(), q, false);
         }
-        return Service.create(ast.getServiceList(), res, false);
+        return Service.create(ast.getServiceList(), BasicGraphPattern.create(exp), false);
     }
     
     

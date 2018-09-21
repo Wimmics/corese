@@ -17,6 +17,8 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Option;
 import fr.inria.corese.sparql.triple.parser.Query;
+import fr.inria.corese.sparql.triple.parser.Source;
+import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +87,7 @@ public class Selector {
     }
     
     void process11(List<Constant> list) {
-        ASTQuery aa = create(list, false);
+        ASTQuery aa = createSelector(list, false);
         Mappings map = exec.basicQuery(aa);
 
         for (Mapping m : map) {
@@ -111,9 +113,9 @@ public class Selector {
 
         trace();
     }
-    
+          
     void process10(List<Constant> list) {
-        ASTQuery aa = create(list, true);
+        ASTQuery aa = createSelector(list, true);
         Mappings map = exec.basicQuery(aa);
         if (ast.isDebug()) {
             System.out.println(map);
@@ -129,7 +131,6 @@ public class Selector {
             }
         }
         
-
         trace();
     }
     
@@ -176,25 +177,81 @@ public class Selector {
      *      bind (exists { ?s predicate_i ?o } as ?b_i)
      *  }
      * }
-     */
-    ASTQuery create(List<Constant> list, boolean sparql10) {
+     */     
+    ASTQuery createSelector(List<Constant> list, boolean sparql10) {
         ASTQuery aa = ASTQuery.create();
         aa.setSelectAll(true);
-        aa.setNSM(ast.getNSM());        
-        BasicGraphPattern bgp = (sparql10) ? createBGP10(aa) : createBGP(aa);
-                        
-        Variable serv = Variable.create(SERVER_VAR);
-        Values values = Values.create(serv, list);
+        aa.setNSM(ast.getNSM()); 
         
-        Service service = Service.create(serv, bgp);
-        aa.setBody(BasicGraphPattern.create(values, service));
+        // triple selector
+        BasicGraphPattern bgp = (sparql10) ? createBGP10(aa) : createBGP(aa); 
+        
+        Variable serv   = Variable.create(SERVER_VAR);
+        Service service = Service.create(serv, bgp);                
+        Values values   = Values.create(serv, list);        
+        
+        BasicGraphPattern body = BasicGraphPattern.create(values, service);        
+        aa.setBody(body);
+        
+        metadata(aa, ast);
+        return aa;
+    }
+    
+    // not used
+    ASTQuery createDataset(List<Constant> list, boolean sparql10) {
+        ASTQuery aa = ASTQuery.create();
+        aa.setSelectAll(true);
+        aa.setNSM(ast.getNSM()); 
+              
+        // selector for remote dataset named graph URI list
+        BasicGraphPattern bgp = BasicGraphPattern.create(Query.create(namedGraph()));
+
+        Variable serv   = Variable.create(SERVER_VAR);
+        Service service = Service.create(serv, bgp);                
+        Values values   = Values.create(serv, list);        
+        
+        BasicGraphPattern body = BasicGraphPattern.create(values, service);        
+        aa.setBody(body);
+        
+        metadata(aa, ast);
+        return aa;
+    }
+    
+    /**
+     * Compute remote dataset named graph URI list
+     * select (group_concat(?g) as ?lg) where {
+     * graph ?g { select * where { ?s ?p ?o } }
+     * }
+     */
+    ASTQuery namedGraph() {
+        ASTQuery aa = ASTQuery.create();
+        
+        Triple t = Triple.create(Variable.create("?s"), Variable.create("?p"), Variable.create("?o"));
+        BasicGraphPattern ng = BasicGraphPattern.create(t);
+        ASTQuery ang = aa.subCreate();
+        ang.setBody(ng);
+        ang.setSelectAll(true);
+        ang.setLimit(1);
+        
+        
+        BasicGraphPattern bgp = BasicGraphPattern.create(Query.create(ang));        
+        Source src = Source.create(Variable.create("?g"), bgp);
+        BasicGraphPattern body = BasicGraphPattern.create(src);
+        aa.setBody(body);
+        Term agg = Term.function("group_concat");
+        agg.setModality(";");
+        agg.add(Variable.create("?g"));
+        aa.defSelect(Variable.create("?lg"), agg);
+        return aa;
+    }
+    
+    void metadata(ASTQuery aa, ASTQuery ast) {
         if (ast.hasMetadata(Metadata.EVENT)) {
             Metadata m = new Metadata().add(Metadata.EVENT);
             aa.setMetadata(m);
             aa.setDefine(ast.getDefine());
             aa.setDefineLambda(ast.getDefineLambda());
         }
-        return aa;
     }
     
     

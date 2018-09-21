@@ -19,9 +19,10 @@ function dragended(d) {
   d.fx = null;
   d.fy = null;
 }
-
+var counter = 1;
 // svgName : id of the svg element to draw the graph (do not forget the #).
 function drawRdf(results, svgId) {
+    var scale = 1;
 	results.links = results.edges;
     var confGraphModal;
     if (d3.select("#configurationGraph").size() === 0) {
@@ -48,17 +49,27 @@ function drawRdf(results, svgId) {
                 confGraphModal.attr("style", "display:none");
             });
     }
+    var maxLen = [];
+    results.nodes.forEach(
+		(node, index, array) => {
+			maxLen[node.id] = 0;
+		}
+	);
+    results.links.forEach(
+    	(link, index, array) => {
+			maxLen[ link.source ] = Math.max( maxLen[ link.source ], link.label.length );
+            maxLen[ link.target ] = Math.max( maxLen[ link.target ], link.label.length );
+		}
+	);
 
-	var graph = d3.select(svgId),
-		width =  +graph.attr("width"),
-		height = +graph.attr("height");
+	var graph = d3.select(svgId);
+
 	var color = d3.scaleOrdinal(d3.schemeCategory20);
-	graph.attr("style", "resize:both;overflow:auto;")
 
     simulation = d3.forceSimulation(results.nodes)
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
         .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2))
+        // .force("center", d3.forceCenter(width, height))
         .on("tick", ticked);
 
 
@@ -109,8 +120,8 @@ function drawRdf(results, svgId) {
             d3.select("#edgesCheckbox").property("checked", displayEdgeLabels);
             d3.select("#configurationGraph")
 				.style("display","block")
-				.style("top", d3.event.x+"px")
-				.style("left", d3.event.y+"px");
+				.style("top", d3.event.y+"px")
+				.style("left", d3.event.x+"px");
 		});
     button.append("xhtml:span")
         .attr("class", "glyphicon glyphicon-cog");
@@ -123,11 +134,13 @@ function drawRdf(results, svgId) {
             switch (d3.event.keyCode) {
 				case 49: {
                     displayNodeLabels = !displayNodeLabels;
+                    updateConfiguration();
                     ticked();
                     break;
                 }
 				case 50: {
 					displayEdgeLabels = !displayEdgeLabels;
+                    updateConfiguration();
 					ticked();
 					break;
 				}
@@ -136,8 +149,13 @@ function drawRdf(results, svgId) {
     );
 
 	updateConfiguration();
-	simulation.force("link")
-		.links(results.links); 
+    var width =  +graph.node().getBBox().width;
+    var height =  +graph.node().getBBox().height;
+	simulation
+		.force("link")
+		.links(results.links);
+	simulation
+        .force("center", d3.forceCenter(width / 2, height / 2));
 	//add zoom capabilities
 	var zoom_handler = d3.zoom()
 		.on("zoom", zoomed);
@@ -147,30 +165,34 @@ function drawRdf(results, svgId) {
             textNodes.attr("visibility", displayNodeLabels ? "visible" : "hidden");
             textEdges.attr("visibility", displayEdgeLabels ? "visible" : "hidden");
 	}
-	function ticked() {
+
+	function ticked(s) {
+		scale = (s === undefined) ? scale : s;
 		link
-			.attr("x1", function(d) { return d.source.x; })
-			.attr("y1", function(d) { return d.source.y; })
-			.attr("x2", function(d) { return d.target.x; })
-			.attr("y2", function(d) { return d.target.y; });
+			.attr("x1", function(d) { return d.source.x * scale; })
+			.attr("y1", function(d) { return d.source.y * scale; })
+			.attr("x2", function(d) { return d.target.x * scale; })
+			.attr("y2", function(d) { return d.target.y * scale; });
 
 		node
-			.attr("cx", function(d) { return d.x; })
-			.attr("cy", function(d) { return d.y; });
+			.attr("cx", function(d) { return d.x * scale; })
+			.attr("cy", function(d) { return d.y * scale; });
 		if (displayNodeLabels) {
             textNodes
-                .attr("x", d => d.x)
-                .attr("y", d => d.y);
+                .attr("x", d => d.x * scale)
+                .attr("y", d => d.y * scale);
         }
         if (displayEdgeLabels) {
-            textEdges.attr("transform", (d,i,nodes) => {
-                // return "translate(" + ((d.source.x + d.target.x) / 2) + "," + ((d.source.y + d.target.y - nodes[i].getBBox().width) / 2) + ")"
-                return "translate(" + ((d.source.x + d.target.x - nodes[i].getBBox().width) / 2) + "," + ((d.source.y + d.target.y) / 2) + ")"
-            });
+            textEdges
+				.attr("x", (d,i,nodes) => ((d.source.x + d.target.x) / 2) * scale )
+                .attr("y", (d,i,nodes) => ((d.source.y + d.target.y) / 2) * scale );
         }
 	}
 	function zoomed() {
-		g.attr("transform", d3.event.transform)
+	    var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
+	    copieTransform.k  = 1;
+		g.attr("transform", copieTransform);
+        ticked( d3.event.transform.k);
 	}
 }
 

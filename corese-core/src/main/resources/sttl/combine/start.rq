@@ -1,5 +1,11 @@
+prefix hs: <https://data.archives-ouvertes.fr/structure/>
 template st:start {
-    st:call-template-with(st:d3, st:frame)
+    st:call-template-with(st:d3, st:frame, us:d3clean)
     st:apply-templates-with(coalesce(st:get(st:sttl2), st:hturtle))
 }
 where {}
+
+@public
+function us:d3clean(?s) {
+    if (strstarts(?s, hs:), "", ?s)
+}

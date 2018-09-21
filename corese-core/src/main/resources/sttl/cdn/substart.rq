@@ -2,13 +2,23 @@
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix db: <http://fr.dbpedia.org/resource/>
 template st:substart(?cent) {
    
-   st:call-template(cn:content, ?cent)   
-        
+   st:call-template(cn:content, ?cent) 
+   
+   st:call-template-with(st:d3, st:frame, us:dbclean)  
+
    st:call-template(cn:sign, cn:sign)
    
 }
 where {
 }  
+
+
+@public
+function us:dbclean(?s) {
+    if (isURI(?s) && strstarts(?s, db:), replace(?s, db:, "db:"), 
+    if (contains(?s, ".gif") || contains(?s, ".JPG") || contains(?s, ".jpg") || contains(?s, ".jpeg") || contains(?s, ".svg") || contains(?s, ".png"), "icon", ?s))
+}
 

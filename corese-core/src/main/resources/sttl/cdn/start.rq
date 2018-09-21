@@ -2,6 +2,7 @@
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix db: <http://fr.dbpedia.org/resource/>
 
 template st:start {
    

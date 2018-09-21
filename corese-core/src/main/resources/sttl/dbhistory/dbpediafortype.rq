@@ -1,0 +1,48 @@
+#
+# Generate a table with DBpedia topmost resource updates
+# given month/year ?date
+#
+#
+prefix swp: <http://www.w3.org/2004/03/trix/swp-2/>
+prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
+prefix dc:  <http://purl.org/dc/element/1.1/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  st:dbpediafortype(?date, ?type) {
+     
+  us:table(aggregate(us:cell(?l, ?c, ?res, ?i)), 5)
+      
+}
+where {
+    
+  service <http://dbpedia-historique.inria.fr/sparql> {
+    
+      select distinct ?res ?x ?c ?date ?type
+      where {
+        ?rev dc:date ?date .
+        ?x dbfr:revPerMonth ?rev .
+        ?x foaf:primaryTopic ?res .
+        ?res a ?type .
+        ?rev rdf:value ?c 
+      }
+      order by desc(?c)
+      limit 50      
+    }
+    
+     # split in two services appears to be much more efficient !
+    
+  service <http://dbpedia-historique.inria.fr/sparql> {
+        ?res o:thumbnail ?i
+	    ?res rdfs:label ?l filter langMatches(lang(?l), "fr")
+    }
+    
+}
+
+
+
+
+
+
+

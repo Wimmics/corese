@@ -1,0 +1,87 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/dbedit/>
+template st:profile {}
+where {}
+
+
+# "10/2015"^^xsd:gYearMonth
+function us:before(?date){
+  let (?m = xsd:integer(strbefore(?date, "/")),
+       ?y = xsd:integer(strafter(?date, "/")),
+       ?mm = if (?m = 1, 12, ?m - 1),
+       ?yy = if (?m = 1, ?y - 1, ?y))
+    {      
+      strdt(concat(us:digit(?mm), "/", ?yy), xsd:gYearMonth)
+    }
+}
+
+function us:after(?date){
+  let (?m = xsd:integer(strbefore(?date, "/")),
+       ?y = xsd:integer(strafter(?date, "/")),
+       ?mm = if (?m = 12, 1, ?m + 1),
+       ?yy = if (?m = 12, ?y + 1, ?y))
+    {      
+      strdt(concat(us:digit(?mm), "/", ?yy), xsd:gYearMonth)
+    }
+}
+
+function us:digit(?n){
+  if (?n < 10 && strlen(str(?n)) = 1, concat("0", ?n), ?n)
+}
+
+function us:year(?date, ?incr){
+  let (?m = xsd:integer(strbefore(?date, "/")),
+       ?y = ?incr + xsd:integer(strafter(?date, "/")))
+    {
+     strdt(concat(us:digit(?m), "/", ?y), xsd:gYearMonth)
+    }
+}
+
+function us:root(){
+  <http://ns.inria.fr/sparql-template/date/>
+}
+
+function us:clean(?s){
+  if (strcontains(?s, "Swastika")
+   || strcontains(?s, "Panzer-Division")
+   , 
+    "", ?s)
+}
+
+#
+# Generation of HTML table of DBpedia updates given ?list of updates 
+#
+function us:table(?list, ?size){
+ let (?table  = st:split(?list, ?size)) {
+     st:format(ft:table.html, 
+      let (?n = 0){
+	    loop (?row in ?table){
+	      st:format(ft:tr.html, 
+	        set(?n = ?n + 1), 
+	        loop (?cell in ?row){
+		      st:format(ft:td.html, ?cell)
+	        } )
+	    }
+	  }
+     )
+  }
+}
+
+# URL of HTML format in the server (/data/format/dbedit/name) 
+function us:format(?name) {
+    st:getFormat("dbedit", ?name)
+}
+
+
+#
+# One cell of the HTML table of DBpedia updates
+#
+function us:cell(?l, ?c, ?x, ?i){
+    st:format (ft:cell.html ,	      	
+	st:plink(?x, st:dbpedia),
+	?x,
+	us:clean(?i),
+	?l,
+	?c
+    )
+}
+

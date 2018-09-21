@@ -1,0 +1,31 @@
+#
+#
+template st:year {
+
+  format {
+
+    """    
+    <p>
+    <table class='table'>
+      <tr style='vertical-align: bottom'>
+      %s
+      </tr>
+    </table>
+    </p>
+    """
+    
+    st:call-template(st:dbpedia10, ?date)
+    
+  }
+  
+}
+where {
+
+   bind (st:get(st:uri) as ?uri)
+   bind (strafter(?uri, <http://ns.inria.fr/sparql-template/date/>) as ?year)
+   bind (unnest(xt:iota(1, 12)) as ?month)
+   bind (concat(us:digit(?month), "/", ?year) as ?str)
+   bind (strdt(?str, xsd:gYearMonth) as ?date)
+   filter kg:display(?date)
+  
+}

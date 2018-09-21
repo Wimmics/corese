@@ -1,0 +1,27 @@
+#
+# Generate title
+# Generate Navigation links to month before and after, 
+# to year before and after
+#
+template st:title(?date) {
+
+  format {
+  """
+  <h2 class='center'>DBpedia History %s</h2>
+  <h3 class='center'> %s &lt;&lt; %s &lt;&lt;  %s   >> %s >> %s </h3>
+  <br/>
+  """
+
+   ?date
+
+   st:call-template(st:link, us:year(?date, -1))
+   st:call-template(st:link, us:before(?date))
+   ?date
+   st:call-template(st:link, us:after(?date))
+   st:call-template(st:link, us:year(?date, 1))
+  }
+  
+}
+where {
+    
+}

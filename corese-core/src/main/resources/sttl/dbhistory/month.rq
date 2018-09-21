@@ -1,0 +1,29 @@
+#
+# URI <http://ns.inria.fr/sparql-template/date/10/2015>
+# translated as "10/2015"^^xsd:gYearMonth
+#
+template st:month {
+
+  st:call-template(st:title, ?date)
+
+  format {
+    """<p>%s</p>"""
+    st:call-template(st:dbpediafortest)   
+  }
+  
+  st:call-template-with(st:d3, st:frame)
+  
+  st:call-template(st:title, ?date)
+  
+  st:call-template(st:tail)
+ 
+}
+where {
+   bind (st:get(st:date) as ?date)
+}
+
+# for st:d3
+@public 
+function us:clean(?s) {
+    if (strstarts(?s, "nodeID://"), "", ?s)
+}

@@ -1,0 +1,19 @@
+#
+# profile.ttl may specify: st:include (("mode" st:mode))
+# st:mode parameter specify a rdf:type of resource to focus on
+# st:plink take st:include into account to generate hyperlink
+#
+template st:link(?date) {
+
+  format {
+    """
+      <a href='%s'>%s</a>
+    """
+    
+    st:plink(uri(concat(us:root(), ?date)))
+    ?date
+  }
+
+}
+where {
+}

@@ -1,0 +1,28 @@
+#
+# Generate a table with DBpedia topmost resource updates
+# given month/year ?date
+#
+#
+prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
+prefix dc:  <http://purl.org/dc/element/1.1/>
+prefix o:   <http://dbpedia.org/ontology/>
+
+template  st:dbpediafortest {
+     
+  us:table(aggregate(us:cell(?l, ?c, ?res, ?i)), 5)
+      
+}
+where {       
+      select distinct ?res ?l ?c ?i
+      where {
+        ?rev dc:date ?date 
+        ?x dbfr:revPerMonth ?rev 
+        ?rev rdf:value ?c 
+        ?x foaf:primaryTopic ?res
+        ?res o:thumbnail ?i
+	    ?res rdfs:label ?l       
+	    }	    
+      order by desc(?c)
+}
+
+

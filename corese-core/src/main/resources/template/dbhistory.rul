@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 10:22:36 CEST 2018
+Fri Sep 21 15:27:10 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -310,11 +310,6 @@ function us:table(?list, ?size){
 	  }
      )
   }
-}
-
-# URL of HTML format in the server (/data/format/dbedit/name) 
-function us:format(?name) {
-    st:getFormat("dbedit", ?name)
 }
 
 

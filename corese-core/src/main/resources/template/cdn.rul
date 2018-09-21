@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 10:22:36 CEST 2018
+Fri Sep 21 11:53:29 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -10,10 +10,10 @@ Fri Sep 21 10:22:36 CEST 2018
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:body(?c) {
  
- format {
-    us:format("body.html")
+ format { ft:body.html
 
   st:call-template(cn:rowtitle, ?c)    
   st:call-template(cn:table, ?min, ?max)
@@ -37,11 +37,12 @@ where {
 #
 prefix cn: <http://cdn.fr/schema/>
 prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template  cn:table(?min, ?max) {
 format {
 
-  us:format("date.html")
+  ft:date.html
   
   st:call-template(cn:wikidate, ?d)
   st:call-template(cn:row, ?d)
@@ -191,9 +192,7 @@ function st:process(?x) {
       #"&transform=st:sparql%23core&profile=st:dbpedia"))
   }
   
-function us:format(?name) {
-    st:getFormat("cdn", ?name)
-}
+
   
 ]]>
 </body>
@@ -206,11 +205,12 @@ function us:format(?name) {
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:sign {
 
    st:call-template(cn:icon, cn:icon)
    
-   format { us:format("sign.html") }
+   format { ft:sign.html }
    
    now()
 }
@@ -224,14 +224,15 @@ where {
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:icon {
 
 format {
-  us:format("icontable.html")
+  ft:icontable.html
 
   group {
     format {
-        us:format("icon.html")	
+        ft:icon.html
         ?i ?i 
       }
     }
@@ -401,11 +402,12 @@ where {
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:tail(?c, ?title) {
 
 format {
-    us:format("tail.html")        
+    ft:tail.html        
     st:call-template(cn:index,  ?title)        
 }
     
@@ -425,20 +427,21 @@ where {
 # Answer using SPARQL Template Transformation
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:index(?title) {
 
 format {
-  us:format("indextable.html")
+  ft:indextable.html
 
   if (bound(?before), 
-    st:format(us:format("before.html"), st:plink(?before)), 
+    st:format(ft:before.html, st:plink(?before)), 
     "")
     
   st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    st:format(us:format("after.html"), st:plink(?after)), 
+    st:format(ft:after.html, st:plink(?after)), 
     "")  
 }
 
@@ -494,10 +497,11 @@ where {
 # Answer using SPARQL Template Transformation
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:elem(?title) {
   format {
-      us:format("index.html")
+      ft:index.html
   
       st:plink(?century)
       if (?show, "bold", "undefined")
@@ -599,10 +603,11 @@ pragma {kg:query kg:detail true}
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:head(?c, ?title) {
 format {
 
-  us:format("head.html")
+  ft:head.html
     
     str(?title)
     ?title
@@ -620,17 +625,18 @@ where {
 <body>
 <![CDATA[
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:list {
 
 format {
 
-  us:format("listtable.html")
+  ft:listtable.html
   
   st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   
   group {
     format {
-      us:format("list.html")
+      ft:list.html
       
       st:misc(?query)
       str(?title)

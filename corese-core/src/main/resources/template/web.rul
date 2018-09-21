@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:33 CEST 2018
+Fri Sep 21 13:46:08 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -81,9 +81,10 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:tail {
 format {
-  us:format("tail.html")
+  ft:tail.html
   
   st:call-template(st:content)
 }
@@ -98,10 +99,11 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:prev(?t) {
 
 format {
-  us:format("prev.html")
+  ft:prev.html
   st:plink(?n)
   }
   
@@ -123,10 +125,11 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:next(?t) {
 
 format {
-  us:format("next.html")
+  ft:next.html
   st:plink(?n)
  }
     
@@ -157,9 +160,6 @@ where {}
     coalesce(st:get(st:protocol), st:std)
   }
   
-function us:format(?name) {
-   st:getFormat("tutorial", ?name)
-}
 
 ]]>
 </body>
@@ -173,11 +173,12 @@ function us:format(?name) {
 # query name bound to uri param
 # Generate query names list from context graph
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:selectform(?t) {
 
 format {
 
-  us:format("selectform.html")
+  ft:selectform.html
   
   st:get(st:service) 
   st:get(st:profile)   
@@ -200,17 +201,18 @@ where {
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:form(?n, ?q, ?t, ?s) {
    
    format {   
-    us:format("form.html")
+    ft:form.html
    
     st:get(st:service) 
     st:get(st:profile)
     str(?t) 
     str(?s) 
     ?n 
-    if (?s = st:null, "", st:format(us:format("nav.html")))
+    if (?s = st:null, "", st:format(ft:nav.html))
     str(?q)
     }
    
@@ -227,10 +229,11 @@ where {
 #
 # Generate query names list from context graph
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:list(?t) {
 
 format {
-  us:format(if (?q = ?t, "optionselected.html", "option.html") )
+  if (?q = ?t, ft:optionselected.html, ft:option.html) 
   
   ?q
   str(?i)
@@ -282,10 +285,11 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:head {
    
   format {
-    us:format("head.html")  str(?title)
+    ft:head.html  str(?title)
   }
   
 }
@@ -306,14 +310,15 @@ where {
 # st:get(st:query) is user query
 # ?q is tutorial query
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:display(?n) {
 
 format {
-   us:format("display.html")
+   ft:display.html
 
    str(?l)
    str(?c)   
-   if (bound(?r), st:format(us:format("documentation.html"), str(?r)), "")
+   if (bound(?r), st:format(ft:documentation.html, str(?r)), "")
    
    st:call-template(st:form, 
      ?n,

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:33 CEST 2018
+Fri Sep 21 15:27:10 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -140,6 +140,22 @@ where {}
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:graph {
+  
+      st:call-template-with(st:d3, st:frame)
+
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # SPARQL Template Transformation 
 # Generate a HTML hypertext navigator on top of Linked Open Data
@@ -245,9 +261,6 @@ template st:profile {
 }
 where {}
 
-function us:format(?name) {
-    st:getFormat("navlab", ?name)
-}
     
 #
 # Get the ?q = st:person st:param property from profile.ttl 
@@ -315,7 +328,9 @@ template st:page {
   st:head()
 
   st:call-template(st:selecttry)
+
   st:call-template-with(st:d3, st:frame)
+   
   st:tail()
   
 }

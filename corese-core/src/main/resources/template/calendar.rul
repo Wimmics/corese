@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:34 CEST 2018
+Fri Sep 21 13:55:58 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -50,11 +50,12 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:main(?year) {
   st:call-template(st:head, ?year)
 
   format {
-    us:format("main.html")
+    ft:main.html
     st:call-template(st:calendar, ?year)
   }
 
@@ -90,16 +91,18 @@ where {
 <body>
 <![CDATA[
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
+prefix ut: <http://ns.inria.fr/sparql-template/format/util/>
 template st:content(?year) {
   format {
-    us:format("content.html")
+    ft:content.html
     
     str(?dd)
     str(?dd)
     group {
     
 	format {
-	  st:getFormat("util", "href.html") 
+	  ut:href.html
 	  
 	  st:plink(?x, st:dbpedia)
 	  str(?title)
@@ -207,10 +210,11 @@ function xt:space(?n) {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:tail {
 
 format {
-    us:format("tail.html")
+    ft:tail.html
     now()
 }
 
@@ -245,9 +249,10 @@ where {
 <body>
 <![CDATA[
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:monthtab(?y, ?m) {
   format {
-  us:format("month.html")
+  ft:month.html
       
   cal:month(?m)
   st:call-template(st:title)
@@ -255,15 +260,15 @@ template st:monthtab(?y, ?m) {
   
   group {            
 	  format {
-        us:format("day.html")
+        ft:day.html
         st:call-template(st:date, ?date)
 	  }
-	  if (?day = "Sunday", st:format(us:format("sunday.html")), "")
+	  if (?day = "Sunday", st:format(ft:sunday.html), "")
 		  
 	  ; separator = ""
   }
   
-  if (?first + ?days - 1 <= 35 , st:format(us:format("last.html")), "")   
+  if (?first + ?days - 1 <= 35 , st:format(ft:last.html), "")   
   }
 
 }
@@ -286,10 +291,6 @@ template st:profile {
                     
 }
 where {}
-
-function us:format(?name){
-    st:getFormat("calendar", ?name)
-}
 
   function xt:space(?n) { 
          if (?n = 0, "", concat("   " , xt:space(?n - 1)))
@@ -317,10 +318,11 @@ function us:format(?name){
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:calendar(?year) {
 
 format {
-    us:format("calendar.html")
+    ft:calendar.html
 
     st:call-template(st:enum, ?year, 1, 3)  
     st:call-template(st:enum, ?year, 4, 6)  
@@ -340,8 +342,9 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:title {
-  format { us:format("title.html") str(?t) }
+  format { ft:title.html str(?t) }
   ; separator = ""
 }
 where {
@@ -425,9 +428,10 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:head(?year) {
 format {
-  us:format("head.html")
+  ft:head.html
   
   st:plink(concat(?uri,  (?year - 1)))
   us:display(?year - 1)
@@ -448,12 +452,13 @@ bind ("http://ns.inria.fr/sparql-template/y" as ?uri)
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
 template st:enum(?year, ?f, ?l) {
 format {
-  us:format("enum1.html")      
+  ft:enum1.html      
   group {
     format {
-      us:format("enum2.html")      
+      ft:enum2.html      
       st:call-template(st:monthtab, ?year, ?month)
      }
   }

@@ -1,15 +1,16 @@
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:list {
 
 format {
 
-  us:format("listtable.html")
+  ft:listtable.html
   
   st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   
   group {
     format {
-      us:format("list.html")
+      ft:list.html
       
       st:misc(?query)
       str(?title)

@@ -4,20 +4,21 @@
 # Answer using SPARQL Template Transformation
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:index(?title) {
 
 format {
-  us:format("indextable.html")
+  ft:indextable.html
 
   if (bound(?before), 
-    st:format(us:format("before.html"), st:plink(?before)), 
+    st:format(ft:before.html, st:plink(?before)), 
     "")
     
   st:call-template(cn:elem, ?title) 
   
   if (bound(?after), 
-    st:format(us:format("after.html"), st:plink(?after)), 
+    st:format(ft:after.html, st:plink(?after)), 
     "")  
 }
 

@@ -2,11 +2,12 @@
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:tail(?c, ?title) {
 
 format {
-    us:format("tail.html")        
+    ft:tail.html        
     st:call-template(cn:index,  ?title)        
 }
     

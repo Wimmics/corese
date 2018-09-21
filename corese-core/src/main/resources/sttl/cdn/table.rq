@@ -3,11 +3,12 @@
 #
 prefix cn: <http://cdn.fr/schema/>
 prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template  cn:table(?min, ?max) {
 format {
 
-  us:format("date.html")
+  ft:date.html
   
   st:call-template(cn:wikidate, ?d)
   st:call-template(cn:row, ?d)

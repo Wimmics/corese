@@ -4,10 +4,11 @@
 # Answer using SPARQL Template Transformation
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 
 template cn:elem(?title) {
   format {
-      us:format("index.html")
+      ft:index.html
   
       st:plink(?century)
       if (?show, "bold", "undefined")

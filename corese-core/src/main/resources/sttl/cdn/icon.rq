@@ -1,12 +1,13 @@
 prefix cn: <http://cdn.fr/schema/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:icon {
 
 format {
-  us:format("icontable.html")
+  ft:icontable.html
 
   group {
     format {
-        us:format("icon.html")	
+        ft:icon.html
         ?i ?i 
       }
     }

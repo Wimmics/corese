@@ -1,0 +1,36 @@
+prefix dbfr:<http://ns.inria.fr/dbpediafr/voc#>
+prefix dc:  <http://purl.org/dc/element/1.1/>
+prefix o:   <http://dbpedia.org/ontology/>
+construct {
+    ?x dbfr:revPerMonth ?rev 
+    ?x foaf:primaryTopic ?res
+    ?rev dc:date ?date     
+    ?rev rdf:value ?c 
+    ?res o:thumbnail ?i
+    ?res rdfs:label ?l    
+}
+where {
+   bind (st:get(st:uri)  as ?uri)
+   bind (st:get(st:mode) as ?type)
+   bind (strafter(?uri, <http://ns.inria.fr/sparql-template/date/>) as ?str)
+   bind (strdt(?str, xsd:gYearMonth) as ?date)
+   bind (st:set(st:date, ?date) as ?tmp)
+   
+   service <http://dbpedia-historique.inria.fr/sparql> {
+    
+      select distinct ?res ?rev ?x ?c ?date ?i ?l
+      where {
+        ?rev dc:date ?date 
+        ?x dbfr:revPerMonth ?rev 
+        ?rev rdf:value ?c 
+        ?x foaf:primaryTopic ?res
+      }
+      order by desc(?c)
+      limit 70      
+    }
+    
+   service <http://dbpedia-historique.inria.fr/sparql> {
+      ?res o:thumbnail ?i
+      ?res rdfs:label ?l filter langMatches(lang(?l), "fr")
+    }    
+}

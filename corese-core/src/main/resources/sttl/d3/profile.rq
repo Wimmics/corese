@@ -13,8 +13,17 @@ function us:get(?s) {
     xt:get(?map, ?s)
 }
 
+function us:declare(?fun) {
+    set(?pretty = ?fun)
+}
+
 function us:label(?s) {
-    if (isLiteral(?s), us:literal(?s), us:uri(?s))
+    if (bound(?pretty), us:pretty(funcall(?pretty, ?s)), us:pretty(?s))
+}
+
+function us:pretty(?s) {
+    if (isBlank(?s), "",
+    if (isLiteral(?s), us:literal(?s), us:uri(?s)))
 }
 
 function us:uri(?u) {

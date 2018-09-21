@@ -25,7 +25,7 @@ st:dbpedia a st:Profile ;
   
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
-    <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+    <query/dbpedia/frdbpedia.rq> <query/dbpedia/frdbpediaclean.rq> 
     [ a sw:Transformation ; sw:uri st:navlab ]
   )
 .
@@ -44,7 +44,7 @@ st:dbpediatest a st:Profile ;
   
 st:dbpediatestwf a sw:Workflow ;
   sw:body ( 
-    <query/frdbpedia.rq> <query/frdbpediaclean.rq> 
+    <query/dbpedia/frdbpedia.rq> <query/dbpedia/frdbpediaclean.rq> 
     [ a sw:Transformation ; sw:uri st:hturtle ]
   )
 .
@@ -282,7 +282,7 @@ st:dbpediaParam
   ] .
   
 st:dbpediaen a st:Profile ;
-  st:query  <query/frdbpediaen.rq> ;
+  st:query  <query/dbpedia/frdbpediaen.rq> ;
   st:transform  st:navlab ;
   st:param [
     st:lang "en" ;
@@ -296,7 +296,7 @@ st:calendar a st:Profile ;
   
  
 st:calendar1 a st:Profile ;
-  st:query     <query/dbpediadate.rq> ;  
+  st:query     <query/dbpedia/dbpediadate.rq> ;  
   st:transform st:content ;
    st:param [
     st:uri   st:y2000 ;
@@ -304,7 +304,7 @@ st:calendar1 a st:Profile ;
   ] .
 
 st:calendar2 a st:Profile ;
-  st:query     <query/dbpediadate2.rq> ;
+  st:query     <query/dbpedia/dbpediadate2.rq> ;
   st:transform st:content ;
   st:param [
     st:uri    st:y2000 ;
@@ -312,7 +312,7 @@ st:calendar2 a st:Profile ;
   ] .
   
 st:calendar3 a st:Profile ;
-  st:query     <query/dbpediadate3.rq> ;
+  st:query     <query/dbpedia/dbpediadate3.rq> ;
   st:transform st:content ;  
   st:param [
     st:uri    st:y1944 ;
@@ -324,7 +324,7 @@ st:calendar3 a st:Profile ;
 # calendar to query dbpedia for event given month-day for any year
 # show answer of such query
 st:gcalendar a st:Profile ;
-  st:query     <query/dbpediadatemd.rq> ;
+  st:query     <query/dbpedia/dbpediadatemd.rq> ;
   st:transform ct:query ;  
   st:param [
     st:import st:cal ;
@@ -339,7 +339,7 @@ st:cal
   
   
 st:gcalendar2 a st:Profile ;
-  st:query     <query/dbpediadatemd2.rq> ;
+  st:query     <query/dbpedia/dbpediadatemd2.rq> ;
   st:transform ct:query ;  
   st:param [
     st:import st:cal ;
@@ -347,7 +347,7 @@ st:gcalendar2 a st:Profile ;
   ] .
   
 st:gcalendar3 a st:Profile ;
-  st:query  <query/dbpediadatemd3.rq> ;
+  st:query  <query/dbpedia/dbpediadatemd3.rq> ;
   st:transform ct:query ; 
    st:param [
     st:import st:cal ;
@@ -356,12 +356,12 @@ st:gcalendar3 a st:Profile ;
   
 
 st:dbpediasparql a st:Profile ;
-  st:query     <query/frdbpedia.rq> ;
+  st:query     <query/dbpedia/frdbpedia.rq> ;
   st:transform st:sparql .
 
 
 st:dbpediacopy a st:Profile ;
-  st:query     <query/frdbpediacopy.rq> ;
+  st:query     <query/dbpedia/frdbpediacopy.rq> ;
   st:transform st:navlab .
   
 

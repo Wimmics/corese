@@ -1,8 +1,9 @@
 #
 #  Get an optional icon from the dataset and display it
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:show(?x) {
-    format { us:format("img.html")  str(?l) }
+    format { ft:img.html  str(?l) }
 }
 where {
   bind (st:get(st:dataset) as ?g)

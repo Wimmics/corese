@@ -3,9 +3,6 @@ template st:profile {
 }
 where {}
 
-function us:format(?name) {
-    st:getFormat("sparql", ?name)
-}
   
   # LOD URI hypertext link generated as is 
   # set by profile.ttl : st:param [ st:lod (URI) ]

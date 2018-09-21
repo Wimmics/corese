@@ -1,7 +1,8 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:table {
     format {
-        us:format("table.html")  
+        ft:table.html  
         st:number()
         st:apply-templates(?s)
     }

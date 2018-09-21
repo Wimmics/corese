@@ -1,6 +1,7 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:pageselect {
     format {
-        us:format("select.html")
+        ft:select.html
         st:call-template(st:variable)
         st:call-template(st:table)
     }    

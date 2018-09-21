@@ -1,15 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:pagecons {
    format {
-    us:format("construct.html")
+    ft:construct.html
     st:call-template(st:tablecons)
-    format {
-      us:format("d3graph.html")
-      st:apply-templates-with(st:d3)
-   }
+    st:apply-templates-with(st:d3)
    }
 }
 where {
 }
 
 
-# utiliser prefix ft: <http:.... navlab> (cf display.rq dans navlab) et utiliser ft:link.html

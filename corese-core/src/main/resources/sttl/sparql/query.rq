@@ -1,11 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:query(?q) {
 
 format {
 
-  us:format("query.html")
+  ft:query.html
   
   st:get(st:service)
-  if (bound(?prof), st:format(us:format("option.html"), ?prof), "")
+  if (bound(?prof), st:format(ft:option.html, ?prof), "")
   str(?q)
   }
 }

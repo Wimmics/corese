@@ -1,8 +1,9 @@
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template  {
 
 format { 
-    us:format("value.html")     
+    ft:value.html     
     coalesce(st:display(?val), "&nbsp;")
 }  
 ; separator = " "

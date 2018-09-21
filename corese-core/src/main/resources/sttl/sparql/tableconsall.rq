@@ -1,6 +1,7 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:tableconsall {
 format {
-        us:format("triple.html")
+        ft:triple.html
         
         st:number()
         st:call-template(st:show,    ?x)

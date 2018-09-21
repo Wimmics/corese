@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:33 CEST 2018
+Fri Sep 21 10:22:36 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -81,6 +81,7 @@ where {
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix db: <http://fr.dbpedia.org/resource/>
 
 template st:start {
    
@@ -153,13 +154,13 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 template  cn:date(?date, ?topic) {
 
-  group { ?uri  ; separator = "<br/>" } 
+  group { ?uri ; separator = "<br/>" } 
 
 }
 where {
 
  graph ?g { [] cn:topic ?topic . 
-	    {  ?uri cn:date ?date } union {  ?uri cn:begin ?date }
+	    { ?uri cn:date ?date } union { ?uri cn:begin ?date }
 	  }
  
 }
@@ -335,7 +336,7 @@ where {
   bind (kg:number() as ?n)
   values ?topic  { unnest(?topicList) }
 }
-group by ?n
+group by ?topicList
 order by ?n
 ]]>
 </body>
@@ -348,17 +349,25 @@ order by ?n
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
+prefix db: <http://fr.dbpedia.org/resource/>
 template st:substart(?cent) {
    
    st:call-template(cn:content, ?cent) 
    
-   st:call-template-with(st:d3, st:frame)  
-        
+   st:call-template-with(st:d3, st:frame, us:dbclean)  
+
    st:call-template(cn:sign, cn:sign)
    
 }
 where {
 }  
+
+
+@public
+function us:dbclean(?s) {
+    if (isURI(?s) && strstarts(?s, db:), replace(?s, db:, "db:"), 
+    if (contains(?s, ".gif") || contains(?s, ".JPG") || contains(?s, ".jpg") || contains(?s, ".jpeg") || contains(?s, ".svg") || contains(?s, ".png"), "icon", ?s))
+}
 
 ]]>
 </body>

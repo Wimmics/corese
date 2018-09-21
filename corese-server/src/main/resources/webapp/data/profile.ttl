@@ -217,14 +217,39 @@ sw:body (
 )  . 
  
  
-
+st:dbhistory a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
+    # st:plink() include in hyperlink: mode = dbo:Artist
+    st:include (("mode" st:mode))
+  ] ;
+  st:workflow [
+    a sw:Workflow ; sw:body (
+        [ a sw:Query ; sw:uri <query/dbpedia/history.rq> ]
+        [ a sw:Transformation ; sw:uri st:dbhistory ]
+    )
+  ] .
+  
+st:dbhistorytype a st:Profile ;
+  st:param [
+    st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
+    # st:plink() include in hyperlink: mode = dbo:Artist
+    st:include (("mode" st:mode))
+  ] ;
+  st:workflow [
+    a sw:Workflow ; sw:body (
+        [ a sw:Query ; sw:uri <query/dbpedia/historytype.rq> ]
+        [ a sw:Transformation ; sw:uri st:dbhistory ]
+    )
+  ] .  
+ 
+ 
 st:dbedit a st:Profile ;
   st:param [
     st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
     # st:plink() include in hyperlink: mode = dbo:Artist
     st:include (("mode" st:mode))
   ] ;
-#  st:transform "/home/corby/AAData/sttl/dbedit" .
   st:transform st:dbedit .
   
 

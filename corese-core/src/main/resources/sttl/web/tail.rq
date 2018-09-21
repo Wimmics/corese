@@ -1,6 +1,7 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:tail {
 format {
-  us:format("tail.html")
+  ft:tail.html
   
   st:call-template(st:content)
 }

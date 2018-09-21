@@ -3,11 +3,12 @@
 # query name bound to uri param
 # Generate query names list from context graph
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:selectform(?t) {
 
 format {
 
-  us:format("selectform.html")
+  ft:selectform.html
   
   st:get(st:service) 
   st:get(st:profile)   

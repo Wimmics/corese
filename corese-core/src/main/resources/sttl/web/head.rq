@@ -1,7 +1,8 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:head {
    
   format {
-    us:format("head.html")  str(?title)
+    ft:head.html  str(?title)
   }
   
 }

@@ -3,17 +3,18 @@
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:form(?n, ?q, ?t, ?s) {
    
    format {   
-    us:format("form.html")
+    ft:form.html
    
     st:get(st:service) 
     st:get(st:profile)
     str(?t) 
     str(?s) 
     ?n 
-    if (?s = st:null, "", st:format(us:format("nav.html")))
+    if (?s = st:null, "", st:format(ft:nav.html))
     str(?q)
     }
    

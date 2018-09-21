@@ -5,14 +5,15 @@
 # st:get(st:query) is user query
 # ?q is tutorial query
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:display(?n) {
 
 format {
-   us:format("display.html")
+   ft:display.html
 
    str(?l)
    str(?c)   
-   if (bound(?r), st:format(us:format("documentation.html"), str(?r)), "")
+   if (bound(?r), st:format(ft:documentation.html, str(?r)), "")
    
    st:call-template(st:form, 
      ?n,

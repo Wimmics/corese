@@ -1,7 +1,8 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:next(?t) {
 
 format {
-  us:format("next.html")
+  ft:next.html
   st:plink(?n)
  }
     

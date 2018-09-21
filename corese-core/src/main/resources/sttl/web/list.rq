@@ -1,10 +1,11 @@
 #
 # Generate query names list from context graph
 #
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:list(?t) {
 
 format {
-  us:format(if (?q = ?t, "optionselected.html", "option.html") )
+  if (?q = ?t, ft:optionselected.html, ft:option.html) 
   
   ?q
   str(?i)

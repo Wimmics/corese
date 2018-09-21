@@ -17,12 +17,12 @@ where {
     select * where {
         { ?uri ?p ?y  
             optional { ?y foaf:name|skos:prefLabel|skos:altLabel|dc:title ?label ; ?pname ?label }
-            optional { filter isBlank(?y) ?y ?q ?z }
+            optional { filter isBlank(?y) ?y ?q ?z  filter (! isBlank(?z)) }
         } 
         union 
-        { ?x ?q ?uri  
+        { ?x ?q ?uri  filter isURI(?x)
             optional { ?x foaf:name|skos:prefLabel|skos:altLabel ?label ; ?pname ?label } 
-            optional { filter isBlank(?x)  ?t ?q ?x  filter isURI(?t) }
+            #optional { filter isBlank(?x)  ?t ?q ?x  filter isURI(?t) }
         }
     } 
     #limit 1000

@@ -48,7 +48,7 @@ construct {
     ?x foaf:publications ?doc .
     ?y foaf:publications ?doc .
     ?y foaf:name ?name .
-    ?doc dc:title ?t
+    ?doc dc:title ?t ; dc:issued ?d
 }
 where {
     ?x foaf:name ?n 
@@ -56,7 +56,7 @@ where {
     ?x foaf:publications ?doc .
     ?y foaf:publications ?doc .
     ?y foaf:name ?name 
-    optional { ?doc dc:title ?t }
+    optional { ?doc dc:hasVersion [ dc:title ?t ; dc:issued ?d ] }
     filter (?x != ?y)
 }
 """ 

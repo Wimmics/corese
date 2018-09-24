@@ -66,11 +66,6 @@ function us:table(?list, ?size){
   }
 }
 
-# URL of HTML format in the server (/data/format/dbedit/name) 
-function us:format(?name) {
-    st:getFormat("dbedit", ?name)
-}
-
 
 #
 # One cell of the HTML table of DBpedia updates

@@ -115,7 +115,7 @@ function us:uri(?u) {
 }
 
 function us:shorten(?l) {
-    let (?s = if (strlen(?l) > 20, concat(substr(?l, 1, 20), ".."), ?l)) { ?s }
+    let (?s = if (strlen(?l) > 50, concat(substr(?l, 1, 50), ".."), ?l)) { ?s }
 }
 
 function us:literal(?l) {

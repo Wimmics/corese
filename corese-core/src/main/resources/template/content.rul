@@ -113,6 +113,8 @@ template st:start {
   
   st:call-template(st:main)
   
+  st:call-template-with(st:d3, st:frame)
+  
 }
 where {
   

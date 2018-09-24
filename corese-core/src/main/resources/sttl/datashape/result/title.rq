@@ -1,7 +1,8 @@
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix ft: <http://ns.inria.fr/sparql-template/format/ds/>
 template st:title {
     format {
-        us:format("title.html")
+        ft:title.html
         
         if (! ?text, st:get(st:param), "")
         if (! ?text, st:get(st:mode), "")  

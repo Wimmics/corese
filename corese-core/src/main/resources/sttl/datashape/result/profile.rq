@@ -1,10 +1,2 @@
 template st:profile {}
 where {}
-
-#
-# Reference to HTML format defined in the Web server 
-# st:getFormat() defined in /server/data/query/function.rq
-#
-function us:format(?name) {
-    st:getFormat("ds", ?name)
-}

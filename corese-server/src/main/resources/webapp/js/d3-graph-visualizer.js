@@ -19,36 +19,107 @@ function dragended(d) {
   d.fx = null;
   d.fy = null;
 }
-var counter = 1;
-// svgName : id of the svg element to draw the graph (do not forget the #).
-function drawRdf(results, svgId) {
-    var scale = 1;
-	results.links = results.edges;
-    var confGraphModal;
-    if (d3.select("#configurationGraph").size() === 0) {
-        var body = d3.select( d3.select(svgId).node().parentNode );
-        confGraphModal = body
-            .append("div")
+
+function createConfigurationPanel(rootConfPanel, graph) {
+	var result = d3.select("#configurationGraph");
+	if (result.size() === 0) {
+
+        confGraphModal = rootConfPanel.append("div");
+        confGraphModal
             .attr("id", "configurationGraph")
-            .attr("class", "modal");
-        var divModal = confGraphModal
-            .append("div")
-            .attr("class", "modal-content");
-        divModal.append("div").html("<label class=\"switch\">\n" +
-            "  <input id=\"nodesCheckbox\" type=\"checkbox\" > Nodes\n" +
-            "</label>\n" +
-            "<label class=\"switch\">\n" +
-            "  <input id=\"edgesCheckbox\" type=\"checkbox\" > Edges\n" +
-            "  <span class=\"slider\"></span>" +
-            "</label>");
-        d3.select("#nodesCheckbox").on("change", e => {displayNodeLabels = d3.select("#nodesCheckbox").property("checked"); updateConfiguration(); ticked()});
-        d3.select("#edgesCheckbox").on("change", e => {displayEdgeLabels = d3.select("#edgesCheckbox").property("checked"); updateConfiguration(); ticked()});
-        var confGraphModalClose = divModal.append("button").attr("class", "btn btn-default").text("Close");
-        confGraphModalClose
+            .attr("class", "modal")
+            .html(
+            "<div class='modal-content' style='list-style:none;'>" +
+            "<ul>" +
+            "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
+            "<ul>" +
+            "<li><label><input id='bnodesCheckbox' type='checkbox'/>Blank Nodes</label>" +
+            "<li><label><input id='uriCheckbox' type='checkbox'/>URI</label>" +
+            "<li><label><input id='literalCheckbox' type='checkbox'/>Literal</label>" +
+            "</ul>" +
+            "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+            "</ul>" +
+            "<br>" +
+            "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
+            "</div>" );
+
+        confGraphModal.nodesCheckbox= d3.select("#nodesCheckbox");
+        confGraphModal.bnodesCheckbox = d3.select("#bnodesCheckbox");
+        confGraphModal.uriCheckbox = d3.select("#uriCheckbox");
+        confGraphModal.literalCheckbox = d3.select("#literalCheckbox");
+        confGraphModal.edgesCheckbox = d3.select("#edgesCheckbox");
+        confGraphModal.closeButton = d3.select("#configurationGraphCloseButton");
+
+        confGraphModal.nodesCheckbox.on("change", function() {
+            [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach( button => {
+                button.property( "checked", this.checked );
+            });
+            graph.updateConfiguration(); graph.ticked();
+        });
+        confGraphModal.edgesCheckbox.on("change", function() {
+        	d3.select("#edgesCheckbox").property("checked"); graph.updateConfiguration(); graph.ticked()
+        });
+        confGraphModal.closeButton
             .on("click", e => {
                 confGraphModal.attr("style", "display:none");
             });
+
+
+        return confGraphModal;
+    } else {
+		return result;
+	}
+}
+var counter = 1;
+// svgName : id of the svg element to draw the graph (do not forget the #).
+function drawRdf(results, svgId) {
+    var confGraphModal;
+    var graph = d3.select(svgId);
+    graph.updateConfiguration = function() {
+        textNodes.attr("visibility", confGraphModal.nodesCheckbox.property("checked") ? "visible" : "hidden");
+        textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
+    };
+    graph.displayNodeLabels = function() {
+        return confGraphModal.nodesCheckbox.property("checked");
     }
+    graph.displayEdgeLabels = function() {
+        return confGraphModal.edgesCheckbox.property("checked");
+    }
+    graph.ticked = function(s) {
+        scale = (s === undefined) ? scale : s;
+        link
+            .attr("x1", function(d) { return d.source.x * scale; })
+            .attr("y1", function(d) { return d.source.y * scale; })
+            .attr("x2", function(d) { return d.target.x * scale; })
+            .attr("y2", function(d) { return d.target.y * scale; });
+
+        node
+            .attr("cx", function(d) { return d.x * scale; })
+            .attr("cy", function(d) { return d.y * scale; });
+        if (graph.displayNodeLabels()) {
+            textNodes
+                .attr("x", d => d.x * scale)
+                .attr("y", d => d.y * scale);
+        }
+        if (graph.displayEdgeLabels()) {
+            textEdges
+                .attr("x", (d,i,nodes) => ((d.source.x + d.target.x) / 2) * scale )
+                .attr("y", (d,i,nodes) => ((d.source.y + d.target.y) / 2) * scale );
+        }
+    };
+    graph.zoomed = function() {
+        var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
+        copieTransform.k  = 1;
+        g.attr("transform", copieTransform);
+        graph.ticked( d3.event.transform.k);
+    };
+
+    var scale = 1;
+	results.links = results.edges;
+
+    var rootConfPanel = d3.select( d3.select(svgId).node().parentNode, graph );
+    confGraphModal = createConfigurationPanel(rootConfPanel, graph);
+
     var maxLen = [];
     results.nodes.forEach(
 		(node, index, array) => {
@@ -62,7 +133,7 @@ function drawRdf(results, svgId) {
 		}
 	);
 
-	var graph = d3.select(svgId);
+
 
 	var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -70,7 +141,7 @@ function drawRdf(results, svgId) {
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
         .force("charge", d3.forceManyBody())
         // .force("center", d3.forceCenter(width, height))
-        .on("tick", ticked);
+        .on("tick", graph.ticked);
 
 
 
@@ -116,8 +187,6 @@ function drawRdf(results, svgId) {
 		.attr("class", "btn btn-info")
 		.attr("id", "configurationButton")
 		.on("click", e => {
-            d3.select("#nodesCheckbox").property("checked", displayNodeLabels);
-            d3.select("#edgesCheckbox").property("checked", displayEdgeLabels);
             d3.select("#configurationGraph")
 				.style("display","block")
 				.style("top", d3.event.y+"px")
@@ -129,26 +198,8 @@ function drawRdf(results, svgId) {
 
     var displayEdgeLabels = false;
     var displayNodeLabels = false;
-    d3.select("body")
-        .on("keydown", function() {
-            switch (d3.event.keyCode) {
-				case 49: {
-                    displayNodeLabels = !displayNodeLabels;
-                    updateConfiguration();
-                    ticked();
-                    break;
-                }
-				case 50: {
-					displayEdgeLabels = !displayEdgeLabels;
-                    updateConfiguration();
-					ticked();
-					break;
-				}
-			}
-        }
-    );
 
-	updateConfiguration();
+	graph.updateConfiguration();
     var width =  +graph.node().getBBox().width;
     var height =  +graph.node().getBBox().height;
 	simulation
@@ -158,42 +209,12 @@ function drawRdf(results, svgId) {
         .force("center", d3.forceCenter(width / 2, height / 2));
 	//add zoom capabilities
 	var zoom_handler = d3.zoom()
-		.on("zoom", zoomed);
+		.on("zoom", graph.zoomed);
 	zoom_handler( graph );
 
-	function updateConfiguration() {
-            textNodes.attr("visibility", displayNodeLabels ? "visible" : "hidden");
-            textEdges.attr("visibility", displayEdgeLabels ? "visible" : "hidden");
-	}
 
-	function ticked(s) {
-		scale = (s === undefined) ? scale : s;
-		link
-			.attr("x1", function(d) { return d.source.x * scale; })
-			.attr("y1", function(d) { return d.source.y * scale; })
-			.attr("x2", function(d) { return d.target.x * scale; })
-			.attr("y2", function(d) { return d.target.y * scale; });
 
-		node
-			.attr("cx", function(d) { return d.x * scale; })
-			.attr("cy", function(d) { return d.y * scale; });
-		if (displayNodeLabels) {
-            textNodes
-                .attr("x", d => d.x * scale)
-                .attr("y", d => d.y * scale);
-        }
-        if (displayEdgeLabels) {
-            textEdges
-				.attr("x", (d,i,nodes) => ((d.source.x + d.target.x) / 2) * scale )
-                .attr("y", (d,i,nodes) => ((d.source.y + d.target.y) / 2) * scale );
-        }
-	}
-	function zoomed() {
-	    var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
-	    copieTransform.k  = 1;
-		g.attr("transform", copieTransform);
-        ticked( d3.event.transform.k);
-	}
+
 }
 
 

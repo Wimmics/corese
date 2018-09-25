@@ -31,8 +31,38 @@ rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable use
 st:query ""
 ]
 
+
 [ a sw:Query ;
-st:name st:begin ;
+st:name st:author ;
+rdfs:label "Author" ;
+rdfs:comment "Author."@fr ;
+rdfs:comment "Author"@en ;
+
+st:query 
+"""prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix dc:   <http://purl.org/dc/terms/>
+
+@federate <https://data.archives-ouvertes.fr/sparql>
+
+construct {
+    ?x foaf:name ?n .
+    ?x foaf:publications ?doc .
+    ?doc dc:title ?t ; dc:issued ?d
+}
+where {
+    ?x foaf:name ?n 
+    filter regex(?n, "Olivier") 
+    ?x foaf:publications ?doc .
+    optional { ?doc dc:hasVersion [ dc:title ?t ; dc:issued ?d ] }
+}
+limit 100
+""" 
+]
+
+
+
+[ a sw:Query ;
+st:name st:coauthor ;
 rdfs:label "Coauthors" ;
 rdfs:comment "Coauteurs."@fr ;
 rdfs:comment "Coauthors"@en ;
@@ -59,6 +89,7 @@ where {
     optional { ?doc dc:hasVersion [ dc:title ?t ; dc:issued ?d ] }
     filter (?x != ?y)
 }
+limit 100
 """ 
 ]
 
@@ -151,12 +182,298 @@ where {
 
 
 
+[ a sw:Query ;
+st:name st:member ;
+rdfs:label "SPARKS Member" ;
+rdfs:comment "SPARKS."@fr ;
+rdfs:comment "Members of SPARKS"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct  {
+    ?x skos:altLabel "SPARKS" .
+    ?p hsc:structure ?x .
+    ?p foaf:name ?n
+}
+where {
+    ?x skos:altLabel "SPARKS" .
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+}
+""" 
+]
 
 
 
 
 
 
+[ a sw:Query ;
+st:name st:coauthorsparks ;
+rdfs:label "SPARKS Coauthor" ;
+rdfs:comment "SPARKS Coauthor."@fr ;
+rdfs:comment "SPARKS Coauthor"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 dc:coauthor ?u2
+}
+where {
+    ?x skos:altLabel ?l
+    filter (?l in ("SPARKS", "WIMMICS")) .
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    ?s2 hsc:structure ?x .
+    ?s2 hsc:person ?p2 .
+    ?p2 foaf:name ?n2
+
+    filter (?n != ?n2)
+
+    ?doc dc:creator ?s
+    ?doc dc:creator ?s2
+    #?doc de:subject ?topic
+    ?doc dc:title ?title
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", if (?n < ?n2, ?n, ?n2))) as ?u1)
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", if (?n < ?n2, ?n2, ?n))) as ?u2)
+}
+
+""" 
+]
+
+
+
+[ a sw:Query ;
+st:name st:topicsparks ;
+rdfs:label "SPARKS Topic" ;
+rdfs:comment "SPARKS Topic."@fr ;
+rdfs:comment "Members of SPARKS and Wimmics linked by topics"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+prefix fab: <http://purl.org/spar/fabio/>
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 us:interestedIn ?topic 
+}
+where {
+    ?x skos:altLabel ?l
+    filter (?l in ("SPARKS", "WIMMICS")) .
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+   
+    ?doc1 dc:creator ?s
+    ?doc1 de:subject ?topic 
+    filter langMatches(lang(?topic), "en")
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", ?n)) as ?u1)
+}
+
+""" 
+]
+
+
+
+[ a sw:Query ;
+st:name st:topici3s ;
+rdfs:label "I3S Topic" ;
+rdfs:comment "I3S Topic."@fr ;
+rdfs:comment "Members of I3S linked by topics"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 us:interestedIn ?topic 
+    ?u1 us:memberOf ?name
+}
+where {
+    ?sam skos:altLabel "I3S"
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    ?doc1 dc:creator ?s
+    ?doc1 de:subject ?topic 
+    filter langMatches(lang(?topic), "en")
+    #filter regex(?topic, "Intelligence")
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", ?n)) as ?u1)
+}
+
+""" 
+]
+
+
+
+
+[ a sw:Query ;
+st:name st:topicsam ;
+rdfs:label "Inria Topic" ;
+rdfs:comment "Inria Topic."@fr ;
+rdfs:comment "Members of Inria Sophia Antipolis linked by topics"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 us:interestedIn ?topic 
+    ?u1 us:memberOf ?name
+}
+where {
+    ?sam skos:altLabel "CRISAM"
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    ?doc1 dc:creator ?s
+    ?doc1 de:subject ?topic 
+    filter regex(?topic, "Intelligence")
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", ?n)) as ?u1)
+}
+
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:confsam ;
+rdfs:label "Inria Conf" ;
+rdfs:comment "Inria Conf."@fr ;
+rdfs:comment "Members of Inria Sophia Antipolis publishing in AI conference"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 us:interestedIn ?source 
+    ?u1 us:memberOf ?name
+}
+where {
+    ?sam skos:altLabel "CRISAM"
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    ?doc1 dc:creator ?s
+    ?doc1 dc:source ?source 
+    filter regex(?source, "Artificial Intelligence")
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", ?n)) as ?u1)
+}
+
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:coauthorinria ;
+rdfs:label "INRIA Coauthor" ;
+rdfs:comment "INRIA Coauthor."@fr ;
+rdfs:comment "INRIA Sophia coauthors, member of the same team"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u1 dc:coauthor ?u2
+    ?u1 us:memberOf ?name
+    ?u2 us:memberOf ?name
+}
+where {
+    ?sam skos:altLabel "CRISAM"
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    ?s2 hsc:structure ?x .
+    ?s2 hsc:person ?p2 .
+    ?p2 foaf:name ?n2
+
+    filter (?n != ?n2)
+
+    ?doc dc:creator ?s
+    ?doc dc:creator ?s2
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", if (?n < ?n2, ?n, ?n2))) as ?u1)
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", if (?n < ?n2, ?n2, ?n))) as ?u2)
+}
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:memberinria ;
+rdfs:label "INRIA Member" ;
+rdfs:comment "INRIA Member."@fr ;
+rdfs:comment "INRIA Sophia member of teams"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?u us:memberOf ?name
+}
+where {
+    ?sam skos:altLabel "CRISAM"
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?s hsc:structure ?x .
+    ?s hsc:person ?p .
+    ?p foaf:name ?n
+
+    bind (uri(concat("http://ns.inria.fr/sparql-extension/user/", ?n)) as ?u)
+}
+""" 
+]
 
 
 

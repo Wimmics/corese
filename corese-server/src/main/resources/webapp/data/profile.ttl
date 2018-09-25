@@ -504,7 +504,8 @@ st:tutocheck a st:Profile ;
 st:tutorialhal a st:Server ;
   st:param [ st:lang 'en' ; 
     # st:sttl st:hturtle ; 
-    st:sttl st:combine ; 
+    # st:sttl st:combine ; 
+    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
     st:param "verbatim" ; 
     st:hyperlink true ; 
     st:number true ;
@@ -521,6 +522,75 @@ st:tutorialhal a st:Server ;
   st:transform st:web ;
   st:content st:tutohal
 .
+
+st:tutorialhal1 a st:Server ;
+  st:param [ st:lang 'en' ; 
+    # st:sttl st:hturtle ; 
+    # st:sttl st:combine ; 
+    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
+    st:mode st:literal ;
+    st:param "verbatim" ; 
+    st:hyperlink true ; 
+    st:number true ;
+    st:export true ;
+    st:focus false ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:service "tutohal1" ;
+  st:transform st:web ;
+  st:content st:tutohal
+.
+
+
+st:tutorialhal2 a st:Server ;
+  st:param [ st:lang 'en' ; 
+    # st:sttl st:hturtle ; 
+    # st:sttl st:combine ; 
+    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
+    st:mode st:uri ;
+    st:param "verbatim" ; 
+    st:hyperlink true ; 
+    st:number true ;
+    st:export true ;
+    st:focus false ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:service "tutohal2" ;
+  st:transform st:web ;
+  st:content st:tutohal
+.
+
+
+st:tutorialhal3 a st:Server ;
+  st:param [ st:lang 'en' ; 
+    st:sttl st:combine ; 
+    st:param "verbatim" ; 
+    st:hyperlink true ; 
+    st:number true ;
+    st:export true ;
+    st:focus false ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal)    
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:service "tutohal3" ;
+  st:transform st:web ;
+  st:content st:tutohal
+.
+
 
 st:tutohal a sw:Workflow ; sw:body ( 
     [ a sw:Parallel ; sw:body ( 

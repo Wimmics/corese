@@ -52,9 +52,20 @@ function createConfigurationPanel(rootConfPanel, graph) {
 
         confGraphModal.nodesCheckbox.on("change", function() {
             [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach( button => {
-                button.property( "checked", this.checked );
+                button.property( "checked", this.checked ); // set all the sub-checkboxes to the same value as nodesCheckbox
             });
             graph.updateConfiguration(); graph.ticked();
+        });
+        [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach( button => {
+            button.on("change", function () {
+                var allChecked = true;
+                [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach(
+                    button => allChecked = allChecked && button.property("checked")
+                );
+                confGraphModal.nodesCheckbox.property("checked", allChecked);
+                graph.updateConfiguration();
+                graph.ticked();
+            })
         });
         confGraphModal.edgesCheckbox.on("change", function() {
         	d3.select("#edgesCheckbox").property("checked"); graph.updateConfiguration(); graph.ticked()
@@ -76,11 +87,20 @@ function drawRdf(results, svgId) {
     var confGraphModal;
     var graph = d3.select(svgId);
     graph.updateConfiguration = function() {
-        textNodes.attr("visibility", confGraphModal.nodesCheckbox.property("checked") ? "visible" : "hidden");
+        var visibleNodes = new Set();
+        if (confGraphModal.bnodesCheckbox.property("checked")) visibleNodes.add("2");
+        if (confGraphModal.uriCheckbox.property("checked")) visibleNodes.add("1");
+        if (confGraphModal.literalCheckbox.property("checked")) visibleNodes.add("3");
+        var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
+        textNodes.attr(
+            "visibility",
+            (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
+        );
         textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
     };
     graph.displayNodeLabels = function() {
-        return confGraphModal.nodesCheckbox.property("checked");
+        // return confGraphModal.nodesCheckbox.property("checked") || ;
+        return true;
     }
     graph.displayEdgeLabels = function() {
         return confGraphModal.edgesCheckbox.property("checked");

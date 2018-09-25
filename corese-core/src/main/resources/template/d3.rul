@@ -15,6 +15,7 @@ template st:graph {
   st:call-template(st:edges)
 } 
 where {
+    bind (xt:print('graph size:', xt:size(xt:graph())) as ?tmp)
 }
 ]]>
 </body>
@@ -111,7 +112,8 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
+    if (st:get(st:mode, st:literal), "", 
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true)))
 }
 
 function us:shorten(?l) {
@@ -119,9 +121,11 @@ function us:shorten(?l) {
 }
 
 function us:literal(?l) {
+    if (st:get(st:mode, st:uri), "", 
     let (?s = us:shorten(?l)) {
         replace(replace(str(?s), "\n", ""), "\"", "'")
     }
+    )
 }
 ]]>
 </body>

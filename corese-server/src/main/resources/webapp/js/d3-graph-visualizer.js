@@ -86,6 +86,7 @@ var counter = 1;
 function drawRdf(results, svgId) {
     var confGraphModal;
     var graph = d3.select(svgId);
+
     graph.updateConfiguration = function() {
         var visibleNodes = new Set();
         if (confGraphModal.bnodesCheckbox.property("checked")) visibleNodes.add("2");
@@ -167,12 +168,29 @@ function drawRdf(results, svgId) {
 
 	var g = graph.append("g")
 	  .attr("class", "everything");
+	var defs = graph.append("defs");
+    defs.append('marker')
+        .attr('id','arrowhead')
+        .attr('viewBox','-0 -5 10 10')
+        .attr('refX',13)
+        .attr('refY',0)
+        .attr('orient','auto')
+        .attr('markerWidth',13)
+        .attr('markerHeight',13)
+        .attr('xoverflow','visible')
+        .append('svg:path')
+        .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        .attr('fill', '#999')
+        .style('stroke','none');
 	var link = g.append("g")
-		.attr("class", "links")
+		.attr("class", "link")
 		.selectAll("line")
 		.data(results.links)
 		.enter().append("line")
-		.attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+		.attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+        .attr('marker-end','url(#arrowhead)')
+        .style("stroke", "black");
+
 	link.append("title")
 		.text(function(d) { return d.label; });
 

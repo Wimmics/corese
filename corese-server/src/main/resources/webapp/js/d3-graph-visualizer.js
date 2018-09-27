@@ -179,7 +179,7 @@ function drawRdf(results, svgId) {
         .attr('markerHeight',13)
         .attr('xoverflow','visible')
         .append('svg:path')
-        .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        .attr('d', 'M 0,-2 L 10 ,0 L 0,2')
         .attr('fill', '#999')
         .style('stroke','none');
 	var link = g.append("g")

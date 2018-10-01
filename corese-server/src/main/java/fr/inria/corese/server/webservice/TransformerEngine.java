@@ -90,13 +90,14 @@ public class TransformerEngine {
         IDatatype swdt = context.get(Context.STL_WORKFLOW);
         String transform = context.getTransform();
         if (swdt != null) {
-            // there is a workflow
-            if (query != null) {
-                logger.warn("Workflow skip query: " + query);
-            }
+            // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.parse(profile.getNode(swdt));
+            if (query != null) {
+                logger.warn("Workflow query: " + query);
+                wp.addQuery(query, 0);
+            }
         } else if (query != null) {          
             if (transform == null) {
                 logger.info("SPARQL endpoint");

@@ -2,10 +2,24 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 10:22:36 CEST 2018
+Mon Oct 01 10:13:48 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+template st:map {
+    st:call-template-with(st:navlab, st:map, ?list)        
+} 
+where {
+    bind (st:get(st:pos) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -15,7 +29,6 @@ template st:graph {
   st:call-template(st:edges)
 } 
 where {
-    bind (xt:print('graph size:', xt:size(xt:graph())) as ?tmp)
 }
 ]]>
 </body>
@@ -63,8 +76,7 @@ template st:nodes {
     format {
         '{"id": "%s", "label": "%s", "group": "%s"}'
         
-        us:get(?s) us:label(?s)
-        if (isURI(?s), 1, if (isBlank(?s), 2, 3))
+        us:get(?s) us:label(?s) us:kind(?s)
         }
     ; separator = ",\n"
   }
@@ -88,6 +100,12 @@ where {}
 
 function us:start() {
     set(?map = xt:map())
+}
+
+function us:kind(?s) {
+    if (st:cget(st:group, ?s, st:other), 2,
+    if (isURI(?s), 1, 
+    if (isBlank(?s), 2, 3)))
 }
 
 function us:record(?s) {
@@ -117,7 +135,7 @@ function us:uri(?u) {
 }
 
 function us:shorten(?l) {
-    let (?s = if (strlen(?l) > 50, concat(substr(?l, 1, 50), ".."), ?l)) { ?s }
+    let (?s = if (strlen(?l) > 50, concat(substr(?l, 1, 50), "..."), ?l)) { ?s }
 }
 
 function us:literal(?l) {

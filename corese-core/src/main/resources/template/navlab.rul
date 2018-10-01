@@ -2,44 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 15:27:10 CEST 2018
+Mon Oct 01 10:13:48 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate resource on a map given lat et long
-#
-prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
-
-template st:gmap(?r, ?lat, ?lon, ?list) {
-
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
-  
-format {
-  ft:map.html
-  
-  str(?lat)
-  str(?lon)
-  coalesce(st:get(st:mapzoom), 7)  
-  coalesce(st:get(st:mapicon1), "/img/bmarker.png")
-  
-  st:call-template(st:gmap2, ?list)
-  
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script2.js))
-        
-  coalesce(st:get(st:mapsize), "mapmedium")
-}
-   
-}
-where {
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -82,49 +48,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Geolocate resource on a map given lat et long
-#
-prefix p: <http://fr.dbpedia.org/property/>
-prefix o: <http://dbpedia.org/ontology/>
-
-template st:glocate {
-
-  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
-  
-}
-where {
-  ?in a o:Place 
-
-  optional { 
-    ?in o:place [ 
-    p:longitude ?lon ;
-    p:latitude  ?lat] } 
-    
-  optional {
-    ?in p:longitude ?lon ;
-    p:latitude  ?lat }
-       
-  # search all other Place resources   
-   optional {
-      select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
-      where {
-        bind (st:get(st:dataset) as ?g)
-	graph ?g {
-	  ?res p:longitude ?lon ; p:latitude ?lat
-	}
-      }
-   }
-   filter(! bound(?res) || ?in != ?res)
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:icon(?label, ?ic) {
   format {
@@ -133,22 +56,6 @@ template st:icon(?label, ?ic) {
   }
 }
 where {}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:graph {
-  
-      st:call-template-with(st:d3, st:frame)
-
-  
-}
-where {
-}
 ]]>
 </body>
 </rule>
@@ -318,6 +225,292 @@ function us:person(){
 <rule>
 <body>
 <![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:maplist(?list) {
+  
+format {
+  ft:map.html
+  
+  str(?lat) 
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/smarker.png")
+  
+  st:call-template(st:gmap2, ?rest)
+          
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+  bind (xt:get(?list, 0) as ?fst) 
+  bind (xt:get(?fst, 1) as ?lat) 
+  bind (xt:get(?fst, 2) as ?lon) 
+  bind (let ((?a | ?rst) = ?list) { ?rst } as ?rest)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
+format {
+  ft:triple.html
+ 
+  str(?title)
+  st:call-template(?temp, ?r, ?p)
+ }
+}
+where {} 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+template st:title(?r, ?l, ?i) {
+ 
+  "<div class='center'>" 
+  
+  "<h2>"  str(?l) "</h2>"
+  
+ """<p>"""
+    coalesce(str(?b), "")
+    if (bound(?b) && bound(?d), " -- " , "")
+    coalesce(str(?d), "")
+  """</p>
+  """
+  
+  "</div>"
+
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:select {
+
+  st:apply-templates(?x)
+  
+}
+where {
+  { ?x a foaf:Person } 
+  union { ?x a o:Place }
+  union { ?x a o:Resource }
+  
+ filter(?x = coalesce(st:get(st:uri), ?x))
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:  <http://fr.dbpedia.org/property/>
+
+template st:substart(?x) {
+
+  st:call-template(st:head, st:head)
+
+  st:apply-templates(?x)
+   
+  st:call-template(st:tail, st:tail)
+  
+}
+where { 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Link to server
+#
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+
+template  st:display(?r, ?l) {
+  format {
+    ft:link.html
+    st:pplink(?r)
+    str(coalesce(?l, ?pr))
+  }
+}
+
+where {
+   bind (
+   if (strstarts(?r, r:), concat(w:, (substr(?r, strlen(r:) + 1))), ?r) 
+   as ?pr)   
+}
+ 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:gmap(?r, ?lat, ?lon, ?list) {
+
+  if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
+  
+format {
+  ft:gmap.html
+  
+  str(?lat)
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/bmarker.png")
+  
+  st:call-template(st:gmap2, ?list)
+  
+  if (st:get(st:protocol, st:ajax), "", st:format(ft:script2.js))
+        
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:map2 {
+    st:call-template(st:maplist, ?list)        
+} 
+where {
+    bind (st:get(st:location) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:glocate {
+
+  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
+  
+}
+where {
+  ?in a o:Place 
+
+  optional { 
+    ?in o:place [ 
+    p:longitude ?lon ;
+    p:latitude  ?lat] } 
+    
+  optional {
+    ?in p:longitude ?lon ;
+    p:latitude  ?lat }
+       
+  # search all other Place resources   
+   optional {
+      select (xt:list(?res, ?lat, ?lon) as ?elem) ?res
+      where {
+        bind (st:get(st:dataset) as ?g)
+	graph ?g {
+	  ?res p:longitude ?lon ; p:latitude ?lat
+	}
+      }
+   }
+   filter(! bound(?res) || ?in != ?res)
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:map1 {
+let ((?fst | ?rst) = ?list, (?a ?b ?c) = ?fst) {
+    st:call-template(st:gmap, ?a, ?b, ?c, ?rst) 
+}
+} 
+where {
+    bind (st:get(st:location) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:graph {
+  
+      st:call-template-with(st:d3, st:frame)
+
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
@@ -343,16 +536,14 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
-template st:desctriple(?n, ?r, ?p, ?title, ?temp) {
-format {
-  ft:triple.html
- 
-  str(?title)
-  st:call-template(?temp, ?r, ?p)
- }
+template st:map {
+    st:call-template(st:maplist, ?list)        
+} 
+where {
+    bind (st:get(st:location) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
 }
-where {} 
+
 ]]>
 </body>
 </rule>
@@ -426,38 +617,8 @@ template st:gmap2(?list) {
 }
 where {
 
-  bind (unnest(?list) as (?r, ?lat, ?lon))
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:    <http://fr.dbpedia.org/property/>
-
-template st:title(?r, ?l, ?i) {
+  values  (?r ?lat ?lon) { unnest(?list) }
  
-  "<div class='center'>" 
-  
-  "<h2>"  str(?l) "</h2>"
-  
- """<p>"""
-    coalesce(str(?b), "")
-    if (bound(?b) && bound(?d), " -- " , "")
-    coalesce(str(?d), "")
-  """</p>
-  """
-  
-  "</div>"
-
-}
-where {
 }
 ]]>
 </body>
@@ -484,54 +645,6 @@ where {
    ?r ?p ?v 
 }
  
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:  <http://fr.dbpedia.org/property/>
-
-template st:select {
-
-  st:apply-templates(?x)
-  
-}
-where {
-  { ?x a foaf:Person } 
-  union { ?x a o:Place }
-  union { ?x a o:Resource }
-  
- filter(?x = coalesce(st:get(st:uri), ?x))
-}
-limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:  <http://fr.dbpedia.org/property/>
-
-template st:substart(?x) {
-
-  st:call-template(st:head, st:head)
-
-  st:apply-templates(?x)
-   
-  st:call-template(st:tail, st:tail)
-  
-}
-where { 
-}
 ]]>
 </body>
 </rule>
@@ -595,38 +708,6 @@ where {
   bind (if (st:get(st:lang, "en"), ?titleen, ?title) as ?tt)
 
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Link to server
-#
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:    <http://fr.dbpedia.org/property/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
-
-
-template  st:display(?r, ?l) {
-  format {
-    ft:link.html
-    st:pplink(?r)
-    str(coalesce(?l, ?pr))
-  }
-}
-
-where {
-   bind (
-   if (strstarts(?r, r:), concat(w:, (substr(?r, strlen(r:) + 1))), ?r) 
-   as ?pr)   
-}
- 
 ]]>
 </body>
 </rule>

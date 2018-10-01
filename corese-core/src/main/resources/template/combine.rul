@@ -9,19 +9,41 @@ Fri Sep 21 10:22:36 CEST 2018
 <rule>
 <body>
 <![CDATA[
-prefix hs: <https://data.archives-ouvertes.fr/structure/>
 template st:start {
-    st:call-template-with(st:d3, st:frame, us:d3clean)
-    st:apply-templates-with(coalesce(st:get(st:sttl2), st:hturtle))
+    if (bound(?list), st:call-template(st:main, ?list), 
+        st:call-template(st:old))
 }
-where {}
-
-@public
-function us:d3clean(?s) {
-    if (strstarts(?s, hs:), "", ?s)
+where {
+    bind (st:get(st:transformations) as ?list)
 }
 ]]>
 </body>
 </rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:main(?list) {
+       st:apply-templates-with(?sttl) 
+}
+where {
+    values ?sttl { unnest(?list) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:old {
+    st:apply-templates-with(coalesce(st:get(st:sttl1), <http://ns.inria.fr/sparql-template/d3#frame> ))
+    st:apply-templates-with(coalesce(st:get(st:sttl2), st:hturtle))
+}
+where {}
+]]>
+</body>
+</rule>
+
 
 </rdf:RDF>

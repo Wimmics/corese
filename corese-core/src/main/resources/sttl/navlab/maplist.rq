@@ -1,0 +1,27 @@
+#
+# Geolocate resource on a map given lat et long
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:maplist(?list) {
+  
+format {
+  ft:map.html
+  
+  str(?lat) 
+  str(?lon)
+  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapicon1), "/img/smarker.png")
+  
+  st:call-template(st:gmap2, ?rest)
+          
+  coalesce(st:get(st:mapsize), "mapmedium")
+}
+   
+}
+where {
+  bind (xt:get(?list, 0) as ?fst) 
+  bind (xt:get(?fst, 1) as ?lat) 
+  bind (xt:get(?fst, 2) as ?lon) 
+  bind (let ((?a | ?rst) = ?list) { ?rst } as ?rest)
+}

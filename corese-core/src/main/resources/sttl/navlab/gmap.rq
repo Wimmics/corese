@@ -8,7 +8,7 @@ template st:gmap(?r, ?lat, ?lon, ?list) {
   if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
   
 format {
-  ft:map.html
+  ft:gmap.html
   
   str(?lat)
   str(?lon)

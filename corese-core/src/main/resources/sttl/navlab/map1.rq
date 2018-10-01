@@ -1,0 +1,10 @@
+template st:map1 {
+let ((?fst | ?rst) = ?list, (?a ?b ?c) = ?fst) {
+    st:call-template(st:gmap, ?a, ?b, ?c, ?rst) 
+}
+} 
+where {
+    bind (st:get(st:location) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+

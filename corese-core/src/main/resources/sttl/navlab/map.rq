@@ -1,0 +1,8 @@
+template st:map {
+    st:call-template(st:maplist, ?list)        
+} 
+where {
+    bind (st:get(st:location) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+

@@ -16,6 +16,6 @@ template st:gmap2(?list) {
 }
 where {
 
-  bind (unnest(?list) as (?r, ?lat, ?lon))
-  
+  values  (?r ?lat ?lon) { unnest(?list) }
+ 
 }

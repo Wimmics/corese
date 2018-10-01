@@ -4,8 +4,7 @@ template st:nodes {
     format {
         '{"id": "%s", "label": "%s", "group": "%s"}'
         
-        us:get(?s) us:label(?s)
-        if (isURI(?s), 1, if (isBlank(?s), 2, 3))
+        us:get(?s) us:label(?s) us:kind(?s)
         }
     ; separator = ",\n"
   }

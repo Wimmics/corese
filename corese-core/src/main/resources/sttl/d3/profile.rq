@@ -5,6 +5,12 @@ function us:start() {
     set(?map = xt:map())
 }
 
+function us:kind(?s) {
+    if (st:cget(st:group, ?s, st:other), 2,
+    if (isURI(?s), 1, 
+    if (isBlank(?s), 2, 3)))
+}
+
 function us:record(?s) {
    xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
 }

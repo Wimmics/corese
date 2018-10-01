@@ -1,0 +1,5 @@
+template st:old {
+    st:apply-templates-with(coalesce(st:get(st:sttl1), <http://ns.inria.fr/sparql-template/d3#frame> ))
+    st:apply-templates-with(coalesce(st:get(st:sttl2), st:hturtle))
+}
+where {}

@@ -1,0 +1,6 @@
+template st:main(?list) {
+       st:apply-templates-with(?sttl) 
+}
+where {
+    values ?sttl { unnest(?list) }
+}

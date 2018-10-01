@@ -46,10 +46,20 @@ public class SemanticWorkflow extends  CompositeProcess {
         insert(p);
         p.subscribe(this);
         return this;
+    }  
+    
+    public SemanticWorkflow add(WorkflowProcess p, int n){
+        insert(p, n);
+        p.subscribe(this);
+        return this;
     }    
     
     public SemanticWorkflow addQuery(String q){
        return add(new SPARQLProcess(q));
+    }
+    
+    public SemanticWorkflow addQuery(String q, int n){
+       return add(new SPARQLProcess(q), n);
     }
     
     public SemanticWorkflow addQuery(String q, String path){

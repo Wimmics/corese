@@ -25,7 +25,9 @@ public class CompositeProcess extends WorkflowProcess {
         processList.add(p);
     }
     
-   
+    public void insert(WorkflowProcess p, int n){
+        processList.add(n, p);
+    }
      public WorkflowProcess getProcessLast(){
          if (processList.isEmpty()){
              return null;

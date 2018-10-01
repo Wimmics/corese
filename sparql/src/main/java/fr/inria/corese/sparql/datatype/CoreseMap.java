@@ -72,6 +72,11 @@ public class CoreseMap extends CoreseUndefLiteral {
     }
     
     @Override
+    public IDatatype member(IDatatype key) {
+        return  map.containsKey(key) ? TRUE : FALSE;
+    }
+    
+    @Override
     public IDatatype get(IDatatype key) {
         return map.get(key);
     }

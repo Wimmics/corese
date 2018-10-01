@@ -35,6 +35,13 @@ public class CGetSetContext extends TemplateFunction {
                         return c.getContext(param[0]).getDatatypeValue();
                     case 2:
                         return c.cget(param[0], param[1]);
+                    case 3:
+                        IDatatype dt = c.cget(param[0], param[1]);
+                        if (dt == null) {
+                            return FALSE;
+                        }
+                        boolean res = dt.equals(param[2]);
+                        return (res) ? TRUE : FALSE;
                     default:
                         return null;
                 }

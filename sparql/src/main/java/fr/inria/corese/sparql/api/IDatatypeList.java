@@ -27,8 +27,6 @@ public interface IDatatypeList extends IDatatype {
     IDatatype remove(IDatatype elem);
     IDatatype remove(int ind);
 
-    IDatatype member(IDatatype elem);
-
     IDatatype cons(IDatatype elem);
     
     IDatatype add(IDatatype elem);

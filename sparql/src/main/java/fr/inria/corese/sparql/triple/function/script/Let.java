@@ -77,7 +77,7 @@ public class Let extends Statement {
         if (val == null) {
             return null;
         }
-        if (val == DatatypeMap.UNBOUND) {
+        else if (val == DatatypeMap.UNBOUND) {
             val = null;
         }
         Variable var = getVariable();

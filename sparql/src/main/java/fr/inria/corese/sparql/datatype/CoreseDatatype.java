@@ -399,6 +399,8 @@ public class CoreseDatatype
         return DatatypeMap.newInstance(getValueList());
     }
     
+    
+    
     @Override
     public Iterator<IDatatype> iterator() {
         if (isLoop()){

@@ -97,7 +97,11 @@ public interface IDatatype
     List<IDatatype> getValues();
     List<IDatatype> getValueList();
     IDatatype toList();
-    IDatatypeList getList();    
+    IDatatypeList getList();  
+    default IDatatype member(IDatatype elem) {
+        return null;
+    }
+
     
     Iterable getLoop();
 

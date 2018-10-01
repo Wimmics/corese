@@ -59,7 +59,7 @@ st:dbpediatestwf a sw:Workflow ;
 st:hal a st:Server ;
 st:service "hal" ;
 st:param [ 
-    st:sttl2 st:hturtle ;
+    st:transformations (<http://ns.inria.fr/sparql-template/d3#frame> st:hturtle) ;
     # export context parameters to subtransformation (st:profile, etc.):
     st:export true;
     # transformation does not focus on uri but display whole graph:
@@ -503,14 +503,17 @@ st:tutocheck a st:Profile ;
 
 st:tutorialhal a st:Server ;
   st:param [ st:lang 'en' ; 
-    # st:sttl st:hturtle ; 
-    # st:sttl st:combine ; 
-    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
+    st:sttl st:combine ; 
+    st:transformations (
+        <http://ns.inria.fr/sparql-template/d3#frame>  
+        <http://ns.inria.fr/sparql-template/navlab#map> ) ;
     st:param "verbatim" ; 
     st:hyperlink true ; 
     st:number true ;
     st:export true ;
     st:focus false ;
+    st:mapzoom 3 ;
+    st:mapsize "mapmedium" ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
         (<https://data.archives-ouvertes.fr/> st:hal)
@@ -519,14 +522,19 @@ st:tutorialhal a st:Server ;
     ) 
   ] ;
   st:service "tutohal" ;
-  st:transform st:web ;
+  st:workflow st:halwf ;
   st:content st:tutohal
+.
+
+
+st:halwf a sw:Workflow ; sw:body (
+    #[ a sw:Query ; sw:uri <query/hal/test.rq> ]
+    [ a sw:Transformation ; sw:uri st:web ]
+)
 .
 
 st:tutorialhal1 a st:Server ;
   st:param [ st:lang 'en' ; 
-    # st:sttl st:hturtle ; 
-    # st:sttl st:combine ; 
     st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
     st:mode st:literal ;
     st:param "verbatim" ; 
@@ -549,8 +557,6 @@ st:tutorialhal1 a st:Server ;
 
 st:tutorialhal2 a st:Server ;
   st:param [ st:lang 'en' ; 
-    # st:sttl st:hturtle ; 
-    # st:sttl st:combine ; 
     st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
     st:mode st:uri ;
     st:param "verbatim" ; 

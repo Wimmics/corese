@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 15:27:10 CEST 2018
+Mon Oct 01 18:27:54 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -293,11 +293,24 @@ function us:clean(?s){
     "", ?s)
 }
 
+function us:split(?list, ?n) {
+  let (?table = xt:list()) {
+    xt:add(?table, xt:list());
+    for (?e in ?list) {
+      if (xt:size(xt:first(?table)) = ?n) {
+        xt:add(?table, 0, xt:list())
+      } ;
+      xt:add(xt:first(?table), ?e)
+    } ;
+    return (xt:reverse(?table))
+  } 
+}
+
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
 function us:table(?list, ?size){
- let (?table  = st:split(?list, ?size)) {
+ let (?table  = us:split(?list, ?size)) {
      st:format(ft:table.html, 
       let (?n = 0){
 	    loop (?row in ?table){

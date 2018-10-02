@@ -208,14 +208,7 @@ template st:profile {
 }
 where {}
 
-function us:format2(?name) {
-    st:getFormat("calcontent", ?name)
-}
-
-
-
-
-    
+  
 ]]>
 </body>
 </rule>

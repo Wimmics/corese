@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Oct 01 10:13:48 CEST 2018
+Mon Oct 01 18:27:54 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -29,6 +29,7 @@ template st:graph {
   st:call-template(st:edges)
 } 
 where {
+    bind (xt:print('graph size', xt:size(xt:graph())) as ?tmp)
 }
 ]]>
 </body>

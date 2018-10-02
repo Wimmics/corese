@@ -87,18 +87,7 @@ function drawRdf(results, svgId) {
     var confGraphModal;
     var graph = d3.select(svgId);
 
-    graph.updateConfiguration = function() {
-        var visibleNodes = new Set();
-        if (confGraphModal.bnodesCheckbox.property("checked")) visibleNodes.add("2");
-        if (confGraphModal.uriCheckbox.property("checked")) visibleNodes.add("1");
-        if (confGraphModal.literalCheckbox.property("checked")) visibleNodes.add("3");
-        var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
-        textNodes.attr(
-            "visibility",
-            (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
-        );
-        textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
-    };
+
     graph.displayNodeLabels = function() {
         // return confGraphModal.nodesCheckbox.property("checked") || ;
         return true;
@@ -123,9 +112,16 @@ function drawRdf(results, svgId) {
                 .attr("y", d => d.y * scale);
         }
         if (graph.displayEdgeLabels()) {
-            textEdges
-                .attr("x", (d,i,nodes) => ((d.source.x + d.target.x) / 2) * scale )
-                .attr("y", (d,i,nodes) => ((d.source.y + d.target.y) / 2) * scale );
+        //    textEdges
+        //        .attr("x", (d, i, nodes) => ((d.source.x + d.target.x) / 2) * scale)
+        //        .attr("y", (d, i, nodes) => ((d.source.y + d.target.y) / 2) * scale);
+            pathLabels
+                .attr("d", (links => {
+                        return (edge, i, edges) => {
+                            return `M ${links[i].source.x * scale},${links[i].source.y * scale} L ${links[i].target.x * scale},${links[i].target.y * scale}`;
+                        };
+                    })(results.links)
+                );
         }
     };
     graph.zoomed = function() {
@@ -140,6 +136,20 @@ function drawRdf(results, svgId) {
 
     var rootConfPanel = d3.select( d3.select(svgId).node().parentNode, graph );
     confGraphModal = createConfigurationPanel(rootConfPanel, graph);
+    graph.updateConfiguration = function(modal) {
+        return function () {
+            var visibleNodes = new Set();
+            if (modal.bnodesCheckbox.property("checked")) visibleNodes.add("2");
+            if (modal.uriCheckbox.property("checked")) visibleNodes.add("1");
+            if (modal.literalCheckbox.property("checked")) visibleNodes.add("3");
+            var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
+            textNodes.attr(
+                "visibility",
+                (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
+            );
+            textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
+        };
+    }(confGraphModal);
 
     var maxLen = [];
     results.nodes.forEach(
@@ -182,6 +192,8 @@ function drawRdf(results, svgId) {
         .attr('d', 'M 0,-2 L 10 ,0 L 0,2')
         .attr('fill', '#999')
         .style('stroke','none');
+
+
 	var link = g.append("g")
 		.attr("class", "link")
 		.selectAll("line")
@@ -207,7 +219,7 @@ function drawRdf(results, svgId) {
 			.on("end", dragended));
 	node.append("title")
 		.text(function(d) { return d.label; });
-    textNodes = g.append("g").selectAll("text")
+    var textNodes = g.append("g").selectAll("text")
         .data(simulation.nodes())
         .enter().append("text")
         .attr("x", 8)
@@ -216,9 +228,12 @@ function drawRdf(results, svgId) {
     var textEdges = g.append("g").selectAll("text")
         .data(results.links)
         .enter().append("text")
-        .attr("x", 8)
-        .attr("y", ".31em")
-        .text(function(d) { return d.label; });
+        .append("textPath")
+        .attr("startOffset", "25%")
+        .text(function(d) { return d.label; })
+        .attr("xlink:href", (edge, i, edges) => {
+            return "#"+edge.id;
+        });
 
     var fo = graph.append('foreignObject').attr("width", "100%").attr("height", "100%");
     var button = fo.append("xhtml:button")
@@ -245,6 +260,18 @@ function drawRdf(results, svgId) {
 		.links(results.links);
 	simulation
         .force("center", d3.forceCenter(width / 2, height / 2));
+    var pathLabels = defs.selectAll("path")
+        .data(results.links)
+        .enter().append("path")
+        .attr("id", (edge, i, edges) => {
+            return edge.id;
+        })
+        .attr("d", (links => {
+                return (edge, i, edges) => {
+                    return `M ${links[i].source.x},${links[i].source.y} L ${links[i].target.x},${links[i].target.y}`;
+                };
+            })(results.links)
+        );
 	//add zoom capabilities
 	var zoom_handler = d3.zoom()
 		.on("zoom", graph.zoomed);

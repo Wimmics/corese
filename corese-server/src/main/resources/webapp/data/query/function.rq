@@ -140,61 +140,6 @@ function st:match(?x, ?decl){
   
 # ____________________________________________________
 
-#
-# Generate a HTML table
-# call user defined us:cell() to generate cells
-#
-function st:table(?table){
-  st:format(
-    "<table class='table'>\n%s</table>\n", 
-      apply(rq:concat, maplist(st:row, xt:iota(xt:size(?table)), ?table)))
-}
-
-function st:row(?n, ?row){
-   st:format("<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n", 
-    ?n,
-    mapfun(rq:concat, st:cell, ?row))  
-}
-
-function st:cell(?elem){
-   st:format(
-    "<td style='vertical-align: bottom'>%s</td>\n", 
-    ?elem)  
-}	
-
-
-#
-# Generate a list of sublist with ?nc elements in each sublist
-# Use case: generate a HTML table.
-#
-function st:split(?l, ?n){
-  xt:split(?l, ?n)
-}
-
-function xt:split(?list, ?n) {
-  let (?table = xt:list()) {
-    xt:add(?table, xt:list());
-    for (?e in ?list) {
-      if (xt:size(xt:first(?table)) = ?n) {
-        xt:add(?table, 0, xt:list())
-      } ;
-      xt:add(xt:first(?table), ?e)
-    } ;
-    return (xt:reverse(?table))
-  } 
-}
-
-
-
-# ____________________________________________________
-
-function st:getFormat(?dir, ?name) {
-    uri(concat(st:get(st:server), "/data/format/", ?dir, "/", ?name))
-}
-
-function st:server(?name){
-  st:call-template-with(st:server, ?name)
-}
 
 function st:head(){
   if (st:isAjax(), "",
@@ -206,22 +151,5 @@ function st:tail(){
     st:server(st:dotail))
 }
 
-function st:bstyle(){
-   if (st:isAjax(), 
-    st:server(st:bstyle), "")   
-}
-
-function st:sstyle(){
-   st:server(st:sstyle) 
-}
-
-function st:submit(){
-    if (st:isAjax()){ st:server(st:submit) }
-    else { "" }
-}
-
-function st:change(){
-  st:server(st:change)
-}
 
 }

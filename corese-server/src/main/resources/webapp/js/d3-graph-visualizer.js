@@ -1,6 +1,6 @@
 var simulation;
 var sheet = document.createElement('style');
-sheet.innerHTML = ".links line { stroke: #999; stroke-opacity: 0.6; } .nodes circle { stroke: #fff; stroke-width: 1.5px; }";
+sheet.innerHTML = ".links line { stroke: grey; stroke-opacity: 0.6; } .nodes circle { stroke: #fff; stroke-width: 1.5px; }";
 document.head.appendChild(sheet);
 
 function dragstarted(d) {
@@ -178,27 +178,28 @@ function drawRdf(results, svgId) {
 	var defs = graph.append("defs");
     defs.append('marker')
         .attr('id','arrowhead')
-        .attr('viewBox','-0 -5 10 10')
-        .attr('refX',13)
+        .attr('viewBox','-0 -50 100 100')
+        .attr('refX',130)
         .attr('refY',0)
         .attr('orient','auto')
-        .attr('markerWidth',13)
-        .attr('markerHeight',13)
+        .attr('markerWidth',130)
+        .attr('markerHeight',130)
         .attr('xoverflow','visible')
         .append('svg:path')
-        .attr('d', 'M 0,-2 L 10 ,0 L 0,2')
-        .style('stroke','none')
+        .attr('d', 'M 0,-20 L 100 ,0 L 0,20')
+        .style('stroke','grey')
+        .style('fill','grey')
     ;
 
 
 	var link = g.append("g")
-		.attr("class", "link")
+		.attr("class", "links")
 		.selectAll("line")
 		.data(results.links)
 		.enter().append("line")
-		.attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+		.attr("stroke-width",0.1)
         .attr('marker-end','url(#arrowhead)')
-        .style("stroke", "black");
+	;
 
 	link.append("title")
 		.text(function(d) { return d.label; });

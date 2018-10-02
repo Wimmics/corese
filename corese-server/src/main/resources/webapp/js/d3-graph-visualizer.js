@@ -112,9 +112,6 @@ function drawRdf(results, svgId) {
                 .attr("y", d => d.y * scale);
         }
         if (graph.displayEdgeLabels()) {
-        //    textEdges
-        //        .attr("x", (d, i, nodes) => ((d.source.x + d.target.x) / 2) * scale)
-        //        .attr("y", (d, i, nodes) => ((d.source.y + d.target.y) / 2) * scale);
             pathLabels
                 .attr("d", (links => {
                         return (edge, i, edges) => {
@@ -190,8 +187,8 @@ function drawRdf(results, svgId) {
         .attr('xoverflow','visible')
         .append('svg:path')
         .attr('d', 'M 0,-2 L 10 ,0 L 0,2')
-        .attr('fill', '#999')
-        .style('stroke','none');
+        .style('stroke','none')
+    ;
 
 
 	var link = g.append("g")

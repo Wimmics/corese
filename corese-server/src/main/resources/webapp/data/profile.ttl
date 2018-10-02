@@ -244,14 +244,6 @@ st:dbhistorytype a st:Profile ;
   ] .  
  
  
-st:dbedit a st:Profile ;
-  st:param [
-    st:uri <http://ns.inria.fr/sparql-template/date/09/2015> ;
-    # st:plink() include in hyperlink: mode = dbo:Artist
-    st:include (("mode" st:mode))
-  ] ;
-  st:transform st:dbedit .
-  
 
   
 st:mapParam
@@ -506,7 +498,9 @@ st:tutorialhal a st:Server ;
     st:sttl st:combine ; 
     st:transformations (
         <http://ns.inria.fr/sparql-template/d3#frame>  
-        <http://ns.inria.fr/sparql-template/navlab#map> ) ;
+        <http://ns.inria.fr/sparql-template/navlab#map> 
+        st:hturtle
+        ) ;
     st:param "verbatim" ; 
     st:hyperlink true ; 
     st:number true ;

@@ -521,7 +521,7 @@ service <http://fr.dbpedia.org/sparql> {
 function us:after(?map) {
     let (?list = xt:list(), ?table = xt:map()) {
         for ((?country ?lat ?lon) in ?map) {
-            if (! xt:member(?table, ?country)) {
+            if (! xt:member(?country, ?table)) {
                 xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
                 xt:set(?table, ?country, ?country)
             }

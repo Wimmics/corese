@@ -359,7 +359,7 @@ select distinct ?n ?n2 ?name where {
     ?s2 hsc:person ?p2 .
     ?p2 foaf:name ?n2
 
-    filter (?n != ?n2)
+    filter (?n < ?n2)
 
     ?doc dc:creator ?s
     ?doc dc:creator ?s2

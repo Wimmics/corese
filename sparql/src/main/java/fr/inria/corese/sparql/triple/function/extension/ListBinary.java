@@ -31,7 +31,9 @@ public class ListBinary extends BinaryFunction {
         }       
         switch (oper()) {
             case ExprType.XT_MEMBER:
-                return dt1.member(dt2); //DatatypeMap.member(dt1, dt2);            
+                // return DatatypeMap.member(dt1, dt2);            
+                // dt1 = elem, dt2 = list/table
+                return dt2.member(dt1); 
             case ExprType.XT_CONS:
                 return DatatypeMap.cons(dt1, dt2);
             case ExprType.XT_APPEND:

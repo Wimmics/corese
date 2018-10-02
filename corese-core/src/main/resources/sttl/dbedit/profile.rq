@@ -46,11 +46,24 @@ function us:clean(?s){
     "", ?s)
 }
 
+function us:split(?list, ?n) {
+  let (?table = xt:list()) {
+    xt:add(?table, xt:list());
+    for (?e in ?list) {
+      if (xt:size(xt:first(?table)) = ?n) {
+        xt:add(?table, 0, xt:list())
+      } ;
+      xt:add(xt:first(?table), ?e)
+    } ;
+    return (xt:reverse(?table))
+  } 
+}
+
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
 function us:table(?list, ?size){
- let ( ?table  = st:split(?list, ?size),
+ let ( ?table  = us:split(?list, ?size),
        ?ftable = coalesce(us:format("table.html"), "<table class='table'>\n%s</table>\n"),
        ?frow   = coalesce(us:format("tr.html"),    "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n"),
        ?fcell  = coalesce(us:format("td.html"),    "<td style='vertical-align: bottom'>%s</td>\n"))

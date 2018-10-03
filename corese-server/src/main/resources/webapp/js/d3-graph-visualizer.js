@@ -1,6 +1,6 @@
 var simulation;
 var sheet = document.createElement('style');
-sheet.innerHTML = ".links line { stroke: grey; stroke-opacity: 0.6; } .nodes circle { stroke: #fff; stroke-width: 1.5px; }";
+sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } .nodes circle { stroke: #fff; stroke-width: 1.5px; }";
 document.head.appendChild(sheet);
 
 function dragstarted(d) {
@@ -197,8 +197,6 @@ function drawRdf(results, svgId) {
 		.selectAll("line")
 		.data(results.links)
 		.enter().append("line")
-		.attr("stroke-width",0.1)
-        .attr('marker-end','url(#arrowhead)')
 	;
 
 	link.append("title")

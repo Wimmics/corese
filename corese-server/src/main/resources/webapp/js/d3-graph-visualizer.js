@@ -19,7 +19,21 @@ function dragended(d) {
   d.fx = null;
   d.fy = null;
 }
+function buildPathFromEdge(scale)
+{
+    return links => {
+        return (edge, i, edges) => {
+            var lefterPoint, righterPoint;
+            [lefterPoint, righterPoint] = (links[i].source.x <= links[i].target.x) ? [links[i].source, links[i].target] : [links[i].target, links[i].source];
+            var leftx = lefterPoint.x * scale;
+            var lefty = lefterPoint.y * scale;
+            var rightx = righterPoint.x * scale;
+            var righty = righterPoint.y * scale;
 
+            return `M ${leftx},${lefty} L ${rightx},${righty}`;
+        };
+    }
+}
 function createConfigurationPanel(rootConfPanel, graph) {
 	var result = d3.select("#configurationGraph");
 	if (result.size() === 0) {
@@ -112,13 +126,7 @@ function drawRdf(results, svgId) {
                 .attr("y", d => d.y * scale);
         }
         if (graph.displayEdgeLabels()) {
-            pathLabels
-                .attr("d", (links => {
-                        return (edge, i, edges) => {
-                            return `M ${links[i].source.x * scale},${links[i].source.y * scale} L ${links[i].target.x * scale},${links[i].target.y * scale}`;
-                        };
-                    })(results.links)
-                );
+            pathLabels.attr( "d", buildPathFromEdge(scale)(results.links) );
         }
     };
     graph.zoomed = function() {
@@ -262,12 +270,7 @@ function drawRdf(results, svgId) {
         .attr("id", (edge, i, edges) => {
             return edge.id;
         })
-        .attr("d", (links => {
-                return (edge, i, edges) => {
-                    return `M ${links[i].source.x},${links[i].source.y} L ${links[i].target.x},${links[i].target.y}`;
-                };
-            })(results.links)
-        );
+        .attr("d", buildPathFromEdge(1)(results.links) );
 	//add zoom capabilities
 	var zoom_handler = d3.zoom()
 		.on("zoom", graph.zoomed);

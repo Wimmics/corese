@@ -142,13 +142,11 @@ function st:match(?x, ?decl){
 
 
 function st:head(){
-  if (st:isAjax(), "",
-    st:server(st:dohead))
+return ("")
 }
 
 function st:tail(){
-  if (st:isAjax(), "",
-    st:server(st:dotail))
+    return ("")
 }
 
 

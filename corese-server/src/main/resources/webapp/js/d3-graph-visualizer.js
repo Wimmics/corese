@@ -1,8 +1,10 @@
 var simulation;
 var sheet = document.createElement('style');
-sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } " +
-    ".nodes circle { stroke: #fff; stroke-width: 1.5px; }" +
-    ".nodes circle.special1 { stroke: red; fill: green; stroke-width: 4px; ";
+sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
+    + ".nodes circle { stroke: #fff; stroke-width: 1.5px; }"
+    // + ".nodes circle.special1 { stroke: red; fill: green; stroke-width: 4px; }"
+    + ".links line.bigredline { stroke: red; stroke-width: 5; markerWidth: 20; markerHeight: 20;}"
+;
 document.head.appendChild(sheet);
 
 function dragstarted(d) {
@@ -192,12 +194,14 @@ function drawRdf(results, svgId) {
         .attr('refX',130)
         .attr('refY',0)
         .attr('orient','auto')
-        .attr('markerWidth',130)
-        .attr('markerHeight',130)
+        .attr('markerWidth',10)
+        .attr('markerHeight',10)
         .attr('xoverflow','visible')
+        .attr('markerUnits', 'userSpaceOnUse')
         .append('svg:path')
         .attr('d', 'M 0,-20 L 100 ,0 L 0,20')
-        .style('stroke','grey')
+        // .style('stroke','grey')
+        .style('markerUnits','userSpaceOnUse')
         .style('fill','grey')
     ;
 
@@ -207,6 +211,16 @@ function drawRdf(results, svgId) {
 		.selectAll("line")
 		.data(results.links)
 		.enter().append("line")
+        .attr(
+            "class",
+            d => {
+                if (d.class !== undefined) {
+                    return d.class;
+                } else {
+                    return "default";
+                }
+            }
+        )
 	;
 
 	link.append("title")

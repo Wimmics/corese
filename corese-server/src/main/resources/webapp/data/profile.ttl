@@ -493,13 +493,48 @@ st:tutocheck a st:Profile ;
 . 
 
 
+
+st:mytest a st:Server ;
+st:service "mytest" ;
+st:param [
+    st:export true
+] ;
+st:workflow [
+    a sw:Workflow ; sw:body (
+        [ a sw:Query ; sw:uri <query/test/q1.rq> ]
+        [ a sw:Transformation ; sw:uri st:testgraph ]
+        [ a sw:Query ; sw:uri <query/test/q2.rq> ]
+        [ a sw:Transformation ; sw:uri st:testgraph ]
+        [ a sw:Transformation ; sw:uri st:testdisplay ]
+    )
+]
+.
+
+@prefix d3: <http://ns.inria.fr/sparql-template/d3#>
+
+st:myload a st:Server ;
+st:service "myload" ;
+st:param [
+    st:export true
+] ;
+st:workflow [
+    a sw:Workflow ; sw:body (
+        [ a sw:Query ; sw:uri <query/test/load.rq> ]
+        [ a sw:Query ; sw:uri <query/test/queryload.rq> ]
+        [ a sw:Transformation ; sw:uri d3:frame ]  
+    )
+]
+.
+
+
+
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+
 st:tutorialhal a st:Server ;
   st:param [ st:lang 'en' ; 
     st:sttl st:combine ; 
     st:transformations (
-        <http://ns.inria.fr/sparql-template/d3#frame>  
-        <http://ns.inria.fr/sparql-template/navlab#map> 
-        st:hturtle
+        d3:frame  navlab:map st:hturtle
         ) ;
     st:param "verbatim" ; 
     st:hyperlink true ; 
@@ -525,70 +560,6 @@ st:halwf a sw:Workflow ; sw:body (
     #[ a sw:Query ; sw:uri <query/hal/test.rq> ]
     [ a sw:Transformation ; sw:uri st:web ]
 )
-.
-
-st:tutorialhal1 a st:Server ;
-  st:param [ st:lang 'en' ; 
-    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
-    st:mode st:literal ;
-    st:param "verbatim" ; 
-    st:hyperlink true ; 
-    st:number true ;
-    st:export true ;
-    st:focus false ;
-    st:lodprofile (
-        (<https://aurehal.archives-ouvertes.fr/> st:hal)
-        (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal)    
-        ("*" st:lod)
-    ) 
-  ] ;
-  st:service "tutohal1" ;
-  st:transform st:web ;
-  st:content st:tutohal
-.
-
-
-st:tutorialhal2 a st:Server ;
-  st:param [ st:lang 'en' ; 
-    st:sttl <http://ns.inria.fr/sparql-template/d3#frame> ; 
-    st:mode st:uri ;
-    st:param "verbatim" ; 
-    st:hyperlink true ; 
-    st:number true ;
-    st:export true ;
-    st:focus false ;
-    st:lodprofile (
-        (<https://aurehal.archives-ouvertes.fr/> st:hal)
-        (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal)    
-        ("*" st:lod)
-    ) 
-  ] ;
-  st:service "tutohal2" ;
-  st:transform st:web ;
-  st:content st:tutohal
-.
-
-
-st:tutorialhal3 a st:Server ;
-  st:param [ st:lang 'en' ; 
-    st:sttl st:combine ; 
-    st:param "verbatim" ; 
-    st:hyperlink true ; 
-    st:number true ;
-    st:export true ;
-    st:focus false ;
-    st:lodprofile (
-        (<https://aurehal.archives-ouvertes.fr/> st:hal)
-        (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal)    
-        ("*" st:lod)
-    ) 
-  ] ;
-  st:service "tutohal3" ;
-  st:transform st:web ;
-  st:content st:tutohal
 .
 
 

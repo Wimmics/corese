@@ -18,8 +18,6 @@ Fri Sep 21 13:46:08 CEST 2018
 #
 template st:start {
 
-  st:head()
-
   st:call-template(st:head)
     
   st:call-template(st:selectform, ?uri)
@@ -28,7 +26,6 @@ template st:start {
    
   st:call-template(st:tail)
 
-  st:tail()
 }
 where {
 
@@ -49,7 +46,6 @@ template st:content {
   st:call-template(st:content2, "Query:",  st:context)
 }
 where {
-
 }
 ]]>
 </body>
@@ -90,7 +86,10 @@ format {
 }
 }
 where {
-
+bind (st:get(st:context) as ?g)
+    graph ?g {
+       ?ds a st:Dataset
+    }
 }
 ]]>
 </body>

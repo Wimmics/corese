@@ -5,5 +5,5 @@ template st:content {
   st:call-template(st:content2, "Query:",  st:context)
 }
 where {
-
+    
 }

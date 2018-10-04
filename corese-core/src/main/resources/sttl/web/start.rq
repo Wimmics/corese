@@ -7,8 +7,6 @@
 #
 template st:start {
 
-  st:head()
-
   st:call-template(st:head)
     
   st:call-template(st:selectform, ?uri)
@@ -17,7 +15,6 @@ template st:start {
    
   st:call-template(st:tail)
 
-  st:tail()
 }
 where {
 

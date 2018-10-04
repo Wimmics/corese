@@ -6,11 +6,6 @@
 #
 
 
-# recall the dataset for the Transformation
-st:tutorial a st:Dataset ;
-  st:data     [ st:uri "/data/tutorial/human1.rdf"  ; st:name st:data1 ] ,
-  st:context  [ st:uri "/data/tutorial/workflowhal.ttl"  ; st:name st:context ] .
-
   
 us:hal a sw:Workflow ;
 
@@ -23,10 +18,11 @@ sw:body (
 [ a sw:Query ;
 st:name st:intro ;
 rdfs:label "Introduction" ;
-rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
-Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. 'Dataset' donne accès au graphe RDF."""@fr ;
 
-rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Solution' displays the solution, 'Template' displays the query template. 'Submit' submits the SPARQL query to the server. 'Dataset' shows the RDF dataset of the tutorial."""@en ;
+rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+Une question est alors posée avec un canevas de réponse à compléter. En cliquant sur 'Solution', on obtient la réponse attendue, en cliquant sur 'Template', le canevas réapparaît. 'Submit' soumet la requête SPARQL au serveur. """@fr ;
+
+rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Solution' displays the solution, 'Template' displays the query template. 'Submit' submits the SPARQL query to the server."""@en ;
 
 st:query ""
 ]
@@ -363,6 +359,8 @@ select distinct ?n ?n2 ?name where {
 
     ?doc dc:creator ?s
     ?doc dc:creator ?s2
+    ?doc dc:issued ?date 
+    filter (?date >= "2015-01-01"^^xsd:date && ?date <= "2016-12-31"^^xsd:date)
 }
 }
     bind (st:cset(st:group, ?n, st:other) as ?tmp) 
@@ -403,6 +401,8 @@ select distinct ?n ?n2 ?name ?ll where {
     ?doc dc:creator ?s .
     ?doc dc:creator ?s2 .    
     filter (?s != ?s2)
+    ?doc dc:issued ?date 
+    filter (?date >= "2015-01-01"^^xsd:date)
    
     ?s2 hsc:structure ?y 
     ?y org:unitOf* ?z
@@ -429,7 +429,7 @@ select distinct ?n ?n2 ?name ?ll where {
 st:name st:coauthorinriacountry ;
 rdfs:label "INRIA Coauthor with country" ;
 rdfs:comment "INRIA Coauthor with country."@fr ;
-rdfs:comment "INRIA Coauthor with counter"@en ;
+rdfs:comment "INRIA Coauthor with country"@en ;
 
 st:query 
 """prefix skos: <http://www.w3.org/2004/02/skos/core#>
@@ -490,24 +490,28 @@ construct {
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
-select distinct ?n ?country  where {
+select distinct ?n ?country ?cc where {
     ?sam skos:altLabel "I3S"
     ?x org:unitOf ?sam ; skos:altLabel ?n
     ?s hsc:structure ?x .
     
     ?doc dc:creator ?s .
-    ?doc dc:creator ?s2 .    
+    ?doc dc:creator ?s2 .  
+    ?doc dc:issued ?date 
+    filter (?date >= "2015-01-01"^^xsd:date)
     filter (?s != ?s2)
    
     ?s2 hsc:structure ?y 
-    ?y vs:country-name ?country    
+    ?y vs:country-name ?country  
     
+    bind (uri(replace(str(?country), " ", "_")) as ?cc)    
 }}
 
 service <http://fr.dbpedia.org/sparql> {
     select * where {
-        ?country rdfs:label ?name ; geo:lat ?lat ; geo:long ?lon
+        ?cc rdfs:label ?name 
         filter langMatches(lang(?name), "en")
+        optional { ?cc geo:lat ?lat ; geo:long ?lon }
     } 
 }
 
@@ -521,7 +525,7 @@ service <http://fr.dbpedia.org/sparql> {
 function us:after(?map) {
     let (?list = xt:list(), ?table = xt:map()) {
         for ((?country ?lat ?lon) in ?map) {
-            if (! xt:member(?country, ?table)) {
+            if (! xt:member(?country, ?table) && bound(?lat)) {
                 xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
                 xt:set(?table, ?country, ?country)
             }

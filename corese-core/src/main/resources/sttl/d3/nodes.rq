@@ -9,10 +9,15 @@ template st:nodes {
     ; separator = ",\n"
   }
   "\n]\n"
-} where {
+} 
+where {
   bind (us:start() as ?start)
+  
   {select distinct ?s where {
     { ?s ?p ?o } union { ?o ?p ?s }
-  } order by ?s}
+  } 
+  order by ?s
+  }
+  
   bind (us:record(?s) as ?tmp)
 }

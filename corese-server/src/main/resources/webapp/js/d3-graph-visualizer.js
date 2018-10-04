@@ -1,6 +1,8 @@
 var simulation;
 var sheet = document.createElement('style');
-sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } .nodes circle { stroke: #fff; stroke-width: 1.5px; }";
+sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } " +
+    ".nodes circle { stroke: #fff; stroke-width: 1.5px; }" +
+    ".nodes circle.special1 { stroke: red; fill: green; stroke-width: 4px; ";
 document.head.appendChild(sheet);
 
 function dragstarted(d) {
@@ -215,6 +217,16 @@ function drawRdf(results, svgId) {
 		.selectAll("circle")
 		.data(results.nodes)
 		.enter().append("circle")
+        .attr(
+            "class",
+            d => {
+                if (d.class !== undefined) {
+                    return d.class;
+                } else {
+                    return "default";
+                }
+            }
+        )
 		.attr("r", 5)
 		.attr("fill", function(d) { return color(d.group); })
 		.call(d3.drag()

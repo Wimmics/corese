@@ -252,8 +252,9 @@ function drawRdf(results, svgId) {
     var textNodes = g.append("g").selectAll("text")
         .data(simulation.nodes())
         .enter().append("text")
-        .attr("x", 8)
-        .attr("y", ".31em")
+        .attr("class", (edge, i, edges) => {
+            return ( edge.class !== undefined) ? edge.class : "default";
+        })
         .text(function(d) { return d.label; });
     var textEdges = g.append("g").selectAll("text")
         .data(results.links)
@@ -261,6 +262,9 @@ function drawRdf(results, svgId) {
         .append("textPath")
         .attr("startOffset", "25%")
         .text(function(d) { return d.label; })
+        .attr("class", (edge, i, edges) => {
+            return ( edge.class !== undefined) ? edge.class : "default";
+        })
         .attr("xlink:href", (edge, i, edges) => {
             return "#"+edge.id;
         });

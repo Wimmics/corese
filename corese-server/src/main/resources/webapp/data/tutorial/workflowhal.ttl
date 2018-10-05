@@ -419,6 +419,9 @@ select distinct ?n ?n2 ?name ?ll where {
 }
     bind (st:cset(st:group, ?n2, st:other) as ?tmp) 
     bind (st:cset(st:group, ?ll, st:other) as ?tmp2) 
+    
+    bind (st:cset(st:class, ?n2, "other") as ?c1) 
+    bind (st:cset(st:class, ?ll, "other") as ?c2) 
 }
 """ 
 ]
@@ -460,7 +463,7 @@ service <https://data.archives-ouvertes.fr/sparql> {
     ?y vs:country-name db:Italie, ?country    
     ?y skos:prefLabel ?n2
 }
-bind (st:cset(st:group, ?n2, st:other) as ?tmp)
+    bind (st:cset(st:group, ?n2, st:other) as ?tmp)
 }
 """ 
 ]

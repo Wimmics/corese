@@ -50,6 +50,9 @@ public class TripleStore {
     }
     
     void init(GraphStore g){
+        if (EmbeddedJettyServer.isDebug()) {
+            g.setVerbose(true);
+        }
     }
     
     void finish(boolean b){

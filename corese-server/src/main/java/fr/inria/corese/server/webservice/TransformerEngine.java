@@ -69,7 +69,7 @@ public class TransformerEngine {
         //sw.setDebug(isDebug());
         if (isDebug()) {
             logger.info("Run workwlow");
-            graph.setVerbose(true);
+            //graph.setVerbose(true);
         }
         Data data = sw.process(new Data(graph));
         return data;

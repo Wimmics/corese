@@ -1,0 +1,7 @@
+template st:map {
+    st:call-template-with(st:navlab, st:map, ?list)        
+} 
+where {
+    bind (st:get(st:pos) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}

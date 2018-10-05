@@ -1,0 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:frame(?pretty) {
+  format {
+      ft:frame.html
+      ?id
+      st:call-template(st:graph)
+  }
+} 
+where {
+    bind (if (bound(?pretty), us:declare(?pretty), true) as ?tmp)
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+}

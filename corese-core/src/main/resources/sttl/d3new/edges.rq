@@ -1,0 +1,23 @@
+template st:edges {
+  "\"edges\":[\n"
+  
+  group { 
+  
+    format {
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?p)
+    }
+    
+    ; separator = ",\n"
+  }
+  
+  "\n]\n"
+} 
+where {
+    select * where {
+        ?s ?p ?o 
+        bind (us:record(?s) as ?ss)
+        bind (us:record(?o) as ?oo)
+    } 
+    limit 10000
+}

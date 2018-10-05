@@ -1,0 +1,67 @@
+template st:profile {}
+where {}
+
+function us:start() {
+    set(?map = xt:map())
+}
+
+function us:kind(?s) {
+    if (st:cget(st:group, ?s, st:other), 2,
+    if (isURI(?s), 1, 
+    if (isBlank(?s), 2, 3)))
+}
+
+function us:record(?s) {
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
+}
+
+function us:get(?s) {
+    xt:get(?map, ?s)
+}
+
+function us:getNodes() {
+    return (?map)
+}
+
+function us:declare(?fun) {
+    set(?pretty = ?fun)
+}
+
+function us:label(?s) {
+    if (bound(?pretty), us:pretty(funcall(?pretty, ?s)), us:pretty(?s))
+}
+
+function us:pretty(?s) {
+    if (isBlank(?s), "",
+    if (isLiteral(?s), us:literal(?s), us:uri(?s)))
+}
+
+function us:uri(?u) {
+    if (st:get(st:mode, st:literal), "", 
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true)))
+}
+
+function us:shorten(?l) {
+    let (?s = if (strlen(?l) > 50, concat(substr(?l, 1, 50), "..."), ?l)) { ?s }
+}
+
+function us:literal(?l) {
+    if (st:get(st:mode, st:uri), "", 
+    let (?s = us:shorten(?l)) {
+        replace(replace(str(?s), "\n", ""), "\"", "'")
+    }
+    )
+}
+
+function us:nodeClass(?s) {
+    if (coalesce(st:cget(st:class, ?s), false),  st:cget(st:class, ?s),
+    if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode")))
+} 
+
+
+function us:edgeClass(?p) {
+    if (strstarts(?p, rdf:),  "rdf", 
+    if (strstarts(?p, rdfs:), "rdfs", 
+    if (strstarts(?p, owl:),  "owl", 
+    "default")))
+}

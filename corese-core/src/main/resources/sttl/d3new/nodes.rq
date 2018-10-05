@@ -1,0 +1,16 @@
+template st:nodes {
+  "\"nodes\":[\n"
+  group {
+    format {
+        '{"id": "%s", "label": "%s", "group": "%s", "class": "%s"}'
+        
+        ?id us:label(?s) us:kind(?s) us:nodeClass(?s)
+        }
+    ; separator = ",\n"
+  }
+  "\n]\n"
+} 
+where {
+   values (?s ?id) { unnest(us:getNodes()) }
+}
+

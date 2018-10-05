@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 13:07:45 CEST 2018
+Fri Oct 05 08:45:47 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -461,9 +461,12 @@ format {
     }
 }
 where {
-  ?x ?p ?y
+    select * where {
+        ?x ?p ?y
+    }
+    order by ?x ?p ?y
+    limit 50000
 }
-order by ?x ?p ?y
 
 
 ]]>
@@ -543,6 +546,7 @@ where {
   ?s rs:index ?i  
 }
 order by ?i
+limit 50000
 ]]>
 </body>
 </rule>

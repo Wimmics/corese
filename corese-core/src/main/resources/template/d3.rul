@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 04 08:27:52 CEST 2018
+Fri Oct 05 12:01:21 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -24,12 +24,19 @@ where {
 <body>
 <![CDATA[
 template st:graph {
-  st:call-template(st:nodes)
+  str(?node)
   ","
-  st:call-template(st:edges)
+  str(?edge)
 } 
 where {
     bind (xt:print('graph size', xt:size(xt:graph())) as ?tmp)
+    
+    bind (us:start() as ?start)
+    
+    bind (st:call-template(st:edges) as ?edge)
+    
+    bind (st:call-template(st:nodes) as ?node)
+    
 }
 ]]>
 </body>
@@ -77,25 +84,18 @@ template st:nodes {
   "\"nodes\":[\n"
   group {
     format {
-        '{"id": "%s", "label": "%s", "group": "%s"}'
+        '{"id": "%s", "label": "%s", "group": "%s", "class": "%s"}'
         
-        us:get(?s) us:label(?s) us:kind(?s)
+        ?id us:label(?s) us:kind(?s) us:nodeClass(?s)
         }
     ; separator = ",\n"
   }
   "\n]\n"
 } 
 where {
-  bind (us:start() as ?start)
-  
-  {select distinct ?s where {
-    { ?s ?p ?o } union { ?o ?p ?s }
-  } 
-  order by ?s
-  }
-  
-  bind (us:record(?s) as ?tmp)
+   values (?s ?id) { unnest(us:getNodes()) }
 }
+
 ]]>
 </body>
 </rule>
@@ -117,11 +117,15 @@ function us:kind(?s) {
 }
 
 function us:record(?s) {
-   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
 }
 
 function us:get(?s) {
     xt:get(?map, ?s)
+}
+
+function us:getNodes() {
+    return (?map)
 }
 
 function us:declare(?fun) {
@@ -153,6 +157,19 @@ function us:literal(?l) {
     }
     )
 }
+
+function us:nodeClass(?s) {
+    if (coalesce(st:cget(st:class, ?s), false),  st:cget(st:class, ?s),
+    if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode")))
+} 
+
+
+function us:edgeClass(?p) {
+    if (strstarts(?p, rdf:),  "rdf", 
+    if (strstarts(?p, rdfs:), "rdfs", 
+    if (strstarts(?p, owl:),  "owl", 
+    "default")))
+}
 ]]>
 </body>
 </rule>
@@ -166,8 +183,8 @@ template st:edges {
   group { 
   
     format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number()
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?p)
     }
     
     ; separator = ",\n"
@@ -176,10 +193,12 @@ template st:edges {
   "\n]\n"
 } 
 where {
-  select * where {
-    ?s ?p ?o 
-  }
-  order by ?s ?o ?p
+    select * where {
+        ?s ?p ?o 
+        bind (us:record(?s) as ?ss)
+        bind (us:record(?o) as ?oo)
+    } 
+    limit 10000
 }
 ]]>
 </body>

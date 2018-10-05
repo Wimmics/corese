@@ -12,3 +12,4 @@ where {
   ?s rs:index ?i  
 }
 order by ?i
+limit 50000

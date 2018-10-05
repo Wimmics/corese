@@ -12,8 +12,11 @@ format {
     }
 }
 where {
-  ?x ?p ?y
+    select * where {
+        ?x ?p ?y
+    }
+    order by ?x ?p ?y
+    limit 50000
 }
-order by ?x ?p ?y
 
 

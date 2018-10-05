@@ -31,6 +31,9 @@ public class Size extends TermEval {
         if (dt.isList()){
             return DatatypeMap.size(dt);
         }
+        if (dt.isMap()) {
+            return DatatypeMap.newInstance(dt.size());
+        }
         if (dt.isPointer()){
             return DatatypeMap.newInstance(dt.getPointerObject().size());                    
         }

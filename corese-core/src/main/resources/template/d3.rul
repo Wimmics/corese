@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Oct 05 12:01:21 CEST 2018
+Sun Oct 07 16:35:43 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -142,8 +142,7 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (st:get(st:mode, st:literal), "", 
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true)))
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
 }
 
 function us:shorten(?l) {
@@ -151,24 +150,23 @@ function us:shorten(?l) {
 }
 
 function us:literal(?l) {
-    if (st:get(st:mode, st:uri), "", 
     let (?s = us:shorten(?l)) {
         replace(replace(str(?s), "\n", ""), "\"", "'")
     }
-    )
 }
 
 function us:nodeClass(?s) {
-    if (coalesce(st:cget(st:class, ?s), false),  st:cget(st:class, ?s),
-    if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode")))
+    coalesce(st:getclass(?s), 
+        if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode") ) )
 } 
 
 
-function us:edgeClass(?p) {
-    if (strstarts(?p, rdf:),  "rdf", 
-    if (strstarts(?p, rdfs:), "rdfs", 
-    if (strstarts(?p, owl:),  "owl", 
-    "default")))
+function us:edgeClass(?g, ?p) {
+    coalesce(st:getclass(?g),
+        if (strstarts(?p, rdf:),  "rdf", 
+        if (strstarts(?p, rdfs:), "rdfs", 
+        if (strstarts(?p, owl:),  "owl", 
+        "default") ) ))
 }
 ]]>
 </body>
@@ -184,7 +182,7 @@ template st:edges {
   
     format {
         '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?p)
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p)
     }
     
     ; separator = ",\n"
@@ -194,7 +192,7 @@ template st:edges {
 } 
 where {
     select * where {
-        ?s ?p ?o 
+        graph ?g { ?s ?p ?o }
         bind (us:record(?s) as ?ss)
         bind (us:record(?o) as ?oo)
     } 

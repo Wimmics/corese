@@ -2,7 +2,24 @@
 # Functions shared by server STTL transformations
 # javascript:trans() defined in webapp/js/server.js
 #
-@export package {
+@public {
+
+function st:setclass(?s, ?c) {
+    st:cset(st:class, ?s, ?c)
+}
+
+function st:getclass(?s) {
+    st:cget(st:class, ?s)
+}
+
+function st:setgroup(?s, ?c) {
+    st:cset(st:group, ?s, ?c)
+}
+
+function st:getgroup(?s) {
+    st:cget(st:group, ?s, ?c)
+}
+
 
 
 function st:isAjax(){

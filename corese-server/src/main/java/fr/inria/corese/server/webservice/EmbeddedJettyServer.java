@@ -4,6 +4,7 @@
  */
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.sparql.triple.parser.Constant;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -122,6 +123,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		Option localhost = new Option("lh", "localhost", false, "set server name as localhost");
 		Option optDebug = new Option("debug", "debug", false, "set server mode as debug");
 		Option protect = new Option("protect", "protect", false, "set server mode as protect");
+		Option string = new Option("string", "string", false, "pprint string with xsd:string");
 
 		Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
 		Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -139,6 +141,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		options.addOption(localhost);
 		options.addOption(optDebug);
 		options.addOption(protect);
+		options.addOption(string);
 
 		options.addOption(sslOpt);
 		options.addOption(portSslOpt);
@@ -214,6 +217,10 @@ public class EmbeddedJettyServer extends ResourceConfig {
 			if (cmd.hasOption("protect")) {
 				logger.info("protect");
 				SPARQLRestAPI.isProtected = true;
+			}
+                        if (cmd.hasOption("string")) {
+				logger.info("string with xsd:string");
+				Constant.setString(true);
 			}
 			URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
 			BASE_URI = baseUri.toString();

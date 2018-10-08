@@ -246,7 +246,8 @@ function drawRdf(results, svgId) {
 		.call(d3.drag()
 			.on("start", dragstarted)
 			.on("drag", dragged)
-			.on("end", dragended));
+			.on("end", dragended))
+        .on("click", (d) => { if (d.url !== undefined) window.open(d.url)});
 	node.append("title")
 		.text(function(d) { return d.label; });
     var textNodes = g.append("g").selectAll("text")
@@ -269,7 +270,7 @@ function drawRdf(results, svgId) {
             return "#"+edge.id;
         });
 
-    var fo = graph.append('foreignObject').attr("width", "100%").attr("height", "100%");
+    var fo = graph.append('foreignObject').attr("width", "1px").attr("height", "1px");
     var button = fo.append("xhtml:button")
 		.attr("class", "btn btn-info")
 		.attr("id", "configurationButton")

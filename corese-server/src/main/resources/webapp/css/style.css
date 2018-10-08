@@ -1,4 +1,29 @@
 
+.nodes circle.literal { fill: lightgreen ; }
+.nodes circle.bnode   { fill: orange; }
+.nodes circle.uri     { fill: lightblue; }
+.nodes circle.other   { fill: blue; }
+.nodes circle.main    { fill: green; }
+
+text.literal { fill: lightgreen; }
+text.other   { fill: blue; }
+text.main    { fill: green; }
+              
+.links line.rdf  { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
+.links line.rdfs { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
+.links line.owl  { stroke: orange; stroke-width: 0.3px; stroke-opacity: 10;}
+
+.links line.tiny    { stroke-width: 0.3px; stroke-opacity: 10;}
+.links line.small   { stroke-width: 1px; stroke-opacity: 10;}
+.links line.medium  { stroke-width: 2px; stroke-opacity: 10;}
+.links line.high    { stroke-width: 3px; stroke-opacity: 10;}
+.links line.huge    { stroke-width: 4px; stroke-opacity: 10;}
+
+
+textPath.rdf  { stroke: lightblue; }
+textPath.rdfs { stroke: lightblue; }
+textPath.owl  { stroke: orange; }
+
 .s0 { background:lightgrey }
 .s1 { background:lightblue }
 

@@ -138,7 +138,9 @@ service <https://data.archives-ouvertes.fr/sparql> {
         filter langMatches(lang(?topic), "en")
     }
 }
-    bind (st:cset(st:group, ?n, st:other) as ?tmp)
+    bind (st:setgroup(?n, st:other) as ?tmp)
+    bind (st:setclass(?n, "other") as ?a)
+    bind (st:setclass(?topic, "main") as ?b)
 }
 """ 
 ]
@@ -177,9 +179,12 @@ service <https://data.archives-ouvertes.fr/sparql> {
     #filter regex(?topic, "Intelligence")
 }
 }
-    bind (st:cset(st:group, ?n, st:other) as ?tmp)
-    bind (st:cset(st:group, ?topic, st:other) as ?tmp2)
 
+    bind (st:setgroup(?n, st:other)     as ?a)
+    bind (st:setgroup(?topic, st:other) as ?b)
+    
+    bind (st:setclass(?topic, "main")   as ?c)
+    bind (st:setclass(?name,  "other")  as ?d)        
 }
 """ 
 ]
@@ -217,9 +222,12 @@ service <https://data.archives-ouvertes.fr/sparql> {
     ?doc1 de:subject ?topic 
     filter regex(?topic, "Intelligence")
 }}
-    bind (st:cset(st:group, ?n, st:other) as ?tmp)
-    bind (st:cset(st:group, ?topic, st:other) as ?tmp2)
 
+    bind (st:setgroup(?n, st:other)     as ?a)
+    bind (st:setgroup(?topic, st:other) as ?b)
+    
+    bind (st:setclass(?topic, "main")   as ?c)
+    bind (st:setclass(?name,  "other")  as ?d)   
 }
 """ 
 ]
@@ -255,7 +263,10 @@ service <https://data.archives-ouvertes.fr/sparql> {
     ?doc1 dc:source ?source 
     filter regex(?source, "Artificial Intelligence")
 }}
-    bind (st:cset(st:group, ?n, st:other) as ?tmp)
+
+    bind (st:setgroup(?n, st:other) as ?tmp)
+    bind (st:setclass(?n, "main")   as ?c)
+    bind (st:setclass(?name,  "other")  as ?d)   
 }
 """ 
 ]
@@ -312,8 +323,7 @@ construct {
     ?u1 us:memberOf ?name
 }
 where {
-    ?p foaf:name ?n ; a foaf:Person
-    filter regex(?n, "Olivier Corby")
+    ?p foaf:name "Olivier Corby" 
     ?s hsc:person ?p .
     ?s hsc:structure ?lab .    
     ?lab skos:altLabel ?name
@@ -322,6 +332,123 @@ where {
 }
 """ 
 ]
+
+
+[ a sw:Query ;
+st:name st:coauthornetwork ;
+rdfs:label "Coauthor network" ;
+rdfs:comment "Coauthor network."@fr ;
+rdfs:comment "Coauthor network"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+construct {
+    ?n dc:coauthor ?n2
+    ?n us:memberOf ?name
+    ?n2 us:memberOf ?name2
+}
+where {
+service <https://data.archives-ouvertes.fr/sparql> {
+select distinct ?n ?n2 ?name ?name2 where {
+    values ?n {  "Olivier Corby"  }
+    ?p foaf:name ?n
+    ?s hsc:person ?p .
+    ?s hsc:structure ?x .
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+
+    ?doc dc:creator ?s
+    ?doc dc:creator ?s2    
+    filter (?s != ?s2)
+    
+    ?s2 hsc:structure ?y .
+    ?y org:unitOf ?lab ; skos:altLabel ?name2
+    ?s2 hsc:person ?p2 .
+    ?p2 foaf:name ?n2
+   
+   
+}
+}
+    bind (st:setgroup(?n, st:other) as ?tmp) 
+    bind (st:setgroup(?n2, st:other) as ?tmp2) 
+    
+    bind (st:setclass(?n, "main")       as ?a)
+    bind (st:setclass(?n2, "main")      as ?b)
+    bind (st:setclass(?name,  "other")  as ?c)    
+    bind (st:setclass(?name2,  "other")  as ?d)    
+
+}
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:coauthornetworkcount ;
+rdfs:label "Coauthor network count" ;
+rdfs:comment "Coauthor network count."@fr ;
+rdfs:comment "Coauthor network count"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+construct {
+    graph ?count { ?sn dc:coauthor ?sn2 }
+    ?sn us:memberOf ?sname
+    ?sn2 us:memberOf ?sname2
+}
+where {
+service <https://data.archives-ouvertes.fr/sparql> {
+
+    select ?n2 (count(distinct ?doc) as ?count)
+        (sample(?n) as ?sn) 
+        (sample(?name) as ?sname) (sample(?name2) as ?sname2)
+    where {
+        values ?n {  "Olivier Corby"  }
+        ?p foaf:name ?n
+        ?s hsc:person ?p .
+        ?s hsc:structure ?x .
+        ?x org:unitOf ?sam ; skos:altLabel ?name
+
+        ?doc dc:creator ?s
+        ?doc dc:creator ?s2    
+        filter (?s != ?s2)
+        
+        ?s2 hsc:structure ?y .
+        ?y org:unitOf ?lab ; skos:altLabel ?name2
+        ?s2 hsc:person ?p2 .
+        ?p2 foaf:name ?n2
+    }
+    group by ?n2
+}
+    bind (concat(?n2, ":", ?count) as ?sn2) 
+    
+    bind (st:setgroup(?sn, st:other) as ?tmp) 
+    bind (st:setgroup(?sn2, st:other) as ?tmp2) 
+    
+    bind (st:setclass(?sn, "main")       as ?a)
+    bind (st:setclass(?sn2, "main")      as ?b)
+    bind (st:setclass(?sname,  "other")  as ?c)    
+    bind (st:setclass(?sname2,  "other")  as ?d)   
+    
+    bind (st:setclass(?count, us:edgeClass(?count)) as ?e)
+
+}
+
+function us:edgeClass(?c) {
+    if (?c = 1,   "tiny", 
+    if (?c <= 5,  "small", 
+    if (?c <= 10, "medium", 
+    if (?c <= 20, "high", "huge"))))
+}
+""" 
+]
+
 
 
 [ a sw:Query ;
@@ -363,8 +490,12 @@ select distinct ?n ?n2 ?name where {
     filter (?date >= "2015-01-01"^^xsd:date && ?date <= "2016-12-31"^^xsd:date)
 }
 }
-    bind (st:cset(st:group, ?n, st:other) as ?tmp) 
-    bind (st:cset(st:group, ?n2, st:other) as ?tmp2) 
+    bind (st:setgroup(?n, st:other) as ?tmp) 
+    bind (st:setgroup(?n2, st:other) as ?tmp2) 
+    
+    bind (st:setclass(?n, "main")       as ?a)
+    bind (st:setclass(?n2, "main")      as ?b)
+    bind (st:setclass(?name,  "other")  as ?c)    
 
 }
 """ 
@@ -387,9 +518,7 @@ prefix org: <http://www.w3.org/ns/org#>
 prefix lab: <http://www.unice.fr/other/>
 prefix inr: <http://ns.inria.fr/sparql-extension/user/>
 construct {
-    ?n  dc:coauthor ?n2
-    ?n  us:memberOf ?name 
-    ?n2 us:memberOf ?ll
+    ?name  dc:coauthor ?ll
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
@@ -405,68 +534,23 @@ select distinct ?n ?n2 ?name ?ll where {
     filter (?date >= "2015-01-01"^^xsd:date)
    
     ?s2 hsc:structure ?y 
-    ?y org:unitOf* ?z
-    ?z skos:altLabel ?l 
-    filter regex(?l, "I3S")
+    filter (?x != ?y)
+    filter not exists { ?y org:unitOf ?sam }
     ?y skos:altLabel ?ll 
-
-    ?s hsc:person ?p .
-    ?p foaf:name ?n .
-    ?s2 hsc:person ?p2 .
-    ?p2 foaf:name ?n2
-    filter (?n != ?n2)
+    #filter regex(?ll, "I3S")
 }
 }
-    bind (st:cset(st:group, ?n2, st:other) as ?tmp) 
-    bind (st:cset(st:group, ?ll, st:other) as ?tmp2) 
+    bind (st:setgroup(?name, st:other) as ?tmp) 
+    bind (st:setgroup(?ll,  st:main) as ?tmp2) 
     
-    bind (st:cset(st:class, ?n2, "other") as ?c1) 
-    bind (st:cset(st:class, ?ll, "other") as ?c2) 
+    bind (st:setclass(?name, "other") as ?b) 
+    bind (st:setclass(?ll, "main") as ?c2) 
+    
 }
 """ 
 ]
 
 
-
-[ a sw:Query ;
-st:name st:coauthorinriacountry ;
-rdfs:label "INRIA Coauthor with country" ;
-rdfs:comment "INRIA Coauthor with country."@fr ;
-rdfs:comment "INRIA Coauthor with country"@en ;
-
-st:query 
-"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
-prefix org: <http://www.w3.org/ns/org#>
-prefix hsc: <http://data.archives-ouvertes.fr/schema/>
-prefix dc:  <http://purl.org/dc/terms/>
-prefix org: <http://www.w3.org/ns/org#>
-prefix lab: <http://www.unice.fr/other/>
-prefix inr: <http://ns.inria.fr/sparql-extension/user/>
-prefix vs:  <http://www.w3.org/2006/vcard/ns#>
-prefix db: <http://fr.dbpedia.org/resource/>
-construct {
-    ?n us:cooperate ?n2
-    ?n2 org:unitOf ?yy
-    ?yy skos:altLabel ?lyy
-}
-where {
-service <https://data.archives-ouvertes.fr/sparql> {
-    ?sam skos:altLabel "CRISAM"
-    ?x org:unitOf ?sam ; skos:altLabel ?n
-    ?s hsc:structure ?x .
-    
-    ?doc dc:creator ?s .
-    ?doc dc:creator ?s2 .    
-    filter (?s != ?s2)
-   
-    ?s2 hsc:structure ?y 
-    ?y vs:country-name db:Italie, ?country    
-    ?y skos:prefLabel ?n2
-}
-    bind (st:cset(st:group, ?n2, st:other) as ?tmp)
-}
-""" 
-]
 
 
 [ a sw:Query ;
@@ -488,14 +572,13 @@ prefix db:  <http://fr.dbpedia.org/resource/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @event
 construct {
-    ?n us:cooperate ?country   
-    ?country rdfs:label ?name
+    ?n us:cooperate ?name   
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
 select distinct ?n ?country ?cc where {
     ?sam skos:altLabel "I3S"
-    ?x org:unitOf ?sam ; skos:altLabel ?n
+    ?x org:unitOf* ?sam ; skos:altLabel ?n
     ?s hsc:structure ?x .
     
     ?doc dc:creator ?s .
@@ -506,6 +589,7 @@ select distinct ?n ?country ?cc where {
    
     ?s2 hsc:structure ?y 
     ?y vs:country-name ?country  
+    filter (?country != db:France)
     
     bind (uri(replace(str(?country), " ", "_")) as ?cc)    
 }}
@@ -517,6 +601,10 @@ service <http://fr.dbpedia.org/sparql> {
         optional { ?cc geo:lat ?lat ; geo:long ?lon }
     } 
 }
+
+    bind (st:setclass(?name, "main") as ?c1) 
+    bind (st:setclass(?n, "other")     as ?c2) 
+
 
 }
 
@@ -569,10 +657,87 @@ select distinct ?n ?name  where {
     ?s hsc:person ?p .
     ?p foaf:name ?n
 }}
-bind (st:cset(st:group, ?n, st:other) as ?tmp)
+
+bind (st:setgroup(?n, st:other) as ?tmp)
+bind (st:setclass(?n, "main") as ?a)
+bind (st:setclass(?name, "other") as ?b)
+
 }
 """ 
 ]
+
+
+
+
+[ a sw:Query ;
+st:name st:schema ;
+rdfs:label "Schema" ;
+rdfs:comment "Schema."@fr ;
+rdfs:comment "Schema"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+construct {
+    foaf:Person us:subjectOf ?p 
+    ?q us:hasObject foaf:Person
+}
+where {
+service <https://data.archives-ouvertes.fr/sparql> {
+
+{select distinct ?p where {
+    ?x foaf:name "Olivier Corby" ;
+    ?p ?y 
+}}
+{select distinct ?q where {
+    ?x foaf:name "Olivier Corby" 
+    ?y ?q ?x 
+}}
+
+}
+
+bind (st:setclass(?p, "main") as ?a)
+bind (st:setclass(?q, "other") as ?b)
+
+}
+""" 
+]
+
+
+[ a sw:Query ;
+st:name st:all ;
+rdfs:label "All" ;
+rdfs:comment "All."@fr ;
+rdfs:comment "All"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+construct {
+   ?x foaf:name "Olivier Corby" ;
+    ?p ?y 
+    ?z ?q ?x   ; ?r ?t
+}
+where {
+service <https://data.archives-ouvertes.fr/sparql> {
+    ?x foaf:name "Olivier Corby" ;
+    ?p ?y 
+    ?z ?q ?x ; ?r ?t
+}
+
+bind (st:setclass(?p, "main") as ?a)
+bind (st:setclass(?q, "other") as ?b)
+
+}
+""" 
+]
+
 
 
 [ a sw:Query ;

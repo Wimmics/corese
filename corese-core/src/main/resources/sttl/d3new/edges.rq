@@ -5,7 +5,7 @@ template st:edges {
   
     format {
         '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?p)
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p)
     }
     
     ; separator = ",\n"
@@ -15,7 +15,7 @@ template st:edges {
 } 
 where {
     select * where {
-        ?s ?p ?o 
+        graph ?g { ?s ?p ?o }
         bind (us:record(?s) as ?ss)
         bind (us:record(?o) as ?oo)
     } 

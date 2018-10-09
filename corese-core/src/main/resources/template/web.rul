@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 13:46:08 CEST 2018
+Mon Oct 08 18:23:56 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,6 +46,7 @@ template st:content {
   st:call-template(st:content2, "Query:",  st:context)
 }
 where {
+    
 }
 ]]>
 </body>
@@ -86,7 +87,7 @@ format {
 }
 }
 where {
-bind (st:get(st:context) as ?g)
+    bind (st:get(st:context) as ?g)
     graph ?g {
        ?ds a st:Dataset
     }
@@ -201,7 +202,7 @@ where {
 # ?q actual query, ?t query template, ?s query solution
 #
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
-template st:form(?n, ?q, ?t, ?s) {
+template st:form(?n, ?q, ?t, ?s, ?select) {
    
    format {   
     ft:form.html
@@ -212,11 +213,13 @@ template st:form(?n, ?q, ?t, ?s) {
     str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
+    if (?select = st:null, "", st:call-template(st:selectparam, ?n, ?select))
     str(?q)
     }
    
 }
 where {
+    
 }
 ]]>
 </body>
@@ -323,7 +326,9 @@ format {
      ?n,
      coalesce(st:get(st:query), str(?q)), 
      str(?q), 
-     coalesce(?s, st:null)) 
+     coalesce(?s, st:null),
+     coalesce(?select, st:null)
+     ) 
      
    st:call-template(st:result)
  }
@@ -340,7 +345,36 @@ where {
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
       optional { ?qt sw:body  ?s }
+      optional { ?qt st:select ?select }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate param selector, ?n = query name  
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selectparam(?n, ?select) {
+
+format {
+  ft:selectparam.html 
+  ?name
+  group { format { "<option value='%s'>%s</option>" ?value ?value } }
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?select st:name ?name ;
+       st:value/rdf:rest*/rdf:first ?value      
   }
 }
 ]]>

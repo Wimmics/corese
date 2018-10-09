@@ -520,13 +520,11 @@ st:param [
 st:workflow [
     a sw:Workflow ; sw:body (
         [ a sw:Query ; sw:uri <query/test/load.rq> ]
-        [ a sw:Query ; sw:uri <query/test/queryload.rq> ]
+        #[ a sw:Query ; sw:uri <query/test/queryload.rq> ]
         [ a sw:Transformation ; sw:uri d3:frame ]  
     )
 ]
 .
-
-
 
 @prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
 
@@ -574,6 +572,12 @@ st:tutohal a sw:Workflow ; sw:body (
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
         [ a sw:Load ; sw:path <tutorial/workflowhal.ttl>  ; sw:name st:context ]
         st:indexQuery ) ]
+        
+      [ a sw:Workflow ; sw:name st:geo ; sw:body ( 
+        [ a sw:Load ; sw:path <tutorial/country.ttl>  ]
+        [ a sw:RuleBase ; sw:uri sw:owlrl ]
+      ) ]
+  
 	  
       ) ]    
     # set st:context graph as named graph of main

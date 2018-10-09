@@ -5,6 +5,7 @@
 # Olivier Corby - Wimmics Inria I3S - 2017
 #
 
+@prefix db:  <http://fr.dbpedia.org/resource/>
 
   
 us:hal a sw:Workflow ;
@@ -292,10 +293,10 @@ prefix de:  <http://purl.org/dc/elements/1.1/>
 @federate <https://data.archives-ouvertes.fr/sparql>
 construct {
     ?x skos:altLabel ?name
-    ?x org:unitOf "Inria"
+    ?x org:unitOf ?lab
 }
 where {
-    ?sam skos:altLabel "Inria"
+    ?sam skos:altLabel "Inria" , ?lab
     ?x org:unitOf ?sam ; skos:altLabel ?name
 }
 
@@ -504,10 +505,10 @@ select distinct ?n ?n2 ?name where {
 
 
 [ a sw:Query ;
-st:name st:coauthorinrialab ;
-rdfs:label "INRIA Coauthor with other Lab" ;
-rdfs:comment "INRIA Coauthor with other Lab."@fr ;
-rdfs:comment "INRIA Coauthor with other Lab"@en ;
+st:name st:coauthorlab ;
+rdfs:label "Coauthor with other Lab" ;
+rdfs:comment "Coauthor with other Lab."@fr ;
+rdfs:comment "Coauthor with other Lab"@en ;
 
 st:query 
 """prefix skos: <http://www.w3.org/2004/02/skos/core#>
@@ -521,9 +522,12 @@ construct {
     ?name  dc:coauthor ?ll
 }
 where {
+
+bind (st:get(st:param) as ?lab)
+
 service <https://data.archives-ouvertes.fr/sparql> {
-select distinct ?n ?n2 ?name ?ll where {
-    ?sam skos:altLabel "CRISAM"
+select distinct ?n ?n2 ?name ?ll ?lab where {
+    ?sam skos:altLabel ?lab
     ?x org:unitOf ?sam ; skos:altLabel ?name
     ?s hsc:structure ?x .
     
@@ -538,7 +542,7 @@ select distinct ?n ?n2 ?name ?ll where {
     filter not exists { ?y org:unitOf ?sam }
     ?y skos:altLabel ?ll 
     #filter regex(?ll, "I3S")
-}
+} limit 2500
 }
     bind (st:setgroup(?name, st:other) as ?tmp) 
     bind (st:setgroup(?ll,  st:main) as ?tmp2) 
@@ -547,7 +551,12 @@ select distinct ?n ?n2 ?name ?ll where {
     bind (st:setclass(?ll, "main") as ?c2) 
     
 }
-""" 
+""" ;
+
+st:select [
+    st:name "param" ;
+    st:value ("CRISAM" "I3S" "UCA" "JAD" "INRA" "ITER" "IPMC")
+]
 ]
 
 
@@ -629,6 +638,99 @@ function us:after(?map) {
 """ 
 ]
 
+
+
+
+[ a sw:Query ;
+st:name st:coauthorcontinent ;
+rdfs:label "Coauthor with countries of continent" ;
+rdfs:comment "Coauthor with countries of continent."@fr ;
+rdfs:comment "Coauthor with countries of continent"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+@event
+construct {
+    ?n us:cooperate ?name   
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+select distinct ?n ?country ?cc where {
+    ?sam skos:altLabel "I3S"
+    ?x org:unitOf* ?sam ; skos:altLabel ?n
+    ?s hsc:structure ?x .
+    
+    ?doc dc:creator ?s .
+    ?doc dc:creator ?s2 .  
+    ?doc dc:issued ?date 
+   # filter (?date >= "2015-01-01"^^xsd:date)
+    filter (?s != ?s2)
+   
+    ?s2 hsc:structure ?y 
+    ?y vs:country-name ?country  
+    filter (?country != db:France)
+
+    
+    bind (uri(replace(str(?country), " ", "_")) as ?cc)    
+}}
+
+bind (st:get(st:mode) as ?continent)
+graph st:geo { ?continent dbo:member ?cc } 
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?cc rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?cc geo:lat ?lat ; geo:long ?lon }
+    } 
+}
+
+    bind (st:setclass(?name, "main") as ?c1) 
+    bind (st:setclass(?n, "other")     as ?c2) 
+
+}
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+    let (?list = xt:list(), ?table = xt:map()) {
+        for ((?country ?lat ?lon) in ?map) {
+            if (! xt:member(?country, ?table) && bound(?lat)) {
+                xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
+                xt:set(?table, ?country, ?country)
+            }
+        } ;
+        st:set(st:location, ?list) ;
+        xt:print('list', ?list)
+    } 
+}
+""" ;
+
+st:select [
+    st:name "mode" ;
+    st:value (
+        db:All
+        db:Afrique db:Afrique_du_Nord db:Afrique_continentale 
+        db:Amérique db:Amérique_du_Nord db:Amérique_centrale db:Amérique_du_Sud 
+        db:Asie db:Asie_centrale db:Europe db:Europe_Est db:Moyen-Orient 
+    )
+]
+
+]
 
 
 

@@ -4,7 +4,7 @@
 # ?q actual query, ?t query template, ?s query solution
 #
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
-template st:form(?n, ?q, ?t, ?s) {
+template st:form(?n, ?q, ?t, ?s, ?select) {
    
    format {   
     ft:form.html
@@ -15,9 +15,11 @@ template st:form(?n, ?q, ?t, ?s) {
     str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
+    if (?select = st:null, "", st:call-template(st:selectparam, ?n, ?select))
     str(?q)
     }
    
 }
 where {
+    
 }

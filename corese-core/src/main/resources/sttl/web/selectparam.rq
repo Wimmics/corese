@@ -1,0 +1,21 @@
+#
+# Generate param selector, ?n = query name  
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selectparam(?n, ?select) {
+
+format {
+  ft:selectparam.html 
+  ?name
+  group { format { "<option value='%s'>%s</option>" ?value ?value } }
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?select st:name ?name ;
+       st:value/rdf:rest*/rdf:first ?value      
+  }
+}

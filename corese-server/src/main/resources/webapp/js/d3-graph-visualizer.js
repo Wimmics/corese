@@ -1,3 +1,4 @@
+var nodeRadius = 15;
 var simulation;
 var sheet = document.createElement('style');
 sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
@@ -123,7 +124,20 @@ function drawRdf(results, svgId) {
 
         node
             .attr("cx", function(d) { return d.x * scale; })
-            .attr("cy", function(d) { return d.y * scale; });
+            .attr("cy", function(d) { return d.y * scale; })
+            .each(
+                (d,i,nodes) => {
+                    var current = d3.select(nodes[i]);
+                    var father = d3.select(nodes[i].parentNode);
+                    var image = father.select("image");
+                    if (image !== undefined) {
+                        var width = current.attr("r") * Math.sqrt(2);
+                        image.attr("x", d => (d.x * scale  - width / 2));
+                        image.attr("y", d => (d.y * scale  - width / 2));
+                    }
+                }
+            );
+
         if (graph.displayNodeLabels()) {
             textNodes
                 .attr("x", d => d.x * scale)
@@ -141,6 +155,18 @@ function drawRdf(results, svgId) {
     };
 
     var scale = 1;
+    var fo = graph.append('foreignObject').attr("width", "40px").attr("height", "34px");
+    var button = fo.append("xhtml:button")
+        .attr("class", "btn btn-info")
+        .attr("id", "configurationButton")
+        .on("click", e => {
+            d3.select("#configurationGraph")
+                .style("display","block")
+                .style("top", d3.event.y+"px")
+                .style("left", d3.event.x+"px");
+        });
+    button.append("xhtml:span")
+        .attr("class", "glyphicon glyphicon-cog");
 	results.links = results.edges;
 
     var rootConfPanel = d3.select( d3.select(svgId).node().parentNode, graph );
@@ -230,7 +256,10 @@ function drawRdf(results, svgId) {
 		.attr("class", "nodes")
 		.selectAll("circle")
 		.data(results.nodes)
-		.enter().append("circle")
+		.enter()
+        .append("g")
+        .attr("class", "node")
+        .append("circle")
         .attr(
             "class",
             d => {
@@ -241,8 +270,18 @@ function drawRdf(results, svgId) {
                 }
             }
         )
-		.attr("r", 5)
-		.attr("fill", function(d) { return color(d.group); })
+		.attr("r", nodeRadius)
+        .each( (d, i, nodes) => {
+            var current = d3.select(nodes[i]);
+            var father = d3.select(current.node().parentNode);
+            var color = d3.scaleOrdinal(d3.schemeCategory20);
+            if (d.bg_image === undefined) {
+                current.attr("fill", color(d.group));
+            } else {
+                var width = Math.sqrt(2) * current.attr("r");
+                father.append("image").attr("xlink:href", d.bg_image).attr("height", width).attr("width", width);
+            }
+        })
 		.call(d3.drag()
 			.on("start", dragstarted)
 			.on("drag", dragged)
@@ -270,18 +309,7 @@ function drawRdf(results, svgId) {
             return "#"+edge.id;
         });
 
-    var fo = graph.append('foreignObject').attr("width", "1px").attr("height", "1px");
-    var button = fo.append("xhtml:button")
-		.attr("class", "btn btn-info")
-		.attr("id", "configurationButton")
-		.on("click", e => {
-            d3.select("#configurationGraph")
-				.style("display","block")
-				.style("top", d3.event.y+"px")
-				.style("left", d3.event.x+"px");
-		});
-    button.append("xhtml:span")
-        .attr("class", "glyphicon glyphicon-cog");
+
 
 
     var displayEdgeLabels = false;

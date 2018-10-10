@@ -1,4 +1,14 @@
-var nodeRadius = 15;
+class GraphModel {
+    constructor() {
+        this.nodeRadius = 15;
+    }
+}
+GraphModel.BNODE_ID = "bnode";
+GraphModel.URI_ID = "uri";
+GraphModel.LITERAL_ID = "literal";
+
+var model = new GraphModel();
+
 var simulation;
 var sheet = document.createElement('style');
 sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
@@ -174,9 +184,9 @@ function drawRdf(results, svgId) {
     graph.updateConfiguration = function(modal) {
         return function () {
             var visibleNodes = new Set();
-            if (modal.bnodesCheckbox.property("checked")) visibleNodes.add("2");
-            if (modal.uriCheckbox.property("checked")) visibleNodes.add("1");
-            if (modal.literalCheckbox.property("checked")) visibleNodes.add("3");
+            if (modal.bnodesCheckbox.property("checked")) visibleNodes.add( GraphModel.BNODE_ID );
+            if (modal.uriCheckbox.property("checked")) visibleNodes.add( GraphModel.URI_ID );
+            if (modal.literalCheckbox.property("checked")) visibleNodes.add( GraphModel.LITERAL_ID );
             var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
             textNodes.attr(
                 "visibility",
@@ -270,11 +280,13 @@ function drawRdf(results, svgId) {
                 }
             }
         )
-		.attr("r", nodeRadius)
+		.attr("r", model.nodeRadius )
         .each( (d, i, nodes) => {
             var current = d3.select(nodes[i]);
             var father = d3.select(current.node().parentNode);
-            var color = d3.scaleOrdinal(d3.schemeCategory20);
+            var color = d3.scaleOrdinal()
+                .domain( [GraphModel.BNODE_ID, GraphModel.LITERAL_ID, GraphModel.URI_ID] )
+                .range( [ "blue", "green", "red" ] );
             if (d.bg_image === undefined) {
                 current.attr("fill", color(d.group));
             } else {

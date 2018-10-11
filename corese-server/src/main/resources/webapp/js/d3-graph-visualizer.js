@@ -19,7 +19,13 @@ sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacit
 document.head.appendChild(sheet);
 
 class ConfGraphModal {
-    constructor(id, root) {
+    /**
+     *
+     * @param id    id given to the DOM node containing the window.
+     * @param root  node parent of the configuration window.
+     * @param graph Reference to the object responsible of the graph management.
+     */
+    constructor(id, root, graph) {
         this.id = id;
         this.domNode = root.append("div")
             .attr("id", this.id)
@@ -46,13 +52,21 @@ class ConfGraphModal {
         this.edgesCheckbox = d3.select("#edgesCheckbox");
         this.closeButton = d3.select("#configurationGraphCloseButton");
 
-        this.nodesCheckbox.on("change", function () {
-            [this.bnodesCheckbox, this.uriCheckbox, this.literalCheckbox].forEach(button => {
-                button.property("checked", this.checked); // set all the sub-checkboxes to the same value as nodesCheckbox
-            });
-            graph.updateConfiguration();
-            graph.ticked();
-        });
+        this.nodesCheckbox.on( "change",
+            function (container) {
+                return function (evt) {
+                    [container.bnodesCheckbox, container.uriCheckbox, container.literalCheckbox].forEach(
+                        function (c) {
+                            return function (button) {
+                                button.property( "checked", c.nodesCheckbox.property("checked") ); // set all the sub-checkboxes to the same value as nodesCheckbox
+                            }
+                        }(container)
+                    )
+                    graph.updateConfiguration();
+                    graph.ticked();
+                }
+            }(this)
+        );
         [this.bnodesCheckbox, this.uriCheckbox, this.literalCheckbox].forEach(button => {
             button.on("change", function () {
                 var allChecked = true;
@@ -71,18 +85,29 @@ class ConfGraphModal {
         });
         this.closeButton
             .on("click", e => {
-                this.attr("style", "display:none");
+                this.displayOff();
             });
     }
 
     static createConfigurationPanel(rootConfPanel, graph) {
         var result = d3.select("#configurationGraph");
         if (result.size() === 0) {
-            var confGraphModal = new ConfGraphModal( "configurationGraph", rootConfPanel );
+            var confGraphModal = new ConfGraphModal( "configurationGraph", rootConfPanel, graph);
             return confGraphModal;
         } else {
             return result;
         }
+    }
+
+    displayOn() {
+        d3.select(`#${this.id}`)
+            .style("display","block")
+            .style("top", d3.event.y+"px")
+            .style("left", d3.event.x+"px");
+    }
+    displayOff() {
+        d3.select(`#${this.id}`)
+            .style("display","none");
     }
 }
 
@@ -119,7 +144,10 @@ function buildPathFromEdge(scale)
 }
 
 var counter = 1;
-// svgName : id of the svg element to draw the graph (do not forget the #).
+
+/**
+ * \param svgId : id of the svg element to draw the graph (do not forget the #).
+ */
 function drawRdf(results, svgId) {
     var confGraphModal;
     var graph = d3.select(svgId);
@@ -178,10 +206,7 @@ function drawRdf(results, svgId) {
         .attr("class", "btn btn-info")
         .attr("id", "configurationButton")
         .on("click", e => {
-            d3.select("#configurationGraph")
-                .style("display","block")
-                .style("top", d3.event.y+"px")
-                .style("left", d3.event.x+"px");
+            confGraphModal.displayOn()
         });
     button.append("xhtml:span")
         .attr("class", "glyphicon glyphicon-cog");

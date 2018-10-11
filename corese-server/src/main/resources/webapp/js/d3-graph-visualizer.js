@@ -18,6 +18,74 @@ sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacit
 ;
 document.head.appendChild(sheet);
 
+class ConfGraphModal {
+    constructor(id, root) {
+        this.id = id;
+        this.domNode = root.append("div")
+            .attr("id", this.id)
+            .attr("class", "modal")
+            .html(
+                "<div class='modal-content' style='list-style:none;'>" +
+                "<ul>" +
+                "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
+                "<ul>" +
+                "<li><label><input id='bnodesCheckbox' type='checkbox'/>Blank Nodes</label>" +
+                "<li><label><input id='uriCheckbox' type='checkbox'/>URI</label>" +
+                "<li><label><input id='literalCheckbox' type='checkbox'/>Literal</label>" +
+                "</ul>" +
+                "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+                "</ul>" +
+                "<br>" +
+                "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
+                "</div>");
+
+        this.nodesCheckbox = d3.select("#nodesCheckbox");
+        this.bnodesCheckbox = d3.select("#bnodesCheckbox");
+        this.uriCheckbox = d3.select("#uriCheckbox");
+        this.literalCheckbox = d3.select("#literalCheckbox");
+        this.edgesCheckbox = d3.select("#edgesCheckbox");
+        this.closeButton = d3.select("#configurationGraphCloseButton");
+
+        this.nodesCheckbox.on("change", function () {
+            [this.bnodesCheckbox, this.uriCheckbox, this.literalCheckbox].forEach(button => {
+                button.property("checked", this.checked); // set all the sub-checkboxes to the same value as nodesCheckbox
+            });
+            graph.updateConfiguration();
+            graph.ticked();
+        });
+        [this.bnodesCheckbox, this.uriCheckbox, this.literalCheckbox].forEach(button => {
+            button.on("change", function () {
+                var allChecked = true;
+                [this.bnodesCheckbox, this.uriCheckbox, this.literalCheckbox].forEach(
+                    button => allChecked = allChecked && button.property("checked")
+                );
+                this.nodesCheckbox.property("checked", allChecked);
+                graph.updateConfiguration();
+                graph.ticked();
+            })
+        });
+        this.edgesCheckbox.on("change", function () {
+            d3.select("#edgesCheckbox").property("checked");
+            graph.updateConfiguration();
+            graph.ticked()
+        });
+        this.closeButton
+            .on("click", e => {
+                this.attr("style", "display:none");
+            });
+    }
+
+    static createConfigurationPanel(rootConfPanel, graph) {
+        var result = d3.select("#configurationGraph");
+        if (result.size() === 0) {
+            var confGraphModal = new ConfGraphModal( "configurationGraph", rootConfPanel );
+            return confGraphModal;
+        } else {
+            return result;
+        }
+    }
+}
+
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
   d.fx = d.x;
@@ -49,67 +117,7 @@ function buildPathFromEdge(scale)
         };
     }
 }
-function createConfigurationPanel(rootConfPanel, graph) {
-	var result = d3.select("#configurationGraph");
-	if (result.size() === 0) {
 
-        confGraphModal = rootConfPanel.append("div");
-        confGraphModal
-            .attr("id", "configurationGraph")
-            .attr("class", "modal")
-            .html(
-            "<div class='modal-content' style='list-style:none;'>" +
-            "<ul>" +
-            "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
-            "<ul>" +
-            "<li><label><input id='bnodesCheckbox' type='checkbox'/>Blank Nodes</label>" +
-            "<li><label><input id='uriCheckbox' type='checkbox'/>URI</label>" +
-            "<li><label><input id='literalCheckbox' type='checkbox'/>Literal</label>" +
-            "</ul>" +
-            "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
-            "</ul>" +
-            "<br>" +
-            "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
-            "</div>" );
-
-        confGraphModal.nodesCheckbox= d3.select("#nodesCheckbox");
-        confGraphModal.bnodesCheckbox = d3.select("#bnodesCheckbox");
-        confGraphModal.uriCheckbox = d3.select("#uriCheckbox");
-        confGraphModal.literalCheckbox = d3.select("#literalCheckbox");
-        confGraphModal.edgesCheckbox = d3.select("#edgesCheckbox");
-        confGraphModal.closeButton = d3.select("#configurationGraphCloseButton");
-
-        confGraphModal.nodesCheckbox.on("change", function() {
-            [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach( button => {
-                button.property( "checked", this.checked ); // set all the sub-checkboxes to the same value as nodesCheckbox
-            });
-            graph.updateConfiguration(); graph.ticked();
-        });
-        [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach( button => {
-            button.on("change", function () {
-                var allChecked = true;
-                [ confGraphModal.bnodesCheckbox, confGraphModal.uriCheckbox, confGraphModal.literalCheckbox ].forEach(
-                    button => allChecked = allChecked && button.property("checked")
-                );
-                confGraphModal.nodesCheckbox.property("checked", allChecked);
-                graph.updateConfiguration();
-                graph.ticked();
-            })
-        });
-        confGraphModal.edgesCheckbox.on("change", function() {
-        	d3.select("#edgesCheckbox").property("checked"); graph.updateConfiguration(); graph.ticked()
-        });
-        confGraphModal.closeButton
-            .on("click", e => {
-                confGraphModal.attr("style", "display:none");
-            });
-
-
-        return confGraphModal;
-    } else {
-		return result;
-	}
-}
 var counter = 1;
 // svgName : id of the svg element to draw the graph (do not forget the #).
 function drawRdf(results, svgId) {
@@ -180,7 +188,7 @@ function drawRdf(results, svgId) {
 	results.links = results.edges;
 
     var rootConfPanel = d3.select( d3.select(svgId).node().parentNode, graph );
-    confGraphModal = createConfigurationPanel(rootConfPanel, graph);
+    confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, graph);
     graph.updateConfiguration = function(modal) {
         return function () {
             var visibleNodes = new Set();

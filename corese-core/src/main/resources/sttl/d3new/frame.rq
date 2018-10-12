@@ -1,5 +1,9 @@
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:frame(?pretty) {
+
+  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
+  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
+
   format {
       ft:frame.html
       ?id
@@ -9,4 +13,6 @@ template st:frame(?pretty) {
 where {
     bind (if (bound(?pretty), us:declare(?pretty), true) as ?tmp)
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (st:get(st:title) as ?title)
+    bind (st:get(st:get(st:uriparam)) as ?uri)
 }

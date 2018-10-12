@@ -1,11 +1,14 @@
 template st:nodes {
   "\"nodes\":[\n"
   group {
-    format {
-        '{"id": "%s", "label": "%s", "group": "%s", "class": "%s"}'
+  
+     format {
+            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
+            ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
+             if (isURI(?s), us:uri(?s), "")
+            coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
+      }
         
-        ?id us:label(?s) us:kind(?s) us:nodeClass(?s)
-        }
     ; separator = ",\n"
   }
   "\n]\n"
@@ -14,3 +17,12 @@ where {
    values (?s ?id) { unnest(us:getNodes()) }
 }
 
+
+# st:link : service?uri=...&profile=...
+# st:url  : URL either ?s itself or a proxy URL
+function us:uri(?s) {
+    coalesce(
+        st:format(', "link": "%s"', st:cget(st:link, ?s)),
+        st:format(',  "url": "%s"', coalesce(st:cget(st:url, ?s), ?s))
+    )
+}

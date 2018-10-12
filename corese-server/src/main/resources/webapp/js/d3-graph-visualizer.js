@@ -1,4 +1,4 @@
-var nodeRadius = 15;
+var nodeRadius = 5;
 var simulation;
 var sheet = document.createElement('style');
 sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
@@ -286,7 +286,10 @@ function drawRdf(results, svgId) {
 			.on("start", dragstarted)
 			.on("drag", dragged)
 			.on("end", dragended))
-        .on("click", (d) => { if (d.url !== undefined) window.open(d.url)});
+        .on("click", (d) => { 
+            if (d.url  !== undefined) window.open(d.url) ;
+            if (d.link !== undefined) trans(d.link) ;
+        });
 	node.append("title")
 		.text(function(d) { return d.label; });
     var textNodes = g.append("g").selectAll("text")

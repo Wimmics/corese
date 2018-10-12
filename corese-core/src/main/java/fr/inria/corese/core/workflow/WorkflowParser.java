@@ -398,6 +398,7 @@ public class WorkflowParser {
             }
         } else {
             String type = dtype.getLabel();
+            System.out.println("Parser: " + type);
             if (type.equals(WORKFLOW)) {
                 // special case (with complete done)
                 ap = subWorkflow(getGraph().getNode(dt));
@@ -423,6 +424,8 @@ public class WorkflowParser {
                         } else if (type.equals(LOAD)) {
                             ap = load(dt);
                         }
+                    } else if (type.equals(PROBE)) {
+                        ap = probe(dt);
                     } else if (dbody != null) {
                         if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
                             ap = new SPARQLProcess(dbody.getLabel(), getPath());
@@ -431,9 +434,7 @@ public class WorkflowParser {
                         } else if (type.equals(PARALLEL)) {
                             ap = parallel(getGraph().getNode(dt));
                         }
-                    } else if (type.equals(PROBE)) {
-                        ap = probe(dt);
-                    } else if (type.equals(LOAD)) {
+                    }  else if (type.equals(LOAD)) {
                         ap = load(dt);
                     } else if (type.equals(TEST)) {
                         ap = test(dt);

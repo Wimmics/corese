@@ -2,8 +2,10 @@ package fr.inria.corese.core.workflow;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
 import org.slf4j.LoggerFactory;
@@ -69,6 +71,7 @@ public class LoadProcess extends WorkflowProcess {
     public Data run(Data data) throws EngineException {
         Graph g = data.getGraph();
         Load ld = Load.create(g);
+        boolean isURL = true;
         try {
             
             if (text != null){
@@ -77,10 +80,19 @@ public class LoadProcess extends WorkflowProcess {
             else {
                 if (path.startsWith(FILE)) {
                     path = path.substring(FILE.length());
+                    isURL = false;
                 }
 
                 if (!hasMode()) {
-                    ld.parseDir(path, name, rec);
+                    if (isURL){
+                        // dbpedia return HTML by default
+                        // if path has no suffix, set header accept "text/n3"
+                        ld.parseWithFormat(path, Loader.RDFXML_FORMAT);
+                        //ld.parseWithFormat(path, Loader.NT_FORMAT);
+                    }
+                    else {
+                        ld.parseDir(path, name, rec); 
+                    }
                 } else if (getModeString().equals(WorkflowParser.SPIN)) {
                     loadSPARQLasSPIN(path, g);
                 } else if (getMode().isNumber()) {

@@ -20,6 +20,21 @@ function st:getgroup(?s) {
     st:cget(st:group, ?s, ?c)
 }
 
+function st:setimg(?s, ?i) {
+    st:cset(st:img, ?s, ?i)
+}
+
+# for D3 nodes.rq
+# server URL interpreted by javascript:trans(URL)
+# LOD URL interpreted by window.open(URL)
+function st:setlink(?s, ?link) {
+    if (contains(?link, "?uri=") || contains(?link, "param="), 
+        # server URL
+        st:cset(st:link, ?s, ?link),
+        # LOD URL
+        st:cset(st:url,  ?s, ?link))
+}
+
 
 
 function st:isAjax(){
@@ -80,6 +95,26 @@ function st:plink(?uri, ?profile) {
   st:protocol(st:link(?uri, ?profile))
 }
 
+#
+# try to get specific profile for uri from profile.ttl 
+# st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia )) 
+# otherwise use st:profile
+#
+function st:pplink(?uri) {
+  st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
+}
+
+# pplink without java:trans()
+function st:hlink(?uri) {
+    let (?profile = coalesce(st:getprofile(?uri), st:get(st:profile))) {
+        if (?profile = st:lod, ?uri, st:link(?uri, ?profile))
+    }
+}
+
+function st:hlink(?uri, ?profile) {
+  st:link(?uri, ?profile)
+}
+
 function st:qname(?uri){
   kg:qname(?uri)
 }
@@ -117,15 +152,6 @@ function st:include2(){
 
 
 #
-# try to get specific profile for uri from profile.ttl 
-# st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia )) 
-# otherwise use st:profile
-#
-function st:pplink(?uri) {
-  st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
-}
-
-#
 # take st:lodprofile into account
 # st:lodprofile ((<http://fr.dbpedia.org/>   st:jdev) ("*" st:lod)) 
 # if getprofile(?x) = st:lod, return uri as is, otherwise return pplink
@@ -150,13 +176,33 @@ function st:getprofile(?uri){
 
 # ?decl = (namespace profile)
 function st:match(?x, ?decl){
-  let (?ns = xt:get(?decl, 0)){
+  let ((?ns) = ?decl){
     strstarts(?x, ?ns) || coalesce(?ns = "*", false)
   }
 }
   
 # ____________________________________________________
 
+
+#
+# Record country locations from Mappings into st:set(st:location)
+# as a list of (country lat lon)
+# used by st:navlab#map
+#
+function st:location(?map) {
+    let (?list = xt:list(), ?table = xt:map()) {
+        for ((?country ?lat ?lon) in ?map) {
+            if (! xt:member(?country, ?table) && bound(?lat)) {
+                xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
+                xt:set(?table, ?country, ?country)
+            }
+        } ;
+        st:set(st:location, ?list) ;
+        xt:print('list', ?list)
+    } 
+}
+
+###
 
 function st:head(){
 return ("")

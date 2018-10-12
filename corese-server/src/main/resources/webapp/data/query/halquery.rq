@@ -8,26 +8,33 @@ prefix dc:   <http://purl.org/dc/terms/>
 construct {
     ?uri ?p ?y . ?x ?q ?uri .
     ?y ?pname ?label . ?x ?pname ?label .
-    ?y ?q ?z . ?t ?q ?x
+    ?y ?q ?z 
 }
 where {
     bind (st:get(st:uri) as ?uri)
     
     service <https://data.archives-ouvertes.fr/sparql> {
-    select * where {
-        { ?uri ?p ?y  
-            optional { ?y foaf:name|skos:prefLabel|skos:altLabel|dc:title ?label ; ?pname ?label }
-            optional { filter isBlank(?y) ?y ?q ?z  filter (! isBlank(?z)) }
+        select * where {
+            { ?uri ?p ?y  
+                optional { ?y foaf:name|skos:prefLabel|skos:altLabel|dc:title ?label ; ?pname ?label }
+                optional { filter isBlank(?y) ?y ?q ?z  filter (! isBlank(?z)) }
+            } 
+            union 
+            { ?x ?q ?uri  filter isURI(?x)
+                optional { ?x foaf:name|skos:prefLabel|skos:altLabel ?label ; ?pname ?label } 
+            }
         } 
-        union 
-        { ?x ?q ?uri  filter isURI(?x)
-            optional { ?x foaf:name|skos:prefLabel|skos:altLabel ?label ; ?pname ?label } 
-            #optional { filter isBlank(?x)  ?t ?q ?x  filter isURI(?t) }
-        }
-    } 
-    #limit 1000
+        limit 10000
+    }
+    
+    bind (us:link(?y) as ?a)
+    bind (us:link(?x) as ?b)
+}
+
+function us:link(?s) {
+    if (isURI(?s)) {
+        st:setlink(?s, st:hlink(?s))
     }
 }
 
-#pragma { kg:kgram kg:detail true }
 

@@ -1,0 +1,30 @@
+#
+# Associate style to RDF graph to be displayed with D3.js
+# style = image and hypertext link
+#
+select * where {
+    ?s ?p ?o
+    bind (us:process(?s) as ?a)
+    bind (us:process(?o) as ?b)
+}
+
+function us:process(?s) {
+    if (us:icon(?s), us:image(?s),
+    if (isURI(?s), st:setlink(?s, us:link(?s)), true))
+}
+
+function us:image(?s) {
+    st:setimg(?s, ?s) ;
+    st:setlink(?s, ?s)
+}
+
+function us:link(?s) {
+    st:format ( 
+        "%s?param=%s" ,
+        st:get(st:service),  encode_for_uri(?s) 
+    )
+}
+
+function us:icon(?s) {
+    mapany (rq:strends, ?s, xt:list(".jpg", ".svg", ".png", ".jpeg", ".JPG"))
+}

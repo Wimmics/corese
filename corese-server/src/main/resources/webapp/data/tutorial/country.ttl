@@ -39,7 +39,9 @@ db:Cuba, db:Jamaïque, db:Honduras, db:Nicaragua, db:Panama, db:Guatemala, db:Be
 
 
 db:Amérique_du_Sud dbo:member
-db:Brésil, db:Venezuela, db:Argentine, db:Chili, db:Uruguay, db:Paraguay, db:Colombie, db:Bolivie, db:Pérou, db:Suriname
+db:Brésil, db:Venezuela, db:Argentine, db:Chili, 
+<http://fr.dbpedia.org/resource/Équateur_(pays)>, 
+db:Guyana, db:Uruguay, db:Paraguay, db:Colombie, db:Bolivie, db:Pérou, db:Suriname
 .
 
 db:Asie dbo:member

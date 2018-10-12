@@ -554,7 +554,8 @@ select distinct ?n ?n2 ?name ?ll ?lab where {
 """ ;
 
 st:select [
-    st:name "param" ;
+    st:name "param" ; 
+    st:uri st:param ;
     st:value ("CRISAM" "I3S" "UCA" "JAD" "INRA" "ITER" "IPMC")
 ]
 ]
@@ -623,16 +624,7 @@ service <http://fr.dbpedia.org/sparql> {
 #
 @after
 function us:after(?map) {
-    let (?list = xt:list(), ?table = xt:map()) {
-        for ((?country ?lat ?lon) in ?map) {
-            if (! xt:member(?country, ?table) && bound(?lat)) {
-                xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
-                xt:set(?table, ?country, ?country)
-            }
-        } ;
-        st:set(st:location, ?list) ;
-        xt:print('list', ?list)
-    } 
+    st:location(?map)
 }
 
 """ 
@@ -658,6 +650,7 @@ prefix inr: <http://ns.inria.fr/sparql-extension/user/>
 prefix vs:  <http://www.w3.org/2006/vcard/ns#>
 prefix db:  <http://fr.dbpedia.org/resource/>
 prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @event
 construct {
@@ -693,11 +686,13 @@ service <http://fr.dbpedia.org/sparql> {
         ?cc rdfs:label ?name 
         filter langMatches(lang(?name), "en")
         optional { ?cc geo:lat ?lat ; geo:long ?lon }
+        optional { ?cc o:thumbnail ?img }
     } 
 }
 
-    bind (st:setclass(?name, "main") as ?c1) 
-    bind (st:setclass(?n, "other")     as ?c2) 
+    bind (st:setclass(?name, "main")   as ?a) 
+    bind (st:setclass(?n, "other")     as ?b) 
+    bind (st:setimg(?name, ?img) as ?c) 
 
 }
 
@@ -707,21 +702,15 @@ service <http://fr.dbpedia.org/sparql> {
 #
 @after
 function us:after(?map) {
-    let (?list = xt:list(), ?table = xt:map()) {
-        for ((?country ?lat ?lon) in ?map) {
-            if (! xt:member(?country, ?table) && bound(?lat)) {
-                xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
-                xt:set(?table, ?country, ?country)
-            }
-        } ;
-        st:set(st:location, ?list) ;
-        xt:print('list', ?list)
-    } 
+       st:location(?map)
 }
 """ ;
 
 st:select [
-    st:name "mode" ;
+    # parameter name in service URL: &mode=value
+    st:name "mode" ; 
+    # parameter name in table: st:get(st:mode) = value
+    st:uri st:mode ;
     st:value (
         db:All
         db:Afrique db:Afrique_du_Nord db:Afrique_continentale 
@@ -824,84 +813,127 @@ prefix org: <http://www.w3.org/ns/org#>
 construct {
    ?x foaf:name "Olivier Corby" ;
     ?p ?y 
-    ?z ?q ?x   ; ?r ?t
+    ?z ?q ?x   
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
     ?x foaf:name "Olivier Corby" ;
     ?p ?y 
-    ?z ?q ?x ; ?r ?t
+    ?z ?q ?x 
 }
 
-bind (st:setclass(?p, "main") as ?a)
+bind (st:setclass(?p, "main")  as ?a)
 bind (st:setclass(?q, "other") as ?b)
 
+bind (map(us:link, xt:list(?y, ?z)) as ?c)
+
+}
+
+function us:link(?s) {
+    if (isURI(?s)) { 
+        st:setlink(?s, st:hlink(?s, st:hal)) 
+    }
 }
 """ 
 ]
+
+
+
+
 
 
 
 [ a sw:Query ;
-st:name st:author ;
-rdfs:label "Author" ;
-rdfs:comment "Author."@fr ;
-rdfs:comment "Author"@en ;
+st:name st:continent ;
+rdfs:label "Continent" ;
+rdfs:comment "Continent."@fr ;
+rdfs:comment "Continent"@en ;
 
 st:query 
-"""prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix dc:   <http://purl.org/dc/terms/>
-
-@federate <https://data.archives-ouvertes.fr/sparql>
-
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+@event
 construct {
-    ?x foaf:name ?n .
-    ?x foaf:publications ?doc .
-    ?doc dc:title ?t ; dc:issued ?d
+    ?continent dbo:member ?country 
+    ?country   dbo:capital ?city
 }
 where {
-    ?x foaf:name ?n 
-    filter regex(?n, "Olivier") 
-    ?x foaf:publications ?doc .
-    optional { ?doc dc:hasVersion [ dc:title ?t ; dc:issued ?d ] }
+
+bind (st:get(st:mode) as ?continent)
+graph st:geo { ?continent dbo:member ?country } 
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?country rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?country geo:lat ?lat ; geo:long ?lon }
+        optional { ?country o:thumbnail ?img  }
+        optional { ?country o:capital ?city . ?city o:thumbnail ?icon } 
+    } 
 }
-limit 100
-""" 
+
+    bind (st:setclass(?country, "main")   as ?a) 
+    bind (st:setclass(?city, "other")   as ?b) 
+    
+    bind (st:setimg(?country, ?img) as ?c) 
+    bind (st:setimg(?city, ?icon)  as ?d) 
+
+}
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+    st:location(?map)
+}
+""" ;
+
+st:select [
+    # parameter name in service URL: &mode=value
+    st:name "mode" ; 
+    # parameter name in table: st:get(st:mode) = value
+    st:uri st:mode ;
+    st:value (
+        db:All
+        db:Afrique db:Afrique_du_Nord db:Afrique_continentale 
+        db:Amérique db:Amérique_du_Nord db:Amérique_centrale db:Amérique_du_Sud 
+        db:Asie db:Asie_centrale db:Europe db:Europe_Est db:Moyen-Orient 
+    )
+]
+
 ]
 
 
 
-[ a sw:Query ;
-st:name st:coauthor ;
-rdfs:label "Coauthors" ;
-rdfs:comment "Coauteurs."@fr ;
-rdfs:comment "Coauthors"@en ;
 
-st:query 
-"""prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix dc:   <http://purl.org/dc/terms/>
 
-@federate <https://data.archives-ouvertes.fr/sparql>
 
-construct {
-    ?x foaf:name ?n .
-    ?x foaf:publications ?doc .
-    ?y foaf:publications ?doc .
-    ?y foaf:name ?name .
-    ?doc dc:title ?t ; dc:issued ?d
-}
-where {
-    ?x foaf:name ?n 
-    filter regex(?n, "Olivier") 
-    ?x foaf:publications ?doc .
-    ?y foaf:publications ?doc .
-    ?y foaf:name ?name 
-    optional { ?doc dc:hasVersion [ dc:title ?t ; dc:issued ?d ] }
-    filter (?x != ?y)
-}
-limit 100
-""" 
-]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 )

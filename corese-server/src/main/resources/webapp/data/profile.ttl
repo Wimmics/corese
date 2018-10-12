@@ -6,6 +6,7 @@
 
 prefix p:    <http://fr.dbpedia.org/property/>
 prefix o:    <http://dbpedia.org/ontology/>
+@prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
 
 
 #[] owl:imports <profile2.ttl>
@@ -16,6 +17,8 @@ prefix o:    <http://dbpedia.org/ontology/>
 
 st:dbpedia a st:Profile ;   
   st:param [ 
+    st:transformations (st:navlab d3:frame) ;
+    st:export true ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam  ;     
   ] ;
@@ -26,7 +29,7 @@ st:dbpedia a st:Profile ;
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
     <query/dbpedia/frdbpedia.rq> <query/dbpedia/frdbpediaclean.rq> 
-    [ a sw:Transformation ; sw:uri st:navlab ]
+    [ a sw:Transformation ; sw:uri st:combine ]
   )
 .
 
@@ -510,7 +513,6 @@ st:workflow [
 ]
 .
 
-@prefix d3: <http://ns.inria.fr/sparql-template/d3#>
 
 st:myload a st:Server ;
 st:service "myload" ;
@@ -544,7 +546,8 @@ st:tutorialhal a st:Server ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
         (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal)    
+        (<http://www.w3c.org/ns/org> st:hal) 
+        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
         ("*" st:lod)
     ) 
   ] ;
@@ -739,10 +742,38 @@ sw:body (
 
 st:display a st:Profile ;
 st:workflow st:display ;
+st:param [
+    st:export true ;
+    st:transformations (d3:frame st:hturtle) 
+
+] ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
     [ a sw:Transformation ] # sw:uri = st:mode 
+)
+.
+
+
+st:lod a st:Server ;
+st:service "lod" ;
+st:workflow st:lodworkflow ;
+st:param [
+    st:title "LOD Browser" ;
+    st:uriparam st:param ;
+    st:export true ;
+    st:transformations (d3:frame st:hturtle) ;
+    st:hyperlink true ;
+] 
+.
+
+
+st:lodworkflow a sw:Workflow ;
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Probe ; sw:exp [ a sw:Query ; sw:uri <query/display.rq> ] ]
+    [ a sw:Transformation ; sw:uri st:combine] 
 )
 .
 

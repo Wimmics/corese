@@ -1,4 +1,4 @@
-var nodeRadius = 5;
+var nodeRadius = 15;
 var simulation;
 var sheet = document.createElement('style');
 sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "

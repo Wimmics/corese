@@ -68,7 +68,7 @@ public class TransformerEngine {
         SemanticWorkflow sw = workflow(getContext(), ds, profile, param.getQuery());
         //sw.setDebug(isDebug());
         if (isDebug()) {
-            logger.info("Run workwlow");
+            logger.info("Run workflow");
             //graph.setVerbose(true);
         }
         Data data = sw.process(new Data(graph));

@@ -521,8 +521,6 @@ template st:page {
   st:head()
 
   st:call-template(st:selecttry)
-
-  st:call-template-with(st:d3, st:frame)
    
   st:tail()
   

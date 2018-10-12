@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Oct 08 18:23:56 CEST 2018
+Tue Oct 09 15:58:07 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -365,7 +365,15 @@ template st:selectparam(?n, ?select) {
 format {
   ft:selectparam.html 
   ?name
-  group { format { "<option value='%s'>%s</option>" ?value ?value } }
+  group { 
+    format { 
+        if (st:get(?uri, ?value), 
+            "<option value='%s' selected='true'>%s</option>", 
+            "<option value='%s'>%s</option>")
+            
+        ?value ?value
+    } 
+}
 }
    
 }
@@ -373,7 +381,7 @@ where {
   bind (st:get(st:context) as ?g)
   
   graph ?g {
-    ?select st:name ?name ;
+    ?select st:name ?name ; st:uri ?uri ;
        st:value/rdf:rest*/rdf:first ?value      
   }
 }

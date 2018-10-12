@@ -16,6 +16,15 @@ public interface Loader {
     static final int TRIG_FORMAT   = 8;
     static final int NQUADS_FORMAT = 9;
     static final int WORKFLOW_FORMAT = 10;
+    
+    static final String JSONLD_FORMAT_STR = "application/ld+json";
+    static final String JSON_FORMAT_STR = "application/json";
+    static final String RDFXML_FORMAT_STR = "application/rdf+xml";
+    static final String NQUADS_FORMAT_STR = "text/n-quads";
+    static final String TRIG_FORMAT_STR = "text/trig";
+    static final String NT_FORMAT_STR = "text/n3";
+    static final String TURTLE_FORMAT_STR = "text/turtle";
+    static final String HTML_FORMAT_STR = "text/html";
 
 	void init(Object o);
 	

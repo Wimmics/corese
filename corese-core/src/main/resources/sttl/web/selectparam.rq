@@ -7,7 +7,15 @@ template st:selectparam(?n, ?select) {
 format {
   ft:selectparam.html 
   ?name
-  group { format { "<option value='%s'>%s</option>" ?value ?value } }
+  group { 
+    format { 
+        if (st:get(?uri, ?value), 
+            "<option value='%s' selected='true'>%s</option>", 
+            "<option value='%s'>%s</option>")
+            
+        ?value ?value
+    } 
+}
 }
    
 }
@@ -15,7 +23,7 @@ where {
   bind (st:get(st:context) as ?g)
   
   graph ?g {
-    ?select st:name ?name ;
+    ?select st:name ?name ; st:uri ?uri ;
        st:value/rdf:rest*/rdf:first ?value      
   }
 }

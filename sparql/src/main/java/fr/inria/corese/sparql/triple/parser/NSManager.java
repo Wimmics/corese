@@ -52,7 +52,9 @@ public class NSManager extends ASTObject {
     public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String SHAPE = "http://www.w3.org/ns/shacl#";
-
+    public static final String DCTERM = "http://purl.org/dc/terms/";
+    public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
+    
     public static final String COSNS      = RDFS.COSNS;
     public static final String COS        = RDFS.COS;
     public static final String SWL        = ExpType.SWL;
@@ -219,7 +221,9 @@ public class NSManager extends ASTObject {
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);
         def.put("http://dbpedia.org/ontology/", "dbo");
-        
+        def.put(DCTERM, "dc");
+        def.put(DBPEDIAFR, "db");
+       
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
         def.put(KGEXTCONS, KECPREF);

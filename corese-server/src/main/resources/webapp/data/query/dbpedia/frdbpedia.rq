@@ -109,5 +109,6 @@ bind (if (bound(?lat) || bound(?plat), o:Place, foaf:Person) as ?class)
       
 bind (concat(w:, (substr(?uri, strlen(r:) + 1))) as ?pr) 
 
-  
+bind (if (isURI(?ts), st:setlink(?ts, st:hlink(?ts)), true) as ?a)
+bind (if (?pp = o:thumbnail, st:setimg(?uri, ?vv), true) as ?b)  
 }

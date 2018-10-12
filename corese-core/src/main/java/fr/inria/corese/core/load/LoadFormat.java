@@ -32,6 +32,7 @@ public class LoadFormat {
     static final String SWF = ".sw";
 
     static HashMap<String, Integer> ptable, utable, dtable;
+    static HashMap<Integer, String> ftable;
     
     static {
         init();
@@ -60,14 +61,16 @@ public class LoadFormat {
         define(SWF,     Loader.WORKFLOW_FORMAT);
         
         utable = new HashMap<String, Integer>();
-        udefine("text/html",        Loader.RDFA_FORMAT);
-        udefine("text/turtle",      Loader.TURTLE_FORMAT);
-        udefine("text/n3",          Loader.NT_FORMAT);
-        udefine("text/trig",        Loader.TRIG_FORMAT);
-        udefine("text/n-quads",     Loader.NQUADS_FORMAT);
-        udefine("application/rdf+xml", Loader.RDFXML_FORMAT);
-        udefine("application/json",    Loader.JSONLD_FORMAT);
-        udefine("application/ld+json", Loader.JSONLD_FORMAT);
+        ftable = new HashMap<Integer, String>();
+        
+        udefine(Loader.HTML_FORMAT_STR,   Loader.RDFA_FORMAT);
+        udefine(Loader.TURTLE_FORMAT_STR, Loader.TURTLE_FORMAT);
+        udefine(Loader.NT_FORMAT_STR,     Loader.NT_FORMAT);
+        udefine(Loader.TRIG_FORMAT_STR,   Loader.TRIG_FORMAT);
+        udefine(Loader.NQUADS_FORMAT_STR, Loader.NQUADS_FORMAT);
+        udefine(Loader.RDFXML_FORMAT_STR, Loader.RDFXML_FORMAT);
+        udefine(Loader.JSON_FORMAT_STR,   Loader.JSONLD_FORMAT);
+        udefine(Loader.JSONLD_FORMAT_STR, Loader.JSONLD_FORMAT);
         
         
         dtable = new HashMap<String, Integer>();
@@ -76,17 +79,22 @@ public class LoadFormat {
         ddefine(Transformer.JSON,   Loader.JSONLD_FORMAT);
         
    }
-    
+      
     static void define(String extension, int format){
         ptable.put(extension, format);
     }
     
-     static void udefine(String extension, int format){
+    static void udefine(String extension, int format){
         utable.put(extension, format);
+        ftable.put(format, extension);
     }
      
-       static void ddefine(String extension, int format){
+    static void ddefine(String extension, int format){
         dtable.put(extension, format);
+    }
+    
+    public static String getFormat(int format) {
+        return ftable.get(format);
     }
     
     public static int getFormat(String path){

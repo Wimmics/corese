@@ -194,24 +194,6 @@ public class Load
         return NSManager.toURI(name);
     }
 
-//    String uri2(String name) {
-//        String str = uri(name);
-//        if (!isURL(name)) {
-//            // use case: relative file name
-//            // otherwise URI is not correct (for ARP)
-//            name = new File(name).getAbsolutePath();
-//            // for windows
-//            if (System.getProperty("os.name").contains("indows")) {
-//                name = name.replace('\\', '/');
-//                if (name.matches("[A-Z]:.*")) {
-//                    name = "/" + name;
-//                }
-//            }
-//            name = FILE + name;
-//        }
-//        return name;
-//    }
-
     boolean isURL(String path) {
         try {
             new URL(path);
@@ -384,9 +366,24 @@ public class Load
         parse(path, null, null, UNDEF_FORMAT);
     }
     
+    
+    
     public void parse(String path, int format) throws LoadException {
         parse(path, null, null, format);
     }
+    
+    public void parseWithFormat(String path, int requiredFormat) throws LoadException {
+        int format = LoadFormat.getFormat(path);
+        if (format == UNDEF_FORMAT) {
+            format = requiredFormat;
+        }
+        parse(path, null, null, format, requiredFormat);
+    }
+    
+    public void parse(String path, int expectedFormat, int requiredFormat) throws LoadException {
+        parse(path, null, null, expectedFormat, requiredFormat);
+    }
+    
     
     @Override
     public void parse(String path, String name) throws LoadException {
@@ -408,11 +405,15 @@ public class Load
      */
     @Override
     public void parse(String path, String name, String base, int format) throws LoadException {
+        parse(path, name, base, format, UNDEF_FORMAT);
+    }
+    
+    public void parse(String path, String name, String base, int expectedFormat, int requiredFormat) throws LoadException {
         name = target(name, path);
         base   = (base == null)   ? path : base;
         name = uri(name);
         base   = uri(base);
-        localLoad(path, base, name, getFormat(path, format));
+        localLoad(path, base, name, getFormat(path, expectedFormat), requiredFormat);
     }
     
     /**
@@ -444,7 +445,7 @@ public class Load
     }
 
     public void parse(InputStream stream, String name, int format) throws LoadException {
-        parse(stream, name, name, name, format);
+       parse(stream, name, name, name, format);
     }
 
     // TODO: clean arg order
@@ -459,17 +460,27 @@ public class Load
         }
     }
 
-    // if base = null   : base = uri(path)
-    // if name = null : name = base
-    // base used for rdf/xml & turtle
+        
     private void localLoad(String path, String base, String name, int format) throws LoadException {
+        localLoad(path, base, name, format, UNDEF_FORMAT);
+    }
+    
+    /**
+       if base = null : base = uri(path)
+       if name = null : name = base
+       * requiredFormat : when path is URL, set HTTP header to accept this format
+       * expectedFormat : expected format according to path extension or specified by user
+       * Use one of these format parameter when calling the function
+    */
+   private void localLoad(String path, String base, String name, int expectedFormat, int requiredFormat) 
+            throws LoadException {
 
         log(path);
 
-        if (format == RULE_FORMAT) {
+        if (expectedFormat == RULE_FORMAT) {
             loadRule(path, base);
             return;
-        } else if (format == QUERY_FORMAT) {
+        } else if (expectedFormat == QUERY_FORMAT) {
             loadQuery(path, base);
             return;
         }
@@ -481,11 +492,14 @@ public class Load
             if (isURL(path)) {
                 URL url = new URL(path);
                 URLConnection c = url.openConnection();
+                if (requiredFormat != UNDEF_FORMAT) {
+                    c.setRequestProperty("Accept", LoadFormat.getFormat(requiredFormat));
+                }
                 String contentType = c.getContentType();
                 stream = c.getInputStream();
                 read = reader(stream);
-                if (format == UNDEF_FORMAT && contentType != null) {
-                    format = getTypeFormat(contentType, format);
+                if ((expectedFormat == UNDEF_FORMAT || requiredFormat != UNDEF_FORMAT) && contentType != null) {
+                    expectedFormat = getTypeFormat(contentType, expectedFormat);
                 }
             } else {
                 read = new FileReader(path);
@@ -505,7 +519,7 @@ public class Load
             name = base;
         }
         
-        synLoad(read, path, base, name, format);
+        synLoad(read, path, base, name, expectedFormat);
 
         if (stream != null) {
             try {

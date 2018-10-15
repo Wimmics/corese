@@ -4,8 +4,8 @@
 # accessible using st:get(st:lang)
 #
 
-prefix p:    <http://fr.dbpedia.org/property/>
-prefix o:    <http://dbpedia.org/ontology/>
+@prefix p:    <http://fr.dbpedia.org/property/>
+@prefix o:    <http://dbpedia.org/ontology/>
 @prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
 
 
@@ -62,7 +62,7 @@ st:dbpediatestwf a sw:Workflow ;
 st:hal a st:Server ;
 st:service "hal" ;
 st:param [ 
-    st:transformations (<http://ns.inria.fr/sparql-template/d3#frame> st:hturtle) ;
+    st:transformations (d3:frame st:hturtle) ;
     # export context parameters to subtransformation (st:profile, etc.):
     st:export true;
     # transformation does not focus on uri but display whole graph:
@@ -534,7 +534,7 @@ st:tutorialhal a st:Server ;
   st:param [ st:lang 'en' ; 
     st:sttl st:combine ; 
     st:transformations (
-        d3:frame  navlab:map st:hturtle
+        d3:frame navlab:map st:hturtle
         ) ;
     st:param "verbatim" ; 
     st:hyperlink true ; 
@@ -771,7 +771,9 @@ st:param [
 st:lodworkflow a sw:Workflow ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
-    [ a sw:Load ] # sw:uri = st:param 
+    # set rdfxml format because fr.dbpedia.org default format generates parsing error
+    [ a sw:Load ; sw:format st:rdfxml ] # sw:uri = st:param 
+    # decorate graph with style and hypertext link
     [ a sw:Probe ; sw:exp [ a sw:Query ; sw:uri <query/display.rq> ] ]
     [ a sw:Transformation ; sw:uri st:combine] 
 )

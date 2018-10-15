@@ -139,7 +139,7 @@ service <https://data.archives-ouvertes.fr/sparql> {
         filter langMatches(lang(?topic), "en")
     }
 }
-    bind (st:setgroup(?n, st:other) as ?tmp)
+    bind (st:setgroup(?n, "other") as ?tmp)
     bind (st:setclass(?n, "other") as ?a)
     bind (st:setclass(?topic, "main") as ?b)
 }
@@ -181,8 +181,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
 }
 }
 
-    bind (st:setgroup(?n, st:other)     as ?a)
-    bind (st:setgroup(?topic, st:other) as ?b)
+    bind (st:setgroup(?n, "other")     as ?a)
+    bind (st:setgroup(?topic, "other") as ?b)
     
     bind (st:setclass(?topic, "main")   as ?c)
     bind (st:setclass(?name,  "other")  as ?d)        
@@ -224,8 +224,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
     filter regex(?topic, "Intelligence")
 }}
 
-    bind (st:setgroup(?n, st:other)     as ?a)
-    bind (st:setgroup(?topic, st:other) as ?b)
+    bind (st:setgroup(?n, "other")     as ?a)
+    bind (st:setgroup(?topic, "other") as ?b)
     
     bind (st:setclass(?topic, "main")   as ?c)
     bind (st:setclass(?name,  "other")  as ?d)   
@@ -265,7 +265,7 @@ service <https://data.archives-ouvertes.fr/sparql> {
     filter regex(?source, "Artificial Intelligence")
 }}
 
-    bind (st:setgroup(?n, st:other) as ?tmp)
+    bind (st:setgroup(?n, "other") as ?tmp)
     bind (st:setclass(?n, "main")   as ?c)
     bind (st:setclass(?name,  "other")  as ?d)   
 }
@@ -373,8 +373,8 @@ select distinct ?n ?n2 ?name ?name2 where {
    
 }
 }
-    bind (st:setgroup(?n, st:other) as ?tmp) 
-    bind (st:setgroup(?n2, st:other) as ?tmp2) 
+    bind (st:setgroup(?n, "other") as ?tmp) 
+    bind (st:setgroup(?n2, "other") as ?tmp2) 
     
     bind (st:setclass(?n, "main")       as ?a)
     bind (st:setclass(?n2, "main")      as ?b)
@@ -429,8 +429,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
 }
     bind (concat(?n2, ":", ?count) as ?sn2) 
     
-    bind (st:setgroup(?sn, st:other) as ?tmp) 
-    bind (st:setgroup(?sn2, st:other) as ?tmp2) 
+    bind (st:setgroup(?sn, "other") as ?tmp) 
+    bind (st:setgroup(?sn2, "other") as ?tmp2) 
     
     bind (st:setclass(?sn, "main")       as ?a)
     bind (st:setclass(?sn2, "main")      as ?b)
@@ -491,8 +491,8 @@ select distinct ?n ?n2 ?name where {
     filter (?date >= "2015-01-01"^^xsd:date && ?date <= "2016-12-31"^^xsd:date)
 }
 }
-    bind (st:setgroup(?n, st:other) as ?tmp) 
-    bind (st:setgroup(?n2, st:other) as ?tmp2) 
+    bind (st:setgroup(?n, "other") as ?tmp) 
+    bind (st:setgroup(?n2, "other") as ?tmp2) 
     
     bind (st:setclass(?n, "main")       as ?a)
     bind (st:setclass(?n2, "main")      as ?b)
@@ -544,7 +544,7 @@ select distinct ?n ?n2 ?name ?ll ?lab where {
     #filter regex(?ll, "I3S")
 } limit 2500
 }
-    bind (st:setgroup(?name, st:other) as ?tmp) 
+    bind (st:setgroup(?name, "other") as ?tmp) 
     bind (st:setgroup(?ll,  st:main) as ?tmp2) 
     
     bind (st:setclass(?name, "other") as ?b) 
@@ -612,10 +612,11 @@ service <http://fr.dbpedia.org/sparql> {
     } 
 }
 
-    bind (st:setclass(?name, "main") as ?c1) 
-    bind (st:setclass(?n, "other")     as ?c2) 
+    bind (st:setclass(?name, "main") as ?a) 
+    bind (st:setclass(?n, "other")   as ?b) 
 
-
+    bind (st:setgroup(?name, "country") as ?c) 
+    bind (st:setgroup(?n, "team")       as ?d) 
 }
 
 #
@@ -691,8 +692,12 @@ service <http://fr.dbpedia.org/sparql> {
 }
 
     bind (st:setclass(?name, "main")   as ?a) 
-    bind (st:setclass(?n, "other")     as ?b) 
-    bind (st:setimg(?name, ?img) as ?c) 
+    bind (st:setclass(?n, "other")     as ?b)
+    
+    bind (st:setgroup(?name, "country")as ?c) 
+    bind (st:setgroup(?n, "team")      as ?d) 
+    
+    bind (st:setimg(?name, ?img)       as ?e) 
 
 }
 
@@ -749,7 +754,7 @@ select distinct ?n ?name  where {
     ?p foaf:name ?n
 }}
 
-bind (st:setgroup(?n, st:other) as ?tmp)
+bind (st:setgroup(?n, "other") as ?tmp)
 bind (st:setclass(?n, "main") as ?a)
 bind (st:setclass(?name, "other") as ?b)
 

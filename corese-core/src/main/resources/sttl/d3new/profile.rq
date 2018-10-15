@@ -5,16 +5,10 @@ function us:start() {
     set(?map = xt:map())
 }
 
-function us:kind2(?s) {
-    if (st:cget(st:group, ?s, st:other), 2,
-    if (isURI(?s), 1, 
-    if (isBlank(?s), 2, 3)))
-}
-
 function us:kind(?s) {
-    if (st:cget(st:group, ?s, st:other), "bnode",
-    if (isURI(?s), "uri", 
-    if (isBlank(?s), "bnode", "literal")))
+    coalesce (st:getgroup(?s), 
+        if (isURI(?s), "uri", 
+        if (isBlank(?s), "bnode", "literal")))
 }
 
 function us:record(?s) {

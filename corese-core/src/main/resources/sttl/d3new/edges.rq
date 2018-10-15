@@ -19,5 +19,5 @@ where {
         bind (us:record(?s) as ?ss)
         bind (us:record(?o) as ?oo)
     } 
-    limit 10000
+    limit 5000
 }

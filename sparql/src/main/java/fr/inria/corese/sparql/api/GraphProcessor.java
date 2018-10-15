@@ -10,7 +10,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  */
 public interface GraphProcessor {
     
-    IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype format);
+    IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat);
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
     

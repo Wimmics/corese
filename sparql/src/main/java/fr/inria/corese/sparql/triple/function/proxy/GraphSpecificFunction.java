@@ -104,16 +104,24 @@ public class GraphSpecificFunction extends TermEval {
     
     IDatatype load(GraphProcessor proc, IDatatype[] param) {
         switch (param.length) {
+            case 0: return null;
             case 1:
-                return proc.load(param[0], null, null);
+                return proc.load(param[0], null, null, null);
             default:
                 IDatatype dt = param[1];
-                if (dt.isPointer() && dt.pointerType() == Pointerable.GRAPH_POINTER) {
-                    return proc.load(param[0], dt, (param.length == 2) ? null : param[2]);
+                if (dt.pointerType() == Pointerable.GRAPH_POINTER) {
+                    return proc.load(param[0], dt, getParam(param, 2), getParam(param, 3));
                 } else {
-                    return proc.load(param[0], null, dt);
+                    return proc.load(param[0], null, dt, getParam(param, 2));
                 }
         }
+    }
+    
+    IDatatype getParam(IDatatype[] param, int n) {
+        if (n < param.length) {
+            return  param[n];
+        }
+        return null;
     }
     
     IDatatype entailment(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {

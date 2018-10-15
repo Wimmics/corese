@@ -1,6 +1,6 @@
 class GraphModel {
     constructor() {
-        this.nodeRadius = 5;
+        this.nodeRadius = 20;
     }
 }
 
@@ -24,6 +24,29 @@ class ConfGraphModal {
             .html(
                 this.createLabelsLi(this.nodeGroups)
             );
+        d3.select("body")
+            .on("keydown", function (that) {
+                    return function () {
+                        var key = d3.event.key;
+                        var numGroup = -1.0;
+                        if (isFinite(key)) {
+                            numGroup = parseInt(key) - 1;
+                            // Changing for a more natural mapping: 1 -> first element,
+                            // 2 -> second, etc. 0 -> 10th element.
+                            if (numGroup === -1) {
+                                numGroup = 10;
+                            }
+                            if (numGroup < that.nodeGroups.size) {
+                                var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
+                                that.getGroupCheckbox(groupToSwitch).property("checked", !that.getGroupCheckbox(groupToSwitch).property("checked"));
+                                graph.updateConfiguration();
+                                graph.ticked();
+                            }
+                        }
+                    }
+                }(this)
+            );
+
 
         this.nodesCheckbox = d3.select("#nodesCheckbox");
         this.edgesCheckbox = d3.select("#edgesCheckbox");
@@ -38,7 +61,7 @@ class ConfGraphModal {
             function (container) {
                 return function (evt) {
                     nodeGroupCheckboxes.forEach(
-                       checkbox => checkbox.property("checked", container.property("checked"))
+                        checkbox => checkbox.property("checked", container.property("checked"))
                     )
                     graph.updateConfiguration();
                     graph.ticked();
@@ -95,7 +118,12 @@ class ConfGraphModal {
         "<ul>" +
         "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
         "<ul>";
-        groups.forEach( group => result += `<li><label><input id='${group}Checkbox' type='checkbox'/>${group}</label>` );
+        var numGroup = 1;
+        groups.forEach( group => {
+            result += `<li><label>${numGroup} <input id='${group}Checkbox' type='checkbox'/>${group}</label>`;
+            numGroup++;
+        }
+        );
         result += "</ul>" +
         "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
         "</ul>" +
@@ -376,9 +404,15 @@ class D3GraphVisualizer {
                 var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getNodeGroups()));
                 if (d.bg_image === undefined) {
                     current.attr("fill", color(d.group));
+                    current.attr("r", 5);
                 } else {
+                    current.attr("r", visualizer.model.nodeRadius);
                     var width = Math.sqrt(2) * current.attr("r");
-                    father.append("image").attr("xlink:href", d.bg_image).attr("height", width).attr("width", width);
+                    father.append("image")
+                        .attr("xlink:href", d.bg_image)
+                        .attr("height", width)
+                        .attr("width", width)
+                        .attr("pointer-events", "none");
                 }
             })
             .call(d3.drag()

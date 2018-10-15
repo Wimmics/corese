@@ -20,9 +20,9 @@ text.main    { fill: green; }
 .links line.huge    { stroke-width: 4px; stroke-opacity: 10;}
 
 
-textPath.rdf  { stroke: lightblue; }
-textPath.rdfs { stroke: lightblue; }
-textPath.owl  { stroke: orange; }
+textPath.rdf  { fill: lightblue; }
+textPath.rdfs { fill: lightblue; }
+textPath.owl  { fill: orange; }
 
 .s0 { background:lightgrey }
 .s1 { background:lightblue }

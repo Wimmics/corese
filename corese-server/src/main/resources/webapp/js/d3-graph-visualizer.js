@@ -26,20 +26,24 @@ class ConfGraphModal {
             );
         d3.select("body")
             .on("keydown", function (that) {
-                return function () {
-                    console.log("event.key = " + d3.event.key);
-                    var key = d3.event.key;
-                    var numGroup = -1.0;
-                    if (isFinite(key)) {
-                        numGroup = parseInt(key);
+                    return function () {
+                        var key = d3.event.key;
+                        var numGroup = -1.0;
+                        if (isFinite(key)) {
+                            numGroup = parseInt(key) - 1;
+                            // Changing for a more natural mapping: 1 -> first element,
+                            // 2 -> second, etc. 0 -> 10th element.
+                            if (numGroup === -1) {
+                                numGroup = 10;
+                            }
+                            if (numGroup < that.nodeGroups.size) {
+                                var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
+                                that.getGroupCheckbox(groupToSwitch).property("checked", !that.getGroupCheckbox(groupToSwitch).property("checked"));
+                                graph.updateConfiguration();
+                                graph.ticked();
+                            }
+                        }
                     }
-                    console.log("groupe #" + numGroup);
-                    console.log("groupe #" + Array.from(that.nodeGroups)[numGroup] );
-                    var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
-                    that.getGroupCheckbox(groupToSwitch).property("checked", !that.getGroupCheckbox(groupToSwitch).property("checked"));
-                    graph.updateConfiguration();
-                    graph.ticked();
-                }
                 }(this)
             );
 
@@ -57,7 +61,7 @@ class ConfGraphModal {
             function (container) {
                 return function (evt) {
                     nodeGroupCheckboxes.forEach(
-                       checkbox => checkbox.property("checked", container.property("checked"))
+                        checkbox => checkbox.property("checked", container.property("checked"))
                     )
                     graph.updateConfiguration();
                     graph.ticked();
@@ -114,7 +118,12 @@ class ConfGraphModal {
         "<ul>" +
         "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
         "<ul>";
-        groups.forEach( group => result += `<li><label><input id='${group}Checkbox' type='checkbox'/>${group}</label>` );
+        var numGroup = 1;
+        groups.forEach( group => {
+            result += `<li><label>${numGroup} <input id='${group}Checkbox' type='checkbox'/>${group}</label>`;
+            numGroup++;
+        }
+        );
         result += "</ul>" +
         "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
         "</ul>" +

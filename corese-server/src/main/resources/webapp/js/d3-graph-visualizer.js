@@ -1,6 +1,6 @@
 class GraphModel {
     constructor() {
-        this.nodeRadius = 5;
+        this.nodeRadius = 20;
     }
 }
 
@@ -24,6 +24,25 @@ class ConfGraphModal {
             .html(
                 this.createLabelsLi(this.nodeGroups)
             );
+        d3.select("body")
+            .on("keydown", function (that) {
+                return function () {
+                    console.log("event.key = " + d3.event.key);
+                    var key = d3.event.key;
+                    var numGroup = -1.0;
+                    if (isFinite(key)) {
+                        numGroup = parseInt(key);
+                    }
+                    console.log("groupe #" + numGroup);
+                    console.log("groupe #" + Array.from(that.nodeGroups)[numGroup] );
+                    var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
+                    that.getGroupCheckbox(groupToSwitch).property("checked", !that.getGroupCheckbox(groupToSwitch).property("checked"));
+                    graph.updateConfiguration();
+                    graph.ticked();
+                }
+                }(this)
+            );
+
 
         this.nodesCheckbox = d3.select("#nodesCheckbox");
         this.edgesCheckbox = d3.select("#edgesCheckbox");
@@ -376,9 +395,15 @@ class D3GraphVisualizer {
                 var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getNodeGroups()));
                 if (d.bg_image === undefined) {
                     current.attr("fill", color(d.group));
+                    current.attr("r", 5);
                 } else {
+                    current.attr("r", visualizer.model.nodeRadius);
                     var width = Math.sqrt(2) * current.attr("r");
-                    father.append("image").attr("xlink:href", d.bg_image).attr("height", width).attr("width", width);
+                    father.append("image")
+                        .attr("xlink:href", d.bg_image)
+                        .attr("height", width)
+                        .attr("width", width)
+                        .attr("pointer-events", "none");
                 }
             })
             .call(d3.drag()

@@ -25,6 +25,7 @@ public class LoadProcess extends WorkflowProcess {
     private boolean named = false;
     String text;
     int format = Load.UNDEF_FORMAT;
+    int requiredFormat = Load.UNDEF_FORMAT;
     private int[] FORMATS =  { Load.TURTLE_FORMAT, Load.RDFXML_FORMAT, Load.JSONLD_FORMAT };
     
     public LoadProcess(String path){
@@ -53,6 +54,11 @@ public class LoadProcess extends WorkflowProcess {
     
     public static LoadProcess createStringLoader(String str, int format){
         return new LoadProcess(str, format);
+    }
+    
+    void setRequiredFormat(String format) {
+        int ft = LoadFormat.getDTFormat(format);
+        requiredFormat = ft;
     }
     
     @Override
@@ -86,8 +92,8 @@ public class LoadProcess extends WorkflowProcess {
                 if (!hasMode()) {
                     if (isURL){
                         // dbpedia return HTML by default
-                        // if path has no suffix, set header accept "text/n3"
-                        ld.parseWithFormat(path, Loader.RDFXML_FORMAT);
+                        // if path has no suffix, set header accept format
+                        ld.parseWithFormat(path, requiredFormat);
                         //ld.parseWithFormat(path, Loader.NT_FORMAT);
                     }
                     else {

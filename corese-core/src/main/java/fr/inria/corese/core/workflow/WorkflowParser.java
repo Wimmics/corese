@@ -64,6 +64,7 @@ public class WorkflowParser {
     public static final String PATH = PREF + "path";
     public static final String NAME = PREF + "name";
     public static final String NAMED = PREF + "named";
+    public static final String FORMAT = PREF + "format";
     public static final String REC = PREF + "rec";
     public static final String PROBE_VALUE = WorkflowProcess.PROBE;
     public static final String DISPLAY = PREF + "display";
@@ -576,10 +577,11 @@ public class WorkflowParser {
           
     
     WorkflowProcess load(IDatatype dt){
-        Node subject = getGraph().getNode(dt);
-        IDatatype dname = getValue(NAME, dt);
+        Node subject     = getGraph().getNode(dt);
+        IDatatype dname  = getValue(NAME, dt);
         IDatatype dnamed = getValue(NAMED, dt);
-        IDatatype drec  = getValue(REC, dt);
+        IDatatype drec   = getValue(REC, dt);
+        IDatatype format = getValue(FORMAT, dt);
         String name = (dname == null) ? null : dname.getLabel();
         boolean rec = (drec == null) ? false : drec.booleanValue();
         boolean named = (dnamed == null) ? false : dnamed.booleanValue();
@@ -587,18 +589,30 @@ public class WorkflowParser {
         
         for (Edge ent : getGraph().getEdges(PATH, subject, 0)){
             String pp = ent.getNode(1).getLabel();
-            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
+            LoadProcess load = new LoadProcess(pp, getName(pp, name, named), rec);
+            if (format != null) {
+                load.setRequiredFormat(format.getLabel());
+            }
+            w.add(load);
         }
         for (Edge ent : getGraph().getEdges(URI, subject, 0)){
             String pp = ent.getNode(1).getLabel();
-            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
+            LoadProcess load = new LoadProcess(pp, getName(pp, name, named), rec);
+            if (format != null) {
+                load.setRequiredFormat(format.getLabel());
+            }
+            w.add(load);            
         }
         
         // get what to load from Context st:param
         String uri  = getStringParam(LOAD_PARAM);
         if (uri != null){
             String pp = resolve(uri); 
-            w.add(new LoadProcess(pp, getName(pp, name, named), rec));
+            LoadProcess load = new LoadProcess(pp, getName(pp, name, named), rec);
+            if (format != null) {
+                load.setRequiredFormat(format.getLabel());
+            }
+            w.add(load);
         }
         
         if (w.getProcessList().size() == 1){
@@ -606,6 +620,8 @@ public class WorkflowParser {
         }
         return w;
     }
+    
+    
     
     String getName(String path, String name, boolean named){
         if (name == null && named){

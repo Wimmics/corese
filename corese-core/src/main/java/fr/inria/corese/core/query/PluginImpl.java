@@ -591,22 +591,28 @@ public class PluginImpl
     }
 
     public IDatatype load(IDatatype dt, IDatatype format) {
-        return load(dt, null, format);
+        return load(dt, null, format, null);
     }
     
     @Override
-    public IDatatype load(IDatatype dt, IDatatype dtg, IDatatype format) {
+    public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat) {
          Graph g;
-         if (dtg == null || ! dtg.isPointer() || dtg.pointerType() != Pointerable.GRAPH_POINTER) {
+         if (graph == null || graph.pointerType() != Pointerable.GRAPH_POINTER) {
              g = Graph.create();
          }
          else {
-             g = (Graph) dtg.getPointerObject();
+             g = (Graph) graph.getPointerObject();
          }
          Load ld = Load.create(g);
          try {
              if (readWriteAuthorized){
-                ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
+                 if (requiredFormat == null) {
+                    ld.parse(dt.getLabel(), getFormat(expectedFormat));
+                 }
+                 else {
+                     System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
+                    ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
+                 }
              }
          } catch (LoadException ex) {
              logger.error("Load error: " + dt);
@@ -615,6 +621,10 @@ public class PluginImpl
          }
         IDatatype res = DatatypeMap.createObject(g);
         return res;
+    }
+    
+    int getFormat(IDatatype dt) {
+        return (dt == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(dt.getLabel());
     }
     
     @Override

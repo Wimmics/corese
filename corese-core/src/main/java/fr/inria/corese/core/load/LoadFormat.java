@@ -2,6 +2,7 @@ package fr.inria.corese.core.load;
 
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.HashMap;
 
 /**
@@ -30,6 +31,8 @@ public class LoadFormat {
     static final String EXT_OWL = ".owl";
     static final String JSONLD = ".jsonld";
     static final String SWF = ".sw";
+    
+    static final String NT_FORMAT = NSManager.STL + "nt";
 
     static HashMap<String, Integer> ptable, utable, dtable;
     static HashMap<Integer, String> ftable;
@@ -75,6 +78,7 @@ public class LoadFormat {
         
         dtable = new HashMap<String, Integer>();
         ddefine(Transformer.TURTLE, Loader.TURTLE_FORMAT);
+        ddefine(NT_FORMAT,          Loader.NT_FORMAT);
         ddefine(Transformer.RDFXML, Loader.RDFXML_FORMAT);
         ddefine(Transformer.JSON,   Loader.JSONLD_FORMAT);
         

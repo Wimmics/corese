@@ -1,4 +1,12 @@
-import {GraphModel} from "/js/GraphModel.js";
+class GraphModel {
+    constructor() {
+        this.nodeRadius = 20;
+    }
+}
+
+GraphModel.BNODE_ID = "bnode";
+GraphModel.URI_ID = "uri";
+GraphModel.LITERAL_ID = "literal";
 
 class ConfGraphModal {
     /**
@@ -173,9 +181,10 @@ class ConfGraphModal {
 }
 
 
-export class D3GraphVisualizer {
+class D3GraphVisualizer {
     constructor() {
         this.model = new GraphModel();
+        // this.simulation = undefined;
         var sheet = document.createElement('style');
         sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
             + ".nodes circle { stroke: #fff; stroke-width: 1.5px; }"
@@ -348,15 +357,8 @@ export class D3GraphVisualizer {
                 return d.id;
             }))
             .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(800,500))
+            // .force("center", d3.forceCenter(width, height))
             .on("tick", graph.ticked);
-        var width = +graph.node().getBoundingClientRect().width;
-        var height = +graph.node().getBoundingClientRect().height;
-        visualizer.simulation
-            .force("link")
-            .links(results.links);
-        visualizer.simulation
-            .force("center", d3.forceCenter(width / 2, height / 2));
 
 
         var g = graph.append("g")
@@ -479,7 +481,13 @@ export class D3GraphVisualizer {
         var displayNodeLabels = false;
 
         graph.updateConfiguration();
-
+        var width = +graph.node().getBBox().width;
+        var height = +graph.node().getBBox().height;
+        visualizer.simulation
+            .force("link")
+            .links(results.links);
+        visualizer.simulation
+            .force("center", d3.forceCenter(width / 2, height / 2));
         var pathLabels = defs.selectAll("path")
             .data(results.links)
             .enter().append("path")
@@ -495,4 +503,3 @@ export class D3GraphVisualizer {
 
     }
 }
-

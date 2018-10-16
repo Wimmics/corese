@@ -17,12 +17,13 @@ class ConfGraphModal {
      */
     constructor(id, root, graph, data) {
         this.id = id;
-        this.nodeGroups = this.computeGroups(data);
+        this.nodeGroups = this.computeGroups(data.nodes);
+        this.edgeGroups = this.computeGroups(data.edges);
         this.domNode = root.append("div")
             .attr("id", this.id)
             .attr("class", "modal")
             .html(
-                this.createLabelsLi(this.nodeGroups)
+                this.createLabelsLi(this.nodeGroups, this.edgeGroups)
             );
         d3.select("body")
             .on("keydown", function (that) {
@@ -38,7 +39,7 @@ class ConfGraphModal {
                             }
                             if (numGroup < that.nodeGroups.size) {
                                 var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
-                                that.getGroupCheckbox(groupToSwitch).property("checked", !that.getGroupCheckbox(groupToSwitch).property("checked"));
+                                that.getGroupCheckbox("nodes", groupToSwitch).property("checked", !that.getGroupCheckbox("nodes", groupToSwitch).property("checked"));
                                 graph.updateConfiguration();
                                 graph.ticked();
                             }
@@ -46,65 +47,72 @@ class ConfGraphModal {
                     }
                 }(this)
             );
-
-
         this.nodesCheckbox = d3.select("#nodesCheckbox");
         this.edgesCheckbox = d3.select("#edgesCheckbox");
         this.closeButton = d3.select("#configurationGraphCloseButton");
-        var nodeGroupCheckboxes = new Set();
-        this.nodeGroups.forEach(
-            group => nodeGroupCheckboxes.add( this.getGroupCheckbox(group))
-        );
 
-        // when father checkbox is changed all sub-checkboxes are changed to the same value.
-        this.nodesCheckbox.on("change",
-            function (container) {
-                return function (evt) {
-                    nodeGroupCheckboxes.forEach(
-                        checkbox => checkbox.property("checked", container.property("checked"))
-                    )
-                    graph.updateConfiguration();
-                    graph.ticked();
-                }
-            }(this.nodesCheckbox)
-        );
-        // when one of subcheckboxes is checked, update if necessary the father checkbox :
-        //   - if all subcheckboxes are unset, unset the father checkbox ;
-        //   - if all subcheckboxes are set, set the father checkbox.
-        nodeGroupCheckboxes.forEach(button =>
-            function (container) {
-                return button.on("change", function () {
-                    var allChecked = true;
-                    nodeGroupCheckboxes.forEach(
-                        button => allChecked = allChecked && button.property("checked")
-                    );
-                    container.nodesCheckbox.property("checked", allChecked);
-                    graph.updateConfiguration();
-                    graph.ticked();
-                })
-            }(this)
-        );
-        this.edgesCheckbox.on("change", function () {
-            d3.select("#edgesCheckbox").property("checked");
-            graph.updateConfiguration();
-            graph.ticked()
-        });
+        this.setHierarchicalCheckboxesHandler("nodes", this.nodesCheckbox, this.nodeGroups, graph);
+        this.setHierarchicalCheckboxesHandler("edges", this.edgesCheckbox, this.edgeGroups, graph);
+
         this.closeButton
             .on("click", e => {
                 this.displayOff();
             });
     }
 
-    getNodeGroups() {
-        return this.nodeGroups;
+    setHierarchicalCheckboxesHandler( groupName, fatherCheckbox, groups, graph ) {
+        // 1. compute sub-checkboxes.
+        var groupCheckboxes = new Set();
+        groups.forEach(
+            group => groupCheckboxes.add( this.getGroupCheckbox(groupName, group))
+        );
+
+        // when father checkbox is changed all sub-checkboxes are changed to the same value.
+        fatherCheckbox.on("change",
+            function (container) {
+                return function (evt) {
+                    groupCheckboxes.forEach(
+                        checkbox => checkbox.property("checked", container.property("checked"))
+                    )
+                    graph.updateConfiguration();
+                    graph.ticked();
+                }
+            }(fatherCheckbox)
+        );
+        // when one of subcheckboxes is checked, update if necessary the father checkbox :
+        //   - if all subcheckboxes are unset, unset the father checkbox ;
+        //   - if all subcheckboxes are set, set the father checkbox.
+        groupCheckboxes.forEach(button =>
+            function (father) {
+                return button.on("change", function () {
+                    var allChecked = true;
+                    groupCheckboxes.forEach(
+                        button => allChecked = allChecked && button.property("checked")
+                    );
+                    father.property("checked", allChecked);
+                    graph.updateConfiguration();
+                    graph.ticked();
+                })
+            }(fatherCheckbox)
+        );
+    }
+
+    getGroups(groupName) {
+        if (groupName === "nodes") {
+            return this.nodeGroups;
+        } else if (groupName === "edges") {
+            return this.edgeGroups;
+        } else {
+            throw `incorrect groupName value = ${groupName}`;
+        }
     }
 
     computeGroups(data) {
         var result = new Set();
-        data.nodes.forEach(
-           node => {
-               if (!result.has(node.group)) {
-                   result.add(node.group);
+        data.forEach(
+           elem => {
+               if (!result.has(elem.group)) {
+                   result.add(elem.group);
                }
            }
         )
@@ -112,29 +120,41 @@ class ConfGraphModal {
         return result;
     }
 
-    createLabelsLi(groups) {
+    createLabelsLi(nodeGroups, edgeGroups) {
         var result =
-        "<div class='modal-content' style='list-style:none;'>" +
-        "<ul>" +
-        "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
-        "<ul>";
-        var numGroup = 1;
-        groups.forEach( group => {
-            result += `<li><label>${numGroup} <input id='${group}Checkbox' type='checkbox'/>${group}</label>`;
-            numGroup++;
-        }
-        );
-        result += "</ul>" +
-        "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
-        "</ul>" +
-        "<br>" +
-        "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
-        "</div>";
+            "<div class='modal-content' style='list-style:none;'>" +
+            "<ul>" +
+            "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
+            "<ul>" +
+            this.addGroups( "nodes", nodeGroups ) +
+            "</ul>" +
+            "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+            this.addGroups( "edges", edgeGroups ) +
+            "</ul>" +
+            "<br>" +
+            "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
+            "</div>";
         return result;
     }
 
-    getGroupCheckbox(group) {
-        return d3.select(`#${group}Checkbox`);
+    getCheckboxName( groupName, group) {
+       return `${groupName}-${group}Checkbox`;
+    }
+
+    addGroups( groupName, groups ) {
+        var result = "";
+        if (groups !== undefined) {
+            var numGroup = 1;
+            groups.forEach( group => {
+            result += `<li><label>${numGroup} <input id='${this.getCheckboxName(groupName, group)}' type='checkbox'/>${group}</label>`;
+            numGroup++;
+            } );
+        }
+        return result;
+    }
+
+    getGroupCheckbox(groupName, group) {
+        return d3.select( '#'+this.getCheckboxName(groupName, group) );
     }
 
     static createConfigurationPanel(rootConfPanel, graph, data) {
@@ -225,7 +245,8 @@ class D3GraphVisualizer {
             return true;
         }
         graph.displayEdgeLabels = function () {
-            return confGraphModal.edgesCheckbox.property("checked");
+            return true;
+            // return confGraphModal.edgesCheckbox.property("checked");
         }
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
@@ -293,21 +314,25 @@ class D3GraphVisualizer {
 
         var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, graph);
         confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, graph, results);
-        graph.updateConfiguration = function (modal) {
+        graph.updateConfiguration = function () {
             return function () {
-                var visibleNodes = new Set();
-                confGraphModal.getNodeGroups().forEach(
-                    group => {
-                        var checkbox = confGraphModal.getGroupCheckbox(group);
-                        (checkbox.property("checked")) ? visibleNodes.add(group) : undefined;
-                    }
-                )
-                var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
-                textNodes.attr(
-                    "visibility",
-                    (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
-                );
-                textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
+                var updateSet = function(groupName, text) {
+                    var visibleNodes = new Set();
+                    confGraphModal.getGroups(groupName).forEach(
+                        group => {
+                            var checkbox = confGraphModal.getGroupCheckbox(groupName, group);
+                            (checkbox.property("checked")) ? visibleNodes.add(group) : undefined;
+                        }
+                    );
+                    var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
+                    text.attr(
+                        "visibility",
+                        (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
+                    );
+                }
+                updateSet("nodes", textNodes);
+                updateSet("edges", textEdges);
+                // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
             };
         }(confGraphModal);
 
@@ -401,7 +426,7 @@ class D3GraphVisualizer {
             .each((d, i, nodes) => {
                 var current = d3.select(nodes[i]);
                 var father = d3.select(current.node().parentNode);
-                var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getNodeGroups()));
+                var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getGroups("nodes")));
                 if (d.bg_image === undefined) {
                     current.attr("fill", color(d.group));
                     current.attr("r", 5);

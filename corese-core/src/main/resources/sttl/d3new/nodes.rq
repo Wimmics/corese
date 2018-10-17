@@ -23,6 +23,7 @@ where {
 function us:uri(?s) {
     coalesce(
         st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', coalesce(st:cget(st:url, ?s), ?s))
+        st:format(',  "url": "%s"', st:cget(st:url, ?s)),
+        st:format(',  "url": "%s"', ?s)
     )
 }

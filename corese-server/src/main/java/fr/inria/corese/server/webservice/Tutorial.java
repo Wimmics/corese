@@ -72,8 +72,8 @@ public class Tutorial {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri")   List<String> namedGraphUris) {
 
-    	if (logger.isDebugEnabled())
-    		logger.debug("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    	//if (logger.isDebugEnabled())
+    		logger.info("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
         return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
@@ -97,8 +97,8 @@ public class Tutorial {
             @FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
             @FormDataParam("named-graph-uri")   List<FormDataBodyPart> namedGraphUris) {
 
-    	if (logger.isDebugEnabled())
-    		logger.debug("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    	//if (logger.isDebugEnabled())
+    		logger.info("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
         return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));

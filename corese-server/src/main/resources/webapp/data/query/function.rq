@@ -8,6 +8,11 @@ function st:setclass(?s, ?c) {
     st:cset(st:class, ?s, ?c)
 }
 
+function st:setclass(?s, ?c, ?g) {
+    st:setclass(?s, ?c) ;
+    st:setgroup(?s, ?g) 
+}
+
 function st:getclass(?s) {
     st:cget(st:class, ?s)
 }

@@ -26,5 +26,6 @@ function us:link(?s) {
 }
 
 function us:icon(?s) {
+    strstarts(?s, "http://") && ! strstarts(?s, db:) &&
     mapany (rq:strends, ?s, xt:list(".jpg", ".svg", ".png", ".jpeg", ".JPG"))
 }

@@ -6,8 +6,8 @@
 .nodes circle.main    { fill: green; }
 
 text.literal { fill: lightgreen; }
-text.other   { fill: blue; }
 text.main    { fill: green; }
+text.other   { fill: blue; }
               
 .links line.rdf  { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
 .links line.rdfs { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}

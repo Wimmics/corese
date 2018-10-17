@@ -10,8 +10,8 @@ format {
   group { 
     format { 
         if (st:get(?uri, ?value), 
-            "<option value='%s' selected='true'>%s</option>", 
-            "<option value='%s'>%s</option>")
+            '<option value="%s" selected="true">%s</option>', 
+            '<option value="%s">%s</option>')
             
         ?value ?value
     } 

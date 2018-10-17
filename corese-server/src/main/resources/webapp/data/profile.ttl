@@ -536,7 +536,7 @@ st:tutorialhal a st:Server ;
     st:transformations (
         d3:frame navlab:map st:hturtle
         ) ;
-    st:param "verbatim" ; 
+# st:param "verbatim" ; 
     st:hyperlink true ; 
     st:number true ;
     st:export true ;

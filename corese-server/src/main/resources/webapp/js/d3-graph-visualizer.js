@@ -1,6 +1,6 @@
 class GraphModel {
     constructor() {
-        this.nodeRadius = 20;
+        this.nodeRadius = 10;
     }
 }
 

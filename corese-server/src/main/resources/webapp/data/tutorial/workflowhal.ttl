@@ -6,6 +6,7 @@
 #
 
 @prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix dbo: <http://fr.dbpedia.org/ontology/>
 
   
 st:labList
@@ -19,6 +20,15 @@ st:name "param" ;
     st:uri st:param ;
     st:value (
     "Inria Sophia Antipolis - Méditerranée "
+    "Inria Grenoble - Rhône-Alpes" 
+    "Inria Bordeaux - Sud-Ouest"
+    "Inria Saclay - Ile de France"
+    "Inria Lille - Nord Europe"
+    "Inria Nancy - Grand Est"
+    "Inria Paris-Rocquencourt"
+    "Inria Rennes – Bretagne Atlantique "
+    "Institut National de Recherche en Informatique et en Automatique"
+    
     "Laboratoire d'Informatique, Signaux, et Systèmes de Sophia Antipolis" 
     "Université Côte d'Azur"
     "Laboratoire Jean Alexandre Dieudonné" 
@@ -361,9 +371,11 @@ construct {
     ?n2 us:memberOf ?name
 }
 where {
+
 service <https://data.archives-ouvertes.fr/sparql> {
+
 select distinct ?n ?n2 ?name where {
-    ?sam skos:altLabel "CRISAM"
+    ?sam skos:prefLabel "$param"
     ?x org:unitOf ?sam ; skos:altLabel ?name
 
     ?s hsc:structure ?x .
@@ -391,7 +403,9 @@ function us:style(?n, ?n2, ?name) {
     st:setclass(?n2, "main", "person");
     st:setclass(?name, "other", "team")
 }
-""" 
+"""  ;
+
+st:select st:labelList
 ]
 
 
@@ -414,12 +428,10 @@ construct {
 }
 where {
 
-bind (st:get(st:param) as ?lab)
-
 service <https://data.archives-ouvertes.fr/sparql> {
 
-    select distinct ?name ?ll ?lab where {
-        ?sam skos:prefLabel ?lab
+    select distinct ?name ?ll where {
+        ?sam skos:prefLabel "$param"
         ?x org:unitOf ?sam ; skos:altLabel ?name
         ?s hsc:structure ?x .
         
@@ -467,7 +479,6 @@ prefix dc:  <http://purl.org/dc/terms/>
 prefix org: <http://www.w3.org/ns/org#>
 prefix lab: <http://www.unice.fr/other/>
 prefix inr: <http://ns.inria.fr/sparql-extension/user/>
-@bind kg:filter 
 construct {
     ?x skos:altLabel ?name
     ?y skos:altLabel ?ll
@@ -475,12 +486,10 @@ construct {
 }
 where {
 
-bind (st:get(st:param) as ?lab)
-
 service <https://data.archives-ouvertes.fr/sparql> {
 
-     select  ?x ?y ?name ?ll ?lab where {
-        ?sam skos:prefLabel ?lab        
+     select distinct ?x ?y ?name ?ll where {
+        ?sam skos:prefLabel "$param"        
         ?doc dc:issued ?date 
         filter (?date >= "2016-01-01"^^xsd:date && ?date < "2018-01-01"^^xsd:date)        
         ?doc dc:creator ?s .
@@ -525,7 +534,8 @@ prefix org: <http://www.w3.org/ns/org#>
 prefix hsc: <http://data.archives-ouvertes.fr/schema/>
 prefix dc:  <http://purl.org/dc/terms/>
 prefix org: <http://www.w3.org/ns/org#>
-@bind kg:filter @debug
+#@bind kg:filter 
+@debug
 construct {
     ?xx skos:altLabel ?namex
     ?y  skos:altLabel ?name2
@@ -537,7 +547,7 @@ where {
 
 service <https://data.archives-ouvertes.fr/sparql> {
 
-     select ?xx  ?x ?y ?namex ?name1 ?name2 where {  
+     select distinct ?xx  ?x ?y ?namex ?name1 ?name2 where {  
      
         ?labo1 skos:prefLabel ?label1 ; skos:altLabel ?label
         filter (?label1 in (
@@ -549,8 +559,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
         ?labo2 skos:prefLabel ?label2 
         filter (?label2 in ("Université Côte d'Azur"))
         
-        ?doc dc:issued ?date 
-        filter (?date >= "2016-01-01"^^xsd:date && ?date < "2018-01-01"^^xsd:date) 
+        ?doc dc:issued ?date         
+        filter (?date >= "$param-01-01"^^xsd:date && ?date <= "$param-01-01"^^xsd:date) 
         
         ?doc dc:creator ?s .
         ?s hsc:structure ?x .
@@ -565,8 +575,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
         ?x skos:altLabel ?name1 .
         ?y skos:altLabel ?name2
         
-        bind (if (?label1 != "Université Côte d'Azur", ?labo1, ?x)     as ?xx)
-        bind (if (?label1 != "Université Côte d'Azur", ?label, ?name1) as ?namex)
+        bind (if (?label1 = "Université Côte d'Azur", ?x, ?labo1)     as ?xx)
+        bind (if (?label1 = "Université Côte d'Azur", ?name1, ?label) as ?namex)
 
     } 
     limit 4000
@@ -580,7 +590,13 @@ function us:style(?name1, ?name2, ?namex) {
     st:setclass(?name2, "other", "team");
     st:setclass(?namex, "other", "team")
 }
-""" 
+""" ;
+
+st:select [
+    st:name "param" ;
+    st:uri  st:param ;
+    st:value ("2010" "2011" "2012" "2013" "2014" "2015" "2016" "2017" "2018")
+]
 
 ]
 
@@ -609,34 +625,35 @@ prefix db:  <http://fr.dbpedia.org/resource/>
 prefix dbo: <http://fr.dbpedia.org/ontology/>
 prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-@event
+@event 
 construct {
     ?n us:cooperate ?name   
 }
 where {
 
 service <https://data.archives-ouvertes.fr/sparql> {
-select distinct ?n ?country ?cc where {
-    ?sam skos:altLabel "I3S"
-    ?x org:unitOf* ?sam ; skos:altLabel ?n
-    ?s hsc:structure ?x .
-    
-    ?doc dc:creator ?s .
-    ?doc dc:creator ?s2 .  
-    ?doc dc:issued ?date 
-   # filter (?date >= "2015-01-01"^^xsd:date)
-    filter (?s != ?s2)
-   
-    ?s2 hsc:structure ?y 
-    ?y vs:country-name ?country  
-    filter (?country != db:France)
 
+    select distinct ?n ?country where {
+        ?sam skos:prefLabel "$param"
+        ?x org:unitOf* ?sam ; skos:altLabel ?n
+        ?s hsc:structure ?x .
+        
+        ?doc dc:creator ?s .
+        ?doc dc:creator ?s2 .  
+        ?doc dc:issued ?date 
+        # filter (?date >= "2015-01-01"^^xsd:date)
+        filter (?s != ?s2)
     
-    bind (uri(replace(str(?country), " ", "_")) as ?cc)    
-}}
+        ?s2 hsc:structure ?y 
+        ?y vs:country-name ?country  
+        filter (?country != db:France)
+    }
+}
 
-bind (st:get(st:mode) as ?continent)
-graph st:geo { ?continent dbo:member ?cc } 
+bind (if (contains(?country, " "), uri(replace(?country, " ", "_")), ?country) 
+as ?cc)   
+
+graph st:geo { $mode dbo:include ?cc } 
 
 service <http://fr.dbpedia.org/sparql> {
     select * where {
@@ -666,10 +683,13 @@ function us:after(?map) {
 }
 """ ;
 
-st:select st:continentList
+st:select st:continentList , st:labelList
 
 
 ]
+
+
+st:coauthorcountry
 
 
 
@@ -820,13 +840,13 @@ prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @event
 construct {
-    ?continent dbo:member ?country 
+    ?continent dbo:include ?country 
     ?country   dbo:capital ?city
 }
 where {
 
 bind (st:get(st:mode) as ?continent)
-graph st:geo { ?continent dbo:member ?country } 
+graph st:geo { ?continent dbo:include ?country } 
 
 service <http://fr.dbpedia.org/sparql> {
     select * where {
@@ -863,23 +883,259 @@ st:select st:continentList
 
 
 
+[ a sw:Query ;
+st:name st:uca ;
+rdfs:label "UCA" ;
+rdfs:comment "UCA."@fr ;
+rdfs:comment "UCA"@en ;
 
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+@event
+construct {
+    ?lab skos:prefLabel ?name
+    ?x org:unitOf ?lab ; skos:prefLabel ?label
+}
+where {
 
+bind (st:get(st:param) as ?name)
 
+service <https://data.archives-ouvertes.fr/sparql> {
+    ?lab skos:prefLabel ?name
+    optional { ?x org:unitOf ?lab ; skos:prefLabel ?label }
+    }
+}
 
+""" ;
 
+st:select [
+    st:name "param" ;
+    st:uri st:param ;
+    st:value (
+"//Transitions : savoirs, médias, territoires (URE)"
+"Actions desrécepteurs tyrosine kinase sur le métabolisme, la croissance et la différenciation cellulaires. Aspects physiologiques et physiopathologiques (diabète Type 2, obésité, cancer)"
+"Astrophysique Relativiste Théories Expériences Métrologie Instrumentation Signaux"
+"Bases, Corpus, Langage (UMR 7320 - UNS / CNRS)"
+"Bibliothèques universitaires de l'université Nice Sophia Antipolis"
+"Biologie et physiopathologie des systèmes intégrés"
+"Centre Mémoire de Ressources et de Recherche"
+"Centre d'Etudes du Droit des Organisations Européennes"
+"Centre d'études et de recherches en droit privé"
+"Centre de Recherche en Ingénierie Financière et Finances Publiques"
+"Centre de la Méditerranée Moderne et Contemporaine"
+"Centre de recherche en droit économique"
+"Centre de recherche sur l'hétéroepitaxie et ses applications"
+"Centre d’Etudes et de Recherche en Droit Administratif, Constitutionnel, Financier et Fiscal"
+"Centre méditérannéen de médecine moléculaire"
+"Centre transdisciplinaire d’épistémologie de la littérature et des arts vivants"
+"Cognition Behaviour Technology"
+"Culture et Environnements, Préhistoire, Antiquité, Moyen-Age"
+"Département Informatique [Université Nice Sophia Antipolis]"
+"Département d'Électronique [UNS - UFR Sciences]"
+"Département de Mathématiques [Nice]"
+"Ecosystèmes Côtiers Marins et Réponses aux Stress"
+"Electronique pour Objets Connectés"
+"Espace Éthique Azuréen "
+"Evolution Paris Seine"
+"Groupe de Recherche en Droit, Economie et Gestion"
+"Groupe de Recherche en Management - EA 4711"
+"Groupement d'études et de recherches sur les évolutions du droit international et comparé"
+"Génétique, physiopathologie et ingénierie du tissu osseux"
+"Géoazur"
+"Immunite anti-tumorale et chimiotactisme. Adenocarcinomes et métastases"
+"Immunologie des muqueuses et inflammation"
+"Infection bactérienne, inflammation, et carcinogenèse digestive"
+"Innovative CiTy Lab"
+"Institut Non Linéaire de Nice Sophia-Antipolis"
+"Institut Sophia Agrobiotech [Sophia Antipolis]"
+"Institut Wolfgang Döblin"
+"Institut d'Administration des Entreprises - Nice"
+"Institut d'études scientifiques de Cargese"
+"Institut de Biologie Valrose"
+"Institut de Chimie de Nice"
+"Institut de Physique de Nice"
+"Institut de Recherche sur le Cancer et le Vieillissement"
+"Institut de droit et d'économie de la firme et de l'industrie"
+"Institut de linguistique française"
+"Institut de pharmacologie moléculaire et cellulaire"
+"Institut de signalisation, biologie du développement et cancer"
+"Institute of Developmental Biology and Cancer"
+"InterDidactique, Didactiques des Disciplines et des Langues"
+"Interactions plantes-microorganismes et santé végétale"
+"Interactions plantes-microorganismes et santé végétale"
+"Joseph Louis LAGRANGE"
+"Laboratoire Interdisciplinaire Récits, Cultures et Sociétés"
+"Laboratoire Jean Alexandre Dieudonné"
+"Laboratoire Motricité Humaine, Education, Sport, Santé"
+"Laboratoire Souterrain à Bas Bruit"
+"Laboratoire Sport, Représentations et Régulations Sociales"
+"Laboratoire Tolérance Immunitaire"
+"Laboratoire d'Anthropologie et de Psychologie Cliniques, Cognitives et Sociales"
+"Laboratoire d'Anthropologie et de Psychologie Cognitive et Sociale"
+"Laboratoire d'Anthropologie et de Sociologie Mémoire, Identité et Cognition sociale"
+"Laboratoire d'Economie et de Management"
+"Laboratoire d'Electronique (Nice)"
+"Laboratoire d'Electronique, Antennes et Télécommunications"
+"Laboratoire d'Informatique, Signaux, et Systèmes de Sophia Antipolis"
+"Laboratoire de Chimie des Molécules Bioactives et des Arômes"
+"Laboratoire de Droit International et Européen"
+"Laboratoire de PhysioMédecine Moléculaire"
+"Laboratoire de Psychologie Expérimentale et Quantitative"
+"Laboratoire de chimie bioorganique"
+"Laboratoire de physiologie des membranes cellulaires"
+"Laboratoire de zététique"
+"Maison des Sciences de l'Homme et de la Société Sud-Est"
+"Microbiologie Orale, Immunothérapie et Santé"
+"Microscopie fonctionnelle du vivant"
+"Méiose et reproduction : génétique moléculaire, physiologie, pathologies, applications"
+"Neurobiologie Vasculaire"
+"Regards intersciplinaires sur les activités et techniques agricoles anciennes et préindustrielles"
+"Signalisation et pathologies"
+"Toxines bactériennes dans la relation hôtes-pathogènes"
+"Transporteurs en Imagerie et Radiothérapie en Oncologie"
+"Unite de recherche migrations et sociétés"
+"Université Côte d'Azur, CNRS, Institut de Physique de Nice, 06100 Nice, France"
+"Université Côte d'Azur, CNRS, LPMC, France"
+"Université Côte d'Azur, NICE Lab, IMREDD, 61-63 avenue Simone Veil, 06200 Nice, France"
+"Université Nice Sophia Antipolis - Département d'orthophonie"
+"Université Nice Sophia Antipolis - Faculté de Chirurgie Dentaire"
+"Université Nice Sophia Antipolis - UFR Lettres, Arts et Sciences humaines"
+"Étude des Structures, des Processus d’Adaptation et des Changements de l’Espace"
 
-
-
-
-
-
-
-
-
-
-
-
+)
+]
+]
 
 )
 .
+
+
+# where to find preprocess function fun:country for this query
+@prefix fun: <process/>
+
+#
+# This query have specific processing
+# $pattern is replaced by ?country or $mode, ?country
+# depending whether st:mode value is in st:patternvalue (cf profile.ttl)
+# Concretely, whether it have space in URI or not within HAL
+#
+
+st:coauthorcountry a sw:Query ;
+st:name st:coauthorcountry ;
+rdfs:label "Coauthor with  coutry" ;
+rdfs:comment "Coauthor with country."@fr ;
+rdfs:comment "Coauthor with country"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+@event 
+construct {
+    ?n us:cooperate ?name   
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+
+    select distinct ?n ?country ?cc  where {
+        ?sam skos:prefLabel "$param"
+        ?x org:unitOf* ?sam ; skos:altLabel ?n
+        ?s hsc:structure ?x .
+        
+        ?doc dc:creator ?s .
+        ?doc dc:creator ?s2 .  
+        ?doc dc:issued ?date 
+        # filter (?date >= "2015-01-01"^^xsd:date)
+        filter (?s != ?s2)
+    
+        ?s2 hsc:structure ?y 
+        ?y vs:country-name $pattern   
+    }
+}
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?country rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?country geo:lat ?lat ; geo:long ?lon }
+        optional { ?country o:thumbnail ?img }
+    } 
+}
+
+    bind (us:style(?name, ?n) as ?a)
+    bind (st:setimg(?name, ?img) as ?b)
+}
+
+function us:style(?name, ?n) {
+    st:setclass(?name, "main", "country");
+    st:setclass(?n, "other", "team")
+}
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+       st:location(?map)
+} 
+""" ;
+
+# name of function to preprocess the query : replace $pattern by appropriate code
+st:processquery fun:country ;
+
+st:select  st:labelList ;
+
+st:select [
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:geo ;
+    st:predicate dbo:member
+]
+
+.
+
+#st:patternparam  st:mode ;
+#st:patternoption ("?country" "$mode, ?country") ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

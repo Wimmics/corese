@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Oct 09 15:58:07 CEST 2018
+Thu Oct 18 21:08:54 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -202,24 +202,28 @@ where {
 # ?q actual query, ?t query template, ?s query solution
 #
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
-template st:form(?n, ?q, ?t, ?s, ?select) {
+template st:form(?n, ?q, ?t, ?s, ?qt) {
    
    format {   
     ft:form.html
    
     st:get(st:service) 
     st:get(st:profile)
-    if (contains(?t, "'"), "", str(?t)) 
-    if (contains(?s, "'"), "", str(?s)) 
+    str(?t) 
+    str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
-    if (?select = st:null, "", st:call-template(st:selectparam, ?n, ?select))
+    group { coalesce(st:call-template(st:selectparam2, ?n, ?select), "") ; separator = "<br/> " }
     str(?q)
     }
    
 }
 where {
-    
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n 
+        optional { ?qt st:select ?select }
+    }
 }
 ]]>
 </body>
@@ -287,6 +291,56 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Generate param selector, ?n = query name  
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selectparam2(?n, ?select) {
+
+format {
+  ft:selectparam.html 
+  ?name
+  group { 
+    format { 
+        if (st:get(?uri, ?value), 
+            '<option value="%s" selected="true">%s</option>', 
+            '<option value="%s">%s</option>')
+            
+        ?value ?value
+    } 
+}
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  # TODO: mandatory to bind ?select parameter
+  graph ?g { ?select st:name ?name ; st:uri ?uri }
+  
+  {
+    graph ?g {
+        ?select st:value/rdf:rest*/rdf:first ?value }
+  }
+  union 
+  {
+    graph ?g { 
+        ?select st:graph ?gname ; st:predicate ?p 
+        bind (st:get(?gname) as ?gg)
+        filter bound(?gg)
+    } 
+       
+    graph ?gg { 
+        select distinct ?p ?value where { ?x ?p ?value  } order by ?value }
+   }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:head {
    
@@ -327,7 +381,7 @@ format {
      coalesce(st:get(st:query), str(?q)), 
      str(?q), 
      coalesce(?s, st:null),
-     coalesce(?select, st:null)
+     ?qt
      ) 
      
    st:call-template(st:result)
@@ -345,7 +399,6 @@ where {
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
       optional { ?qt sw:body  ?s }
-      optional { ?qt st:select ?select }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }

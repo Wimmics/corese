@@ -16,6 +16,7 @@ import fr.inria.corese.kgram.api.core.ExpType;
  *
  */
 public class Dataset extends ASTObject {
+  
 	protected static final String KG = ExpType.KGRAM;
 	static final String EMPTY = KG + "empty";
 	static final Constant CEMPTY = Constant.create(EMPTY);
@@ -25,6 +26,7 @@ public class Dataset extends ASTObject {
         List<Constant> with;
         private Context context;
         private Object templateVisitor;
+        private String base;
 
         // true when used by update (delete in default graph specified by from)
 	// W3C test case is true
@@ -268,6 +270,21 @@ public class Dataset extends ASTObject {
      */
     public void setNamed(List<Constant> named) {
         this.named = named;
+    }
+    
+    /**
+     * @return the base
+     */
+    public String getBase() {
+        return base;
+    }
+
+    /**
+     * @param base the base to set
+     */
+    public Dataset setBase(String base) {
+        this.base = base;
+        return this;
     }
    
 }

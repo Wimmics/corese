@@ -1631,38 +1631,45 @@ public class ASTQuery
     }
     
     public Term createFunction(Constant name) {
-        Term term = createFunction(name.getName());
+        Term term = createFunction(name.getName(), name.getLongName());
         term.setCName(name);
         return term;
     }
 
     public Term createFunction(Constant name, Expression exp) {
-        Term term = createFunction(name.getName(), exp);
-        term.setCName(name);
+        Term term = createFunction(name);
+        term.add(exp);
         return term;
     }
 
-    public Term createFunction(Constant name, Expression exp, Expression e2) {
-        Term term = createFunction(name, exp);
+    public Term createFunction(Constant name, Expression e1, Expression e2) {
+        Term term = createFunction(name);
+        term.add(e1);
         term.add(e2);
         return term;
     }
     
     public Term createFunction(Constant name, Expression e1, Expression e2, Expression e3) {
-        Term term = createFunction(name, e1, e2);
+        Term term = createFunction(name);
+        term.add(e1);
+        term.add(e2);
         term.add(e3);
         return term;
     }
     
     public Term createFunction(Constant name, ExpressionList el) {
-        Term term = createFunction(name.getName(), el);
-        term.setCName(name);
+        Term term = createFunction(name);
+        setExpressionList(term, el);
         return term;
     }  
     
     
     public Term createFunction(String name) {
-        String longName = getNSM().toNamespace(name);
+        // no toNamespaceB()
+        return createFunction(name, getNSM().toNamespace(name));
+    }
+    
+    Term createFunction(String name, String longName) {
         Term term = Term.function(name, longName);
         // no toNamespaceB()
         term.setLongName(longName);
@@ -1683,26 +1690,18 @@ public class ASTQuery
         return term;
     }
 
-
-
- 
-    
-    public Term createReturn(Expression exp) {
-        Term term = createFunction(Processor.RETURN);
-        term.setCName(Constant.createResource(Processor.RETURN));
-        term.add(exp);
-        return term;
-    }
-
         
     Term createFun(String name, ExpressionList el) {
-        Term term = createFunction(name);
+        Term term = createFunction(name);    
+        setExpressionList(term, el);
+        return term;
+    }
     
+    void setExpressionList(Term term, ExpressionList el) {
         term.setModality(el);
         for (Expression exp : el) {
             term.add(exp);
         }
-        return term;
     }
     
         // at runtime
@@ -1713,6 +1712,14 @@ public class ASTQuery
         return t;
     }
     
+ 
+    public Term createReturn(Expression exp) {
+        Term term = createFunction(Processor.RETURN);
+        term.setCName(Constant.createResource(Processor.RETURN));
+        term.add(exp);
+        return term;
+    }
+       
      /**
      * mapfun(st:concat, us:cell, ?list) 
      * ::=
@@ -1875,7 +1882,7 @@ public class ASTQuery
     }
 
     public Constant createQName(String qname) {
-        String uri = getNSM().toNamespaceB(qname);
+        String uri = getNSM().toNamespaceB(qname);      
         Constant cst = Constant.createResource(qname, uri);
         if (qname.equals(uri)) {
             addError("Undefined prefix: ", qname);

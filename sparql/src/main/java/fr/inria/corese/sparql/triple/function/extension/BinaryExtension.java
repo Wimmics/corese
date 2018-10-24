@@ -4,12 +4,14 @@ import static fr.inria.corese.kgram.api.core.ExprType.EXTCONT;
 import static fr.inria.corese.kgram.api.core.ExprType.EXTEQUAL;
 import static fr.inria.corese.kgram.api.core.ExprType.XPATH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_COMPARE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_REPLACE;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.function.StringHelper;
 import fr.inria.corese.sparql.datatype.function.VariableResolverImpl;
 
@@ -51,14 +53,10 @@ public class BinaryExtension extends TermEval {
             }
             
             case XT_COMPARE:
-               return value(dt1.compareTo(dt2));
+               return value(dt1.compareTo(dt2));                                   
         }
 
         return null;
 
     }
-    
-   
-
-   
 }

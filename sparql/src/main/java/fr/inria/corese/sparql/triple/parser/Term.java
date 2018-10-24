@@ -314,6 +314,9 @@ public class Term extends Expression {
             case ExprType.XT_COMPARE:
                 return new BinaryExtension(name);
                 
+            case ExprType.XT_REPLACE:
+                return new TernaryExtension(name);
+                
             case ExprType.UNDEF:
                 return new Extension(name);
             case ExprType.XT_METHOD:

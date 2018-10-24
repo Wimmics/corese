@@ -34,7 +34,8 @@ public class Context extends ASTObject {
     public static final String STL_URI      = STL + "uri";        // focus resource URI
     public static final String STL_PROTOCOL = STL + "protocol";   // st:ajax
     public static final String STL_AJAX     = STL + "ajax";
-    public static final String STL_CONTEXT  = STL + "context";    // query named graph (for tutorial) 
+    public static final String STL_CONTEXT  = STL + "context";    // query named graph for tutorial 
+    public static final String STL_CONTEXT_LIST  = STL + "contextlist";    //  context graph list for tutorial 
     public static final String STL_DATASET  = STL + "dataset";    // dataset named graph
     public static final String STL_EXPORT   = STL + "export";   
     public static final String STL_IMPORT   = STL + "import";   
@@ -60,6 +61,11 @@ public class Context extends ASTObject {
     public static final String STL_VISITOR  = STL + "visitor";
     public static final String STL_DEFAULT  = STL + "default";
     public static final String STL_REMOTE_HOST  = STL + "remoteHost";
+    public static final String STL_PATTERN        = STL + "pattern";
+    public static final String STL_PATTERN_PARAM  = STL + "patternparam";
+    public static final String STL_PATTERN_VALUE  = STL + "patternvalue";
+    public static final String STL_PATTERN_OPTION = STL + "patternoption";
+    public static final String STL_PROCESS_QUERY  = STL + "processquery";
     
     
     HashMap<String, IDatatype> table;
@@ -383,6 +389,14 @@ public class Context extends ASTObject {
     
     public IDatatype get(IDatatype name) {
         return table.get(name.getLabel());
+    }
+    
+    public boolean isList(String name) {
+        switch (name) {
+            case STL_PATTERN_VALUE:
+            case STL_PATTERN_OPTION: return true;
+        }
+        return false;
     }
     
     

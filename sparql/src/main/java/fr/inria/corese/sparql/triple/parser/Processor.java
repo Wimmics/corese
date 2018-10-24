@@ -50,6 +50,7 @@ public class Processor {
 	public static final String XT_RESULT   = EXT+"result";
  	public static final String XT_COMPARE  = EXT+"compare";
  	public static final String XT_VISITOR  = EXT+"visitor";
+ 	public static final String XT_REPLACE  = EXT+"replace";
        
 	public static final String IN  	 = "in";
 
@@ -883,6 +884,7 @@ public class Processor {
                 defoper(XT_GDISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_GPRINT, ExprType.XT_PRINT);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 
+                defoper(XT_REPLACE,ExprType.XT_REPLACE); 
                 
                 defoper(XT_UNION,  ExprType.XT_UNION);  
                 defoper(XT_MINUS,  ExprType.XT_MINUS);  

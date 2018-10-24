@@ -1,0 +1,9 @@
+insert { 
+    ?q st:index ?n 
+} 
+where { 
+
+    ?w sw:body/rdf:rest*/rdf:first ?q
+    
+    bind (kg:number() as ?n) 
+}

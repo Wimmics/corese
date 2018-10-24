@@ -20,7 +20,7 @@ format {
      coalesce(st:get(st:query), str(?q)), 
      str(?q), 
      coalesce(?s, st:null),
-     coalesce(?select, st:null)
+     ?qt
      ) 
      
    st:call-template(st:result)
@@ -38,7 +38,6 @@ where {
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
       optional { ?qt sw:body  ?s }
-      optional { ?qt st:select ?select }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
   }
 }

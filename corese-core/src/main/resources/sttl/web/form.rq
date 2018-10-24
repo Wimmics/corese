@@ -4,22 +4,26 @@
 # ?q actual query, ?t query template, ?s query solution
 #
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
-template st:form(?n, ?q, ?t, ?s, ?select) {
+template st:form(?n, ?q, ?t, ?s, ?qt) {
    
    format {   
     ft:form.html
    
     st:get(st:service) 
     st:get(st:profile)
-    if (contains(?t, "'"), "", str(?t)) 
-    if (contains(?s, "'"), "", str(?s)) 
+    str(?t) 
+    str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
-    if (?select = st:null, "", st:call-template(st:selectparam, ?n, ?select))
+    group { coalesce(st:call-template(st:selectparam2, ?n, ?select), "") ; separator = "<br/> " }
     str(?q)
     }
    
 }
 where {
-    
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n 
+        optional { ?qt st:select ?select }
+    }
 }

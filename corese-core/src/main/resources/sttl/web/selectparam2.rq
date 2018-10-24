@@ -1,0 +1,47 @@
+#
+# Generate param selector, ?n = query name  
+# Use a context graph for select values
+# context graph has a sw:name st:graphName in content workflow (see tutohal service in profile.ttl)
+# specify context graph with st:param [ st:export true ; st:contextlist(st:graphName) ]
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selectparam2(?n, ?select) {
+
+format {
+  ft:selectparam.html 
+  ?name
+  group { 
+    format { 
+        if (st:get(?uri, ?value), 
+            '<option value="%s" selected="true">%s</option>', 
+            '<option value="%s">%s</option>')
+            
+        ?value ?value
+    } 
+}
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  # TODO: mandatory to bind ?select parameter
+  graph ?g { ?select st:name ?name ; st:uri ?uri }
+  
+  {
+    graph ?g {
+        ?select st:value/rdf:rest*/rdf:first ?value }
+  }
+  union 
+  {
+    graph ?g { 
+        ?select st:graph ?gname ; st:predicate ?p
+        # get graph object ?gg in context corresponding to graph name ?gname
+        bind (st:get(?gname) as ?gg)
+        filter bound(?gg)
+    } 
+       
+    graph ?gg { 
+        select distinct ?p ?value where { ?x ?p ?value } order by ?value }
+   }
+}

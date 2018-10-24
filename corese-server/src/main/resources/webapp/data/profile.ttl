@@ -4,9 +4,12 @@
 # accessible using st:get(st:lang)
 #
 
-@prefix p:    <http://fr.dbpedia.org/property/>
-@prefix o:    <http://dbpedia.org/ontology/>
+@prefix p:   <http://fr.dbpedia.org/property/>
+@prefix o:   <http://dbpedia.org/ontology/>
 @prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
+@prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+@prefix fun: <query/hal/process/>
 
 
 #[] owl:imports <profile2.ttl>
@@ -20,7 +23,7 @@ st:dbpedia a st:Profile ;
     st:transformations (st:navlab d3:frame) ;
     st:export true ;
     st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam  ;     
+    st:import st:dbpediaParam, st:mapParam   
   ] ;
   st:workflow st:dbpediawf
   .
@@ -28,7 +31,11 @@ st:dbpedia a st:Profile ;
   
 st:dbpediawf a sw:Workflow ;
   sw:body ( 
-    <query/dbpedia/frdbpedia.rq> <query/dbpedia/frdbpediaclean.rq> 
+    [ a sw:Query ;  
+        st:processquery fun:trace ;
+        sw:uri <query/dbpedia/frdbpedia.rq> 
+    ]
+    <query/dbpedia/frdbpediaclean.rq> 
     [ a sw:Transformation ; sw:uri st:combine ]
   )
 .
@@ -483,9 +490,10 @@ st:tutocontent a sw:Workflow ; sw:body (
     [a sw:Dataset]
 ).
 
- st:indexQuery a sw:Query ; 
-   sw:body 
-   "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
+st:indexQuery a sw:Query ; 
+    #   sw:body 
+    #   "insert { ?q st:index ?n } where { ?q a sw:Query bind (kg:number() as ?n) }"
+    sw:uri <query/indexquery.rq>   
 .
 
    
@@ -528,18 +536,31 @@ st:workflow [
 ]
 .
 
-@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
 
 st:tutorialhal a st:Server ;
-  st:param [ st:lang 'en' ; 
+  st:param [ st:lang 'en' ;
+  
+#  st:patternparam  st:mode ;
+#  st:patternoption ("?country" "$mode, ?country") ;
+
+# these URI have space instead of _ in hal
+# we need special treatment (see workflowhal.ttl)
+
+  st:patternvalue  (
+        db:Afrique_du_Sud db:Arabie_saoudite 
+        db:Corée_du_Sud db:Corée_du_Nord <http://fr.dbpedia.org/resource/Côte_d’Ivoire> db:République_tchèque db:Sierra_Leone db:Sri_Lanka 
+    ) ;
+    
+    #st:processquery fun:trace ;
+    
     st:sttl st:combine ; 
     st:transformations (
         d3:frame navlab:map st:hturtle
-        ) ;
-# st:param "verbatim" ; 
+        ) ; 
     st:hyperlink true ; 
     st:number true ;
     st:export true ;
+    st:contextlist(st:geo) ;
     st:focus false ;
     st:mapzoom 3 ;
     st:mapsize "mapmedium" ;
@@ -577,7 +598,7 @@ st:tutohal a sw:Workflow ; sw:body (
         st:indexQuery ) ]
         
       [ a sw:Workflow ; sw:name st:geo ; sw:body ( 
-        [ a sw:Load ; sw:path <tutorial/country.ttl>  ]
+        [ a sw:Load ; sw:path <tutorial/country.ttl> ; sw:name st:geo ]
         [ a sw:RuleBase ; sw:uri sw:owlrl ]
       ) ]
   

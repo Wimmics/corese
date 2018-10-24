@@ -1,0 +1,17 @@
+@prefix fun: <>
+
+
+@public {
+
+
+function fun:trace(?q) {
+    xt:print('process query:') ;
+    xt:print('uri',   st:get(st:uri)) ;
+    xt:print('mode',  st:get(st:mode)) ;
+    xt:print('param', st:get(st:param)) ;
+    return (?q)
+}
+
+
+
+}

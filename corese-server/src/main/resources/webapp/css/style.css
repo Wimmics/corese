@@ -24,6 +24,8 @@ textPath.rdf  { fill: lightblue; }
 textPath.rdfs { fill: lightblue; }
 textPath.owl  { fill: orange; }
 
+.hidden { visibility: hidden }
+
 .s0 { background:lightgrey }
 .s1 { background:lightblue }
 

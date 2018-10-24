@@ -1,11 +1,11 @@
 <form method='post'  id='form' 	action='%s' >   
   <input type='hidden' name='profile' value='%s' /> 
-  <input type='hidden' id='tmp' 	value='%s' />
-  <input type='hidden' id='sol' 	value='%s' />
+  <textarea  id='tmp' class='hidden'>%s</textarea>
+  <textarea  id='sol' class='hidden'>%s</textarea>  
   <input type='hidden' name='uri' 	value='%s' />
   %s
   <input type='submit' value='submit' class='btn btn-default' onClick='trans(this.form); return false;' />
-  %s <br/>
+  <br/> %s <br/>
   <textarea cols='60' rows='25' id='query' name='query'>%s</textarea>
   <br/>
   <input type='submit' value='submit' class='btn btn-default' onClick='trans(this.form); return false;' />

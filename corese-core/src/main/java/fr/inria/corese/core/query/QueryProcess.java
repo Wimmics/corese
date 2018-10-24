@@ -443,23 +443,27 @@ public class QueryProcess extends QuerySolver {
         if (function == null) {
             return null;
         }
-        return call(EVENT, function, param);
+        return call(EVENT, function, param, null);
     }
     
     /**
      * Execute LDScript function defined as @public
      */
     public IDatatype funcall(String name, IDatatype[] param) throws EngineException {
-        Function function = getFunction(name, param);
-        if (function == null) {
+        return funcall(name, param, null);
+    }
+
+    public IDatatype funcall(String name, IDatatype[] param, Context c) throws EngineException {
+        Function function = getLinkedFunction(name, param);
+        if (function == null) {          
             return null;
         }
-        return call(name, function, param);
-
+        return call(name, function, param, c);
     }
     
-    IDatatype call(String name, Function function, IDatatype[] param) throws EngineException {
+    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
         Eval eval = getEval();
+        eval.getMemory().getQuery().setContext(c);
         return new Funcall(name).call((Interpreter) eval.getEvaluator(),
                 (Binding) eval.getMemory().getBind(),
                 eval.getMemory(), eval.getProducer(), function, param);
@@ -471,6 +475,17 @@ public class QueryProcess extends QuerySolver {
         }
         return eval;
     }
+    
+    Function getLinkedFunction(String name,  IDatatype[] param) {
+        Function function = getFunction(name, param);
+        if (function == null) {
+            setLinkedFunction(true);
+            getLinkedFunction(name);
+            function = getFunction(name, param);
+        }
+        return function;
+    }
+    
 
     /**
      * Search a method 
@@ -490,8 +505,9 @@ public class QueryProcess extends QuerySolver {
     public Query load(String path) {
         QueryLoad ql = QueryLoad.create();
         try {
-            String str = ql.readWE(path);
-            Query q = compile(str);
+            String pp =  (path.endsWith("/")) ? path.substring(0, path.length()-1) : path;
+            String str = ql.readWE(pp);
+            Query q = compile(str, new Dataset().setBase(path));
             return q;
         } catch (LoadException ex) {
 			logger.error(ex.getMessage());
@@ -510,6 +526,7 @@ public class QueryProcess extends QuerySolver {
         if (transformer == null) {
             transformer = Transformer.create();
             transformer.setSPARQLEngine(this);
+            transformer.setLinkedFunction(isLinkedFunction());
         }
         return transformer;
     }

@@ -395,7 +395,7 @@ public class WorkflowParser {
         if (dtype == null) {
             if (dt.isURI()) {
                 // default is Query
-                ap = queryPath(dt.getLabel());
+                ap = queryPath(dt, dt.getLabel());
             }
         } else {
             String type = dtype.getLabel();
@@ -417,7 +417,7 @@ public class WorkflowParser {
                     if (duri != null) {
                         String uri = duri.getLabel();
                         if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
-                            ap = queryPath(uri);
+                            ap = queryPath(dt, uri);
                         } else if (type.equals(FUNCTION)) {
                             ap = functionPath(uri);
                         } else if (type.equals(RULE) || type.equals(RULEBASE)) {
@@ -429,7 +429,7 @@ public class WorkflowParser {
                         ap = probe(dt);
                     } else if (dbody != null) {
                         if (type.equals(QUERY) || type.equals(UPDATE) || type.equals(TEMPLATE)) {
-                            ap = new SPARQLProcess(dbody.getLabel(), getPath());
+                            ap = queryBody(dt, dbody);
                         } else if (type.equals(FUNCTION)) {
                             ap = new FunctionProcess(dbody.getLabel(), getPath());
                         } else if (type.equals(PARALLEL)) {
@@ -565,10 +565,23 @@ public class WorkflowParser {
          return new DatasetProcess();
      }
      
-    SPARQLProcess queryPath(String path) throws LoadException{
+    SPARQLProcess queryPath(IDatatype dt, String path) throws LoadException{
         String q = QueryLoad.create().readWE(path);
-        return new SPARQLProcess(q, path);
+        SPARQLProcess qq = new SPARQLProcess(q, path);
+        complete(qq, dt);
+        return qq;
     } 
+    
+    SPARQLProcess queryBody(IDatatype dt, IDatatype dbody){
+        SPARQLProcess qq = new SPARQLProcess(dbody.getLabel(), getPath());
+        complete(qq, dt);
+        return qq;
+    }
+    
+    void complete(SPARQLProcess q, IDatatype dt) {
+        q.setValue(getValue(Context.STL_PATTERN_VALUE, dt));
+        q.setProcess(getValue(Context.STL_PROCESS_QUERY, dt)); 
+    }
     
     FunctionProcess functionPath(String path) throws LoadException{
         String q = QueryLoad.create().readWE(path);

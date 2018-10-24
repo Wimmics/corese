@@ -2122,6 +2122,14 @@ public class Graph extends GraphObject implements
         return list;
     }
     
+    public List<IDatatype> getDatatypeList(IDatatype dt) {
+        Node node = getNode(dt);
+        if (node == null) {
+            return null;
+        }
+        return getDatatypeList(node);
+    }
+    
     public List<IDatatype> getDatatypeList(Node node) {
         List<Node> list = getList(node);
         ArrayList<IDatatype> ldt = new ArrayList<>();

@@ -1,0 +1,28 @@
+@prefix fun: <>
+
+@public {
+
+#
+# modify query string text, replace $pattern by appropriate code depending on value of st:get(st:mode)
+# if URI of country in HAL contains space, replace it by underscore for DBpedia
+# st:get(st:patternvalue) is the list of DBpedia URI which (may) contain space in HAL
+# it is defined in profile.ttl tutohal
+# st:get(st:mode) is the DBpedia URI select by user
+#
+function fun:country(?q) {
+    let (?text =
+"""
+?cc 
+bind ($mode as ?country) 
+filter (if (contains(str(?cc), " "), uri(replace(str(?cc), " ", "_")), ?cc) = $mode)
+"""
+    ) {    
+    
+    if (xt:member(st:get(st:mode), st:get(st:patternvalue)),    
+        xt:replace(?q, "$pattern", ?text),
+        xt:replace(?q, "$pattern", "$mode, ?country"))
+    }
+}
+
+
+}

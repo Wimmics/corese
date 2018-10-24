@@ -248,7 +248,9 @@ public class Extension {
         sb.append("extension: ");
         sb.append(NL);
         for (FunMap m : getMaps()){
-            for (Expr exp : m.values()) {
+            for (String name : m.keySet()) {
+                Expr exp = m.get(name);
+                sb.append("# ").append(name).append(NL);
                 sb.append(exp);
                 sb.append(NL);
                 sb.append(NL);

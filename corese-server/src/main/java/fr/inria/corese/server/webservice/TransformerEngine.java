@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 public class TransformerEngine {
     
     private static Logger logger = LogManager.getLogger(Transformer.class);
+    private static final String PARAM = "$param";
+    private static final String MODE  = "$mode";
 
     // TripleStore RDF Graph  
     GraphStore graph;
@@ -89,6 +91,9 @@ public class TransformerEngine {
         wp.setLog(true);
         IDatatype swdt = context.get(Context.STL_WORKFLOW);
         String transform = context.getTransform();
+//        if (query != null) {
+//            query = tune(context, query);
+//        }
         if (swdt != null) {
             // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
@@ -112,6 +117,21 @@ public class TransformerEngine {
         }
         defaultTransform(wp, transform);
         return wp;
+    }
+    
+    /**
+     * if query contains $param, e.g. filter ($param)
+     * and there is st:get(st:param)
+     * replace $param by st:get(st:param)
+     */
+    String tune(Context context, String query) {
+        if (context.get(Context.STL_PARAM) != null && query.contains(PARAM)) {
+            query = query.replace(PARAM, context.get(Context.STL_PARAM).stringValue()) ;
+        }
+        if (context.get(Context.STL_MODE) != null && query.contains(MODE)) {
+            query = query.replace(MODE, String.format("<%s>", context.get(Context.STL_MODE).stringValue())) ;
+        }
+        return query;
     }
 
     /**
@@ -151,6 +171,17 @@ public class TransformerEngine {
         Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
         if (cg != null) {
             context.set(Context.STL_CONTEXT,    DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+        }
+        // st:param [ st:contextlist (st:geo) ]
+        // extended named graph st:geo from initial dataset to be stored in context by st:set(st:geo, gg)
+        IDatatype list = context.get(Context.STL_CONTEXT_LIST);
+        if (list != null) {
+            for (IDatatype name : list.getValues()) {
+                Graph gg = graph.getNamedGraph(name.stringValue());
+                if (gg != null) {
+                    context.set(name, DatatypeMap.createObject(name.stringValue(), gg));
+                }
+            }
         }
         context.set(Context.STL_DATASET,        DatatypeMap.createObject(Context.STL_DATASET, graph));
         context.set(Context.STL_SERVER_PROFILE, DatatypeMap.createObject(Context.STL_SERVER_PROFILE, profile));

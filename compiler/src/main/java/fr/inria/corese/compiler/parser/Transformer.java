@@ -183,7 +183,7 @@ public class Transformer implements ExpType {
         ast = ASTQuery.create(squery);
         ast.setRule(isRule);
         ast.setDefaultNamespaces(namespaces);
-        ast.setDefaultBase(base);
+        ast.setDefaultBase(getDefaultBase());
         ast.setSPARQLCompliant(isSPARQLCompliant);
 
         if (dataset != null) {
@@ -195,6 +195,13 @@ public class Transformer implements ExpType {
 
         return q;
 
+    }
+    
+    String getDefaultBase() {        
+        if (getDataset() != null && getDataset().getBase() != null) {
+            return getDataset().getBase();
+        }
+        return base;
     }
 
     /**
@@ -608,12 +615,12 @@ public class Transformer implements ExpType {
         if (! isLinkedFunction()){
             return false;
         }
-        String path = NSManager.namespace(label);
+        String path = NSManager.namespace(label);       
         if (loaded.containsKey(path)) {
             return true;
         }
         loaded.put(path, path);
-        Query imp = sparql.load(label);
+        Query imp = sparql.load(path);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
             definePublic(imp.getExtension(), imp);

@@ -1,13 +1,14 @@
 @prefix db:  <http://fr.dbpedia.org/resource/>
 @prefix dbo: <http://fr.dbpedia.org/ontology/>
 
-dbo:member a owl:TransitiveProperty .
+dbo:member rdfs:subPropertyOf dbo:include .
+dbo:include a owl:TransitiveProperty .
 
-db:All dbo:member
+db:All dbo:include
 db:Europe_continentale, db:Amérique, db:Asie, db:Asie_centrale, db:Afrique_du_Nord, db:Afrique
 .
 
-db:Europe_continentale dbo:member db:Europe, db:Europe_Est .
+db:Europe_continentale dbo:include db:Europe, db:Europe_Est .
 
 db:Europe dbo:member 
 db:Andorre, 
@@ -63,7 +64,7 @@ db:Koweït, db:Yémen, db:Emirats_arabes-unis,
 db:Dubaï, db:Qatar, db:Oman, db:Bahreïn, db:Brunei
 .
 
-db:Afrique dbo:member 
+db:Afrique dbo:include 
 db:Afrique_du_Nord, db:Afrique_continentale 
 .
 
@@ -76,7 +77,7 @@ db:Maroc, db:Algérie, db:Tunisie, db:Lybie, db:Égypte
 db:Afrique_continentale dbo:member
 db:Afrique_du_Sud, db:Angola, 
 db:Bénin, db:Botswana, db:Burkina_Faso, db:Burundi,  
-db:Cameroun, db:Cap-Vert, db:République_centrafricaine, db:Comores, db:Congo, 
+db:Cameroun, db:Cap-Vert, db:République_centrafricaine, db:Comores, db:Congo, db:République_démocratique_du_Congo,
 <http://fr.dbpedia.org/resource/Côte_d'Ivoire>,
 db:Djibouti, db:Érythrée, db:Éthiopie,  db:Gabon, db:Gambie, db:Ghana, db:Guinée, db:Guinée-Bissau, db:Guinée_équatoriale, 
 db:Kenya, db:Lesotho, db:Liberia, db:Madagascar, db:Malawi, db:Maurice, db:Mauritanie, db:Mali,db:Mozambique, db:Namibie, db:Niger, db:Nigeria, 

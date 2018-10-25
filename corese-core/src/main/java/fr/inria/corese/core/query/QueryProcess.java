@@ -449,11 +449,11 @@ public class QueryProcess extends QuerySolver {
     /**
      * Execute LDScript function defined as @public
      */
-    public IDatatype funcall(String name, IDatatype[] param) throws EngineException {
-        return funcall(name, param, null);
+    public IDatatype funcall(String name, IDatatype... param) throws EngineException {
+        return funcall(name, null, param);
     }
 
-    public IDatatype funcall(String name, IDatatype[] param, Context c) throws EngineException {
+    public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {
         Function function = getLinkedFunction(name, param);
         if (function == null) {          
             return null;

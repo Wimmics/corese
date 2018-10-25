@@ -4,8 +4,11 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Hierarchy;
+import fr.inria.corese.kgram.core.Eval;
 import java.util.Collection;
 import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage extension functions 
@@ -17,6 +20,7 @@ import java.util.HashMap;
  */
 public class Extension {
 
+    private static Logger logger = LoggerFactory.getLogger(Extension.class);
     static final String NL = System.getProperty("line.separator");
     public static final String TYPE = ExpType.TYPE_METADATA;
     //FunMap map;
@@ -26,6 +30,7 @@ public class Extension {
     
     public class FunMap extends HashMap<String, Expr> {
         
+        // String is metadata such as @before
         HashMap<String, Expr> metadata;
         
         FunMap() {
@@ -44,6 +49,23 @@ public class Extension {
                     metadata.put(name, exp);
                 }
             }
+        }
+        
+        void removeNamespace(String namespace) {
+            for (String name : keySet()) {
+                if (name.startsWith(namespace)) {
+                    logger.info("Remove: " + name);
+                    put(name, null);
+                }
+            } 
+            for (String meta : metadata.keySet()) {
+                Expr exp = metadata.get(meta);
+                String name = exp.getFunction().getLabel();
+                if (name.startsWith(namespace)) {
+                    logger.info("Remove: " + name);
+                    metadata.put(meta, null);
+                }
+            }               
         }
     }
     
@@ -91,6 +113,20 @@ public class Extension {
         }
         else {
             defineFunction(exp);
+        }
+    }
+    
+    /**
+     * name is a namespace
+     */
+    public void removeNamespace(String name) {
+        for (FunMap fm : getMaps()) {
+            fm.removeNamespace(name);
+        }
+        if (getMethod() != null) {
+            for (Extension ext : getMethod().values()) {
+                ext.removeNamespace(name);
+            }
         }
     }
     

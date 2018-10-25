@@ -131,9 +131,7 @@ public class SPARQLProcess extends  WorkflowProcess {
             return query;
         }
         try {
-            IDatatype[] param = new IDatatype[1];
-            param[0] = DatatypeMap.newInstance(query) ;
-            IDatatype res = exec.funcall(name.stringValue(), param, getContext());
+            IDatatype res = exec.funcall(name.stringValue(), getContext(), DatatypeMap.newInstance(query));
             if (res != null) {
                 return res.stringValue();
             }

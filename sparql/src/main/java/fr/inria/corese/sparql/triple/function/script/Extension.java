@@ -66,7 +66,7 @@ public class Extension extends TermEval {
         if (function == null) {
             function = (Function) eval.getDefine(this, env);
             if (function == null) {
-                logger.error("Undefined function: " + this);
+                logger.error("Undefined function: " + this.getLabel() + " " + this);
                 return null;
             } else {
                 init();

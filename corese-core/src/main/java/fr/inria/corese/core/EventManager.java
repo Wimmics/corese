@@ -1,6 +1,7 @@
 package fr.inria.corese.core;
 
 import fr.inria.corese.compiler.eval.Interpreter;
+import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.core.api.Engine;
 import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;
@@ -216,6 +217,7 @@ public class EventManager {
         if (Interpreter.getExtension() != null) {
             Interpreter.getExtension().setHierarchy(null);
         }
+        Transformer.removeLinkedFunction();
     }
         
     

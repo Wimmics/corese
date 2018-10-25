@@ -607,6 +607,13 @@ public class Transformer implements ExpType {
         return false;
     }
     
+    public static void removeLinkedFunction() {
+        for (String name : loaded.values()) {
+            Interpreter.getExtension().removeNamespace(name);
+        }
+        loaded.clear();
+    }
+    
 
     /**
      * Define function into Extension Export into Interpreter

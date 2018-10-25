@@ -568,9 +568,8 @@ public class Transformer implements ExpType {
     void undefinedFunction(Query q, ASTQuery ast) {
         for (Expression exp : ast.getUndefined().values()) {
             boolean ok = Interpreter.isDefined(exp);
-            if (ok) {
-                return;
-            } else {
+            if (ok) { } 
+            else {
                 ok = !ast.isUserQuery()
                         && (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
                         && importFunction(q, exp);
@@ -580,29 +579,7 @@ public class Transformer implements ExpType {
             }
         }
     }
-
-    /**
-     */
-//    boolean importFunction2(Query q, Expression exp) {
-//        String path = NSManager.namespace(exp.getLabel());
-//        if (loaded.containsKey(path)) {
-//            return true;
-//        }
-//        loaded.put(path, path);
-//        if (q.isDebug()) {
-//            System.out.println("Transformer: load " + exp.getLabel());
-//        }
-//
-//        Query imp = sparql.load(exp.getLabel());
-//
-//        if (imp != null && imp.hasDefinition()) {
-//            // loaded functions are exported in Interpreter  
-//            definePublic(imp.getExtension(), imp);
-//            return Interpreter.isDefined(exp);
-//        }
-//        return false;
-//    }
-    
+     
     boolean importFunction(Query q, Expression exp) {
         boolean b = getLinkedFunction(exp.getLabel());
         if (b) {
@@ -615,10 +592,11 @@ public class Transformer implements ExpType {
         if (! isLinkedFunction()){
             return false;
         }
-        String path = NSManager.namespace(label);       
+        String path = NSManager.namespace(label);  
         if (loaded.containsKey(path)) {
             return true;
         }
+        logger.info("Load Linked Function: " + label);
         loaded.put(path, path);
         Query imp = sparql.load(path);
         if (imp != null && imp.hasDefinition()) {

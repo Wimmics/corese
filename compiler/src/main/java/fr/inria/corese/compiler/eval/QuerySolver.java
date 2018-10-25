@@ -68,6 +68,7 @@ public class QuerySolver  implements SPARQLEngine {
         public static boolean BGP_DEFAULT = false;
         public static boolean ALGEBRA_DEFAULT = false;
         private static boolean visitorable = false;
+        private static boolean LINKED_FUNCTION_DEFAULT = false;
         
 	static String NAMESPACES;
 
@@ -90,7 +91,7 @@ public class QuerySolver  implements SPARQLEngine {
 	isOptimize = false,
 	isSPARQLCompliant = false;
     private boolean isGenerateMain = true;
-    private boolean loadFunction = false;
+    private boolean linkedFunction = LINKED_FUNCTION_DEFAULT;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
@@ -792,14 +793,18 @@ public class QuerySolver  implements SPARQLEngine {
      * @return the loadFunction
      */
     public boolean isLinkedFunction() {
-        return loadFunction;
+        return linkedFunction;
     }
 
     /**
      * @param loadFunction the loadFunction to set
      */
     public void setLinkedFunction(boolean loadFunction) {
-        this.loadFunction = loadFunction;
+        this.linkedFunction = loadFunction;
+    }
+    
+    public static void setLinkedFunctionDefault(boolean b) {
+        LINKED_FUNCTION_DEFAULT = b;
     }
 
     /**

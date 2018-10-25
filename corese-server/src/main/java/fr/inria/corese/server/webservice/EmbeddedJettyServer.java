@@ -4,6 +4,7 @@
  */
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -112,22 +113,23 @@ public class EmbeddedJettyServer extends ResourceConfig {
 
 		// logger.debug("Started.");
 		Options options = new Options();
-		Option portOpt = new Option("p", "port", true, "specify the server port");
-		Option helpOpt = new Option("h", "help", false, "print this message");
-		Option entailOpt = new Option("e", "entailments", false, "enable RDFS entailments");
+		Option portOpt  = new Option("p", "port", true, "specify the server port");
+		Option helpOpt  = new Option("h", "help", false, "print this message");
+		Option entailOpt= new Option("e", "entailments", false, "enable RDFS entailments");
 		Option owlrlOpt = new Option("o", "owlrl", false, "enable OWL RL entailments");
-		Option dataOpt = new Option("l", "load", true, "data file or directory to be loaded");
+		Option dataOpt  = new Option("l", "load", true, "data file or directory to be loaded");
 		Option profileOpt = new Option("lp", "profile", false, "load profile data");
 		Option locProfileOpt = new Option("pp", "profile", true, "local profile");
 		Option versionOpt = new Option("v", "version", false, "print the version information and exit");
-		Option localhost = new Option("lh", "localhost", false, "set server name as localhost");
-		Option optDebug = new Option("debug", "debug", false, "set server mode as debug");
-		Option protect = new Option("protect", "protect", false, "set server mode as protect");
-		Option string = new Option("string", "string", false, "pprint string with xsd:string");
+		Option localhost  = new Option("lh", "localhost", false, "set server name as localhost");
+		Option optDebug   = new Option("debug", "debug", false, "set server mode as debug");
+		Option protect    = new Option("protect", "protect", false, "set server mode as protect");
+		Option string     = new Option("string", "string", false, "pprint string with xsd:string");
+		Option linkedFun  = new Option("lf", "linkedfunction", false, "authorize linked function");
 
-		Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
-		Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
-		Option keystoreOpt = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
+		Option sslOpt         = new Option("ssl", "ssl", false, "enable ssl connection ?");
+		Option portSslOpt     = new Option("pssl", "pssl", true, "port of ssl connection");
+		Option keystoreOpt    = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
 		Option keypasswordOpt = new Option("pwd", "password", true, "java key store password (key, store, trust store)");
 
 		options.addOption(portOpt);
@@ -142,6 +144,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		options.addOption(optDebug);
 		options.addOption(protect);
 		options.addOption(string);
+		options.addOption(linkedFun);
 
 		options.addOption(sslOpt);
 		options.addOption(portSslOpt);
@@ -222,6 +225,10 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				logger.info("string with xsd:string");
 				Constant.setString(true);
 			}
+                        if (cmd.hasOption("lf")) {
+                            logger.info("Linked Function");
+                            QuerySolver.setLinkedFunctionDefault(true);
+                        }
 			URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
 			BASE_URI = baseUri.toString();
 			logger.info("BASE_URI = {}", BASE_URI);

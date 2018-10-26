@@ -40,6 +40,7 @@ public class Context extends ASTObject {
     public static final String STL_EXPORT   = STL + "export";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PARAM    = STL + "param";   
+    public static final String STL_ARG      = STL + "arg";   
     public static final String STL_FORMAT   = STL + "format";   
     public static final String STL_LANG     = STL + "lang";
     public static final String STL_TITLE    = STL + "title";
@@ -405,6 +406,10 @@ public class Context extends ASTObject {
         return dt != null && dt.getLabel().equals(value);
     }
     
+    public boolean hasValue(String name) {
+        return get(name) != null;
+    }
+    
     public IDatatype getName(String name) {
         return get(NSManager.STL+name);
     }
@@ -471,6 +476,6 @@ public class Context extends ASTObject {
      */
     public void setNamedContext(HashMap<String, Context> context) {
         this.context = context;
-    }
+    }         
   
 }

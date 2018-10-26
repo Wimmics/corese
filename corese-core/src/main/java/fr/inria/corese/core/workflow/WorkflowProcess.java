@@ -17,6 +17,8 @@ import static fr.inria.corese.core.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.core.workflow.WorkflowParser.COLLECT;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Date;
 import java.util.List;
 
@@ -558,6 +560,23 @@ public class WorkflowProcess implements AbstractProcess {
     }
     
     public SPARQLProcess getQueryProcess(){
+        return null;
+    }
+    
+    /**
+     * In the st:context graph, retrieve the value of property  of query (subject)
+     * Use case: tutorial where queries ara managed in a st:context named graph
+     */
+    public IDatatype getContextParamValue(IDatatype subject, String property) {
+        IDatatype dtgraph = getContext().get(Context.STL_CONTEXT);
+        if (dtgraph != null && dtgraph.pointerType() == Pointerable.GRAPH_POINTER && subject!= null) {
+            Graph g = (Graph) dtgraph.getPointerObject();
+            IDatatype dt = g.getValue(property, subject);
+            if (dt != null && getContext().isList(property)) {
+                dt = DatatypeMap.newList(g.getDatatypeList(dt));
+            }
+            return dt;
+        }
         return null;
     }
 

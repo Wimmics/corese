@@ -34,6 +34,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     static final String NL = System.getProperty("line.separator");
     static final NSManager nsm = NSManager.create();
     private static final String PARAM    = "$param";
+    private static final String ARG      = "$arg";
     private static final String MODE     = "$mode";
     private static final String PATTERN  = "$pattern";
     private IDatatype param;    
@@ -112,10 +113,13 @@ public class SPARQLProcess extends  WorkflowProcess {
      */
     String tune(QueryProcess exec, String query) {
         query = pattern(exec, query);
-        if (getContext().get(Context.STL_PARAM) != null && query.contains(PARAM)) {
+        if (getContext().hasValue(Context.STL_PARAM) && query.contains(PARAM)) {
             query = query.replace(PARAM, getContext().get(Context.STL_PARAM).stringValue()) ;
         }
-        if (getContext().get(Context.STL_MODE) != null && query.contains(MODE)) {
+        if (getContext().hasValue(Context.STL_ARG) && query.contains(ARG)) {
+            query = query.replace(ARG, getContext().get(Context.STL_ARG).stringValue()) ;
+        }
+        if (getContext().hasValue(Context.STL_MODE) && query.contains(MODE)) {
             query = query.replace(MODE, String.format("<%s>", getContext().get(Context.STL_MODE).stringValue())) ;
         }
         return query;
@@ -180,30 +184,13 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (value == null) {
             value = getContext().get(name);
             if (value == null) {  
-                value = getParamValue(getContext().get(Context.STL_URI), name);
+                value = getContextParamValue(getContext().get(Context.STL_URI), name);
             }                                    
         }
         return value;
     }
     
-    /**
-     * In the st:context graph, retrieve the value of property  of query (subject)
-     * Use case: tutorial where queries ara managed in a st:context named graph
-     */
-    IDatatype getParamValue(IDatatype subject, String property) {
-        IDatatype dtgraph = getContext().get(Context.STL_CONTEXT);
-        if (dtgraph != null && dtgraph.pointerType() == Pointerable.GRAPH_POINTER && subject!= null) {
-            Graph g = (Graph) dtgraph.getPointerObject();
-            IDatatype dt = g.getValue(property, subject);
-            if (dt != null && getContext().isList(property)) {
-                dt = DatatypeMap.newList(g.getDatatypeList(dt));
-            }
-            return dt;
-        }
-        return null;
-    }
-
-     
+    
     void log1(Graph g, Context c){
         if (isLog() || pgetWorkflow().isLog()){
             //logger.info(NL + getQuery());

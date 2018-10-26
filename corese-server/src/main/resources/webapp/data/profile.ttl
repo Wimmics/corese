@@ -590,11 +590,11 @@ st:tutohal a sw:Workflow ; sw:body (
       # main is empty
           #  st:humancontent  
 
-      [ a sw:Workflow ; sw:body ( [ a sw:Load ; sw:path <tutorial/workflowhal.ttl> ] ) ]
+      [ a sw:Workflow ; sw:body ( [ a sw:Load ; sw:path <tutorial/workflowhalpublic.ttl> ] ) ]
       
       # context dataset with predefined queries in a specific graph
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-        [ a sw:Load ; sw:path <tutorial/workflowhal.ttl>  ; sw:name st:context ]
+        [ a sw:Load ; sw:path <tutorial/workflowhalpublic.ttl>  ; sw:name st:context ]
         st:indexQuery ) ]
         
       [ a sw:Workflow ; sw:name st:geo ; sw:body ( 

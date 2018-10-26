@@ -50,6 +50,7 @@ public class Param {
     private String uri;
     private String mode;
     private String param;
+    private String arg;
     private String format;
     private String name;
     private String query;
@@ -111,8 +112,11 @@ public class Param {
         if (getMode() != null) {
             ctx.setMode(ns(getMode()));
         }
-         if (getParam()!= null) {
+        if (getParam()!= null) {
             ctx.setParam(getParam());
+        }
+        if (getArg()!= null) {
+            ctx.set(Context.STL_ARG, getArg());
         }
         if (getFormat()!= null) {
             ctx.setFormat(ns(getFormat()));
@@ -366,6 +370,20 @@ public class Param {
      */
     public void setParam(String param) {
         this.param = param;
+    }
+    
+      /**
+     * @return the param
+     */
+    public String getArg() {
+        return arg;
+    }
+
+    /**
+     * @param param the param to set
+     */
+    public void setArg(String param) {
+        this.arg = param;
     }
 
     /**

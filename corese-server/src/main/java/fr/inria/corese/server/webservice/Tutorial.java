@@ -64,7 +64,8 @@ public class Tutorial {
             @FormParam("uri")       String resource, 
             @FormParam("mode")      String mode, 
             @FormParam("param")     String param, 
-            @FormParam("format")     String format, 
+            @FormParam("arg")       String arg,
+            @FormParam("format")    String format, 
             @FormParam("query")     String query, // SPARQL query
             @FormParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormParam("value")     String value, // values clause that may complement query           
@@ -76,7 +77,7 @@ public class Tutorial {
     		logger.info("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     @POST
@@ -89,7 +90,8 @@ public class Tutorial {
             @FormDataParam("uri")       String resource, // query + transform
             @FormDataParam("mode")      String mode,
             @FormDataParam("param")     String param,
-            @FormDataParam("format")     String format,
+            @FormDataParam("arg")       String arg,
+            @FormDataParam("format")    String format,
             @FormDataParam("query")     String query, // SPARQL query
             @FormDataParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value")     String value, // values clause that may complement query
@@ -99,9 +101,9 @@ public class Tutorial {
 
     	//if (logger.isDebugEnabled())
     		logger.info("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
-    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", param: " + param + ", arg: " + arg + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(request, serv, profile, resource, mode, param, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
+        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
 
     @GET
@@ -113,7 +115,8 @@ public class Tutorial {
             @QueryParam("uri")      String resource, // URI of resource focus
             @QueryParam("mode")     String mode, 
             @QueryParam("param")    String param, 
-            @QueryParam("format")    String format, 
+            @QueryParam("arg")      String arg,
+            @QueryParam("format")   String format, 
             @QueryParam("query")    String query, // SPARQL query
             @QueryParam("name")     String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value")    String value, // values clause that may complement query           
@@ -123,7 +126,7 @@ public class Tutorial {
     	
     	if (logger.isDebugEnabled())
     		logger.debug("GET. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
-    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", param: " + param + ", arg: " + arg +", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
 
     	// Dataset URI of the service
@@ -133,6 +136,7 @@ public class Tutorial {
         par.setServer(uri);
         par.setMode(mode);
         par.setParam(param);
+        par.setArg(arg);
         par.setFormat(format);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);

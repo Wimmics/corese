@@ -73,7 +73,7 @@ public class Manager {
                 try {
                     initTripleStore(p, s);
                 } catch (LoadException ex) {
-                    LogManager.getLogger(Tutorial.class.getName()).log(Level.ERROR, "", ex);
+                    LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
                 } catch (EngineException ex) {
                     LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
                 }
@@ -261,7 +261,7 @@ public class Manager {
             exec.query(init);
             exec.query(init2);
         } catch (EngineException ex) {
-            LogManager.getLogger(Tutorial.class.getName()).log(Level.ERROR, "", ex);
+            LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 

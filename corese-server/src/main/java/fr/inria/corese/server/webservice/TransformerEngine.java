@@ -67,7 +67,7 @@ public class TransformerEngine {
      */
     public Data process() throws EngineException, LoadException {
         Dataset ds = createDataset(param.getFrom(), param.getNamed());
-        SemanticWorkflow sw = workflow(getContext(), ds, profile, param.getQuery());
+        SemanticWorkflow sw = workflow(getContext(), ds, profile);
         //sw.setDebug(isDebug());
         if (isDebug()) {
             logger.info("Run workflow");
@@ -84,24 +84,38 @@ public class TransformerEngine {
      * specification, i.e no st:workflow [ ] create a Workflow with
      * query/transform.
      */
-    SemanticWorkflow workflow(Context context, Dataset dataset, Graph profile, String query) throws LoadException {
+    SemanticWorkflow workflow(Context context, Dataset dataset, Graph profile) throws LoadException {
         SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
         wp.setLog(true);
-        IDatatype swdt = context.get(Context.STL_WORKFLOW);
-        String transform = context.getTransform();
-//        if (query != null) {
-//            query = tune(context, query);
-//        }
+        IDatatype swdt    = context.get(Context.STL_WORKFLOW);
+        IDatatype querydt = context.get(Context.STL_QUERY);
+        IDatatype uridt   = context.get(Context.STL_URI);
+        String query      = (querydt == null) ? null : querydt.stringValue();
+        String transform  = context.getTransform();
+        
         if (swdt != null) {
             // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.parse(profile.getNode(swdt));
+            
             if (query != null) {
                 logger.warn("Workflow query: " + query);
                 wp.addQuery(query, 0);
+            }
+            else if (uridt != null 
+                    && (context.hasValue(Context.STL_MODE) || context.hasValue(Context.STL_PARAM))) {
+                // URI of query in context graph (use case: tutorial)
+                // with query parameter mode/param (this means we want to execute the query)
+                IDatatype qdt = wp.getContextParamValue(uridt, Context.STL_QUERY);
+                if (qdt != null) {
+                    logger.warn("Workflow query: " + qdt.stringValue());
+                    System.out.println(getContext());
+                    context.set(Context.STL_QUERY, qdt);
+                    wp.addQuery(qdt.stringValue(), 0);
+                }
             }
         } else if (query != null) {          
             if (transform == null) {
@@ -118,21 +132,7 @@ public class TransformerEngine {
         defaultTransform(wp, transform);
         return wp;
     }
-    
-    /**
-     * if query contains $param, e.g. filter ($param)
-     * and there is st:get(st:param)
-     * replace $param by st:get(st:param)
-     */
-    String tune(Context context, String query) {
-        if (context.get(Context.STL_PARAM) != null && query.contains(PARAM)) {
-            query = query.replace(PARAM, context.get(Context.STL_PARAM).stringValue()) ;
-        }
-        if (context.get(Context.STL_MODE) != null && query.contains(MODE)) {
-            query = query.replace(MODE, String.format("<%s>", context.get(Context.STL_MODE).stringValue())) ;
-        }
-        return query;
-    }
+      
 
     /**
      * If transform = null and workflow does not end with transform: use

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Oct 12 08:57:27 CEST 2018
+Fri Oct 26 15:33:24 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,6 +46,30 @@ where {
 <body>
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:title {
+
+  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
+  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
+  if (bound(?param) || bound(?mode), 
+    st:format("<h3>%s %s %s</h3>", coalesce(str(?param), ""), coalesce(str(?arg), ""), coalesce(str(?mode), "")), 
+    "")
+
+} 
+where {
+    bind (st:get(st:title) as ?title)
+    bind (st:get(st:get(st:uriparam)) as ?uri)
+    bind (st:get(st:param) as ?param)
+    bind (st:get(st:mode)  as ?mode)
+    bind (st:get(st:arg)   as ?arg)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:start {
   format {
       ft:graph.html
@@ -64,8 +88,7 @@ where {
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:frame(?pretty) {
 
-  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
-  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
+  st:call-template(st:title)
 
   format {
       ft:frame.html
@@ -76,8 +99,6 @@ template st:frame(?pretty) {
 where {
     bind (if (bound(?pretty), us:declare(?pretty), true) as ?tmp)
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind (st:get(st:title) as ?title)
-    bind (st:get(st:get(st:uriparam)) as ?uri)
 }
 ]]>
 </body>
@@ -111,7 +132,8 @@ where {
 function us:uri(?s) {
     coalesce(
         st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', coalesce(st:cget(st:url, ?s), ?s))
+        st:format(',  "url": "%s"', st:cget(st:url, ?s)),
+        st:format(',  "url": "%s"', ?s)
     )
 }
 ]]>

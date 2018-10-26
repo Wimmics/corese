@@ -1,0 +1,635 @@
+#
+# Query definitions for a Workflow with st:web transformation
+# To be used with /tutorial/tutohal
+# This graph is stored in named graph st:context
+# It is available in query and transformation with bind (st:get(st:context) as ?g)
+#
+# Olivier Corby - Wimmics Inria I3S - 2018
+#
+
+@prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix dbo: <http://fr.dbpedia.org/ontology/>
+# where to find preprocess function fun:country 
+@prefix fun: <process.rq/>
+
+
+#
+# To build selector in GUI, used by transformation st:web
+#
+st:altLabel
+    st:name "param" ; 
+    st:uri st:param ;
+    st:value ("CRISAM" "I3S" "UCA" "JAD" "INRA" "ITER" "IPMC")
+.  
+
+st:prefLabel
+    st:name "param" ; 
+    st:uri st:param ;
+    st:value (
+    "Inria Sophia Antipolis - Méditerranée "
+    "Inria Grenoble - Rhône-Alpes" 
+    "Inria Bordeaux - Sud-Ouest"
+    "Inria Saclay - Ile de France"
+    "Inria Lille - Nord Europe"
+    "Inria Nancy - Grand Est"
+    "Inria Paris-Rocquencourt"
+    "Inria Rennes – Bretagne Atlantique "
+    "Institut National de Recherche en Informatique et en Automatique"
+    
+    "Laboratoire d'Informatique, Signaux, et Systèmes de Sophia Antipolis" 
+    "Université Côte d'Azur"
+    "Laboratoire Jean Alexandre Dieudonné" 
+    "Institut National de la Recherche Agronomique" 
+    "ITER Organisation"  
+    "Institut de pharmacologie moléculaire et cellulaire"
+    )
+.  
+
+
+st:continentList
+    st:name "mode" ; 
+    st:uri st:mode ;
+    st:value (
+        db:Afrique db:Afrique_du_Nord db:Afrique_continentale 
+        db:Amérique db:Amérique_du_Nord db:Amérique_centrale db:Amérique_du_Sud 
+        db:Asie db:Asie_centrale db:Europe db:Europe_Est db:Moyen-Orient 
+        db:All
+    )
+.
+
+st:topicList 
+    st:name "arg" ;
+    st:uri st:arg ;
+    st:value (
+        "Artificial Intelligence"
+        "Language"
+        "Programming Language"
+        "Semantic Web"
+        "Social Network"
+        "Software"
+        "Web"
+    )
+.
+  
+st:yearList 
+    st:name "arg" ;
+    st:uri  st:arg ;
+    st:value ("2010" "2011" "2012" "2013" "2014" "2015" "2016" "2017" "2018")  
+.
+
+  
+#
+# List of Query
+#
+us:hal a sw:Workflow ;
+sw:display true;
+sw:debug true;
+sw:collect true;
+sw:body (
+    st:into
+    st:topic
+    st:conference
+    st:unitof
+    st:coauthorlab
+    st:coauthorteamlab
+    st:coauthorcontinent
+    st:coauthorcountry
+    st:continent
+)
+.
+
+
+
+st:into a sw:Query ;
+    st:name st:intro ;
+    rdfs:label "Introduction" ;
+
+    rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+    'Submit' soumet la requête SPARQL au serveur. """@fr ;
+
+    rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server."""@en ;
+
+    st:query ""
+.
+
+
+
+
+
+st:topic a sw:Query ;
+st:name st:topic ;
+rdfs:label "Topic" ;
+rdfs:comment "Topic."@fr ;
+rdfs:comment """Members of lab linked by topics. To obtain more results: org:unitOf*.
+You can change the keyword in regex()."""@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+
+@event
+construct {
+    ?name us:interestedIn ?topic 
+    ?x skos:altLabel ?name
+}
+where {
+
+    service <https://data.archives-ouvertes.fr/sparql> {
+        select distinct ?topic ?name ?x where {
+            ?sam skos:altLabel "$param"
+            ?x org:unitOf ?sam ; skos:altLabel ?name
+
+            ?s hsc:structure ?x .
+            ?s hsc:person ?p .
+            ?p foaf:name ?n
+
+            ?doc1 dc:creator ?s
+            ?doc1 de:subject ?topic 
+            filter regex(?topic, "$arg", "i")
+        }
+    }
+
+} 
+
+@result
+function us:result(?map, ?m) {
+    let ((?topic ?name) = ?m) {
+        st:setclass(?topic, "main", "topic") ;
+        st:setclass(?name,  "other", "team")
+    }
+}
+""" 
+;
+st:select st:altLabel, st:topicList
+.
+
+
+
+
+st:conference a sw:Query ;
+st:name st:conference ;
+rdfs:label "Conference Topic" ;
+rdfs:comment "Conference Topic."@fr ;
+rdfs:comment """Members of Lab publishing in AI conference. To obtain more results: org:unitOf*.
+You can change the keyword in regex()."""@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+
+construct {
+    ?name us:source ?source
+    ?x skos:altLabel ?name
+}
+where {
+service <https://data.archives-ouvertes.fr/sparql> {
+        select distinct ?x ?name ?source where {
+            ?sam skos:altLabel "$param"
+            ?x org:unitOf ?sam ; skos:altLabel ?name
+
+            ?s hsc:structure ?x .
+            ?s hsc:person ?p .
+            ?p foaf:name ?n
+
+            ?doc1 dc:creator ?s
+            ?doc1 dc:source ?source 
+            filter regex(?source, "$arg", "i")
+        }
+}
+
+    bind (us:style(?source, ?name)  as ?a)   
+}
+
+function us:style(?source, ?name) {
+    st:setclass(?source, "main", "title") ;
+    st:setclass(?name, "other", "team")
+}
+"""  ;
+st:select st:altLabel, st:topicList
+.
+
+
+
+
+
+
+
+st:unitof a sw:Query ;
+st:name st:unitof ;
+rdfs:label "Unit of Lab" ;
+rdfs:comment "Unit of Lab."@fr ;
+rdfs:comment "Unit of Lab. To obtain more results: org:unitOf*."@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+
+@federate <https://data.archives-ouvertes.fr/sparql>
+construct {
+    ?x skos:altLabel ?name
+    ?x org:unitOf ?lab
+}
+where {
+    ?sam skos:altLabel "$param" , ?lab
+    ?x org:unitOf ?sam ; skos:altLabel ?name
+}
+
+""" ;
+st:select st:altLabel
+.
+
+
+
+
+
+
+
+
+st:coauthorlab a sw:Query ;
+st:name st:coauthorlab ;
+rdfs:label "Coauthor with other Lab" ;
+rdfs:comment "Coauthor with other Lab."@fr ;
+rdfs:comment "Coauthor with other Lab. To obtain more results: org:unitOf*"@en ;
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+
+construct {
+    ?name  dc:coauthor ?ll
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+
+    select distinct ?name ?ll where {
+        ?sam skos:prefLabel "$param"
+        ?x org:unitOf ?sam ; skos:altLabel ?name
+        ?s hsc:structure ?x .
+        
+        ?doc dc:creator ?s .
+        ?doc dc:creator ?s2 .    
+        filter (?s != ?s2)
+        ?doc dc:issued ?date 
+        filter (?date >= "$arg-01-01"^^xsd:date && ?date <= "$arg-12-31"^^xsd:date)
+    
+        ?s2 hsc:structure ?y 
+        filter (?x != ?y)
+        filter not exists { ?y org:unitOf ?sam }
+        ?y skos:altLabel ?ll 
+        #filter regex(?ll, "I3S")
+    } 
+    limit 2500
+}
+
+    bind(us:style(?name, ?ll) as ?a)
+}
+
+function us:style(?name, ?ll) {
+    st:setclass(?name, "other", "local");
+    st:setclass(?ll,   "main",  "lab")
+}
+""" ;
+
+st:select st:prefLabel, st:yearList
+
+.
+
+
+
+
+st:coauthorteamlab a sw:Query ;
+st:name st:coauthorteamlab ;
+rdfs:label   "Coauthor with other team of same Lab" ;
+rdfs:comment "Coauthor with other team of same Lab."@fr ;
+rdfs:comment "Coauthor with other team of same Lab"@en ;
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+
+construct {
+    ?x skos:altLabel ?name
+    ?y skos:altLabel ?ll
+    ?x dc:coauthor ?y
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+
+     select distinct ?x ?y ?name ?ll where {
+        ?sam skos:prefLabel "$param"        
+        ?doc dc:issued ?date 
+        filter (?date >= "$arg-01-01"^^xsd:date && ?date <= "$arg-12-31"^^xsd:date)        
+        ?doc dc:creator ?s .
+        ?s hsc:structure ?x .
+        ?x org:unitOf+ ?sam         
+        
+        ?doc dc:creator ?s2 .    
+        filter (?s < ?s2)
+    
+        ?s2 hsc:structure ?y 
+        filter (?x != ?y)
+        ?y org:unitOf+ ?sam         
+        
+        ?x skos:altLabel ?name
+        ?y skos:altLabel ?ll 
+    } 
+    limit 4000
+}
+
+    bind(us:style(?name, ?ll) as ?a)
+}
+
+function us:style(?name, ?ll) {
+    st:setclass(?name, "other", "team");
+    st:setclass(?ll,   "other", "team")
+}
+""" ;
+
+st:select st:prefLabel, st:yearList 
+
+.
+
+
+
+
+st:continent a sw:Query ;
+st:name st:continent ;
+rdfs:label "Continent" ;
+rdfs:comment "Continent."@fr ;
+rdfs:comment "Continent"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@event
+construct {
+    ?continent dbo:include ?country 
+    ?country   dbo:capital ?city
+}
+where {
+
+bind (st:get(st:mode) as ?continent)
+graph st:geo { ?continent dbo:include ?country } 
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?country rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?country geo:lat ?lat ; geo:long ?lon }
+        optional { ?country o:thumbnail ?img  }
+        optional { ?country o:capital ?city . ?city o:thumbnail ?icon } 
+    } 
+}
+
+    bind (st:setclass(?country, "main", "country") as ?a)
+    bind (st:setclass(?city, "other", "city")   as ?b)
+    bind (st:setimg(?country, ?img)             as ?c)
+    bind (st:setimg(?city, ?icon)               as ?d)
+}
+
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+    st:location(?map)
+}
+""" ;
+
+st:select st:continentList
+.
+
+
+
+
+
+st:coauthorcontinent a sw:Query ;
+st:name st:coauthorcontinent ;
+rdfs:label "Coauthor with  continent" ;
+rdfs:comment "Coauthor with countries of continent."@fr ;
+rdfs:comment "Coauthor with countries of continent"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@event 
+construct {
+    ?n us:cooperate ?name   
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+
+    select distinct ?n ?country where {
+        ?sam skos:prefLabel "$param"
+        ?x org:unitOf* ?sam ; skos:altLabel ?n
+        ?s hsc:structure ?x .
+        
+        ?doc dc:creator ?s .
+        ?doc dc:creator ?s2 .  
+        ?doc dc:issued ?date 
+        # filter (?date >= "2015-01-01"^^xsd:date)
+        filter (?s != ?s2)
+    
+        ?s2 hsc:structure ?y 
+        ?y vs:country-name ?country  
+        filter (?country != db:France)
+    }
+}
+
+bind (if (contains(?country, " "), uri(replace(?country, " ", "_")), ?country) 
+as ?cc)   
+
+graph st:geo { $mode dbo:include ?cc } 
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?cc rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?cc geo:lat ?lat ; geo:long ?lon }
+        optional { ?cc o:thumbnail ?img }
+    } 
+}
+
+    bind (us:style(?name, ?n) as ?a)
+    bind (st:setimg(?name, ?img) as ?b)
+}
+
+function us:style(?name, ?n) {
+    st:setclass(?name, "main", "country");
+    st:setclass(?n, "other", "team")
+}
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+       st:location(?map)
+}
+""" ;
+
+st:select st:continentList , st:prefLabel
+.
+
+
+
+
+#
+# This query have specific processing
+# $pattern is replaced by ?country or $mode, ?country
+# depending whether st:mode value is in st:patternvalue (cf profile.ttl)
+# Concretely, whether it have space in URI or not within HAL
+#
+
+st:coauthorcountry a sw:Query ;
+st:name st:coauthorcountry ;
+rdfs:label "Coauthor with  coutry" ;
+rdfs:comment "Coauthor with country."@fr ;
+rdfs:comment "Coauthor with country"@en ;
+
+st:query 
+"""prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix org: <http://www.w3.org/ns/org#>
+prefix lab: <http://www.unice.fr/other/>
+prefix inr: <http://ns.inria.fr/sparql-extension/user/>
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@event 
+construct {
+    ?n us:cooperate ?name   
+}
+where {
+
+service <https://data.archives-ouvertes.fr/sparql> {
+
+    select distinct ?n ?country ?cc  where {
+        ?sam skos:prefLabel "$param"
+        ?x org:unitOf* ?sam ; skos:altLabel ?n
+        ?s hsc:structure ?x .
+        
+        ?doc dc:creator ?s .
+        ?doc dc:creator ?s2 .  
+        ?doc dc:issued ?date 
+        # filter (?date >= "2015-01-01"^^xsd:date)
+        filter (?s != ?s2)
+    
+        ?s2 hsc:structure ?y 
+        ?y vs:country-name $pattern   
+    }
+}
+
+service <http://fr.dbpedia.org/sparql> {
+    select * where {
+        ?country rdfs:label ?name 
+        filter langMatches(lang(?name), "en")
+        optional { ?country geo:lat ?lat ; geo:long ?lon }
+        optional { ?country o:thumbnail ?img }
+    } 
+}
+
+    bind (us:style(?name, ?n) as ?a)
+    bind (st:setimg(?name, ?img) as ?b)
+}
+
+function us:style(?name, ?n) {
+    st:setclass(?name, "main", "country");
+    st:setclass(?n, "other", "team")
+}
+
+#
+# Record country location in a list of (country lat lon)
+# List of location can be retrieved with st:get(st:location)
+#
+@after
+function us:after(?map) {
+       st:location(?map)
+} 
+""" ;
+
+# name of function to preprocess the query : replace $pattern by appropriate code
+st:processquery fun:country ;
+
+st:select  st:prefLabel ;
+
+st:select [
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:geo ;
+    st:predicate dbo:member
+]
+
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

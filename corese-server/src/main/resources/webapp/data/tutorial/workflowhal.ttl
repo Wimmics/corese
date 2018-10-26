@@ -1022,7 +1022,7 @@ st:select [
 
 
 # where to find preprocess function fun:country for this query
-@prefix fun: <process/>
+@prefix fun: <process.rq/>
 
 #
 # This query have specific processing

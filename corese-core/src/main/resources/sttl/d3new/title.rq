@@ -1,0 +1,17 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:title {
+
+  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
+  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
+  if (bound(?param) || bound(?mode), 
+    st:format("<h3>%s %s %s</h3>", coalesce(str(?param), ""), coalesce(str(?arg), ""), coalesce(str(?mode), "")), 
+    "")
+
+} 
+where {
+    bind (st:get(st:title) as ?title)
+    bind (st:get(st:get(st:uriparam)) as ?uri)
+    bind (st:get(st:param) as ?param)
+    bind (st:get(st:mode)  as ?mode)
+    bind (st:get(st:arg)   as ?arg)
+}

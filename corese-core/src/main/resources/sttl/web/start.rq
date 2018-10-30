@@ -12,7 +12,9 @@ template st:start {
   st:call-template(st:selectform, ?uri)
   
   st:call-template(st:display, ?uri)
-   
+  
+  st:call-template(st:result)
+
   st:call-template(st:tail)
 
 }

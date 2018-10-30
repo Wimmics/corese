@@ -22,8 +22,6 @@ format {
      coalesce(?s, st:null),
      ?qt
      ) 
-     
-   st:call-template(st:result)
  }
       
 }

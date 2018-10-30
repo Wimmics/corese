@@ -12,7 +12,7 @@ public interface SPARQLEngine {
         
     Mappings eval(Query q, Mapping m, Producer p);
     
-    Query load(String path);
+    //Query load(String path);
     
     void getLinkedFunction(String uri);
     

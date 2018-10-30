@@ -34,6 +34,9 @@ public class Namespace extends TermEval {
 
         switch (oper()) {
             case ExprType.QNAME:
+                if (arity() == 2) {
+                    return uri(env, dt);
+                }
                 return qname(env, dt);
         }
 
@@ -56,6 +59,14 @@ public class Namespace extends TermEval {
             return dt;
         }
         return DatatypeMap.newInstance(qname);
+    }
+    
+    IDatatype uri(Environment env, IDatatype dt) {           
+        String uri = nsm(env).toNamespace(dt.getLabel());
+        if (uri.equals(dt.getLabel())) {
+            return dt;
+        }
+        return DatatypeMap.newResource(uri);
     }
 
    

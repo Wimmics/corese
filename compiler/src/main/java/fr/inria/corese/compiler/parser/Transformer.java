@@ -598,7 +598,7 @@ public class Transformer implements ExpType {
         }
         logger.info("Load Linked Function: " + label);
         loaded.put(path, path);
-        Query imp = sparql.load(path);
+        Query imp = sparql.parseQuery(path);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
             definePublic(imp.getExtension(), imp);

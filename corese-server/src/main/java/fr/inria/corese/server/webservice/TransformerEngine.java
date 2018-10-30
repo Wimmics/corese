@@ -99,24 +99,13 @@ public class TransformerEngine {
             // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
-            parser.parse(profile.getNode(swdt));
-            
+            parser.parse(profile.getNode(swdt));           
+            query = getQuery(wp, query);
             if (query != null) {
                 logger.warn("Workflow query: " + query);
                 wp.addQuery(query, 0);
             }
-            else if (uridt != null 
-                    && (context.hasValue(Context.STL_MODE) || context.hasValue(Context.STL_PARAM))) {
-                // URI of query in context graph (use case: tutorial)
-                // with query parameter mode/param (this means we want to execute the query)
-                IDatatype qdt = wp.getContextParamValue(uridt, Context.STL_QUERY);
-                if (qdt != null) {
-                    logger.warn("Workflow query: " + qdt.stringValue());
-                    System.out.println(getContext());
-                    context.set(Context.STL_QUERY, qdt);
-                    wp.addQuery(qdt.stringValue(), 0);
-                }
-            }
+            
         } else if (query != null) {          
             if (transform == null) {
                 logger.info("SPARQL endpoint");
@@ -131,6 +120,30 @@ public class TransformerEngine {
         }
         defaultTransform(wp, transform);
         return wp;
+    }
+    
+    String getQuery(SemanticWorkflow wp, String query) {
+        if (query == null) {
+            return getQuery(wp);
+        }
+        return query;
+    }
+   
+    /**
+     * Try to retrieve query from context graph using uri
+     */
+    String getQuery(SemanticWorkflow wp) {
+        if (context.hasValue(Context.STL_URI)
+                && (context.hasValue(Context.STL_MODE) || context.hasValue(Context.STL_PARAM))) {
+            // URI of query in context graph (use case: tutorial)
+            // with query parameter mode/param (this means we want to execute the query)
+            IDatatype qdt = wp.getContextParamValue(context.get(Context.STL_URI), Context.STL_QUERY);
+            if (qdt != null) {
+                context.set(Context.STL_QUERY, qdt);
+                return qdt.stringValue();
+            }
+        }
+        return null;
     }
       
 

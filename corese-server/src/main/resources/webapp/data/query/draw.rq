@@ -1,0 +1,82 @@
+#
+# Service as a function
+#
+# http://localhost:8080/srv/tutorial/funcall?uri=http://localhost:8080/data/query/draw.rq/draw&param=("Artificial Intelligence")
+#
+prefix fun: <>
+prefix skos:<http://www.w3.org/2004/02/skos/core#>
+prefix org: <http://www.w3.org/ns/org#>
+prefix hsc: <http://data.archives-ouvertes.fr/schema/>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
+
+@public {
+
+function fun:draw(?text) {
+    xt:print('funcall draw:', ?text) ;
+    let (?g = us:graph(?text)) {
+       us:display(?g)          
+    }
+}
+
+function us:display(?g) {
+  reduce(rq:concat, 
+        maplist(st:apply-templates-with-graph, 
+            xt:list(d3:frame, st:hturtle), 
+            xt:list(?g)))  
+}
+
+
+function fun:drawlist(?text, ?date) {
+    xt:print('funcall drawlist:', ?text, ?date) ;
+    let (?glist = maplist(us:graph, ?text, xt:list(?date))) {
+         reduce(rq:concat, maplist(us:display, ?glist))
+    }
+}
+
+
+function us:graph(?text) {
+xt:print('HAL query draw:', ?text) ;
+let (?g = 
+    construct {
+        ?name us:interestedIn ?topic 
+        ?x skos:altLabel ?name
+    }
+    where {
+        service <https://data.archives-ouvertes.fr/sparql> {
+            select distinct ?text ?date ?topic ?name ?x where {
+                values (?text) { (UNDEF ) }
+                ?sam skos:altLabel "CRISAM"
+                ?x org:unitOf ?sam ; skos:altLabel ?name
+
+                ?s hsc:structure ?x .
+                ?s hsc:person ?p .
+                ?p foaf:name ?n
+
+                ?doc dc:creator ?s
+                ?doc de:subject ?topic 
+                ?doc dc:issued ?dd 
+                #filter (year(?dd) = ?date)
+                filter regex(?topic, ?text, "i")
+            }
+        }
+        bind (us:result(?topic, ?name) as ?tmp)
+    } )
+    {
+        xt:print("graph size:", xt:size(?g)) ;
+        return (?g)
+    }
+}
+
+
+function us:result(?topic, ?name) {
+    st:setclass(?topic, "main", "topic") ;
+    st:setclass(?name,  "other", "team")
+}
+
+
+
+}
+
+

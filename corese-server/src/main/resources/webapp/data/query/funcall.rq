@@ -1,0 +1,94 @@
+#
+# Implement funcall(name, v1, .. vn) as a service
+# Server with Linked Function 
+# http://localhost:8080/srv/tutorial/funcall?uri=name&param=(v1 .. vn)
+#
+
+template {
+    str(?res)
+}
+where {
+    bind (us:process() as ?res)
+}
+
+
+function us:process() {
+    let (?name  = st:get(st:uri), 
+         ?param = st:get(st:param)) {
+         xt:print("funcall:", ?name, ?param) ;
+         apply(?name, us:parse(?param))
+         }
+}
+
+function us:test(?x) {
+     st:format("funcall: %s", ?x)
+}
+
+function us:test(?x, ?y) {
+     st:format("funcall: %s %s", ?x, ?y)
+}
+
+
+function us:parse(?text) {
+    if (strstarts(?text, "(" ), us:parseList(?text), 
+    if (strstarts(?text, "<"),  us:parseURI(?text),
+    if (strstarts(?text, '"'),  us:parseLiteral(?text),
+    if (contains(?text, ":"),   us:qname(?text),
+    us:parseLiteralSyntax(?text)))))
+}
+
+function us:parseList(?text) {
+    maplist(us:parse, us:split(us:removeoc(?text)))
+}
+
+function us:removeoc(?text) {
+    substr(?text, 2, strlen(?text) - 2)
+}
+
+function us:split(?text) {
+    if (contains(?text, ","),
+        xt:cons(strbefore(?text, ","), us:split(us:clean(strafter(?text, ",")))),
+        xt:list(us:clean(?text)))
+}
+
+function us:clean(?text) {
+    if (strstarts(?text, " "), strafter(?text, " "), ?text)
+}
+
+function us:parseURI(?text) {
+    uri(us:removeoc(?text))
+}
+
+function us:parseLiteral(?text) {
+    if (contains(?text, '"^^'), us:parseDatatype(?text),
+    if (contains(?text, '"@'),  us:parseLang(?text),
+    us:removeoc(?text)))
+}
+
+function us:parseDatatype(?text) {
+    let (?str = us:removeoc(strbefore(?text, "^^")), ?dt = strafter(?text, "^^")) {
+        strdt(?str, us:datatype(?dt))
+    }
+}
+
+function us:datatype(?dt) {
+    uri(concat(xsd:, strafter(?dt, "xsd:")))
+}
+
+function us:parseLang(?text) {
+    let (?str = us:removeoc(strbefore(?text, "@")), ?dt = strafter(?text, "@")) {
+        strlang(?str, ?dt)
+    }
+}
+
+function us:qname(?text) {
+    kg:qname(?text, true)
+}
+
+function us:parseLiteralSyntax(?text) {
+    if (contains(?text, "e"), coalesce(xsd:double(?text), xsd:boolean(?text)), 
+    if (contains(?text, "."), xsd:decimal(?text), 
+    coalesce(xsd:integer(?text), ?text)))
+}
+
+

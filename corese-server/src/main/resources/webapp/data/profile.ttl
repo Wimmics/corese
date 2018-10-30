@@ -868,7 +868,14 @@ st:demoContent a sw:Workflow ; sw:body (
 
 
 
-
+st:function a st:Server ;
+st:service "funcall" ;
+st:workflow [
+    a sw:Workflow ;
+    sw:body (
+        [ a sw:Transformation ; sw:uri <query/funcall.rq> ]
+    )
+]
 
 
 

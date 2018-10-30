@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Oct 18 21:08:54 CEST 2018
+Fri Oct 26 16:17:43 CEST 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -23,7 +23,9 @@ template st:start {
   st:call-template(st:selectform, ?uri)
   
   st:call-template(st:display, ?uri)
-   
+  
+  st:call-template(st:result)
+
   st:call-template(st:tail)
 
 }
@@ -293,6 +295,9 @@ where {
 <![CDATA[
 #
 # Generate param selector, ?n = query name  
+# Use a context graph for select values
+# context graph has a sw:name st:graphName in content workflow (see tutohal service in profile.ttl)
+# specify context graph with st:param [ st:export true ; st:contextlist(st:graphName) ]
 #
 prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:selectparam2(?n, ?select) {
@@ -325,13 +330,14 @@ where {
   union 
   {
     graph ?g { 
-        ?select st:graph ?gname ; st:predicate ?p 
+        ?select st:graph ?gname ; st:predicate ?p
+        # get graph object ?gg in context corresponding to graph name ?gname
         bind (st:get(?gname) as ?gg)
         filter bound(?gg)
     } 
        
     graph ?gg { 
-        select distinct ?p ?value where { ?x ?p ?value  } order by ?value }
+        select distinct ?p ?value where { ?x ?p ?value } order by ?value }
    }
 }
 ]]>
@@ -383,8 +389,6 @@ format {
      coalesce(?s, st:null),
      ?qt
      ) 
-     
-   st:call-template(st:result)
  }
       
 }

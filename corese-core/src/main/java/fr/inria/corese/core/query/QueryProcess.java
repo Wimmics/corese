@@ -502,7 +502,7 @@ public class QueryProcess extends QuerySolver {
     }
     
     @Override
-    public Query load(String path) {
+    public Query parseQuery(String path) {
         QueryLoad ql = QueryLoad.create();
         try {
             String pp =  (path.endsWith("/")) ? path.substring(0, path.length()-1) : path;

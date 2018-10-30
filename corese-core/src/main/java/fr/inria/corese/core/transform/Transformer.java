@@ -108,7 +108,6 @@ public class Transformer implements TransformProcessor {
     NSManager nsm;
     QueryProcess exec;
     private Mapping mapping;
-    Processor proc;
     private Dataset ds;
     Stack stack;
     static Table table;
@@ -176,7 +175,6 @@ public class Transformer implements TransformProcessor {
         stack = new Stack(this, true);
         EMPTY = DatatypeMap.newLiteral(NULL);
         tcount = new HashMap<Query, Integer>();
-        proc = Processor.create();
         loaded = new HashMap<>();
         imported = new HashMap<>();
         tmap = new TransformerMapping(qp.getGraph());

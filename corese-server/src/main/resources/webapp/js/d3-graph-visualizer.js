@@ -358,8 +358,15 @@ class D3GraphVisualizer {
             }))
             .force("charge", d3.forceManyBody())
             // .force("center", d3.forceCenter(width, height))
+            .force("center", d3.forceCenter(800, 500))
             .on("tick", graph.ticked);
-
+        var width = +graph.node().getBoundingClientRect().width;
+        var height = +graph.node().getBoundingClientRect().height;
+        visualizer.simulation
+            .force("link")
+            .links(results.links);
+        visualizer.simulation
+            .force("center", d3.forceCenter(width / 2, height / 2));
 
         var g = graph.append("g")
             .attr("class", "everything");
@@ -481,13 +488,13 @@ class D3GraphVisualizer {
         var displayNodeLabels = false;
 
         graph.updateConfiguration();
-        var width = +graph.node().getBBox().width;
-        var height = +graph.node().getBBox().height;
-        visualizer.simulation
-            .force("link")
-            .links(results.links);
-        visualizer.simulation
-            .force("center", d3.forceCenter(width / 2, height / 2));
+        // var width = +graph.node().getBBox().width;
+        // var height = +graph.node().getBBox().height;
+        // visualizer.simulation
+        //     .force("link")
+        //     .links(results.links);
+        // visualizer.simulation
+        //     .force("center", d3.forceCenter(width / 2, height / 2));
         var pathLabels = defs.selectAll("path")
             .data(results.links)
             .enter().append("path")

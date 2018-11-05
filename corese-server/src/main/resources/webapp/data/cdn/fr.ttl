@@ -254,7 +254,7 @@ r:Émile_Loubet a foaf:Person ;
   rdfs:label "Émile Loubet"@fr .    
   
 r:Armand_Fallières a foaf:Person ;
-  <http://cdn.fr/schema/date> "1906" ;
+  <http://cdn.fr/schema/date> 1906 ;
   rdfs:label "Armand Fallières"@fr .
 
   

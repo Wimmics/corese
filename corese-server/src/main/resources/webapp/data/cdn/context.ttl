@@ -509,10 +509,21 @@ r:Albert_Einstein a foaf:Person ;
   <http://cdn.fr/schema/date> 1879 ; 
   rdfs:comment "1879-1955" ;
   rdfs:label "Albert Einstein"@fr .
+  
+r:Relativité_restreinte cn:date 1905 ;
+rdfs:label "Relativité restreinte" .
+
+r:Relativité_générale cn:date 1915 ;
+rdfs:label "Relativité générale" .
+
+
 
 <http://fr.dbpedia.org/resource/Victor-Emmanuel_III_d'Italie> a foaf:Person ;
 cn:date 1900 ; rdfs:comment "Roi d'Italie";
 rdfs:label "Victor-Emmanuel III" .
+
+
+
 
 [] cn:date 1960 ;
 rdfs:label "100e anniversaire de l'annexion de Nice et de la Savoie" .

@@ -20,5 +20,5 @@ rdfs:comment "Nièce du roi de France Philippe VI, épouse Amédée VI" .
 r:Dédition_de_Nice_à_la_Savoie 
 cn:date 1388 ; 
 rdfs:label "Dédition de Nice" ;
-rdfs:comment "Nice, Puget-Théniers et Lantosque optent pour la souveraineté du comte de  Savoie (au détriment du comte de Provence)"  .
+rdfs:comment "Le comte de  Savoie annexe Nice, Puget-Théniers et Lantosque  au détriment du comte de Provence"  .
 

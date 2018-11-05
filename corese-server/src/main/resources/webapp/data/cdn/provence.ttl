@@ -231,7 +231,7 @@ rdfs:comment "Comte de Provence"
 r:Jean_Grimaldi_de_Bueil a foaf:Person ;
 cn:date 1388 ;
 rdfs:label "Jean Grimaldi de Beuil" ;
-rdfs:comment "Prépare, avec son frère Annibal, la dédition de Nice à la Savoie" .
+rdfs:comment "Négocie, avec son frère Annibal, la dédition de Nice à la Savoie" .
 
 
 <http://fr.dbpedia.org/resource/Louis_III_d'Anjou> a foaf:Person ;

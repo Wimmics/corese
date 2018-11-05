@@ -364,9 +364,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public InterpreterEval getComputerEval(Environment env, Producer p, Expr function) {
         Query q = getQuery(env, function);
-//        Interpreter in = new Interpreter(proxy);
-//        // original Producer, for cast purpose
-//        in.setProducer(producer);
         Eval currentEval = getEval(env);
         InterpreterEval eval = new InterpreterEval(p, this, currentEval.getMatcher());
         eval.setSPARQLEngine(currentEval.getSPARQLEngine());
@@ -441,7 +438,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 if (qq.isConstruct()) {
                     // let (?g =  construct where)
                     Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
-                    //return (IDatatype) producer.getValue(m.getGraph());
                     return DatatypeMap.createObject(m.getGraph());
                 }
                 if (qq.getService() != null) {

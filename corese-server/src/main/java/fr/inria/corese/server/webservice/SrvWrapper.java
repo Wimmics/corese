@@ -74,8 +74,11 @@ public class SrvWrapper {
 		} else if (path.equalsIgnoreCase("sdk")) {
 			rs = new SDK().sdk(query, name, value);
 		} else if (path.startsWith("tutorial")) {
-			rs = new Tutorial().get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
-		} else if (path.startsWith("process")) {
+			rs = new Tutorial().get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);		
+                } else if (path.startsWith("service")) {
+			rs = new ServiceOnline().get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+		}
+                else if (path.startsWith("process")) {
 			rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
 		} else {
 			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
@@ -116,6 +119,8 @@ public class SrvWrapper {
 			rs = new SDK().sdk(query, name, value);
 		} else if (path.startsWith("tutorial")) {
 			rs = new Tutorial().post(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+		} else if (path.startsWith("service")) {
+			rs = new ServiceOnline().post(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("process")) {
 			rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
 		} else {
@@ -157,6 +162,8 @@ public class SrvWrapper {
 			rs = new SDK().sdkPostMD(query, name, value);
 		} else if (path.startsWith("tutorial")) {
 			rs = new Tutorial().postMD(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+		} else if (path.startsWith("service")) {
+			rs = new ServiceOnline().postMD(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("process")) {
 			rs = new Processor().typecheckPost_MD(resource, "std", transform, query, getService(path));
 		} else {

@@ -30,13 +30,12 @@ import javax.servlet.http.HttpServletRequest;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-@Deprecated
-@Path("tutorial/{serv}")
-public class Tutorial {
+@Path("service/{serv}")
+public class ServiceOnline {
 
     private final Logger logger = LogManager.getLogger(this.getClass());
 
-    static final String SERVICE = "/tutorial/"; 
+    static final String SERVICE = "/service/"; 
     
     static {
         Manager.getManager().init();

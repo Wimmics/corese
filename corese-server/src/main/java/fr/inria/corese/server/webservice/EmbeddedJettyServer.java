@@ -285,7 +285,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				SPIN.class,
 				MultiPartFeature.class,
 				SDK.class,
-				Tutorial.class,
+				Tutorial.class,ServiceOnline.class,
 				Transformer.class,
 				Processor.class
 			);

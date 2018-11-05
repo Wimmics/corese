@@ -680,7 +680,7 @@ public class TestQuery1 {
         exec.query(i);
         Binding b = Binding.create().setVariable("?count", DatatypeMap.ZERO);
         Mappings map = exec.query(q, b);
-        assertEquals(22, b.getVariable("?count").intValue());
+        assertEquals(44, b.getVariable("?count").intValue());
     }
     
     

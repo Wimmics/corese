@@ -15,9 +15,34 @@ prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
 
 function fun:draw(?text) {
     xt:print('funcall draw:', ?text) ;
-    let (?g = us:graph(?text)) {
-       us:display(?g)          
+    let (?ctx = us:createContext(), 
+         ?g = us:graph(?text)) {
+         us:setClass(?ctx);   
+         us:display(?g)          
     }
+}
+
+function us:createContext() {
+    set (?context = xt:map());
+    xt:set(?context, st:class, xt:map());
+    xt:set(?context, st:group, xt:map());
+    return (?context)
+}
+
+function us:context() {
+    return (?context)
+}
+
+#
+# Public function us:graph is evaluated within the (virtual) query of this program
+# because it has a construct where inside
+# whereas fun:draw and us:display are evaluated within calling query (funcall.rq template query)
+# hence us:graph and us:display do not share the same context (it is a bug)
+# this is why we need to manage a specific context
+#
+function us:setClass(?context) {
+    map (lambda((?key, ?val)) { st:setclass(?key, ?val) }, xt:get(?context, st:class)) ;
+    map (lambda((?key, ?val)) { st:setgroup(?key, ?val) }, xt:get(?context, st:group)) 
 }
 
 function us:display(?g) {
@@ -37,13 +62,14 @@ function fun:drawlist(?text, ?date) {
 
 
 function us:graph(?text) {
-xt:print('HAL query draw:', ?text) ;
+xt:print('query draw:', ?text) ;
 let (?g = 
     construct {
         ?name us:interestedIn ?topic 
         ?x skos:altLabel ?name
     }
     where {
+        
         service <https://data.archives-ouvertes.fr/sparql> {
             select distinct ?text ?date ?topic ?name ?x where {
                 values (?text) { (UNDEF ) }
@@ -69,12 +95,12 @@ let (?g =
     }
 }
 
-
 function us:result(?topic, ?name) {
-    st:setclass(?topic, "main", "topic") ;
-    st:setclass(?name,  "other", "team")
+    xt:set(xt:get(us:context(), st:class), ?topic, "main") ;
+    xt:set(xt:get(us:context(), st:class), ?name,  "other") ;
+    xt:set(xt:get(us:context(), st:group), ?topic, "topic") ;
+    xt:set(xt:get(us:context(), st:group), ?name,  "team")
 }
-
 
 
 }

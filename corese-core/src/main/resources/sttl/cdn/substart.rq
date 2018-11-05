@@ -7,7 +7,7 @@ template st:substart(?cent) {
    
    st:call-template(cn:content, ?cent) 
    
-   st:call-template-with(st:d3, st:frame, us:dbclean)  
+  # st:call-template-with(st:d3, st:frame, us:dbclean)  
 
    st:call-template(cn:sign, cn:sign)
    

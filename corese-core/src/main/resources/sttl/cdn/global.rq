@@ -1,0 +1,27 @@
+#
+# Timeline SPARQL Template - Olivier Corby - 2018
+#
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:global {
+
+  st:call-template(cn:head, cn:XX, "XX")
+
+  us:table(aggregate(?cell), 10)
+
+}
+where {
+
+    {select * where {
+        graph ?g { [] cn:topic ?topic . 
+            { ?uri cn:date ?date } union { ?uri cn:begin ?date }
+        }
+    }
+    order by ?date ?topic
+    }
+    filter xt:print(?uri, ?date)
+    bind (st:apply-templates(?uri) as ?cell)
+
+}
+

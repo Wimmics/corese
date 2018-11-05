@@ -20,6 +20,7 @@ format {
   if (bound(?after), 
     st:format(ft:after.html, st:plink(?after)), 
     "")  
+    
 }
 
 st:call-template(cn:list)   

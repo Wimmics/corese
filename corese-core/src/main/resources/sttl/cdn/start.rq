@@ -6,9 +6,14 @@ prefix db: <http://fr.dbpedia.org/resource/>
 
 template st:start {
    
-   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
+   if (?uri = st:global, 
+    st:call-template(cn:global),
+    st:call-template(st:substart, ?uri))  
         
 }
 where {
+
+ bind (coalesce(st:get(st:uri), cn:XIV) as ?uri)
+
 }  
 

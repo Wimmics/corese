@@ -8,6 +8,8 @@ format {
   
   st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   
+  st:format("<td>&nbsp;</td><td><a href='%s'>%s</a></td>", st:plink(st:global), "Global")  
+
   group {
     format {
       ft:list.html

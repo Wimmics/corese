@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 11:53:29 CEST 2018
+Thu Nov 01 16:23:18 CET 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -86,10 +86,15 @@ prefix db: <http://fr.dbpedia.org/resource/>
 
 template st:start {
    
-   st:call-template(st:substart, (coalesce(st:get(st:uri), cn:XIV)))   
+   if (?uri = st:global, 
+    st:call-template(cn:global),
+    st:call-template(st:substart, ?uri))  
         
 }
 where {
+
+ bind (coalesce(st:get(st:uri), cn:XIV) as ?uri)
+
 }  
 
 ]]>
@@ -173,6 +178,8 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/dbedit/>
+
 template st:profile {
 
 }
@@ -182,18 +189,48 @@ function st:process(?x) {
     if (isLiteral(?x), xsd:string(?x), st:apply-templates(?x))
   }
     
-  function st:default(?x) { 
+function st:default(?x) { 
     xsd:string(?x)
-  }
+}
        
-  function st:misc(?name) { 
+function st:misc(?name) { 
     st:protocol(
       concat(st:get(st:service), "?name=", st:get(st:server), ?name, "&profile=st:sparql"))
       #"&transform=st:sparql%23core&profile=st:dbpedia"))
-  }
+}
   
 
-  
+#
+# Generation of HTML table  
+#
+function us:table(?list, ?size){
+ let (?table  = us:split(?list, ?size)) {
+     st:format(ft:table.html, 
+      let (?n = 0){
+	    loop (?row in ?table){
+	      st:format(ft:tr.html, 
+	        set(?n = ?n + 1), 
+	        loop (?cell in ?row){
+		      st:format(ft:td.html, ?cell)
+	        } )
+	    }
+	  }
+     )
+  }
+} 
+
+function us:split(?list, ?n) {
+  let (?table = xt:list()) {
+    xt:add(?table, xt:list());
+    for (?e in ?list) {
+      if (xt:size(xt:first(?table)) = ?n) {
+        xt:add(?table, 0, xt:list())
+      } ;
+      xt:add(xt:first(?table), ?e)
+    } ;
+    return (xt:reverse(?table))
+  } 
+}
 ]]>
 </body>
 </rule>
@@ -262,6 +299,40 @@ values ?i {
 
 
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2018
+#
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:global {
+
+  st:call-template(cn:head, cn:XX, "XX")
+
+  us:table(aggregate(?cell), 10)
+
+}
+where {
+
+    {select * where {
+        graph ?g { [] cn:topic ?topic . 
+            { ?uri cn:date ?date } union { ?uri cn:begin ?date }
+        }
+    }
+    order by ?date ?topic
+    }
+    filter xt:print(?uri)
+    bind (st:apply-templates(?uri) as ?cell)
+
+}
+
 ]]>
 </body>
 </rule>
@@ -355,7 +426,7 @@ template st:substart(?cent) {
    
    st:call-template(cn:content, ?cent) 
    
-   st:call-template-with(st:d3, st:frame, us:dbclean)  
+  # st:call-template-with(st:d3, st:frame, us:dbclean)  
 
    st:call-template(cn:sign, cn:sign)
    
@@ -443,6 +514,7 @@ format {
   if (bound(?after), 
     st:format(ft:after.html, st:plink(?after)), 
     "")  
+    
 }
 
 st:call-template(cn:list)   
@@ -611,7 +683,7 @@ format {
     
     str(?title)
     ?title
-    st:call-template(cn:icon, cn:icon)
+    "" #st:call-template(cn:icon, cn:icon)
     st:call-template(cn:index,  ?title)
     }
 }
@@ -634,6 +706,8 @@ format {
   
   st:plink(<http://fr.dbpedia.org/resource/Nice>, st:dbpedia)
   
+  st:format("<td>&nbsp;</td><td><a href='%s'>%s</a></td>", st:plink(st:global), "Global")  
+
   group {
     format {
       ft:list.html

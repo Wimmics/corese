@@ -9,6 +9,7 @@ class ConfGraphModal {
      */
     constructor(id, root, graph, data) {
         this.id = id;
+        this.prefix = `${graph.attr("id")}-`;
         this.nodeGroups = this.computeGroups(data.nodes);
         this.edgeGroups = this.computeGroups(data.edges);
         this.domNode = root.append("div")
@@ -32,12 +33,12 @@ class ConfGraphModal {
                             if (d3.event.ctrlKey) {
                                 if (numGroup < that.edgeGroups.size) {
                                     const groupToSwitch = Array.from(that.edgeGroups)[numGroup];
-                                    that.getGroupCheckbox("edges", groupToSwitch).property("checked", !that.getGroupCheckbox("edges", groupToSwitch).property("checked"));
+                                    that.getGroupCheckbox('edges', groupToSwitch).property("checked", !that.getGroupCheckbox('edges', groupToSwitch).property("checked"));
                                 }
                             } else {
                                 if (numGroup < that.nodeGroups.size) {
                                     const groupToSwitch = Array.from(that.nodeGroups)[numGroup];
-                                    that.getGroupCheckbox("nodes", groupToSwitch).property("checked", !that.getGroupCheckbox("nodes", groupToSwitch).property("checked"));
+                                    that.getGroupCheckbox('nodes', groupToSwitch).property("checked", !that.getGroupCheckbox('nodes', groupToSwitch).property("checked"));
                                 }
                             }
                             graph.updateConfiguration();
@@ -56,12 +57,12 @@ class ConfGraphModal {
                     }
                 }(this)
             );
-        this.nodesCheckbox = d3.select("#nodesCheckbox");
-        this.edgesCheckbox = d3.select("#edgesCheckbox");
-        this.closeButton = d3.select("#configurationGraphCloseButton");
+        this.nodesCheckbox = d3.select(`#${this.prefix}nodesCheckbox`);
+        this.edgesCheckbox = d3.select(`#${this.prefix}edgesCheckbox`);
+        this.closeButton = d3.select(`#${this.prefix}configurationGraphCloseButton`);
 
-        this.setHierarchicalCheckboxesHandler("nodes", this.nodesCheckbox, this.nodeGroups, graph);
-        this.setHierarchicalCheckboxesHandler("edges", this.edgesCheckbox, this.edgeGroups, graph);
+        this.setHierarchicalCheckboxesHandler('nodes', this.nodesCheckbox, this.nodeGroups, graph);
+        this.setHierarchicalCheckboxesHandler('edges', this.edgesCheckbox, this.edgeGroups, graph);
 
         this.closeButton
             .on("click", e => {
@@ -140,22 +141,22 @@ class ConfGraphModal {
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
             "<div class='modal-content' style='list-style:none;'>" +
-            "<label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
+            `<label><input id='${this.prefix}nodesCheckbox' type='checkbox'/>All Nodes Labels</label>` +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
             "</ul>" +
-            "<p><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+            `<p><label><input id='${this.prefix}edgesCheckbox' type='checkbox'/>Edges</label>` +
             "<ul>" +
             this.addGroups( "edges", edgeGroups ) +
             "</ul>" +
             "<br>" +
-            "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
+            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
             "</div>";
         return result;
     }
 
     getCheckboxName( groupName, group) {
-       return `${groupName}-${group}Checkbox`;
+       return `${this.prefix}${groupName}-${group}Checkbox`;
     }
 
     addGroups( groupName, groups ) {
@@ -175,9 +176,11 @@ class ConfGraphModal {
     }
 
     static createConfigurationPanel(rootConfPanel, graph, data) {
-        var result = d3.select("#configurationGraph");
+        var prefix = `${graph.attr("id")}-`;
+        var confPanelId = `${this.prefix}configurationGraph`;
+        var result = d3.select(`#${confPanelId}`);
         if (result.size() === 0) {
-            var confGraphModal = new ConfGraphModal("configurationGraph", rootConfPanel, graph, data);
+            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data);
             return confGraphModal;
         } else {
             return result;
@@ -257,6 +260,7 @@ export class D3GraphVisualizer {
         var visualizer = new D3GraphVisualizer();
         var confGraphModal;
         var graph = d3.select(svgId);
+
 
 
         // TODO : à corriger, il faut renvoyer true ssi au moins un group de noeuds est à afficher

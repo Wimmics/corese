@@ -2751,10 +2751,10 @@ public class Eval implements ExpType, Plugin {
         Memory env = memory;
         Mappings lMap;
         getVisitor().start(subQuery);
-        if (exp.getObject() != null && !isBound(subQuery, env) && gNode == null) {
-            // result is cached, can reuse it
-            lMap = (Mappings) exp.getObject();
-        } else 
+//        if (exp.getObject() != null && !isBound(subQuery, env) && gNode == null) {
+//            // result is cached, can reuse it
+//            lMap = (Mappings) exp.getObject();
+//        } else 
         {
             // copy current Eval,  new stack
             // bind sub query select nodes in new memory
@@ -2773,9 +2773,9 @@ public class Eval implements ExpType, Plugin {
             }
             
             lMap = ev.eval(subNode, subQuery, null);
-            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null && ! query.getGlobalQuery().isAlgebra()) {
-                exp.setObject(lMap);
-            }
+//            if (! subQuery.isFun() && !isBound(subQuery, env) && gNode == null && ! query.getGlobalQuery().isAlgebra()) {
+//                exp.setObject(lMap);
+//            }
         }
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
         getVisitor().finish(lMap);

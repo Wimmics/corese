@@ -457,13 +457,14 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 @event 
 construct {
+    ?x skos:altLabel ?n
     ?n us:cooperate ?name   
 }
 where {
 
 service <https://data.archives-ouvertes.fr/sparql> {
 
-    select distinct ?n ?country where {
+    select distinct ?x ?n ?country where {
         ?sam skos:prefLabel "$param"
         ?x org:unitOf* ?sam ; skos:altLabel ?n
         ?s hsc:structure ?x .
@@ -548,13 +549,14 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 @event 
 construct {
+    ?x skos:altLabel ?n
     ?n us:cooperate ?name   
 }
 where {
 
 service <https://data.archives-ouvertes.fr/sparql> {
 
-    select distinct ?n ?country ?cc  where {
+    select distinct ?x ?n ?country  where {
         ?sam skos:prefLabel "$param"
         ?x org:unitOf* ?sam ; skos:altLabel ?n
         ?s hsc:structure ?x .
@@ -566,7 +568,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
         filter (?s != ?s2)
     
         ?s2 hsc:structure ?y 
-        ?y vs:country-name $pattern   
+        # ?y vs:country-name dollarmode, ?country
+        $pattern   
     }
 }
 

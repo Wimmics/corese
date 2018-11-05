@@ -10,17 +10,21 @@
 # st:get(st:mode) is the DBpedia URI select by user
 #
 function fun:country(?q) {
-    let (?text =
+    xt:replace(?q, "$pattern", us:countryText())
+}
+
+function us:countryText() {
+let (?text =
 """
-?cc 
 bind ($mode as ?country) 
-filter (if (contains(str(?cc), " "), uri(replace(str(?cc), " ", "_")), ?cc) = $mode)
+bind (uri(replace(str(?country), "_", " ")) as ?cc)
+?y vs:country-name ?cc 
 """
     ) {    
     
-    if (xt:member(st:get(st:mode), st:get(st:patternvalue)),    
-        xt:replace(?q, "$pattern", ?text),
-        xt:replace(?q, "$pattern", "$mode, ?country"))
+    if (xt:member(st:get(st:mode), st:get(st:patternvalue)), 
+        ?text,
+        "?y vs:country-name $mode, ?country")
     }
 }
 

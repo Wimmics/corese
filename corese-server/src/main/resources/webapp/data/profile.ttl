@@ -572,7 +572,7 @@ st:tutorialhal a st:Server ;
         ("*" st:lod)
     ) 
   ] ;
-  st:service "tutohal" ;
+  st:service "halopendata" ;
   st:workflow st:halwf ;
   st:content st:tutohal
 .

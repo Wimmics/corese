@@ -21,15 +21,15 @@ class ConfGraphModal {
         this.edgeGroups = this.computeGroups(data.edges);
         this.domNode = root.append("div")
             .attr("id", this.id)
-            .attr("class", "modal")
+            .attr("class", "modal modal-sm")
             .html(
                 this.createLabelsLi(this.nodeGroups, this.edgeGroups)
             );
         d3.select("body")
             .on("keydown", function (that) {
                     return function () {
-                        var key = d3.event.key;
-                        var numGroup = -1.0;
+                        const key = d3.event.key;
+                        let numGroup = -1.0;
                         if (isFinite(key)) {
                             numGroup = parseInt(key) - 1;
                             // Changing for a more natural mapping: 1 -> first element,
@@ -37,12 +37,29 @@ class ConfGraphModal {
                             if (numGroup === -1) {
                                 numGroup = 10;
                             }
-                            if (numGroup < that.nodeGroups.size) {
-                                var groupToSwitch = Array.from(that.nodeGroups)[numGroup];
-                                that.getGroupCheckbox("nodes", groupToSwitch).property("checked", !that.getGroupCheckbox("nodes", groupToSwitch).property("checked"));
-                                graph.updateConfiguration();
-                                graph.ticked();
+                            if (d3.event.ctrlKey) {
+                                if (numGroup < that.edgeGroups.size) {
+                                    const groupToSwitch = Array.from(that.edgeGroups)[numGroup];
+                                    that.getGroupCheckbox("edges", groupToSwitch).property("checked", !that.getGroupCheckbox("edges", groupToSwitch).property("checked"));
+                                }
+                            } else {
+                                if (numGroup < that.nodeGroups.size) {
+                                    const groupToSwitch = Array.from(that.nodeGroups)[numGroup];
+                                    that.getGroupCheckbox("nodes", groupToSwitch).property("checked", !that.getGroupCheckbox("nodes", groupToSwitch).property("checked"));
+                                }
                             }
+                            graph.updateConfiguration();
+                            graph.ticked();
+                        } else if (key === "n") {
+                            if (d3.event.ctrlKey) {
+                                that.edgesCheckbox.check();
+                            } else {
+                                that.nodesCheckbox.check();
+                            }
+                            graph.updateConfiguration();
+                            graph.ticked();
+                        } else {
+                            console.log("key" + key);
                         }
                     }
                 }(this)
@@ -79,6 +96,14 @@ class ConfGraphModal {
                 }
             }(fatherCheckbox)
         );
+        fatherCheckbox.check = function() {
+            fatherCheckbox.property("checked", !fatherCheckbox.property("checked"));
+            groupCheckboxes.forEach(
+                checkbox => checkbox.property("checked", fatherCheckbox.property("checked"))
+            )
+            graph.updateConfiguration();
+            graph.ticked();
+        }
         // when one of subcheckboxes is checked, update if necessary the father checkbox :
         //   - if all subcheckboxes are unset, unset the father checkbox ;
         //   - if all subcheckboxes are set, set the father checkbox.
@@ -111,6 +136,9 @@ class ConfGraphModal {
         var result = new Set();
         data.forEach(
            elem => {
+               if (elem.group === undefined) {
+                   elem.group = "default";
+               }
                if (!result.has(elem.group)) {
                    result.add(elem.group);
                }
@@ -123,12 +151,12 @@ class ConfGraphModal {
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
             "<div class='modal-content' style='list-style:none;'>" +
-            "<ul>" +
-            "<li><label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
+            "<label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
             "</ul>" +
-            "<li><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+            "<p><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
+            "<ul>" +
             this.addGroups( "edges", edgeGroups ) +
             "</ul>" +
             "<br>" +
@@ -146,7 +174,7 @@ class ConfGraphModal {
         if (groups !== undefined) {
             var numGroup = 1;
             groups.forEach( group => {
-            result += `<li><label>${numGroup} <input id='${this.getCheckboxName(groupName, group)}' type='checkbox'/>${group}</label>`;
+            result += `<ul><label>${numGroup} <input id='${this.getCheckboxName(groupName, group)}' type='checkbox'/>${group}</label></ul>`;
             numGroup++;
             } );
         }
@@ -167,6 +195,10 @@ class ConfGraphModal {
         }
     }
 
+    isDisplayOn() {
+        return d3.select(`#${this.id}`)
+            .style("display") === "block";
+    }
     displayOn() {
         d3.select(`#${this.id}`)
             .style("display", "block")
@@ -306,7 +338,11 @@ class D3GraphVisualizer {
             .attr("class", "btn btn-info")
             .attr("id", "configurationButton")
             .on("click", e => {
-                confGraphModal.displayOn()
+                if (confGraphModal.isDisplayOn()) {
+                    confGraphModal.displayOff()
+                } else {
+                    confGraphModal.displayOn();
+                }
             });
         button.append("xhtml:span")
             .attr("class", "glyphicon glyphicon-cog");

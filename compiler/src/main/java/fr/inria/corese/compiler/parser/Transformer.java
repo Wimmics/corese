@@ -678,7 +678,6 @@ public class Transformer implements ExpType {
 
     void construct(Query q, ASTQuery ast) {
         validate(ast.getInsert(), ast);
-        //Exp cons = construct(ast);
         Exp cons = compile(ast.getInsert(), false);
         q.setConstruct(cons);
         q.setConstruct(true);
@@ -691,11 +690,9 @@ public class Transformer implements ExpType {
      * order to get fresh new nodes
      */
     Query compile(ASTQuery ast) {
-        //compileFunction(ast);
         Exp ee = compile(ast.getExtBody(), false);
         Query q = Query.create(ee);
         q.setUseBind(isUseBind);
-        //compileFunction(ast);
         compileFunction(q, ast);
         q.setAST(ast);
         q.setHasFunctional(ast.hasFunctional());
@@ -1347,7 +1344,11 @@ public class Transformer implements ExpType {
             case QUERY:
                 if (query.getQuery().isConstruct()) {
                     exp = constructQuery(query.getQuery());
-                } else {
+                } 
+                else if (query.getQuery().isUpdate()) {
+                    exp = constructQuery(query.getQuery());
+                }
+                else {
                     exp = compileQuery(query.getQuery());
                 }
                 break;
@@ -1572,18 +1573,6 @@ public class Transformer implements ExpType {
     Node compile(Atom at) {
         return compiler.createNode(at);
     }
-
-//    void pop(Exp exp) {
-//        List<Exp> list = new ArrayList<Exp>();
-//        for (Exp ee : exp) {
-//            if (ee.isQuery() && ee.getQuery().isBind()) {
-//                list.add(Exp.create(POP, ee));
-//            }
-//        }
-//        for (Exp ee : list) {
-//            exp.insert(ee);
-//        }
-//    }
 
     /**
      * Rewrite fun() as ?var in exp Compile exists {}

@@ -434,8 +434,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
             if (sub.isQuery()) {
                 Query qq = sub.getQuery();
-                qq.setFun(true);
-                if (qq.isConstruct()) {
+                qq.setFun(true);              
+                if (qq.isConstruct() || qq.isUpdate()) {
                     // let (?g =  construct where)
                     Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
                     return DatatypeMap.createObject(m.getGraph());

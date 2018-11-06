@@ -136,6 +136,9 @@ class ConfGraphModal {
         var result = new Set();
         data.forEach(
            elem => {
+               if (elem.group === undefined) {
+                   elem.group = "default";
+               }
                if (!result.has(elem.group)) {
                    result.add(elem.group);
                }

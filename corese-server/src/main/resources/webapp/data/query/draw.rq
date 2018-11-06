@@ -15,6 +15,7 @@ prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
 
 function fun:draw(?text) {
     xt:print('funcall draw:', ?text) ;
+    xt:print('context', xt:context()) ;
     let (?ctx = us:createContext(), 
          ?g = us:graph(?text)) {
          us:setClass(?ctx);   

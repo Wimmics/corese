@@ -11,7 +11,9 @@ public class Query extends Exp {
 	
 	Query(ASTQuery a){
 		ast = a;
-		add(ast.getBody());
+		if (ast.getBody() != null) {
+                    add(ast.getBody());
+                }
 	}
 	
         @Override

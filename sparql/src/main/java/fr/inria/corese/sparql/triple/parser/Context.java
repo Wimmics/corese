@@ -95,10 +95,10 @@ public class Context extends ASTObject {
         String[] keys = new String[table.size()];
         table.keySet().toArray(keys);
         Arrays.sort(keys);
-        for (String key : keys) {
+        for (String key : keys) {           
             sb.append(getNSM().toPrefix(key, true));
             sb.append(" : ");
-            sb.append(table.get(key));
+            sb.append((table.get(key) == null) ? "null" : table.get(key));
             sb.append(NL);
         }
         return sb.toString();
@@ -267,7 +267,12 @@ public class Context extends ASTObject {
     }
 
     public Context set(String name, String str) {
-        table.put(name, DatatypeMap.newInstance(str));
+        if (str == null) {
+            table.remove(name);
+        }
+        else {
+            table.put(name, DatatypeMap.newInstance(str));
+        }
         return this;
     }
     

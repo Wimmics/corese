@@ -1468,6 +1468,13 @@ Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
  { astq.setBody(exp); q = Query.create(astq); astq = ast; return q;} 
 }
 
+Exp SubUpdate() : {ASTQuery ast; Query q; Exp exp;}
+{
+ { ast = astq; astq = gast.subCreate(); astq.setBody(BasicGraphPattern.create()); } 
+  UpdateQuery(null) 
+ { q = Query.create(astq); astq = ast; return q;} 
+}
+
 
 void Bind(Exp stack) : { Expression exp; Exp q; Variable var, vv;}
 {
@@ -2438,6 +2445,8 @@ Term QueryExp () : {Expression exp = null; Exp stack; Term term; Exp sub;}
     sub = SubQueryExp() 
     |
     sub = SubConstruct() { sub = BasicGraphPattern.create(sub); }
+    |
+    sub = SubUpdate()    { sub = BasicGraphPattern.create(sub); }
     )
     (  <COMMA>
         { stack = BasicGraphPattern.create(); }
@@ -2511,6 +2520,8 @@ Expression LetForExp() : {Exp sub; Expression exp;}
     sub = ServiceExp()  { exp = astq.term(sub); }
     |
     sub = SubConstruct() { exp = astq.term(BasicGraphPattern.create(sub)); }
+    |
+    sub = SubUpdate()    { exp = astq.term(BasicGraphPattern.create(sub)); }
     | 
     <AT> exp = CstList() 
 

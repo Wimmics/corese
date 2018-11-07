@@ -419,6 +419,8 @@ public class Term extends Expression {
 
             case ExprType.INDEX:
             case ExprType.XT_CONTENT:
+            case ExprType.XT_LOWERCASE:
+            case ExprType.XT_UPPERCASE:
                 return new UnaryExtension(name);
                 
             case ExprType.XT_FOCUS:

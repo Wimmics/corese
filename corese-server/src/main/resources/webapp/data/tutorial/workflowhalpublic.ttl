@@ -132,13 +132,13 @@ prefix de:  <http://purl.org/dc/elements/1.1/>
 
 @event
 construct {
-    ?name us:interestedIn ?topic 
+    ?x us:interestedIn ?topic 
     ?x skos:altLabel ?name
 }
 where {
 
     service <https://data.archives-ouvertes.fr/sparql> {
-        select distinct ?topic ?name ?x where {
+        select distinct ?subject ?name ?x where {
             ?sam skos:altLabel "$param"
             ?x org:unitOf ?sam ; skos:altLabel ?name
 
@@ -147,11 +147,12 @@ where {
             ?p foaf:name ?n
 
             ?doc1 dc:creator ?s
-            ?doc1 de:subject ?topic 
-            filter regex(?topic, "$arg", "i")
+            ?doc1 de:subject ?subject 
+            filter regex(?subject, "$arg", "i")
         }
     }
-
+    bind (xt:lowercase(?subject) as ?src)
+    bind (if (strstarts(?src, " "), strafter(?src, " "), ?src) as ?topic)
 } 
 
 @result
@@ -184,12 +185,12 @@ prefix dc:  <http://purl.org/dc/terms/>
 prefix de:  <http://purl.org/dc/elements/1.1/> 
 
 construct {
-    ?name us:source ?source
+    ?x us:source ?source
     ?x skos:altLabel ?name
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
-        select distinct ?x ?name ?source where {
+        select distinct ?x ?name ?text where {
             ?sam skos:altLabel "$param"
             ?x org:unitOf ?sam ; skos:altLabel ?name
 
@@ -198,11 +199,13 @@ service <https://data.archives-ouvertes.fr/sparql> {
             ?p foaf:name ?n
 
             ?doc1 dc:creator ?s
-            ?doc1 dc:source ?source 
-            filter regex(?source, "$arg", "i")
+            ?doc1 dc:source ?text 
+            filter regex(?text, "$arg", "i")
         }
 }
 
+    bind (xt:lowercase(?text) as ?src)
+    bind (if (strstarts(?src, " "), strafter(?src, " "), ?src) as ?source)
     bind (us:style(?source, ?name)  as ?a)   
 }
 
@@ -458,7 +461,7 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @event 
 construct {
     ?x skos:altLabel ?n
-    ?n us:cooperate ?name   
+    ?x us:cooperate ?name   
 }
 where {
 
@@ -550,7 +553,7 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @event 
 construct {
     ?x skos:altLabel ?n
-    ?n us:cooperate ?name   
+    ?x us:cooperate ?name   
 }
 where {
 

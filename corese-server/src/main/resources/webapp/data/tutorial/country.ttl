@@ -58,7 +58,7 @@ db:Iran, db:Afghanistan, db:Pakistan, db:Ouzbékistan, db:Kazakhstan, db:Turkmé
 
 
 db:Moyen-Orient dbo:member
-db:Israël, db:Palestine, db:Lybie, db:Jordanie, db:Liban, db:Syrie,
+db:Israël, db:Palestine,  db:Jordanie, db:Liban, db:Syrie,
 db:Irak, db:Turquie, db:Géorgie, db:Azerbaïdjan, db:Iran, db:Arabie_saoudite, 
 db:Koweït, db:Yémen, db:Emirats_arabes-unis, 
 db:Dubaï, db:Qatar, db:Oman, db:Bahreïn, db:Brunei
@@ -70,7 +70,7 @@ db:Afrique_du_Nord, db:Afrique_continentale
 
 
 db:Afrique_du_Nord dbo:member
-db:Maroc, db:Algérie, db:Tunisie, db:Lybie, db:Égypte
+db:Maroc, db:Algérie, db:Tunisie, db:Libye, db:Égypte
 .
 
 

@@ -564,6 +564,7 @@ st:tutorialhal a st:Server ;
     st:focus false ;
     st:mapzoom 3 ;
     st:mapsize "mapmedium" ;
+    st:title "HAL Open Data" ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
         (<https://data.archives-ouvertes.fr/> st:hal)

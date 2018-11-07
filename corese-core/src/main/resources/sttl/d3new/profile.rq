@@ -55,11 +55,22 @@ function us:nodeClass(?s) {
         if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode") ) )
 } 
 
+function us:prefix(?p) {
+    if (strstarts(?p, rdf:),  "rdf", 
+    if (strstarts(?p, rdfs:), "rdfs", 
+    if (strstarts(?p, owl:),  "owl", 
+    if (strstarts(?p, foaf:), "foaf", 
+    if (strstarts(?p, skos:), "skos", 
+    if (strstarts(?p, dc:),   "dc", 
+    "default") ) ))))
+}
 
 function us:edgeClass(?g, ?p) {
-    coalesce(st:getclass(?g),
-        if (strstarts(?p, rdf:),  "rdf", 
-        if (strstarts(?p, rdfs:), "rdfs", 
-        if (strstarts(?p, owl:),  "owl", 
-        "default") ) ))
+    coalesce(st:getclass(?g), us:prefix(?p))
 }
+
+function us:edgeGroup(?g, ?p) {
+    coalesce(st:getgroup(?g), us:prefix(?p))
+}
+    
+    

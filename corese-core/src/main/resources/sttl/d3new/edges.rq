@@ -4,8 +4,8 @@ template st:edges {
   group { 
   
     format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p)
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
     }
     
     ; separator = ",\n"

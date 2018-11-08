@@ -133,13 +133,13 @@ prefix de:  <http://purl.org/dc/elements/1.1/>
 @event
 construct {
     ?x us:interestedIn ?topic 
-    ?x skos:altLabel ?name
+    ?x us:label ?name
 }
 where {
 
     service <https://data.archives-ouvertes.fr/sparql> {
         select distinct ?subject ?name ?x where {
-            ?sam skos:altLabel "$param"
+            ?sam skos:prefLabel "$param"
             ?x org:unitOf ?sam ; skos:altLabel ?name
 
             ?s hsc:structure ?x .
@@ -164,7 +164,7 @@ function us:result(?map, ?m) {
 }
 """ 
 ;
-st:select st:altLabel, st:topicList
+st:select st:prefLabel, st:topicList
 .
 
 
@@ -186,12 +186,12 @@ prefix de:  <http://purl.org/dc/elements/1.1/>
 
 construct {
     ?x us:source ?source
-    ?x skos:altLabel ?name
+    ?x us:abel ?name
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
         select distinct ?x ?name ?text where {
-            ?sam skos:altLabel "$param"
+            ?sam skos:prefLabel "$param"
             ?x org:unitOf ?sam ; skos:altLabel ?name
 
             ?s hsc:structure ?x .
@@ -214,7 +214,7 @@ function us:style(?source, ?name) {
     st:setclass(?name, "other", "team")
 }
 """  ;
-st:select st:altLabel, st:topicList
+st:select st:prefLabel, st:topicList
 .
 
 
@@ -238,16 +238,16 @@ prefix de:  <http://purl.org/dc/elements/1.1/>
 
 @federate <https://data.archives-ouvertes.fr/sparql>
 construct {
-    ?x skos:altLabel ?name
+    ?x us:label ?name
     ?x org:unitOf ?lab
 }
 where {
-    ?sam skos:altLabel "$param" , ?lab
+    ?sam skos:prefLabel "$param" , ?lab
     ?x org:unitOf ?sam ; skos:altLabel ?name
 }
 
 """ ;
-st:select st:altLabel
+st:select st:prefLabel
 .
 
 

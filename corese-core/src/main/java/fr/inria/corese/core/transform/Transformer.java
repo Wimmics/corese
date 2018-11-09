@@ -130,6 +130,7 @@ public class Transformer implements TransformProcessor {
     // templates share this table
     // sub transformers share same table recursively
     private HashMap<String, Transformer> transformerMap;
+    private Binding binding;
     // table accessible using st:set/st:get
     private Context context;
     private boolean isHide = false;
@@ -541,6 +542,13 @@ public class Transformer implements TransformProcessor {
     public IDatatype process() {
         return process(null, false, null, null, null);
     }
+    
+    public IDatatype process(Binding b) {
+        if (b != null) {
+            setBinding(b);
+        }
+        return process(null, false, null, null, (b==null)?null:Mapping.create(b));
+    }
 
     public IDatatype process(String temp) {
         return process(temp, false, null, null, null);
@@ -587,7 +595,7 @@ public class Transformer implements TransformProcessor {
                 context.set(STL_START, (String) null);
             }
             Mappings map = exec.query(qq, m);
-
+            save(map);
             query = null;
             IDatatype res = getResult(map);
 
@@ -608,6 +616,12 @@ public class Transformer implements TransformProcessor {
         }
 
         return isBoolean() ? defaultBooleanResult() : EMPTY;
+    }
+    
+    void save(Mappings map) {
+        if (getBinding() == null && map.getBinding() != null) {
+            setBinding((Binding) map.getBinding());
+        }
     }
 
     public int level() {
@@ -755,6 +769,7 @@ public class Transformer implements TransformProcessor {
                 }
 
                 Mappings map = exec.query(qq, bm);
+                save(map);
                 stack.visit(dt);
                 stack.pop();
                 IDatatype res = getResult(map);
@@ -1468,5 +1483,20 @@ public class Transformer implements TransformProcessor {
     public void setTransformerMap(HashMap<String, Transformer> transformerMap) {
         this.transformerMap = transformerMap;
     }
+    
+    /**
+     * @return the binding
+     */
+    public Binding getBinding() {
+        return binding;
+    }
+
+    /**
+     * @param binding the binding to set
+     */
+    public void setBinding(Binding binding) {
+        this.binding = binding;
+    }
+
 
 }

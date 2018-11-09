@@ -58,13 +58,14 @@ public class TransformationProcess extends  WorkflowProcess {
         setTransfomer(t);
         init(t, data, getContext());
         Data res = new Data(data.getGraph());
-        IDatatype dt = t.process();
+        IDatatype dt = t.process(data.getBinding());
         if (dt != null){
             res.setTemplateResult(dt.getLabel());
             res.setDatatypeValue(dt);
         }
-        res.setProcess(this);       
-        complete(t, res);
+        res.setProcess(this);
+        res.setBinding(t.getBinding());
+        complete(t, data, res);
         return res;
     }
     
@@ -82,9 +83,9 @@ public class TransformationProcess extends  WorkflowProcess {
         }               
     }
     
-    void complete(Transformer t, Data data){
+    void complete(Transformer t, Data data, Data res){
         if (t.getVisitor() != null){
-            data.setVisitor(t.getVisitor());
+            res.setVisitor(t.getVisitor());
         }
     }
 

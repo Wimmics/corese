@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
@@ -17,12 +18,14 @@ import java.util.List;
  *
  */
 public class Data {
+
     private Dataset dataset;
     private WorkflowProcess process;
     private Mappings map;
     private IDatatype datatype;
     private Graph graph;
     private Context context;
+    private Binding binding;
     private TemplateVisitor visitor;
     private String templateResult;
     private List<Data> dataList;
@@ -289,7 +292,7 @@ public class Data {
     
     
     Dataset dataset(Context c, Dataset ds) {
-        if (ds == null && (c != null || getVisitor()!= null)) {
+        if (ds == null && (c != null || getVisitor()!= null || getBinding() != null)) {
             ds = new Dataset();
         }
         if (c != null) {
@@ -297,6 +300,9 @@ public class Data {
         }        
         if (getVisitor()!= null) {
             ds.setTemplateVisitor(getVisitor());
+        }
+        if (getBinding() != null) {
+            ds.setBinding(getBinding());
         }
         return ds;
     }
@@ -348,6 +354,20 @@ public class Data {
      */
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+    
+        /**
+     * @return the binding
+     */
+    public Binding getBinding() {
+        return binding;
+    }
+
+    /**
+     * @param binding the binding to set
+     */
+    public void setBinding(Binding binding) {
+        this.binding = binding;
     }
 
 }

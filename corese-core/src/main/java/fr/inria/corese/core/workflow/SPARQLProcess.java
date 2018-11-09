@@ -18,6 +18,7 @@ import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.Date;
 import java.util.logging.Level;
 import org.slf4j.Logger;
@@ -78,13 +79,12 @@ public class SPARQLProcess extends  WorkflowProcess {
     
     @Override
     public Data run(Data data) throws EngineException { 
-        Mappings map = query(data, getContext(), getDataset()); 
-        Data res = new Data(this, map, getGraph(map, data));
+        Data res = query(data, getContext(), getDataset()); 
         complete(res);
         return res;
     }
     
-    Mappings query(Data data, Context c, Dataset ds) throws EngineException{
+    Data query(Data data, Context c, Dataset ds) throws EngineException{
         Graph g = data.getGraph();
         if (g == null){
             g = GraphStore.create();
@@ -100,8 +100,10 @@ public class SPARQLProcess extends  WorkflowProcess {
         log1(g, c);    
         Date d1 = new Date();
         Mappings map = exec.query(tuneQuery(exec, data), data.dataset(c, ds)); 
+        Data res = new Data(this, map, getGraph(map, data));
+        res.setBinding((Binding) map.getBinding());
         log2(g, d1, new Date());  
-        return map;
+        return res;
     }
     
     String tuneQuery(QueryProcess exec, Data data) {

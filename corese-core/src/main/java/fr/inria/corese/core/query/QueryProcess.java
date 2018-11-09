@@ -656,7 +656,7 @@ public class QueryProcess extends QuerySolver {
      ***************************************************************************
      */
     Mappings query(Query q, Mapping m, Dataset ds) throws EngineException {
-
+        m = createMapping(m, ds);
         pragma(q);
         if (q.getService() != null) {
             //@federate <http://dbpedia.org/sparql>
@@ -687,6 +687,18 @@ public class QueryProcess extends QuerySolver {
 
         finish(q, map);
         return map;
+    }
+    
+    Mapping createMapping(Mapping m, Dataset ds) {
+        if (m == null) {
+            if (ds != null && ds.getBinding() != null) {
+                m = Mapping.create(ds.getBinding());
+            }
+        } 
+        else if (m.getBind() == null && ds != null) {
+            m.setBind(ds.getBinding());
+        }
+        return m;
     }
     
     void dbProducer(Query q) {

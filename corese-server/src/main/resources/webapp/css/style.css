@@ -9,15 +9,16 @@ text.literal { fill: lightgreen; }
 text.main    { fill: green; }
 text.other   { fill: blue; }
               
-.links line.rdf  { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
-.links line.rdfs { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
-.links line.owl  { stroke: orange; stroke-width: 0.3px; stroke-opacity: 10;}
+.links { fill: none; stroke: black; marker-end: url(#arrowhead); }
+.links path.rdf  { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
+.links path.rdfs { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
+.links path.owl  { stroke: orange; stroke-width: 0.3px; stroke-opacity: 10;}
 
-.links line.tiny    { stroke-width: 0.3px; stroke-opacity: 10;}
-.links line.small   { stroke-width: 1px; stroke-opacity: 10;}
-.links line.medium  { stroke-width: 2px; stroke-opacity: 10;}
-.links line.high    { stroke-width: 3px; stroke-opacity: 10;}
-.links line.huge    { stroke-width: 4px; stroke-opacity: 10;}
+.links path.tiny    { stroke-width: 0.3px; stroke-opacity: 10;}
+.links path.small   { stroke-width: 1px; stroke-opacity: 10;}
+.links path.medium  { stroke-width: 2px; stroke-opacity: 10;}
+.links path.high    { stroke-width: 3px; stroke-opacity: 10;}
+.links path.huge    { stroke-width: 4px; stroke-opacity: 10;}
 
 
 textPath.rdf  { fill: lightblue; }

@@ -218,10 +218,12 @@ class D3GraphVisualizer {
         this.model = new GraphModel();
         // this.simulation = undefined;
         var sheet = document.createElement('style');
-        sheet.innerHTML = ".links line { stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
+        sheet.innerHTML = "path.default { fill:none; stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
             + ".nodes circle { stroke: #fff; stroke-width: 1.5px; }"
             // + ".nodes circle.special1 { stroke: red; fill: green; stroke-width: 4px; }"
-            + ".links line.bigredline { stroke: red; stroke-width: 5; markerWidth: 20; markerHeight: 20;}";
+            + ".bigredline { stroke: red; }"
+            + "path.bigredline { fill: none; stroke-width: 5px; marker-end: url(#arrowhead) }";
+
         document.head.appendChild(sheet); // Bug : does not support multiple graphs in the same page.
     }
 
@@ -271,7 +273,26 @@ class D3GraphVisualizer {
         var graph = d3.select(svgId);
 
 
-        // TODO : à corriger, il faut renvoyer true ssi au moins un group de noeuds est à afficher
+        results.edges.sort(function(a,b) {
+            if (a.source > b.source) {return 1;}
+            else if (a.source < b.source) {return -1;}
+            else {
+                if (a.target > b.target) {return 1;}
+                if (a.target < b.target) {return -1;}
+                else {return 0;}
+            }
+
+        });
+        for (var i=0; i<results.edges.length; i++) {
+            if (i != 0 &&
+                results.edges[i].source == results.edges[i-1].source &&
+                results.edges[i].target == results.edges[i-1].target) {
+                results.edges[i].linknum = results.edges[i-1].linknum + 1;
+            }
+            else {results.edges[i].linknum = 1;};
+        };
+
+        // TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
         graph.displayNodeLabels = function () {
             // return confGraphModal.nodesCheckbox.property("checked") || ;
             return true;
@@ -282,20 +303,12 @@ class D3GraphVisualizer {
         }
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
-            link
-                .attr("x1", function (d) {
-                    return d.source.x * scale;
-                })
-                .attr("y1", function (d) {
-                    return d.source.y * scale;
-                })
-                .attr("x2", function (d) {
-                    return d.target.x * scale;
-                })
-                .attr("y2", function (d) {
-                    return d.target.y * scale;
-                });
-
+            link.attr("d", function(d) {
+                var dx = (d.target.x - d.source.x) * scale,
+                    dy = (d.target.y - d.source.y) * scale,
+                    dr = ((d.linknum === 1) ? 10000 : 75/d.linknum) * scale;  //linknum is defined above
+                return "M" + d.source.x * scale + "," + d.source.y * scale + "A" + dr + "," + dr + " 0 0,1 " + d.target.x * scale + "," + d.target.y * scale;
+            });
             node
                 .attr("cx", function (d) {
                     return d.x * scale;
@@ -427,9 +440,9 @@ class D3GraphVisualizer {
 
         var link = g.append("g")
             .attr("class", "links")
-            .selectAll("line")
+            .selectAll("path")
             .data(results.links)
-            .enter().append("line")
+            .enter().append("path")
             .attr(
                 "class",
                 d => {
@@ -439,6 +452,9 @@ class D3GraphVisualizer {
                         return "default";
                     }
                 }
+            )
+            .attr("id",
+                d => { return d.id; }
             )
         ;
 
@@ -508,6 +524,7 @@ class D3GraphVisualizer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
+            .attr("xlink:href", d => {return `#${d.id}`;})
             .attr("startOffset", "25%")
             .text(function (d) {
                 return d.label;

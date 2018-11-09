@@ -40,7 +40,6 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -671,7 +670,7 @@ public class QueryProcess extends QuerySolver {
 
         if (q.isUpdate() || q.isRule()) {
             log(Log.UPDATE, q);
-            map = synUpdate(q, ds);
+            map = synUpdate(q, m, ds);
             // map is the result of the last Update in q
             // hence the query in map is a local query corresponding to the last Update in q
             // return the Mappings of the last Update and the global query q
@@ -742,7 +741,7 @@ public class QueryProcess extends QuerySolver {
         return (getMode() == SERVER_MODE || getAST(q).isUserQuery()); 
     }
     
-    Mappings synUpdate(Query query, Dataset ds) throws EngineException {
+    Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         if (isProtected(query)) {
             return new Mappings();
         }
@@ -763,7 +762,7 @@ public class QueryProcess extends QuerySolver {
             if (query.isRule()) {
                 return rule(query);
             } else {
-                return update(query, ds);
+                return update(query, m, ds);
             }
         } finally {
             //g.logFinish(query);
@@ -819,7 +818,7 @@ public class QueryProcess extends QuerySolver {
 	 * ds.getFrom() represents the explicit default graph
      *
      */
-    Mappings update(Query query, Dataset ds) throws EngineException {
+    Mappings update(Query query, Mapping m, Dataset ds) throws EngineException {
         getEventManager().start(Event.Update, query.getAST());
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
@@ -827,7 +826,7 @@ public class QueryProcess extends QuerySolver {
         }
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
-        Mappings map = up.update(query);
+        Mappings map = up.update(query, m);
         getEventManager().finish(Event.Update, query.getAST());
         return map;
     }

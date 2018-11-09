@@ -336,7 +336,11 @@ public class Binding implements Binder {
         return bind(new VariableLocal(name), val);
     }
     
-    // must be LocalVariable
+    public boolean hasVariable() {
+        return ! getGlobalVariableValues().isEmpty();
+    }
+    
+    // must be LocalVariable, i.e. LDScript Variable
     public Binding bind(Variable var, IDatatype val) {
         bind(null, var, val);
         return this;
@@ -347,6 +351,8 @@ public class Binding implements Binder {
      */
     public void bind(Expr exp, Expr var, IDatatype val) {
         switch (var.subtype()) {
+            // global means SPARQL variable
+            // local  means LDScript variable
             case ExprType.GLOBAL:
                 break;
             default:
@@ -404,7 +410,7 @@ public class Binding implements Binder {
         share((Binding) b);
     }
     
-    void share(Binding b) {
+    public void share(Binding b) {
         setGlobalVariableNames(b.getGlobalVariableNames());
         setGlobalVariableValues(b.getGlobalVariableValues());
     }

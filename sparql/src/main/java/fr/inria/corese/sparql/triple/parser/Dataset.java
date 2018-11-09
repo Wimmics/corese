@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import fr.inria.corese.kgram.api.core.ExpType;
  *
  */
 public class Dataset extends ASTObject {
-  
+
 	protected static final String KG = ExpType.KGRAM;
 	static final String EMPTY = KG + "empty";
 	static final Constant CEMPTY = Constant.create(EMPTY);
@@ -25,6 +26,7 @@ public class Dataset extends ASTObject {
 	private List<Constant> named;
         List<Constant> with;
         private Context context;
+        private Binding binding;
         private Object templateVisitor;
         private String base;
 
@@ -286,5 +288,20 @@ public class Dataset extends ASTObject {
         this.base = base;
         return this;
     }
+    
+       /**
+     * @return the binding
+     */
+    public Binding getBinding() {
+        return binding;
+    }
+
+    /**
+     * @param binding the binding to set
+     */
+    public void setBinding(Binding binding) {
+        this.binding = binding;
+    }
+  
    
 }

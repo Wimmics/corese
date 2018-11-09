@@ -18,6 +18,7 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.query.Binder;
 
 /*
  * Manage list of Mapping, result of a query
@@ -29,7 +30,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public class Mappings extends PointerObject
         implements Comparator<Mapping>, Iterable<Mapping> {
-    
+   
     private static final String NL = System.getProperty("line.separator");    
     private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
@@ -64,6 +65,7 @@ public class Mappings extends PointerObject
     private Mapping sm1;
     private Mapping sm2;
     private Node result;
+    private Binder binding;
 
     public Mappings() {
         list = new ArrayList<Mapping>();
@@ -1560,6 +1562,21 @@ public class Mappings extends PointerObject
     public void setResult(Node result) {
         this.result = result;
     }
+    
+        /**
+     * @return the binding
+     */
+    public Binder getBinding() {
+        return binding;
+    }
+
+    /**
+     * @param binding the binding to set
+     */
+    public void setBinding(Binder binding) {
+        this.binding = binding;
+    }
+ 
 
 
 }

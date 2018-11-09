@@ -187,7 +187,7 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             send(Event.END, q, map);
         }
-
+        map.setBinding(memory.getBind());
         return map;
     }
     

@@ -474,35 +474,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     Mapping getMapping(Environment env, Query q) {
         if (env.hasBind()) {
-            Mapping map = getMapping(env.getBind(), q);
+            Mapping map = Mapping.create(q, env.getBind());
             // share global variables and ProcessVisitor
             map.setBind(env.getBind());
             return map;
         }
         return null;
     }
-
-    /**
-     * TODO: remove duplicates in getVariables()
-     * use case:
-     * function us:fun(?x){let (select ?x where {}) {}}
-     * variable ?x appears twice in the stack because it is redefined in the let clause
-     */
-    Mapping getMapping(Binder b, Query q) {
-        ArrayList<Node> lvar = new ArrayList();
-        ArrayList<Node> lval = new ArrayList();
-        for (Expr var : b.getVariables()) {
-            Node node = q.getProperAndSubSelectNode(var.getLabel());
-            if (node != null && !lvar.contains(node)) {
-                lvar.add(node);
-                lval.add(b.get(var));
-            }
-        }
-        Mapping m = Mapping.create(lvar, lval);
-        return m;
-    }
-
-
+  
     /**
      * exp : system(kg:memory)
      */

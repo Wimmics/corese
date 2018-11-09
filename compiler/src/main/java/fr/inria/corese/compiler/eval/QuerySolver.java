@@ -228,15 +228,20 @@ public class QuerySolver  implements SPARQLEngine {
 	 * it return the Mappings in this case
 	 */
 	public Mappings basicQuery(ASTQuery ast) {
-		return basicQuery(ast, null);
+		return basicQuery(ast, null, null);
 	}
-	public Mappings basicQuery(ASTQuery ast, Dataset ds) {
+        
+	public Mappings basicQuery(ASTQuery ast, Mapping m, Dataset ds) {		
+		Query query = compile(ast, ds);
+		return query(query, m);
+	}
+        
+        public Query compile(ASTQuery ast, Dataset ds) {
 		if (ds!=null){
 			ast.setDefaultDataset(ds);
 		}
 		Transformer transformer =  transformer();
-		Query query = transformer.transform(ast);
-		return query(query, null);
+		return transformer.transform(ast);
 	}
 	
 	
@@ -247,11 +252,6 @@ public class QuerySolver  implements SPARQLEngine {
 	public Mappings query(String squery, Mapping map) throws EngineException{
 		return query(squery, map, null);
 	}
-
-//	public Mappings query(String squery, Mapping map, List<String> from, List<String> named) throws EngineException{
-//		Dataset ds = Dataset.create(from, named);
-//		return query(squery, map, ds);
-//	}
 	
 	public Mappings query(String squery, Mapping map, Dataset ds) throws EngineException{
 		Query query = compile(squery, ds);

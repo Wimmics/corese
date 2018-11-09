@@ -399,7 +399,7 @@ public class WorkflowParser {
             }
         } else {
             String type = dtype.getLabel();
-            System.out.println("Parser: " + type);
+           // System.out.println("Parser: " + type);
             if (type.equals(WORKFLOW)) {
                 // special case (with complete done)
                 ap = subWorkflow(getGraph().getNode(dt));

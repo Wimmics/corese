@@ -178,6 +178,29 @@ public class Mapping
             Node[] qnodes, Node[] nodes) {
         return new Mapping(query, result, qnodes, nodes);
     }
+    
+    
+     /**
+     * TODO: remove duplicates in getVariables()
+     * use case:
+     * function us:fun(?x){let (select ?x where {}) {}}
+     * variable ?x appears twice in the stack because it is redefined in the let clause
+     */
+    public static Mapping create(Query q, Binder b) {
+        ArrayList<Node> lvar = new ArrayList();
+        ArrayList<Node> lval = new ArrayList();
+        for (Expr var : b.getVariables()) {
+            Node node = q.getProperAndSubSelectNode(var.getLabel());
+            if (node != null && !lvar.contains(node)) {
+                lvar.add(node);
+                lval.add(b.get(var));
+            }
+        }
+        Mapping m = Mapping.create(lvar, lval);
+        return m;
+    }
+    
+    
 
     void init(List<Node> q, List<Node> t) {
         Node[] qn = new Node[q.size()];

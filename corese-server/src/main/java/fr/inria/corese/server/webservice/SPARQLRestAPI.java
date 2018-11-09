@@ -328,6 +328,26 @@ public class SPARQLRestAPI {
                 throw new Exception("No query");
 
             Mappings maps = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
+            String ttl = TripleFormat.create(maps).toString();
+            logger.debug(ttl);
+            return Response.status(200).header(headerAccept, "*").entity(ttl).build();
+        } catch (Exception ex) {
+            logger.error("Error while querying the remote KGRAM engine", ex);
+            return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+        }
+    }
+    
+    @GET
+    @Produces({"text/trig", "application/trig"})
+    public Response getRDFGraphTrigForGet(@QueryParam("query") String query, @QueryParam("default-graph-uri") List<String> defaultGraphUris,
+                                             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("Rest Get RDF Turtle: " + query);
+            if (query == null)
+                throw new Exception("No query");
+
+            Mappings maps = getTripleStore().query(query, createDataset(defaultGraphUris, namedGraphUris));
             String ttl = TripleFormat.create(maps, true).toString();
             logger.debug(ttl);
             return Response.status(200).header(headerAccept, "*").entity(ttl).build();

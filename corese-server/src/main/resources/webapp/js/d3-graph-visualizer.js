@@ -544,7 +544,7 @@ class D3GraphVisualizer {
         //     .links(results.links);
         // visualizer.simulation
         //     .force("center", d3.forceCenter(width / 2, height / 2));
-        var pathLabels = defs.selectAll("path")
+        var pathLabels = graph.append("defs").attr("class", "paths").selectAll("path")
             .data(results.links)
             .enter().append("path")
             .attr("id", (edge, i, edges) => {

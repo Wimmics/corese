@@ -218,11 +218,6 @@ class D3GraphVisualizer {
         this.model = new GraphModel();
         // this.simulation = undefined;
         var sheet = document.createElement('style');
-        sheet.innerHTML = "path.default { fill:none; stroke: black; stroke-width: 0.1; stroke-opacity: 1; marker-end: url(#arrowhead) } "
-            + ".nodes circle { stroke: #fff; stroke-width: 1.5px; }"
-            // + ".nodes circle.special1 { stroke: red; fill: green; stroke-width: 4px; }"
-            + ".bigredline { stroke: red; }"
-            + "path.bigredline { fill: none; stroke-width: 5px; marker-end: url(#arrowhead) }";
 
         document.head.appendChild(sheet); // Bug : does not support multiple graphs in the same page.
     }
@@ -248,17 +243,20 @@ class D3GraphVisualizer {
         }
     }
 
+    // To be used with text for edges, in order to obtain text no upside-down.
     buildPathFromEdge(scale) {
         return links => {
             return (edge, i, edges) => {
-                var lefterPoint, righterPoint;
-                [lefterPoint, righterPoint] = (links[i].source.x <= links[i].target.x) ? [links[i].source, links[i].target] : [links[i].target, links[i].source];
-                var leftx = lefterPoint.x * scale;
-                var lefty = lefterPoint.y * scale;
-                var rightx = righterPoint.x * scale;
-                var righty = righterPoint.y * scale;
-
-                return `M ${leftx},${lefty} L ${rightx},${righty}`;
+                var dr = 100/edge.linknum * scale;  //linknum is defined above
+                var lefterpoint, righterpoint;
+                var sourceLeft = edge.source.x <= edge.target.x;
+                [lefterpoint, righterpoint] = (sourceLeft) ? [edge.source, edge.target] : [edge.target, edge.source];
+                var leftx = lefterpoint.x * scale;
+                var lefty = lefterpoint.y * scale;
+                var rightx = righterpoint.x * scale;
+                var righty = righterpoint.y * scale;
+                var sweep = (sourceLeft) ? "1" : "0";
+                return `M ${leftx},${lefty} A ${dr},${dr} 0 0,${sweep} ${rightx},${righty}`
             };
         }
     }
@@ -303,12 +301,13 @@ class D3GraphVisualizer {
         }
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
-            link.attr("d", function(d) {
-                var dx = (d.target.x - d.source.x) * scale,
-                    dy = (d.target.y - d.source.y) * scale,
-                    dr = ((d.linknum === 1) ? 10000 : 75/d.linknum) * scale;  //linknum is defined above
-                return "M" + d.source.x * scale + "," + d.source.y * scale + "A" + dr + "," + dr + " 0 0,1 " + d.target.x * scale + "," + d.target.y * scale;
+            link.attr("d", function(edge, i, edges) {
+                var r = 100;
+                var dr = r / edge.linknum ;
+                d3.select(this).attr("marker-end", "url(#arrowhead)");
+                return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
             });
+
             node
                 .attr("cx", function (d) {
                     return d.x * scale;
@@ -453,10 +452,7 @@ class D3GraphVisualizer {
                     }
                 }
             )
-            .attr("id",
-                d => { return d.id; }
-            )
-        ;
+            .attr("id", d => `${d.id}_edge` );
 
         link.append("title")
             .text(function (d) {
@@ -511,7 +507,7 @@ class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-        var textNodes = g.append("g").selectAll("text")
+        var textNodes = g.append("g").attr("class", "texts").selectAll("text")
             .data(visualizer.simulation.nodes())
             .enter().append("text")
             .attr("class", (edge, i, edges) => {
@@ -520,7 +516,7 @@ class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-        var textEdges = g.append("g").selectAll("text")
+        var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
             .data(results.links)
             .enter().append("text")
             .append("textPath")

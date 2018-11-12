@@ -9,7 +9,7 @@ text.literal { fill: lightgreen; }
 text.main    { fill: green; }
 text.other   { fill: blue; }
               
-.links { fill: none; stroke: black; marker-end: url(#arrowhead); }
+.links { fill: none; stroke: black; }
 .links path.rdf  { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
 .links path.rdfs { stroke: blue; stroke-width: 0.3px; stroke-opacity: 10;}
 .links path.owl  { stroke: orange; stroke-width: 0.3px; stroke-opacity: 10;}

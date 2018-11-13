@@ -247,7 +247,12 @@ class D3GraphVisualizer {
     buildPathFromEdge(scale) {
         return links => {
             return (edge, i, edges) => {
-                var dr = 100/edge.linknum * scale;  //linknum is defined above
+                var dx = edge.source.x - edge.target.x;
+                var dy = edge.source.y - edge.target.y;
+                var r = 10 * Math.sqrt(dx*dx + dy*dy);
+                var dr = r /  (2 * edge.linknum);
+
+                // var dr = 100/edge.linknum * scale;  //linknum is defined above
                 var lefterpoint, righterpoint;
                 var sourceLeft = edge.source.x <= edge.target.x;
                 [lefterpoint, righterpoint] = (sourceLeft) ? [edge.source, edge.target] : [edge.target, edge.source];
@@ -256,7 +261,7 @@ class D3GraphVisualizer {
                 var rightx = righterpoint.x * scale;
                 var righty = righterpoint.y * scale;
                 var sweep = (sourceLeft) ? "1" : "0";
-                return `M ${leftx},${lefty} A ${dr},${dr} 0 0,${sweep} ${rightx},${righty}`
+                return `M ${leftx},${lefty} A ${dr * scale},${dr * scale} 0 0,${sweep} ${rightx},${righty}`
             };
         }
     }
@@ -302,8 +307,10 @@ class D3GraphVisualizer {
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
             link.attr("d", function(edge, i, edges) {
-                var r = 100;
-                var dr = r / edge.linknum ;
+                var dx = edge.source.x - edge.target.x;
+                var dy = edge.source.y - edge.target.y;
+                var r = 10 * Math.sqrt(dx*dx + dy*dy);
+                var dr = r /  (2 * edge.linknum);
                 d3.select(this).attr("marker-end", "url(#arrowhead)");
                 return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
             });

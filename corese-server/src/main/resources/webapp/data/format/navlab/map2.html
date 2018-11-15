@@ -1,6 +1,6 @@
 var pos%1$s = [ %2$s, %3$s ];
 var icon%1$s = new L.Icon( { iconUrl: '%4$s' } );
-var marker%1$s = L.marker( pos%1$s, { icon: icon%1$s } ).addTo(mymap);// new google.maps.Marker({ position: pos%1$s, map: map, icon: '%4$s' });
+var marker%1$s = L.marker( pos%1$s, { icon: icon%1$s } ).addTo(mymap);
 
 marker%1$s.on("click", function(event) {
   window.location.href = '%5$s';

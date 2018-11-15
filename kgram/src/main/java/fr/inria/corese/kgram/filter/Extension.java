@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Hierarchy;
-import fr.inria.corese.kgram.core.Eval;
 import java.util.Collection;
 import java.util.HashMap;
 import org.slf4j.Logger;

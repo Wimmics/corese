@@ -107,6 +107,7 @@ public class Eval implements ExpType, Plugin {
             hasCandidate = false,
             hasStatement = false,
             hasProduce  = false;
+    private boolean stop = false;
 
     //Edge previous;
     
@@ -188,6 +189,7 @@ public class Eval implements ExpType, Plugin {
             send(Event.END, q, map);
         }
         map.setBinding(memory.getBind());
+        clean();
         return map;
     }
     
@@ -269,6 +271,9 @@ public class Eval implements ExpType, Plugin {
             Exp values = q.getValues();
             if (! values.isPostpone() && !q.isAlgebra()) {
                 for (Mapping m : values.getMappings()) {
+                    if (stop) {
+                        return STOP;
+                    }
                     if (binding(values.getNodeList(), m)) {
                         eval(gNode, q);
                         free(values.getNodeList(), m);
@@ -1409,7 +1414,9 @@ public class Eval implements ExpType, Plugin {
             node2 = exp.getGraphNode();
         }
         Mappings map1 = subEval(p, gNode, node1, exp.first(), exp, memory.getResetJoinMappings());
-        
+        if (stop) {
+            return STOP;
+        }
         if (map1.isEmpty()) {
             return backtrack;
         }
@@ -1424,7 +1431,10 @@ public class Eval implements ExpType, Plugin {
         set.setDebug(query.isDebug());
         set.start();
         
-        for (Mapping map : map1) {            
+        for (Mapping map : map1) {   
+            if (stop) {
+                return STOP;
+            }
             boolean ok = ! set.minusCompatible(map);
             if (ok) {
                 if (env.push(map, n)) {
@@ -1585,7 +1595,9 @@ public class Eval implements ExpType, Plugin {
            
         MappingSet set1 = new MappingSet(map1);
         Exp rest = prepareRest(exp, set1);
-        
+        if (stop) {
+             return STOP;
+        }
         Mappings map2 = subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
         
         getVisitor().join(this, getGraphNode(gNode), exp, map1, map2);
@@ -1641,7 +1653,9 @@ public class Eval implements ExpType, Plugin {
 
             // exploit dichotomy for ?x = ?y
             for (Mapping m1 : map1) {
-
+                if (stop) {
+                    return STOP;
+                }
                 Node n1 = m1.getNode(qn1);
                 if (n1 != null) {
 
@@ -1653,7 +1667,9 @@ public class Eval implements ExpType, Plugin {
                         if (nn >= 0 && nn < map2.size()) {
 
                             for (int i = nn; i < map2.size(); i++) {
-
+                                if (stop) {
+                                    return STOP;
+                                }
                                 // enumerate occurrences of ?y in map2
                                 Mapping m2 = map2.get(i);
                                 Node n2 = m2.getNode(qn2);
@@ -1699,7 +1715,9 @@ public class Eval implements ExpType, Plugin {
             map2.sort(this, q);
 
             for (Mapping m1 : map1) {
-
+                if (stop) {
+                    return STOP;
+                }
                 // value of q in map1
                 Node n1 = m1.getNode(q);
                 if (env.push(m1, n)) {
@@ -1707,7 +1725,9 @@ public class Eval implements ExpType, Plugin {
                     if (n1 == null) {
                         // enumerate all map2
                         for (Mapping m2 : map2) {
-
+                            if (stop) {
+                                return STOP;
+                            }
                             if (env.push(m2, n)) {
                                 backtrack = eval(p, gNode, stack, n + 1);
                                 env.pop(m2);
@@ -1720,7 +1740,9 @@ public class Eval implements ExpType, Plugin {
 
                         // first, try : n2 == null
                         for (Mapping m2 : map2) {
-
+                            if (stop) {
+                                return STOP;
+                            }
                             Node n2 = m2.getNode(q);
                             if (n2 != null) {
                                 break;
@@ -1770,11 +1792,15 @@ public class Eval implements ExpType, Plugin {
     int simpleJoin(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) {
         int backtrack = n - 1;
         for (Mapping m1 : map1) {
-
+            if (stop) {
+                return STOP;
+            }
             if (env.push(m1, n)) {
 
                 for (Mapping m2 : map2) {
-
+                    if (stop) {
+                        return STOP;
+                    }
                     if (env.push(m2, n)) {
                         backtrack = eval(p, gNode, stack, n + 1);
                         env.pop(m2);
@@ -1810,6 +1836,9 @@ public class Eval implements ExpType, Plugin {
         Mappings map = memory.getResetJoinMappings();
 
         Mappings map1 = unionBranch(p, gNode, exp.first(), exp, map);
+        if (stop) {
+            return STOP;
+        }
         Mappings map2 = unionBranch(p, gNode, exp.rest(),  exp, map);
 
         getVisitor().union(this, getGraphNode(gNode), exp, map1, map2);
@@ -1846,6 +1875,9 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Memory env = memory;
         for (Mapping m : map) {
+            if (stop) {
+                return STOP;
+            }
             if (env.push(m, n)) {
                 backtrack = eval(p, gNode, stack, n+1 );
                 env.pop(m);
@@ -1878,6 +1910,9 @@ public class Eval implements ExpType, Plugin {
         Memory env = memory;
         
         for (Mapping m : res) { 
+            if (stop) {
+                return STOP;
+            }
             Node val1 = null, val2 = null;
             if (ggNode != null) {
                 val1 = m.getNode(ggNode);
@@ -2063,6 +2098,9 @@ public class Eval implements ExpType, Plugin {
         Mappings map = p.getMappings(gNode, from, exp, memory);
         
         for (Mapping m : map) {
+            if (stop) {
+                return STOP;
+            }
             m.fixQueryNodes(query);
             boolean b = memory.push(m, n, false);
             if (b) {
@@ -2085,6 +2123,9 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;      
         Mappings map = getMappings(p, gNode, exp);
         for (Mapping m : map) {
+            if (stop) {
+                return STOP;
+            }
             m.fixQueryNodes(query);
             boolean b = memory.push(m, n, false);           
             if (b) {
@@ -2135,6 +2176,9 @@ public class Eval implements ExpType, Plugin {
             Mappings lMap = provider.service(node, exp, env.getJoinMappings(), this);
             
             for (Mapping map : lMap) {
+                if (stop) {
+                    return STOP;
+                }
                 // push each Mapping in memory and continue
                 complete(query, map);
                 if (env.push(map, n, false)) {
@@ -2261,6 +2305,9 @@ public class Eval implements ExpType, Plugin {
             if (//member(graph, query.getFrom(gNode)) && 
                     mm.match(gNode, graph, env)
                     && env.push(gNode, graph, n)) {
+                if (stop) {
+                    return STOP;
+                }
                 // set new/former gNode
                 backtrack = eval(nextGraph, stack, next);
                 env.pop(gNode);
@@ -2351,6 +2398,9 @@ public class Eval implements ExpType, Plugin {
         if (map != null) {
             HashMap<String, Node>  tab =  toMap(exp.getNodeList());
             for (Mapping m : map) {
+                if (stop) {
+                    return STOP;
+                }
                 if (env.push(tab, m, n)) {  
                     backtrack = eval(p, gNode, stack, n + 1);
                     env.pop(tab, m);
@@ -2451,6 +2501,10 @@ public class Eval implements ExpType, Plugin {
         }
 
         for (Mapping map : path.candidate(gNode, list, env)) {
+            if (stop) {
+                path.stop();
+                return STOP;
+            }
             boolean b = match(map);
             boolean success = match(map) && env.push(map, n);
 
@@ -2487,7 +2541,9 @@ public class Eval implements ExpType, Plugin {
         getVisitor().values(this, getGraphNode(gNode), exp, exp.getMappings());
         
         for (Mapping map : exp.getMappings()) {
-
+            if (stop) {
+                return STOP;
+            }
             if (binding(exp.getNodeList(), map, n)) {
                 backtrack = eval(p, gNode, stack, n + 1);
                 free(exp.getNodeList(), map);
@@ -2597,6 +2653,10 @@ public class Eval implements ExpType, Plugin {
         Iterator<Edge> it = entities.iterator();
 
         while (it.hasNext()) {
+            
+            if (stop) {
+                return STOP;
+            }
 
             Edge edge = it.next();
             //if (query.isDebug())System.out.println("E: " + ent);
@@ -2779,10 +2839,13 @@ public class Eval implements ExpType, Plugin {
         }
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
         getVisitor().finish(lMap);
-        
+
         // enumerate the result of the sub query
         // bind the select nodes into the stack
         for (Mapping map : lMap) {
+            if (stop) {
+                return STOP;
+            }
             boolean bmatch = push(subQuery, map, n);
 
             if (isEvent) {
@@ -2875,6 +2938,9 @@ public class Eval implements ExpType, Plugin {
         }
 
         Mappings map1 = subEval(p, gNode, proxyGraphNode, exp.first(), exp, memory.getResetJoinMappings());
+        if (stop) {
+            return STOP;
+        }
         if (map1.isEmpty()) {
             return backtrack;
         }
@@ -2898,9 +2964,15 @@ public class Eval implements ExpType, Plugin {
         set.start();
                
         for (Mapping m1 : map1) {
+            if (stop) {
+                return STOP;
+            }
             boolean success = false;
             int nbsuc = 0;
-            for (Mapping m2 : set.getCandidateMappings(m1)) {  
+            for (Mapping m2 : set.getCandidateMappings(m1)) { 
+                if (stop) {
+                    return STOP;
+                }
                 Mapping merge = m1.merge(m2);
                 if (merge != null) {
                     success = filter(proxyGraphNode, merge, exp);
@@ -3352,6 +3424,23 @@ public class Eval implements ExpType, Plugin {
         this.visitor = visitor;
     }
 
-   
+    /**
+     * @return the stop
+     */
+    public boolean isStop() {
+        return stop;
+    }
+
+    /**
+     * @param stop the stop to set
+     */
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
+    
+    public void finish() {
+        setStop(true);
+    }
+
 
 }

@@ -2,7 +2,6 @@ package fr.inria.corese.sparql.triple.parser;
 
 
 import fr.inria.corese.sparql.triple.function.script.Function;
-import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExpType;
 import java.util.ArrayList;
 import java.util.HashMap;

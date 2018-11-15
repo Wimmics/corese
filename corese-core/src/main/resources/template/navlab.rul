@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Oct 01 18:27:54 CEST 2018
+Thu Nov 15 08:46:41 CET 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -240,7 +240,7 @@ format {
   coalesce(st:get(st:mapzoom), 7)  
   coalesce(st:get(st:mapicon1), "/img/smarker.png")
   
-  st:call-template(st:gmap2, ?rest)
+  st:call-template(st:map2, ?rest)
           
   coalesce(st:get(st:mapsize), "mapmedium")
 }
@@ -387,13 +387,11 @@ where {
 <body>
 <![CDATA[
 #
-# Geolocate resource on a map given lat et long
+# Geolocate resource on a map given lat et long (googlemap)
 #
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:gmap(?r, ?lat, ?lon, ?list) {
-
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
   
 format {
   ft:gmap.html
@@ -405,7 +403,7 @@ format {
   
   st:call-template(st:gmap2, ?list)
   
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script2.js))
+  "" # deprecated arg
         
   coalesce(st:get(st:mapsize), "mapmedium")
 }
@@ -420,14 +418,27 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:map2 {
-    st:call-template(st:maplist, ?list)        
-} 
-where {
-    bind (st:get(st:location) as ?list)
-    filter (bound(?list) && xt:size(?list) > 0)
+#
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon))
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+template st:map2(?list) {
+  format {
+    ft:map2.html
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    coalesce(st:get(st:mapicon2), "/img/smarker.png")
+    st:plink(?r)
+  }
 }
+where {
 
+  values  (?r ?lat ?lon) { unnest(?list) }
+ 
+}
 ]]>
 </body>
 </rule>
@@ -443,7 +454,7 @@ prefix o: <http://dbpedia.org/ontology/>
 
 template st:glocate {
 
-  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
+  st:call-template(st:omap, ?in, ?lat, ?lon, aggregate(?elem))
   
 }
 where {
@@ -511,6 +522,25 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Geolocate resource on a map given lat et long (openstreetmap)
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:omap(?r, ?lat, ?lon, ?list) {
+  
+    st:call-template(st:maplist, xt:cons(xt:list(?r, ?lat, ?lon), ?list))
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix o:    <http://dbpedia.org/ontology/>
 prefix w:    <http://fr.wikipedia.org/wiki/>
 prefix r:    <http://fr.dbpedia.org/resource/>
@@ -518,12 +548,8 @@ prefix p:  <http://fr.dbpedia.org/property/>
 
 template st:page {
 
-  st:head()
-
   st:call-template(st:selecttry)
-   
-  st:tail()
-  
+     
 }
 where {
 }
@@ -604,7 +630,7 @@ where {
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:gmap2(?list) {
   format {
-    ft:map2.html
+    ft:gmap2.html
     
     st:number()
     str(?lat)

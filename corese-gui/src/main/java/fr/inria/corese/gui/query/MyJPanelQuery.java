@@ -86,7 +86,7 @@ public final class MyJPanelQuery extends JPanel {
     int maxres = 1000000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -112,6 +112,7 @@ public final class MyJPanelQuery extends JPanel {
     private SparqlQueryEditor sparqlQueryEditor;
     private JTextPane serviceEditor;
     private MainFrame mainFrame;
+    private Exec current;
     private static final String KGSTYLE = ExpType.KGRAM + "style";
     private static final String KGGRAPH = Pragma.GRAPH;
     private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
@@ -122,15 +123,21 @@ public final class MyJPanelQuery extends JPanel {
         setQuery("empty request");
     }
 
-    public MyJPanelQuery(final MainFrame coreseFrame) {
+    public MyJPanelQuery(final MainFrame coreseFrame, String query, String name) {
         super();
         initComponents();
         mainFrame = coreseFrame;
         installListenersOnMainFrame(coreseFrame);
-        setQuery(coreseFrame.getTextQuery());
+        //setQuery(coreseFrame.getTextQuery());
+        setQuery(query);
+        setFileName(name);
         stylesheet = coreseFrame.getDefaultStylesheet();
     }
-
+    
+    public void setFileName(String name) {
+         serviceEditor.setText(name);
+    }
+    
     private void initComponents() {
       
         paneQuery = new JPanel(new BorderLayout());
@@ -139,6 +146,8 @@ public final class MyJPanelQuery extends JPanel {
         add(paneQuery);
 
         buttonRun = new JButton();
+        buttonStop = new JButton();
+        buttonKill = new JButton();
         buttonValidate = new JButton();
         buttonToSPIN = new JButton();
         buttonToSPARQL = new JButton();
@@ -260,14 +269,15 @@ public final class MyJPanelQuery extends JPanel {
          */
         //Lancer une requête
         buttonRun.setText("Query");
+        buttonStop.setText("Stop");
+        buttonKill.setText("Kill");
         buttonValidate.setText("Validate");
         buttonToSPIN.setText("to SPIN");
         buttonToSPARQL.setText("to SPARQL");
         buttonProve.setText("Prove");
         buttonTKgram.setText("Trace");
-        //OC: buttonTKgram.addActionListener(sparqlQueryEditor);
 
-        //Pour chercher un string dans la fen�tre de r�sultat XML
+        //Pour chercher un string dans la fenêtre de résultat XML
         buttonSearch.setText("Search");
 
         ActionListener searchListener = new ActionListener() {
@@ -325,11 +335,12 @@ public final class MyJPanelQuery extends JPanel {
 
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
+        hSeq2.addComponent(buttonStop);
+        hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
         hSeq2.addComponent(buttonToSPIN);
         hSeq2.addComponent(buttonToSPARQL);
-//        hSeq2.addComponent(buttonProve);
-//        hSeq2.addComponent(buttonTKgram);
+
         hSeq2.addComponent(buttonSearch);
         hSeq2.addGap(30, 30, 30);
         hSeq2.addComponent(buttonRefreshStyle);
@@ -356,12 +367,11 @@ public final class MyJPanelQuery extends JPanel {
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
 
         vParallel2.addComponent(buttonRun);
+        vParallel2.addComponent(buttonStop);
+        vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
         vParallel2.addComponent(buttonToSPIN);
         vParallel2.addComponent(buttonToSPARQL);
-
-//        vParallel2.addComponent(buttonProve);
-//        vParallel2.addComponent(buttonTKgram);
 
         vParallel2.addComponent(buttonSearch);
         vParallel2.addComponent(buttonRefreshStyle);
@@ -380,15 +390,11 @@ public final class MyJPanelQuery extends JPanel {
         pane_listenerLayout.setVerticalGroup(vParallel1);
 
     }
-
+    
     public String getSparqlRequest() {
         return sparqlQueryEditor.getTextPaneQuery().getText();
     }
     
-     public String getSparqlService() {
-        return serviceEditor.getText();
-    }
-
     public JTextPane getTextPaneQuery() {
         return sparqlQueryEditor.getTextPaneQuery();
     }
@@ -434,15 +440,13 @@ public final class MyJPanelQuery extends JPanel {
         });
 
         ActionListener l_RunListener = createListener(coreseFrame, false);
+        
         buttonRun.addActionListener(l_RunListener);
+        buttonStop.addActionListener(l_RunListener);
+        buttonKill.addActionListener(l_RunListener);
         buttonValidate.addActionListener(l_RunListener);
         buttonToSPIN.addActionListener(l_RunListener);
         buttonToSPARQL.addActionListener(l_RunListener);
-
-//        buttonProve.addActionListener(l_RunListener);
-
-//        ActionListener kt_RunListener = createListener(coreseFrame, true);
-//        buttonTKgram.addActionListener(kt_RunListener);
     }
 
     public void setQuery(final String newRequest) {
@@ -763,11 +767,7 @@ public final class MyJPanelQuery extends JPanel {
                 GraphEngine engine = coreseFrame.getMyCorese();
 
                 try {
-                    String service = getSparqlService();
                     String query = sparqlQueryEditor.getTextPaneQuery().getText();
-                    if (! service.isEmpty()){
-                        query = service + NL + query;
-                    }
                     if (ev.getSource() == buttonToSPARQL) {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSparql(query);
@@ -778,17 +778,12 @@ public final class MyJPanelQuery extends JPanel {
                         String str = spin.toSpin(query);
                         coreseFrame.getPanel().getTextArea().setText(str);
                         tabbedPaneResults.setSelectedIndex(XML_PANEL);
-//                    } else if (ev.getSource() == buttonProve) {
-//                        l_Results = engine.SPARQLProve(query);
-//                        if (l_Results != null) {
-//                            display(l_Results, coreseFrame);
-//                        }
                     } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate) {
                         // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);
+                        setCurrent(exec);
                         exec.setValidate(ev.getSource() == buttonValidate);
                         exec.process();
-
                         //Permet de passer a true toutes les options du trace KGram
                         for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
                             coreseFrame.getListCheckbox().get(i).setEnabled(true);
@@ -796,7 +791,11 @@ public final class MyJPanelQuery extends JPanel {
                         for (int i = 0; i < coreseFrame.getListJMenuItems().size(); i++) {
                             coreseFrame.getListJMenuItems().get(i).setEnabled(true);
                         }
-
+                    }
+                    else if (ev.getSource() == buttonStop || ev.getSource() == buttonKill) {
+                        if (getCurrent() != null) {
+                            getCurrent().finish(ev.getSource() == buttonKill);
+                        }
                     }
 
                 } catch (EngineException e) {
@@ -806,7 +805,14 @@ public final class MyJPanelQuery extends JPanel {
                 textPaneValidation.setText(l_message + "Done.");
             }
         };
-
+    }
+    
+    void setCurrent(Exec e) {
+        current = e;
+    }
+    
+    Exec getCurrent() {
+        return current;
     }
     
     public void exec(MainFrame frame, String query) {

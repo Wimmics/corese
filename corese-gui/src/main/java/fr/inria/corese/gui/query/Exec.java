@@ -34,7 +34,7 @@ public class Exec extends Thread {
 	MyJPanelQuery panel;
 	boolean debug = false;
         private boolean validate = false;
-	
+	QueryExec current;
 	
 	public Exec(MainFrame f,  String q, boolean b){
 		frame = f;
@@ -76,9 +76,22 @@ public class Exec extends Thread {
 		//frame.getPanel().display(res,frame);
 	}
 	
+        public void finish(boolean kill) {
+            if (kill) {
+                stop();
+            }
+            else if (current != null) {
+                current.finish();
+            }
+        }
+        
+        void setCurrent(QueryExec exec) {
+            current = exec;
+        }
 	
 	Mappings query(){
 		QueryExec exec =  QueryExec.create(frame.getMyCorese());
+                setCurrent(exec);
 		if (debug) debug(exec);
 		Date d1 = new Date();
 		try {

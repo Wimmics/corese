@@ -36,11 +36,16 @@ public class QueryExec {
     /**
      * Corese implementation
      */
-    public static QueryExec create(GraphEngine eng) {
-        GraphEngine engine = (GraphEngine) eng;
+    public static QueryExec create(GraphEngine engine) {
         QueryExec qe = new QueryExec();
         qe.add(engine);
         return qe;
+    }
+    
+    public void finish() {
+        if (exec != null) {
+            exec.finish();
+        }
     }
 
     /**
@@ -48,8 +53,7 @@ public class QueryExec {
      *
      * TODO: add is done in first engine (see constructor in set() )
      */
-    public void add(GraphEngine eng) {
-        GraphEngine engine = (GraphEngine) eng;
+    public void add(GraphEngine engine) {
         if (exec == null) {
             exec = engine.createQueryProcess();
             //exec.setListGroup(isListGroup);

@@ -76,13 +76,14 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.0 - Wimmics INRIA I3S - 2018-11-01";
+    private static final String TITLE = "Corese 4.0 - Wimmics INRIA I3S - 2018-11-11";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
     private ArrayList<Integer> nbreTab = new ArrayList<Integer>();
     private String lCurrentPath = "user/home";
     private String lPath;
+    private String fileName = "";
     //Variable true ou false pour déterminer le mode Kgram ou Corese
     private boolean isKgram = true;
     boolean trace = false;
@@ -335,7 +336,7 @@ public class MainFrame extends JFrame implements ActionListener {
         // s : texte par défaut dans la requête
         textQuery = str;
         //Crée un nouvel onglet Query
-        newQuery();
+        newQuery(str);
     }
 
     void setStyleSheet() {
@@ -369,11 +370,15 @@ public class MainFrame extends JFrame implements ActionListener {
     /**
      * Crée un onglet Query *
      */
-    public MyJPanelQuery newQuery() {
+    MyJPanelQuery newQuery(String query) {
+        return newQuery(query, "");
+    }
+    
+    public MyJPanelQuery newQuery(String query, String name) {
         nbTabs++;
         //supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la suite
         conteneurOnglets.remove(plus);
-        MyJPanelQuery temp = new MyJPanelQuery(this);
+        MyJPanelQuery temp = new MyJPanelQuery(this, query, name);
 
         monTabOnglet.add(temp);
         nbreTab.add(nbTabs);
@@ -886,36 +891,7 @@ public class MainFrame extends JFrame implements ActionListener {
             compile();
         } //sauvegarde la requête dans un fichier texte (.txt)
         else if (e.getSource() == saveQuery) {
-
-            // Créer un JFileChooser
-            JFileChooser filechoose = new JFileChooser();
-            // Le bouton pour valider l’enregistrement portera la mention enregistrer
-            String approve = "Save";
-            int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
-            // Si l’utilisateur clique sur le bouton enregistrer
-            if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
-                // Récupérer le nom du fichier qu’il a spécifié
-                String myFile = filechoose.getSelectedFile().toString();
-
-                if (!myFile.endsWith(RQ) && !myFile.endsWith(TXT)) {
-                    myFile = myFile + RQ;
-                }
-
-                try {
-                    // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
-                    FileWriter lu = new FileWriter(myFile);
-                    // Mettre le flux en tampon (en cache)
-                    BufferedWriter out = new BufferedWriter(lu);
-                    // Mettre dans le flux le contenu de la zone de texte
-                    out.write(current.getTextPaneQuery().getText());
-                    // Fermer le flux
-                    out.close();
-
-                } catch (IOException er) {
-                    LOGGER.error(er);
-                }
-
-            }
+          saveQuery();
         } else if (e.getSource() == loadStyle) {
             String style = loadText();
             defaultStylesheet = style;
@@ -924,31 +900,7 @@ public class MainFrame extends JFrame implements ActionListener {
             save(current.getTextAreaXMLResult().getText());
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
-            lPath = null;
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setMultiSelectionEnabled(true);
-            int returnValue = fileChooser.showOpenDialog(null);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File[] lFiles = fileChooser.getSelectedFiles();
-                for (File f : lFiles) {
-                    lPath = f.getAbsolutePath();
-                    if (lPath != null) {
-                        try {
-                            myCorese.load(lPath);
-                            appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
-                            appendMsg(myCapturer.getContent() + "\ndone.\n\n");
-                            ongletListener.getModel().addElement(lPath);
-                            boolean b = myCorese.runRuleEngine();
-                            if (b) {
-                                appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
-                            }
-                        } catch (EngineException | LoadException e1) {
-                            LOGGER.error(e1);
-                            appendMsg(e1.toString());
-                        }
-                    }
-                }
-            }
+            loadRunRule();
         } // Couper, copier, coller
         else if (e.getSource() == cut) {
             if (!nbreTab.isEmpty()) {
@@ -969,7 +921,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 String toDuplicate;
                 toDuplicate = current.getTextPaneQuery().getText();
                 textQuery = toDuplicate;
-                newQuery();
+                newQuery(textQuery);
             }
         } //Dupliquer une requête à partir du texte sélectionné
         else if (e.getSource() == duplicateFrom) {
@@ -977,7 +929,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 String toDuplicate;
                 toDuplicate = current.getTextPaneQuery().getSelectedText();
                 textQuery = toDuplicate;
-                newQuery();
+                newQuery(textQuery);
             }
         } //Commente une sélection dans la requête
         else if (e.getSource() == comment) {
@@ -1006,7 +958,7 @@ public class MainFrame extends JFrame implements ActionListener {
         } //crée un nouvel onglet requête
         else if (e.getSource() == newQuery) {
             textQuery = defaultQuery();
-            newQuery();
+            newQuery(textQuery);
         } //Applique les règles chargées
         else if (e.getSource() == runRules) {
             runRules(false);
@@ -1042,6 +994,69 @@ public class MainFrame extends JFrame implements ActionListener {
         } else if (itable.get(e.getSource()) != null) {
             String query = itable.get(e.getSource());
             execPlus(query);
+        }
+    }
+    
+    void loadRunRule() {
+        String lPath = null;
+        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        fileChooser.setMultiSelectionEnabled(true);
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File[] lFiles = fileChooser.getSelectedFiles();
+            for (File f : lFiles) {
+                lPath = f.getAbsolutePath();
+                if (lPath != null) {
+                    try {
+                        myCorese.load(lPath);
+                        appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
+                        appendMsg(myCapturer.getContent() + "\ndone.\n\n");
+                        ongletListener.getModel().addElement(lPath);
+                        boolean b = myCorese.runRuleEngine();
+                        if (b) {
+                            appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
+                        }
+                    } catch (EngineException | LoadException e1) {
+                        LOGGER.error(e1);
+                        appendMsg(e1.toString());
+                    }
+                }
+            }
+        }
+    }
+    
+    void saveQuery() {
+        // Créer un JFileChooser
+        JFileChooser filechoose = new JFileChooser(lCurrentPath);
+        // Le bouton pour valider l’enregistrement portera la mention enregistrer
+        String approve = "Save";
+        int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
+        // Si l’utilisateur clique sur le bouton enregistrer
+        if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
+            File file = filechoose.getSelectedFile();
+            lCurrentPath = file.getParent();
+            // Récupérer le nom du fichier qu’il a spécifié
+            String myFile = file.toString();
+
+            if (!myFile.endsWith(RQ) && !myFile.endsWith(TXT)) {
+                myFile = myFile + RQ;
+            }
+
+            try {
+                // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
+                FileWriter lu = new FileWriter(myFile);
+                // Mettre le flux en tampon (en cache)
+                BufferedWriter out = new BufferedWriter(lu);
+                // Mettre dans le flux le contenu de la zone de texte
+                out.write(current.getTextPaneQuery().getText());
+                current.setFileName(file.getName());
+                // Fermer le flux
+                out.close();
+
+            } catch (IOException er) {
+                LOGGER.error(er);
+            }
+
         }
     }
 
@@ -1399,6 +1414,7 @@ public class MainFrame extends JFrame implements ActionListener {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             //Voici le fichier qu'on a selectionné
             selectedFile = fileChooser.getSelectedFile();
+            setFileName(selectedFile.getName());
             lCurrentPath = selectedFile.getParent();
             FileInputStream fis = null;
             try {
@@ -1432,12 +1448,12 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void loadQuery() {
         textQuery = loadText();
-        newQuery();
+        newQuery(textQuery, getFileName());
     }
     
     void defQuery(String text, boolean run){
         textQuery = text;
-        MyJPanelQuery panel = newQuery();
+        MyJPanelQuery panel = newQuery(textQuery);
         if (run){
             panel.exec(this, text);
         }
@@ -1636,6 +1652,21 @@ public class MainFrame extends JFrame implements ActionListener {
         if (buffer != null) {
             buffer.set(event);
         }
+    }
+    
+    
+    /**
+     * @return the fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public static void main(String[] p_args) {

@@ -310,6 +310,12 @@ public class QuerySolver  implements SPARQLEngine {
             return (Binding) getCurrentEval().getEnvironment().getBind();
         }
         
+        public void finish() {
+            if (current != null) {
+                current.finish();
+            }
+        }
+        
         void setEval(Eval e) {
             current = e;
         }

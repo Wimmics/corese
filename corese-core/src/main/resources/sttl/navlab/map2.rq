@@ -1,8 +1,21 @@
-template st:map2 {
-    st:call-template(st:maplist, ?list)        
-} 
-where {
-    bind (st:get(st:location) as ?list)
-    filter (bound(?list) && xt:size(?list) > 0)
+#
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon))
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+template st:map2(?list) {
+  format {
+    ft:map2.html
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    coalesce(st:get(st:mapicon2), "/img/smarker.png")
+    st:plink(?r)
+  }
 }
+where {
 
+  values  (?r ?lat ?lon) { unnest(?list) }
+ 
+}

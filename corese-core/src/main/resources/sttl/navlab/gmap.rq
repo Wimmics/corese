@@ -1,11 +1,9 @@
 #
-# Geolocate resource on a map given lat et long
+# Geolocate resource on a map given lat et long (googlemap)
 #
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:gmap(?r, ?lat, ?lon, ?list) {
-
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script.js))
   
 format {
   ft:gmap.html
@@ -17,7 +15,7 @@ format {
   
   st:call-template(st:gmap2, ?list)
   
-  if (st:get(st:protocol, st:ajax), "", st:format(ft:script2.js))
+  "" # deprecated arg
         
   coalesce(st:get(st:mapsize), "mapmedium")
 }

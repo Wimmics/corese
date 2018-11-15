@@ -5,7 +5,7 @@
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:gmap2(?list) {
   format {
-    ft:map2.html
+    ft:gmap2.html
     
     st:number()
     str(?lat)

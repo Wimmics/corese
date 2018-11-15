@@ -6,7 +6,7 @@ prefix o: <http://dbpedia.org/ontology/>
 
 template st:glocate {
 
-  st:call-template(st:gmap, ?in, ?lat, ?lon, aggregate(?elem))
+  st:call-template(st:omap, ?in, ?lat, ?lon, aggregate(?elem))
   
 }
 where {

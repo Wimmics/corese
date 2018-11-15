@@ -13,7 +13,7 @@ format {
   coalesce(st:get(st:mapzoom), 7)  
   coalesce(st:get(st:mapicon1), "/img/smarker.png")
   
-  st:call-template(st:gmap2, ?rest)
+  st:call-template(st:map2, ?rest)
           
   coalesce(st:get(st:mapsize), "mapmedium")
 }

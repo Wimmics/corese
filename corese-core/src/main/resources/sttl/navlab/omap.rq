@@ -1,0 +1,12 @@
+#
+# Geolocate resource on a map given lat et long (openstreetmap)
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:omap(?r, ?lat, ?lon, ?list) {
+  
+    st:call-template(st:maplist, xt:cons(xt:list(?r, ?lat, ?lon), ?list))
+}
+where {
+
+}

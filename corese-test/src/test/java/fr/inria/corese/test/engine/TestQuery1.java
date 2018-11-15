@@ -289,7 +289,41 @@ public class TestQuery1 {
         return graph;
     }
     
-    
+     @Test 
+    public void testUpdate() throws EngineException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);        
+        String q = 
+                "select (us:foo(us:John) as ?g) where {}"
+                
+                + "function us:foo(?x) {"
+                + "let (?g = construct {} where {} ) {"
+                + "xt:focus(?g, query("
+                + "insert data { "
+                + "us:John rdfs:label 'John', 'Jack'"
+                + "us:Jim  rdfs:label 'Jim'"
+                + "} ;"
+                + "delete {?x rdfs:label ?name} insert {?x foaf:name ?name} "
+                + "where  {?x rdfs:label ?name}"
+                + ") ) ;"
+                + "?g"
+                + "}"
+                + "}" 
+               ;
+                
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?g");
+        Graph gg = (Graph) dt.getPointerObject();
+        
+        String qq = "select ?p (count(*) as ?c) {"
+                + "?x ?p ?y"
+                + "}"
+                + "group by ?p order by ?c ";
+        QueryProcess exec2 = QueryProcess.create(gg);      
+        Mappings m = exec2.query(qq);
+        assertEquals(1, m.get(0).getValue("?c").intValue());
+        assertEquals(2, m.get(1).getValue("?c").intValue());
+    }
     
      @Test
      public void testOverload7() throws EngineException, LoadException {

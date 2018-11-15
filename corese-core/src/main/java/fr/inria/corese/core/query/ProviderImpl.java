@@ -209,6 +209,9 @@ public class ProviderImpl implements Provider {
         Mappings res = null, sol = null;
         
         for (Node service : list) {
+            if (eval.isStop()) {
+                break;
+            }
             g.getEventManager().process(Event.Service, service);
 
             // select appropriate subset of distinct Mappings with service URI 
@@ -219,6 +222,9 @@ public class ProviderImpl implements Provider {
             int size = 0;
             
             while (size < mappings.size()) {
+                if (eval.isStop()) {
+                    break;
+                }
                 // consider subset of Mappings of size slice
                 // it may produce bindings for target service
                 Mappings mm = send(compiler, service, q, mappings, eval.getEnvironment(), size, size + slice);
@@ -322,6 +328,9 @@ public class ProviderImpl implements Provider {
         } else {
             Mappings res = null;
             for (Node service : list) {
+                if (eval.isStop()) {
+                    break;
+                }
                 g.getEventManager().process(Event.Service, service);
                 Mappings sol = send(compiler, service, q, map, eval.getEnvironment(), min, max);
                 eval.getVisitor().service(eval, service, exp, sol);

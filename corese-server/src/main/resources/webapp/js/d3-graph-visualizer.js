@@ -270,7 +270,8 @@ class D3GraphVisualizer {
     /**
      * \param svgId : id of the svg element to draw the graph (do not forget the #).
      */
-    static drawRdf(results, svgId) {
+    static drawRdf(_results, svgId) {
+        var results = _results;
         var visualizer = new D3GraphVisualizer();
         var confGraphModal;
         var graph = d3.select(svgId);
@@ -306,7 +307,7 @@ class D3GraphVisualizer {
         }
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
-            link.attr("d", function(edge, i, edges) {
+            links.attr("d", function(edge, i, edges) {
                 var dx = edge.source.x - edge.target.x;
                 var dy = edge.source.y - edge.target.y;
                 var r = 10 * Math.sqrt(dx*dx + dy*dy);
@@ -315,7 +316,7 @@ class D3GraphVisualizer {
                 return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
             });
 
-            node
+            nodes
                 .attr("cx", function (d) {
                     return d.x * scale;
                 })
@@ -379,7 +380,7 @@ class D3GraphVisualizer {
                             (checkbox.property("checked")) ? visibleNodes.add(group) : undefined;
                         }
                     );
-                    var nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden"
+                    const nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden";
                     text.attr(
                         "visibility",
                         (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
@@ -405,7 +406,7 @@ class D3GraphVisualizer {
         );
 
 
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
+        var color = d3.scaleOrdinal( d3.schemeCategory20 );
 
         visualizer.simulation = d3.forceSimulation(results.nodes)
             .force("link", d3.forceLink().id(function (d) {
@@ -444,7 +445,7 @@ class D3GraphVisualizer {
         ;
 
 
-        var link = g.append("g")
+        var links = g.append("g")
             .attr("class", "links")
             .selectAll("path")
             .data(results.links)
@@ -461,18 +462,18 @@ class D3GraphVisualizer {
             )
             .attr("id", d => `${d.id}_edge` );
 
-        link.append("title")
+        links.append("title")
             .text(function (d) {
                 return d.label;
             });
-
-        var node = g.append("g")
+        var textNodes;
+        var nodes = g.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(results.nodes)
             .enter()
             .append("g")
-            .attr("class", "node")
+            .attr("class", "nodes")
             .append("circle")
             .attr(
                 "class",
@@ -485,23 +486,41 @@ class D3GraphVisualizer {
                 }
             )
             .attr("r", visualizer.model.nodeRadius)
-            .each((d, i, nodes) => {
-                var current = d3.select(nodes[i]);
-                var father = d3.select(current.node().parentNode);
-                var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getGroups("nodes")));
-                if (d.bg_image === undefined) {
-                    current.attr("fill", color(d.group));
-                    current.attr("r", 5);
-                } else {
-                    current.attr("r", visualizer.model.nodeRadius);
-                    var width = Math.sqrt(2) * current.attr("r");
-                    father.append("image")
-                        .attr("xlink:href", d.bg_image)
-                        .attr("height", width)
-                        .attr("width", width)
-                        .attr("pointer-events", "none");
-                }
-            })
+            .each(
+                    (d, i, nodes) => {
+                        var current = d3.select(nodes[i]);
+                        var father = d3.select(current.node().parentNode);
+                        var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getGroups("nodes")));
+                        d.colorMap = color;
+                        if (d.bg_image === undefined) {
+                            current.attr("fill", color(d.group));
+                            current.attr("r", 5);
+                        } else {
+                            current.attr("r", visualizer.model.nodeRadius);
+                            var width = Math.sqrt(2) * current.attr("r");
+                            father.append("image")
+                                .attr("xlink:href", d.bg_image)
+                                .attr("height", width)
+                                .attr("width", width)
+                                .attr("pointer-events", "none");
+                        }
+                    }
+            )
+            .each(
+                (_links => {
+                 return (d, i, nodes) => {
+                    var neighbors = new Set();
+
+                    _links.forEach( link => {
+                        if (link.source.id === d.id || link.target.id == d.id) {
+                            neighbors.add( link.source.id );
+                            neighbors.add( link.target.id );
+                        }
+                    });
+                    d.neighbors = neighbors;
+                 }
+                })(results.links)
+            )
             .call(d3.drag()
                 .on("start", visualizer.dragstarted(visualizer.simulation))
                 .on("drag", visualizer.dragged)
@@ -509,12 +528,41 @@ class D3GraphVisualizer {
             .on("click", (d) => {
                 if (d.url  !== undefined) window.open(d.url);
                 if (d.link !== undefined) trans(d.link);
+            })
+            .on("mouseover", (d, i , nodes) => {
+                var center = d3.select(nodes[i]);
+                var datum = center.datum();
+                var counter = 0;
+                nodes.forEach( node => {
+                    if (datum.neighbors.has(d3.select(node).datum().id)) {
+                        d3.select(node).attr("fill", "red");
+                        d3.select(node).attr("background-color", "yellow");
+                        d3.select(textNodes.nodes()[counter]).attr("visibility", "visible");
+                    }
+                    counter++;
+                })
+
+            })
+            .on("mouseout", (d, i, nodes) => {
+                var center = d3.select(nodes[i]);
+                var datum = center.datum();
+                var counter = 0;
+                nodes.forEach( node => {
+                    var datumNode = d3.select(node).datum();
+                    if (datum.neighbors.has(datumNode.id)) {
+                        d3.select(node).attr("fill", datumNode.colorMap(datumNode.group));
+                        d3.select(node).attr("background-color", "white");
+                        d3.select(textNodes.nodes()[counter]).attr("visibility", "hidden");
+                    }
+                    counter++;
+                })
+
             });
-        node.append("title")
+        nodes.append("title")
             .text(function (d) {
                 return d.label;
             });
-        var textNodes = g.append("g").attr("class", "texts").selectAll("text")
+        textNodes = g.append("g").attr("class", "texts").selectAll("text")
             .data(visualizer.simulation.nodes())
             .enter().append("text")
             .attr("class", (edge, i, edges) => {
@@ -544,13 +592,6 @@ class D3GraphVisualizer {
         var displayNodeLabels = false;
 
         graph.updateConfiguration();
-        // var width = +graph.node().getBBox().width;
-        // var height = +graph.node().getBBox().height;
-        // visualizer.simulation
-        //     .force("link")
-        //     .links(results.links);
-        // visualizer.simulation
-        //     .force("center", d3.forceCenter(width / 2, height / 2));
         var pathLabels = graph.append("defs").attr("class", "paths").selectAll("path")
             .data(results.links)
             .enter().append("path")

@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
@@ -92,6 +93,7 @@ public class WorkflowParser {
     public static final String FORMAT_PARAM = Context.STL_FORMAT; //PREF +"format";
     public static final String LOAD_PARAM   = Context.STL_PARAM;
     public static final String MODE_PARAM   = Context.STL_MODE;
+    public static final String TEXT_PARAM   = Context.STL_ARG;
     
     static final String[] propertyList = {NAME, DEBUG, DISPLAY, RESULT, MODE, COLLECT};
 
@@ -625,6 +627,13 @@ public class WorkflowParser {
             if (format != null) {
                 load.setRequiredFormat(format.getLabel());
             }
+            w.add(load);
+        }
+        
+        // get text to load from Context st:arg
+        String text = getStringParam(TEXT_PARAM);
+        if (text != null) {
+            LoadProcess load = new LoadProcess(text, Loader.UNDEF_FORMAT);           
             w.add(load);
         }
         

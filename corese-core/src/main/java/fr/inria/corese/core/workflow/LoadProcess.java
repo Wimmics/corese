@@ -2,7 +2,6 @@ package fr.inria.corese.core.workflow;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
@@ -35,6 +34,9 @@ public class LoadProcess extends WorkflowProcess {
     public LoadProcess(String str, int format){
         this.text = str;
         this.format = format;
+        if (path == null) {
+            path = "";
+        }
     }
     
     public LoadProcess(String path, String name, boolean rec){
@@ -80,7 +82,7 @@ public class LoadProcess extends WorkflowProcess {
         boolean isURL = true;
         try {
             
-            if (text != null){
+            if (text != null && ! hasMode()){
                 loadString(ld);
             }
             else {
@@ -136,14 +138,22 @@ public class LoadProcess extends WorkflowProcess {
     }
     
     
-     void loadSPARQLasSPIN(String uri, Graph g) throws EngineException, LoadException{
-        QueryLoad ql = QueryLoad.create();
-        String str = ql.readWE(uri);
+    void loadSPARQLasSPIN(String uri, Graph g) throws EngineException, LoadException{
+        String str = getText(uri);
         if (str != null){
             SPINProcess sp = SPINProcess.create();
             sp.setDefaultBase(path);
             sp.toSpinGraph(str, g);        
         }              
+    }
+    
+    String getText(String uri) throws LoadException {
+        if (text != null) {
+            return text;
+        }
+         QueryLoad ql = QueryLoad.create();
+         String str = ql.readWE(uri);
+         return str;
     }
     
     @Override

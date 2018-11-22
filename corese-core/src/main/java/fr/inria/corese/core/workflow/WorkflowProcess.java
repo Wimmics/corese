@@ -104,6 +104,10 @@ public class WorkflowProcess implements AbstractProcess {
         return false;
     }
     
+    public boolean isEmpty() {
+        return false;
+    }
+    
     public void init(boolean b){
         if (isVisitable(b)){
             initialize();

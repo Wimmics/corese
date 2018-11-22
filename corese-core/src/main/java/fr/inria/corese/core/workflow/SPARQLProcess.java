@@ -53,6 +53,11 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     @Override
+    public boolean isEmpty() {
+        return query == null;
+    }
+    
+    @Override
     void start(Data data){
         if (isRecDebug() || isRecDisplay()){
             System.out.println(getWorkflow().getPath());
@@ -105,6 +110,9 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     String tuneQuery(QueryProcess exec, Data data) {
+        if (getQuery() == null) {
+            return "select * where {?s ?p ?o} limit 10";
+        }
         return tune(exec, getQuery());
     }
     

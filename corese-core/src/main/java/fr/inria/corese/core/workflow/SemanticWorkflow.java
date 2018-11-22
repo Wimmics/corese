@@ -59,7 +59,21 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
     
     public SemanticWorkflow addQuery(String q, int n){
-       return add(new SPARQLProcess(q), n);
+        SPARQLProcess wp = getEmptyQuery();
+        if (wp == null) {
+            return add(new SPARQLProcess(q), n);
+        }
+        wp.setQuery(q);
+        return this;
+    }
+    
+    SPARQLProcess getEmptyQuery() {
+        for (WorkflowProcess wp : getProcessList()) {
+            if (wp instanceof SPARQLProcess && wp.isEmpty()) {
+                return (SPARQLProcess) wp;
+            }
+        }
+        return null;
     }
     
     public SemanticWorkflow addQuery(String q, String path){
@@ -292,6 +306,16 @@ public class SemanticWorkflow extends  CompositeProcess {
     
     public boolean hasTransformation(){  
         return getTransformation() != null;
+    }
+    
+    public boolean hasResult() {
+        WorkflowProcess wp = getProcessLast();
+        if (wp == null){
+            return false;
+        }
+        else {
+            return (wp instanceof ResultProcess);
+        } 
     }
 
     /**

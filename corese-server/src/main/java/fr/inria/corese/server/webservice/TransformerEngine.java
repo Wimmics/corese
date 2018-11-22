@@ -12,6 +12,7 @@ import fr.inria.corese.core.workflow.WorkflowParser;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.ResultFormat;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -94,19 +95,20 @@ public class TransformerEngine {
         IDatatype uridt   = context.get(Context.STL_URI);
         String query      = (querydt == null) ? null : querydt.stringValue();
         String transform  = context.getTransform();
-        
+        logger.info("Parse workflow: " + swdt);
         if (swdt != null) {
             // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
+            //parser.setDebug(true);
             parser.parse(profile.getNode(swdt));           
             query = getQuery(wp, query);
             if (query != null) {
                 logger.warn("Workflow query: " + query);
                 wp.addQuery(query, 0);
-            }
-            
-        } else if (query != null) {          
+            }  
+        } 
+        else if (query != null) {          
             if (transform == null) {
                 logger.info("SPARQL endpoint");
                 wp.addQueryMapping(query);
@@ -153,7 +155,7 @@ public class TransformerEngine {
      */
     void defaultTransform(SemanticWorkflow wp, String transform) {
         boolean isDefault = false;
-        if (transform == null && !wp.hasTransformation()) {
+        if (transform == null && !wp.hasTransformation() && !wp.hasResult()) {
             isDefault = true;
             transform = fr.inria.corese.core.transform.Transformer.SPARQL;
         }

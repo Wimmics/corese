@@ -824,6 +824,17 @@ sw:body (
 .
 
 
+st:spin a st:Server ;
+st:workflow st:spin ;
+st:service "spin" ;
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load    ; sw:mode sw:spin ] # sw:uri = st:param | text = st:arg
+    [ a sw:Transformation ; sw:uri st:turtle ] 
+)
+.
+
+
 
 st:sensor a st:Server ;
 st:service "sensor" ;

@@ -490,7 +490,7 @@ public class Eval implements ExpType, Plugin {
      * exp stack
      */
    
-    public Eval copy(Memory m, Producer p) {
+    Eval copy(Memory m, Producer p) {
         return copy(m, p, getEvaluator(), query, false);
     }
 

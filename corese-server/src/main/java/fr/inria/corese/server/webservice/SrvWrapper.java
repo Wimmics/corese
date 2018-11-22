@@ -66,7 +66,7 @@ public class SrvWrapper {
 
 		Response rs;
 		if (path.equalsIgnoreCase("template")) {
-			rs = new Transformer().queryGETHTML(request, profile, resource, mode, param, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Transformer().queryGETHTML(request, profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPIN(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -110,7 +110,7 @@ public class SrvWrapper {
 		Response rs;
 
 		if (path.equalsIgnoreCase("template")) {
-			rs = new Transformer().queryPOSTHTML(request, profile, resource, mode, param, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Transformer().queryPOSTHTML(request, profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPINPOST(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -153,7 +153,7 @@ public class SrvWrapper {
 		Response rs;
 
 		if (path.equalsIgnoreCase("template")) {
-			rs = new Transformer().queryPOSTHTML_MD(request, profile, resource, mode, param, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Transformer().queryPOSTHTML_MD(request, profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPINPOST_MD(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {

@@ -968,17 +968,18 @@ public class Eval implements ExpType, Plugin {
                     break;
 
                 case GRAPH:  
-                    if (!true) {
-                        backtrack = genGraph(p, gNode, exp, stack, n);
-                    } 
-                    else {
+//                    if (!true) {
+//                        backtrack = genGraph(p, gNode, exp, stack, n);
+//                    } 
+//                    else 
+                    {
                         Node gg = getNode(exp.getGraphName());
                         if (gg != null && p.isProducer(gg)) {
                             // graph $path { } or named graph in GraphStore 
                             backtrack = inGraph(p, p.getProducer(gg, memory),
                                     gNode, exp, stack, n);
                         } else {
-                            backtrack = graph(gNode, exp, stack, n);
+                            backtrack = graph(p, gNode, exp, stack, n);
                         }
                     }
                     break;
@@ -989,7 +990,7 @@ public class Eval implements ExpType, Plugin {
 
                 case GRAPHNODE:
 
-                    backtrack = graphNode(gNode, exp, stack, n);
+                    backtrack = graphNode(p, gNode, exp, stack, n);
                     break;
                                  
                 case UNION:
@@ -1001,7 +1002,7 @@ public class Eval implements ExpType, Plugin {
                 case BIND:
 
                     if (gNode != null && !env.isBound(gNode)) {
-                        backtrack = graphNodes(gNode, gNode, exp, stack, n, n);
+                        backtrack = graphNodes(p, gNode, gNode, exp, stack, n, n);
                     } else {
                         switch (exp.type()) {
                             case UNION:
@@ -1034,7 +1035,7 @@ public class Eval implements ExpType, Plugin {
                     if (gNode != null && !env.isBound(gNode)) {
                         // bind graph ?g before watch
                         // use case: graph ?g {option {?x ?p ?y} !bound(?x) ?z ?q ?t}
-                        backtrack = graphNodes(gNode, gNode, exp, stack, n, n);
+                        backtrack = graphNodes(p, gNode, gNode, exp, stack, n, n);
                     } else {
                         backtrack = watch(p, gNode, exp, stack, n);
                     }
@@ -2210,7 +2211,7 @@ public class Eval implements ExpType, Plugin {
      * exp is graph ?g { PAT } set GRAPHNODE(?g) before and GRAPHNODE(?gNode)
      * after
      */
-    private int graph(Node gNode, Exp exp, Stack stack, int n) {
+    private int graph(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         getVisitor().graph(this, exp.getGraphName(), exp, null);
         int backtrack = n - 1;
         // set GRAPHNODE
@@ -2228,14 +2229,14 @@ public class Eval implements ExpType, Plugin {
             stack.add(n + 1, exp.first().rest());
         }
         // do next
-        backtrack = eval(gNode, stack, n);
+        backtrack = eval(p, gNode, stack, n);
         return backtrack;
     }
 
     /**
      * exp is GRAPHNODE(?g) set current gNode as ?g
      */
-    private int graphNode(Node gNode, Exp exp, Stack stack, int n) {
+    private int graphNode(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         // two cases:
         // 1. leave graph ?g {} reset gNode to former graph node (may be null)
         // 2. enter graph ?g {} set gNode to ?g
@@ -2252,11 +2253,11 @@ public class Eval implements ExpType, Plugin {
                 // check that ?g is in from 
                 // use case:
                 // graph ?g {{select * where {?x ?p ?g}}}
-                if (!producer.isGraphNode(gNode, from, env)) {
+                if (!p.isGraphNode(gNode, from, env)) {
                     return env.getIndex(gNode);
                 }
             } else {
-                return graphNodes(gNode, nextGraph, exp, stack, n, n + 1);
+                return graphNodes(p, gNode, nextGraph, exp, stack, n, n + 1);
             }
         } // set new graph 
         else if (env.isBound(nextGraph)) {
@@ -2264,7 +2265,7 @@ public class Eval implements ExpType, Plugin {
             // use case:
             // ?x ?p ?g . graph ?g { }
             //if (! producer.isGraphNode(nextGraph, from, env)){
-            if (!producer.isGraphNode(nextGraph, query.getFrom(nextGraph), env)) {
+            if (!p.isGraphNode(nextGraph, query.getFrom(nextGraph), env)) {
                 return env.getIndex(nextGraph);
             }
         }
@@ -2272,15 +2273,15 @@ public class Eval implements ExpType, Plugin {
         // leaving: set new graph 
         if (exp.status()) {
             // leave graph ?g {} ; restore previous graph node (or null)
-            backtrack = eval(nextGraph, stack, n + 1);
+            backtrack = eval(p, nextGraph, stack, n + 1);
         } else if (query.getFrom(nextGraph).size() > 0) {
             // from named graph ?g {}
             // enumerate target named graphs
-            backtrack = graphNodes(nextGraph, nextGraph, exp, stack, n, n + 1);
+            backtrack = graphNodes(p, nextGraph, nextGraph, exp, stack, n, n + 1);
         } else {
             // graph ?g {}
             // variable ?g bound by target pattern
-            backtrack = eval(nextGraph, stack, n + 1);
+            backtrack = eval(p, nextGraph, stack, n + 1);
         }
 
         return backtrack;
@@ -2294,9 +2295,9 @@ public class Eval implements ExpType, Plugin {
      * use case: graph ?gNode { not {} } use case: graph ?gNode { optional {?x p
      * ?y } !bound(?y) ?z q ?t} next is n
      */
-    private int graphNodes(Node gNode, Node nextGraph, Exp exp, Stack stack, int n, int next) {
+    private int graphNodes(Producer p, Node gNode, Node nextGraph, Exp exp, Stack stack, int n, int next) {
         Memory env = memory;
-        Producer prod = producer;
+        Producer prod = p;
         Query qq = query;
         Matcher mm = match;
         int backtrack = n - 1;
@@ -2309,7 +2310,7 @@ public class Eval implements ExpType, Plugin {
                     return STOP;
                 }
                 // set new/former gNode
-                backtrack = eval(nextGraph, stack, next);
+                backtrack = eval(p, nextGraph, stack, next);
                 env.pop(gNode);
                 if (backtrack < next - 1) {
                     return backtrack;

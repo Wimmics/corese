@@ -30,7 +30,7 @@ import fr.inria.corese.kgram.api.query.Binder;
  */
 public class Mappings extends PointerObject
         implements Comparator<Mapping>, Iterable<Mapping> {
-   
+ 
     private static final String NL = System.getProperty("line.separator");    
     private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
@@ -62,6 +62,7 @@ public class Mappings extends PointerObject
     private int nbInsert = 0;
     private Node templateResult;
     private boolean isFake = false;
+    private boolean error = false;
     private Mapping sm1;
     private Mapping sm2;
     private Node result;
@@ -1577,6 +1578,19 @@ public class Mappings extends PointerObject
         this.binding = binding;
     }
  
+    /**
+     * @return the error
+     */
+    public boolean isError() {
+        return error;
+    }
 
+    /**
+     * @param error the error to set
+     */
+    public void setError(boolean error) {
+        this.error = error;
+    }
+  
 
 }

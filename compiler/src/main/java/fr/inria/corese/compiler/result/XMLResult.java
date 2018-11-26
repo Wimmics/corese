@@ -34,6 +34,8 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SPARQL XML Results Format Parser into Mappings
@@ -42,6 +44,8 @@ import java.util.Collection;
  *
  */
 public class XMLResult {
+
+    private static Logger logger = LoggerFactory.getLogger(XMLResult.class);
 
     // create target Node
     Producer producer;
@@ -56,6 +60,7 @@ public class XMLResult {
     private static final int BNODE = 5;
     private static final int BOOLEAN = 6;
     private boolean debug = false;
+    private boolean trapError = false;
 
     public XMLResult() {
         init();
@@ -89,7 +94,8 @@ public class XMLResult {
     /**
      * parse SPARQL XML Result as Mappings
      */
-    public Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException {
+    public Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException 
+    {
         if (debug) {
             System.out.println("start parse XML result");
         }
@@ -98,11 +104,24 @@ public class XMLResult {
         MyHandler handler = new MyHandler(map);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
-        SAXParser parser = factory.newSAXParser();
-        InputStreamReader r = new InputStreamReader(stream, "UTF-8");
-        parser.parse(new InputSource(r), handler);
-        complete(map);
-        return map;
+        try {
+            SAXParser parser = factory.newSAXParser();
+            InputStreamReader r = new InputStreamReader(stream, "UTF-8");
+            parser.parse(new InputSource(r), handler);
+            complete(map);
+            return map;
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            if (isTrapError()) {                
+                logger.error(e.toString());
+                complete(map);
+                map.setError(true);
+                System.out.println("Return partial result of size: " + map.size());
+                return map;
+            }
+            else {
+                throw e;
+            }
+        }
     }
 
     public Collection<Node> getVariables() {
@@ -341,5 +360,19 @@ public class XMLResult {
         FileInputStream stream;
         stream = new FileInputStream(path);
         return stream;
+    }
+    
+        /**
+     * @return the trapError
+     */
+    public boolean isTrapError() {
+        return trapError;
+    }
+
+    /**
+     * @param trapError the trapError to set
+     */
+    public void setTrapError(boolean trapError) {
+        this.trapError = trapError;
     }
 }

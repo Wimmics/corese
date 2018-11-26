@@ -224,6 +224,11 @@ public class Term extends Expression {
             case ExprType.XT_PRINT:
             case ExprType.XT_PRETTY:
                 return new Display(name);
+            case ExprType.XT_XML:
+            case ExprType.XT_JSON:
+                return new ResultFormater(name);
+            case ExprType.XT_SPIN:
+                return new SPINFormater(name);
             case ExprType.EXTERNAL:
                 return new Extern(name);
             case ExprType.HASH:

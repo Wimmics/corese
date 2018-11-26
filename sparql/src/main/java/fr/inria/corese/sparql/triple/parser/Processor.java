@@ -387,6 +387,9 @@ public class Processor {
         public static final String XT_DISPLAY 	= EXT + "display";
         public static final String XT_PRINT 	= EXT + "print";
         static final String XT_PRETTY   = EXT + "pretty";
+        static final String XT_XML      = EXT + "xml";
+        static final String XT_JSON     = EXT + "json";
+        static final String XT_SPIN     = EXT + "spin";        
         static final String XT_GDISPLAY = EXT + "gdisplay";
         static final String XT_GPRINT 	= EXT + "gprint";
         static final String XT_TUNE 	= EXT + "tune";
@@ -883,6 +886,9 @@ public class Processor {
                 defoper(XT_PRETTY, ExprType.XT_PRETTY);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_PRINT,  ExprType.XT_PRINT);  
+                defoper(XT_XML,    ExprType.XT_XML);
+                defoper(XT_JSON,   ExprType.XT_JSON);
+                defoper(XT_SPIN,   ExprType.XT_SPIN);
                 defoper(XT_GDISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_GPRINT, ExprType.XT_PRINT);  
                 defoper(XT_TUNE,   ExprType.XT_TUNE); 

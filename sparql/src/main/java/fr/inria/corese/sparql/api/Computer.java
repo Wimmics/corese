@@ -4,7 +4,6 @@ package fr.inria.corese.sparql.api;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.core.Eval;
 
 /**
  * Interface for Interpreter

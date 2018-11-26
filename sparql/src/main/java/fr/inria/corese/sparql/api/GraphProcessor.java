@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.api;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mappings;
 
 /**
  *
@@ -15,6 +16,10 @@ public interface GraphProcessor {
     IDatatype write(IDatatype dtfile, IDatatype dt); 
     
     IDatatype format(IDatatype[] ldt);
+    
+    IDatatype format(Mappings map, int format);
+    
+    IDatatype spin(IDatatype dt);
         
     IDatatype similarity(Environment env, Producer p);
     

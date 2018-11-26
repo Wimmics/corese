@@ -378,6 +378,9 @@ public class ProviderImpl implements Provider {
                    logger.info("** Provider result: \n" + res.size()); 
                 }
             }
+            if (res != null && res.isError()) {
+                logger.info("Parse error in result of: " + serv.getLabel());
+            }
             return res;
         } catch (IOException e) {
             logger.error(q.getAST().toString(), e);
@@ -426,9 +429,10 @@ public class ProviderImpl implements Provider {
     
     Mappings send(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getAST();
+        boolean trap = ast.getGlobalAST().hasMetadata(Metadata.FEDERATE) || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
-        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q, serv, env));
-        return parse(stream);
+        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q, serv, env));       
+        return parse(stream, trap);
     }
 
     /**
@@ -448,9 +452,10 @@ public class ProviderImpl implements Provider {
         return map;
     }
 
-    Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException {
+    Mappings parse(InputStream stream, boolean trap) throws ParserConfigurationException, SAXException, IOException {
         ProducerImpl p = ProducerImpl.create(Graph.create());
         XMLResult r = SPARQLResult.create(p);
+        r.setTrapError(trap);
         Mappings map = r.parse(stream);
         return map;
     }

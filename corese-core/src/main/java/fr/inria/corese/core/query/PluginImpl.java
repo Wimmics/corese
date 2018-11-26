@@ -53,9 +53,11 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
+import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -63,6 +65,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import static fr.inria.corese.kgram.api.core.Pointerable.GRAPH_POINTER;
+import java.util.logging.Level;
 
 
 /**
@@ -447,6 +451,24 @@ public class PluginImpl
                 return pt.eval(exp, env, p, param);  
         }
 
+    }
+    
+    @Override
+    public IDatatype spin(IDatatype dt) {
+        SPINProcess sp = SPINProcess.create();
+        try {
+            Graph g = sp.toSpinGraph(dt.stringValue());
+            return DatatypeMap.createObject(g);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype format(Mappings map, int format) {
+        ResultFormat ft = ResultFormat.create(map, format);
+        return DatatypeMap.newInstance(ft.toString());
     }
     
     @Override

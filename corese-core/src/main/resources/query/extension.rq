@@ -27,28 +27,12 @@ function xt:rdfxml() {
     st:apply-templates-with(st:rdfxml)
 }
 
-function xt:json() {  
-    st:apply-templates-with(st:json)
-}
-
-function xt:json(?x) {  
-    st:apply-templates-with(st:json, ?x)
-}
-
 function xt:owl() {  
     st:apply-templates-with(st:owl)
 }
 
 function xt:owl(?x) {  
     st:apply-templates-with(st:owl, ?x)
-}
-
-function xt:spin() {  
-    st:apply-templates-with(st:spin)
-}
-
-function xt:spin(?x) {  
-    st:apply-templates-with(st:spin, ?x)
 }
 
 function st:list(?t) { 

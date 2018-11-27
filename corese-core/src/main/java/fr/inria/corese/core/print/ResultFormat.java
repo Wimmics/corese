@@ -10,25 +10,16 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.util.MappingsGraph;
+import fr.inria.corese.sparql.api.ResultFormatDef;
 import java.util.HashMap;
 
 /**
  * Select Result format according to query form and @display annotation.,
  * Olivier Corby Edelweiss INRIA 2011 - Wimmics 2016
  */
-public class ResultFormat {
-
-    public static final int UNDEF_FORMAT = -1;
+public class ResultFormat implements ResultFormatDef {
     
-    public static final int RDF_XML_FORMAT = 1;
-    public static final int TURTLE_FORMAT  = 2;
-    public static final int JSON_LD_FORMAT = 3;
-    
-    public static final int XML_FORMAT     = 11;
-    public static final int RDF_FORMAT     = 12;
-    public static final int JSON_FORMAT    = 13;
-    
-    public static int DEFAULT_SELECT_FORMAT = XML_FORMAT;
+    public static int DEFAULT_SELECT_FORMAT    = XML_FORMAT;
     public static int DEFAULT_CONSTRUCT_FORMAT = RDF_XML_FORMAT;
     
     Mappings map;

@@ -75,6 +75,7 @@ public class Transformer {
             @FormParam("uri") String resource, // query + transform
             @FormParam("mode") String mode, 
             @FormParam("param") String param, 
+            @FormParam("arg")       String arg,
             @FormParam("format") String format, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query)
@@ -87,6 +88,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setArg(arg);
         par.setFormat(format);
         par.setDataset(from, named);
         par.setRequest(request);
@@ -102,6 +104,7 @@ public class Transformer {
             @FormDataParam("uri") String resource,
             @FormDataParam("mode") String mode,
             @FormDataParam("param") String param,
+            @FormDataParam("arg")       String arg,
             @FormDataParam("format") String format,
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
@@ -114,6 +117,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setArg(arg);
         par.setFormat(format);
         par.setDataset(toStringList(from), toStringList(named));
         par.setRequest(request);
@@ -128,6 +132,7 @@ public class Transformer {
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 
             @QueryParam("param") String param, 
+            @QueryParam("arg") String arg, 
             @QueryParam("format") String format, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
@@ -140,6 +145,7 @@ public class Transformer {
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
+        par.setArg(arg);
         par.setFormat(format);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);

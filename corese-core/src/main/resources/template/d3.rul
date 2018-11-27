@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Oct 26 15:33:24 CEST 2018
+Tue Nov 27 10:05:26 CET 2018
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -114,7 +114,7 @@ template st:nodes {
      format {
             '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
             ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
-             if (isURI(?s), us:uri(?s), "")
+             us:url(?s)
             coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
       }
         
@@ -129,11 +129,11 @@ where {
 
 # st:link : service?uri=...&profile=...
 # st:url  : URL either ?s itself or a proxy URL
-function us:uri(?s) {
+function us:url(?s) {
     coalesce(
         st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', st:cget(st:url, ?s)),
-        st:format(',  "url": "%s"', ?s)
+        st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
+        if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
     )
 }
 ]]>
@@ -200,7 +200,6 @@ function us:nodeClass(?s) {
         if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode") ) )
 } 
 
-
 function us:prefix(?p) {
     if (strstarts(?p, rdf:),  "rdf", 
     if (strstarts(?p, rdfs:), "rdfs", 
@@ -218,6 +217,7 @@ function us:edgeClass(?g, ?p) {
 function us:edgeGroup(?g, ?p) {
     coalesce(st:getgroup(?g), us:prefix(?p))
 }
+    
     
 ]]>
 </body>

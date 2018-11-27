@@ -37,9 +37,10 @@ public class Metadata extends ASTObject
     public static final int ENCODING= 20;
     public static final int DB      = 21;
     public static final int DB_FACTORY = 22;
-    public static final int ALGEBRA     = 23;
+    public static final int ALGEBRA = 23;
     public static final int BOUNCE  = 24;
-    public static final int SPARQL10  = 25;
+    public static final int SPARQL10= 25;
+    public static final int TRAP    = 26;    
     
     public static final int EVENT   = 50;
 //    public static final int BEFORE  = 51;
@@ -116,6 +117,7 @@ public class Metadata extends ASTObject
         define("@algebra",  ALGEBRA); 
         define("@metadata", METADATA);      
         define("@visitor",  VISITOR); 
+        define("@trap",     TRAP); 
         
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  

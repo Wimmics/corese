@@ -16,11 +16,9 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.Date;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +50,11 @@ public class SPARQLProcess extends  WorkflowProcess {
     public SPARQLProcess(String q, String path){
         this.query = q;
         this.path = path;
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return query == null;
     }
     
     @Override
@@ -107,6 +110,9 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     String tuneQuery(QueryProcess exec, Data data) {
+        if (getQuery() == null) {
+            return "select * where {?s ?p ?o} limit 10";
+        }
         return tune(exec, getQuery());
     }
     

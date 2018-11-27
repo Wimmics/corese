@@ -304,9 +304,8 @@ public class Memory extends PointerObject implements Environment {
      */
     void copyInto(Memory mem, Exp exp) {
         if (hasBind()) {
-            mem.copy(bind, exp);
+            mem.copy(getBind(), exp);
         } 
-        //share(mem.getBind(), getBind());
         mem.share(this);
         copyInto(mem);
     }
@@ -334,7 +333,6 @@ public class Memory extends PointerObject implements Environment {
                 push(qn, bind.get(var));
             }
         }
-        //setBind(bind);
     }
     
     void copyInto(Memory mem) {
@@ -348,7 +346,8 @@ public class Memory extends PointerObject implements Environment {
     }
        
     /**
-     * outNode is query Node in this Memory subNode is query Node in mem Memory
+     * outNode is query Node in this Memory 
+     * subNode is query Node in mem Memory
      */
     void copyInto(Node outNode, Node subNode, Memory mem, int n) {
         if (outNode != null) {
@@ -362,15 +361,6 @@ public class Memory extends PointerObject implements Environment {
                 if (tNode != null) {
                     mem.push(subNode, tNode, -1);
                 }
-            }
-        }
-    }
-    
-    void copyInto2(Node outNode, Node subNode, Memory mem, int n) {
-        if (outNode != null) {
-            Node tNode = getNode(outNode);
-            if (tNode != null) {
-                mem.push(subNode, tNode, -1);
             }
         }
     }
@@ -816,17 +806,10 @@ public class Memory extends PointerObject implements Environment {
                 // when var has no index
                 Node node = res.getNode(k);
                 if (push(qNode, node, n)) {
-                    // TODO: next push may fail and hence bind may be poped ...
-//                    if (res.isPath(k)) {
-//                        pushPath(qNode, res.getPath(k));
-//                    }
-                } else {
+                } 
+                else {
                     for (int i = 0; i < k; i++) {
                         pop(res.getQueryNode(i));
-                        // TODO: check this
-//                        if (res.isPath(i)) {
-//                            popPath(res.getQueryNode(i));
-//                        }
                     }
                     return false;
                 }
@@ -909,9 +892,6 @@ public class Memory extends PointerObject implements Environment {
         for (Node qNode : res.getQueryNodes()) {
             if (qNode != null && qNode.getIndex() >= 0) {
                 pop(qNode);
-//                if (res.isPath(n)) {
-//                    popPath(qNode);
-//                }
             }
             n++;
         }

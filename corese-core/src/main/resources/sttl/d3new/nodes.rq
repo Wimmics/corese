@@ -5,7 +5,7 @@ template st:nodes {
      format {
             '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
             ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
-             if (isURI(?s), us:uri(?s), "")
+             us:url(?s)
             coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
       }
         
@@ -20,10 +20,10 @@ where {
 
 # st:link : service?uri=...&profile=...
 # st:url  : URL either ?s itself or a proxy URL
-function us:uri(?s) {
+function us:url(?s) {
     coalesce(
         st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', st:cget(st:url, ?s)),
-        st:format(',  "url": "%s"', ?s)
+        st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
+        if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
     )
 }

@@ -460,8 +460,8 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 @event 
 construct {
-    ?x skos:altLabel ?n
-    ?x us:cooperate ?name   
+    # ?x skos:altLabel ?n
+    ?n us:cooperate ?name   
 }
 where {
 
@@ -498,13 +498,14 @@ service <http://fr.dbpedia.org/sparql> {
     } 
 }
 
-    bind (us:style(?name, ?n) as ?a)
-    bind (st:setimg(?name, ?img) as ?b)
+    bind (us:style(?name, ?n)     as ?a)
+    bind (st:setimg(?name, ?img)  as ?b)
+    bind (st:cset(st:url, ?n, ?x) as ?c)
 }
 
 function us:style(?name, ?n) {
-    st:setclass(?name, "main", "country");
-    st:setclass(?n, "other", "team")
+    st:setclass(?name, "main",  "country");
+    st:setclass(?n,    "other", "team")
 }
 
 #
@@ -552,8 +553,8 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
 @event 
 construct {
-    ?x skos:altLabel ?n
-    ?x us:cooperate ?name   
+    # ?x skos:altLabel ?n
+    ?n us:cooperate ?name   
 }
 where {
 
@@ -585,13 +586,14 @@ service <http://fr.dbpedia.org/sparql> {
     } 
 }
 
-    bind (us:style(?name, ?n) as ?a)
-    bind (st:setimg(?name, ?img) as ?b)
+    bind (us:style(?name, ?n)     as ?a)
+    bind (st:setimg(?name, ?img)  as ?b)
+    bind (st:cset(st:url, ?n, ?x) as ?c)
 }
 
 function us:style(?name, ?n) {
-    st:setclass(?name, "main", "country");
-    st:setclass(?n, "other", "team")
+    st:setclass(?name, "main",  "country");
+    st:setclass(?n,    "other", "team")
 }
 
 #

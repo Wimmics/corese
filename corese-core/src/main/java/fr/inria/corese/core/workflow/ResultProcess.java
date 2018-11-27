@@ -15,7 +15,7 @@ import fr.inria.corese.core.print.ResultFormat;
  *
  */
 public class ResultProcess extends WorkflowProcess {
-    int format = ResultFormat.UNDEF_FORMAT;
+    private int format = ResultFormat.UNDEF_FORMAT;
     
     public ResultProcess() {
     }
@@ -35,14 +35,28 @@ public class ResultProcess extends WorkflowProcess {
     public String stringValue(Data data) {       
         Mappings m = data.getMappings();  
         if (m == null){
-            ResultFormat f = ResultFormat.create(data.getGraph(), format);
+            ResultFormat f = ResultFormat.create(data.getGraph(), getFormat());
             return f.toString();
         }
         if (m.getQuery().isTemplate()){
             return m.getTemplateStringResult();
         }
-        ResultFormat f = ResultFormat.create(m, format);
+        ResultFormat f = ResultFormat.create(m, getFormat());
         return f.toString();
+    }
+    
+       /**
+     * @return the format
+     */
+    public int getFormat() {
+        return format;
+    }
+
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(int format) {
+        this.format = format;
     }
     
 

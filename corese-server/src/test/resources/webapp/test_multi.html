@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+  <title>Corese Web Server</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="js/d3-graph-visualizer.js"></script>
+	</head>
+	<body>
+	<div id="graph">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				hello
+			</div>
+			<div class="panel-body" style="resize:vertical;overflow:auto">
+					<svg id="graph1" width="100%" height="100%"/> 
+			</div>
+		</div>
+	</div>
+	<div id="graph_2">
+		<div class="panel panel-warning">
+			<div class="panel-heading">
+				hello2
+			</div>
+			<div class="panel-body" style="resize:vertical;overflow:auto">
+					<svg id="graph2" width="100%" height="100%"/> 
+			</div>
+		</div>
+	</div>
+	<script type="module">
+			import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
+var data = {
+	"nodes":[
+{"id": "n0", "label": "ns1:Jimmy_Page_at_the_Echo_music_award_2013.jpg?wi..", "group": "type1", "class": "special1", "bg_image": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Jimmy_Page_at_the_Echo_music_award_2013.jpg?uselang=fr"},
+{"id": "n1", "label": "r:Jimmy_Page", "group": "uri", "bg_image": "http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_captainmarvel.png"},
+{"id": "n2", "label": "r:Led_Zeppelin", "group": "type2"},
+{"id": "n3", "label": "r:The_New_Yardbirds", "group": "type3"},
+{"id": "n4", "label": "foaf:Person", "group": "uri"},
+{"id": "n5", "label": "James Patrick Page (né le 9 janvier 1944) est un g..", "group": "literal"},
+{"id": "n6", "label": "Jimmy Page", "group": "literal"},
+{"id": "n7", "label": "Led Zeppelin", "group": "literal"},
+{"id": "n8", "label": "The New Yardbirds", "group": "literal"},
+{"id": "n9", "label": "http://fr.wikipedia.org/wiki/Jimmy_Page", "group": "literal", "bg_image":     "https://upload.wikimedia.org/wikipedia/commons/9/9f/Jimmy_Page_at_the_Echo_music_award_2013.jpg?uselang=fr", "url": "http://fr.wikipedia.org/wiki/Jimmy_Page"},
+{"id": "n10", "label": "1944-01-09+02:00", "group": "literal"},
+{"id": "n11", "label": "bnode_test", "group": "bnode"}
+]
+,"edges":[
+{"source": "n0", "target": "n11", "label": "dbo:bandMember", "id": "e17", "class": "bigredline", "group": "edge_t1" },
+{"source": "n1", "target": "n2", "label": "dbo:bandMember", "id": "e1", "class": "bigredline", "group": "edge_t2" },
+{"source": "n1", "target": "n3", "label": "dbo:bandMember", "id": "e2" },
+{"source": "n1", "target": "n10", "label": "dbo:birthDate", "id": "e3" },
+{"source": "n1", "target": "n1", "label": "dbo:dbpedia", "id": "e4" },
+{"source": "n1", "target": "n0", "label": "dbo:thumbnail", "id": "e5" },
+{"source": "n1", "target": "n2", "label": "dbo:wikiPageWikiLink", "id": "e6" },
+{"source": "n1", "target": "n3", "label": "dbo:wikiPageWikiLink", "id": "e7" },
+{"source": "n1", "target": "n9", "label": "dbo:wikipedia", "id": "e8" },
+{"source": "n1", "target": "n10", "label": "p:dateDeNaissance", "id": "e9" },
+{"source": "n1", "target": "n2", "label": "p:membresActuels", "id": "e10" },
+{"source": "n1", "target": "n3", "label": "p:membresActuels", "id": "e11" },
+{"source": "n1", "target": "n4", "label": "rdf:type", "id": "e12" },
+{"source": "n1", "target": "n5", "label": "rdfs:comment", "id": "e13" },
+{"source": "n1", "target": "n6", "label": "rdfs:label", "id": "e14" },
+{"source": "n2", "target": "n7", "label": "rdfs:label", "id": "e15", "group": "t4" },
+{"source": "n3", "target": "n8", "label": "rdfs:label", "id": "e16", "group": "t3" }
+]
+
+};
+D3GraphVisualizer.drawRdf(data, '#graph1');
+D3GraphVisualizer.drawRdf(data, '#graph2');
+
+		</script>
+</html>

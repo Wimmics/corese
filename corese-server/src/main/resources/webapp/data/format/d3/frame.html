@@ -7,10 +7,17 @@
     </div>
 </div>
 
-<script>
-data%1$s = {
+<script type="module">
+	import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
+	var data%1$s = {
+		%2$s
+	};
+	D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
+</script>
+
+<script nomodule>
+	data%1$s = {
 	%2$s
 };
 D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
 </script>
-

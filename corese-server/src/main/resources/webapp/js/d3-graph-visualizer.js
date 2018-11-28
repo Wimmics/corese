@@ -286,8 +286,8 @@ export class D3GraphVisualizer {
         });
         for (var i=0; i<results.edges.length; i++) {
             if (i != 0 &&
-                results.edges[i].source == results.edges[i-1].source &&
-                results.edges[i].target == results.edges[i-1].target) {
+                results.edges[i].source === results.edges[i-1].source &&
+                results.edges[i].target === results.edges[i-1].target) {
                 results.edges[i].linknum = results.edges[i-1].linknum + 1;
             }
             else {results.edges[i].linknum = 1;};
@@ -441,6 +441,30 @@ export class D3GraphVisualizer {
             .style('fill', 'grey')
         ;
 
+        let textNodes = g.append("g").attr("class", "texts").selectAll("text")
+            .data(visualizer.simulation.nodes())
+            .enter().append("text")
+            .attr("class", (edge, i, edges) => {
+                return (edge.class !== undefined) ? edge.class : "default";
+            })
+            .text(function (d) {
+                return d.label;
+            });
+        var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
+            .data(results.links)
+            .enter().append("text")
+            .append("textPath")
+            .attr("xlink:href", d => {return `#${d.id}`;})
+            .attr("startOffset", "25%")
+            .text(function (d) {
+                return d.label;
+            })
+            .attr("class", (edge, i, edges) => {
+                return (edge.class !== undefined) ? edge.class : "default";
+            })
+            .attr("xlink:href", (edge, i, edges) => {
+                return "#" + edge.id;
+            });
 
         var links = g.append("g")
             .attr("class", "links")
@@ -463,8 +487,7 @@ export class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-        var textNodes;
-        var nodes = g.append("g")
+        let nodes = g.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(results.nodes)
@@ -559,30 +582,7 @@ export class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-        textNodes = g.append("g").attr("class", "texts").selectAll("text")
-            .data(visualizer.simulation.nodes())
-            .enter().append("text")
-            .attr("class", (edge, i, edges) => {
-                return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .text(function (d) {
-                return d.label;
-            });
-        var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
-            .data(results.links)
-            .enter().append("text")
-            .append("textPath")
-            .attr("xlink:href", d => {return `#${d.id}`;})
-            .attr("startOffset", "25%")
-            .text(function (d) {
-                return d.label;
-            })
-            .attr("class", (edge, i, edges) => {
-                return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .attr("xlink:href", (edge, i, edges) => {
-                return "#" + edge.id;
-            });
+
 
 
         var displayEdgeLabels = false;

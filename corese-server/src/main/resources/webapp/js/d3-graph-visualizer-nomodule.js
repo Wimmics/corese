@@ -1,8 +1,13 @@
-import {GraphModel} from "/js/GraphModel.js";
+class GraphModel {
+    constructor() {
+        this.nodeRadius = 10;
+    }
+}
 
-/**
- *  Responsible for the graphical management of the configuration.
- */
+GraphModel.BNODE_ID = "bnode";
+GraphModel.URI_ID = "uri";
+GraphModel.LITERAL_ID = "literal";
+
 class ConfGraphModal {
     /**
      *
@@ -12,7 +17,6 @@ class ConfGraphModal {
      */
     constructor(id, root, graph, data) {
         this.id = id;
-        this.prefix = `${graph.attr("id")}-`;
         this.nodeGroups = this.computeGroups(data.nodes);
         this.edgeGroups = this.computeGroups(data.edges);
         this.domNode = root.append("div")
@@ -60,12 +64,12 @@ class ConfGraphModal {
                     }
                 }(this)
             );
-        this.nodesCheckbox = d3.select(`#${this.prefix}nodesCheckbox`);
-        this.edgesCheckbox = d3.select(`#${this.prefix}edgesCheckbox`);
-        this.closeButton = d3.select(`#${this.prefix}configurationGraphCloseButton`);
+        this.nodesCheckbox = d3.select("#nodesCheckbox");
+        this.edgesCheckbox = d3.select("#edgesCheckbox");
+        this.closeButton = d3.select("#configurationGraphCloseButton");
 
-        this.setHierarchicalCheckboxesHandler('nodes', this.nodesCheckbox, this.nodeGroups, graph);
-        this.setHierarchicalCheckboxesHandler('edges', this.edgesCheckbox, this.edgeGroups, graph);
+        this.setHierarchicalCheckboxesHandler("nodes", this.nodesCheckbox, this.nodeGroups, graph);
+        this.setHierarchicalCheckboxesHandler("edges", this.edgesCheckbox, this.edgeGroups, graph);
 
         this.closeButton
             .on("click", e => {
@@ -147,22 +151,22 @@ class ConfGraphModal {
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
             "<div class='modal-content' style='list-style:none;'>" +
-            `<label><input id='${this.prefix}nodesCheckbox' type='checkbox'/>All Nodes Labels</label>` +
+            "<label><input id='nodesCheckbox' type='checkbox'/>All Nodes Labels</label>" +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
             "</ul>" +
-            `<p><label><input id='${this.prefix}edgesCheckbox' type='checkbox'/>Edges</label>` +
+            "<p><label><input id='edgesCheckbox' type='checkbox'/>Edges</label>" +
             "<ul>" +
             this.addGroups( "edges", edgeGroups ) +
             "</ul>" +
             "<br>" +
-            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
+            "<button id='configurationGraphCloseButton' class='btn btn-default'>Close</button>" +
             "</div>";
         return result;
     }
 
     getCheckboxName( groupName, group) {
-       return `${this.prefix}${groupName}-${group}Checkbox`;
+       return `${groupName}-${group}Checkbox`;
     }
 
     addGroups( groupName, groups ) {
@@ -182,11 +186,9 @@ class ConfGraphModal {
     }
 
     static createConfigurationPanel(rootConfPanel, graph, data) {
-        var prefix = `${graph.attr("id")}-`;
-        var confPanelId = `${this.prefix}configurationGraph`;
-        var result = d3.select(`#${confPanelId}`);
+        var result = d3.select("#configurationGraph");
         if (result.size() === 0) {
-            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data);
+            var confGraphModal = new ConfGraphModal("configurationGraph", rootConfPanel, graph, data);
             return confGraphModal;
         } else {
             return result;
@@ -211,9 +213,10 @@ class ConfGraphModal {
 }
 
 
-export class D3GraphVisualizer {
+class D3GraphVisualizer {
     constructor() {
         this.model = new GraphModel();
+        // this.simulation = undefined;
         var sheet = document.createElement('style');
 
         document.head.appendChild(sheet); // Bug : does not support multiple graphs in the same page.
@@ -286,15 +289,14 @@ export class D3GraphVisualizer {
         });
         for (var i=0; i<results.edges.length; i++) {
             if (i != 0 &&
-                results.edges[i].source === results.edges[i-1].source &&
-                results.edges[i].target === results.edges[i-1].target) {
+                results.edges[i].source == results.edges[i-1].source &&
+                results.edges[i].target == results.edges[i-1].target) {
                 results.edges[i].linknum = results.edges[i-1].linknum + 1;
             }
             else {results.edges[i].linknum = 1;};
         };
 
         // TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
-
         graph.displayNodeLabels = function () {
             // return confGraphModal.nodesCheckbox.property("checked") || ;
             return true;
@@ -411,7 +413,8 @@ export class D3GraphVisualizer {
                 return d.id;
             }))
             .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(800,500))
+            // .force("center", d3.forceCenter(width, height))
+            .force("center", d3.forceCenter(800, 500))
             .on("tick", graph.ticked);
         var width = +graph.node().getBoundingClientRect().width;
         var height = +graph.node().getBoundingClientRect().height;
@@ -441,30 +444,6 @@ export class D3GraphVisualizer {
             .style('fill', 'grey')
         ;
 
-        let textNodes = g.append("g").attr("class", "texts").selectAll("text")
-            .data(visualizer.simulation.nodes())
-            .enter().append("text")
-            .attr("class", (edge, i, edges) => {
-                return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .text(function (d) {
-                return d.label;
-            });
-        var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
-            .data(results.links)
-            .enter().append("text")
-            .append("textPath")
-            .attr("xlink:href", d => {return `#${d.id}`;})
-            .attr("startOffset", "25%")
-            .text(function (d) {
-                return d.label;
-            })
-            .attr("class", (edge, i, edges) => {
-                return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .attr("xlink:href", (edge, i, edges) => {
-                return "#" + edge.id;
-            });
 
         var links = g.append("g")
             .attr("class", "links")
@@ -487,7 +466,8 @@ export class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-        let nodes = g.append("g")
+        var textNodes;
+        var nodes = g.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(results.nodes)
@@ -582,7 +562,30 @@ export class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-
+        textNodes = g.append("g").attr("class", "texts").selectAll("text")
+            .data(visualizer.simulation.nodes())
+            .enter().append("text")
+            .attr("class", (edge, i, edges) => {
+                return (edge.class !== undefined) ? edge.class : "default";
+            })
+            .text(function (d) {
+                return d.label;
+            });
+        var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
+            .data(results.links)
+            .enter().append("text")
+            .append("textPath")
+            .attr("xlink:href", d => {return `#${d.id}`;})
+            .attr("startOffset", "25%")
+            .text(function (d) {
+                return d.label;
+            })
+            .attr("class", (edge, i, edges) => {
+                return (edge.class !== undefined) ? edge.class : "default";
+            })
+            .attr("xlink:href", (edge, i, edges) => {
+                return "#" + edge.id;
+            });
 
 
         var displayEdgeLabels = false;
@@ -604,4 +607,3 @@ export class D3GraphVisualizer {
 
     }
 }
-

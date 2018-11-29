@@ -122,9 +122,12 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
         
         // BGP body of service, graph
-        public Exp getBodyExp() {
-            return get(0);
-        }
+       public Exp getBodyExp() {
+            if (size() > 0) {
+                return get(0);
+            }
+            return this;
+       }
                  
         public List<Variable> getVariables() {
             ArrayList<Variable> list = new ArrayList<>();

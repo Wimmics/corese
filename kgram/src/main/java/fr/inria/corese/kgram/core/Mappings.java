@@ -275,14 +275,19 @@ public class Mappings extends PointerObject
     }
     
     public String toString(boolean all) {
-        return toString(all, false);     
+        return toString(all, false, size());     
     }
 
-    public String toString(boolean all, boolean ptr) {
+    public String toString(boolean all, boolean ptr, int max) {
         StringBuffer sb = new StringBuffer();
         int i = 1;
         boolean isSelect = select != null && !all;
         for (Mapping map : this) {
+            if (i > max) {
+                sb.append(String.format("# size = %s, stop after: %s" , size(), (i-1)));
+                sb.append(NL);
+                break;
+            }
             String str = ((i < 10) ? "0" : "") + i + " ";
             sb.append(str);
 

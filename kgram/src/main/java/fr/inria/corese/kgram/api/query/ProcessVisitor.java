@@ -40,6 +40,8 @@ public interface ProcessVisitor extends Pointerable {
     default boolean limit(Mappings map) { return true;}
     
     default int timeout(Node serv) { return 0; }
+    
+    default int slice(Node serv, Mappings map) { return 20; }
 
     default DatatypeValue produce(Eval eval, Node g, Edge edge) { return null; }
     

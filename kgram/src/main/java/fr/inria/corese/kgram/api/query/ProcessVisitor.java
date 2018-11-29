@@ -18,6 +18,7 @@ import fr.inria.corese.kgram.path.Path;
  *
  */
 public interface ProcessVisitor extends Pointerable {
+    int SLICE_DEFAULT = 20;
     
     default boolean isShareable() { return false; }
     
@@ -41,7 +42,7 @@ public interface ProcessVisitor extends Pointerable {
     
     default int timeout(Node serv) { return 0; }
     
-    default int slice(Node serv, Mappings map) { return 20; }
+    default int slice(Node serv, Mappings map) { return SLICE_DEFAULT; }
 
     default DatatypeValue produce(Eval eval, Node g, Edge edge) { return null; }
     

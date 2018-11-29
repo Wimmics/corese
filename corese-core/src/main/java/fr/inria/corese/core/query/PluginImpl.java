@@ -88,17 +88,18 @@ public class PluginImpl
    
     static int nbBufferedValue = 0;
     static final String EXT = ExpType.EXT;
-    public static final String VISITOR = EXT+"visitor";
-    public static final String LISTEN = EXT+"listen";
-    public static final String SILENT = EXT+"silent";
-    public static final String DEBUG  = EXT+"debug";
-    public static final String EVENT  = EXT+"event";
-    public static final String METHOD = EXT+"method";
-    public static final String EVENT_LOW  = EXT+"eventLow";
-    public static final String SHOW  = EXT+"show";
-    public static final String HIDE  = EXT+"hide";
-    public static final String NODE_MGR  = EXT+"nodeManager";
-    private static final String QM = "?";
+    public static final String METADATA = EXT+"metadata";
+    public static final String VISITOR  = EXT+"visitor";
+    public static final String LISTEN   = EXT+"listen";
+    public static final String SILENT   = EXT+"silent";
+    public static final String DEBUG    = EXT+"debug";
+    public static final String EVENT    = EXT+"event";
+    public static final String METHOD   = EXT+"method";
+    public static final String EVENT_LOW= EXT+"eventLow";
+    public static final String SHOW     = EXT+"show";
+    public static final String HIDE     = EXT+"hide";
+    public static final String NODE_MGR = EXT+"nodeManager";
+    private static final String QM      = "?";
     
     String PPRINTER = DEF_PPRINTER;
     // for storing Node setProperty() (cf Nicolas Marie store propagation values in nodes)

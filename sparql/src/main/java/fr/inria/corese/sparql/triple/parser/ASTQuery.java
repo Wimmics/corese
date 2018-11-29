@@ -2731,13 +2731,13 @@ public class ASTQuery
     void defService(List<String> list){
         if (list != null && ! list.isEmpty()){
             defService(list.get(0));
-            setServiceList(new ArrayList<Atom>());
+            setServiceList(new ArrayList<>());
             for (String serv : list){
                 getServiceList().add(Constant.createResource(serv));
             }
         }
     }
-
+    
     public void defService(String ns) {
         service = ns;
     }

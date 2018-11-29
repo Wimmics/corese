@@ -57,6 +57,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     public static final String LIMIT    = "@limit";
     public static final String TIMEOUT  = "@timeout";
+    public static final String SLICE    = "@slice";
     public static final String ORDERBY  = "@orderby";
     public static final String DISTINCT = "@distinct";
     public static final String PRODUCE  = "@produce";
@@ -263,6 +264,15 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         IDatatype dt = callback(eval, TIMEOUT, toArray(serv));
         if (dt == null) {
             return 0;
+        }
+        return dt.intValue();
+    }
+    
+    @Override
+    public int slice(Node serv, Mappings map) {
+        IDatatype dt = callback(eval, SLICE, toArray(serv, map));
+        if (dt == null) {
+            return SLICE_DEFAULT;
         }
         return dt.intValue();
     }

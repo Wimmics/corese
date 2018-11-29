@@ -71,6 +71,7 @@ public class QuerySolver  implements SPARQLEngine {
         private static boolean LINKED_FUNCTION_DEFAULT = false;
         
 	static String NAMESPACES;
+        private static Metadata defaultMetadata;
 
 	protected EventManager manager;
 	protected ResultListener listener;
@@ -466,7 +467,7 @@ public class QuerySolver  implements SPARQLEngine {
             transformer.setGenerateMain(isGenerateMain());
             transformer.setNamespaces(NAMESPACES);
             transformer.setPragma(getPragma());
-            transformer.setMetadata(metadata);
+            transformer.setMetadata(getActualMetadata());
             transformer.setPlanProfile(getPlanProfile());
             transformer.setUseBind(isUseBind());
             transformer.setBGP(isBGP());
@@ -811,6 +812,10 @@ public class QuerySolver  implements SPARQLEngine {
     public static void setLinkedFunctionDefault(boolean b) {
         LINKED_FUNCTION_DEFAULT = b;
     }
+    
+    Metadata getActualMetadata() {
+        return getMetadata();
+    }
 
     /**
      * @return the metadata
@@ -829,7 +834,7 @@ public class QuerySolver  implements SPARQLEngine {
      public void set(Metadata metadata) {
         this.metadata = metadata;
     }
-
+     
     /**
      * @return the rule
      */

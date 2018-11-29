@@ -27,7 +27,7 @@ function us:before(?q) {
     xt:print('Connect dbpedia')
 }
 
-@federate
-function us:service(?s, ?m) {
-    xt:print('service', ?m)
+@service
+function us:service(?s, ?e, ?m) {
+    xt:print('service', ?s, ?m)
 }

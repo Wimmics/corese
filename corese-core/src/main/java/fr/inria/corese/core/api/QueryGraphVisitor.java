@@ -12,12 +12,20 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public interface QueryGraphVisitor {
 	
-	Graph visit(Graph g);
+    default Graph visit(Graph g) {
+        return g;
+    }
 	
-	ASTQuery visit(ASTQuery ast);
+    default ASTQuery visit(ASTQuery ast) {
+        return ast;
+    }
 	
-	Edge visit(Edge ent);
+    default Edge visit(Edge ent) {
+        return ent;
+    }
 
-	Query visit(Query q);
+    default Query visit(Query q) {
+        return q;
+    }
 
 }

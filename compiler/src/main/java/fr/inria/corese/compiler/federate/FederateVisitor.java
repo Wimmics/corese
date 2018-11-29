@@ -16,7 +16,9 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -44,6 +46,8 @@ public class FederateVisitor implements QueryVisitor {
     private static Logger logger = LoggerFactory.getLogger(FederateVisitor.class);
     
     public static final String PROXY = "_proxy_";
+    private static HashMap<String, List<Atom>> federation;
+    
     // false: evaluate named graph pattern as a whole on each server 
     // true:  evaluate the triples of the named graph pattern on the merge of 
     // the named graphs of the servers
@@ -69,6 +73,10 @@ public class FederateVisitor implements QueryVisitor {
     RewriteTriple rwt;
     Simplify sim;
     
+    static {
+        federation = new HashMap<>();
+    }
+    
     public FederateVisitor(QuerySolver e){
         stack = new Stack();
         exec = e;
@@ -83,6 +91,9 @@ public class FederateVisitor implements QueryVisitor {
     @Override
     public void visit(ASTQuery ast) {
         this.ast = ast;
+        if (! init()) {
+            return;
+        }
         rew.setDebug(ast.isDebug());
         option();
         
@@ -98,6 +109,34 @@ public class FederateVisitor implements QueryVisitor {
             System.out.println(ast.getBody());
             System.out.println();
         }
+    }
+    
+    boolean init() {
+        if (ast.hasMetadata(Metadata.FEDERATION)) {
+            List<String> list = ast.getMetadata().getValues(Metadata.FEDERATION);
+            List<Atom> serviceList;
+            if (list.isEmpty()) {
+                return false;
+            }
+            else if (list.size() == 1) {
+                // refer to federation
+                serviceList = getFederation().get(list.get(0));
+                if (serviceList == null) {
+                    logger.error("Undefined federation: " + list.get(0));
+                    return false;
+                }
+            } else {
+                // define federation
+                serviceList = new ArrayList<>();
+                for (int i = 1; i < list.size(); i++) {
+                    serviceList.add(Constant.createResource(list.get(i)));
+                }
+                getFederation().put(list.get(0), serviceList);
+            }
+            ast.setServiceList(serviceList);
+        }
+
+        return true;
     }
     
     
@@ -242,6 +281,7 @@ public class FederateVisitor implements QueryVisitor {
         
         if (body.isBGP()) {
             sim.simplifyBGP(body);
+            new Sorter().process(body);
         }
         
         return body;
@@ -483,4 +523,20 @@ public class FederateVisitor implements QueryVisitor {
     public boolean isBounce() {
         return bounce;
     }
+    
+        /**
+     * @return the federation
+     */
+    public static HashMap<String, List<Atom>> getFederation() {
+        return federation;
+    }
+
+    /**
+     * @param aFederation the federation to set
+     */
+    public static void setFederation(HashMap<String, List<Atom>> aFederation) {
+        federation = aFederation;
+    }
+
+
 }

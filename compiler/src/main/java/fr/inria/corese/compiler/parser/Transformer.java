@@ -155,7 +155,7 @@ public class Transformer implements ExpType {
     public void setMetadata(Metadata m) {
         metadata = m;
     }
-
+    
     public void set(Sorter s) {
         sort = s;
     }
@@ -338,16 +338,20 @@ public class Transformer implements ExpType {
      * select * where { }
      * Rewrite every triple t as: service <s1> <s2> { t }
      */
-    void federate(ASTQuery ast){
-        if (ast.getServiceList() == null && getServiceList() != null){
+    void federate(ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.FEDERATION) && !ast.hasMetadata(Metadata.FEDERATE)) {
+            add(new FederateVisitor(getSPARQLEngine()));
+        }
+        else if (ast.getServiceList() == null && getServiceList() != null) {
+            // default service list
             ast.setServiceList(getServiceList());
-            if (ast.getServiceList().size() == 1){
+            if (ast.getServiceList().size() == 1) {
                 ast.defService(ast.getServiceList().get(0).getLabel());
             }
-        }
+        } 
+        
         if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
-            ast.defService(null);
-            //add(new ServiceVisitor());
+            ast.defService((String) null);
             add(new FederateVisitor(getSPARQLEngine()));
         }
     }

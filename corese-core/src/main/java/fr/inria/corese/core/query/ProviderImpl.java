@@ -32,7 +32,6 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.kgram.core.Eval;
-import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
@@ -169,7 +168,7 @@ public class ProviderImpl implements Provider {
         // share prefix
         compiler.prepare(q);
 
-        int slice = compiler.slice(q);
+        int slice = getSlice(q, serv, eval.getEnvironment(), map); //compiler.slice(q);
 
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean hasValues = ast.getValues() != null;
@@ -217,7 +216,7 @@ public class ProviderImpl implements Provider {
             // select appropriate subset of distinct Mappings with service URI 
             Mappings mappings = getMappings(exp.getServiceNode(), service, map, eval.getEnvironment());
             if (mappings != null && mappings.size() > 0) {
-                g.getEventManager().process(Event.Service, mappings.toString(true));
+                g.getEventManager().process(Event.Service, mappings.toString(true, false, 20));
             }
             int size = 0;
             
@@ -405,6 +404,12 @@ public class ProviderImpl implements Provider {
             return env.getEval().getVisitor().timeout(serv);
         }
         return time;
+    }
+    
+    int getSlice(Query q, Node serv, Environment env, Mappings map) {
+        // former: 
+        q.getGlobalQuery().getSlice();
+        return env.getEval().getVisitor().slice(serv, map);
     }
     
     Mappings eval(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {

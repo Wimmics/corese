@@ -272,7 +272,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public int slice(Node serv, Mappings map) {
         IDatatype dt = callback(eval, SLICE, toArray(serv, map));
         if (dt == null) {
-            return 0;
+            return SLICE_DEFAULT;
         }
         return dt.intValue();
     }

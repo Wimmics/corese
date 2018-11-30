@@ -183,6 +183,7 @@ public class Query extends Exp implements Graphable {
             isDistribute = false,
             isOptimize = false,
             isTest = false,
+            isNew = false,
             // sort edges to be connected
             isSort = true, isConstruct = false,
             isDelete = false, isUpdate = false, // true:  path do not loop on node
@@ -865,6 +866,14 @@ public class Query extends Exp implements Graphable {
 
     public void setTest(boolean b) {
         isTest = b;
+    }
+    
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean b) {
+        isNew = b;
     }
 
     public boolean isOptimize() {

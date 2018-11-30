@@ -37,6 +37,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -177,11 +178,11 @@ public class ProviderImpl implements Provider {
         Graph g = getGraph(eval.getProducer());
         if (map == null || slice == 0 || hasValues || skipBind) {
             // if query has its own values {}, do not include Mappings
-            return basicSend(g, compiler, serv, q, exp, (skipBind)?null:map, eval, 0, 0);
-        }         
-        else {          
-            res = sliceSend(g, compiler, serv, q, exp, map, eval, slice);            
-        } 
+            return sliceSend(g, compiler, serv, q, exp, (skipBind) ? null : map, eval, false, slice);
+            //return basicSend(g, compiler, serv, q, exp, (skipBind) ? null : map, eval, 0, 0);
+        } else {
+            res = sliceSend(g, compiler, serv, q, exp, map, eval, true, slice);
+        }
 
         if (!hasValues) {
             ast.setValues(null);
@@ -197,7 +198,7 @@ public class ProviderImpl implements Provider {
      * Split Mappings into buckets with size = slice
      * Iterate service on each bucket
      */
-    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int slice) {
+    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) {
         
         List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
@@ -205,7 +206,11 @@ public class ProviderImpl implements Provider {
         if (list.isEmpty()) {
             logger.error("Undefined service: " + exp.getServiceNode());
         }
-        Mappings res = null, sol = null;
+
+        ArrayList<Mappings> mapList = new ArrayList<>();
+        ArrayList<ProviderThread> pList = new ArrayList<>();
+        // With @new annotation => service in parallel
+        boolean parallel = q.getOuterQuery().isNew();
         
         for (Node service : list) {
             if (eval.isStop()) {
@@ -213,40 +218,37 @@ public class ProviderImpl implements Provider {
             }
             g.getEventManager().process(Event.Service, service);
 
-            // select appropriate subset of distinct Mappings with service URI 
-            Mappings mappings = getMappings(exp.getServiceNode(), service, map, eval.getEnvironment());
-            if (mappings != null && mappings.size() > 0) {
-                g.getEventManager().process(Event.Service, mappings.toString(true, false, 20));
-            }
-            int size = 0;
-            
-            while (size < mappings.size()) {
-                if (eval.isStop()) {
-                    break;
+            Mappings input = map;
+            if (slice) {
+                // select appropriate subset of distinct Mappings with service URI 
+                input = getMappings(exp.getServiceNode(), service, map, eval.getEnvironment());
+                if (input.size() > 0) {
+                    g.getEventManager().process(Event.Service, input.toString(true, false, 20));
                 }
-                // consider subset of Mappings of size slice
-                // it may produce bindings for target service
-                Mappings mm = send(compiler, service, q, mappings, eval.getEnvironment(), size, size + slice);
-                // join (serviceNode = serviceURI)
-                complete(exp.getServiceNode(), service, mm,  eval.getEnvironment());
-                if (sol == null) {
-                    sol = mm;
-                } else if (mm != null) {
-                    sol.add(mm);
-                }
-                size += slice;
             }
             
-            eval.getVisitor().service(eval, service, exp, sol);
+            Mappings sol = new Mappings();
+            mapList.add(sol);
             
-            if (res == null) {
-                res = sol;
-            } else if (sol != null) {
-                res.add(sol);
+            if (parallel) {
+                ProviderThread p = parallelProcess(q, service, exp, input, sol, eval, compiler, slice, length);
+                pList.add(p);
             }
-            
-            sol = null;
+            else {
+                process(q, service, exp, input, sol, eval, compiler, slice, length);
+            }
         }
+        
+        // Wait for parallel threads to stop
+        for (ProviderThread p : pList) {
+            try {
+                p.join();
+            } catch (InterruptedException ex) {
+                logger.warn(ex.toString());
+            }
+        }
+        
+        Mappings res = getResult(mapList);
         
         if (list.size() > 1) {
             eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
@@ -254,10 +256,74 @@ public class ProviderImpl implements Provider {
         g.getEventManager().finish(Event.Service);
         return res;
     }
+    
+    /**
+     * Execute service in a parallel thread 
+     */
+    ProviderThread parallelProcess(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length) {
+        ProviderThread thread = new ProviderThread(this, q, service, exp, map, sol, eval, compiler, slice, length);
+        thread.start();
+        return thread;
+    }
+       
+    /**
+     * Execute service with possibly input Mappings map and possibly slicing map into packet of size length
+     * Add results into Mappings sol which is empty when entering
+     */
+    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length) {
+        int size = 0;
+        if (slice) {
+            while (size < map.size()) {
+                if (eval.isStop()) {
+                    break;
+                }
+                // consider subset of Mappings of size slice
+                // it may produce bindings for target service
+                Mappings res = send(compiler, service, q, map, eval.getEnvironment(), size, size + length);
+                // join (serviceNode = serviceURI)
+                complete(exp.getServiceNode(), service, res, eval.getEnvironment());
+                addResult(sol, res);
+                size += length;
+            }
+        } else {
+            Mappings res = send(compiler, service, q, map, eval.getEnvironment(), 0, 0);
+            // join (serviceNode = serviceURI)
+            complete(exp.getServiceNode(), service, res, eval.getEnvironment());
+            addResult(sol, res);
+        }
+
+        eval.getVisitor().service(eval, service, exp, sol);
+    }
+    
+    void addResult(Mappings sol, Mappings res) {
+        if (res != null && !res.isEmpty()) {
+            sol.add(res);
+            if (sol.getQuery() == null) {
+                sol.setQuery(res.getQuery());
+                sol.init(res.getQuery());
+            }
+        }
+    }
+    
+    Mappings getResult(List<Mappings> mapList) {
+        Mappings res = null;
+        for (Mappings m : mapList) {
+            if (res == null) {
+                if (!m.isEmpty()) {
+                    res = m;
+                }
+            }
+            else if (!m.isEmpty()){
+                res.add(m);
+            }
+        }
+        return res;
+    }
        
     /**
      * service ?s { BGP }
      * When ?s is unbound, join (?s = URI) to Mappings, reject those that are incompatible 
+     * TODO: optimize map.join()
      */
     void complete(Node serviceNode, Node serviceURI, Mappings map, Environment env){
         if (map != null && serviceNode.isVariable() && ! env.isBound(serviceNode)) {
@@ -315,7 +381,7 @@ public class ProviderImpl implements Provider {
     }
     
    
-
+    @Deprecated
     Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int min, int max) {
         List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
@@ -434,7 +500,7 @@ public class ProviderImpl implements Provider {
     
     Mappings send(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getAST();
-        boolean trap = ast.getGlobalAST().hasMetadata(Metadata.FEDERATE) || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
+        boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
         InputStream stream = doPost(serv.getLabel(), query, getTimeout(q, serv, env));       
         return parse(stream, trap);

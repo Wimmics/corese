@@ -278,6 +278,9 @@ public class Transformer implements ExpType {
         if (ast.hasMetadata(Metadata.TEST)){
             q.setTest(true);
         }
+        if (ast.hasMetadata(Metadata.NEW)){
+            q.setNew(true);
+        }
     }
     
     void toJava(ASTQuery ast){

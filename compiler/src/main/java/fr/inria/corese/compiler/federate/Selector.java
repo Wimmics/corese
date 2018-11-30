@@ -246,11 +246,19 @@ public class Selector {
     }
     
     void metadata(ASTQuery aa, ASTQuery ast) {
-        if (ast.hasMetadata(Metadata.EVENT)) {
-            Metadata m = new Metadata().add(Metadata.EVENT);
+        if (ast.hasMetadata(Metadata.EVENT) || ast.hasMetadata(Metadata.NEW)) {
+            Metadata m = new Metadata();
             aa.setMetadata(m);
-            aa.setDefine(ast.getDefine());
-            aa.setDefineLambda(ast.getDefineLambda());
+        
+            if (ast.hasMetadata(Metadata.EVENT)) {
+                m.add(Metadata.EVENT);
+                aa.setDefine(ast.getDefine());
+                aa.setDefineLambda(ast.getDefineLambda());
+            }
+            
+            if (ast.hasMetadata(Metadata.NEW)) {
+                m.add(Metadata.NEW);
+            }
         }
     }
     

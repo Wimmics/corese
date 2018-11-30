@@ -273,7 +273,8 @@ export class D3GraphVisualizer {
         var confGraphModal;
         var graph = d3.select(svgId);
 
-
+        // @Todo make a function counting the edges between same nodes.
+        // To be able to detect edges between same nodes.
         results.edges.sort(function(a,b) {
             if (a.source > b.source) {return 1;}
             else if (a.source < b.source) {return -1;}
@@ -284,6 +285,7 @@ export class D3GraphVisualizer {
             }
 
         });
+        // counting the edges between the same edges.
         for (var i=0; i<results.edges.length; i++) {
             if (i != 0 &&
                 results.edges[i].source === results.edges[i-1].source &&
@@ -336,8 +338,19 @@ export class D3GraphVisualizer {
 
             if (graph.displayNodeLabels()) {
                 textNodes
-                    .attr("x", d => d.x * scale)
-                    .attr("y", d => d.y * scale);
+                    .attr("x",
+                            (d) => {
+                                const r = Number( d3.select(d.node).attr("r") );
+                                const result = d.x * scale + r;
+                                return result;
+                            }
+                    )
+                    .attr("y",
+                        (d) => {
+                            const r = Number( d3.select(d.node).attr("r") );
+                            return (d.y * scale + r);
+                        }
+                    );
             }
             if (graph.displayEdgeLabels()) {
                 pathLabels.attr("d", visualizer.buildPathFromEdge(scale)(results.links));
@@ -449,7 +462,12 @@ export class D3GraphVisualizer {
             })
             .text(function (d) {
                 return d.label;
-            });
+            })
+            .each(
+                (d, i, nodes) => {
+                    d.textNode = nodes[i];
+                }
+            );
         var textEdges = g.append("g").attr("class", "textPaths").selectAll("text")
             .data(results.links)
             .enter().append("text")
@@ -464,7 +482,11 @@ export class D3GraphVisualizer {
             })
             .attr("xlink:href", (edge, i, edges) => {
                 return "#" + edge.id;
-            });
+            })
+            .each(
+                (d, i, nodes) =>
+                    d.textEdges = nodes[i]
+            );
 
         var links = g.append("g")
             .attr("class", "links")
@@ -481,7 +503,11 @@ export class D3GraphVisualizer {
                     }
                 }
             )
-            .attr("id", d => `${d.id}_edge` );
+            .attr("id", d => `${d.id}_edge` )
+            .each(
+                (d, i, nodes) =>
+                    d.link = nodes[i]
+            );
 
         links.append("title")
             .text(function (d) {
@@ -525,6 +551,10 @@ export class D3GraphVisualizer {
                                 .attr("pointer-events", "none");
                         }
                     }
+            )
+            .each(
+                (d, i, nodes) =>
+                    d.node = nodes[i]
             )
             .each(
                 (_links => {

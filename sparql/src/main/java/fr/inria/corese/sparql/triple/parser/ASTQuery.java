@@ -1219,6 +1219,11 @@ public class ASTQuery
     public String getMetadataValue(int type) {
         return metadata.getValue(type);
     }
+    
+    public boolean isFederate() {
+        return getGlobalAST().hasMetadata(Metadata.FEDERATE) 
+            || getGlobalAST().hasMetadata(Metadata.FEDERATION); 
+    }
 
     public boolean hasMetadata(int type) {
         return metadata != null && metadata.hasMetadata(type);

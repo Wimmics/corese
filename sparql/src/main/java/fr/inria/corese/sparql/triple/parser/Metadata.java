@@ -23,6 +23,7 @@ public class Metadata extends ASTObject
     public static final int TRACE  = 2;
     public static final int PUBLIC = 3;
     public static final int IMPORT = 4;
+    public static final int NEW    = 5;
     
     // Query
     public static final int RELAX   = 11;
@@ -97,6 +98,7 @@ public class Metadata extends ASTObject
         define("@debug",    DEBUG);
         define("@trace",    TRACE);
         define("@test",     TEST);
+        define("@new",      NEW);
         define("@export",   PUBLIC);      
         define("@public",   PUBLIC);      
         define("@more",     MORE);      

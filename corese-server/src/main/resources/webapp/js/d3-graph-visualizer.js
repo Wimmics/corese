@@ -1,4 +1,4 @@
-import {GraphModel} from "/js/GraphModel.js";
+import {GraphModel} from "./GraphModel.js";
 
 /**
  *  Responsible for the graphical management of the configuration.
@@ -265,6 +265,7 @@ export class D3GraphVisualizer {
 
 
     /**
+     * \param _results : json representation of the graph.
      * \param svgId : id of the svg element to draw the graph (do not forget the #).
      */
     static drawRdf(_results, svgId) {
@@ -295,8 +296,7 @@ export class D3GraphVisualizer {
             else {results.edges[i].linknum = 1;};
         };
 
-        // TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
-
+        // @TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
         graph.displayNodeLabels = function () {
             // return confGraphModal.nodesCheckbox.property("checked") || ;
             return true;
@@ -423,7 +423,10 @@ export class D3GraphVisualizer {
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
             }))
-            .force("charge", d3.forceManyBody())
+            // .force("charge", d3.forceManyBody())
+            .force("charge",
+                n => n.weight
+            )
             .force("center", d3.forceCenter(800,500))
             .on("tick", graph.ticked);
         var width = +graph.node().getBoundingClientRect().width;

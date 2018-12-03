@@ -1,5 +1,8 @@
-export class GraphModel {
+import {Observable} from "./Observable.mjs";
+
+export class GraphModel extends Observable {
     constructor() {
+        super();
         this.nodeRadius = 20;
     }
 }

@@ -1,4 +1,5 @@
 import {GraphModel} from "./GraphModel.js";
+import {Observer} from "./Observer.mjs";
 
 /**
  *  Responsible for the graphical management of the configuration.
@@ -8,10 +9,11 @@ class ConfGraphModal {
      *
      * @param id    id given to the DOM node containing the window.
      * @param root  node parent of the configuration window.
-     * @param graph Reference to the object responsible of the graph management.
+     * @param graph Reference to the D3 wrapper responsible for the SVG management.
      */
-    constructor(id, root, graph, data) {
+    constructor(id, root, graph, data, model) {
         this.id = id;
+        this.model = model;
         this.prefix = `${graph.attr("id")}-`;
         this.nodeGroups = this.computeGroups(data.nodes);
         this.edgeGroups = this.computeGroups(data.edges);
@@ -48,12 +50,10 @@ class ConfGraphModal {
                             graph.ticked();
                         } else if (key === "n") {
                             if (d3.event.ctrlKey) {
-                                that.edgesCheckbox.check();
+                                that.model.displayEdgeLabels = ! that.model.displayEdgeLabels;
                             } else {
-                                that.nodesCheckbox.check();
+                                that.model.displayNodeLabels = ! that.model.displayNodeLabels;
                             }
-                            graph.updateConfiguration();
-                            graph.ticked();
                         } else {
                             console.log("key" + key);
                         }
@@ -181,12 +181,12 @@ class ConfGraphModal {
         return d3.select( '#'+this.getCheckboxName(groupName, group) );
     }
 
-    static createConfigurationPanel(rootConfPanel, graph, data) {
+    static createConfigurationPanel(rootConfPanel, graph, data, model) {
         var prefix = `${graph.attr("id")}-`;
         var confPanelId = `${this.prefix}configurationGraph`;
         var result = d3.select(`#${confPanelId}`);
         if (result.size() === 0) {
-            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data);
+            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data, model);
             return confGraphModal;
         } else {
             return result;
@@ -211,12 +211,21 @@ class ConfGraphModal {
 }
 
 
-export class D3GraphVisualizer {
+export class D3GraphVisualizer extends Observer {
     constructor() {
+        super();
         this.model = new GraphModel();
+        this.model.displayEdgeLabels = false;
+        this.model.displayNodeLabels = false;
+        this.model.addObserver(this);
         var sheet = document.createElement('style');
 
         document.head.appendChild(sheet); // Bug : does not support multiple graphs in the same page.
+    }
+
+    update(observable, data) {
+        super.update(observable, data);
+        console.log("notified of a configuration update");
     }
 
     dragstarted(_simulation) {
@@ -296,15 +305,6 @@ export class D3GraphVisualizer {
             else {results.edges[i].linknum = 1;};
         };
 
-        // @TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
-        graph.displayNodeLabels = function () {
-            // return confGraphModal.nodesCheckbox.property("checked") || ;
-            return true;
-        }
-        graph.displayEdgeLabels = function () {
-            return true;
-            // return confGraphModal.edgesCheckbox.property("checked");
-        }
         graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
             links.attr("d", function(edge, i, edges) {
@@ -336,7 +336,7 @@ export class D3GraphVisualizer {
                     }
                 );
 
-            if (graph.displayNodeLabels()) {
+            if (visualizer.model.displayNodeLabels) {
                 textNodes
                     .attr("x",
                             (d) => {
@@ -352,7 +352,7 @@ export class D3GraphVisualizer {
                         }
                     );
             }
-            if (graph.displayEdgeLabels()) {
+            if (visualizer.model.displayEdgeLabels) {
                 pathLabels.attr("d", visualizer.buildPathFromEdge(scale)(results.links));
             }
         };
@@ -380,7 +380,7 @@ export class D3GraphVisualizer {
         results.links = results.edges;
 
         var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, graph);
-        confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, graph, results);
+        confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, graph, results, visualizer.model);
         graph.updateConfiguration = function () {
             return function () {
                 var updateSet = function(groupName, text) {
@@ -615,11 +615,6 @@ export class D3GraphVisualizer {
             .text(function (d) {
                 return d.label;
             });
-
-
-
-        var displayEdgeLabels = false;
-        var displayNodeLabels = false;
 
         graph.updateConfiguration();
         var pathLabels = graph.append("defs").attr("class", "paths").selectAll("path")

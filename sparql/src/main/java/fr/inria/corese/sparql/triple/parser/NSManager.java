@@ -51,9 +51,10 @@ public class NSManager extends ASTObject {
     public static final String SQL  = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
-    public static final String SHAPE = "http://www.w3.org/ns/shacl#";
-    public static final String DCTERM = "http://purl.org/dc/terms/";
-    public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
+    public static final String SHAPE    = "http://www.w3.org/ns/shacl#";
+    public static final String DCTERM   = "http://purl.org/dc/terms/";
+    public static final String DBPEDIAFR= "http://fr.dbpedia.org/resource/";
+    public static final String DBPEDIA  = "http://dbpedia.org/resource/";
     
     public static final String COSNS      = RDFS.COSNS;
     public static final String COS        = RDFS.COS;
@@ -224,6 +225,7 @@ public class NSManager extends ASTObject {
         def.put("http://www.w3.org/2004/02/skos/core#", "skos");
         def.put(DCTERM, "dc");
         def.put(DBPEDIAFR, "db");
+        def.put(DBPEDIA, "dbe");
        
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);

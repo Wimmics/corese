@@ -207,11 +207,11 @@ public class ProviderImpl implements Provider {
             logger.error("Undefined service: " + exp.getServiceNode());
         }
 
-        ArrayList<Mappings> mapList = new ArrayList<>();
+        ArrayList<Mappings> mapList     = new ArrayList<>();
         ArrayList<ProviderThread> pList = new ArrayList<>();
         // With @new annotation => service in parallel
         boolean parallel = q.getOuterQuery().isNew();
-        
+
         for (Node service : list) {
             if (eval.isStop()) {
                 break;
@@ -296,7 +296,7 @@ public class ProviderImpl implements Provider {
     }
     
     void addResult(Mappings sol, Mappings res) {
-        if (res != null && !res.isEmpty()) {
+        if (res != null) {
             sol.add(res);
             if (sol.getQuery() == null) {
                 sol.setQuery(res.getQuery());
@@ -306,16 +306,24 @@ public class ProviderImpl implements Provider {
     }
     
     Mappings getResult(List<Mappings> mapList) {
-        Mappings res = null;
+        if (mapList.size() == 1) {
+            return mapList.get(0);
+        }
+        Mappings res   = null;
+        int n = 0;
+        
         for (Mappings m : mapList) {
             if (res == null) {
-                if (!m.isEmpty()) {
-                    res = m;
-                }
+                res = m;
             }
-            else if (!m.isEmpty()){
+            else {
                 res.add(m);
             }
+        }
+        
+        // TODO: if two Mappings have their own duplicates, they are removed
+        if (res.getSelect() != null){
+            res = res.distinct(res.getSelect(), res.getSelect());
         }
         return res;
     }

@@ -278,6 +278,7 @@ public class CompileService {
     
     Term getFilter(Query q, Mapping m) {
         ArrayList<Term> lt = new ArrayList<Term>();
+        ASTQuery ast = (ASTQuery) q.getAST();
 
         for (Node varNode : q.getBody().getRecordInScopeNodes()) {
             String varName = varNode.getLabel();
@@ -287,7 +288,7 @@ public class CompileService {
                 // and it will not be available on another server because 
                 // bnode are local
                 // wish: select Mapping with unique(varNode, valNode)
-                Term t = filter(Variable.create(varName), (IDatatype) valNode.getDatatypeValue()); 
+                Term t = filter(ast, Variable.create(varName), (IDatatype) valNode.getDatatypeValue()); 
                 lt.add(t);
             }
         }
@@ -311,10 +312,13 @@ public class CompileService {
      * hence, the service query will get all bnodes (!) and the local join will do the job
      * of selecting the right bnodes according to current partial solution where we have the bnode val
      */
-    Term filter(Variable var, IDatatype dt) {
+    Term filter(ASTQuery ast, Variable var, IDatatype dt) {
         if (dt.isBlank()) {
             return Term.function(Processor.ISBLANK, var);
         }
+//        else if (dt.isURI()) {
+//            return Term.create(Term.SEQ, var, ast.createQNameURI(dt.getLabel()));
+//        }
         return Term.create(Term.SEQ, var, Constant.create(dt));
     }
     

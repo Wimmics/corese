@@ -44,6 +44,9 @@ public class Metadata extends ASTObject
     public static final int TRAP    = 26;    
     public static final int FEDERATION= 27;
     public static final int COUNT   = 28;
+    public static final int PARALLEL= 29;
+    public static final int SEQUENCE= 30;
+    
     
     public static final int EVENT   = 50;
 //    public static final int BEFORE  = 51;
@@ -100,6 +103,8 @@ public class Metadata extends ASTObject
         define("@trace",    TRACE);
         define("@test",     TEST);
         define("@new",      NEW);
+        define("@parallel", PARALLEL);
+        define("@sequence", SEQUENCE);
         define("@count",    COUNT);
         define("@export",   PUBLIC);      
         define("@public",   PUBLIC);      

@@ -16,6 +16,7 @@ public class CompilerFacKgram implements CompilerFactory {
   public CompilerFacKgram(boolean b) {
   }
 
+  @Override
   public Compiler newInstance() {
     return new CompilerKgram();
   }

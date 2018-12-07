@@ -29,6 +29,20 @@ import org.slf4j.LoggerFactory;
 public class Query extends Exp implements Graphable {
 
     /**
+     * @return the serviceResult
+     */
+    public boolean isServiceResult() {
+        return serviceResult;
+    }
+
+    /**
+     * @param serviceResult the serviceResult to set
+     */
+    public void setServiceResult(boolean serviceResult) {
+        this.serviceResult = serviceResult;
+    }
+
+    /**
      * @return the federate
      */
     public boolean isFederate() {
@@ -193,6 +207,7 @@ public class Query extends Exp implements Graphable {
             isListPath = false;
     private boolean validate = false;
     private boolean federate = false;
+    private boolean serviceResult = false;
     private boolean isFun = false;
     private boolean isPathType = false;
     // store the list of edges of the path

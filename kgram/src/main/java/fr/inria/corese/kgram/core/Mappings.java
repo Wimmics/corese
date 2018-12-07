@@ -151,19 +151,38 @@ public class Mappings extends PointerObject
         return res;
     }
     
+    public Mappings distinctAll() {
+        List<Node> list = query.getSelectNodes();
+        if (list.isEmpty()) {
+            list = query.getSelect();
+        }
+        if (list.isEmpty()) {
+            list = getSelect();
+        }
+        return distinct(list, list);
+    }
+
+    
     public Mappings distinct(List<Node> list) {
+        Mappings map = distinct(query.getSelect(), list);
+        //map.setNodeList(list);
+        return map;
+    }
+    
+    public Mappings distinct(List<Node> selectList, List<Node> distinctList) {
         Mappings map = new Mappings(query);
-        map.setSelect(query.getSelect());
-        Group group = Group.create(list);
+        map.setSelect(selectList);
+        Group group = Group.create(distinctList);
         group.setDistinct(true);
         for (Mapping m : this) {
             if (group.isDistinct(m)) {
                 map.add(m);
             }
         }
-        map.setNodeList(list);
         return map;
     }
+    
+    
     
     public boolean isDistinct(){
         return isDistinct;
@@ -1371,7 +1390,10 @@ public class Mappings extends PointerObject
      * Use case: service ?s { BGP }
      */
     public void join (Node var, Node val) {
-        for (int i = 0; i<size(); ) {
+        if (! getSelect().contains(var)){
+            getSelect().add(var);
+        }
+      for (int i = 0; i<size(); ) {
             Mapping m = list.get(i);
             Node node = m.getNode(var);
             if (node == null){
@@ -1407,6 +1429,45 @@ public class Mappings extends PointerObject
             }
         }
         return map.distinct();
+    }
+    
+    /**
+     * Check if all values of a given variable are in same namespace
+     */
+    void select() {
+        if (size() > 0) {
+            Mapping m = get(0);
+            if (m.size() > 0) {
+                Node var = m.getQueryNode(0);
+                if (var.isVariable()) {
+                    DatatypeValue value = m.getValue(var);
+                    if (value.isURI()) {
+                        String ns = value.stringValue();
+                        boolean check = check(var, ns);
+                        if (check) {
+                            ArrayList<Object> list = new ArrayList<>();
+                            list.add(var);
+                            list.add(ns);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    boolean check(Node var, String ns) {
+        for (Mapping m : this) {
+            if (m.size() > 0) {
+                DatatypeValue value = m.getValue(var);
+                if (!(value != null && value.isURI() && value.stringValue().startsWith(ns))) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
     }
     
 

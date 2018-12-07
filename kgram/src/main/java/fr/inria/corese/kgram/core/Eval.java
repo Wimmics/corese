@@ -1469,6 +1469,7 @@ public class Eval implements ExpType, Plugin {
             // or impose irrelevant bindings 
             // map = select distinct map1 wrt exp inscope nodes 
             Mappings map = set1.getMappings().distinct(nodeListInScope);
+            map.setNodeList(nodeListInScope);
             if (exp.isJoin() || isFederate(rest)) {
                 // service clause in rest may take Mappings into account
                 set1.setJoinMappings(map);

@@ -16,6 +16,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
@@ -42,18 +43,25 @@ public class Selector {
     HashMap<Triple, String> tripleVariable;
     QuerySolver exec;
     boolean sparql10 = false;
+    boolean count = false;
     
     Selector(QuerySolver e, ASTQuery ast) {
         this.ast = ast;
         exec = e;
-        predicateService  = new HashMap<>();
+        init();
+    }
+    
+    void init() {
+        predicateService = new HashMap<>();
         predicateVariable = new HashMap<>();
-        tripleVariable    = new HashMap<>();
-        tripleService     = new HashMap<>();
-        
-        if (ast.hasMetadata(Metadata.SPARQL10)){
+        tripleVariable = new HashMap<>();
+        tripleService = new HashMap<>();
+
+        if (ast.hasMetadata(Metadata.SPARQL10)) {
             sparql10 = true;
         }
+        
+        count = ast.hasMetadata(Metadata.COUNT);
     }
     
     void process() {
@@ -274,27 +282,50 @@ public class Selector {
                 Variable s = Variable.create("?s");
                 Variable o = Variable.create("?o");
                 Triple t = aa.triple(s, p, o);
-                BasicGraphPattern bb = BasicGraphPattern.create(t);
-                Variable var = Variable.create("?b" + i++);
-                Binding exist = Binding.create(aa.createExist(bb, false), var);
-                bgp.add(exist);
+                Variable var = create(aa, bgp, t, i);
                 declare(p, var);
-            }
+                
+                if (count) {
+                    count(aa, bgp, t, i);
+                }
+                i++;
+            }                      
         }
         
         for (Triple t : ast.getTripleList()) {
             if (selectable(t)) {
                 // triple with constant
-                BasicGraphPattern bb = BasicGraphPattern.create(t);
-                Variable var = Variable.create("?b" + i++);
-                Binding exist = Binding.create(aa.createExist(bb, false), var);
-                bgp.add(exist);
+                Variable var = create(aa, bgp, t, i);
                 declare(t, var);
+                if (count) {
+                    count(aa, bgp, t, i);
+                }
+                i++;
             }
         }
         
         return bgp;
     }
+    
+    void count(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
+        ASTQuery a = aa.subCreate();
+        Term fun = Term.function(Processor.COUNT);
+        Variable var = Variable.create("?c" + i);
+        a.defSelect(var, fun);
+        BasicGraphPattern body = BasicGraphPattern.create(t);
+        a.setBody(body);
+        BasicGraphPattern exp = BasicGraphPattern.create(Query.create(a));
+        bgp.add(exp);
+    }
+    
+    Variable create(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
+        BasicGraphPattern bb = BasicGraphPattern.create(t);
+        Variable var = Variable.create("?b" + i++);
+        Binding exist = Binding.create(aa.createExist(bb, false), var);
+        bgp.add(exist);
+        return var;
+    }
+    
     
     boolean selectable(Triple t) {
         return t.getPredicate().isConstant() 

@@ -209,6 +209,7 @@ public class ProviderImpl implements Provider {
 
         ArrayList<Mappings> mapList     = new ArrayList<>();
         ArrayList<ProviderThread> pList = new ArrayList<>();
+        int timeout = getTimeout(q, serviceNode, eval.getEnvironment());
         // With @new annotation => service in parallel
         boolean parallel = q.getOuterQuery().isNew();
 
@@ -231,18 +232,18 @@ public class ProviderImpl implements Provider {
             mapList.add(sol);
             
             if (parallel) {
-                ProviderThread p = parallelProcess(q, service, exp, input, sol, eval, compiler, slice, length);
+                ProviderThread p = parallelProcess(q, service, exp, input, sol, eval, compiler, slice, length, timeout);
                 pList.add(p);
             }
             else {
-                process(q, service, exp, input, sol, eval, compiler, slice, length);
+                process(q, service, exp, input, sol, eval, compiler, slice, length, timeout);
             }
         }
         
         // Wait for parallel threads to stop
         for (ProviderThread p : pList) {
             try {
-                p.join();
+                p.join(timeout);
             } catch (InterruptedException ex) {
                 logger.warn(ex.toString());
             }
@@ -260,8 +261,8 @@ public class ProviderImpl implements Provider {
     /**
      * Execute service in a parallel thread 
      */
-    ProviderThread parallelProcess(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length) {
-        ProviderThread thread = new ProviderThread(this, q, service, exp, map, sol, eval, compiler, slice, length);
+    ProviderThread parallelProcess(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
+        ProviderThread thread = new ProviderThread(this, q, service, exp, map, sol, eval, compiler, slice, length, timeout);
         thread.start();
         return thread;
     }
@@ -270,7 +271,7 @@ public class ProviderImpl implements Provider {
      * Execute service with possibly input Mappings map and possibly slicing map into packet of size length
      * Add results into Mappings sol which is empty when entering
      */
-    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length) {
+    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
         int size = 0;
         if (slice) {
             while (size < map.size()) {
@@ -279,20 +280,22 @@ public class ProviderImpl implements Provider {
                 }
                 // consider subset of Mappings of size slice
                 // it may produce bindings for target service
-                Mappings res = send(compiler, service, q, map, eval.getEnvironment(), size, size + length);
+                Mappings res = send(compiler, service, q, map, eval.getEnvironment(), size, size + length, timeout);
                 // join (serviceNode = serviceURI)
                 complete(exp.getServiceNode(), service, res, eval.getEnvironment());
                 addResult(sol, res);
                 size += length;
             }
         } else {
-            Mappings res = send(compiler, service, q, map, eval.getEnvironment(), 0, 0);
+            Mappings res = send(compiler, service, q, map, eval.getEnvironment(), 0, 0, timeout);
             // join (serviceNode = serviceURI)
             complete(exp.getServiceNode(), service, res, eval.getEnvironment());
             addResult(sol, res);
         }
 
-        eval.getVisitor().service(eval, service, exp, sol);
+        synchronized (eval.getEnvironment().getBind()) {
+            eval.getVisitor().service(eval, service, exp, sol);
+        }
     }
     
     void addResult(Mappings sol, Mappings res) {
@@ -394,7 +397,7 @@ public class ProviderImpl implements Provider {
         List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
         if (list.size() == 1) { 
-            Mappings res = send(compiler, list.get(0), q, map, eval.getEnvironment(), min, max);
+            Mappings res = send(compiler, list.get(0), q, map, eval.getEnvironment(), min, max, 0);
             eval.getVisitor().service(eval, list.get(0), exp, res);
             g.getEventManager().finish(Event.Service);
             return res;
@@ -405,7 +408,7 @@ public class ProviderImpl implements Provider {
                     break;
                 }
                 g.getEventManager().process(Event.Service, service);
-                Mappings sol = send(compiler, service, q, map, eval.getEnvironment(), min, max);
+                Mappings sol = send(compiler, service, q, map, eval.getEnvironment(), min, max, 0);
                 eval.getVisitor().service(eval, service, exp, sol);
                 complete(exp.getServiceNode(), serviceNode, sol, eval.getEnvironment());
                 if (res == null) {
@@ -425,7 +428,7 @@ public class ProviderImpl implements Provider {
     /**
      * Send query to sparql endpoint using a POST HTTP query
      */
-    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit) {
+    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) {
         Query gq = q.getGlobalQuery();
         try {
 
@@ -441,7 +444,7 @@ public class ProviderImpl implements Provider {
             if (gq.isDebug()) {
                 logger.info("** Provider query: \n" + q.getAST());
             }
-            Mappings res = eval(q, serv, env);
+            Mappings res = eval(q, serv, env, timeout);
             
             if (gq.isDebug()) {
                 if (res.size() <= 100 || gq.isDetail()) {
@@ -486,11 +489,11 @@ public class ProviderImpl implements Provider {
         return env.getEval().getVisitor().slice(serv, map);
     }
     
-    Mappings eval(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
+    Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
         if (isDB(serv)){
             return db(q, serv);
         }
-        return send(q, serv,env);
+        return send(q, serv,env, timeout);
     }
     
     /**
@@ -506,11 +509,11 @@ public class ProviderImpl implements Provider {
         return serv.getLabel().startsWith(DB);
     }
     
-    Mappings send(Query q, Node serv, Environment env) throws IOException, ParserConfigurationException, SAXException {
+    Mappings send(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
-        InputStream stream = doPost(serv.getLabel(), query, getTimeout(q, serv, env));       
+        InputStream stream = doPost(serv.getLabel(), query, timeout);       
         return parse(stream, trap);
     }
 

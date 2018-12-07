@@ -36,8 +36,9 @@ public class ProviderThread extends Thread {
     CompileService c;
     boolean slice;
     int length;
+    int timeout;
     
-    ProviderThread(ProviderImpl p, Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length){
+    ProviderThread(ProviderImpl p, Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout){
         this.p = p;
         this.q = q;
         this.service = service;
@@ -48,6 +49,7 @@ public class ProviderThread extends Thread {
         this.c = compiler;
         this.slice = slice;
         this.length = length;
+        this.timeout = timeout;
     }
     
     @Override
@@ -56,7 +58,7 @@ public class ProviderThread extends Thread {
     }
     
     void process() {
-        p.process(q, service, exp, map, sol, eval, c, slice, length);
+        p.process(q, service, exp, map, sol, eval, c, slice, length, timeout);
     }
 
 }

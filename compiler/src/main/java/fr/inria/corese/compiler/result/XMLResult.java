@@ -52,6 +52,7 @@ public class XMLResult {
     // create query Node
     	fr.inria.corese.compiler.parser.Compiler compiler;
     HashMap<String, Integer> table;
+    ArrayList<Node> varList;
     private static final int UNKNOWN = -1;
     private static final int RESULT = 1;
     private static final int BINDING = 2;
@@ -59,6 +60,8 @@ public class XMLResult {
     private static final int LITERAL = 4;
     private static final int BNODE = 5;
     private static final int BOOLEAN = 6;
+    private static final int VARIABLE = 7;
+    
     private boolean debug = false;
     private boolean trapError = false;
 
@@ -131,24 +134,27 @@ public class XMLResult {
     void complete(Mappings map) {
         ASTQuery ast = ASTQuery.create();
         ast.setBody(BasicGraphPattern.create());
-        for (Node n : getVariables()) {
+        for (Node n : varList) { //getVariables()) {
             ast.setSelect(new Variable(n.getLabel()));
         }
         QuerySolver qs = QuerySolver.create();
         Query q = qs.compile(ast);
+        q.setServiceResult(true);
         map.setQuery(q);
         map.init(q);
     }
 
     public void init() {
+        varList = new ArrayList<>();
         compiler = new CompilerFacKgram().newInstance();
         table = new HashMap<String, Integer>();
-        table.put("result", RESULT);
+        table.put("result",  RESULT);
         table.put("binding", BINDING);
-        table.put("uri", URI);
-        table.put("bnode", BNODE);
+        table.put("uri",     URI);
+        table.put("bnode",   BNODE);
         table.put("literal", LITERAL);
         table.put("boolean", BOOLEAN);
+        table.put("variable",VARIABLE);
     }
 
     int type(String name) {
@@ -207,7 +213,8 @@ public class XMLResult {
                 isBoolean = false,
                 isURI = false,
                 isLiteral = false,
-                isBlank = false;
+                isBlank = false,
+                isVariable = false;
         String text, datatype, lang;
 
         MyHandler(Mappings m) {
@@ -232,15 +239,24 @@ public class XMLResult {
             text = null;
             datatype = null;
             lang = null;
+            isVariable = false;
         }
 
         /**
          * result is represented by Mapping add one binding to current Mapping
          */
         void add(String var, Node nval) {
-            Node nvar = compiler.createNode(vtable.get(var));
+            Node nvar = getVariable(var);
             lvar.add(nvar);
             lval.add(nval);
+        }
+        
+        Node getVariable(String var) {
+            return compiler.createNode(vtable.get(var));
+        }
+        
+        void defineVariable(Node var) {
+            varList.add(var);
         }
 
         @Override
@@ -259,6 +275,11 @@ public class XMLResult {
                     lval.clear();
                     lvar.clear();
                     break;
+                    
+                case VARIABLE:
+                   String name = atts.getValue("name");
+                   defineVariable(getVariable(name));
+                   break;
 
                 case BINDING:
                     var = atts.getValue("name");

@@ -281,6 +281,12 @@ public class Transformer implements ExpType {
         if (ast.hasMetadata(Metadata.NEW)){
             q.setNew(true);
         }
+        if (ast.hasMetadata(Metadata.PARALLEL)) {
+            q.setNew(true);
+        }
+        if (ast.hasMetadata(Metadata.SEQUENCE)) {
+            q.setNew(false);
+        }
     }
     
     void toJava(ASTQuery ast){

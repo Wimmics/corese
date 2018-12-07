@@ -197,7 +197,7 @@ public class Query extends Exp implements Graphable {
             isDistribute = false,
             isOptimize = false,
             isTest = false,
-            isNew = false,
+            isNew = true,
             // sort edges to be connected
             isSort = true, isConstruct = false,
             isDelete = false, isUpdate = false, // true:  path do not loop on node

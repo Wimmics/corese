@@ -16,7 +16,8 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +65,8 @@ public class FederateVisitor implements QueryVisitor {
     boolean exist = false;
     private boolean bounce = false;
     boolean verbose = false;
+    boolean variable = false;
+    boolean aggregate = false;
 
     ASTQuery ast;
     Stack stack;
@@ -72,6 +75,7 @@ public class FederateVisitor implements QueryVisitor {
     RewriteBGP rew;
     RewriteTriple rwt;
     Simplify sim;
+    List<Atom> empty;
     
     static {
         federation = new HashMap<>();
@@ -83,6 +87,7 @@ public class FederateVisitor implements QueryVisitor {
         rew = new RewriteBGP(this);
         rwt = new RewriteTriple(this);
         sim = new Simplify(this);
+        empty = new ArrayList<>(0);
     }
     
     /**
@@ -174,8 +179,14 @@ public class FederateVisitor implements QueryVisitor {
         if (ast.hasMetadata(Metadata.BOUNCE)) {
             bounce = true;
         }
+        if (ast.hasMetadata(Metadata.VARIABLE)) {
+            variable = true;
+        }
+        if (ast.hasMetadata(Metadata.SERVER)) {
+            aggregate = true;
+        }
         if (select) {
-            selector = new Selector(exec, ast);
+            selector = new Selector(this, exec, ast);
             selector.process();
         }
     }
@@ -189,6 +200,32 @@ public class FederateVisitor implements QueryVisitor {
      */
     void rewrite(ASTQuery ast) {
         rewrite(null, ast);
+        variable(ast);
+    }
+    
+    void variable(ASTQuery ast) {
+        if (variable) {
+            // rewrite service (uri) {} as values ?serv { (uri) } service ?serv {}
+            RewriteService rs = new RewriteService(this);
+            rs.process(ast);
+            if (aggregate) {
+                aggregate(ast, rs.getVarList());
+            }
+        }
+    }
+    
+    /**
+     * select ?serv_1  ?serv_n (count(*) as ?count)
+     * where {}
+     * group by ?serv_1  ?serv_n.
+     */
+    void aggregate(ASTQuery ast, List<Variable> valList) {
+        ast.setGroup(valList);
+        ast.cleanSelect();
+        ast.setSelect(valList);
+        Term fun = Term.function(Processor.COUNT);
+        Variable var = Variable.create("?count");
+        ast.defSelect(var, fun);
     }
     
     /**
@@ -436,20 +473,23 @@ public class FederateVisitor implements QueryVisitor {
                 return list;
             }
         }
-        return ast.getServiceList();
+        return getDefaultServiceList();
     }
     
-    List<Atom> getServiceListTriple(Triple t) {
-        if (t.getPredicate().isVariable()) {
-            return ast.getServiceList();
-        }        
+    List<Atom> getServiceListTriple(Triple t) {     
         if (select) {
             List<Atom> list = selector.getPredicateService(t);
-            if (! list.isEmpty()) {
+            if (list != null && ! list.isEmpty()) {
                 return list;
             }
         }
-        return ast.getServiceList();
+        return getDefaultServiceList();
+    }
+    
+    // when there is no service for a triple
+    List<Atom> getDefaultServiceList() {
+        //return ast.getServiceList();
+        return empty;
     }
            
    

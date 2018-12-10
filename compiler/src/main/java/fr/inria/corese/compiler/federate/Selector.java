@@ -27,7 +27,7 @@ import java.util.List;
 /**
  *
  * Ask remote endpoints if they contain predicates of the federated query
- * Build a table: predicate -> { Service_1, Service_n }
+ * Build a table: triple | predicate -> { Service_1, Service_n }
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
@@ -36,6 +36,7 @@ public class Selector {
     
     private static final String SERVER_VAR = "?serv";
     
+    FederateVisitor vis;
     ASTQuery ast;
     HashMap<String, List<Atom>> predicateService;
     HashMap<String, String> predicateVariable;
@@ -45,17 +46,18 @@ public class Selector {
     boolean sparql10 = false;
     boolean count = false;
     
-    Selector(QuerySolver e, ASTQuery ast) {
+    Selector(FederateVisitor vis, QuerySolver e, ASTQuery ast) {
         this.ast = ast;
+        this.vis = vis;
         exec = e;
         init();
     }
     
     void init() {
-        predicateService = new HashMap<>();
+        predicateService  = new HashMap<>();
         predicateVariable = new HashMap<>();
-        tripleVariable = new HashMap<>();
-        tripleService = new HashMap<>();
+        tripleVariable    = new HashMap<>();
+        tripleService     = new HashMap<>();
 
         if (ast.hasMetadata(Metadata.SPARQL10)) {
             sparql10 = true;
@@ -71,13 +73,13 @@ public class Selector {
             process11(getServiceList(false));
         }
         else {
-            process11(getServiceList());
+            process11(ast.getServiceListConstant());
         }
     }
     
     
     List<Constant> getServiceList(boolean sparql10) {
-        List<Constant> list = getServiceList();
+        List<Constant> list = ast.getServiceListConstant();
         List<Constant> res = new ArrayList<>();
         for (Constant serv : list) {
             if (sparql10){
@@ -148,10 +150,13 @@ public class Selector {
     
     List<Atom> getPredicateService(Triple t) {
         List<Atom> list = tripleService.get(t);
-        if (list != null && !list.isEmpty()) {
+        if (list != null) {
             return list;
         }
-        return predicateService.get(t.getPredicate().getLabel());
+        if (t.getPredicate().isVariable()) {
+            return ast.getServiceList();
+        }
+        return getPredicateService(t.getPredicate().getConstant());
     }
    
     void trace() {
@@ -328,8 +333,8 @@ public class Selector {
     
     
     boolean selectable(Triple t) {
-        return t.getPredicate().isConstant() 
-                && (t.getSubject().isConstant() || t.getObject().isConstant());
+        return //t.getPredicate().isConstant() &&
+                 (t.getSubject().isConstant() || t.getObject().isConstant());
     }
     
     /**
@@ -373,15 +378,6 @@ public class Selector {
             option = new Option(BasicGraphPattern.create(option), BasicGraphPattern.create(list.get(i)));
         }
         return option;
-    }
-    
-    
-    ArrayList<Constant> getServiceList() {
-        ArrayList<Constant> list = new ArrayList<>();
-        for (Atom at : ast.getServiceList()) {
-            list.add(at.getConstant());
-        }
-        return list;
     }
 
 }

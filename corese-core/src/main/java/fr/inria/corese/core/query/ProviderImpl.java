@@ -325,7 +325,7 @@ public class ProviderImpl implements Provider {
         }
         
         // TODO: if two Mappings have their own duplicates, they are removed
-        if (res.getSelect() != null){
+        if (res != null && res.getSelect() != null){
             res = res.distinct(res.getSelect(), res.getSelect());
         }
         return res;

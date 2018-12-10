@@ -31,9 +31,22 @@ public class Service extends And {
     }
 
     public static Service create(List<Atom> list, Exp body, boolean b) {
-        Service s = new Service(list.get(0), body, b);
+        Service s = new Service(getDefaultService(list), body, b);
         s.setServiceList(list);
         return s;
+    }
+    
+    public static Service create(Atom serv, List<Atom> list, Exp body, boolean b) {
+        Service s = new Service(serv, body, b);
+        s.setServiceList(list);
+        return s;
+    }
+    
+    static Atom getDefaultService(List<Atom> list) {
+        if (list.isEmpty()) {
+            return Variable.create("?undef_serv");           
+        }
+        return list.get(0);     
     }
 
     public static Service create(Atom serv, Exp body) {
@@ -64,7 +77,11 @@ public class Service extends And {
     public ASTBuffer toString(ASTBuffer sb) {
         sb.append(Term.SERVICE);
         int i = 0;
-        for (Atom at : serviceList) {
+        if (getServiceName().isVariable()) {
+            sb.append(" ");
+            getServiceName().getVariable().toString(sb);
+        }
+        else for (Atom at : serviceList) {
             if (i++ == 0) {
                 sb.append(" ");
             }
@@ -94,6 +111,10 @@ public class Service extends And {
     public Atom getServiceName() {
         return uri;
     }
+    
+    public void setServiceName(Atom at) {
+        uri = at;
+    }
 
     @Override
     public boolean validate(ASTQuery ast, boolean exist) {
@@ -104,6 +125,18 @@ public class Service extends And {
             }
         }
         return super.validate(ast, exist);
+    }
+    
+    public void clearServiceList() {
+        setServiceList(new ArrayList<>(0));
+    }
+   
+    public List<Constant> getServiceConstantList() {
+        ArrayList<Constant> list = new ArrayList<>();
+        for (Atom at : getServiceList()) {
+            list.add(at.getConstant());
+        }
+        return list;
     }
 
     /**

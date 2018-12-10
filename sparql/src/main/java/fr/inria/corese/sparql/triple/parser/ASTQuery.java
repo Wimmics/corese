@@ -401,6 +401,14 @@ public class ASTQuery
     public List<Atom> getServiceList() {
         return serviceList;
     }
+    
+    public List<Constant> getServiceListConstant() {
+        ArrayList<Constant> list = new ArrayList<>();
+        for (Atom at : getServiceList()) {
+            list.add(at.getConstant());
+        }
+        return list;
+    }
 
     /**
      * @param serviceList the serviceList to set
@@ -1970,8 +1978,10 @@ public class ASTQuery
                 submit(pred);
             }
         }
-        else if (t.getPredicate().isConstant()) {
-            submit(t.getPredicate().getConstant());
+        else {
+            if (t.getPredicate().isConstant()) {
+                submit(t.getPredicate().getConstant());
+            }
             record(t);
         }
     }
@@ -2839,6 +2849,12 @@ public class ASTQuery
         return false;
     }
 
+    public void setGroup(List<Variable> list) {
+        for (Variable var : list) {
+            setGroup(var);
+        }
+    }
+    
     public void setGroup(Expression exp) {
         if (exp.isVariable()) {
             setGroup(exp.getName());
@@ -2918,10 +2934,23 @@ public class ASTQuery
             setSelect(var, exp);
         }
     }
+    
+    public void cleanSelect() {
+        selectVar.clear();;
+        selectAllVar.clear();
+        selectFunctions.clear();
+        selectExp.clear();
+    }
 
     public void setSelect(Variable var) {
         if (!selectVar.contains(var)) {
             selectVar.add(var);
+        }
+    }
+    
+    public void setSelect(List<Variable> list) {
+        for (Variable var : list) {
+            setSelect(var);
         }
     }
 

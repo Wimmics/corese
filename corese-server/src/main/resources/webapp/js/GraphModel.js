@@ -31,38 +31,49 @@ export class GraphModel extends Observable {
         });
     }
 
+    setDisplayAll(element, value) {
+        this.displayAll[element] = value;
+        this.getGroups(element).forEach(
+            group => this.groups[element][group] = value
+        )
+        this.notififyObservers();
+    }
+
     getDisplayAll(element) {
         return this.displayAll[element];
     }
 
     getDisplayAllNodes() {
-        return this.displayAll[this.ALL_NODES];
+        this.getDisplayAll(this.ALL_NODES);
+    }
+    getDisplayAllNodes() {
+        this.getDisplayAll(this.ALL_EDGES);
     }
 
-    getDisplayAllEdges() {
-        return this.displayAll[this.ALL_EDGES];
-    }
+
 
     getDisplayGroup(element, group) {
-        return group => this.groups[element][group];
+        return this.groups[element][group];
     }
 
     getDisplayNodeGroup(group) {
-        return group => this.groups[this.ALL_NODES][group];
+        return this.getDisplayGroup(this.ALL_NODES, group);
     }
 
     getDisplayEdgeGroup(group) {
-        return group => this.groups[this.ALL_EDGES][group];
+        return this.getDisplayGroup(this.ALL_EDGES, group);
     }
 
     setDisplayGroup(element, group, display) {
-        this.group[element][group] = display;
+        this.groups[element][group] = display;
         let allEquals = true;
-        this.group[element].forEach(
-            group => (allEquals &= (this.group[element] === display))
+        Object.keys(this.groups[element]).forEach(
+            group => allEquals = (allEquals && (this.groups[element][group] === display))
         )
         if (allEquals) {
             this.displayAll[element] = display;
+        } else {
+            this.displayAll[element] = false;
         }
         this.notififyObservers();
     }
@@ -71,8 +82,8 @@ export class GraphModel extends Observable {
        this.displayAll[element] = !this.displayAll[element];
        this.getGroups(element).forEach(
            group => this.groups[element][group] = this.displayAll[element]
-       )
-        this.notififyObservers();
+       );
+       this.notififyObservers();
     }
 
     toggleDisplayGroup(element, group) {

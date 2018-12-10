@@ -160,7 +160,7 @@ class ConfGraphModal extends Observer {
             groupName => {
                 this.getGroupCheckbox(groupName, "all").property("checked", this.model.getDisplayAll(groupName));
                 this.model.getGroups(groupName).forEach(
-                    group => this.getGroupCheckbox(groupName, group).property("checked", this.model.getDisplayGroup(groupName))
+                    group => this.getGroupCheckbox(groupName, group).property("checked", this.model.getDisplayGroup(groupName, group))
                 )
             }
         );
@@ -289,24 +289,79 @@ export class D3GraphVisualizer extends Observer {
 
         var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, visualizer.graph);
 
-        visualizer.graph.ticked = function (s) {};
+        visualizer.graph.ticked = function (s) {
+            scale = (s === undefined) ? scale : s;
+            links.attr("d", function(edge, i, edges) {
+                var dx = edge.source.x - edge.target.x;
+                var dy = edge.source.y - edge.target.y;
+                var r = 10 * Math.sqrt(dx*dx + dy*dy);
+                var dr = r /  (2 * edge.linknum);
+                d3.select(this).attr("marker-end", "url(#arrowhead)");
+                return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+            });
+
+            nodes
+                .attr("cx", function (d) {
+                    return d.x * scale;
+                })
+                .attr("cy", function (d) {
+                    return d.y * scale;
+                })
+                .each(
+                    (d, i, nodes) => {
+                        var current = d3.select(nodes[i]);
+                        var father = d3.select(nodes[i].parentNode);
+                        var image = father.select("image");
+                        if (image !== undefined) {
+                            var width = current.attr("r") * Math.sqrt(2);
+                            image.attr("x", d => (d.x * scale - width / 2));
+                            image.attr("y", d => (d.y * scale - width / 2));
+                        }
+                    }
+                );
+
+            if (true) {
+                textNodes
+                    .attr("x",
+                        (d) => {
+                            const r = Number( d3.select(d.node).attr("r") );
+                            const result = d.x * scale + r;
+                            return result;
+                        }
+                    )
+                    .attr("y",
+                        (d) => {
+                            const r = Number( d3.select(d.node).attr("r") );
+                            return (d.y * scale + r);
+                        }
+                    ).attr("visibility",
+                    (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group) ? "visible" : "hidden"
+                );
+            }
+            if (true) {
+                textEdges
+                    .attr("d", visualizer.buildPathFromEdge(scale)(results.links))
+                    .attr("visibility",
+                        (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_EDGES, d.group) ? "visible" : "hidden"
+                    );
+            }
+        };
+
 
         confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, visualizer.graph, results, visualizer.model);
         confGraphModal.model.addObserver(confGraphModal);
         visualizer.graph.updateConfiguration = function () {
-            return function () {
-                var updateSet = function(groupName, text) {
-                    const nodesDisplayCriteria = (d, i, nodes) => (confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group)) ? "visible" : "hidden";
-                    text.attr(
-                        "visibility",
-                        (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
-                    );
-                }
-                updateSet("nodes", textNodes);
-                updateSet("edges", textEdges);
+            var updateSet = function(groupName, text) {
+                const nodesDisplayCriteria = (d, i, nodes) => (confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group)) ? "visible" : "hidden";
+                text.attr(
+                    "visibility",
+                    (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
+                );
+            }
+            updateSet("nodes", textNodes);
+            updateSet("edges", textEdges);
                 // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
             };
-        }(confGraphModal);
 
         var maxLen = [];
         results.nodes.forEach(
@@ -362,7 +417,7 @@ export class D3GraphVisualizer extends Observer {
             .style('fill', 'grey')
         ;
 
-        let textNodes = g.append("g").attr("class", "texts").selectAll("text")
+        let textNodes = g.append("g").attr("class", "textNodes").selectAll("text")
             .data(visualizer.simulation.nodes())
             .enter().append("text")
             .attr("class", (edge, i, edges) => {
@@ -380,7 +435,7 @@ export class D3GraphVisualizer extends Observer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
-            .attr("xlink:href", d => {return `#${d.id}`;})
+            .attr("xlink:href", d => {return `#${d.id}_edge`;})
             .attr("startOffset", "25%")
             .text(function (d) {
                 return d.label;
@@ -389,7 +444,7 @@ export class D3GraphVisualizer extends Observer {
                 return (edge.class !== undefined) ? edge.class : "default";
             })
             .attr("xlink:href", (edge, i, edges) => {
-                return "#" + edge.id;
+                return "#" + edge.id + "_edge";
             })
             .each(
                 (d, i, nodes) =>
@@ -536,59 +591,6 @@ export class D3GraphVisualizer extends Observer {
             .on("zoom", visualizer.graph.zoomed);
         zoom_handler(visualizer.graph);
 
-        visualizer.graph.ticked = function (s) {
-            scale = (s === undefined) ? scale : s;
-            links.attr("d", function(edge, i, edges) {
-                var dx = edge.source.x - edge.target.x;
-                var dy = edge.source.y - edge.target.y;
-                var r = 10 * Math.sqrt(dx*dx + dy*dy);
-                var dr = r /  (2 * edge.linknum);
-                d3.select(this).attr("marker-end", "url(#arrowhead)");
-                return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
-            });
-
-            nodes
-                .attr("cx", function (d) {
-                    return d.x * scale;
-                })
-                .attr("cy", function (d) {
-                    return d.y * scale;
-                })
-                .each(
-                    (d, i, nodes) => {
-                        var current = d3.select(nodes[i]);
-                        var father = d3.select(nodes[i].parentNode);
-                        var image = father.select("image");
-                        if (image !== undefined) {
-                            var width = current.attr("r") * Math.sqrt(2);
-                            image.attr("x", d => (d.x * scale - width / 2));
-                            image.attr("y", d => (d.y * scale - width / 2));
-                        }
-                    }
-                );
-
-            if (visualizer.model.getDisplayAll(visualizer.model.ALL_NODES)) {
-                textNodes
-                    .attr("x",
-                        (d) => {
-                            const r = Number( d3.select(d.node).attr("r") );
-                            const result = d.x * scale + r;
-                            return result;
-                        }
-                    )
-                    .attr("y",
-                        (d) => {
-                            const r = Number( d3.select(d.node).attr("r") );
-                            return (d.y * scale + r);
-                        }
-                    ).attr("visibility",
-                    (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group) ? "visible" : "hidden"
-                );
-            }
-            if (visualizer.model.getDisplayAll(visualizer.model.ALL_EDGES)) {
-                pathLabels.attr("d", visualizer.buildPathFromEdge(scale)(results.links));
-            }
-        };
 
     }
 }

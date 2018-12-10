@@ -91,8 +91,8 @@ export class GraphModel extends Observable {
     }
 
     toggleDisplayGroupNum(element, groupNum) {
-        const group = Object.keys(this.group[element])[groupNum];
-        toggleDisplayGroup(element, group);
+        const group = Object.keys(this.groups[element])[groupNum];
+        this.toggleDisplayGroup(element, group);
     }
 
     toggleDisplayNodeGroupNum(groupNum) {

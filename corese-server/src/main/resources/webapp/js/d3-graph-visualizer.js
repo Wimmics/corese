@@ -25,7 +25,8 @@ class ConfGraphModal extends Observer {
         for (let option of this.model.getOptions()) {
             html += `<label>${option}</label>`;
             for (let value of this.model.getOptionRange(option)) {
-                html += `<input type="radio" id='${value}' name='${option}'>${value}</input>`;
+                let checked = (this.model.getOption(option) === value) ? "checked" : "";
+                html += `<input type="radio" id='${value}' name='${option}' ${checked}>${value}</input>`;
             }
         }
         html += "<br>" +

@@ -19,9 +19,22 @@ class ConfGraphModal extends Observer {
         this.domNode = root.append("div")
             .attr("id", this.id)
             .attr("class", "modal modal-sm")
-            .html(
-                this.createLabelsLi(model.getNodeGroups(), model.getEdgeGroups())
-            );
+            .style("width", "fit-content");
+        let html = "<div class='modal-content' style='list-style:none;'>";
+        html += this.createLabelsLi(model.getNodeGroups(), model.getEdgeGroups());
+        for (let option of this.model.getOptions()) {
+            html += `<label>${option}</label>`;
+            for (let value of this.model.getOptionRange(option)) {
+                html += `<input type="radio" id='${value}' name='${option}'>${value}</input>`;
+            }
+        }
+        html += "<br>" +
+            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
+            "</div>";
+        this.domNode.html(html);
+
+
+        // event handlers setting.
         d3.select("body")
             .on("keydown", function (that) {
                     return function () {
@@ -48,7 +61,6 @@ class ConfGraphModal extends Observer {
         this.nodesCheckbox = d3.select(`#${this.getCheckboxName(this.model.ALL_NODES, 'all')}`);
         this.edgesCheckbox = d3.select(`#${this.getCheckboxName(this.model.ALL_EDGES, "all")}`);
         this.closeButton = d3.select(`#${this.prefix}configurationGraphCloseButton`);
-
         this.nodesCheckbox.on("change",
             function(model, checkbox) {
                 return function() {
@@ -65,7 +77,18 @@ class ConfGraphModal extends Observer {
         );
         this.setupGroupHandler("nodes", model.getNodeGroups() );
         this.setupGroupHandler("edges", model.getEdgeGroups() );
-
+        for (let option of this.model.getOptions()) {
+            for (let value of this.model.getOptionRange(option)) {
+                d3.select(`#${value}`).on("change",
+                    function(model) {
+                        return function () {
+                            model.setOption(option, value);
+                            console.log("setting option");
+                        };
+                    }(this.model)
+                );
+            }
+        }
         this.closeButton
             .on("click", e => {
                 this.displayOff();
@@ -74,7 +97,7 @@ class ConfGraphModal extends Observer {
 
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
-            "<div class='modal-content' style='list-style:none;'>" +
+
             `<label><input id='${this.getCheckboxName(this.model.ALL_NODES, "all")}' type='checkbox'/>All Nodes Labels</label>` +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
@@ -82,10 +105,7 @@ class ConfGraphModal extends Observer {
             `<p><label><input id='${this.getCheckboxName(this.model.ALL_EDGES, 'all')}' type='checkbox'/>Edges</label>` +
             "<ul>" +
             this.addGroups( "edges", edgeGroups ) +
-            "</ul>" +
-            "<br>" +
-            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
-            "</div>";
+            "</ul>";
         return result;
     }
 
@@ -291,14 +311,26 @@ export class D3GraphVisualizer extends Observer {
 
         visualizer.graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
-            links.attr("d", function(edge, i, edges) {
-                var dx = edge.source.x - edge.target.x;
-                var dy = edge.source.y - edge.target.y;
-                var r = 10 * Math.sqrt(dx*dx + dy*dy);
-                var dr = r /  (2 * edge.linknum);
-                d3.select(this).attr("marker-end", "url(#arrowhead)");
-                return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
-            });
+            links.attr("d",
+                function(model) {
+                    return function(edge, i, edges) {
+                        if (model.getOption(model.ARROW_STYLE) === "curve") {
+                            var dx = edge.source.x - edge.target.x;
+                            var dy = edge.source.y - edge.target.y;
+                            var r = 10 * Math.sqrt(dx * dx + dy * dy);
+                            var dr = r / (2 * edge.linknum);
+                            d3.select(this).attr("marker-end", "url(#arrowhead)");
+                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                        } else {
+                            var dx = edge.source.x - edge.target.x;
+                            var dy = edge.source.y - edge.target.y;
+                            var dr = 0;
+                            d3.select(this).attr("marker-end", "url(#arrowhead)");
+                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                        }
+                    }
+                }(visualizer.model)
+                );
 
             nodes
                 .attr("cx", function (d) {
@@ -320,7 +352,7 @@ export class D3GraphVisualizer extends Observer {
                     }
                 );
 
-            if (true) {
+            if (true) { // @TODO : à réécrire pour parcourir les groupes à afficher.
                 textNodes
                     .attr("x",
                         (d) => {
@@ -338,7 +370,7 @@ export class D3GraphVisualizer extends Observer {
                     (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group) ? "visible" : "hidden"
                 );
             }
-            if (true) {
+            if (true) {// @TODO : à réécrire pour parcourir les groupes à afficher.
                 textEdges
                     .attr("d", visualizer.buildPathFromEdge(scale)(results.links))
                     .attr("visibility",

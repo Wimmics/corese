@@ -29,6 +29,38 @@ export class GraphModel extends Observable {
         this.computeGroups(data.edges).forEach(group => {
             this.groups[this.ALL_EDGES][group] = false;
         });
+        this.options = {};
+        this.ARROW_STYLE = "display.arrows";
+        this.addOption(this.ARROW_STYLE, ["straight", "curve"], "straight", () => this.notififyObservers());
+    }
+
+    getOptions() {
+        return Object.keys(this.options);
+    }
+    addOption(key, range, initialValue, updateFunction) {
+        this.options[key] = {
+            "range": range,
+            "value": initialValue,
+            "updateFunction": updateFunction
+        }
+    }
+    setOption(key, value) {
+        this.checkOptionExist(key);
+        this.options[key].value = value;
+        this.options[key].updateFunction();
+    }
+    getOption(key) {
+        this.checkOptionExist(key);
+        return this.options[key].value;
+    }
+    getOptionRange(key) {
+        this.checkOptionExist(key);
+        return this.options[key].range;
+    }
+    checkOptionExist(key) {
+        if (this.options[key] === undefined) {
+            throw new Error(`The key \""{key}\" does not exist.`)
+        }
     }
 
     setDisplayAll(element, value) {

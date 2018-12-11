@@ -22,6 +22,7 @@ import org.apache.commons.vfs.VFS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -251,6 +252,11 @@ public class EmbeddedJettyServer extends ResourceConfig {
 			staticContextHandler.setHandler(resource_handler);
 			logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
 			logger.info("----------------------------------------------");
+
+			// @TODO Check regularly whether it is still required by jetty or it is already set.
+			MimeTypes mimeTypes = new MimeTypes();
+			mimeTypes.addMimeMapping("mjs", "application/javascript");
+			staticContextHandler.setMimeTypes(mimeTypes);
 
 //            Server server = JettyHttpContainerFactory.createServer(baseUri, config, false);
 			// === SSL Connector begin ====

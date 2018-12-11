@@ -1,163 +1,112 @@
-import {GraphModel} from "/js/GraphModel.js";
+import {GraphModel} from "./GraphModel.js";
+import {Observer} from "./Observer.mjs";
 
 /**
  *  Responsible for the graphical management of the configuration.
  */
-class ConfGraphModal {
+class ConfGraphModal extends Observer {
     /**
      *
      * @param id    id given to the DOM node containing the window.
      * @param root  node parent of the configuration window.
-     * @param graph Reference to the object responsible of the graph management.
+     * @param graph Reference to the D3 wrapper responsible for the SVG management.
      */
-    constructor(id, root, graph, data) {
+    constructor(id, root, graph, data, model) {
+        super();
         this.id = id;
+        this.model = model;
         this.prefix = `${graph.attr("id")}-`;
-        this.nodeGroups = this.computeGroups(data.nodes);
-        this.edgeGroups = this.computeGroups(data.edges);
         this.domNode = root.append("div")
             .attr("id", this.id)
             .attr("class", "modal modal-sm")
-            .html(
-                this.createLabelsLi(this.nodeGroups, this.edgeGroups)
-            );
+            .style("width", "fit-content");
+        let html = "<div class='modal-content' style='list-style:none;'>";
+        html += this.createLabelsLi(model.getNodeGroups(), model.getEdgeGroups());
+        for (let option of this.model.getOptions()) {
+            html += `<label>${option}</label>`;
+            for (let value of this.model.getOptionRange(option)) {
+                let checked = (this.model.getOption(option) === value) ? "checked" : "";
+                html += `<input type="radio" id='${value}' name='${option}' ${checked}>${value}</input>`;
+            }
+        }
+        html += "<br>" +
+            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
+            "</div>";
+        this.domNode.html(html);
+
+
+        // event handlers setting.
         d3.select("body")
             .on("keydown", function (that) {
                     return function () {
                         const key = d3.event.key;
                         let numGroup = -1.0;
-                        if (isFinite(key)) {
+
+                        let groupName = ( d3.event.ctrlKey ) ? that.model.ALL_EDGES : that.model.ALL_NODES;
+                        // Ctrl = switch the display for edges.
+                        // without Ctrl = switch the display for nodes.
+                        if (isFinite(key)) { // display/hide the labels of a group of nodes or edges
                             numGroup = parseInt(key) - 1;
                             // Changing for a more natural mapping: 1 -> first element,
                             // 2 -> second, etc. 0 -> 10th element.
                             if (numGroup === -1) {
                                 numGroup = 10;
                             }
-                            if (d3.event.ctrlKey) {
-                                if (numGroup < that.edgeGroups.size) {
-                                    const groupToSwitch = Array.from(that.edgeGroups)[numGroup];
-                                    that.getGroupCheckbox("edges", groupToSwitch).property("checked", !that.getGroupCheckbox("edges", groupToSwitch).property("checked"));
-                                }
-                            } else {
-                                if (numGroup < that.nodeGroups.size) {
-                                    const groupToSwitch = Array.from(that.nodeGroups)[numGroup];
-                                    that.getGroupCheckbox("nodes", groupToSwitch).property("checked", !that.getGroupCheckbox("nodes", groupToSwitch).property("checked"));
-                                }
-                            }
-                            graph.updateConfiguration();
-                            graph.ticked();
+                            that.model.toggleDisplayGroupNum( groupName, numGroup);
                         } else if (key === "n") {
-                            if (d3.event.ctrlKey) {
-                                that.edgesCheckbox.check();
-                            } else {
-                                that.nodesCheckbox.check();
-                            }
-                            graph.updateConfiguration();
-                            graph.ticked();
-                        } else {
-                            console.log("key" + key);
+                            that.model.toggleDisplayAll(groupName);
                         }
                     }
                 }(this)
             );
-        this.nodesCheckbox = d3.select(`#${this.prefix}nodesCheckbox`);
-        this.edgesCheckbox = d3.select(`#${this.prefix}edgesCheckbox`);
+        this.nodesCheckbox = d3.select(`#${this.getCheckboxName(this.model.ALL_NODES, 'all')}`);
+        this.edgesCheckbox = d3.select(`#${this.getCheckboxName(this.model.ALL_EDGES, "all")}`);
         this.closeButton = d3.select(`#${this.prefix}configurationGraphCloseButton`);
-
-        this.setHierarchicalCheckboxesHandler('nodes', this.nodesCheckbox, this.nodeGroups, graph);
-        this.setHierarchicalCheckboxesHandler('edges', this.edgesCheckbox, this.edgeGroups, graph);
-
+        this.nodesCheckbox.on("change",
+            function(model, checkbox) {
+                return function() {
+                    model.setDisplayAll("nodes", checkbox.property("checked"));
+                }
+            }(this.model, this.nodesCheckbox )
+        );
+        this.edgesCheckbox.on("change",
+            function(model, checkbox) {
+                return function() {
+                    model.setDisplayAll("edges", checkbox.property("checked"));
+                }
+            }(this.model, this.edgesCheckbox )
+        );
+        this.setupGroupHandler("nodes", model.getNodeGroups() );
+        this.setupGroupHandler("edges", model.getEdgeGroups() );
+        for (let option of this.model.getOptions()) {
+            for (let value of this.model.getOptionRange(option)) {
+                d3.select(`#${value}`).on("change",
+                    function(model) {
+                        return function () {
+                            model.setOption(option, value);
+                            console.log("setting option");
+                        };
+                    }(this.model)
+                );
+            }
+        }
         this.closeButton
             .on("click", e => {
                 this.displayOff();
             });
     }
 
-    setHierarchicalCheckboxesHandler( groupName, fatherCheckbox, groups, graph ) {
-        // 1. compute sub-checkboxes.
-        var groupCheckboxes = new Set();
-        groups.forEach(
-            group => groupCheckboxes.add( this.getGroupCheckbox(groupName, group))
-        );
-
-        // when father checkbox is changed all sub-checkboxes are changed to the same value.
-        fatherCheckbox.on("change",
-            function (container) {
-                return function (evt) {
-                    groupCheckboxes.forEach(
-                        checkbox => checkbox.property("checked", container.property("checked"))
-                    )
-                    graph.updateConfiguration();
-                    graph.ticked();
-                }
-            }(fatherCheckbox)
-        );
-        fatherCheckbox.check = function() {
-            fatherCheckbox.property("checked", !fatherCheckbox.property("checked"));
-            groupCheckboxes.forEach(
-                checkbox => checkbox.property("checked", fatherCheckbox.property("checked"))
-            )
-            graph.updateConfiguration();
-            graph.ticked();
-        }
-        // when one of subcheckboxes is checked, update if necessary the father checkbox :
-        //   - if all subcheckboxes are unset, unset the father checkbox ;
-        //   - if all subcheckboxes are set, set the father checkbox.
-        groupCheckboxes.forEach(button =>
-            function (father) {
-                return button.on("change", function () {
-                    var allChecked = true;
-                    groupCheckboxes.forEach(
-                        button => allChecked = allChecked && button.property("checked")
-                    );
-                    father.property("checked", allChecked);
-                    graph.updateConfiguration();
-                    graph.ticked();
-                })
-            }(fatherCheckbox)
-        );
-    }
-
-    getGroups(groupName) {
-        if (groupName === "nodes") {
-            return this.nodeGroups;
-        } else if (groupName === "edges") {
-            return this.edgeGroups;
-        } else {
-            throw `incorrect groupName value = ${groupName}`;
-        }
-    }
-
-    computeGroups(data) {
-        var result = new Set();
-        data.forEach(
-           elem => {
-               if (elem.group === undefined) {
-                   elem.group = "default";
-               }
-               if (!result.has(elem.group)) {
-                   result.add(elem.group);
-               }
-           }
-        )
-        console.log(`found groups: ${result}`)
-        return result;
-    }
-
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
-            "<div class='modal-content' style='list-style:none;'>" +
-            `<label><input id='${this.prefix}nodesCheckbox' type='checkbox'/>All Nodes Labels</label>` +
+
+            `<label><input id='${this.getCheckboxName(this.model.ALL_NODES, "all")}' type='checkbox'/>All Nodes Labels</label>` +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
             "</ul>" +
-            `<p><label><input id='${this.prefix}edgesCheckbox' type='checkbox'/>Edges</label>` +
+            `<p><label><input id='${this.getCheckboxName(this.model.ALL_EDGES, 'all')}' type='checkbox'/>Edges</label>` +
             "<ul>" +
             this.addGroups( "edges", edgeGroups ) +
-            "</ul>" +
-            "<br>" +
-            `<button id='${this.prefix}configurationGraphCloseButton' class='btn btn-default'>Close</button>` +
-            "</div>";
+            "</ul>";
         return result;
     }
 
@@ -170,23 +119,40 @@ class ConfGraphModal {
         if (groups !== undefined) {
             var numGroup = 1;
             groups.forEach( group => {
-            result += `<ul><label>${numGroup} <input id='${this.getCheckboxName(groupName, group)}' type='checkbox'/>${group}</label></ul>`;
-            numGroup++;
-            } );
+                const checkboxName = this.getCheckboxName(groupName, group);
+                result += `<ul><label>${numGroup} <input id='${checkboxName}' type='checkbox'/>${group}</label></ul>`;
+                numGroup++;
+                }
+            );
         }
         return result;
+    }
+
+    setupGroupHandler(groupName, groups) {
+        if (groups !== undefined) {
+            groups.forEach( group => {
+                    const checkboxName = this.getCheckboxName(groupName, group);
+                    const checkbox = d3.select(`#${checkboxName}`);
+                    checkbox.on("change", function(model, checkbox) {
+                        return function() {
+                            model.setDisplayGroup( groupName, group, checkbox.property("checked"));
+                        }
+                    }(this.model, checkbox ));
+                }
+            );
+        }
     }
 
     getGroupCheckbox(groupName, group) {
         return d3.select( '#'+this.getCheckboxName(groupName, group) );
     }
 
-    static createConfigurationPanel(rootConfPanel, graph, data) {
+    static createConfigurationPanel(rootConfPanel, graph, data, model) {
         var prefix = `${graph.attr("id")}-`;
         var confPanelId = `${this.prefix}configurationGraph`;
         var result = d3.select(`#${confPanelId}`);
         if (result.size() === 0) {
-            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data);
+            var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data, model);
             return confGraphModal;
         } else {
             return result;
@@ -208,15 +174,37 @@ class ConfGraphModal {
         d3.select(`#${this.id}`)
             .style("display", "none");
     }
+
+
+    update(observable, data) {
+        this.model.ALL_ELEMENTS.forEach(
+            groupName => {
+                this.getGroupCheckbox(groupName, "all").property("checked", this.model.getDisplayAll(groupName));
+                this.model.getGroups(groupName).forEach(
+                    group => this.getGroupCheckbox(groupName, group).property("checked", this.model.getDisplayGroup(groupName, group))
+                )
+            }
+        );
+        console.log("ConfGraphModel notified");
+    }
 }
 
 
-export class D3GraphVisualizer {
-    constructor() {
-        this.model = new GraphModel();
+export class D3GraphVisualizer extends Observer {
+    constructor( data ) {
+        super();
+        this.model = new GraphModel( data );
+        // this.model.displayAllEdgeLabels = false;
+        // this.model.displayAllNodeLabels = false;
+        this.model.addObserver(this);
         var sheet = document.createElement('style');
 
         document.head.appendChild(sheet); // Bug : does not support multiple graphs in the same page.
+    }
+
+    update(observable, data) {
+        super.update(observable, data);
+        this.graph.ticked();
     }
 
     dragstarted(_simulation) {
@@ -265,13 +253,14 @@ export class D3GraphVisualizer {
 
 
     /**
+     * \param _results : json representation of the graph.
      * \param svgId : id of the svg element to draw the graph (do not forget the #).
      */
     static drawRdf(_results, svgId) {
         var results = _results;
-        var visualizer = new D3GraphVisualizer();
+        var visualizer = new D3GraphVisualizer( _results );
         var confGraphModal;
-        var graph = d3.select(svgId);
+        visualizer.graph = d3.select(svgId);
 
         // @Todo make a function counting the edges between same nodes.
         // To be able to detect edges between same nodes.
@@ -295,26 +284,54 @@ export class D3GraphVisualizer {
             else {results.edges[i].linknum = 1;};
         };
 
-        // TODO : à corriger, il faut renvoyer true ssi au moins un groupe de noeuds est à afficher
 
-        graph.displayNodeLabels = function () {
-            // return confGraphModal.nodesCheckbox.property("checked") || ;
-            return true;
-        }
-        graph.displayEdgeLabels = function () {
-            return true;
-            // return confGraphModal.edgesCheckbox.property("checked");
-        }
-        graph.ticked = function (s) {
-            scale = (s === undefined) ? scale : s;
-            links.attr("d", function(edge, i, edges) {
-                var dx = edge.source.x - edge.target.x;
-                var dy = edge.source.y - edge.target.y;
-                var r = 10 * Math.sqrt(dx*dx + dy*dy);
-                var dr = r /  (2 * edge.linknum);
-                d3.select(this).attr("marker-end", "url(#arrowhead)");
-                return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+        visualizer.graph.zoomed = function () {
+            var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
+            copieTransform.k = 1;
+            g.attr("transform", copieTransform);
+            visualizer.graph.ticked(d3.event.transform.k);
+        };
+
+        var scale = 1;
+        var fo = visualizer.graph.append('foreignObject').attr("width", "40px").attr("height", "34px");
+        var button = fo.append("xhtml:button")
+            .attr("class", "btn btn-info")
+            .attr("id", "configurationButton")
+            .on("click", e => {
+                if (confGraphModal.isDisplayOn()) {
+                    confGraphModal.displayOff()
+                } else {
+                    confGraphModal.displayOn();
+                }
             });
+        button.append("xhtml:span")
+            .attr("class", "glyphicon glyphicon-cog");
+        results.links = results.edges;
+
+        var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, visualizer.graph);
+
+        visualizer.graph.ticked = function (s) {
+            scale = (s === undefined) ? scale : s;
+            links.attr("d",
+                function(model) {
+                    return function(edge, i, edges) {
+                        if (model.getOption(model.ARROW_STYLE) === "curve") {
+                            var dx = edge.source.x - edge.target.x;
+                            var dy = edge.source.y - edge.target.y;
+                            var r = 10 * Math.sqrt(dx * dx + dy * dy);
+                            var dr = r / (2 * edge.linknum);
+                            d3.select(this).attr("marker-end", "url(#arrowhead)");
+                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                        } else {
+                            var dx = edge.source.x - edge.target.x;
+                            var dy = edge.source.y - edge.target.y;
+                            var dr = 0;
+                            d3.select(this).attr("marker-end", "url(#arrowhead)");
+                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                        }
+                    }
+                }(visualizer.model)
+                );
 
             nodes
                 .attr("cx", function (d) {
@@ -336,72 +353,48 @@ export class D3GraphVisualizer {
                     }
                 );
 
-            if (graph.displayNodeLabels()) {
+            if (true) { // @TODO : à réécrire pour parcourir les groupes à afficher.
                 textNodes
                     .attr("x",
-                            (d) => {
-                                const r = Number( d3.select(d.node).attr("r") );
-                                const result = d.x * scale + r;
-                                return result;
-                            }
+                        (d) => {
+                            const r = Number( d3.select(d.node).attr("r") );
+                            const result = d.x * scale + r;
+                            return result;
+                        }
                     )
                     .attr("y",
                         (d) => {
                             const r = Number( d3.select(d.node).attr("r") );
                             return (d.y * scale + r);
                         }
+                    ).attr("visibility",
+                    (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group) ? "visible" : "hidden"
+                );
+            }
+            if (true) {// @TODO : à réécrire pour parcourir les groupes à afficher.
+                textEdges
+                    .attr("d", visualizer.buildPathFromEdge(scale)(results.links))
+                    .attr("visibility",
+                        (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_EDGES, d.group) ? "visible" : "hidden"
                     );
             }
-            if (graph.displayEdgeLabels()) {
-                pathLabels.attr("d", visualizer.buildPathFromEdge(scale)(results.links));
+        };
+
+
+        confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, visualizer.graph, results, visualizer.model);
+        confGraphModal.model.addObserver(confGraphModal);
+        visualizer.graph.updateConfiguration = function () {
+            var updateSet = function(groupName, text) {
+                const nodesDisplayCriteria = (d, i, nodes) => (confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group)) ? "visible" : "hidden";
+                text.attr(
+                    "visibility",
+                    (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
+                );
             }
-        };
-        graph.zoomed = function () {
-            var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
-            copieTransform.k = 1;
-            g.attr("transform", copieTransform);
-            graph.ticked(d3.event.transform.k);
-        };
-
-        var scale = 1;
-        var fo = graph.append('foreignObject').attr("width", "40px").attr("height", "34px");
-        var button = fo.append("xhtml:button")
-            .attr("class", "btn btn-info")
-            .attr("id", "configurationButton")
-            .on("click", e => {
-                if (confGraphModal.isDisplayOn()) {
-                    confGraphModal.displayOff()
-                } else {
-                    confGraphModal.displayOn();
-                }
-            });
-        button.append("xhtml:span")
-            .attr("class", "glyphicon glyphicon-cog");
-        results.links = results.edges;
-
-        var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, graph);
-        confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, graph, results);
-        graph.updateConfiguration = function () {
-            return function () {
-                var updateSet = function(groupName, text) {
-                    var visibleNodes = new Set();
-                    confGraphModal.getGroups(groupName).forEach(
-                        group => {
-                            var checkbox = confGraphModal.getGroupCheckbox(groupName, group);
-                            (checkbox.property("checked")) ? visibleNodes.add(group) : undefined;
-                        }
-                    );
-                    const nodesDisplayCriteria = (d, i, nodes) => (visibleNodes.has(d.group)) ? "visible" : "hidden";
-                    text.attr(
-                        "visibility",
-                        (d, i, nodes) => nodesDisplayCriteria(d, i, nodes)
-                    );
-                }
-                updateSet("nodes", textNodes);
-                updateSet("edges", textEdges);
+            updateSet("nodes", textNodes);
+            updateSet("edges", textEdges);
                 // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
             };
-        }(confGraphModal);
 
         var maxLen = [];
         results.nodes.forEach(
@@ -423,20 +416,23 @@ export class D3GraphVisualizer {
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
             }))
-            .force("charge", d3.forceManyBody())
+            // .force("charge", d3.forceManyBody())
+            .force("charge",
+                n => n.weight
+            )
             .force("center", d3.forceCenter(800,500))
-            .on("tick", graph.ticked);
-        var width = +graph.node().getBoundingClientRect().width;
-        var height = +graph.node().getBoundingClientRect().height;
+            .on("tick", visualizer.graph.ticked);
+        var width = +visualizer.graph.node().getBoundingClientRect().width;
+        var height = +visualizer.graph.node().getBoundingClientRect().height;
         visualizer.simulation
             .force("link")
             .links(results.links);
         visualizer.simulation
             .force("center", d3.forceCenter(width / 2, height / 2));
 
-        var g = graph.append("g")
+        var g = visualizer.graph.append("g")
             .attr("class", "everything");
-        var defs = graph.append("defs");
+        var defs = visualizer.graph.append("defs");
         defs.append('marker')
             .attr('id', 'arrowhead')
             .attr('viewBox', '-0 -50 100 100')
@@ -454,7 +450,7 @@ export class D3GraphVisualizer {
             .style('fill', 'grey')
         ;
 
-        let textNodes = g.append("g").attr("class", "texts").selectAll("text")
+        let textNodes = g.append("g").attr("class", "textNodes").selectAll("text")
             .data(visualizer.simulation.nodes())
             .enter().append("text")
             .attr("class", (edge, i, edges) => {
@@ -472,7 +468,7 @@ export class D3GraphVisualizer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
-            .attr("xlink:href", d => {return `#${d.id}`;})
+            .attr("xlink:href", d => {return `#${d.id}_edge`;})
             .attr("startOffset", "25%")
             .text(function (d) {
                 return d.label;
@@ -481,7 +477,7 @@ export class D3GraphVisualizer {
                 return (edge.class !== undefined) ? edge.class : "default";
             })
             .attr("xlink:href", (edge, i, edges) => {
-                return "#" + edge.id;
+                return "#" + edge.id + "_edge";
             })
             .each(
                 (d, i, nodes) =>
@@ -536,7 +532,7 @@ export class D3GraphVisualizer {
                     (d, i, nodes) => {
                         var current = d3.select(nodes[i]);
                         var father = d3.select(current.node().parentNode);
-                        var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.getGroups("nodes")));
+                        var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.model.getGroups("nodes")));
                         d.colorMap = color;
                         if (d.bg_image === undefined) {
                             current.attr("fill", color(d.group));
@@ -606,6 +602,8 @@ export class D3GraphVisualizer {
                     }
                     counter++;
                 })
+                visualizer.graph.updateConfiguration();
+                visualizer.graph.ticked();
 
             });
         nodes.append("title")
@@ -613,13 +611,8 @@ export class D3GraphVisualizer {
                 return d.label;
             });
 
-
-
-        var displayEdgeLabels = false;
-        var displayNodeLabels = false;
-
-        graph.updateConfiguration();
-        var pathLabels = graph.append("defs").attr("class", "paths").selectAll("path")
+        visualizer.graph.updateConfiguration();
+        var pathLabels = visualizer.graph.append("defs").attr("class", "paths").selectAll("path")
             .data(results.links)
             .enter().append("path")
             .attr("id", (edge, i, edges) => {
@@ -628,8 +621,8 @@ export class D3GraphVisualizer {
             .attr("d", visualizer.buildPathFromEdge(1)(results.links));
         //add zoom capabilities
         var zoom_handler = d3.zoom()
-            .on("zoom", graph.zoomed);
-        zoom_handler(graph);
+            .on("zoom", visualizer.graph.zoomed);
+        zoom_handler(visualizer.graph);
 
 
     }

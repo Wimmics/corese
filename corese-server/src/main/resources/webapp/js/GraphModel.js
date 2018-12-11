@@ -1,8 +1,9 @@
 import {Observable} from "./Observable.mjs";
 
 export class GraphModel extends Observable {
-    constructor(data) {
+    constructor(data, prefix) {
         super();
+        this.prefix = prefix;
         this.nodeRadius = 20;
         this.BNODE_ID = "bnode";
         this.URI_ID = "uri";
@@ -31,7 +32,7 @@ export class GraphModel extends Observable {
         });
         this.options = {};
         this.ARROW_STYLE = "display.arrows";
-        this.addOption(this.ARROW_STYLE, ["straight", "curve"], "straight", () => this.notififyObservers());
+        this.addOption(this.prefix + this.ARROW_STYLE, ["straight", "curve"], "straight", () => this.notififyObservers());
     }
 
     getOptions() {
@@ -59,7 +60,7 @@ export class GraphModel extends Observable {
     }
     checkOptionExist(key) {
         if (this.options[key] === undefined) {
-            throw new Error(`The key \""{key}\" does not exist.`)
+            throw new Error(`The key '${key}' does not exist.`)
         }
     }
 

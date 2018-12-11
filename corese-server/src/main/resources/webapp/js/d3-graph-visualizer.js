@@ -26,7 +26,7 @@ class ConfGraphModal extends Observer {
             html += `<label>${option}</label>`;
             for (let value of this.model.getOptionRange(option)) {
                 let checked = (this.model.getOption(option) === value) ? "checked" : "";
-                html += `<input type="radio" id='${value}' name='${option}' ${checked}>${value}</input>`;
+                html += `<input type="radio" id='${this.prefix}${value}' name='${option}' ${checked}>${value}</input>`;
             }
         }
         html += "<br>" +
@@ -80,7 +80,7 @@ class ConfGraphModal extends Observer {
         this.setupGroupHandler("edges", model.getEdgeGroups() );
         for (let option of this.model.getOptions()) {
             for (let value of this.model.getOptionRange(option)) {
-                d3.select(`#${value}`).on("change",
+                d3.select(`#${this.prefix}${value}`).on("change",
                     function(model) {
                         return function () {
                             model.setOption(option, value);
@@ -148,8 +148,8 @@ class ConfGraphModal extends Observer {
     }
 
     static createConfigurationPanel(rootConfPanel, graph, data, model) {
-        var prefix = `${graph.attr("id")}-`;
-        var confPanelId = `${this.prefix}configurationGraph`;
+        const prefix = `${graph.attr("id")}-`;
+        var confPanelId = `${prefix}configurationGraph`;
         var result = d3.select(`#${confPanelId}`);
         if (result.size() === 0) {
             var confGraphModal = new ConfGraphModal( confPanelId, rootConfPanel, graph, data, model);
@@ -191,9 +191,10 @@ class ConfGraphModal extends Observer {
 
 
 export class D3GraphVisualizer extends Observer {
-    constructor( data ) {
+    constructor( data, prefix ) {
         super();
-        this.model = new GraphModel( data );
+        this.prefix = prefix;
+        this.model = new GraphModel( data, prefix );
         // this.model.displayAllEdgeLabels = false;
         // this.model.displayAllNodeLabels = false;
         this.model.addObserver(this);
@@ -258,7 +259,7 @@ export class D3GraphVisualizer extends Observer {
      */
     static drawRdf(_results, svgId) {
         var results = _results;
-        var visualizer = new D3GraphVisualizer( _results );
+        var visualizer = new D3GraphVisualizer( _results, svgId );
         var confGraphModal;
         visualizer.graph = d3.select(svgId);
 
@@ -315,7 +316,7 @@ export class D3GraphVisualizer extends Observer {
             links.attr("d",
                 function(model) {
                     return function(edge, i, edges) {
-                        if (model.getOption(model.ARROW_STYLE) === "curve") {
+                        if (model.getOption(svgId + model.ARROW_STYLE) === "curve") {
                             var dx = edge.source.x - edge.target.x;
                             var dy = edge.source.y - edge.target.y;
                             var r = 10 * Math.sqrt(dx * dx + dy * dy);
@@ -468,16 +469,13 @@ export class D3GraphVisualizer extends Observer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
-            .attr("xlink:href", d => {return `#${d.id}_edge`;})
+            .attr("xlink:href", d => {return `#${visualizer.prefix}${d.id}_edge`;})
             .attr("startOffset", "25%")
             .text(function (d) {
                 return d.label;
             })
             .attr("class", (edge, i, edges) => {
                 return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .attr("xlink:href", (edge, i, edges) => {
-                return "#" + edge.id + "_edge";
             })
             .each(
                 (d, i, nodes) =>
@@ -499,7 +497,7 @@ export class D3GraphVisualizer extends Observer {
                     }
                 }
             )
-            .attr("id", d => `${d.id}_edge` )
+            .attr("id", d => `${visualizer.prefix}${d.id}_edge` )
             .each(
                 (d, i, nodes) =>
                     d.link = nodes[i]
@@ -615,9 +613,12 @@ export class D3GraphVisualizer extends Observer {
         var pathLabels = visualizer.graph.append("defs").attr("class", "paths").selectAll("path")
             .data(results.links)
             .enter().append("path")
-            .attr("id", (edge, i, edges) => {
-                return edge.id;
-            })
+            .attr("id",
+                function (prefix) {
+                    return (edge, i, edges) => {
+                        return prefix + edge.id;
+                    }
+                }( visualizer.model.prefix ))
             .attr("d", visualizer.buildPathFromEdge(1)(results.links));
         //add zoom capabilities
         var zoom_handler = d3.zoom()

@@ -95,7 +95,7 @@ public class TransformerMapping {
         else {
             // reuse template Mapping
             for (int i = 0; i<values.length; i++){
-                map.getNodes()[i] = values[i];
+                map.getNodes()[i] = getNode(values[i]);
             }
         }
         

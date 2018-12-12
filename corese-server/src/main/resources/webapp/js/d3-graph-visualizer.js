@@ -81,6 +81,10 @@ export class D3GraphVisualizer extends Observer {
         var confGraphModal;
         visualizer.graph = d3.select(svgId);
 
+        const stylesheet = d3.select("style");
+        if (_results.style !== undefined) {
+            stylesheet.html(_results.style)
+        }
         // @Todo make a function counting the edges between same nodes.
         // To be able to detect edges between same nodes.
         results.edges.sort(function(a,b) {

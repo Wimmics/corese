@@ -97,7 +97,7 @@ export class ConfGraphModal extends Observer {
     createLabelsLi(nodeGroups, edgeGroups) {
         var result =
 
-            `<label><input id='${this.getCheckboxName(this.model.ALL_NODES, "all")}' type='checkbox'/>All Nodes Labels</label>` +
+            `<label><input id='${this.getCheckboxName(this.model.ALL_NODES, "all")}' type='checkbox'/>Nodes</label>` +
             "<ul>" +
             this.addGroups( "nodes", nodeGroups ) +
             "</ul>" +

@@ -81,7 +81,7 @@ public class Service extends And {
             sb.append(" ");
             getServiceName().getVariable().toString(sb);
         }
-        else for (Atom at : serviceList) {
+        else for (Atom at : getServiceList()) {
             if (i++ == 0) {
                 sb.append(" ");
             }

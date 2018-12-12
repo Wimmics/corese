@@ -43,15 +43,20 @@ export class D3GraphVisualizer extends Observer {
     }
 
     // To be used with text for edges, in order to obtain text no upside-down.
-    buildPathFromEdge(scale) {
+    buildPathFromEdge(scale, svgId, model) {
         return links => {
             return (edge, i, edges) => {
                 var dx = edge.source.x - edge.target.x;
                 var dy = edge.source.y - edge.target.y;
                 var r = 10 * Math.sqrt(dx*dx + dy*dy);
-                var dr = r /  (2 * edge.linknum);
 
-                // var dr = 100/edge.linknum * scale;  //linknum is defined above
+                let dr = 0;
+                if (model.getOption(svgId + model.ARROW_STYLE) === "curve") {
+                    let r = 10 * Math.sqrt(dx * dx + dy * dy);
+                    dr = r / (2 * edge.linknum);
+                } else {
+                    dr = 0;
+                }
                 var lefterpoint, righterpoint;
                 var sourceLeft = edge.source.x <= edge.target.x;
                 [lefterpoint, righterpoint] = (sourceLeft) ? [edge.source, edge.target] : [edge.target, edge.source];
@@ -129,20 +134,17 @@ export class D3GraphVisualizer extends Observer {
             links.attr("d",
                 function(model) {
                     return function(edge, i, edges) {
+                        let dx = edge.source.x - edge.target.x;
+                        let dy = edge.source.y - edge.target.y;
+                        let dr = 0;
                         if (model.getOption(svgId + model.ARROW_STYLE) === "curve") {
-                            var dx = edge.source.x - edge.target.x;
-                            var dy = edge.source.y - edge.target.y;
-                            var r = 10 * Math.sqrt(dx * dx + dy * dy);
-                            var dr = r / (2 * edge.linknum);
-                            d3.select(this).attr("marker-end", "url(#arrowhead)");
-                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                            let r = 10 * Math.sqrt(dx * dx + dy * dy);
+                            dr = r / (2 * edge.linknum);
                         } else {
-                            var dx = edge.source.x - edge.target.x;
-                            var dy = edge.source.y - edge.target.y;
-                            var dr = 0;
-                            d3.select(this).attr("marker-end", "url(#arrowhead)");
-                            return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                            dr = 0;
                         }
+                        d3.select(this).attr("marker-end", "url(#arrowhead)");
+                        return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
                     }
                 }(visualizer.model)
                 );
@@ -187,10 +189,11 @@ export class D3GraphVisualizer extends Observer {
             }
             if (true) {// @TODO : à réécrire pour parcourir les groupes à afficher.
                 textEdges
-                    .attr("d", visualizer.buildPathFromEdge(scale)(results.links))
                     .attr("visibility",
                         (d) => confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_EDGES, d.group) ? "visible" : "hidden"
                     );
+                pathLabels
+                    .attr("d", visualizer.buildPathFromEdge(scale, svgId, confGraphModal.model)(results.links));
             }
         };
 
@@ -282,18 +285,11 @@ export class D3GraphVisualizer extends Observer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
-            .attr("xlink:href", d => {return `#${visualizer.prefix}${d.id}_edge`;})
+            .attr("xlink:href", d => `#${visualizer.prefix}${d.id}_path` )
             .attr("startOffset", "25%")
-            .text(function (d) {
-                return d.label;
-            })
-            .attr("class", (edge, i, edges) => {
-                return (edge.class !== undefined) ? edge.class : "default";
-            })
-            .each(
-                (d, i, nodes) =>
-                    d.textEdges = nodes[i]
-            );
+            .text( d => d.label )
+            .attr("class", (edge, i, edges) => (edge.class !== undefined) ? edge.class : "default" )
+            .each( (d, i, nodes) => d.textEdges = nodes[i] );
 
         var links = g.append("g")
             .attr("class", "links")
@@ -428,11 +424,9 @@ export class D3GraphVisualizer extends Observer {
             .enter().append("path")
             .attr("id",
                 function (prefix) {
-                    return (edge, i, edges) => {
-                        return prefix + edge.id;
-                    }
+                    return (edge, i, edges) =>  `${prefix}${edge.id}_path`
                 }( visualizer.model.prefix ))
-            .attr("d", visualizer.buildPathFromEdge(1)(results.links));
+            .attr("d", visualizer.buildPathFromEdge(1, svgId, visualizer.model)(results.links));
         //add zoom capabilities
         var zoom_handler = d3.zoom()
             .on("zoom", visualizer.graph.zoomed);

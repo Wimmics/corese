@@ -32,16 +32,17 @@ export class GraphModel extends Observable {
         });
         this.options = {};
         this.ARROW_STYLE = "display.arrows";
-        this.addOption(this.prefix + this.ARROW_STYLE, ["straight", "curve"], "straight", () => this.notififyObservers());
+        this.addOption(this.prefix + this.ARROW_STYLE, "arrow style", ["straight", "curve"], "straight", () => this.notififyObservers());
     }
 
     getOptions() {
         return Object.keys(this.options);
     }
-    addOption(key, range, initialValue, updateFunction) {
+    addOption(key, prettyName, range, initialValue, updateFunction) {
         this.options[key] = {
             "range": range,
             "value": initialValue,
+            "prettyName" : prettyName,
             "updateFunction": updateFunction
         }
     }
@@ -53,6 +54,10 @@ export class GraphModel extends Observable {
     getOption(key) {
         this.checkOptionExist(key);
         return this.options[key].value;
+    }
+    getOptionPrettyName(key) {
+        this.checkOptionExist(key);
+        return this.options[key].prettyName;
     }
     getOptionRange(key) {
         this.checkOptionExist(key);

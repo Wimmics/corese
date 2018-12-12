@@ -21,7 +21,7 @@ export class ConfGraphModal extends Observer {
         let html = "<div class='modal-content' style='list-style:none;'>";
         html += this.createLabelsLi(model.getNodeGroups(), model.getEdgeGroups());
         for (let option of this.model.getOptions()) {
-            html += `<label>${option}</label>`;
+            html += `<label>${this.model.getOptionPrettyName(option)}</label>`;
             for (let value of this.model.getOptionRange(option)) {
                 let checked = (this.model.getOption(option) === value) ? "checked" : "";
                 html += `<input type="radio" id='${this.prefix}${value}' name='${option}' ${checked}>${value}</input>`;

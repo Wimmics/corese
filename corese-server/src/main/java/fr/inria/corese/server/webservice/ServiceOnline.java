@@ -81,6 +81,32 @@ public class ServiceOnline {
     }
     
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces("application/rdf+xml")
+    public Response postSPARQLEndpoint(
+     @javax.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("serv")      String serv,
+            @FormParam("profile")   String profile, 
+            @FormParam("uri")       String resource, 
+            @FormParam("mode")      String mode, 
+            @FormParam("param")     String param, 
+            @FormParam("arg")       String arg,
+            @FormParam("format")    String format, 
+            @FormParam("query")     String query, // SPARQL query
+            @FormParam("name")      String name, // SPARQL query name (in webapp/query)
+            @FormParam("value")     String value, // values clause that may complement query           
+            @FormParam("transform") String transform, // Transformation URI to post process result
+            @FormParam("default-graph-uri") List<String> defaultGraphUris,
+            @FormParam("named-graph-uri")   List<String> namedGraphUris) {
+
+    	//if (logger.isDebugEnabled())
+    		logger.info("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
+    				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
+    				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
+        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+    }
+    
+    @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response postMD(
@@ -124,7 +150,7 @@ public class ServiceOnline {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri")  List<String> namedGraphUris) {
     	
-    	if (logger.isDebugEnabled())
+    	//if (logger.isDebugEnabled())
     		logger.debug("GET. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", arg: " + arg +", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);

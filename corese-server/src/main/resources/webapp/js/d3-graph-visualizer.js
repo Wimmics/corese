@@ -99,7 +99,7 @@ export class D3GraphVisualizer extends Observer {
         });
         // counting the edges between the same edges.
         for (var i=0; i<results.edges.length; i++) {
-            if (i != 0 &&
+            if (i !== 0 &&
                 results.edges[i].source === results.edges[i-1].source &&
                 results.edges[i].target === results.edges[i-1].target) {
                 results.edges[i].linknum = results.edges[i-1].linknum + 1;
@@ -138,8 +138,21 @@ export class D3GraphVisualizer extends Observer {
             links.attr("d",
                 function(model) {
                     return function(edge, i, edges) {
-                        let dx = edge.source.x - edge.target.x;
-                        let dy = edge.source.y - edge.target.y;
+                        let dx =    edge.target.x - edge.source.x;
+                        let dy = edge.target.y - edge.source.y;
+                        let pathLength = Math.sqrt((dx * dx) + (dy * dy));
+                        let offsetTargetX = 0;
+                        let offsetTargetY = 0;
+                        if (pathLength !== 0) {
+                            offsetTargetX = (dx * edge.target.r) / pathLength;
+                            offsetTargetY = (dy * edge.target.r) / pathLength;
+                        }
+                        let offsetSourceX = 0;
+                        let offsetSourceY = 0;
+                        if (pathLength !== 0) {
+                            offsetSourceX = (dx * edge.source.r) / pathLength;
+                            offsetSourceY = (dy * edge.source.r) / pathLength;
+                        }
                         let dr = 0;
                         if (model.getOption(svgId + model.ARROW_STYLE) === "curve") {
                             let r = 10 * Math.sqrt(dx * dx + dy * dy);
@@ -148,7 +161,8 @@ export class D3GraphVisualizer extends Observer {
                             dr = 0;
                         }
                         d3.select(this).attr("marker-end", "url(#arrowhead)");
-                        return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale},${edge.target.y * scale}`
+                        // return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${(edge.target.x - offsetTargetX)* scale},${(edge.target.y - offsetY)* scale}`
+                        return `M ${edge.source.x * scale + offsetSourceX},${edge.source.y * scale + offsetSourceY} L${edge.target.x* scale - offsetTargetX},${edge.target.y* scale - offsetTargetY}`
                     }
                 }(visualizer.model)
                 );
@@ -233,14 +247,39 @@ export class D3GraphVisualizer extends Observer {
 
         var color = d3.scaleOrdinal( d3.schemeCategory20 );
 
+        var g = visualizer.graph.append("g")
+            .attr("class", "everything");
+        let nodes = g.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(results.nodes)
+            .enter()
+            .append("g")
+            .attr("class", "nodes")
+            .append("circle");
+        nodes.each(
+            (d, i, nodes) => {
+                var current = d3.select(nodes[i]);
+                if (d.bg_image === undefined) {
+                    current.attr("r", 5);
+                } else {
+                    current.attr("r", visualizer.model.nodeRadius);
+                }
+                d.r = current.attr("r");
+            }
+        )
+
         visualizer.simulation = d3.forceSimulation(results.nodes)
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
             }))
             // .force("charge", d3.forceManyBody())
-            .force("charge",
-                n => n.weight
-            )
+            // .force("charge",
+            //     n => -2000
+            // )
+            .force("collide", d3.forceCollide().radius(function(d, i, nodes) {
+                return d.r * 2; }
+                ).iterations(2))
             .force("center", d3.forceCenter(800,500))
             .on("tick", visualizer.graph.ticked);
         var width = +visualizer.graph.node().getBoundingClientRect().width;
@@ -251,8 +290,7 @@ export class D3GraphVisualizer extends Observer {
         visualizer.simulation
             .force("center", d3.forceCenter(width / 2, height / 2));
 
-        var g = visualizer.graph.append("g")
-            .attr("class", "everything");
+
         var defs = visualizer.graph.append("defs");
         defs.append('marker')
             .attr('id', 'arrowhead')
@@ -320,21 +358,13 @@ export class D3GraphVisualizer extends Observer {
             .text(function (d) {
                 return d.label;
             });
-        let nodes = g.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(results.nodes)
-            .enter()
-            .append("g")
-            .attr("class", "nodes")
-            .append("circle")
-            .attr(
-                "class",
-                d => {
-                    if (d.class !== undefined) {
-                        return d.class;
-                    } else {
-                        return "default";
+        nodes.attr(
+            "class",
+            d => {
+                if (d.class !== undefined) {
+                    return d.class;
+                } else {
+                    return "default";
                     }
                 }
             )
@@ -357,6 +387,7 @@ export class D3GraphVisualizer extends Observer {
                                 .attr("width", width)
                                 .attr("pointer-events", "none");
                         }
+                        d.r = current.attr("r");
                     }
             )
             .each(

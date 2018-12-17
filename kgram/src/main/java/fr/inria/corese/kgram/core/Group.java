@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import fr.inria.corese.kgram.api.core.Node;
+import java.util.Map;
 
 /**
  * select distinct ?x ?y select (count(distinct *) as ?c)
@@ -234,6 +235,10 @@ public class Group implements Comparator<Mappings> {
 
     Iterable<Mappings> getValues() {
         return table.values();
+    }
+    
+    public Map<Mapping,Mappings> getTable() {
+        return table;
     }
 
 

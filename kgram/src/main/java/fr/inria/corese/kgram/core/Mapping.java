@@ -694,6 +694,13 @@ public class Mapping
             setNodeValue(q.getLabel(), t);
         }
     }
+    
+    Node getNodeValueOpt(Node node) {
+        if (node.isVariable()) {
+            return getNodeValue(node);
+        }
+        return getNode(node);
+    }
 
     public void setNodeValue(String q, Node t) {
         if (t == null) {

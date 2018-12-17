@@ -1721,7 +1721,7 @@ public class Eval implements ExpType, Plugin {
                     return STOP;
                 }
                 // value of q in map1
-                Node n1 = m1.getNode(q);
+                Node n1 = m1.getNodeValueOpt(q);
                 if (env.push(m1, n)) {
 
                     if (n1 == null) {
@@ -1745,7 +1745,7 @@ public class Eval implements ExpType, Plugin {
                             if (stop) {
                                 return STOP;
                             }
-                            Node n2 = m2.getNode(q);
+                            Node n2 = m2.getNodeValueOpt(q);
                             if (n2 != null) {
                                 break;
                             }

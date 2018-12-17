@@ -67,6 +67,7 @@ public class Mappings extends PointerObject
     private Mapping sm2;
     private Node result;
     private Binder binding;
+    private Object provenance;
 
     public Mappings() {
         list = new ArrayList<Mapping>();
@@ -569,7 +570,7 @@ public class Mappings extends PointerObject
         this.setEval(eval);
         sortWithDesc = false;
         for (Mapping m : this) {
-            m.setOrderBy(m.getNode(node));
+            m.setOrderBy(m.getNodeValueOpt(node));
         }
         sort();
         this.setEval(null);
@@ -1396,7 +1397,7 @@ public class Mappings extends PointerObject
         }
       for (int i = 0; i<size(); ) {
             Mapping m = list.get(i);
-            Node node = m.getNode(var);
+            Node node = m.getNodeValue(var); //m.getNode(var);
             if (node == null){
                 m.addNode(var, val);
                 i++;
@@ -1421,15 +1422,16 @@ public class Mappings extends PointerObject
         return list;
     }
     
-    public Mappings getMappings(Node var, Node val) {
-        Mappings map = create(getQuery());
+    public Mappings getMappings(Query q, Node var, Node val) {
+        Mappings map = create(q); //create(getQuery());
         for (Mapping m : this) {
-            Node node = m.getNode(var);
+            Node node = m.getNodeValue(var);
             if (node != null && node.equals(val)) {
                 map.add(m);
             }
         }
-        return map.distinct();
+        Mappings res = map.distinct();
+        return res;
     }
     
     /**
@@ -1658,6 +1660,21 @@ public class Mappings extends PointerObject
     public void setError(boolean error) {
         this.error = error;
     }
+    
+        /**
+     * @return the provenance
+     */
+    public Object getProvenance() {
+        return provenance;
+    }
+
+    /**
+     * @param provenance the provenance to set
+     */
+    public void setProvenance(Object provenance) {
+        this.provenance = provenance;
+    }
+
   
 
 }

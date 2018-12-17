@@ -161,8 +161,7 @@ export class D3GraphVisualizer extends Observer {
                             dr = 0;
                         }
                         d3.select(this).attr("marker-end", "url(#arrowhead)");
-                        // return `M ${edge.source.x * scale},${edge.source.y * scale} A ${dr * scale},${dr * scale} 0 0,1 ${(edge.target.x - offsetTargetX)* scale},${(edge.target.y - offsetY)* scale}`
-                        return `M ${edge.source.x * scale + offsetSourceX},${edge.source.y * scale + offsetSourceY} L${edge.target.x* scale - offsetTargetX},${edge.target.y* scale - offsetTargetY}`
+                        return `M ${edge.source.x * scale + offsetSourceX},${edge.source.y * scale + offsetSourceY} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale - offsetTargetX},${edge.target.y * scale - offsetTargetY}`
                     }
                 }(visualizer.model)
                 );

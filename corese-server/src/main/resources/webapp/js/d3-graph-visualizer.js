@@ -228,8 +228,8 @@ export class D3GraphVisualizer extends Observer {
             }
             updateSet("nodes", textNodes);
             updateSet("edges", textEdges);
-                // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
-            };
+            // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
+        };
 
         var maxLen = [];
         results.nodes.forEach(
@@ -279,7 +279,7 @@ export class D3GraphVisualizer extends Observer {
             // )
             .force("collide", d3.forceCollide().radius(function(d, i, nodes) {
                 return d.r * 2; }
-                ).iterations(2))
+            ).iterations(2))
             .force("center", d3.forceCenter(800,500))
             .on("tick", visualizer.graph.ticked);
         var width = +visualizer.graph.node().getBoundingClientRect().width;

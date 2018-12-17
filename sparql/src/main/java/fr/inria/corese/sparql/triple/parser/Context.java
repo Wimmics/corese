@@ -67,6 +67,7 @@ public class Context extends ASTObject {
     public static final String STL_PATTERN_VALUE  = STL + "patternvalue";
     public static final String STL_PATTERN_OPTION = STL + "patternoption";
     public static final String STL_PROCESS_QUERY  = STL + "processquery";
+    public static final String STL_METADATA       = STL + "metadata";
     
     
     HashMap<String, IDatatype> table;

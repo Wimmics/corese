@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Graphable;
+import fr.inria.corese.sparql.api.QueryVisitor;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -226,6 +227,7 @@ public class ASTQuery
     List<Expression> sort = new ArrayList<Expression>();
     List<Expression> lGroup = new ArrayList<Expression>();
     List<Expression> relax = new ArrayList<Expression>();
+    private List<QueryVisitor> visitList;
     private Dataset // Triple store default dataset
             defaultDataset,
             // from, from named, with
@@ -430,6 +432,7 @@ public class ASTQuery
         undefined = new HashMap();
         predicateList = new ArrayList<>();
         tripleList = new ArrayList<>();
+        visitList = new ArrayList<>();
     }
 
     ASTQuery(String query) {
@@ -3333,5 +3336,19 @@ public class ASTQuery
 
     public List<String> getApproximateSearchOptions(String key) {
         return this.approximateSearchOptions.get(key);
+    }
+
+    /**
+     * @return the visitList
+     */
+    public List<QueryVisitor> getVisitorList() {
+        return visitList;
+    }
+
+    /**
+     * @param visitList the visitList to set
+     */
+    public void setVisitorList(List<QueryVisitor> visitList) {
+        this.visitList = visitList;
     }
 }

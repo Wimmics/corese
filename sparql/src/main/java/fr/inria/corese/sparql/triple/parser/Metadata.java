@@ -48,6 +48,7 @@ public class Metadata extends ASTObject
     public static final int SEQUENCE= 30;
     public static final int VARIABLE= 31;
     public static final int SERVER  = 32;
+    public static final int PROVENANCE  = 33;
     
     
     public static final int EVENT   = 50;
@@ -108,6 +109,7 @@ public class Metadata extends ASTObject
         define("@parallel", PARALLEL);
         define("@sequence", SEQUENCE);
         define("@variable", VARIABLE);
+        define("@provenance",PROVENANCE);      
         define("@count",    COUNT);
         define("@server",   SERVER);
         define("@export",   PUBLIC);      

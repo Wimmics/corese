@@ -1,6 +1,7 @@
 import {GraphModel} from "./GraphModel.js";
 import {Observer} from "./Observer.mjs";
 import {ConfGraphModal} from "./ConfGraphModal.mjs";
+import {OntologyDrawer} from "./OntologyDrawer.js";
 
 
 export class D3GraphVisualizer extends Observer {
@@ -467,6 +468,17 @@ export class D3GraphVisualizer extends Observer {
         zoom_handler(visualizer.graph);
 
 
+    }
+
+
+    /** Visualisation of ontology.
+     *
+     */
+    static drawOntology(_results, svgId, rootId) {
+        let drawer = new OntologyDrawer().
+            setRoot(rootId).
+            setData(_results).
+            draw(svgId);
     }
 }
 

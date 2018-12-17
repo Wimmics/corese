@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<style> /* set the CSS */
+
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.node--internal text {
+	text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 2px;
+}
+
+</style>
+
+	<head>
+  <title>Corese Web Server</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/d3-graph-visualizer.js"></script>
+	</head>
+	<body>
+	<div id="graph">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				hello
+			</div>
+			<div class="panel-body" style="resize:vertical;overflow:auto">
+					<svg id="graph1" width="1000px" height="1000px"/> 
+			</div>
+		</div>
+	</div>
+		<script type="module">
+import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+
+
+var data = {
+			"nodes":[
+{"id": "n16", "label": "ns1:BasicContainer", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#BasicContainer" },
+{"id": "n15", "label": "ns1:Container", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container" },
+{"id": "n14", "label": "ns1:DirectContainer", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#DirectContainer" },
+{"id": "n17", "label": "ns1:IndirectContainer", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#IndirectContainer" },
+{"id": "n1", "label": "rdf:Property", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" },
+{"id": "n9", "label": "rdfs:Class", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2000/01/rdf-schema#Class" },
+{"id": "n3", "label": "owl:AnnotationProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#AnnotationProperty" },
+{"id": "n8", "label": "owl:Class", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#Class" },
+{"id": "n5", "label": "owl:DatatypeProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#DatatypeProperty" },
+{"id": "n10", "label": "owl:DeprecatedClass", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#DeprecatedClass" },
+{"id": "n6", "label": "owl:DeprecatedProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#DeprecatedProperty" },
+{"id": "n0", "label": "owl:FunctionalProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#FunctionalProperty" },
+{"id": "n11", "label": "owl:InverseFunctionalProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#InverseFunctionalProperty" },
+{"id": "n4", "label": "owl:ObjectProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#ObjectProperty" },
+{"id": "n2", "label": "owl:OntologyProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#OntologyProperty" },
+{"id": "n7", "label": "owl:Restriction", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#Restriction" },
+{"id": "n12", "label": "owl:SymmetricProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#SymmetricProperty" },
+{"id": "n13", "label": "owl:TransitiveProperty", "group": "uri", "class": "uri" ,  "url": "http://www.w3.org/2002/07/owl#TransitiveProperty" }
+]
+,"edges":[
+{"source": "n0", "target": "n1", "label": "rdfs:subClassOf", "id": "e0", "class": "rdfs", "group": "rdfs" },
+{"source": "n2", "target": "n1", "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs", "group": "rdfs" },
+{"source": "n3", "target": "n1", "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs", "group": "rdfs" },
+{"source": "n4", "target": "n1", "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs", "group": "rdfs" },
+{"source": "n5", "target": "n1", "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs", "group": "rdfs" },
+{"source": "n6", "target": "n1", "label": "rdfs:subClassOf", "id": "e5", "class": "rdfs", "group": "rdfs" },
+{"source": "n7", "target": "n8", "label": "rdfs:subClassOf", "id": "e6", "class": "rdfs", "group": "rdfs" },
+{"source": "n8", "target": "n9", "label": "rdfs:subClassOf", "id": "e7", "class": "rdfs", "group": "rdfs" },
+{"source": "n10", "target": "n9", "label": "rdfs:subClassOf", "id": "e8", "class": "rdfs", "group": "rdfs" },
+{"source": "n11", "target": "n4", "label": "rdfs:subClassOf", "id": "e9", "class": "rdfs", "group": "rdfs" },
+{"source": "n12", "target": "n4", "label": "rdfs:subClassOf", "id": "e10", "class": "rdfs", "group": "rdfs" },
+{"source": "n13", "target": "n4", "label": "rdfs:subClassOf", "id": "e11", "class": "rdfs", "group": "rdfs" },
+{"source": "n14", "target": "n15", "label": "rdfs:subClassOf", "id": "e12", "class": "rdfs", "group": "rdfs" },
+{"source": "n16", "target": "n15", "label": "rdfs:subClassOf", "id": "e13", "class": "rdfs", "group": "rdfs" },
+{"source": "n17", "target": "n15", "label": "rdfs:subClassOf", "id": "e14", "class": "rdfs", "group": "rdfs" }
+]
+
+		};
+
+
+D3GraphVisualizer.drawOntology(data, '#graph1', "n1");
+		</script>
+</html>

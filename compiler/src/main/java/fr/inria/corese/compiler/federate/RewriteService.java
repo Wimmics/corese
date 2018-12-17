@@ -20,10 +20,12 @@ public class RewriteService {
     int count = 0;
     String name = "?_serv_";
     ArrayList<Variable> varList; 
+    ArrayList<Service> serviceList;
     
     RewriteService(FederateVisitor vis) {
         this.vis = vis;
         varList = new ArrayList<>();
+        serviceList = new ArrayList<>();
     }
     
     void process(ASTQuery ast) {
@@ -38,6 +40,7 @@ public class RewriteService {
                 if (! s.getServiceName().isVariable()) {
                     Variable var = new Variable(name + count++);
                     varList.add(var);
+                    serviceList.add(s);
                     Values values = Values.create(var, s.getServiceConstantList());
                     s.setServiceName(var);
                     s.clearServiceList();
@@ -53,6 +56,10 @@ public class RewriteService {
     
     List<Variable> getVarList() {
         return varList;
+    }
+    
+    List<Service> getServiceList() {
+        return serviceList;
     }
        
 

@@ -31,6 +31,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -369,7 +370,18 @@ public class Transformer implements ExpType {
         if (metadata != null) {
             ast.addMetadata(metadata);
         }
+        if (ast.getContext() != null) {
+            context(ast);
+        }
         annotateLocal(ast);
+    }
+    
+    void context(ASTQuery ast) {
+        if (ast.getContext().hasValue(Context.STL_METADATA)) {
+            for (IDatatype meta : ast.getContext().get(Context.STL_METADATA).getValues()) {
+                ast.getMetadata().add(meta.getLabel());
+            }
+        }
     }
     
     void annotateLocal(ASTQuery ast){

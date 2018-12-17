@@ -16,6 +16,8 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ public class FederateVisitor implements QueryVisitor {
     boolean verbose = false;
     boolean variable = false;
     boolean aggregate = false;
+    boolean provenance = false;
 
     ASTQuery ast;
     Stack stack;
@@ -74,6 +77,7 @@ public class FederateVisitor implements QueryVisitor {
     QuerySolver exec;
     RewriteBGP rew;
     RewriteTriple rwt;
+    RewriteService rs;
     Simplify sim;
     List<Atom> empty;
     
@@ -150,6 +154,26 @@ public class FederateVisitor implements QueryVisitor {
         query.setFederate(true);
     }
     
+    @Override
+    public void before(fr.inria.corese.kgram.core.Query q) {
+        
+    }
+    
+    @Override
+    public void after(Mappings map) {
+        if (provenance) {
+            Provenance prov = provenance(map);
+            prov.aggregate();
+        }
+    }
+    
+    Provenance  provenance(Mappings map) {
+        Provenance prov = new Provenance(rs.getServiceList(), map);
+        map.setProvenance(prov);
+        return prov;
+    }
+    
+    
     /**
      * Metadata: 
      * default is true:
@@ -183,7 +207,12 @@ public class FederateVisitor implements QueryVisitor {
             variable = true;
         }
         if (ast.hasMetadata(Metadata.SERVER)) {
+            variable = true;
             aggregate = true;
+        }
+        if (ast.hasMetadata(Metadata.PROVENANCE)) {
+            variable = true;
+            provenance = true;
         }
         if (select) {
             selector = new Selector(this, exec, ast);
@@ -201,12 +230,13 @@ public class FederateVisitor implements QueryVisitor {
     void rewrite(ASTQuery ast) {
         rewrite(null, ast);
         variable(ast);
+        ast.getVisitorList().add(this);
     }
     
     void variable(ASTQuery ast) {
         if (variable) {
             // rewrite service (uri) {} as values ?serv { (uri) } service ?serv {}
-            RewriteService rs = new RewriteService(this);
+            rs = new RewriteService(this);
             rs.process(ast);
             if (aggregate) {
                 aggregate(ast, rs.getVarList());
@@ -578,5 +608,5 @@ public class FederateVisitor implements QueryVisitor {
         federation = aFederation;
     }
 
-
+   
 }

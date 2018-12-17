@@ -291,12 +291,28 @@ public class QuerySolver  implements SPARQLEngine {
 		pragma(kgram, query);
                 tune(kgram, query);
                 
+                before(query);
                 Mappings map  = kgram.query(query, m);
                 //TODO: check memory usage when storing Eval
                 map.setEval(kgram);
+                after(map);
 		
 		return map;
 	}
+        
+        void before(Query q) {
+            ASTQuery ast = (ASTQuery) q.getAST();
+            for (fr.inria.corese.sparql.api.QueryVisitor vis : ast.getVisitorList()) {
+                vis.before(q);
+            }       
+        }
+        
+        void after(Mappings map) {
+            ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+            for (fr.inria.corese.sparql.api.QueryVisitor vis : ast.getVisitorList()) {
+                vis.after(map);
+            }   
+        }
         
         public Eval getCurrentEval() {
             return current;

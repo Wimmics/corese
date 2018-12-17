@@ -222,7 +222,7 @@ public class ProviderImpl implements Provider {
             Mappings input = map;
             if (slice) {
                 // select appropriate subset of distinct Mappings with service URI 
-                input = getMappings(exp.getServiceNode(), service, map, eval.getEnvironment());
+                input = getMappings(q, exp.getServiceNode(), service, map, eval.getEnvironment());
                 if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, input.toString(true, false, 20));
                 }
@@ -345,9 +345,9 @@ public class ProviderImpl implements Provider {
     /**
      * Select subset of distinct Mappings where serviceNode = serviceURI
      */
-    Mappings getMappings(Node serviceNode, Node serviceURI, Mappings map, Environment env) {
+    Mappings getMappings(Query q, Node serviceNode, Node serviceURI, Mappings map, Environment env) {
         if (serviceNode.isVariable() && ! env.isBound(serviceNode)) {
-           return map.getMappings(serviceNode, serviceURI);
+           return map.getMappings(q, serviceNode, serviceURI);
         }
         return map;
     }

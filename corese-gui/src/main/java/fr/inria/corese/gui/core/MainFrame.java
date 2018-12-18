@@ -76,7 +76,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.0 - Wimmics INRIA I3S - 2018-11-11";
+    private static final String TITLE = "Corese 4.0 - Wimmics INRIA I3S - 2018-12-25";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -326,6 +326,8 @@ public class MainFrame extends JFrame implements ActionListener {
         for (int i = 0; i < listJMenuItems.size(); i++) {
             listJMenuItems.get(i).setEnabled(false);
         }
+        
+        process(cmd);
     }
 
     void execPlus() {
@@ -1293,7 +1295,13 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     void execWF(String path) {
-        reset();
+        execWF(path, true);
+    }
+    
+    void execWF(String path, boolean reset) {
+        if (reset) {
+            reset();
+        }
         WorkflowParser parser = new WorkflowParser();
         // parser.setDebug(true);
         try {
@@ -1540,6 +1548,13 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         myCorese = GraphEngine.create(rdfs);
         myCorese.setOption(cmd);
+    }
+    
+    void process(Command cmd) {
+        String path = cmd.get(Command.WORKFLOW);
+        if (path != null) {
+            execWF(path, false);
+        }
     }
 
     void setRDFSEntailment(boolean b) {

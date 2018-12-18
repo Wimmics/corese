@@ -14,6 +14,7 @@ public class Command extends HashMap<String, String> {
     public static final String LINKED_FUNCTION  = "-linkedfunction";
     public static final String METADATA         = "-metadata";
     public static final String STRING           = "-string";
+    public static final String WORKFLOW         = "-wf";
         
     
     Command (String[] args) {
@@ -40,6 +41,10 @@ public class Command extends HashMap<String, String> {
                     
                 case MAX_LOAD:
                    put(MAX_LOAD, args[i++]);
+                   break; 
+                   
+                case WORKFLOW:
+                   put(WORKFLOW, args[i++]);
                    break; 
                    
                 default:

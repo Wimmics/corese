@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
@@ -18,6 +19,7 @@ public class RewriteService {
     
     FederateVisitor vis;
     int count = 0;
+    boolean export = false;
     String name = "?_serv_";
     ArrayList<Variable> varList; 
     ArrayList<Service> serviceList;
@@ -29,6 +31,9 @@ public class RewriteService {
     }
     
     void process(ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.PUBLIC)) {
+            export = true;
+        }
         process(ast.getBody());
     }
     
@@ -40,12 +45,19 @@ public class RewriteService {
                 if (! s.getServiceName().isVariable()) {
                     Variable var = new Variable(name + count++);
                     varList.add(var);
-                    serviceList.add(s);
-                    Values values = Values.create(var, s.getServiceConstantList());
+                    serviceList.add(s);                  
                     s.setServiceName(var);
-                    s.clearServiceList();
-                    body.add(i, values);
-                    i++;
+                    if (true) {
+                        // bind service variable with values
+                        Values values = Values.create(var, s.getServiceConstantList());
+                        s.clearServiceList();
+                        body.add(i, values);
+                        i++;
+                    }
+                    else {
+                      // service has variable and server URI list
+                       s.setGenerated(true);
+                    }
                 }
             }
             else {

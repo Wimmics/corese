@@ -827,8 +827,9 @@ public class Transformer implements ExpType {
 
         Exp exp = Exp.create(SERVICE, node, q);
         exp.setSilent(service.isSilent());
-        
-        if (service.getServiceList().size() > 1) {
+        exp.setGenerated(service.isGenerated());
+
+        if (service.getServiceList().size() > 1 || service.isGenerated()) {
             // special case for federated query
             // one service clause with several URI
             // perform merge of resut Mappings
@@ -1359,11 +1360,11 @@ public class Transformer implements ExpType {
         switch (type) {
 
             case FILTER:
-                exp = compileFilter((Triple) query, opt);
+                exp = compileFilter(query.getTriple(), opt);
                 break;
 
             case EDGE:
-                exp = compileEdge((Triple) query, opt);
+                exp = compileEdge(query.getTriple(), opt);
                 break;
 
             case QUERY:
@@ -1383,7 +1384,7 @@ public class Transformer implements ExpType {
                 break;
 
             case SERVICE:
-                exp = compileService((Service) query);
+                exp = compileService(query.getService());
                 break;
 
             case VALUES:
@@ -1440,7 +1441,7 @@ public class Transformer implements ExpType {
                         }
                     }
                 }
-
+                
                 // PRAGMA: do it after loop above to have filter compiled
                 query.validateBlank(ast);
                 

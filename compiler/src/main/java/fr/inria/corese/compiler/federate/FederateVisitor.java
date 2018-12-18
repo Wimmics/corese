@@ -203,7 +203,7 @@ public class FederateVisitor implements QueryVisitor {
         if (ast.hasMetadata(Metadata.BOUNCE)) {
             bounce = true;
         }
-        if (ast.hasMetadata(Metadata.VARIABLE)) {
+        if (ast.hasMetadata(Metadata.VARIABLE) || ast.hasMetadata(Metadata.PUBLIC)) {
             variable = true;
         }
         if (ast.hasMetadata(Metadata.SERVER)) {

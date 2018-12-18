@@ -1,3 +1,4 @@
+"use strict";
 export class OntologyDrawer {
     constructor() {
     }
@@ -14,10 +15,31 @@ export class OntologyDrawer {
             let t = e.target;
             if (e.label === "rdfs:subClassOf") {
                 this.dataMap[t].children[s] = true;
+                this.dataMap[s].parent = t;
             }
         }
 
-
+        // compute numbers of tree roots.
+        this.nbRoots = 0;
+        this.roots = [];
+        for (let d of data.nodes) {
+            if (this.dataMap[d.id].parent === undefined) {
+                console.log(`new tree root : ${d.id}`);
+                this.nbRoots++;
+                this.roots.push(d.id);
+            }
+        }
+        if (this.nbRoots > 1) {
+            this.dataMap["Root"] = {
+                id: "Root",
+                label: "Root",
+                children: {}
+            }
+            for (let child of this.roots) {
+                this.dataMap["Root"].children[child] = true;
+            }
+            this.root = "Root";
+        }
 
         return this;
     }
@@ -37,6 +59,7 @@ export class OntologyDrawer {
                 stack.push(summit.children[childId]);
             }
         }
+        return this;
     }
 
     draw(svgId) {
@@ -124,8 +147,8 @@ export class OntologyDrawer {
             this.selectButton = d3.select(`body`).append("select").
             attr("id", selectButtonId).
             attr("class","select");
-            this.selectButton.selectAll("option").data(this.rawData.nodes).enter().
-            append("option").attr("value", (d) => d.id).text((d)=>d.label);
+            this.selectButton.selectAll("option").data(Object.keys(this.dataMap)).enter().
+            append("option").attr("value", (d) => d).text((d)=> this.dataMap[d].label);
             this.selectButton.on("change", (d) => {
                 const selectValue = d3.select(`#${selectButtonId}`).property('value')
                 this.setRoot(selectValue);

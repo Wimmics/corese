@@ -10,6 +10,21 @@ import fr.inria.corese.sparql.triple.api.ASTVisitor;
  */
 
 public class TopExp implements ASTVisitable  {
+
+    /**
+     * @return the generated
+     */
+    public boolean isGenerated() {
+        return generated;
+    }
+
+    /**
+     * @param generated the generated to set
+     */
+    public void setGenerated(boolean generated) {
+        this.generated = generated;
+    }
+    private boolean generated = false;
 	
         @Override
 	public String toString(){

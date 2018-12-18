@@ -1414,7 +1414,7 @@ public class Mappings extends PointerObject
     public List<Node> aggregate(Node var) {
         List<Node> list = new ArrayList<>();       
         for (Mapping m : this) {
-            Node val = m.getNode(var);
+            Node val = m.getNodeValue(var);
             if (val != null && !list.contains(val)) {
                 list.add(val);
             }
@@ -1429,6 +1429,15 @@ public class Mappings extends PointerObject
             if (node != null && node.equals(val)) {
                 map.add(m);
             }
+        }
+        Mappings res = map.distinct();
+        return res;
+    }
+    
+    public Mappings getMappings(Query q) {
+        Mappings map = create(q); 
+        for (Mapping m : this) {
+             map.add(m);
         }
         Mappings res = map.distinct();
         return res;

@@ -1587,7 +1587,6 @@ public class Eval implements ExpType, Plugin {
     private int join(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
-        
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, memory.getResetJoinMappings());
         if (map1.size() == 0) {
             //exp.rest().setMappings(null);
@@ -1705,7 +1704,7 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
        
         Node q = map1.getCommonNode(map2);
-
+        
         if (q == null) {
             // no variable in common : simple cartesian product
             backtrack = simpleJoin(p, gNode, stack, env, map1, map2, n);
@@ -1713,9 +1712,14 @@ public class Eval implements ExpType, Plugin {
             // map1 and map2 share a variable q
             // sort map2 on q
             // enumerate map1
-            // retreive the index of value of q in map2 by dichotomy
+            // retrieve the index of value of q in map2 by dichotomy
+            
+            if (map1.size() > map2.size()) {
+                Mappings tmp = map1;
+                map1 = map2;
+                map2 = tmp;
+            }
             map2.sort(this, q);
-
             for (Mapping m1 : map1) {
                 if (stop) {
                     return STOP;
@@ -1749,7 +1753,6 @@ public class Eval implements ExpType, Plugin {
                             if (n2 != null) {
                                 break;
                             }
-
                             if (env.push(m2, n)) {
                                 backtrack = eval(p, gNode, stack, n + 1);
                                 env.pop(m2);
@@ -1768,8 +1771,7 @@ public class Eval implements ExpType, Plugin {
 
                                 // get value of q in map2
                                 Mapping m2 = map2.get(i);
-                                Node n2 = m2.getNode(q);
-
+                                Node n2 = m2.getNodeValueOpt(q);
                                 if (n2 == null || !n1.match(n2)) { // was equals
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;

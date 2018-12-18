@@ -25,6 +25,20 @@ public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
 
     /**
+     * @return the generated
+     */
+    public boolean isGenerated() {
+        return generated;
+    }
+
+    /**
+     * @param generated the generated to set
+     */
+    public void setGenerated(boolean generated) {
+        this.generated = generated;
+    }
+
+    /**
      * @return the simpleNodeList
      */
     public List<Node> getInScopeNodeList() {
@@ -80,6 +94,7 @@ public class Exp extends PointerObject
     private boolean isPostpone = false;
     private boolean BGPAble = false;
     private boolean isFunctional = false;
+    private boolean generated = false;
     VExp args;
     Edge edge;
     Node node;

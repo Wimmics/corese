@@ -103,7 +103,7 @@
 	<properties>
 		<deployOnMavenCentral>false</deployOnMavenCentral>
 		<!-- Unique entry point for version number management -->
-		<revision>4.1.0</revision>
+		<revision>4.1.1-SNAPSHOT</revision>
 		<!-- To ignore errors in javadoc usage. -->
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<!-- Sonar -->

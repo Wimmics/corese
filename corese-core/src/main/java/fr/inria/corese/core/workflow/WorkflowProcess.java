@@ -252,6 +252,10 @@ public class WorkflowProcess implements AbstractProcess {
         return pgetWorkflow().getVisitor();
     }
     
+    boolean hasVisitor() {
+        return recVisitor() != null;
+    }
+    
      boolean isVerbose(){
         boolean b1 = getMode() == null || ! getModeString().equals(WorkflowParser.SILENT);
         boolean b2 = getContext().get(WorkflowParser.MODE) == null || 

@@ -6,8 +6,14 @@ package fr.inria.corese.core.workflow;
  */
 public interface WorkflowVisitor {
     
-    void before(WorkflowProcess wp, Data data);
+    default void before(WorkflowProcess wp, Data data) {}
     
-    void after(WorkflowProcess wp, Data data);
+    default void after(WorkflowProcess wp, Data data) {}
+    
+    default void visit(WorkflowProcess wp, Data data, double time) {}
+    
+    default boolean isTest() {
+        return false;
+    }
     
 }

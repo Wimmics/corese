@@ -100,12 +100,33 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (getPath() != null){
             exec.setDefaultBase(getPath());
         }
-        log1(g, c);    
+        log1(g, c); 
+        if (hasVisitor() && recVisitor().isTest()) {
+            return test(exec, data, c, ds);
+        }
+        else {
+            Date d1 = new Date();
+            Mappings map = exec.query(tuneQuery(exec, data), data.dataset(c, ds)); 
+            Data res = new Data(this, map, getGraph(map, data));
+            res.setBinding((Binding) map.getBinding());
+            log2(res, d1, new Date());  
+            return res;
+        }
+    }
+    
+    Data test(QueryProcess exec, Data data, Context c, Dataset ds) throws EngineException {
+        Mappings map = null;
         Date d1 = new Date();
-        Mappings map = exec.query(tuneQuery(exec, data), data.dataset(c, ds)); 
+        int nb = 5;
+        for (int i = 0; i < nb; i++) {
+            map = exec.query(getQuery(), data.dataset(c, ds));
+        }
+        Date d2 = new Date();
         Data res = new Data(this, map, getGraph(map, data));
         res.setBinding((Binding) map.getBinding());
-        log2(g, d1, new Date());  
+        if (hasVisitor()) {
+            recVisitor().visit(this, res, ((d2.getTime()-d1.getTime())/(1000.0 * nb)));
+        }
         return res;
     }
     
@@ -211,7 +232,10 @@ public class SPARQLProcess extends  WorkflowProcess {
         }
     }
     
-    void log2(Graph g, Date d1, Date d2){
+    void log2(Data data, Date d1, Date d2){
+        if (hasVisitor()) {
+            recVisitor().visit(this, data, (d2.getTime() - d1.getTime()) / 1000.0);
+        }
         if (isLog() || pgetWorkflow().isLog()){
             logger.info("Time: " + (d2.getTime() - d1.getTime()) / 1000.0);
         }

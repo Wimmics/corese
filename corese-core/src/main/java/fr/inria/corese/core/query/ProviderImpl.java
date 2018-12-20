@@ -35,10 +35,8 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -250,7 +248,7 @@ public class ProviderImpl implements Provider {
             }
         }
         
-        Mappings res = getResult(mapList);
+        Mappings res = getResult(q, mapList);
         
         if (list.size() > 1) {
             eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
@@ -309,7 +307,7 @@ public class ProviderImpl implements Provider {
         }
     }
     
-    Mappings getResult(List<Mappings> mapList) {
+    Mappings getResult(Query q, List<Mappings> mapList) {
         if (mapList.size() == 1) {
             return mapList.get(0);
         }
@@ -324,9 +322,10 @@ public class ProviderImpl implements Provider {
                 res.add(m);
             }
         }
-        
+        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
+        boolean distinct = ! ast.hasMetadata(Metadata.DUPLICATE);
         // TODO: if two Mappings have their own duplicates, they are removed
-        if (res != null && res.getSelect() != null){
+        if (res != null && res.getSelect() != null && distinct){
             res = res.distinct(res.getSelect(), res.getSelect());
         }
         return res;

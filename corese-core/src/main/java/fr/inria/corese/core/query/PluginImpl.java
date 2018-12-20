@@ -955,7 +955,7 @@ public class PluginImpl
         }
         else if (label.equals(VISITOR)) {
             QuerySolver.setVisitorable(dt2.booleanValue());
-            System.out.println("QuerySolver visitorable: " + QuerySolver.isVisitorable());
+            //System.out.println("QuerySolver visitorable: " + QuerySolver.isVisitorable());
         }
         return TRUE;
      }

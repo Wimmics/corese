@@ -347,7 +347,7 @@ public class CompileService {
     }
     
     void submit(List<Term> lt) {
-        termList.add(lt);
+        //termList.add(lt);
     }
     
 

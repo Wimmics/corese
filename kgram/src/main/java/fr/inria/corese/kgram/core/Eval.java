@@ -28,6 +28,7 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.slf4j.Logger;
@@ -1593,9 +1594,10 @@ public class Eval implements ExpType, Plugin {
             getVisitor().join(this, getGraphNode(gNode), exp, map1, map1);
             return backtrack;
         }
-           
+        Date d1 = new Date();
         MappingSet set1 = new MappingSet(map1);
         Exp rest = prepareRest(exp, set1);
+        Date d2 = new Date();
         if (stop) {
              return STOP;
         }
@@ -1718,7 +1720,7 @@ public class Eval implements ExpType, Plugin {
                 Mappings tmp = map1;
                 map1 = map2;
                 map2 = tmp;
-            }
+            }                      
             map2.sort(this, q);
             for (Mapping m1 : map1) {
                 if (stop) {

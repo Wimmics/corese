@@ -1016,9 +1016,11 @@ public class Mapping
     
     Node getCommonNode(Mapping m) {
         for (Node q1 : getQueryNodes()) {
-            Node q2 = m.getQueryNode(q1);
-            if (q2 != null) {
-                return q2;
+            if (q1.isVariable()) {
+                Node q2 = m.getQueryNode(q1);
+                if (q2 != null && q2.isVariable()) {
+                    return q2;
+                }
             }
         }
         return null;
@@ -1151,17 +1153,17 @@ public class Mapping
     }
 
     // common variable between two Mapping
-    Node common(Mapping m2) {
-        for (Node qn : getQueryNodes()) {
-            if (qn.isVariable()) {
-                Node qq = m2.getQueryNode(qn.getLabel());
-                if (qq != null) {
-                    return qn;
-                }
-            }
-        }
-        return null;
-    }
+//    Node common(Mapping m2) {
+//        for (Node qn : getQueryNodes()) {
+//            if (qn.isVariable()) {
+//                Node qq = m2.getQueryNode(qn.getLabel());
+//                if (qq != null) {
+//                    return qn;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     Mapping project(List<Exp> lExp) {
 

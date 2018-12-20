@@ -84,7 +84,7 @@ public class EvalSPARQL {
         Mapping m2 = map2.get(0);
         
         // common variable
-        Node cmn = m1.common(m2);
+        Node cmn = m1.getCommonNode(m2);
                
         if (cmn == null){
             return map1.joiner(map2);

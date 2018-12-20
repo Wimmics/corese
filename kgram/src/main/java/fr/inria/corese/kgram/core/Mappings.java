@@ -585,7 +585,7 @@ public class Mappings extends PointerObject
             return first;
         } else {
             int mid = (first + last) / 2;
-            Node n1 = list.get(mid).getNode(qnode);
+            Node n1 = list.get(mid).getNodeValue(qnode);
             int res = compare(n1, n2);
             if (res >= 0) {
                 return find(n2, qnode, first, mid);

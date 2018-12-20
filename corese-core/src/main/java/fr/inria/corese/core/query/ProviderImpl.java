@@ -35,6 +35,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
@@ -338,7 +339,7 @@ public class ProviderImpl implements Provider {
      */
     void complete(Node serviceNode, Node serviceURI, Mappings map, Environment env){
         if (map != null && serviceNode.isVariable() && ! env.isBound(serviceNode)) {
-            map.join(serviceNode, serviceURI);
+           map.join(serviceNode, serviceURI);
         }
     }
     

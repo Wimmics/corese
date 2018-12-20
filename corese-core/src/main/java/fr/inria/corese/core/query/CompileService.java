@@ -259,7 +259,6 @@ public class CompileService {
     public boolean filter(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
-
         for (int j = start; j < map.size() && j < limit; j++) {
             Term f = getFilter(q, map.get(j));
 
@@ -282,7 +281,7 @@ public class CompileService {
 
         for (Node varNode : q.getBody().getRecordInScopeNodes()) {
             String varName = varNode.getLabel();
-            Node valNode = m.getNode(varName);
+            Node valNode = m.getNodeValue(varName);
             if (valNode != null) { // && ! valNode.isBlank()) {
                 // do not send bnode because it will raise a syntax error
                 // and it will not be available on another server because 

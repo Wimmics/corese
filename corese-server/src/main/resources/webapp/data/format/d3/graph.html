@@ -3,6 +3,14 @@
 data = {
 	%s
 };
-drawRdf(data, '#graph1');
 </script>
+<script type="module">
+        import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
+        D3GraphVisualizer.drawRdf(data, '#graph1');
+</script>
+
+<script nomodule>
+        D3GraphVisualizer.drawRdf(data, '#graph1');
+</script>
+
 

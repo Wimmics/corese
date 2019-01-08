@@ -1,6 +1,7 @@
 import {GraphModel} from "./GraphModel.js";
 import {Observer} from "./Observer.mjs";
 import {ConfGraphModal} from "./ConfGraphModal.mjs";
+import {OntologyDrawer} from "./OntologyDrawer.js";
 
 
 export class D3GraphVisualizer extends Observer {
@@ -227,8 +228,8 @@ export class D3GraphVisualizer extends Observer {
             }
             updateSet("nodes", textNodes);
             updateSet("edges", textEdges);
-                // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
-            };
+            // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
+        };
 
         var maxLen = [];
         results.nodes.forEach(
@@ -278,7 +279,7 @@ export class D3GraphVisualizer extends Observer {
             // )
             .force("collide", d3.forceCollide().radius(function(d, i, nodes) {
                 return d.r * 2; }
-                ).iterations(2))
+            ).iterations(2))
             .force("center", d3.forceCenter(800,500))
             .on("tick", visualizer.graph.ticked);
         var width = +visualizer.graph.node().getBoundingClientRect().width;
@@ -467,6 +468,22 @@ export class D3GraphVisualizer extends Observer {
         zoom_handler(visualizer.graph);
 
 
+    }
+
+
+    /** Visualisation of ontology.
+     *
+     */
+    static drawOntology(_results, svgId, rootId) {
+        let drawer = new OntologyDrawer().
+        setRoot(rootId).
+        setData(JSON.parse(JSON.stringify(_results))).
+        draw(svgId);
+    }
+    static drawCircle(_results, svgId, rootId) {
+        let drawer2 = new OntologyDrawer().
+        setData(JSON.parse(JSON.stringify(_results))).
+        drawCircle(svgId);
     }
 }
 

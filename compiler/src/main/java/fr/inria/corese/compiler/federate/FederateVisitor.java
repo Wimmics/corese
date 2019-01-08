@@ -162,12 +162,12 @@ public class FederateVisitor implements QueryVisitor {
     @Override
     public void after(Mappings map) {
         if (provenance) {
-            Provenance prov = provenance(map);
-            prov.aggregate();
+            Provenance prov = getProvenance(map);
+            System.out.println(prov);        
         }
     }
     
-    Provenance  provenance(Mappings map) {
+    public Provenance getProvenance(Mappings map) {
         Provenance prov = new Provenance(rs.getServiceList(), map);
         map.setProvenance(prov);
         return prov;

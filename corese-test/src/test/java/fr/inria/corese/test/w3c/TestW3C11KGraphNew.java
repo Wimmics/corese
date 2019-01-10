@@ -406,7 +406,7 @@ public class TestW3C11KGraphNew {
         test(root + "bindings");
         test(root + "exists");
 
-       // test(root + "subquery");
+        test(root + "subquery");
 
     }
 
@@ -743,7 +743,7 @@ public class TestW3C11KGraphNew {
 
         // here
 
-        //if (! fquery.contains("sq14") ) return true;
+        //if (! fquery.contains("exists03") ) return true;
 
         if (trace && fquery != null) {
             System.out.println(pp(fquery));

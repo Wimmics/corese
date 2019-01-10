@@ -2703,10 +2703,36 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
+        
         exec.query(q);
         assertEquals(12, g.size());
+        
+    }
+    
+    
+     @Test
+    public void testDatatypeValue111() throws EngineException {
+        String init =
+                "insert data {"
+                        + "graph us:g1 { <Jack> rdf:value  1,  1.0, 01, '1'^^xsd:long, '01'^^xsd:byte, 1e0, 2 }"
+
+                        + "graph us:g2 { <Jack> rdf:value  1,  1.0, 01, '1'^^xsd:long, '01'^^xsd:byte, 1e0, 2 }"
+                        + "} ";
+
+        String q = "delete data  { <Jack> rdf:value 01 }";
+
+        String q2 = "delete  where { <Jack> rdf:value 01 }";
+
+        String q3 = "delete  where { ?x rdf:value 01 }";
+
+        String q4 = "select  where { <Jack> rdf:value 01 }";
+
+        Graph g = createGraph();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(init);
+
         exec.query(q2);
-        assertEquals(4, g.size());
+        assertEquals(12, g.size());
     }
 
 
@@ -5385,7 +5411,7 @@ public class TestQuery1 {
         graph.setNamedGraph(NSManager.STL + "sys", g);
 
 
-        String q = "select  * "
+        String q =  "select  * "
                 + "where {"
                 + "?x foaf:knows ?y "
                 + "graph st:sys {"
@@ -5398,7 +5424,10 @@ public class TestQuery1 {
                 + "filter exists { ?a rdfs:label 'John' }"
                 + "filter not exists { ?u rdfs:label 'tata' }"
                 + "}"
-                + "}";
+                + "}"
+              
+                ;
+        
         Mappings map = exec.query(q);
 
         assertEquals(5, map.size());

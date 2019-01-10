@@ -570,7 +570,7 @@ public class Mappings extends PointerObject
         this.setEval(eval);
         sortWithDesc = false;
         for (Mapping m : this) {
-            m.setOrderBy(m.getNodeValueOpt(node));
+            m.setOrderBy(m.getNode(node));
         }
         sort();
         this.setEval(null);

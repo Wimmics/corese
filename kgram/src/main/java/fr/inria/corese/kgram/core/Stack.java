@@ -110,6 +110,7 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		return this;
 	}
 	
+        @Override
 	public String toString(){
 		String str = ""; //"[" + level +"] ";
 		int i = 0;

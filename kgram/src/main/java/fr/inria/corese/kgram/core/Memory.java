@@ -651,6 +651,9 @@ public class Memory extends PointerObject implements Environment {
      * n is the index in Exp stack where Node is bound
      */
     boolean push(Node node, Node target, int n) {
+        if (node.isConstant()) {
+            return true;
+        }
         int index = node.getIndex();
         if (nodes[index] == null) { // (nbNodes[index] > 0){
             nodes[index] = target;

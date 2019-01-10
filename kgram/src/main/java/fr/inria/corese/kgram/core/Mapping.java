@@ -302,14 +302,6 @@ public class Mapping
         init(lqNodes, ltNodes);
     }
 
-//    public void setRead(boolean b) {
-//        read = b;
-//    }
-//
-//    public boolean isRead() {
-//        return read;
-//    }
-
     void setOrderBy(Node[] nodes) {
         oNodes = nodes;
     }
@@ -385,7 +377,6 @@ public class Mapping
             return null;
         }
         return node.getPath();
-        //return getPath(getIndex(qNode));
     }
 
     public Path getPath(String name) {
@@ -394,7 +385,6 @@ public class Mapping
             return null;
         }
         return getPath(qNode);
-        //return getPath(getIndex(qNode));
     }
 
     /**
@@ -503,18 +493,6 @@ public class Mapping
         return list;
     }
 
-    @Override
-    public Node getNode(Node node) {
-        int n = 0;
-        for (Node qnode : qNodes) {
-            if (node.same(qnode)) {
-                return nodes[n];
-            }
-            n++;
-        }
-        return null;
-    }
-
     void init() {
     }
 
@@ -577,15 +555,27 @@ public class Mapping
         int n = 0;
         for (Node qrNode : qNodes) {
             if (qNode.same(qrNode)) {
-                nodes[n] = node;
-                if (qNode.isVariable()) {
-                    setNodeValue(qNode, node);
-                }
+                setNode(qNode, node, n);
+//                nodes[n] = node;
+//                if (qNode.isVariable()) {
+//                    setNodeValue(qNode, node);
+//                }
                 return;
             }
             n++;
         }
         addNode(qNode, node);
+    }
+    
+    void setNode(Node qNode, Node node, int n) {
+        nodes[n] = node;
+        if (qNode.isVariable()) {
+            setNodeValue(qNode, node);
+        }
+    }
+    
+    public void setNode(Node node, int n) {
+       setNode(getQueryNode(n), node, n);
     }
 
     public Mapping project(Node q) {
@@ -694,13 +684,6 @@ public class Mapping
             setNodeValue(q.getLabel(), t);
         }
     }
-    
-    Node getNodeValueOpt(Node node) {
-        if (node.isVariable()) {
-            return getNodeValue(node);
-        }
-        return getNode(node);
-    }
 
     public void setNodeValue(String q, Node t) {
         if (t == null) {
@@ -724,15 +707,38 @@ public class Mapping
     }
 
     public DatatypeValue getValue(Node qn) {
-        Node n = (qn.isVariable()) ? getNodeValue(qn.getLabel()) : getNode(qn);
+        Node n = getNode(qn);
         if (n == null) {
             return null;
         }
         return n.getDatatypeValue();
     }
-
+    
+    @Override
+    public Node getNode(Node node) {
+        if (node.isVariable()) {
+            return getNodeValue(node.getLabel());
+        }
+        return getNodeBasic(node);
+    }
+    
     @Override
     public Node getNode(String label) {
+        return getNodeValue(label);
+    }
+    
+    Node getNodeBasic(Node node) {
+        int n = 0;
+        for (Node qnode : qNodes) {
+            if (node.same(qnode)) {
+                return nodes[n];
+            }
+            n++;
+        }
+        return null;
+    }
+
+    Node getNodeBasic(String label) {
         int n = 0;
         for (Node qnode : qNodes) {
             if (qnode.getLabel().equals(label)) {
@@ -792,14 +798,7 @@ public class Mapping
         }
         return list;
     }
-    
-    public Iterable getLoop2() {
-        ArrayList<Object> list = new ArrayList<>();
-        for (Node n : getNodes()) {
-            list.add(n.getValue());
-        }
-        return list;
-    }
+
 
     @Override
     public Node[] getQueryNodes() {
@@ -1152,18 +1151,6 @@ public class Mapping
         return map;
     }
 
-    // common variable between two Mapping
-//    Node common(Mapping m2) {
-//        for (Node qn : getQueryNodes()) {
-//            if (qn.isVariable()) {
-//                Node qq = m2.getQueryNode(qn.getLabel());
-//                if (qq != null) {
-//                    return qn;
-//                }
-//            }
-//        }
-//        return null;
-//    }
 
     Mapping project(List<Exp> lExp) {
 

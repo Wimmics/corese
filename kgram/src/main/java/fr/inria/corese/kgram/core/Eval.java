@@ -1002,7 +1002,7 @@ public class Eval implements ExpType, Plugin {
                 case FILTER:
                 case BIND:
 
-                    if (gNode != null && !env.isBound(gNode)) {
+                    if (gNode != null && gNode.isVariable() && !env.isBound(gNode)) {
                         backtrack = graphNodes(p, gNode, gNode, exp, stack, n, n);
                     } else {
                         switch (exp.type()) {
@@ -1469,7 +1469,8 @@ public class Eval implements ExpType, Plugin {
             // bound in map1, otherwise it would generate duplicates in map2
             // or impose irrelevant bindings 
             // map = select distinct map1 wrt exp inscope nodes 
-            Mappings map = set1.getMappings().distinct(nodeListInScope);
+            Mappings map = set1.getMappings().distinct(nodeListInScope);                      
+            //Mappings map = set1.getMappings();                      
             map.setNodeList(nodeListInScope);
             if (exp.isJoin() || isFederate(rest)) {
                 // service clause in rest may take Mappings into account
@@ -1727,7 +1728,7 @@ public class Eval implements ExpType, Plugin {
                     return STOP;
                 }
                 // value of q in map1
-                Node n1 = m1.getNodeValueOpt(q);
+                Node n1 = m1.getNode(q);
                 if (env.push(m1, n)) {
 
                     if (n1 == null) {
@@ -1751,7 +1752,7 @@ public class Eval implements ExpType, Plugin {
                             if (stop) {
                                 return STOP;
                             }
-                            Node n2 = m2.getNodeValueOpt(q);
+                            Node n2 = m2.getNode(q);
                             if (n2 != null) {
                                 break;
                             }
@@ -1773,7 +1774,7 @@ public class Eval implements ExpType, Plugin {
 
                                 // get value of q in map2
                                 Mapping m2 = map2.get(i);
-                                Node n2 = m2.getNodeValueOpt(q);
+                                Node n2 = m2.getNode(q);
                                 if (n2 == null || !n1.match(n2)) { // was equals
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;
@@ -2306,14 +2307,13 @@ public class Eval implements ExpType, Plugin {
         Query qq = query;
         Matcher mm = match;
         int backtrack = n - 1;
-
         for (Node graph : prod.getGraphNodes(gNode, qq.getFrom(gNode), env)) {
             if (//member(graph, query.getFrom(gNode)) && 
                     mm.match(gNode, graph, env)
                     && env.push(gNode, graph, n)) {
                 if (stop) {
                     return STOP;
-                }
+                }               
                 // set new/former gNode
                 backtrack = eval(p, nextGraph, stack, next);
                 env.pop(gNode);

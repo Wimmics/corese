@@ -59,7 +59,8 @@ public class TransformerMapping {
                 q.setMapping(map);
             }
             else {
-                map.getNodes()[0] = getNode(dt);
+                //map.getNodes()[0] = getNode(dt);
+                map.setNode(getNode(dt), 0);
             }
 
             return map;
@@ -73,7 +74,8 @@ public class TransformerMapping {
             setMapping(map);
         }
         else {
-            map.getNodes()[0] = getNode(dt);
+            //map.getNodes()[0] = getNode(dt);
+            map.setNode(getNode(dt), 0);
         }
         return map;
     }
@@ -95,7 +97,8 @@ public class TransformerMapping {
         else {
             // reuse template Mapping
             for (int i = 0; i<values.length; i++){
-                map.getNodes()[i] = getNode(values[i]);
+                //map.getNodes()[i] = getNode(values[i]);
+                map.setNode(getNode(values[i]), i);
             }
         }
         

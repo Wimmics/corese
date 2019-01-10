@@ -575,7 +575,13 @@ st:tutorialhal a st:Server ;
   ] ;
   st:service "halopendata" ;
   st:workflow st:halwf ;
-  st:content st:tutohal
+  st:shareContent st:tutohal
+.
+
+
+st:halsparql a st:Server ;
+  st:service "halsparql" ;
+  st:shareContent st:tutohal
 .
 
 
@@ -829,12 +835,12 @@ st:service "spinquery" ;
 #st:param [ st:export true ] ;
 st:content [
     a sw:Workflow ; sw:body (
-        [ a sw:Load ; sw:path rdf: ]
+        [ a sw:Load ; sw:path rdf: ; sw:name rdf: ]
     )
 ] ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
-    [ a sw:Load    ; sw:mode sw:spin ] # sw:uri = st:param | text = st:arg
+    [ a sw:Load    ; sw:mode sw:spin ] # query uri = st:param | query text = st:arg
     [ a sw:Query ]  # place holder, get query text with query=text 
     [ a sw:Result  ; sw:format st:json ]
 )
@@ -851,6 +857,15 @@ sw:body (
 )
 .
 
+st:spin2 a st:Server ;
+st:workflow st:spin2 ;
+st:service "spin2" ;
+sw:body (
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load    ; sw:mode sw:spin ] # sw:uri = st:param | text = st:arg
+    [ a sw:Transformation ; sw:uri st:spin ] 
+)
+.
 
 
 st:sensor a st:Server ;

@@ -10,12 +10,11 @@ prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
 
 template st:place {
 
-    st:call-template(st:gmap, ?in, ?lat, ?lon, ?list)  
+    st:call-template-with(st:navlab, st:maplist,  ?list)  
     
 }
 where {
     filter xt:print('place')
-    ?in geo:lat ?lat ; geo:long ?lon .
     
     { select  (aggregate(xt:list(?x, ?lat, ?lon, us:value(?val))) as ?list) 
     where {
@@ -28,5 +27,4 @@ where {
         ?mesure sosa:hasSimpleResult ?val 
     }}
 }
-limit 1
 

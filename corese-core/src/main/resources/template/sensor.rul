@@ -2,40 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Sep 12 11:11:03 CEST 2018
+Thu Jan 10 15:40:15 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate resource on a map, given lat et long
-#
-prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
-
-template st:gmap(?r, ?lat, ?lon, ?list) {
-  
-format {
-  <ft:map.html>
-  
-  str(?lat)
-  str(?lon)
-  coalesce(st:get(st:mapzoom), 7)  
-  coalesce(st:get(st:mapicon1), "/img/smarker.png")
-  
-  st:call-template(st:gmap2, ?list)
-          
-  coalesce(st:get(st:mapsize), "mapmedium")
-}
-   
-}
-where {
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -66,77 +36,6 @@ where {
         # filter (us:value(?value) <= 30)
     }
     order by desc(us:value(?value))
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Geolocate  resources on a map 
-# ?list = list(list(uri, lat, lon, val))
-#
-prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
-prefix ex: <http://example.org/> .
-
-template st:gmap2(?list) {
-  format {
-    <ft:map2.html>
-    
-    st:number()
-    str(?lat)
-    str(?lon)
-    coalesce(us:icon(us:num(?val)), "/img/greenmarker.png")
-    st:plink(?r)
-  }
-}
-where {
-
-  values (?r ?lat ?lon ?val) { unnest(?list) }
-  
-}
-
-
-function us:num(?val) {
-    us:absolute(?val)
-}
-
-
-function us:absolute(?val) {
-    if (isNumeric(?val),
-        if (?val >= 60, 4, 
-        if (?val >= 30, 3, 
-        if (?val >= 15, 2, 1))),
-    0)
-}
-
-
-
-# 0 is good, greater is worse
-function us:icon(?n) {
-    let (?list = @(
-    "/img/bluemarker.png" "/img/bluemarker.png"  "/img/greenmarker.png" 
-    "/img/pinkmarker.png" "/img/blackmarker.png"
-    "https://cdn4.iconfinder.com/data/icons/48x48-free-object-icons/48/Red_pin.png" 
-    )) {
-        if (?n >= xt:size(?list),  us:icon(0), xt:get(?list, ?n))
-    }
-}
-
-
-
-# 0 <= val <= 100
-# 0 is good, 100 is bad
-
-function us:relative(?val) {
-    if (isNumeric(?val),
-        if (?val >= st:cget(st:quart3, ex:AirQualityIndex), 4, 
-        if (?val >= st:cget(st:median, ex:AirQualityIndex), 3, 
-        if (?val >= st:cget(st:quart1, ex:AirQualityIndex), 2, 1))),
-    0)
 }
 
 ]]>
@@ -191,7 +90,6 @@ where {
 template st:start {
 
   st:call-template(st:main)
-  st:call-template-with(st:d3, st:frame)
   
 }
 where {
@@ -233,12 +131,11 @@ prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
 
 template st:place {
 
-    st:call-template(st:gmap, ?in, ?lat, ?lon, ?list)  
+    st:call-template-with(st:navlab, st:maplist,  ?list)  
     
 }
 where {
     filter xt:print('place')
-    ?in geo:lat ?lat ; geo:long ?lon .
     
     { select  (aggregate(xt:list(?x, ?lat, ?lon, us:value(?val))) as ?list) 
     where {
@@ -251,7 +148,6 @@ where {
         ?mesure sosa:hasSimpleResult ?val 
     }}
 }
-limit 1
 
 ]]>
 </body>

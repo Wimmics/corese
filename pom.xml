@@ -109,7 +109,7 @@
 			b = build number. 
 			For more details: https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm#MAVEN400
 		 -->
-		<revision>4.1.1-2</revision>
+		<revision>4.1.1</revision>
 		<!-- To ignore errors in javadoc usage. -->
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<!-- Sonar -->

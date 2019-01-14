@@ -7,12 +7,18 @@ export class OntologyDrawer {
         this.rawData = data;
         this.dataMap = {};
         for (let d of this.rawData.nodes) {
-            this.dataMap[d.id] = d;
+            this.dataMap[d.id] = {
+                id: d.id,
+                label: d.label,
+                group: d.group,
+                class: d.class,
+                url: d.url
+            };
             this.dataMap[d.id].children = {};
         }
         for (let e of data.edges) {
-            let s = e.source;
-            let t = e.target;
+            let s = e.source.id;
+            let t = e.target.id;
             if (e.label === "rdfs:subClassOf") {
                 this.dataMap[t].children[s] = true;
                 this.dataMap[s].parent = t;

@@ -477,12 +477,12 @@ export class D3GraphVisualizer extends Observer {
     static drawOntology(_results, svgId, rootId) {
         let drawer = new OntologyDrawer().
         setRoot(rootId).
-        setData(JSON.parse(JSON.stringify(_results))).
+        setData(_results).
         draw(svgId);
     }
     static drawCircle(_results, svgId, rootId) {
         let drawer2 = new OntologyDrawer().
-        setData(JSON.parse(JSON.stringify(_results))).
+        setData(_results).
         drawCircle(svgId);
     }
 }

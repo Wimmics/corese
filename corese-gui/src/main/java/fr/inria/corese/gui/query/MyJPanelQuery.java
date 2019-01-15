@@ -694,9 +694,7 @@ public final class MyJPanelQuery extends JPanel {
             if (gsub == null) {
                 gsub = graph.addNode(sujetUri);
                 gsub.addAttribute("label", sujet);
-                if (n1.isBlank()) {
-                    gsub.setAttribute("ui.class", "Blank");
-                }
+                style(n1, gsub);
             }
             num++;
 
@@ -709,13 +707,7 @@ public final class MyJPanelQuery extends JPanel {
                 if (gobj == null) {
                     gobj = graph.addNode(objetUri);
                     gobj.addAttribute("label", objet);
-                    if (n2.isBlank()) {
-                        gobj.setAttribute("ui.class", "Blank");
-                    }
-                    IDatatype dt = (IDatatype) n2.getValue();
-                    if (dt.isLiteral()) {
-                        gobj.setAttribute("ui.class", "Literal");
-                    }
+                    style(n2, gobj);
                 }
                 num++;
 
@@ -725,6 +717,14 @@ public final class MyJPanelQuery extends JPanel {
         }
 
         return graph;
+    }
+    
+    void style(fr.inria.corese.kgram.api.core.Node n, Node gn) {
+        if (n.isBlank()) {
+            gn.setAttribute("ui.class", "Blank");
+        } else if (n.getDatatypeValue().isLiteral()) {
+            gn.setAttribute("ui.class", "Literal");
+        }
     }
 
 

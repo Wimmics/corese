@@ -1,6 +1,7 @@
 "use strict";
 export class OntologyDrawer {
     constructor() {
+        this.setProperties({"rdfs:subClassOf": true});
     }
 
     setData(data) {
@@ -19,7 +20,7 @@ export class OntologyDrawer {
         for (let e of data.edges) {
             let s = e.source.id;
             let t = e.target.id;
-            if (e.label === "rdfs:subClassOf") {
+            if (e.label  in this.properties) {
                 this.dataMap[t].children[s] = true;
                 this.dataMap[s].parent = t;
             }
@@ -31,7 +32,7 @@ export class OntologyDrawer {
         for (let d of data.nodes) {
             this.dataMap[d.id].value = Object.keys(this.dataMap[d.id].children).length;
             this.dataMap[d.id].r = 10;
-            if (this.dataMap[d.id].parent === undefined) {
+            if (this.dataMap[d.id].parent === undefined && Object.keys(this.dataMap[d.id].children).length !== 0) {
                 console.log(`new tree root : ${d.id}`);
                 this.nbRoots++;
                 this.roots.push(d.id);
@@ -57,14 +58,42 @@ export class OntologyDrawer {
         return this;
     }
 
-    setRoot(root) {
-        this.root = root;
+    /**
+     *
+     * @param params Expect { rootId : "id", properties: {"prop1", "prop2"}}
+     */
+    setParameters( params ) {
+        if (params !== undefined) {
+            if ("rootId" in params) {
+                this.setDisplayRoot(params.rootId);
+            }
+            if ("properties" in params) {
+                this.setProperties(params.properties);
+            }
+        }
         return this;
     }
+
+    /*
+     *  Set the root used by the tree layout algorithm. I.e. draw the subtree below root (included).
+     */
+    setDisplayRoot(root) {
+        this.displayRoot = root;
+        return this;
+    }
+    /*
+     *  Set the properties to be used when extracting the tree.
+     */
+    setProperties(properties) {
+        this.properties = properties;
+    }
     computeHierarchy() {
+        if (this.displayRoot === undefined) {
+            this.displayRoot = this.root;
+        }
         // Fill the children map with { id: dataMap[id] }, in order to make the dataMap structure compatible
         // with the layout algorithm.
-        this.hierarchy = this.dataMap[this.root];
+        this.hierarchy = this.dataMap[this.displayRoot];
         let stack = [];
         stack.push(this.hierarchy);
         while (stack.length !== 0) {
@@ -129,7 +158,7 @@ export class OntologyDrawer {
 // maps the node data to the tree layout
         nodes = treemap(nodes);
 
-// append the svg obgect to the body of the page
+// append the svg object to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
         let svg = d3.select(svgId);
@@ -181,10 +210,7 @@ export class OntologyDrawer {
         this.addOptionButton();
 
         let zoomed = function () {
-            var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
-            copieTransform.k = 1;
             g.attr("transform", d3.event.transform);
-            // visualizer.graph.ticked(d3.event.transform.k);
         };
         var zoom_handler = d3.zoom().on("zoom", zoomed);
         zoom_handler(svg);
@@ -202,7 +228,7 @@ export class OntologyDrawer {
             append("option").attr("value", (d) => d).text((d)=> this.dataMap[d].label);
             this.selectButton.on("change", (d) => {
                 const selectValue = d3.select(`#${selectButtonId}`).property('value')
-                this.setRoot(selectValue);
+                this.setDisplayRoot(selectValue);
                 this.draw(this.svgId);
             });
         }

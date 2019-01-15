@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<style> /* set the CSS */
+
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.node--internal text {
+	text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 2px;
+}
+
+</style>
+
+	<head>
+  <title>Corese Web Server</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/d3-graph-visualizer.js"></script>
+	</head>
+	<body>
+	<div id="graph">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				hello
+			</div>
+			<div class="panel-body" style="resize:vertical;overflow:auto">
+				<svg id="graph1" width="1000px" height="1000px"/>
+				<svg id="graph2" width="960" height="960"><g transform="translate(1,1)"></g></svg>
+			</div>
+		</div>
+	</div>
+		<script type="module">
+import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+
+
+var data = {
+			"nodes":[
+{"id": "n16", "label": "ns1:BasicContainer", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#BasicContainer" },
+{"id": "n15", "label": "ns1:Container", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container" },
+]
+,"edges":[
+{"source": {"id":"n16"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e13", "class": "rdfs", "group": "rdfs" },
+]
+
+		};
+
+
+D3GraphVisualizer.drawOntology(data, '#graph1');
+D3GraphVisualizer.drawCircle(data, '#graph2');
+
+		</script>
+</html>

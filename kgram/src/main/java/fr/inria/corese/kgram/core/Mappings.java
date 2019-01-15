@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.Binder;
+import java.util.Map;
 
 /*
  * Manage list of Mapping, result of a query
@@ -985,6 +986,17 @@ public class Mappings extends PointerObject
             mem.setGroup(null);
         }
     }
+    
+    
+    public void aggregate(Mapping map, Query q, Map<String, DatatypeValue> bn, int n) {
+        setCount(n);
+        // in case there is a nested aggregate, map will be an Environment
+        // it must implement aggregate() and hence must know current Mappings group
+        map.setMappings(this);
+        map.setQuery(q);
+        // share same bnode table in all Mapping of current group solution
+        map.setMap(bn);
+    }
 
     /**
      * process group by leave one Mapping within each group
@@ -1154,23 +1166,23 @@ public class Mappings extends PointerObject
      * sum(?x)) on the list of Mapping with Mapping as environment to get
      * variable binding
      */
-    void aggregate(Evaluator eval, Filter f, Environment env, Producer p) {
-        if (isFake()) {
-            // fake Mappings because there were no result
-            return;
-        }
-        int n = 0;
-        for (Mapping map : this) {
-            this.setCount(n++);
-            // in case there is a nested aggregate, map will be an Environment
-            // it must implement aggregate() and hence must know current Mappings group
-            map.setMappings(this);
-            map.setQuery(env.getQuery());
-            // share same bnode table in all Mapping of current group solution
-            map.setMap(env.getMap());
-            eval.eval(f, map, p);
-        }
-    }
+//    void aggregate(Evaluator eval, Filter f, Environment env, Producer p) {
+//        if (isFake()) {
+//            // fake Mappings because there were no result
+//            return;
+//        }
+//        int n = 0;
+//        for (Mapping map : this) {
+//            this.setCount(n++);
+//            // in case there is a nested aggregate, map will be an Environment
+//            // it must implement aggregate() and hence must know current Mappings group
+//            map.setMappings(this);
+//            map.setQuery(env.getQuery());
+//            // share same bnode table in all Mapping of current group solution
+//            map.setMap(env.getMap());
+//            eval.eval(f, map, p);
+//        }
+//    }
        
     /**
      * *******************************************************************

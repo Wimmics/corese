@@ -11,12 +11,10 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
-import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Result;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
@@ -58,7 +56,7 @@ public class Mapping
     Mappings lMap;
     HashMap<String, Node> values;
     Query query;
-    Map bnode;
+    Map<String, DatatypeValue> bnode;
     //boolean read = false;
     private Binder bind;
     private Node graphNode;
@@ -333,12 +331,12 @@ public class Mapping
         return query;
     }
 
-    void setMap(Map m) {
+    void setMap(Map<String, DatatypeValue> m) {
         bnode = m;
     }
 
     @Override
-    public Map getMap() {
+    public Map<String, DatatypeValue> getMap() {
         return bnode;
     }
 
@@ -1013,7 +1011,7 @@ public class Mapping
         return getQueryNode(node.getLabel());
     }
     
-    Node getCommonNode(Mapping m) {
+     Node getCommonNode(Mapping m) {
         for (Node q1 : getQueryNodes()) {
             if (q1.isVariable()) {
                 Node q2 = m.getQueryNode(q1);
@@ -1215,15 +1213,15 @@ public class Mapping
     /**
      * Mapping as Environment may compute aggregates see same function in Memory
      */
-    @Override
-    public void aggregate(Evaluator eval, Producer p, Filter f) {
-        if (!getMappings().isFake()) {
-            for (Mapping map : getMappings()) {
-                // in case there is a nested aggregate
-                eval.eval(f, map, p);
-            }
-        }
-    }
+//    @Override
+//    public void aggregate(Evaluator eval, Producer p, Filter f) {
+//        if (!getMappings().isFake()) {
+//            for (Mapping map : getMappings()) {
+//                // in case there is a nested aggregate
+//                eval.eval(f, map, p);
+//            }
+//        }
+//    }
     
     @Override
     public Iterable<Mapping> getAggregate(){
@@ -1235,14 +1233,18 @@ public class Mapping
     
     @Override
     public void aggregate(Mapping map, int n){
-        getMappings().setCount(n);
-        // in case there is a nested aggregate, map will be an Environment
-        // it must implement aggregate() and hence must know current Mappings group
-        map.setMappings(getMappings());
-        map.setQuery(getQuery());
-        // share same bnode table in all Mapping of current group solution
-        map.setMap(getMap());
-    }
+        getMappings().aggregate(map, getQuery(), getMap(), n);
+    }   
+    
+//    public void aggregate(Mapping map, int n){
+//        getMappings().setCount(n);
+//        // in case there is a nested aggregate, map will be an Environment
+//        // it must implement aggregate() and hence must know current Mappings group
+//        map.setMappings(getMappings());
+//        map.setQuery(getQuery());
+//        // share same bnode table in all Mapping of current group solution
+//        map.setMap(getMap());
+//    }
 
     @Override
     public Extension getExtension() {
@@ -1371,6 +1373,7 @@ public class Mapping
     /**
      * @param eval the eval to set
      */
+    @Override
     public void setEval(Eval eval) {
         this.eval = eval;
     }

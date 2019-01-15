@@ -52,7 +52,7 @@ public class Memory extends PointerObject implements Environment {
     Object object;
     // bnode(label) must return same bnode in same solution, different otherwise.
     // hence must clear bnodes after each solution
-    Map bnode;
+    Map<String, DatatypeValue> bnode;
     //  query or sub query
     Query query;
     Node gNode;
@@ -535,11 +535,11 @@ public class Memory extends PointerObject implements Environment {
     }
 
     @Override
-    public Map getMap() {
+    public Map<String, DatatypeValue> getMap() {
         return bnode;
     }
 
-    void setMap(Map m) {
+    void setMap(Map<String, DatatypeValue> m) {
         bnode = m;
     }
 
@@ -793,7 +793,7 @@ public class Memory extends PointerObject implements Environment {
      */
     void aggregate(Mapping map) {
         push(map, -1);
-        Map bnode = map.getMap();
+        Map<String, DatatypeValue> bnode = map.getMap();
         if (bnode == null) {
             bnode = new HashMap();
             map.setMap(bnode);
@@ -1089,10 +1089,10 @@ public class Memory extends PointerObject implements Environment {
     }
 
     // sum(?x)
-    @Override
-    public void aggregate(Evaluator eval, Producer p, Filter f) {
-        current().aggregate(eval, f, this, p);
-    }
+//    @Override
+//    public void aggregate(Evaluator eval, Producer p, Filter f) {
+//        current().aggregate(eval, f, this, p);
+//    }
 
     public Node max(Node qNode) {
         return current().max(qNode);
@@ -1151,14 +1151,18 @@ public class Memory extends PointerObject implements Environment {
      */
     @Override
     public void aggregate(Mapping map, int n) {
-        current().setCount(n);
-        // in case there is a nested aggregate, map will be an Environment
-        // it must implement aggregate() and hence must know current Mappings group
-        map.setMappings(current());
-        map.setQuery(getQuery());
-        // share same bnode table in all Mapping of current group solution
-        map.setMap(getMap());
+        current().aggregate(map, getQuery(), getMap(), n);
     }
+       
+//    public void aggregate2(Mapping map, int n) {
+//        current().setCount(n);
+//        // in case there is a nested aggregate, map will be an Environment
+//        // it must implement aggregate() and hence must know current Mappings group
+//        map.setMappings(current());
+//        map.setQuery(getQuery());
+//        // share same bnode table in all Mapping of current group solution
+//        map.setMap(getMap());
+//    }
 
     @Override
     public int pathLength(Node qNode) {

@@ -84,11 +84,11 @@ public class EnvironmentImpl implements Environment {
 		return 0;
 	}
 
-	@Override
-	public void aggregate(Evaluator eval, Producer p, Filter f) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void aggregate(Evaluator eval, Producer p, Filter f) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public Query getQuery() {

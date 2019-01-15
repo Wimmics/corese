@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.query;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
@@ -114,7 +115,7 @@ public interface Environment {
 	 * @param eval
 	 * @param f
 	 */
-	void aggregate(Evaluator eval, Producer p, Filter f);
+	//void aggregate(Evaluator eval, Producer p, Filter f);
 	
 	EventManager getEventManager();
 	
@@ -128,7 +129,8 @@ public interface Environment {
 	
 	Exp getExp();
 	
-	Map getMap();
+        // id -> bnode
+	Map<String, DatatypeValue> getMap();
         
         Edge[] getEdges();	
         

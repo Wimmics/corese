@@ -122,7 +122,7 @@ export class OntologyDrawer {
             }
             return { "height": height, "width": width};
         }
-        let geomTree = recurNode(this, this.root);
+        let geomTree = recurNode(this, this.displayRoot);
         this.width = geomTree.width;
         this.height = geomTree.height;
         return this;

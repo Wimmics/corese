@@ -50,6 +50,8 @@ export class OntologyDrawer {
                 this.dataMap[child].parent = "Root";
             }
             this.root = "Root";
+        } else {
+            this.root = this.roots.pop();
         }
 
         return this;

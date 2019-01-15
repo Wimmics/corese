@@ -60,6 +60,8 @@ export class OntologyDrawer {
         return this;
     }
     computeHierarchy() {
+        // Fill the children map with { id: dataMap[id] }, in order to make the dataMap structure compatible
+        // with the layout algorithm.
         this.hierarchy = this.dataMap[this.root];
         let stack = [];
         stack.push(this.hierarchy);
@@ -70,27 +72,52 @@ export class OntologyDrawer {
                 stack.push(summit.children[childId]);
             }
         }
+
+        // compute width and height of the tree
+        let recurNode = function(tree, nodeId) {
+            let data = tree.dataMap[nodeId];
+            let height = 0;
+            let width = 0;
+            if ( Object.keys(data.children).length == 0) {
+                height = 1;
+                width = 1;
+            } else {
+                for (let childId of Object.keys(data.children)) {
+                    let result = recurNode(tree, childId);
+                    height = Math.max(height, result.height);
+                    width += result.width;
+                }
+                height += 1; // count "node" itself.
+            }
+            return { "height": height, "width": width};
+        }
+        let geomTree = recurNode(this, this.root);
+        this.width = geomTree.width;
+        this.height = geomTree.height;
         return this;
+    }
+
+    getWidth() {
+        return this.width;
+    }
+
+    getHeight() {
+        return this.height;
     }
 
     draw(svgId) {
         this.svgId = svgId;
         this.computeHierarchy();
         // set the dimensions and margins of the diagram
-        var margin = {top: 40, right: 20, bottom: 20, left: 20},
-            width = 660 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        let margin = {top: 40, right: 20, bottom: 20, left: 20};
+        let width = this.getWidth() * 25 - margin.left - margin.right;
+        let height = this.getHeight() * 125 - margin.top - margin.bottom;
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
             .size([width, height]);
 
 //  assigns the data to a hierarchy using parent-child relationships
-//         var nodes = d3.hierarchy( this.hierarchy,
-//             function(d) {
-//                 return Object.values(d);
-//             }
-//         );
         var nodes = d3.hierarchy(this.hierarchy
             , function children(d) {
                 return Object.values(d.children);
@@ -148,7 +175,17 @@ export class OntologyDrawer {
             });
 
 
+
         this.addOptionButton();
+
+        let zoomed = function () {
+            var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
+            copieTransform.k = 1;
+            g.attr("transform", d3.event.transform);
+            // visualizer.graph.ticked(d3.event.transform.k);
+        };
+        var zoom_handler = d3.zoom().on("zoom", zoomed);
+        zoom_handler(svg);
     }
 
     addOptionButton() {

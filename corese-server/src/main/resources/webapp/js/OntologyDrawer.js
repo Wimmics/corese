@@ -112,8 +112,8 @@ export class OntologyDrawer {
         this.computeHierarchy();
         // set the dimensions and margins of the diagram
         let margin = {top: 40, right: 20, bottom: 20, left: 20};
-        let width = this.getWidth() * 25 - margin.left - margin.right;
-        let height = this.getHeight() * 125 - margin.top - margin.bottom;
+        let width = Math.max(this.getWidth(), 5 ) * 45 - margin.left - margin.right;
+        let height = Math.max( this.getHeight(),5 ) * 125 - margin.top - margin.bottom;
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
@@ -194,7 +194,8 @@ export class OntologyDrawer {
         "use strict";
         let selectButtonId = "selectButton";
         if (d3.select(`#${selectButtonId}`).empty()) {
-            this.selectButton = d3.select(`body`).append("select").
+            var fo = d3.select(this.svgId).append('foreignObject').attr("width", "100%").attr("height", "34px");
+            this.selectButton = fo.append("xhtml:select").
             attr("id", selectButtonId).
             attr("class","select");
             this.selectButton.selectAll("option").data(Object.keys(this.dataMap)).enter().

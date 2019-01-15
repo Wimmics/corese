@@ -45,6 +45,7 @@ public class Selector {
     QuerySolver exec;
     boolean sparql10 = false;
     boolean count = false;
+    boolean trace = false;
     
     Selector(FederateVisitor vis, QuerySolver e, ASTQuery ast) {
         this.ast = ast;
@@ -64,6 +65,7 @@ public class Selector {
         }
         
         count = ast.hasMetadata(Metadata.COUNT);
+        trace = ast.hasMetadata(Metadata.TRACE);
     }
     
     void process() {
@@ -121,7 +123,7 @@ public class Selector {
             
         }
 
-        trace();
+        trace(map);
     }
           
     void process10(List<Constant> list) {
@@ -141,7 +143,7 @@ public class Selector {
             }
         }
         
-        trace();
+        trace(map);
     }
     
     List<Atom> getPredicateService(Constant pred) {
@@ -159,7 +161,7 @@ public class Selector {
         return getPredicateService(t.getPredicate().getConstant());
     }
    
-    void trace() {
+    void trace(Mappings map) {
         if (ast.isDebug()) {
             System.out.println("Triple Selection");
             for (String pred : predicateService.keySet()) {
@@ -168,6 +170,9 @@ public class Selector {
             for (Triple t : tripleService.keySet()) {
                 System.out.println(t + " " + tripleService.get(t));
             }
+        }
+        if (trace) {
+            System.out.println(map);
         }
     }
     
@@ -259,7 +264,7 @@ public class Selector {
     }
     
     void metadata(ASTQuery aa, ASTQuery ast) {
-        if (ast.hasMetadata(Metadata.EVENT) || ast.hasMetadata(Metadata.NEW)) {
+        if (ast.hasMetadata(Metadata.EVENT) || ast.hasMetadata(Metadata.NEW) || ast.hasMetadata(Metadata.TRACE)) {
             Metadata m = new Metadata();
             aa.setMetadata(m);
         
@@ -271,6 +276,10 @@ public class Selector {
             
             if (ast.hasMetadata(Metadata.NEW)) {
                 m.add(Metadata.NEW);
+            }
+            
+            if (ast.hasMetadata(Metadata.TRACE)) {
+                m.add(Metadata.TRACE);
             }
         }
     }
@@ -286,13 +295,17 @@ public class Selector {
             } else {
                 Variable s = Variable.create("?s");
                 Variable o = Variable.create("?o");
-                Triple t = aa.triple(s, p, o);
-                Variable var = create(aa, bgp, t, i);
-                declare(p, var);
+                Triple t   = aa.triple(s, p, o);
                 
+                Variable var;
                 if (count) {
-                    count(aa, bgp, t, i);
+                    var = count(aa, bgp, t, i);
                 }
+                else {
+                    var = exist(aa, bgp, t, i);
+                }
+                declare(p, var);
+                                
                 i++;
             }                      
         }
@@ -300,11 +313,16 @@ public class Selector {
         for (Triple t : ast.getTripleList()) {
             if (selectable(t)) {
                 // triple with constant
-                Variable var = create(aa, bgp, t, i);
-                declare(t, var);
+                
+                Variable var;
                 if (count) {
-                    count(aa, bgp, t, i);
+                    var = count(aa, bgp, t, i);
                 }
+                else {
+                    var = exist(aa, bgp, t, i);
+                }
+                declare(t, var);
+                                             
                 i++;
             }
         }
@@ -312,18 +330,25 @@ public class Selector {
         return bgp;
     }
     
-    void count(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
+    Variable count(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
         ASTQuery a = aa.subCreate();
+        
         Term fun = Term.function(Processor.COUNT);
-        Variable var = Variable.create("?c" + i);
+        Variable var = Variable.create("?c_" + i);
         a.defSelect(var, fun);
-        BasicGraphPattern body = BasicGraphPattern.create(t);
-        a.setBody(body);
-        BasicGraphPattern exp = BasicGraphPattern.create(Query.create(a));
-        bgp.add(exp);
+        
+        Term bound = Term.create(">", var, Constant.create(0));
+        Variable varBound = Variable.create("?v_" + i);
+        aa.defSelect(varBound, bound);
+        
+        a.setBody(BasicGraphPattern.create(t));
+        
+        bgp.add(BasicGraphPattern.create(Query.create(a)));
+        
+        return varBound;
     }
     
-    Variable create(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
+    Variable exist(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
         BasicGraphPattern bb = BasicGraphPattern.create(t);
         Variable var = Variable.create("?b" + i++);
         Binding exist = Binding.create(aa.createExist(bb, false), var);

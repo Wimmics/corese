@@ -452,16 +452,19 @@ public class SPIN implements ASTVisitor {
             }
         }
         else if (exp.isOption()) {
-            visit((Option) exp);
+            visit(exp.getOptional());
         } 
         else if (exp.isOptional()) {
-            visitOptional((Option) exp);
+            visitOptional(exp.getOptional());
         } 
         else if (exp.isValues()) {
             visit((Values) exp);
         } 
         else if (exp.isUnion()) {
             visit((Or) exp);
+        } 
+        else if (exp.isMinus()) {
+            visit(exp.getMinus());
         } 
         else {
             for (Exp ee : exp.getBody()) {
@@ -732,10 +735,11 @@ public class SPIN implements ASTVisitor {
     public void visit(And and) {
         if (and.isService()) {
             visit((Service) and);
-        } else 
-        if (and.isMinus()) {
-            visit((Minus) and);
-        } else if (and.isBGP()) {
+        }  
+//       else if (and.isMinus()) {
+//            visit((Minus) and);
+//        } 
+        else if (and.isBGP()) {
             visit((BasicGraphPattern) and);
         } else if (and.isGraph()) {
             visit((Source) and);

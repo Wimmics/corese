@@ -678,6 +678,10 @@ public class Triple extends Exp {
 	public Atom getSubject(){
 		return subject;
 	}
+        
+        public boolean isConstantNode() {
+            return getSubject().isConstant() || getObject().isConstant();
+        }
 	
 	public Atom getPredicate(){
 		if (variable != null)

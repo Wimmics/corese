@@ -4,7 +4,7 @@ import java.util.List;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 
-public class Minus extends And {
+public class Minus extends Binary {
 	
 	public static Minus create(Exp exp){
 		Minus e = new Minus();

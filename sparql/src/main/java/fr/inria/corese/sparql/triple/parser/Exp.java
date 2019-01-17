@@ -313,6 +313,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             return null;
         }
         
+        public Or getUnion() {
+            return null;
+        }
+        
         public Exist getExist() {
             return null;
         }

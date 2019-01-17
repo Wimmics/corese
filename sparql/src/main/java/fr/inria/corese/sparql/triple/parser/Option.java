@@ -22,7 +22,7 @@ import java.util.List;
  * @author Olivier Corby
  */
 
-public class Option extends Exp {
+public class Option extends Binary {
 	
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;

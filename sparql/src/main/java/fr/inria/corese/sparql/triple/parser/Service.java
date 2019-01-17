@@ -53,6 +53,10 @@ public class Service extends And {
         return create(serv, body, false);
     }
     
+    public static Service create(List<Atom> list, Exp body) {
+        return create(list, body, false);
+    }
+    
     @Override
     public Service copy() {
         Service exp = super.copy().getService();

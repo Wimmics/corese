@@ -8,7 +8,7 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Minus;
-import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
@@ -189,7 +189,7 @@ public class ServiceVisitor implements QueryVisitor {
      * graph ?g { ?x ex:p ?y optional { ?y ex:q ?g_proxy }}
      * filter coalesce(?g = ?g_proxy, true)
      */
-    Exp process(Atom name, Option exp){
+    Exp process(Atom name, Optional exp){
         rewrite(name, exp.get(0));
         if (name != null && name.isVariable()){
             rewriteVariable(name.getVariable(), exp.get(1));            

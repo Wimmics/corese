@@ -5,7 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -213,7 +213,7 @@ public class Simplify {
     
     boolean isUnionTripleOnly(Exp bgp) {
         if (bgp.size() == 1 && bgp.get(0).isUnion()) {
-            Or union = bgp.get(0).getUnion();
+            Union union = bgp.get(0).getUnion();
             return isTripleOnly(union.get(0)) && isTripleOnly(union.get(1)) ;
         }
         return false;
@@ -264,7 +264,7 @@ public class Simplify {
      * service S { {t1} union {t2} }
      */
     Service simplifyUnion(Exp exp, Service s1, Service s2) {
-        Or union = Or.create(s1.getBodyExp(), s2.getBodyExp());
+        Union union = Union.create(s1.getBodyExp(), s2.getBodyExp());
         Service s = Service.create(s1.getServiceList(), BasicGraphPattern.create(union));
         return s;
     }

@@ -11,7 +11,7 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
@@ -222,7 +222,7 @@ public class ExpandPath implements QueryVisitor {
 		BasicGraphPattern bgp1 = BasicGraphPattern.create(e1);
 		BasicGraphPattern bgp2 = BasicGraphPattern.create(e2);
 		
-		Or or = Or.create(bgp1, bgp2);
+		Union or = Union.create(bgp1, bgp2);
 		return or;
 	}
 	
@@ -245,14 +245,14 @@ public class ExpandPath implements QueryVisitor {
 			// add ?x rdf:first ?y
 			Exp e = ast.createPath(t.getArg(0), exp.getArg(1), t.getArg(1));
 			BasicGraphPattern b = BasicGraphPattern.create(e);
-			res = Or.create(b, res);
+			res = Union.create(b, res);
 		}
 		else if (exp.getArg(1).isStar() || exp.getArg(1).isOpt()){
 			// use case: rdf:type/rdfs:subClassOf* 
 			// add ?x rdf:type ?c
 			Exp e = ast.createPath(t.getArg(0), exp.getArg(0), t.getArg(1));
 			BasicGraphPattern b = BasicGraphPattern.create(e);
-			res = Or.create(b, res);
+			res = Union.create(b, res);
 		}
 		
 		return res;
@@ -298,7 +298,7 @@ public class ExpandPath implements QueryVisitor {
 		
 		bgp.add(e2);
 		
-		Or or = Or.create(res, bgp);
+		Union or = Union.create(res, bgp);
 		return or;
 	}
 	

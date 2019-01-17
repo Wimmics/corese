@@ -7,7 +7,7 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -437,7 +437,7 @@ public class FederateVisitor implements QueryVisitor {
             return list.get(n);
         }
         else {
-            return Or.create(list.get(n), union(list, n+1));
+            return Union.create(list.get(n), union(list, n+1));
         }
     }    
         

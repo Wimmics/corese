@@ -15,7 +15,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -398,9 +398,9 @@ public class Selector {
     }
     
     Exp optional(List<Triple> list) {
-        Option option = new Option(BasicGraphPattern.create(), BasicGraphPattern.create(list.get(0)));
+        Optional option = new Optional(BasicGraphPattern.create(), BasicGraphPattern.create(list.get(0)));
         for (int i = 1; i < list.size(); i++) {
-            option = new Option(BasicGraphPattern.create(option), BasicGraphPattern.create(list.get(i)));
+            option = new Optional(BasicGraphPattern.create(option), BasicGraphPattern.create(list.get(i)));
         }
         return option;
     }

@@ -6,7 +6,7 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -135,7 +135,7 @@ public class RewriteTriple {
         for (Constant cst : from) {
             if (i++ > 0) {
                 src = Source.create(cst, exp);
-                union = Or.create(bgp(union), bgp(src));
+                union = Union.create(bgp(union), bgp(src));
             }
         }
         return union;

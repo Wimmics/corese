@@ -5,7 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
@@ -92,8 +92,8 @@ public class Checker {
         Triple t2 = Triple.create(c, aa.createQName(RDFSSUBCLASSOF), var);
         Triple t3 = Triple.create(var, aa.createQName(RDFSSUBCLASSOF), c);
 
-        Or exp = Or.create(t1, t2);
-        exp = Or.create(exp, t3);
+        Union exp = Union.create(t1, t2);
+        exp = Union.create(exp, t3);
 
         bgp.add(exp);
 

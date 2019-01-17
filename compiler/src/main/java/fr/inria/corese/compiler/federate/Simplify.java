@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.Or;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -210,6 +211,18 @@ public class Simplify {
         return true;
     }
     
+    boolean isUnionTripleOnly(Exp bgp) {
+        if (bgp.size() == 1 && bgp.get(0).isUnion()) {
+            Or union = bgp.get(0).getUnion();
+            return isTripleOnly(union.get(0)) && isTripleOnly(union.get(1)) ;
+        }
+        return false;
+    }
+    
+    boolean isUnionOrTripleOnly(Exp bgp) {
+        return isUnionTripleOnly(bgp) || isTripleOnly(bgp);
+    }
+    
       /**
      * service s {e1} optional { service s {e2}}
      * ->
@@ -230,6 +243,9 @@ public class Simplify {
     }
     
     Exp simplifyService(Exp exp, Service s1, Service s2) {
+        if (isSimplifyUnion(exp, s1, s2)) {
+            return simplifyUnion(exp, s1, s2);
+        }
         if (!s1.isFederate() && !s2.isFederate()
                 && s1.getServiceName().equals(s2.getServiceName())) {
             exp.set(0, s1.getBodyExp());
@@ -241,6 +257,39 @@ public class Simplify {
         }
         return simplifyService2(exp, s1, s2);
     }
+    
+    /**
+     * {service S {t1}} union {service S {t2}}
+     * ::=
+     * service S { {t1} union {t2} }
+     */
+    Service simplifyUnion(Exp exp, Service s1, Service s2) {
+        Or union = Or.create(s1.getBodyExp(), s2.getBodyExp());
+        Service s = Service.create(s1.getServiceList(), BasicGraphPattern.create(union));
+        return s;
+    }
+    
+    boolean isSimplifyUnion(Exp exp, Service s1, Service s2) {
+        return exp.isUnion() && s1.isFederate() && s2.isFederate() 
+            && sameURIList(s1, s2)
+            && isUnionOrTripleOnly(s1.getBodyExp()) && isUnionOrTripleOnly(s2.getBodyExp());
+    }
+    
+    boolean sameURIList(Service s1, Service s2) {
+        return same(s1.getServiceList(), s2.getServiceList());
+    }
+    
+   boolean same(List<Atom> l1, List<Atom> l2) {
+       if (l1.size() != l2.size()) {
+           return false;
+       }
+       for (Atom s : l1) {
+           if (! l2.contains(s)) {
+               return false;
+           }
+       }
+       return true;
+   }
     
     Exp simplifyService2(Exp exp, Service s1, Service s2) {
         if (!s1.isFederate() && isLocalizable(s2)

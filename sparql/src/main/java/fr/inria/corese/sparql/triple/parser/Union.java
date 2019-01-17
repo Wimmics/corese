@@ -20,7 +20,7 @@ import fr.inria.corese.sparql.triple.cst.KeywordPP;
  *
  * @author Olivier Corby & Olivier Savoie
  */
-public class Or extends Binary {
+public class Union extends Binary {
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -29,26 +29,20 @@ public class Or extends Binary {
     private static final long serialVersionUID = 1L;
     static int num = 0;
 
-    public Or() {
+    public Union() {
     }
 
-    public Or(Exp e1, Exp e2) {
+    public Union(Exp e1, Exp e2) {
         add(e1);
         add(e2);
     }
 
-    public static Or create() {
-        return new Or();
+    public static Union create() {
+        return new Union();
     }
 
-    public static Or create(Exp e1, Exp e2) {
-        if (!e1.isAnd()) {
-            e1 = new BasicGraphPattern(e1);
-        }
-        if (!e2.isAnd()) {
-            e2 = new BasicGraphPattern(e2);
-        }
-        return new Or(e1, e2);
+    public static Union create(Exp e1, Exp e2) {
+        return new Union(e1, e2);
     }
 
     @Override
@@ -57,7 +51,7 @@ public class Or extends Binary {
     }
 
     @Override
-    public Or getUnion() {
+    public Union getUnion() {
         return this;
     }
 

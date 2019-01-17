@@ -13,8 +13,8 @@ import fr.inria.corese.sparql.triple.parser.Exist;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Minus;
-import fr.inria.corese.sparql.triple.parser.Option;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Optional;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
@@ -42,9 +42,9 @@ public interface ASTVisitor {
 
 	void visit(Query query);
 
-	void visit(Or or);
+	void visit(Union or);
 
-	void visit(Option option);
+	void visit(Optional option);
 
 	void visit(And and);
 

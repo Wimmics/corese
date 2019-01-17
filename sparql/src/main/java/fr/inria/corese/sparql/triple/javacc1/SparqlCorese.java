@@ -3622,7 +3622,7 @@
       throw new ParseException();
     }
     e = GroupGraphPattern();
-                e= Option.create(e);
+                e= Optional.create(e);
                 stack.add(e);
   }
 
@@ -3744,7 +3744,7 @@
         throw new ParseException();
       }
                         temp = res;
-                res =  Or.create();
+                res =  Union.create();
                 res.add(temp);
       temp = GroupGraphPattern();
           res.add(temp);
@@ -5007,7 +5007,7 @@
   }
 
   final public Variable Var() throws ParseException {
-                   Token t1; Variable res; String s; boolean isPath = false;
+                   Token t1; Variable res; String s;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VAR1:
       t1 = jj_consume_token(VAR1);
@@ -5015,14 +5015,14 @@
       break;
     case VAR2:
       t1 = jj_consume_token(VAR2);
-                  s = "?"+(t1.image).substring(1,(t1.image).length()); isPath = true;
+                  s = "?"+(t1.image).substring(1,(t1.image).length());
       break;
     default:
       jj_la1[233] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    res = ASTQuery.createVariable(s, astq); res.setPath(isPath);
+    res = ASTQuery.createVariable(s, astq);
     {if (true) return res;}
     throw new Error("Missing return statement in function");
   }

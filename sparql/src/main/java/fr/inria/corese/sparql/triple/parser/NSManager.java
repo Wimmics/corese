@@ -60,6 +60,7 @@ public class NSManager extends ASTObject {
     public static final String COS        = RDFS.COS;
     public static final String SWL        = ExpType.SWL;
     public static final String STL        = ExpType.STL;
+    public static final String D3         = STL + "d3#";
     public static final String STL_FORMAT = STL + "format/";
     public static final String JAVA       = ExpType.EXT+"java/";    
     public static final String DS         = ExpType.EXT+"ds/";    
@@ -234,6 +235,7 @@ public class NSManager extends ASTObject {
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
+        def.put(D3, "d3");
         def.put(SWL, SWL_PREF);
         def.put(EXT, EXT_PREF);
         def.put(USER, "us");

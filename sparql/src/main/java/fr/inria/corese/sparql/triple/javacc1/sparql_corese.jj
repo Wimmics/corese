@@ -1515,7 +1515,7 @@ void OptionalGraphPattern(Exp stack) : { Exp e; }
 	( <OPTIONAL> | <OPTION> { deprecated("option","optional"); } ) 
   	e = GroupGraphPattern()
   	{ 
-  		e= Option.create(e);
+  		e= Optional.create(e);
   		stack.add(e); 		
   	}
 }
@@ -1612,7 +1612,7 @@ void GroupOrUnionGraphPattern(Exp stack) : { Exp temp, res; }
   	  	( <UNION> | <OR> { deprecated("or","union"); } )
   	  	{ 
   	  		temp = res;
-      		res =  Or.create();
+      		res =  Union.create();
       		res.add(temp);
   	  	}
     	temp = GroupGraphPattern()  
@@ -2229,11 +2229,11 @@ Atom VarOrIRIref(Exp stack) : { Atom a; String s; }
 }
 
 
-Variable Var() : { Token t1; Variable res; String s; boolean isPath = false;}
+Variable Var() : { Token t1; Variable res; String s;} // boolean isPath = false;}
 {
   ( t1 = <VAR1> { s = t1.image; } | 
-    t1 = <VAR2> { s = "?"+(t1.image).substring(1,(t1.image).length()); isPath = true;} ) 
-  { res = ASTQuery.createVariable(s, astq); res.setPath(isPath);}
+    t1 = <VAR2> { s = "?"+(t1.image).substring(1,(t1.image).length()); } ) //isPath = true;} ) 
+  { res = ASTQuery.createVariable(s, astq); } //res.setPath(isPath);}
   
   { return res; }
 }

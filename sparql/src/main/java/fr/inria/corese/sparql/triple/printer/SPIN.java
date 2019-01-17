@@ -14,8 +14,8 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Minus;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.Option;
-import fr.inria.corese.sparql.triple.parser.Or;
+import fr.inria.corese.sparql.triple.parser.Optional;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
@@ -461,7 +461,7 @@ public class SPIN implements ASTVisitor {
             visit((Values) exp);
         } 
         else if (exp.isUnion()) {
-            visit((Or) exp);
+            visit((Union) exp);
         } 
         else if (exp.isMinus()) {
             visit(exp.getMinus());
@@ -704,7 +704,7 @@ public class SPIN implements ASTVisitor {
     }
 
     @Override
-    public void visit(Or or) {
+    public void visit(Union or) {
 
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
         counter++;
@@ -753,7 +753,7 @@ public class SPIN implements ASTVisitor {
     }
 
     @Override
-    public void visit(Option option) {
+    public void visit(Optional option) {
 
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
         counter++;
@@ -771,7 +771,7 @@ public class SPIN implements ASTVisitor {
         sb.append(tab() + CSBRACKET + NL);
     }
     
-     void visitOptional(Option option) {
+     void visitOptional(Optional option) {
 
         visit(option.eget(0));
         

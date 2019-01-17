@@ -2536,12 +2536,12 @@ public class ASTQuery
             template.add(e2);
 
             //// create the union of both
-            Or union = new Or();
+            Union union = new Union();
             union.add(bgp1);
             union.add(bgp2);
 
             // make the union optional
-            Option opt = Option.create(BasicGraphPattern.create(union));
+            Optional opt = Optional.create(BasicGraphPattern.create(union));
 
             bodyExpLocal.add(opt);
 

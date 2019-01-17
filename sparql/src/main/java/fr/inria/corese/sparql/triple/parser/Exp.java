@@ -301,7 +301,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return false;
 	}
         
-        public Option getOptional(){
+        public Optional getOptional(){
             return null;
         }
         
@@ -313,7 +313,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             return null;
         }
         
-        public Or getUnion() {
+        public Union getUnion() {
             return null;
         }
         

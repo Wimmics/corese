@@ -300,7 +300,7 @@ public class BasicGraphPattern extends And {
     			exp = e;
     		}
     		else {
-    			exp = Or.create(exp, e);
+    			exp = Union.create(exp, e);
     		}
     	}
     	return exp;

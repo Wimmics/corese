@@ -7,7 +7,7 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
@@ -127,7 +127,7 @@ public class ASTRewriter implements QueryVisitor {
 
         //2 rewrite triples in AST
         List<Triple> filters = new ArrayList<Triple>();
-        List<Option> options = new ArrayList<Option>();
+        List<Optional> options = new ArrayList<Optional>();
 
         rewrite(map.get(S), filters, options);
         if (relaxProperty){
@@ -139,7 +139,7 @@ public class ASTRewriter implements QueryVisitor {
             exp.add(filter);
         }
 
-        for (Option option : options) {
+        for (Optional option : options) {
             exp.add(option);
         }
 
@@ -192,7 +192,7 @@ public class ASTRewriter implements QueryVisitor {
     //approximate the name of URI
     //ex, kg:john, kg:Johnny
     //applicable to: subject, predicate and object
-    private void rewrite(TripleWrapper tw, List<Triple> filters, List<Option> options) {
+    private void rewrite(TripleWrapper tw, List<Triple> filters, List<Optional> options) {
         if (tw == null) {
             return;
         }
@@ -214,7 +214,7 @@ public class ASTRewriter implements QueryVisitor {
 
             String label;
             Triple t1, t2;
-            Option opt = new Option();
+            Optional opt = new Optional();
             switch (st) {
                 case PROPERTY_EQUALITY:
                 case URI_EQUALITY:

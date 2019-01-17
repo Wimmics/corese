@@ -10,7 +10,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.Option;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
@@ -104,10 +104,10 @@ public class QueryProcess extends QuerySolver {
      */
     public static void setOptional(boolean b) {
         if (b) {
-            Option.isOptional = true;
+            Optional.isOptional = true;
             Query.isOptional = true;
         } else {
-            Option.isOptional = false;
+            Optional.isOptional = false;
             Query.isOptional = false;
         }
     }

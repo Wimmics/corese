@@ -14,7 +14,7 @@
 
 #[] owl:imports <profile2.ttl>
 
-
+# display
 
 
 
@@ -772,13 +772,24 @@ st:display a st:Profile ;
 st:workflow st:display ;
 st:param [
     st:export true ;
-    st:transformations (d3:frame st:hturtle) 
+    st:transformations (d3:frame  st:hturtle) 
 
 ] ;
 sw:body (
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
     [ a sw:Transformation ] # sw:uri = st:mode 
+)
+.
+
+
+st:graphic a st:Server ;
+st:service "graphic" ;
+st:workflow st:graphic ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Transformation ; sw:uri d3:frame ] 
 )
 .
 

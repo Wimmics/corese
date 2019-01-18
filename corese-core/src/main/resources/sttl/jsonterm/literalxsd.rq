@@ -4,7 +4,7 @@
 template  {
 
   "{"
-    "\"@value\": \""   str(?in) "\", "
+    "\"@value\": \""   us:escape(?in) "\", "
     "\"@type\": \""    st:turtle(datatype(?in)) "\""
   "}"
   

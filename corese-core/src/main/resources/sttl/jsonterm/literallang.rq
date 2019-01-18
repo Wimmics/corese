@@ -1,7 +1,7 @@
 template  {
 
   "{"
-    "\"@value\": \""       str(?in) "\", "
+    "\"@value\": \""       us:escape(?in) "\", "
     "\"@language\": \""    lang(?in) "\""
   "}"
   

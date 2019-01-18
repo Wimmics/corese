@@ -1,6 +1,6 @@
 template {
 
-  str(?in)
+  ?in
   
 }
 where {

@@ -1,6 +1,6 @@
 template {
 
-  ?in
+  us:escape(?in)
   
 }
 where {

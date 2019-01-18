@@ -1,8 +1,7 @@
 template {
-  "{\"@id\": \""  str(?in)  "\"}"
+  "{\"@id\": \""  us:escape(?in)  "\"}"
 }
 where {
-  ?x ?p ?in
+  bind (st:getFocusNode() as ?in)
   filter isURI(?in)
 }
-limit 1

@@ -1,0 +1,6 @@
+template st:profile {}
+where {}
+
+function us:escape(?str) {
+    replace(replace(?str, "\n", "\\\\n"), "\"", "\\\\\"")
+}

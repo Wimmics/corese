@@ -60,7 +60,7 @@ export class OntologyDrawer {
 
     /**
      *
-     * @param params Expect { rootId : "id", properties: {"prop1", "prop2"}}
+     * @param params Expect { rootId : "id", properties: {"prop1", "prop2"}, ["menuNode": menu]}
      */
     setParameters( params ) {
         if (params !== undefined) {
@@ -69,6 +69,9 @@ export class OntologyDrawer {
             }
             if ("properties" in params) {
                 this.setProperties(params.properties);
+            }
+            if ("menuNode" in params) {
+               this.menuNode = params.menuNode;
             }
         }
         return this;
@@ -136,8 +139,12 @@ export class OntologyDrawer {
         return this.height;
     }
 
+    /**
+     * @param svgId
+     */
     draw(svgId) {
         this.svgId = svgId;
+        d3.select(svgId).node().oncontextmenu = function() { return false; }
         this.computeHierarchy();
         // set the dimensions and margins of the diagram
         let margin = {top: 40, right: 20, bottom: 20, left: 20};
@@ -189,6 +196,12 @@ export class OntologyDrawer {
             .attr("transform", function (d) {
                 return "translate(" + d.y + "," + d.x + ")";
             });
+        node.on("contextmenu", (currentNode) => {
+            d3.event.preventDefault();
+            d3.event.stopImmediatePropagation();
+            this.menuNode.setParameters( currentNode );
+            this.menuNode.displayOn();
+        });
 
 // adds the circle to the node
         node.append("circle")
@@ -214,6 +227,13 @@ export class OntologyDrawer {
         };
         var zoom_handler = d3.zoom().on("zoom", zoomed);
         zoom_handler(svg);
+        return this;
+    }
+
+    up() {
+        if (this.dataMap[this.displayRoot].parent !== undefined) {
+            this.displayRoot = this.dataMap[this.displayRoot].parent;
+        }
     }
 
     addOptionButton() {

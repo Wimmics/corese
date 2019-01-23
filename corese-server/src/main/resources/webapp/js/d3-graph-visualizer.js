@@ -475,17 +475,19 @@ export class D3GraphVisualizer extends Observer {
      *  @param _results
      *  @param svgId Name of the svg id
      */
-    static drawOntology(_results, svgId, parameters) {
+    static drawOntology(_results, svgId, parameters, menuNode) {
         let drawer = new OntologyDrawer().
         setParameters(parameters).
         setData(_results).
         draw(svgId);
+        return drawer;
     }
     static drawCircle(_results, svgId, parameters) {
         let drawer2 = new OntologyDrawer().
         setParameters(parameters).
         setData(_results).
         drawCircle(svgId);
+        return drawer2;
     }
 }
 

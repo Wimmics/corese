@@ -32,6 +32,7 @@ public class Binding implements Binder {
    
     static final String NL = System.getProperty("line.separator");
     static final int UNBOUND = ExprType.UNBOUND;
+    public static boolean DEBUG_DEFAULT = false;
 
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
@@ -46,7 +47,7 @@ public class Binding implements Binder {
     HashMap<String, Variable>  globalVariable;
     private ProcessVisitor visitor;
 
-    private boolean debug = false;
+    private boolean debug = DEBUG_DEFAULT;
 
     private static Logger logger = LoggerFactory.getLogger(Binding.class);
     private boolean result;
@@ -126,9 +127,9 @@ public class Binding implements Binder {
                 }
         }
         set(var, val);
-        if (isDebug()) {
-            trace(exp, val);
-        }
+//        if (isDebug()) {
+//            trace(exp, val);
+//        }
     }
 
     public void unset(Expr exp, Expr var, IDatatype val) {
@@ -280,13 +281,19 @@ public class Binding implements Binder {
     @Override
     public IDatatype get(Expr var) {
         switch (var.getIndex()) {
-            case UNBOUND: 
+            case UNBOUND: {
                 IDatatype dt = globalValue.get(var.getLabel());
-                if (dt == null && debug) {
+                if (dt == null && isDebug()) {
                     logger.warn("Variable unbound: " + var);
                 }
                 return dt;
-            default:      return valList.get(getIndex(var));
+            }
+            default:
+                IDatatype dt = valList.get(getIndex(var));
+                if (dt == null && isDebug()) {
+                    logger.warn("Variable unbound: " + var);
+                }
+                return dt;
         }
     }
 

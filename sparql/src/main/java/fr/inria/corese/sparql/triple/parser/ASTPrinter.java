@@ -33,8 +33,13 @@ public class ASTPrinter {
                 sb.append(ast.getNSM().toString(null, false, false));
                 //getSparqlPrefix(sb);
             }
-            getSparqlHeader(sb);
             
+            if (ast.isTemplate()) {
+                template(sb);
+            }
+            
+            getSparqlHeader(sb);
+                       
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
                 sb.append(KeywordPP.WHERE).append(" ");
                 ast.getBody().pretty(sb);
@@ -49,6 +54,17 @@ public class ASTPrinter {
         getFinal(sb);
 
         return sb;
+    }
+    
+    void template(ASTBuffer sb) {
+        sb.append("# template").append(" ");
+        if (ast.getName() != null) {
+            sb.append(ast.getName()).append(" ");
+        }
+        if (ast.getArgList() != null) {
+            sb.append(ast.getArgList());
+        }
+        sb.nl();
     }
 
     ASTBuffer getSparqlPrefix(ASTBuffer sb) {

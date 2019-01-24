@@ -264,7 +264,7 @@ public class Selector {
     }
     
     void metadata(ASTQuery aa, ASTQuery ast) {
-        if (ast.hasMetadata(Metadata.EVENT) || ast.hasMetadata(Metadata.NEW) || ast.hasMetadata(Metadata.TRACE)) {
+        if (ast.hasMetadata(Metadata.EVENT) || ast.hasMetadata(Metadata.SEQUENCE) || ast.hasMetadata(Metadata.TRACE)) {
             Metadata m = new Metadata();
             aa.setMetadata(m);
         
@@ -274,8 +274,8 @@ public class Selector {
                 aa.setDefineLambda(ast.getDefineLambda());
             }
             
-            if (ast.hasMetadata(Metadata.NEW)) {
-                m.add(Metadata.NEW);
+            if (ast.hasMetadata(Metadata.SEQUENCE)) {
+                m.add(Metadata.SEQUENCE);
             }
             
             if (ast.hasMetadata(Metadata.TRACE)) {

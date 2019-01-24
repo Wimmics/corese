@@ -11,6 +11,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
@@ -181,6 +182,7 @@ public class DataShapeTest {
             System.out.println(name);
             process(data + name + "/");
             System.out.println();
+            //break;
         }
 
         //report.write("/home/corby/AATest/data-shapes/earl-report-test.ttl");
@@ -190,7 +192,10 @@ public class DataShapeTest {
 
     public void process(String name) throws LoadException, EngineException {
         Graph g = manifest(name);
-
+//Binding.DEBUG_DEFAULT = true;
+//Memory.DEBUG_DEFAULT = true;
+//Mapping.DEBUG_DEFAULT = true;
+//Eval.NAMED_GRAPH_DEFAULT = true;
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(qm);
 
@@ -198,8 +203,10 @@ public class DataShapeTest {
             IDatatype dt = (IDatatype) m.getValue("?f");
             if (repeat) {
                 exec(dt.getLabel());
-            } else {
+            } else //if (dt.getLabel().contains("qualifiedMinCountDisjoint-001.ttl"))
+            {
                 file(dt.getLabel());
+                //break;
             }
         }
     }
@@ -233,13 +240,12 @@ public class DataShapeTest {
         ld.parse(file);
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(qdata);
-        IDatatype datadt = (IDatatype) map.getValue("?data");
+        IDatatype datadt  = (IDatatype) map.getValue("?data");
         IDatatype shapedt = (IDatatype) map.getValue("?shape");
 //        System.out.println(datadt.getLabel());
 //        System.out.println(shapedt.getLabel());
         ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), false, lds);
         Data res = wf.process();
-
 
         QueryProcess exec0 = QueryProcess.create(res.getVisitedGraph());
         Mappings mm = exec0.query(qcheck);
@@ -258,6 +264,9 @@ public class DataShapeTest {
 
         if (!benchmark || mapkgram.size() != mapw3c.size()) {
             System.out.println(count++ + " " + mes + file + " " + mapw3c.size() + " " + mapkgram.size());
+//            System.out.println("w3c: \n"   + mapw3c);
+//            System.out.println("--");
+//            System.out.println("kgram: \n" + mapkgram);
         }
         if (mm.size() != 1) {
             System.out.println("**** " + mm.size() + " reports");
@@ -281,8 +290,10 @@ public class DataShapeTest {
     void trace(Graph w3c, Graph kg) {
         Transformer t1 = Transformer.create(w3c, Transformer.TURTLE);
         Transformer t2 = Transformer.create(kg, Transformer.TURTLE);
-        // System.out.println(t1.transform());
-        // System.out.println("__");
+//        System.out.println("w3c report: ");
+//        System.out.println(t1.transform());
+//        System.out.println("__");
+        System.out.println("kgram report: ");
         System.out.println(t2.transform());
         System.out.println("==");
     }

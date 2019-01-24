@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Sep 21 15:27:10 CEST 2018
+Thu Jan 24 14:57:24 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -169,6 +169,7 @@ format {
     st:apply-templates-with-graph(st:hturtle, st:visitor)
     st:apply-templates-with(st:hturtle)
 }
+
 st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/d3#frame>, st:shape)
 
 }

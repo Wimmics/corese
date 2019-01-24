@@ -1,5 +1,6 @@
 #
 # Store sibling shapes of qualified shapes
+# @deprecated
 #
 template sh:sibling(?shape) {   
     if (bound(?qsh), st:cset(sh:sibling, ?qsh, ?list), true)

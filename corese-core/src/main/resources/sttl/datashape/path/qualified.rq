@@ -19,8 +19,10 @@ where {
         optional { ?sh sh:qualifiedMaxCount ?max }
         optional { ?sh sh:qualifiedValueShapesDisjoint ?disjoint }
     }
-            
+                
+  
   bind (sh:qualified(?shape, ?qsh, ?s, ?p) as ?list)
+  
       
   # test disjointness with sibling shapes
   bind (
@@ -30,11 +32,13 @@ where {
         ?list)
     as ?qlist)
     
+    
   bind (xt:size(?qlist) >= coalesce(?min, 0) as ?suc1) 
   bind (xt:size(?qlist) <= coalesce(?max, xt:size(?qlist)) as ?suc2) 
 
   bind (st:report(sh:qualifiedMinCount, ?sh, ?shape, ?s, ?p, ?s, ?suc1, ?vis) as ?b1)
   bind (st:report(sh:qualifiedMaxCount, ?sh, ?shape, ?s, ?p, ?s, ?suc2, ?vis) as ?b2)
+  
 }
 
 #
@@ -51,11 +55,11 @@ function sh:disjoint(?o, ?shape, ?qsh, ?s){
 }
 
 #
-# Return the list of value nodes that match qualified shape ?sh 
+# Return the list of value nodes that match qualified shape ?qsh 
 #
-function sh:qualified(?shape, ?sh, ?s, ?p){
+function sh:qualified(?shape, ?qsh, ?s, ?p){
      let (?list = sh:path(?shape, ?s, ?p)) {
-        mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?sh)
+        mapfindlist(sh:qualifiedShape, ?list, xt:list(?shape), ?qsh)
      }
 }
 

@@ -8,8 +8,8 @@ template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape { filter not exists { ?sh sh:path ?ppp } }
-    
+    graph ?shape { values ?sh { UNDEF } filter not exists { ?sh sh:path ?ppp } }
+        
     bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
   
 }

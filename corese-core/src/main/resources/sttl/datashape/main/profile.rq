@@ -156,20 +156,26 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
         } 
         where { 
             bind (uuid() as ?r)
-            graph ?shape { 
+            bind (coalesce(java:isdefby(?name), ?name) as ?def)
+            bind (xt:focus(?shape, java:severity(?sh)) as ?sev)
+            bind (xt:focus(?shape, java:message(?sh)) as ?m)
+            bind (if (bound(?m), ?m, concat("Fail at: ", xt:focus(?shape, st:apply-templates-with(st:turtle, ?sh)))) as ?mes)
+            bind (java:value(?p) as ?pp)
+            bind (java:value(?o) as ?oo)            
+            bind (if (bound(?pp), xt:focus(?shape, java:graph(?pp)), error())  as ?pathDetail)                        
+    
+            #graph ?shape { 
                 # ?sh can be a constraint or a shape                               
-                bind (java:severity(?sh) as ?sev)
+                # bind (java:severity(?sh) as ?sev)
                 
-                bind (java:message(?sh)  as ?m)                
-                bind (
-                    if (bound(?m), ?m, concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh))) 
-                as ?mes)
+                #bind (java:message(?sh)  as ?m)                
+                #bind (if (bound(?m), ?m, concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh))) as ?mes)
                 
-                bind (coalesce(java:isdefby(?name), ?name) as ?def)
-                bind (java:value(?p) as ?pp)
-                bind (java:value(?o) as ?oo)
-                bind (if (bound(?pp), java:graph(?pp), error())  as ?pathDetail)                
-            }
+                #bind (coalesce(java:isdefby(?name), ?name) as ?def)
+                #bind (java:value(?p) as ?pp)
+                #bind (java:value(?o) as ?oo)
+                #bind (if (bound(?pp), java:graph(?pp), error())  as ?pathDetail)                
+            #}
             bind (java:graphbnode(?foc) as ?focDetail)
             bind (if (bound(?oo), java:graphbnode(?oo), error())  as ?valueDetail)
             bind (java:bnodeid() as ?bnode)
@@ -183,7 +189,7 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
 }
 
 # within graph ?shape {}
-function sh:severity(?sh){
+function sh:severity(?sh) {
     for ((?s, ?p, ?o) in xt:edge(?sh, sh:severity)){
         return (?o)
     } ;
@@ -460,7 +466,8 @@ function sh:in(?shape, ?o, ?lv){
   exists { 
     # "declare" Node ?o to allow parameter passing
     values ?o { UNDEF }
-    graph ?shape { ?lv rdf:rest*/rdf:first ?v  
+    graph ?shape { values ?o { UNDEF }
+        ?lv rdf:rest*/rdf:first ?v  
         filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
     }
   } 
@@ -473,7 +480,7 @@ function sh:languageIn(?shape, ?o, ?lv){
     values ?o { UNDEF }
     bind (lang(?o) as ?lang)
     filter bound(?lang)
-    graph ?shape { 
+    graph ?shape { values ?lang { UNDEF }
         ?lv rdf:rest*/rdf:first ?l  
         filter langMatches(?lang, ?l)
     }

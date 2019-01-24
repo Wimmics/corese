@@ -8,9 +8,22 @@
     stroke-width: 3px;
 }
 
+.node--leaf circle {
+    fill: #fff;
+    stroke: blue;
+    stroke-width: 1px;
+}
+
+.node--folded circle {
+    fill: #fff;
+    stroke: red;
+    stroke-width: 4px;
+}
+
 .node text {
     font: 12px sans-serif;
 }
+
 
 .node--internal text {
     text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
@@ -335,16 +348,27 @@
         ]
 
     };
-    var menuNode;
     let root = d3.select("body");
+    // menuNode settings
+    var menuNode;
     window.setDisplayRoot = function (parameters) {
         drawer.setDisplayRoot(parameters.data.id);
         drawer.draw('#graph1');
         menuNode.displayOff();
     }
-    menuNode = ContextMenu.create(root, "nodeMenu").addEntry("set as root", setDisplayRoot);
+    window.switchMaskSubtree = function (parameters) {
+        drawer.switchVisibility(parameters.data.id);
+        drawer.draw('#graph1');
+        menuNode.displayOff();
+    }
+    menuNode = ContextMenu.create(root, "nodeMenu")
+        .addEntry("set as root", setDisplayRoot)
+        .addEntry("Mask/Unmask the subtree", switchMaskSubtree )
+    ;
+    // end of menuNode settigs.
 
     var drawer = D3GraphVisualizer.drawOntology(data, '#graph1', {"menuNode": menuNode});
+
     let menu = ContextMenu.create(root, "graphMenu")
         .addEntry("Go to upper level", function() { return setDisplayRoot({data:{id:"Root"}}); } )
         .addEntry("Up one level", function() { drawer.up(); drawer.draw('#graph1') } )

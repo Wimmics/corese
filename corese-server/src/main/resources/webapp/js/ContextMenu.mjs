@@ -17,7 +17,7 @@ export class ContextMenu {
         this.domNode.append("a")
             .text(label)
             .attr("id", label)
-            .attr("href", "#")
+            // .attr("href", "#")
         ;
         var h = this.handler;
         let parameters = {"menu": this, "action": action};

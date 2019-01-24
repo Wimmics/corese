@@ -16,6 +16,7 @@ export class OntologyDrawer {
                 url: d.url
             };
             this.dataMap[d.id].children = {};
+            this.dataMap[d.id].isFolded = false;
         }
         for (let e of data.edges) {
             let s = e.source.id;
@@ -83,6 +84,19 @@ export class OntologyDrawer {
     setDisplayRoot(root) {
         this.displayRoot = root;
         return this;
+    }
+
+    switchVisibility(node) {
+        if (this.dataMap[node]._children !== undefined) {
+            this.dataMap[node].children = this.dataMap[node]._children;
+            this.dataMap[node]._children = {};
+            this.dataMap[node].isFolded = false;
+            // this.dataMap[node].
+        } else if (this.dataMap[node].children !== undefined) {
+            this.dataMap[node]._children = this.dataMap[node].children;
+            this.dataMap[node].children = {};
+            this.dataMap[node].isFolded = true;
+        }
     }
     /*
      *  Set the properties to be used when extracting the tree.
@@ -189,10 +203,15 @@ export class OntologyDrawer {
         var node = g.selectAll(".node")
             .data(nodes.descendants())
             .enter().append("g")
-            .attr("class", function (d) {
-                return "node" +
-                    (d.children ? " node--internal" : " node--leaf");
-            })
+            .attr("class", function (_dataMap) {
+                return function (d) {
+                    return "node" +
+                        (_dataMap[d.data.id].isFolded ?
+                            " node--folded" :
+                            (d.children ? " node--internal" : " node--leaf"));
+                }
+            }(this.dataMap)
+            )
             .attr("transform", function (d) {
                 return "translate(" + d.y + "," + d.x + ")";
             });

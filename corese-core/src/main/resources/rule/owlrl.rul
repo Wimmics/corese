@@ -1093,20 +1093,20 @@ WHERE {
 
 <!--  eq-ref  -->
 <rule>
-  <rule:value>  
+  <body> 
 CONSTRUCT {
     ?s owl:sameAs ?s .
     ?p owl:sameAs ?p .
 }
 WHERE {
-	?s ?p ?o .
+	?s ?p ?o
 }
-</rule:value>
+</body>
 </rule>
 
 <!--  eq-ref  -->
 <rule>
-<rule:value>  
+<body>  
 CONSTRUCT {   
     ?o owl:sameAs ?o .
 }
@@ -1115,22 +1115,22 @@ WHERE {
         Filter (! isLiteral(?o))
        <!-- Filter (isURI(?o))-->
 }
-</rule:value>
+</body>
 </rule>
 
 <rule>
-  <rule:value>  <!--  eq-sym -->
+  <body>  <!--  eq-sym -->
 CONSTRUCT {
     ?y owl:sameAs ?x .
 }
 WHERE {
     ?x owl:sameAs ?y . filter(?x != ?y)
 }
-</rule:value>
+</body>
 </rule>
 
 <rule>
-<rule:value>  <!--  eq-trans -->
+<body>  <!--  eq-trans -->
 CONSTRUCT {
     ?x owl:sameAs ?z .
 }
@@ -1138,12 +1138,12 @@ WHERE {
     ?x owl:sameAs ?y . 
     ?y owl:sameAs ?z .
 }
-</rule:value>
+</body>
 </rule>
 
 
 <rule>
-<rule:value>  
+<body>  
 CONSTRUCT {
     ?s2 ?p ?o .
 }
@@ -1153,11 +1153,11 @@ WHERE {
     ?s ?p ?o 
     filter(?p != rdf:first)
 }
-</rule:value>
+</body>
 </rule>
 
 <rule>
-<rule:value>  
+<body>  
 CONSTRUCT {
     ?s ?p2 ?o .
 }
@@ -1166,11 +1166,11 @@ WHERE {
     filter(?p != ?p2)
     ?s ?p ?o .
 }
-</rule:value>
+</body>
 </rule>
 
 <rule>
-<rule:value>  
+<body>  
 CONSTRUCT {
     ?s ?p ?o2 .
 }
@@ -1180,7 +1180,7 @@ WHERE {
      filter(?o != ?o2)
     filter(?p != rdf:first)
 }
-</rule:value>
+</body>
 </rule>
 
 

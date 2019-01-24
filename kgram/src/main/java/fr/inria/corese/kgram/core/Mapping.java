@@ -38,7 +38,7 @@ import java.util.Set;
 public class Mapping
         extends EnvironmentImpl
         implements Result, Environment, Pointerable {
-
+    public static boolean DEBUG_DEFAULT = false; 
     static final Edge[] emptyEdge = new Edge[0];
     static final Edge[] emptyEntity = new Edge[0];
     static final Node[] emptyNode = new Node[0];
@@ -61,6 +61,7 @@ public class Mapping
     private Binder bind;
     private Node graphNode;
     private Eval eval;
+    boolean debug = DEBUG_DEFAULT;
 
     Mapping() {
         this.qEdges = emptyEdge;;
@@ -986,10 +987,19 @@ public class Mapping
     @Override
     public Node getNode(Expr var) {
         switch (var.subtype()) {
-            case ExprType.LOCAL:
-                return get(var);
+            case ExprType.LOCAL: {
+                Node node = get(var);
+                if (debug && node == null) {
+                    System.out.println("Mapping: Unbound variable: " + var);
+                }
+                return node;
+            }
         }
-        return getNodeValue(var.getLabel());
+        Node node = getNodeValue(var.getLabel());
+        if (debug && node == null) {
+            System.out.println("Mapping: Unbound variable: " + var);
+        }
+        return node;
 //            int i = getIndex(var.getLabel());
 //            if (i == -1){
 //                return null;

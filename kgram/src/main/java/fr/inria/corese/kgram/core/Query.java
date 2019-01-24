@@ -29,6 +29,20 @@ import org.slf4j.LoggerFactory;
 public class Query extends Exp implements Graphable {
 
     /**
+     * @return the parallel
+     */
+    public boolean isParallel() {
+        return parallel;
+    }
+
+    /**
+     * @param parallel the parallel to set
+     */
+    public void setParallel(boolean parallel) {
+        this.parallel = parallel;
+    }
+
+    /**
      * @return the serviceResult
      */
     public boolean isServiceResult() {
@@ -205,6 +219,7 @@ public class Query extends Exp implements Graphable {
             isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
             // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
             isListPath = false;
+    private boolean parallel = true;
     private boolean validate = false;
     private boolean federate = false;
     private boolean serviceResult = false;

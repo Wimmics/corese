@@ -32,6 +32,7 @@ import java.util.ArrayList;
  */
 public class Memory extends PointerObject implements Environment {
 
+    public static boolean DEBUG_DEFAULT = false;
     public static boolean IS_EDGE = !true;
     static final Edge[] emptyEdges = new Edge[0];
     static final Edge[] emptyEntities = new Edge[0];
@@ -68,6 +69,7 @@ public class Memory extends PointerObject implements Environment {
     int nbEdge = 0, nbNode = 0;
     private Binder bind;
     private ApproximateSearchEnv appxSearchEnv;
+    boolean debug = DEBUG_DEFAULT;
 
     public Memory(Matcher m, Evaluator e) {
         match = m;
@@ -1056,17 +1058,40 @@ public class Memory extends PointerObject implements Environment {
                 return get(var);
 
             case ExprType.UNDEF:
+                if (debug) {
+                    System.out.println("Memory UNDEF: Unbound variable: " + var);
+                    if (var.getLabel().equals("?value")) {
+                        System.out.println(query.getAST());
+                        System.out.println(this);
+                    }
+                }
                 return null;
 
             case ExprType.GLOBAL:
                 index = getIndex(var.getLabel());
                 var.setIndex(index);
                 if (index == ExprType.UNBOUND) {
+                    if (debug) {
+                        System.out.println("Memory GLOBAL: Unbound variable: " + var);
+//                        if (!var.getLabel().equals("?value") && !var.getLabel().equals("?m")) {
+//                            System.out.println(query);
+//                            System.out.println(query.getAST());
+//                            System.out.println(this);
+//                        }
+                    }
                     return null;
                 }
 
         }
-        return getNode(index);
+        Node node = getNode(index);
+        if (node == null && debug) {
+            System.out.println("Memory DEFAULT: Unbound variable: " + var);
+            if (var.getLabel().equals("?value")) {
+                System.out.println(query.getAST());
+                System.out.println(this);
+            }
+        }
+        return node;
     }
 
     // Filter evaluator

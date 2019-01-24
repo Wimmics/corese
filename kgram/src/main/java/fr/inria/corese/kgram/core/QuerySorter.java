@@ -200,17 +200,28 @@ public class QuerySorter implements ExpType {
 
         }
 
-        if (exp.isOptional()) {
+        InScopeNodes(exp);
+
+        return exp;
+    }
+    
+    void InScopeNodes(Exp exp) {
+         if (exp.isOptional()) {
             // A optional B
             // variables bound by A
             optional(exp);
-        } else if (exp.isUnion()) {
+        } 
+        else if (exp.isMinus()) {
+            minus(exp);
+         }
+        else if (exp.isUnion()) {
             union(exp);
-        } else if (exp.isJoin()) {
+        } else if (exp.isGraph()) {
+            graph(exp);
+        }
+        else if (exp.isJoin()) {
             exp.bindNodes();
         }
-
-        return exp;
     }
     
     void optional(Exp exp){
@@ -222,6 +233,14 @@ public class QuerySorter implements ExpType {
     void union(Exp exp){
         exp.first().setNodeList(exp.first().getInScopeNodes());
         exp.rest().setNodeList(exp.rest().getInScopeNodes());
+    }
+    
+    void minus(Exp exp){
+        exp.first().setNodeList(exp.first().getInScopeNodes());
+    }
+    
+    void graph(Exp exp) {
+       exp.setNodeList(exp.getInScopeNodes());
     }
     
     void setBind(Query q, Exp exp){

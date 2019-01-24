@@ -1423,6 +1423,16 @@ public class Mappings extends PointerObject
         }
     }
     
+    public boolean inScope(Node var) {
+        if (getNodeList() != null) {
+            return getNodeList().contains(var);
+        }
+        if (getSelect() != null) {  
+            return getSelect().contains(var);
+        }
+        return true; 
+    }
+    
     public List<Node> aggregate(Node var) {
         List<Node> list = new ArrayList<>();       
         for (Mapping m : this) {

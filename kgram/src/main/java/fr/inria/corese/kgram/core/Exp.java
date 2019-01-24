@@ -2021,7 +2021,6 @@ public class Exp extends PointerObject
      */
     void bindNodes() {
         for (Exp exp : getExpList()) {
-            //exp.setNodeList(exp.getNodes());
             exp.setNodeList(exp.getInScopeNodes());
         }
     }

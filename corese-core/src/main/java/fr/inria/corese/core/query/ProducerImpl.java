@@ -458,6 +458,10 @@ public class ProducerImpl implements Producer, IProducerQP {
             // start node is now reverse(index) node
             index = (index == 0) ? 1 : 0;
         }
+        
+        if (src != null && isExtern(src, env)) {
+              src = getExtNode(src);
+        }
 
         if (exp.isNot()) {
             return getNegEdges(gNode, from, edge, env, exp, src, start, index);
@@ -519,6 +523,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         return false;
     }
 
+    @Override
     public Iterable<Node> getNodes(Node gNode, List<Node> from, Edge edge,
             Environment env, List<Regex> exp, int index) {
         return pn.getNodeIterator(gNode, from, edge, env, exp, index);

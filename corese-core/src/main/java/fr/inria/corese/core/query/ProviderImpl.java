@@ -210,7 +210,7 @@ public class ProviderImpl implements Provider {
         ArrayList<ProviderThread> pList = new ArrayList<>();
         int timeout = getTimeout(q, serviceNode, eval.getEnvironment());
         // With @new annotation => service in parallel
-        boolean parallel = q.getOuterQuery().isNew();
+        boolean parallel = q.getOuterQuery().isParallel();
 
         for (Node service : list) {
             if (eval.isStop()) {

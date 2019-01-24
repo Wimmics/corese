@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Query;
 
 /**
@@ -19,7 +20,7 @@ public class TransformerVisitor implements QueryVisitor {
     boolean optimize = false;
     
     public TransformerVisitor(boolean b){
-        optimize = b;
+        optimize = b && ! Eval.NAMED_GRAPH_DEFAULT;
     }
     
     /**

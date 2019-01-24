@@ -278,15 +278,12 @@ public class Transformer implements ExpType {
         }
         if (ast.hasMetadata(Metadata.TEST)){
             q.setTest(true);
-        }
-        if (ast.hasMetadata(Metadata.NEW)){
-            q.setNew(true);
-        }
+        }       
         if (ast.hasMetadata(Metadata.PARALLEL)) {
-            q.setNew(true);
+            q.setParallel(true);
         }
         if (ast.hasMetadata(Metadata.SEQUENCE)) {
-            q.setNew(false);
+            q.setParallel(false);
         }
     }
     
@@ -1884,7 +1881,7 @@ public class Transformer implements ExpType {
     }
     
     private boolean isJoinableBasic(fr.inria.corese.sparql.triple.parser.Exp ee) {
-        return ee.isBGP() || ee.isUnion() ; // || ee.isGraph();
+        return ee.isBGP() || ee.isUnion() || ee.isGraph();
     }
     
     private boolean isJoinableAlgebra(Exp exp, fr.inria.corese.sparql.triple.parser.Exp ee) {

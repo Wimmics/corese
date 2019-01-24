@@ -120,7 +120,7 @@ public class TestRuleEngine {
                 + "filter (isURI(?x) && strstarts(?x, f:) "
                 + "    && isURI(?y) && strstarts(?y, f:))"
                 + "}"
-                + "filter not exists {graph ?g {?x ?p ?y filter(?g != kg:rule)}}"
+                + "filter not exists {graph ?g {?x ?p ?y } filter(?g != kg:rule)}"
                 + "}"
                 + "order by ?x ?p ?y";
         Mappings map = exec.query(q);
@@ -152,7 +152,7 @@ public class TestRuleEngine {
                 + "filter (isURI(?x) && strstarts(?x, f:) "
                 + "    && isURI(?y) && strstarts(?y, f:))"
                 + "}"
-                + "filter not exists {graph ?g {?x ?p ?y filter(?g != kg:rule)}}"
+                + "filter not exists {graph ?g {?x ?p ?y } filter(?g != kg:rule)}"
                 + "}"
                 + "order by ?x ?p ?y";
 

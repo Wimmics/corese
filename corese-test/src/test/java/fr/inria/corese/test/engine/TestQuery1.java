@@ -1622,7 +1622,7 @@ public class TestQuery1 {
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?g");
         Graph gg = (Graph) dt.getObject();
-        assertEquals(7, gg.size());
+        assertEquals(14, gg.size());
     } 
 
     

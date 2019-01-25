@@ -924,28 +924,29 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case SERVICE:
-                        backtrack = service(p, gNode, exp, stack, n);
+                        backtrack = service(p, gNode, exp, getMappings(), stack, n);
                         break;
 
                     case GRAPH:
-                        backtrack = namedGraph(p, gNode, exp, stack, n);
+                        backtrack = namedGraph(p, gNode, exp, getMappings(), stack, n);
                         break;
 
                     case UNION:
-                        backtrack = union(p, gNode, exp, stack, n);
+                        backtrack = union(p, gNode, exp, getMappings(), stack, n);
+                        break;
+                    
+                    case OPTIONAL:
+                        backtrack = optional(p, gNode, exp, getMappings(), stack, n);
+                        break;
+                    case MINUS:
+                        backtrack = minus(p, gNode, exp, getMappings(), stack, n);
+                        break;
+                    case JOIN:
+                        backtrack = join(p, gNode, exp, getMappings(), stack, n);
                         break;
                     case QUERY:
                         backtrack = query(p, gNode, exp, stack, n);
-                        break;
-                    case OPTIONAL:
-                        backtrack = optional(p, gNode, exp, stack, n);
-                        break;
-                    case MINUS:
-                        backtrack = minus(p, gNode, exp, stack, n);
-                        break;
-                    case JOIN:
-                        backtrack = join(p, gNode, exp, stack, n);
-                        break;
+                        break;    
                     case FILTER:
                         backtrack = filter(p, gNode, exp, stack, n);
                         break;
@@ -1039,6 +1040,10 @@ public class Eval implements ExpType, Plugin {
 
         return backtrack;
 
+    }
+    
+    Mappings getMappings() {
+        return memory.getResetJoinMappings();
     }
 
     Node getGraphNode(Node node) {
@@ -1248,7 +1253,7 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    private int minus(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int minus(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = memory;
@@ -1259,7 +1264,7 @@ public class Eval implements ExpType, Plugin {
             node1 = qNode;
             node2 = exp.getGraphNode();
         }
-        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp, memory.getResetJoinMappings());
+        Mappings map1 = subEval(p, gNode, node1, exp.first(), exp, data);
         if (stop) {
             return STOP;
         }
@@ -1346,11 +1351,11 @@ public class Eval implements ExpType, Plugin {
      * JOIN(e1, e2) Eval e1, eval e2, generate all joins that are compatible in
      * cartesian product
      */
-    private int join(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int join(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
         
-        Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, memory.getResetJoinMappings());
+        Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, data);
         if (map1.size() == 0) {
             getVisitor().join(this, getGraphNode(gNode), exp, map1, map1);
             return backtrack;
@@ -1584,16 +1589,15 @@ public class Eval implements ExpType, Plugin {
     }
 
     // new 
-    private int union(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int union(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         // join(A, union(B, C)) ; map = eval(A).distinct(inscopenodes())
-        Mappings map = memory.getResetJoinMappings();
 
-        Mappings map1 = unionBranch(p, gNode, exp.first(), exp, map);
+        Mappings map1 = unionBranch(p, gNode, exp.first(), exp, data);
         if (stop) {
             return STOP;
         }
-        Mappings map2 = unionBranch(p, gNode, exp.rest(), exp, map);
+        Mappings map2 = unionBranch(p, gNode, exp.rest(), exp, data);
 
         getVisitor().union(this, getGraphNode(gNode), exp, map1, map2);
 
@@ -1643,18 +1647,17 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    private int namedGraph(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int namedGraph(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
         Node queryNode = query.getGraphNode();
         Node graph = getNode(graphNode);
-        Mappings map = memory.getResetJoinMappings();
         Mappings res;
 
         if (graph == null) {
-            res = graphNodes(p, exp, map, n);
+            res = graphNodes(p, exp, data, n);
         } else {
-            res = graph(p, graph, exp, map, n);
+            res = graph(p, graph, exp, data, n);
         }
 
         if (res == null) {
@@ -1854,7 +1857,7 @@ public class Eval implements ExpType, Plugin {
         return subEval(p, gNode, gNode, exp, exp, null, null, true);
     }
 
-    private int service(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int service(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
         Node serv = exp.first().getNode();
@@ -1866,7 +1869,7 @@ public class Eval implements ExpType, Plugin {
 
         if (provider != null) {
             // service delegated to provider
-            Mappings lMap = provider.service(node, exp, env.getResetJoinMappings(), this);
+            Mappings lMap = provider.service(node, exp, data, this);
 
             for (Mapping map : lMap) {
                 if (stop) {
@@ -2434,7 +2437,7 @@ public class Eval implements ExpType, Plugin {
      * if m1.compatible(m2): merge = m1.merge(m2) if eval(F(merge)) result +=
      * merge ...
      */
-    private int optional(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+    private int optional(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = memory;
@@ -2443,7 +2446,7 @@ public class Eval implements ExpType, Plugin {
             proxyGraphNode = query.getGraphNode();
         }
 
-        Mappings map1 = subEval(p, gNode, proxyGraphNode, exp.first(), exp, memory.getResetJoinMappings());
+        Mappings map1 = subEval(p, gNode, proxyGraphNode, exp.first(), exp, data);
         if (stop) {
             return STOP;
         }

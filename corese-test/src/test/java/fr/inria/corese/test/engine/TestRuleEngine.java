@@ -161,7 +161,37 @@ public class TestRuleEngine {
 
     }
 
-     
+     @Test
+    public void testOWLRL22() throws EngineException, IOException {
+        GraphStore gs = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(gs);
+        Load ld = Load.create(gs);
+        try {
+            ld.parse(data + "template/owl/data/primer.owl");
+        } catch (LoadException ex) {
+            System.out.println(ex);
+        }
+        RuleEngine re = RuleEngine.create(gs);
+        re.setProfile(re.OWL_RL);
+        Date d1 = new Date();
+        re.process();
+
+        String q = "prefix f: <http://example.com/owl/families/>"
+                + "select * "
+                + "where {"
+                + "graph kg:rule {"
+                + "?x ?p ?y "
+                + "filter (isURI(?x) && strstarts(?x, f:) "
+                + "    && isURI(?y) && strstarts(?y, f:))"
+                + "}"
+                + "filter not exists {graph ?g {?x ?p ?y } filter(?g != kg:rule)}"
+                + "}"
+                + "order by ?x ?p ?y";
+
+        Mappings map = exec.query(q);
+        assertEquals(170, map.size());
+
+    } 
         
          @Test
      public void testOWLRL3() throws LoadException, EngineException{

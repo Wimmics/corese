@@ -2,6 +2,7 @@ import {GraphModel} from "./GraphModel.js";
 import {Observer} from "./Observer.mjs";
 import {ConfGraphModal} from "./ConfGraphModal.mjs";
 import {OntologyDrawer} from "./OntologyDrawer.js";
+import {ContextMenu} from "./ContextMenu.mjs";
 
 
 export class D3GraphVisualizer extends Observer {
@@ -470,14 +471,51 @@ export class D3GraphVisualizer extends Observer {
 
     }
 
-
     /** Visualisation of ontology.
      *  @param _results
      *  @param svgId Name of the svg id
      */
-    static drawOntology(_results, svgId, parameters, menuNode) {
+    static drawOntology(_results, svgId) {
+        // menuNode settings
+        var menuNode;
+        window.setDisplayRoot = function (parameters) {
+            drawer.setDisplayRoot(parameters.data.id);
+            drawer.draw(svgId);
+            menuNode.displayOff();
+        }
+        window.switchMaskSubtree = function (parameters) {
+            drawer.switchVisibility(parameters.data.id);
+            drawer.draw(svgId);
+            menuNode.displayOff();
+        }
+
+        let root = d3.select(d3.select(svgId).node().parentNode);
+        menuNode = ContextMenu.create(root, "nodeMenu")
+            .addEntry("set as root", setDisplayRoot)
+            .addEntry("Mask/Unmask the subtree", switchMaskSubtree )
+        ;
+        // end of menuNode settings.
+
+        // begin of menu for the ontology graph background.
+        let menu = ContextMenu.create(root, "graphMenu")
+            .addEntry("Go to top level", function() { return setDisplayRoot({data:{id:"Root"}}); } )
+            .addEntry("Up one level", function() { drawer.up(); drawer.draw(svgId) } )
+        ;
+        d3.select(svgId).node().oncontextmenu = function () {
+            return false;
+        }
+        d3.select(svgId).on('contextmenu', function (e) {
+            d3.event.stopPropagation()
+            console.log("hello world");
+            menu.displayOn();
+        });
+        d3.select(svgId).on('click', function (e) {
+            menu.displayOff();
+            menuNode.displayOff();
+        });
+        // end of menu for the ontology graph background.
         let drawer = new OntologyDrawer().
-        setParameters(parameters).
+        setParameters({menuNode: menuNode}).
         setData(_results).
         draw(svgId);
         return drawer;

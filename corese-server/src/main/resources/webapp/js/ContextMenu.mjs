@@ -3,8 +3,10 @@ export class ContextMenu {
         this.id = id;
         this.domNode = root.append("div")
             .attr("id", this.id)
-            .attr("class", "dropdown-content")
-            .style("display", "none")
+            .attr("class", "context-menu")
+            .style("width", "fit-content")
+            .style("height", "fit-content")
+            .style("display", "none");
     }
 
     /**

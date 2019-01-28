@@ -1,3 +1,32 @@
+/*
+ *  Style for the tree layout of the ontology.
+ */
+.node circle { fill: #fff; stroke: steelblue; stroke-width: 3px; }
+.node--leaf circle { fill: #fff; stroke: blue; stroke-width: 1px; }
+.node--folded circle { fill: #fff; stroke: red; stroke-width: 4px; }
+.node text { font: 12px sans-serif; }
+.node--internal text { text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; }
+.link { fill: none; stroke: #ccc; stroke-width: 2px; }
+
+.context-menu {
+    display: none;
+    position: fixed;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.context-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.context-menu a:hover {
+    background-color: #ddd;
+}
 
 .nodes circle.literal { fill: lightgreen ; }
 .nodes circle.bnode   { fill: orange; }
@@ -205,3 +234,5 @@ pre  a {
 
 .owlql {
 }
+
+

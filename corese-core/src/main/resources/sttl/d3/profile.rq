@@ -48,3 +48,10 @@ function us:literal(?l) {
     }
     )
 }
+
+function us:plist(?list) {
+    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
+        maplist(lambda(?name) { st:format("\"%s\":true", st:turtle(?name)) }, ?list)
+    )
+}
+

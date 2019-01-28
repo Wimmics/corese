@@ -41,17 +41,20 @@
 
 <script>
 	var data%1$s = {
-		%2$s
+		%3$s
 	};
 </script>
 
 <script type="module">
 	import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
 	D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
-	D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s');
+	D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s', 
+	{"properties": { %2$s } });
 </script>
 
 <script nomodule>
 	D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
     D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s');
 </script>
+
+<!-- {"properties": { "rdfs:subClassOf":true, "us:subTaskOf":true, "us:subPartOf":true} }); -->

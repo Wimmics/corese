@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Nov 27 10:05:26 CET 2018
+Mon Jan 28 11:37:38 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -24,43 +24,12 @@ where {
 <body>
 <![CDATA[
 template st:graph {
-  str(?node)
+  st:call-template(st:nodes)
   ","
-  str(?edge)
+  st:call-template(st:edges)
 } 
 where {
     bind (xt:print('graph size', xt:size(xt:graph())) as ?tmp)
-    
-    bind (us:start() as ?start)
-    
-    bind (st:call-template(st:edges) as ?edge)
-    
-    bind (st:call-template(st:nodes) as ?node)
-    
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:title {
-
-  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
-  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
-  if (bound(?param) || bound(?mode), 
-    st:format("<h3>%s %s %s</h3>", coalesce(str(?param), ""), coalesce(str(?arg), ""), coalesce(str(?mode), "")), 
-    "")
-
-} 
-where {
-    bind (st:get(st:title) as ?title)
-    bind (st:get(st:get(st:uriparam)) as ?uri)
-    bind (st:get(st:param) as ?param)
-    bind (st:get(st:mode)  as ?mode)
-    bind (st:get(st:arg)   as ?arg)
 }
 ]]>
 </body>
@@ -87,19 +56,19 @@ where {
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:frame(?pretty) {
-
-  st:call-template(st:title)
-
   format {
       ft:frame.html
       ?id
+      us:plist(?list)
       st:call-template(st:graph)
   }
 } 
 where {
     bind (if (bound(?pretty), us:declare(?pretty), true) as ?tmp)
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
 }
+
 ]]>
 </body>
 </rule>
@@ -110,31 +79,25 @@ where {
 template st:nodes {
   "\"nodes\":[\n"
   group {
-  
-     format {
-            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
-            ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
-             us:url(?s)
-            coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
-      }
+    format {
+        '{"id": "%s", "label": "%s", "group": "%s"}'
         
+        us:get(?s) us:label(?s) us:kind(?s)
+        }
     ; separator = ",\n"
   }
   "\n]\n"
 } 
 where {
-   values (?s ?id) { unnest(us:getNodes()) }
-}
-
-
-# st:link : service?uri=...&profile=...
-# st:url  : URL either ?s itself or a proxy URL
-function us:url(?s) {
-    coalesce(
-        st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
-        if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
-    )
+  bind (us:start() as ?start)
+  
+  {select distinct ?s where {
+    { ?s ?p ?o } union { ?o ?p ?s }
+  } 
+  order by ?s
+  }
+  
+  bind (us:record(?s) as ?tmp)
 }
 ]]>
 </body>
@@ -151,21 +114,17 @@ function us:start() {
 }
 
 function us:kind(?s) {
-    coalesce (st:getgroup(?s), 
-        if (isURI(?s), "uri", 
-        if (isBlank(?s), "bnode", "literal")))
+    if (st:cget(st:group, ?s, st:other), 2,
+    if (isURI(?s), 1, 
+    if (isBlank(?s), 2, 3)))
 }
 
 function us:record(?s) {
-   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
 }
 
 function us:get(?s) {
     xt:get(?map, ?s)
-}
-
-function us:getNodes() {
-    return (?map)
 }
 
 function us:declare(?fun) {
@@ -182,7 +141,8 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
+    if (st:get(st:mode, st:literal), "", 
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true)))
 }
 
 function us:shorten(?l) {
@@ -190,35 +150,19 @@ function us:shorten(?l) {
 }
 
 function us:literal(?l) {
+    if (st:get(st:mode, st:uri), "", 
     let (?s = us:shorten(?l)) {
         replace(replace(str(?s), "\n", ""), "\"", "'")
     }
+    )
 }
 
-function us:nodeClass(?s) {
-    coalesce(st:getclass(?s), 
-        if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode") ) )
-} 
-
-function us:prefix(?p) {
-    if (strstarts(?p, rdf:),  "rdf", 
-    if (strstarts(?p, rdfs:), "rdfs", 
-    if (strstarts(?p, owl:),  "owl", 
-    if (strstarts(?p, foaf:), "foaf", 
-    if (strstarts(?p, skos:), "skos", 
-    if (strstarts(?p, dc:),   "dc", 
-    "default") ) ))))
+function us:plist(?list) {
+    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
+        maplist(lambda(?name) { st:format("\"%s\":true", st:turtle(?name)) }, ?list)
+    )
 }
 
-function us:edgeClass(?g, ?p) {
-    coalesce(st:getclass(?g), us:prefix(?p))
-}
-
-function us:edgeGroup(?g, ?p) {
-    coalesce(st:getgroup(?g), us:prefix(?p))
-}
-    
-    
 ]]>
 </body>
 </rule>
@@ -232,8 +176,8 @@ template st:edges {
   group { 
   
     format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number()
     }
     
     ; separator = ",\n"
@@ -242,12 +186,10 @@ template st:edges {
   "\n]\n"
 } 
 where {
-    select * where {
-        graph ?g { ?s ?p ?o }
-        bind (us:record(?s) as ?ss)
-        bind (us:record(?o) as ?oo)
-    } 
-    limit 5000
+  select * where {
+    ?s ?p ?o 
+  }
+  order by ?s ?o ?p
 }
 ]]>
 </body>

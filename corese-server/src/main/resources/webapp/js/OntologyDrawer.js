@@ -230,7 +230,7 @@ export class OntologyDrawer {
                     return "node" +
                         (_dataMap[d.data.id].isFolded ?
                             " node--folded" :
-                            (_dataMap[d.data.id].isLeaf() ? " node--internal" : " node--leaf"));
+                            (_dataMap[d.data.id].isLeaf() ? " node--leaf" : " node--internal"));
                 }
             }(this.dataMap)
             )
@@ -251,9 +251,10 @@ export class OntologyDrawer {
 // adds the text to the node
         node.append("text")
             .attr("dy", ".35em")
-            .attr("y", function (d) {
-                return d.children ? -20 : 20;
-            })
+            .attr("y", "20")
+        // function (d) {
+        //         return d.children ? -20 : 20;
+        //     })
             .style("text-anchor", "middle")
             .text(function (d) {
                 return d.data.label;

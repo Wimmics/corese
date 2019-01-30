@@ -498,8 +498,9 @@ export class D3GraphVisualizer extends Observer {
 
         // begin of menu for the ontology graph background.
         let menu = ContextMenu.create(root, "graphMenu")
-            .addEntry("Go to top level", function() { return setDisplayRoot({data:{id:"Root"}}); } )
-            .addEntry("Up one level", function() { drawer.up(); drawer.draw(svgId) } )
+            .addEntry("Go to top level", function() { drawer.goTop(); drawer.draw(svgId); menu.displayOff(); } )
+            .addEntry("Up one level", function() { drawer.up(); drawer.draw(svgId); menu.displayOff(); } )
+            .addEntry("Reset centering", function() { drawer.centerDisplay(); drawer.draw(svgId); menu.displayOff(); } )
         ;
         d3.select(svgId).node().oncontextmenu = function () {
             return false;

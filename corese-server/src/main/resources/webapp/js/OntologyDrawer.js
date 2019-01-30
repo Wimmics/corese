@@ -206,11 +206,11 @@ export class OntologyDrawer {
 // moves the 'group' element to the top left margin
         let svg = d3.select(svgId);
         svg.selectAll("g").remove();
-        let g = svg.append("g")
+        this.g = svg.append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
         // adds the links between the nodes
-        var link = g.selectAll(".link")
+        var link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
             .enter().append("path")
             .attr("class", "link")
@@ -222,7 +222,7 @@ export class OntologyDrawer {
             });
 
 // adds each node as a group
-        var node = g.selectAll(".node")
+        var node = this.g.selectAll(".node")
             .data(nodes.descendants())
             .enter().append("g")
             .attr("class", function (_dataMap) {
@@ -265,11 +265,19 @@ export class OntologyDrawer {
         this.addOptionButton();
 
         let zoomed = function () {
-            g.attr("transform", d3.event.transform);
+            this.g.attr("transform", d3.event.transform);
         };
-        var zoom_handler = d3.zoom().on("zoom", zoomed);
+        var zoom_handler = d3.zoom().on("zoom", zoomed.bind(this) );
         zoom_handler(svg);
         return this;
+    }
+
+    centerDisplay() {
+        this.g.attr("transform", "translate( 0, 0)");
+    }
+
+    goTop() {
+        this.displayRoot = this.root;
     }
 
     up() {

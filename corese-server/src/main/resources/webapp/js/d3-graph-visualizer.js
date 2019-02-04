@@ -6,10 +6,10 @@ import {ContextMenu} from "./ContextMenu.mjs";
 
 
 export class D3GraphVisualizer extends Observer {
-    constructor( data, prefix ) {
+    constructor(data, prefix) {
         super();
         this.prefix = prefix;
-        this.model = new GraphModel( data, prefix );
+        this.model = new GraphModel(data, prefix);
         // this.model.displayAllEdgeLabels = false;
         // this.model.displayAllNodeLabels = false;
         this.model.addObserver(this);
@@ -24,7 +24,7 @@ export class D3GraphVisualizer extends Observer {
     }
 
     dragstarted(_simulation) {
-        return function(d) {
+        return function (d) {
             if (!d3.event.active) _simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
@@ -36,8 +36,8 @@ export class D3GraphVisualizer extends Observer {
         d.fy = d3.event.y;
     }
 
-    dragended( _simulation ) {
-        return function(d) {
+    dragended(_simulation) {
+        return function (d) {
             if (!d3.event.active) _simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
@@ -50,7 +50,7 @@ export class D3GraphVisualizer extends Observer {
             return (edge, i, edges) => {
                 var dx = edge.source.x - edge.target.x;
                 var dy = edge.source.y - edge.target.y;
-                var r = 10 * Math.sqrt(dx*dx + dy*dy);
+                var r = 10 * Math.sqrt(dx * dx + dy * dy);
 
                 let dr = 0;
                 if (model.getOption(svgId + model.ARROW_STYLE) === "curve") {
@@ -79,7 +79,7 @@ export class D3GraphVisualizer extends Observer {
      */
     static drawRdf(_results, svgId) {
         var results = _results;
-        var visualizer = new D3GraphVisualizer( _results, svgId );
+        var visualizer = new D3GraphVisualizer(_results, svgId);
         var confGraphModal;
         visualizer.graph = d3.select(svgId);
 
@@ -89,25 +89,35 @@ export class D3GraphVisualizer extends Observer {
         }
         // @Todo make a function counting the edges between same nodes.
         // To be able to detect edges between same nodes.
-        results.edges.sort(function(a,b) {
-            if (a.source > b.source) {return 1;}
-            else if (a.source < b.source) {return -1;}
-            else {
-                if (a.target > b.target) {return 1;}
-                if (a.target < b.target) {return -1;}
-                else {return 0;}
+        results.edges.sort(function (a, b) {
+            if (a.source > b.source) {
+                return 1;
+            } else if (a.source < b.source) {
+                return -1;
+            } else {
+                if (a.target > b.target) {
+                    return 1;
+                }
+                if (a.target < b.target) {
+                    return -1;
+                } else {
+                    return 0;
+                }
             }
 
         });
         // counting the edges between the same edges.
-        for (var i=0; i<results.edges.length; i++) {
+        for (var i = 0; i < results.edges.length; i++) {
             if (i !== 0 &&
-                results.edges[i].source === results.edges[i-1].source &&
-                results.edges[i].target === results.edges[i-1].target) {
-                results.edges[i].linknum = results.edges[i-1].linknum + 1;
+                results.edges[i].source === results.edges[i - 1].source &&
+                results.edges[i].target === results.edges[i - 1].target) {
+                results.edges[i].linknum = results.edges[i - 1].linknum + 1;
+            } else {
+                results.edges[i].linknum = 1;
             }
-            else {results.edges[i].linknum = 1;};
-        };
+            ;
+        }
+        ;
 
 
         visualizer.graph.zoomed = function () {
@@ -138,9 +148,9 @@ export class D3GraphVisualizer extends Observer {
         visualizer.graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
             links.attr("d",
-                function(model) {
-                    return function(edge, i, edges) {
-                        let dx =    edge.target.x - edge.source.x;
+                function (model) {
+                    return function (edge, i, edges) {
+                        let dx = edge.target.x - edge.source.x;
                         let dy = edge.target.y - edge.source.y;
                         let pathLength = Math.sqrt((dx * dx) + (dy * dy));
                         let offsetTargetX = 0;
@@ -166,7 +176,7 @@ export class D3GraphVisualizer extends Observer {
                         return `M ${edge.source.x * scale + offsetSourceX},${edge.source.y * scale + offsetSourceY} A ${dr * scale},${dr * scale} 0 0,1 ${edge.target.x * scale - offsetTargetX},${edge.target.y * scale - offsetTargetY}`
                     }
                 }(visualizer.model)
-                );
+            );
 
             nodes
                 .attr("cx", function (d) {
@@ -192,14 +202,14 @@ export class D3GraphVisualizer extends Observer {
                 textNodes
                     .attr("x",
                         (d) => {
-                            const r = Number( d3.select(d.node).attr("r") );
+                            const r = Number(d3.select(d.node).attr("r"));
                             const result = d.x * scale + r;
                             return result;
                         }
                     )
                     .attr("y",
                         (d) => {
-                            const r = Number( d3.select(d.node).attr("r") );
+                            const r = Number(d3.select(d.node).attr("r"));
                             return (d.y * scale + r);
                         }
                     ).attr("visibility",
@@ -220,7 +230,7 @@ export class D3GraphVisualizer extends Observer {
         confGraphModal = ConfGraphModal.createConfigurationPanel(rootConfPanel, visualizer.graph, results, visualizer.model);
         confGraphModal.model.addObserver(confGraphModal);
         visualizer.graph.updateConfiguration = function () {
-            var updateSet = function(groupName, text) {
+            var updateSet = function (groupName, text) {
                 const nodesDisplayCriteria = (d, i, nodes) => (confGraphModal.model.getDisplayGroup(confGraphModal.model.ALL_NODES, d.group)) ? "visible" : "hidden";
                 text.attr(
                     "visibility",
@@ -246,7 +256,7 @@ export class D3GraphVisualizer extends Observer {
         );
 
 
-        var color = d3.scaleOrdinal( d3.schemeCategory20 );
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
 
         var g = visualizer.graph.append("g")
             .attr("class", "everything");
@@ -278,10 +288,11 @@ export class D3GraphVisualizer extends Observer {
             // .force("charge",
             //     n => -2000
             // )
-            .force("collide", d3.forceCollide().radius(function(d, i, nodes) {
-                return d.r * 2; }
+            .force("collide", d3.forceCollide().radius(function (d, i, nodes) {
+                    return d.r * 2;
+                }
             ).iterations(2))
-            .force("center", d3.forceCenter(800,500))
+            .force("center", d3.forceCenter(800, 500))
             .on("tick", visualizer.graph.ticked);
         var width = +visualizer.graph.node().getBoundingClientRect().width;
         var height = +visualizer.graph.node().getBoundingClientRect().height;
@@ -328,11 +339,11 @@ export class D3GraphVisualizer extends Observer {
             .data(results.links)
             .enter().append("text")
             .append("textPath")
-            .attr("xlink:href", d => `#${visualizer.prefix}${d.id}_path` )
+            .attr("xlink:href", d => `#${visualizer.prefix}${d.id}_path`)
             .attr("startOffset", "25%")
-            .text( d => d.label )
-            .attr("class", (edge, i, edges) => (edge.class !== undefined) ? edge.class : "default" )
-            .each( (d, i, nodes) => d.textEdges = nodes[i] );
+            .text(d => d.label)
+            .attr("class", (edge, i, edges) => (edge.class !== undefined) ? edge.class : "default")
+            .each((d, i, nodes) => d.textEdges = nodes[i]);
 
         var links = g.append("g")
             .attr("class", "links")
@@ -349,7 +360,7 @@ export class D3GraphVisualizer extends Observer {
                     }
                 }
             )
-            .attr("id", d => `${visualizer.prefix}${d.id}_edge` )
+            .attr("id", d => `${visualizer.prefix}${d.id}_edge`)
             .each(
                 (d, i, nodes) =>
                     d.link = nodes[i]
@@ -366,30 +377,30 @@ export class D3GraphVisualizer extends Observer {
                     return d.class;
                 } else {
                     return "default";
-                    }
                 }
-            )
+            }
+        )
             .attr("r", visualizer.model.nodeRadius)
             .each(
-                    (d, i, nodes) => {
-                        var current = d3.select(nodes[i]);
-                        var father = d3.select(current.node().parentNode);
-                        var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.model.getGroups("nodes")));
-                        d.colorMap = color;
-                        if (d.bg_image === undefined) {
-                            current.attr("fill", color(d.group));
-                            current.attr("r", 5);
-                        } else {
-                            current.attr("r", visualizer.model.nodeRadius);
-                            var width = Math.sqrt(2) * current.attr("r");
-                            father.append("image")
-                                .attr("xlink:href", d.bg_image)
-                                .attr("height", width)
-                                .attr("width", width)
-                                .attr("pointer-events", "none");
-                        }
-                        d.r = current.attr("r");
+                (d, i, nodes) => {
+                    var current = d3.select(nodes[i]);
+                    var father = d3.select(current.node().parentNode);
+                    var color = d3.scaleOrdinal(d3.schemeCategory20).domain(Array.from(confGraphModal.model.getGroups("nodes")));
+                    d.colorMap = color;
+                    if (d.bg_image === undefined) {
+                        current.attr("fill", color(d.group));
+                        current.attr("r", 5);
+                    } else {
+                        current.attr("r", visualizer.model.nodeRadius);
+                        var width = Math.sqrt(2) * current.attr("r");
+                        father.append("image")
+                            .attr("xlink:href", d.bg_image)
+                            .attr("height", width)
+                            .attr("width", width)
+                            .attr("pointer-events", "none");
                     }
+                    d.r = current.attr("r");
+                }
             )
             .each(
                 (d, i, nodes) =>
@@ -397,17 +408,17 @@ export class D3GraphVisualizer extends Observer {
             )
             .each(
                 (_links => {
-                 return (d, i, nodes) => {
-                    var neighbors = new Set();
+                    return (d, i, nodes) => {
+                        var neighbors = new Set();
 
-                    _links.forEach( link => {
-                        if (link.source.id === d.id || link.target.id == d.id) {
-                            neighbors.add( link.source.id );
-                            neighbors.add( link.target.id );
-                        }
-                    });
-                    d.neighbors = neighbors;
-                 }
+                        _links.forEach(link => {
+                            if (link.source.id === d.id || link.target.id == d.id) {
+                                neighbors.add(link.source.id);
+                                neighbors.add(link.target.id);
+                            }
+                        });
+                        d.neighbors = neighbors;
+                    }
                 })(results.links)
             )
             .call(d3.drag()
@@ -415,14 +426,14 @@ export class D3GraphVisualizer extends Observer {
                 .on("drag", visualizer.dragged)
                 .on("end", visualizer.dragended(visualizer.simulation)))
             .on("click", (d) => {
-                if (d.url  !== undefined) window.open(d.url);
+                if (d.url !== undefined) window.open(d.url);
                 if (d.link !== undefined) trans(d.link);
             })
-            .on("mouseover", (d, i , nodes) => {
+            .on("mouseover", (d, i, nodes) => {
                 var center = d3.select(nodes[i]);
                 var datum = center.datum();
                 var counter = 0;
-                nodes.forEach( node => {
+                nodes.forEach(node => {
                     if (datum.neighbors.has(d3.select(node).datum().id)) {
                         d3.select(node).attr("fill", "red");
                         d3.select(node).attr("background-color", "yellow");
@@ -436,7 +447,7 @@ export class D3GraphVisualizer extends Observer {
                 var center = d3.select(nodes[i]);
                 var datum = center.datum();
                 var counter = 0;
-                nodes.forEach( node => {
+                nodes.forEach(node => {
                     var datumNode = d3.select(node).datum();
                     if (datum.neighbors.has(datumNode.id)) {
                         d3.select(node).attr("fill", datumNode.colorMap(datumNode.group));
@@ -460,8 +471,8 @@ export class D3GraphVisualizer extends Observer {
             .enter().append("path")
             .attr("id",
                 function (prefix) {
-                    return (edge, i, edges) =>  `${prefix}${edge.id}_path`
-                }( visualizer.model.prefix ))
+                    return (edge, i, edges) => `${prefix}${edge.id}_path`
+                }(visualizer.model.prefix))
             .attr("d", visualizer.buildPathFromEdge(1, svgId, visualizer.model)(results.links));
         //add zoom capabilities
         var zoom_handler = d3.zoom()
@@ -484,7 +495,12 @@ export class D3GraphVisualizer extends Observer {
             menuNode.displayOff();
         }
         window.switchMaskSubtree = function (parameters) {
-            drawer.switchVisibility(parameters.data.id);
+            drawer.switchVisibility(parameters.data.id, false);
+            drawer.draw(svgId);
+            menuNode.displayOff();
+        }
+        window.switchMaskAllSubtree = function (parameters) {
+            drawer.switchVisibility(parameters.data.id, true);
             drawer.draw(svgId);
             menuNode.displayOff();
         }
@@ -492,15 +508,33 @@ export class D3GraphVisualizer extends Observer {
         let root = d3.select(d3.select(svgId).node().parentNode);
         menuNode = ContextMenu.create(root, "nodeMenu")
             .addEntry("set as root", setDisplayRoot)
-            .addEntry("Mask/Unmask the subtree", switchMaskSubtree )
+            .addEntry("Mask/Unmask the subtree", switchMaskSubtree)
+            .addEntry("Mask/Unmask all nodes in the subtree", switchMaskAllSubtree)
         ;
         // end of menuNode settings.
 
         // begin of menu for the ontology graph background.
         let menu = ContextMenu.create(root, "graphMenu")
-            .addEntry("Go to top level", function() { drawer.goTop(); drawer.draw(svgId); menu.displayOff(); } )
-            .addEntry("Up one level", function() { drawer.up(); drawer.draw(svgId); menu.displayOff(); } )
-            .addEntry("Reset centering", function() { drawer.centerDisplay(); drawer.draw(svgId); menu.displayOff(); } )
+            .addEntry("Go to top level", function () {
+                drawer.goTop();
+                drawer.draw(svgId);
+                menu.displayOff();
+            })
+            .addEntry("Up one level", function () {
+                drawer.up();
+                drawer.draw(svgId);
+                menu.displayOff();
+            })
+            .addEntry("Reset centering", function () {
+                drawer.centerDisplay();
+                drawer.draw(svgId);
+                menu.displayOff();
+            })
+            .addEntry("Switch horizontal/vertical layout", function () {
+                drawer.switchLayout();
+                drawer.draw(svgId);
+                menu.displayOff();
+            })
         ;
         d3.select(svgId).node().oncontextmenu = function () {
             return false;
@@ -515,17 +549,12 @@ export class D3GraphVisualizer extends Observer {
             menuNode.displayOff();
         });
         // end of menu for the ontology graph background.
-        let drawer = new OntologyDrawer().
-        setParameters({menuNode: menuNode}).
-        setData(_results).
-        draw(svgId);
+        let drawer = new OntologyDrawer().setParameters({menuNode: menuNode}).setData(_results).draw(svgId);
         return drawer;
     }
+
     static drawCircle(_results, svgId, parameters) {
-        let drawer2 = new OntologyDrawer().
-        setParameters(parameters).
-        setData(_results).
-        drawCircle(svgId);
+        let drawer2 = new OntologyDrawer().setParameters(parameters).setData(_results).drawCircle(svgId);
         return drawer2;
     }
 }

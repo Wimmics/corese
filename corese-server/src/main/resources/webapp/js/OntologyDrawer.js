@@ -1,6 +1,8 @@
 "use strict";
+
 export class OntologyDrawer {
     constructor() {
+        this.horizontalLayout = false;
         this.setProperties({"rdfs:subClassOf": true});
     }
 
@@ -19,23 +21,25 @@ export class OntologyDrawer {
                     return this.valChildren;
                 },
                 getVisibleChildren() {
-                   if (!this.isFolded) {
-                       return this.valChildren;
-                   } else {
-                       return {};
-                   }
+                    if (!this.isFolded) {
+                        return this.valChildren;
+                    } else {
+                        return {};
+                    }
                 },
-                isLeaf: function() {
-                   return Object.keys(this.valChildren).length === 0;
+                isLeaf: function () {
+                    return Object.keys(this.valChildren).length === 0;
                 },
-                get children() { return this.getVisibleChildren(); },
+                get children() {
+                    return this.getVisibleChildren();
+                },
                 valChildren: {}
             };
         }
         for (let e of data.edges) {
             let s = e.source.id;
             let t = e.target.id;
-            if (e.label  in this.properties) {
+            if (e.label in this.properties) {
                 this.dataMap[t].valChildren[s] = true;
                 this.dataMap[s].parent = t;
             }
@@ -53,12 +57,17 @@ export class OntologyDrawer {
                 this.roots.push(d.id);
             }
         }
+        if (this.nbRoots == 0 && data.nodes.length !== 0) { // cyclic graph chosing an arbitrary root.
+            this.nbRoots = 1;
+            let idPseudoRoot = data.nodes[0].id;
+            this.roots.push( idPseudoRoot );
+        }
         if (this.nbRoots > 1) {
             this.dataMap["Root"] = {
                 id: "Root",
                 label: "Root",
                 r: 10,
-                value:1,
+                value: 1,
                 isFolded: false,
                 getActualChildren() {
                     return this.valChildren;
@@ -70,10 +79,12 @@ export class OntologyDrawer {
                         return {};
                     }
                 },
-                isLeaf: function() {
+                isLeaf: function () {
                     return Object.keys(this.valChildren).length === 0;
                 },
-                get children() { return this.getVisibleChildren(); },
+                get children() {
+                    return this.getVisibleChildren();
+                },
                 valChildren: {}
             }
             for (let child of this.roots) {
@@ -92,7 +103,7 @@ export class OntologyDrawer {
      *
      * @param params Expect { rootId : "id", properties: {"prop1", "prop2"}, ["menuNode": menu]}
      */
-    setParameters( params ) {
+    setParameters(params) {
         if (params !== undefined) {
             if ("rootId" in params) {
                 this.setDisplayRoot(params.rootId);
@@ -101,7 +112,7 @@ export class OntologyDrawer {
                 this.setProperties(params.properties);
             }
             if ("menuNode" in params) {
-               this.menuNode = params.menuNode;
+                this.menuNode = params.menuNode;
             }
         }
         return this;
@@ -115,17 +126,24 @@ export class OntologyDrawer {
         return this;
     }
 
-    switchVisibility(node) {
+    switchVisibility(node, recursive) {
         if (!this.dataMap[node].isLeaf()) {
             this.dataMap[node].isFolded = !this.dataMap[node].isFolded;
+            if (recursive) {
+                for (let child of this.dataMap[node].children()) {
+                    this.switchVisibility(child, true);
+                }
+            }
         }
     }
+
     /*
      *  Set the properties to be used when extracting the tree.
      */
     setProperties(properties) {
         this.properties = properties;
     }
+
     computeHierarchy() {
         if (this.displayRoot === undefined) {
             this.displayRoot = this.root;
@@ -135,20 +153,28 @@ export class OntologyDrawer {
         this.hierarchy = this.dataMap[this.displayRoot];
         let stack = [];
         stack.push(this.hierarchy);
+        let alreadySeen = new Set();
+        alreadySeen.add(this.hierarchy);
         while (stack.length !== 0) {
             let summit = stack.pop();
             for (let childId of Object.keys(summit.children)) {
                 summit.children[childId] = this.dataMap[childId];
-                stack.push(summit.children[childId]);
+                if (alreadySeen.has(summit.children[childId] ))  {
+                    console.log("cycle detected including node:" + childId);
+                    delete summit.children[childId];
+                } else {
+                    stack.push(summit.children[childId]);
+                    alreadySeen.add(summit.children[childId]);
+                }
             }
         }
 
         // compute width and height of the tree
-        let recurNode = function(tree, nodeId) {
+        let recurNode = function (tree, nodeId) {
             let data = tree.dataMap[nodeId];
             let height = 0;
             let width = 0;
-            if ( Object.keys(data.children).length == 0) {
+            if (Object.keys(data.children).length == 0) {
                 height = 1;
                 width = 1;
             } else {
@@ -159,7 +185,7 @@ export class OntologyDrawer {
                 }
                 height += 1; // count "node" itself.
             }
-            return { "height": height, "width": width};
+            return {"height": height, "width": width};
         }
         let geomTree = recurNode(this, this.displayRoot);
         this.width = geomTree.width;
@@ -180,16 +206,33 @@ export class OntologyDrawer {
      */
     draw(svgId) {
         this.svgId = svgId;
-        d3.select(svgId).node().oncontextmenu = function() { return false; }
+        d3.select(svgId).node().oncontextmenu = function () {
+            return false;
+        }
         this.computeHierarchy();
         // set the dimensions and margins of the diagram
-        let margin = {top: 40, right: 20, bottom: 20, left: 20};
-        let width = Math.max(this.getWidth(), 5 ) * 45 - margin.left - margin.right;
-        let height = Math.max( this.getHeight(),5 ) * 125 - margin.top - margin.bottom;
+        let margin = {top: 20, right: 20, bottom: 20, left: 20};
+        let width;
+        let height;
+        if (this.horizontalLayout) {
+            width = Math.max(this.getWidth(), 5) * 45 - margin.left - margin.right;
+            height = Math.max(this.getHeight(), 5) * 125 - margin.top - margin.bottom;
+        } else {
+            width = Math.max(this.getWidth(), 5) * 45 - margin.left - margin.right;
+            height = Math.max(this.getHeight(), 5) * 125 - margin.top - margin.bottom;
+        }
+        if (!this.horizontalLayout) {
+            let temp = width;
+            width = height;
+            height = width;
+        }
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
             .size([width, height]);
+        // if (!this.horizontalLayout) {
+        //     treemap.nodeSize([100,50]);
+        // }
 
 //  assigns the data to a hierarchy using parent-child relationships
         var nodes = d3.hierarchy(this.hierarchy
@@ -215,51 +258,62 @@ export class OntologyDrawer {
             .enter().append("path")
             .attr("class", "link")
             .attr("d", function (d) {
-                return "M" + d.y + "," + d.x
-                    + "C" + (d.y + d.parent.y) / 2 + "," + d.x
-                    + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
-                    + " " + d.parent.y + "," + d.parent.x;
+                if (this.horizontalLayout) {
+                    return "M" + d.y + "," + d.x
+                        + "C" + (d.y + d.parent.y) / 2 + "," + d.x
+                        + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
+                        + " " + d.parent.y + "," + d.parent.x;
+                } else {
+                    return "M" + d.x + "," + d.y
+                        + "C" + (d.x + d.parent.x) / 2 + "," + d.y
+                        + " " + (d.x + d.parent.x) / 2 + "," + d.parent.y
+                        + " " + d.parent.x + "," + d.parent.y;
+                }
             });
 
-// adds each node as a group
+// begin: draw each node.
         var node = this.g.selectAll(".node")
             .data(nodes.descendants())
             .enter().append("g")
             .attr("class", function (_dataMap) {
-                return function (d) {
-                    return "node" +
-                        (_dataMap[d.data.id].isFolded ?
-                            " node--folded" :
-                            (_dataMap[d.data.id].isLeaf() ? " node--leaf" : " node--internal"));
-                }
-            }(this.dataMap)
+                    return function (d) {
+                        return "node" +
+                            (_dataMap[d.data.id].isFolded ?
+                                " node--folded" :
+                                (_dataMap[d.data.id].isLeaf() ? " node--leaf" : " node--internal"));
+                    }
+                }(this.dataMap)
             )
             .attr("transform", function (d) {
-                return "translate(" + d.y + "," + d.x + ")";
+                if (this.horizontalLayout) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                } else {
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
             });
         node.on("contextmenu", (currentNode) => {
             d3.event.preventDefault();
             d3.event.stopImmediatePropagation();
-            this.menuNode.setParameters( currentNode );
+            this.menuNode.setParameters(currentNode);
             this.menuNode.displayOn();
         });
 
 // adds the circle to the node
         node.append("circle")
-            .attr("r", (d) => 10 );
+            .attr("r", (d) => 10);
 
 // adds the text to the node
-        node.append("text")
-            .attr("dy", ".35em")
+        let textNode = node.append("text");
+        textNode.attr("dy", ".35em")
             .attr("y", "20")
-        // function (d) {
-        //         return d.children ? -20 : 20;
-        //     })
             .style("text-anchor", "middle")
             .text(function (d) {
                 return d.data.label;
             });
-
+        if (!this.horizontalLayout) {
+            textNode.attr("transform", "rotate(90)");
+        }
+// end: draw each node.
 
 
         this.addOptionButton();
@@ -267,9 +321,13 @@ export class OntologyDrawer {
         let zoomed = function () {
             this.g.attr("transform", d3.event.transform);
         };
-        var zoom_handler = d3.zoom().on("zoom", zoomed.bind(this) );
+        var zoom_handler = d3.zoom().on("zoom", zoomed.bind(this));
         zoom_handler(svg);
         return this;
+    }
+
+    switchLayout() {
+        this.horizontalLayout = !this.horizontalLayout;
     }
 
     centerDisplay() {
@@ -291,11 +349,8 @@ export class OntologyDrawer {
         let selectButtonId = "selectButton";
         if (d3.select(`#${selectButtonId}`).empty()) {
             var fo = d3.select(this.svgId).append('foreignObject').attr("width", "100%").attr("height", "34px");
-            this.selectButton = fo.append("xhtml:select").
-            attr("id", selectButtonId).
-            attr("class","select");
-            this.selectButton.selectAll("option").data(Object.keys(this.dataMap)).enter().
-            append("option").attr("value", (d) => d).text((d)=> this.dataMap[d].label);
+            this.selectButton = fo.append("xhtml:select").attr("id", selectButtonId).attr("class", "select");
+            this.selectButton.selectAll("option").data(Object.keys(this.dataMap)).enter().append("option").attr("value", (d) => d).text((d) => this.dataMap[d].label);
             this.selectButton.on("change", (d) => {
                 const selectValue = d3.select(`#${selectButtonId}`).property('value')
                 this.setDisplayRoot(selectValue);
@@ -324,8 +379,12 @@ export class OntologyDrawer {
             .size([width - 2, height - 2])
             .padding(3);
         var root = stratify(Object.values(this.dataMap))
-            .sum(function(d) { return d.value+1; } )
-            .sort(function(a, b) { return b.value - a.value; })
+            .sum(function (d) {
+                return d.value + 1;
+            })
+            .sort(function (a, b) {
+                return b.value - a.value;
+            })
         ;
         pack(root);
 
@@ -333,40 +392,65 @@ export class OntologyDrawer {
             .selectAll("g")
             .data(root.descendants())
             .enter().append("g")
-            .attr("transform", function(d) {
+            .attr("transform", function (d) {
                 return "translate(" + d.x + "," + d.y + ")";
             })
-            .attr("class", function(d) {
+            .attr("class", function (d) {
                 return "node" + (!d.children ? " node--leaf" : d.depth ? "" : " node--root");
             })
-            .each(function(d) {
+            .each(function (d) {
                 d.node = this;
             });
 
         node.append("circle")
-            .attr("id", function(d) { return "node-" + d.id; })
-            .attr("r", function(d) { return d.r; })
-            .style("fill", function(d) { return color(d.depth); });
+            .attr("id", function (d) {
+                return "node-" + d.id;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return color(d.depth);
+            });
         // node.append("text")
         //     .text(function(d) { return d.children ? "" : d.data.label; });
 
-        var leaf = node.filter(function(d) { return !d.children; });
+        var leaf = node.filter(function (d) {
+            return !d.children;
+        });
 
         leaf.append("clipPath")
-            .attr("id", function(d) { return "clip-" + d.id; })
+            .attr("id", function (d) {
+                return "clip-" + d.id;
+            })
             .append("use")
-            .attr("xlink:href", function(d) { return "#node-" + d.id + ""; });
+            .attr("xlink:href", function (d) {
+                return "#node-" + d.id + "";
+            });
 
         leaf.append("text")
-            .attr("clip-path", function(d) { return "url(#clip-" + d.id + ")"; })
+            .attr("clip-path", function (d) {
+                return "url(#clip-" + d.id + ")";
+            })
             .selectAll("tspan")
-            .data(function(d) { console.log(d);return [ d.data.label ]; })
+            .data(function (d) {
+                console.log(d);
+                return [d.data.label];
+            })
             .enter().append("tspan")
-            .attr("x", function(d, i, nodes) { return -d.length*2-13} )
-            .attr("y", function(d, i, nodes) { return 3; })
-            .text(function(d) { return d; });
+            .attr("x", function (d, i, nodes) {
+                return -d.length * 2 - 13
+            })
+            .attr("y", function (d, i, nodes) {
+                return 3;
+            })
+            .text(function (d) {
+                return d;
+            });
 
         node.append("title")
-            .text(function(d) { return d.data.label; });
+            .text(function (d) {
+                return d.data.label;
+            });
     }
 }

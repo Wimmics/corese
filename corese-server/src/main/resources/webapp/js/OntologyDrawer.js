@@ -34,12 +34,15 @@ export class OntologyDrawer {
             this.dataMap[d.id].valChildren = function () {
             }
         }
+        this.edgesMapId = {};
         for (let e of data.edges) {
+            this.edgesMapId[e.id] = e;
             let s = e.source.id;
             let t = e.target.id;
             if (e.label in this.properties) {
-                this.dataMap[t].valChildren[s] = true;
-                this.dataMap[s].parent = t;
+                this.dataMap[s].valChildren[t] = true;
+                this.dataMap[t].parent = s;
+                this.dataMap[t].parentEdge = e;
             }
         }
 
@@ -55,7 +58,7 @@ export class OntologyDrawer {
                 this.roots.push(d.id);
             }
         }
-        if (this.nbRoots == 0 && data.nodes.length !== 0) { // cyclic graph chosing an arbitrary root.
+        if (this.nbRoots === 0 && data.nodes.length !== 0) { // cyclic graph choosing an arbitrary root.
             this.nbRoots = 1;
             let idPseudoRoot = data.nodes[0].id;
             this.roots.push(idPseudoRoot);
@@ -269,6 +272,24 @@ export class OntologyDrawer {
                         + " " + d.parent.x + "," + d.parent.y;
                 }
             });
+        link.append("title")
+            .text((d) => {
+                // return `link between ${d.parent.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
+                let result = "";
+                let first = true;
+                if ("edgePropertiesToDisplay" in this.parameters) {
+                    for (let prop of this.parameters.edgePropertiesToDisplay) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            result += `\n`;
+                        }
+                        result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
+                    }
+                }
+                return result;
+            }
+        );
 
 // begin: draw each node.
         var node = this.g.selectAll(".node")
@@ -428,8 +449,6 @@ export class OntologyDrawer {
             .style("fill", function (d) {
                 return color(d.depth);
             });
-        // node.append("text")
-        //     .text(function(d) { return d.children ? "" : d.data.label; });
 
         var leaf = node.filter(function (d) {
             return !d.children;

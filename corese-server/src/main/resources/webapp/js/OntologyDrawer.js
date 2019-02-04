@@ -10,31 +10,29 @@ export class OntologyDrawer {
         this.rawData = data;
         this.dataMap = {};
         for (let d of this.rawData.nodes) {
-            this.dataMap[d.id] = {
-                id: d.id,
-                label: d.label,
-                group: d.group,
-                class: d.class,
-                url: d.url,
-                isFolded: false,
-                getActualChildren() {
-                    return this.valChildren;
-                },
-                getVisibleChildren() {
-                    if (!this.isFolded) {
-                        return this.valChildren;
-                    } else {
-                        return {};
-                    }
-                },
-                isLeaf: function () {
-                    return Object.keys(this.valChildren).length === 0;
-                },
-                get children() {
-                    return this.getVisibleChildren();
-                },
-                valChildren: {}
+            this.dataMap[d.id] = {};
+            for (let p in d) {
+                this.dataMap[d.id][p] = d[p];
+            }
+            this.dataMap[d.id].isFolded = false;
+            this.dataMap[d.id].getActualChildren = function () {
+                return this.valChildren;
             };
+            this.dataMap[d.id].getVisibleChildren = function () {
+                if (!this.isFolded) {
+                    return this.valChildren;
+                } else {
+                    return {};
+                }
+            };
+            this.dataMap[d.id].isLeaf = function () {
+                return Object.keys(this.valChildren).length === 0;
+            };
+            Object.defineProperty(this.dataMap[d.id], "children", {
+                get: function () { return this.getVisibleChildren(); }
+            });
+            this.dataMap[d.id].valChildren = function () {
+            }
         }
         for (let e of data.edges) {
             let s = e.source.id;
@@ -60,7 +58,7 @@ export class OntologyDrawer {
         if (this.nbRoots == 0 && data.nodes.length !== 0) { // cyclic graph chosing an arbitrary root.
             this.nbRoots = 1;
             let idPseudoRoot = data.nodes[0].id;
-            this.roots.push( idPseudoRoot );
+            this.roots.push(idPseudoRoot);
         }
         if (this.nbRoots > 1) {
             this.dataMap["Root"] = {
@@ -105,6 +103,7 @@ export class OntologyDrawer {
      */
     setParameters(params) {
         if (params !== undefined) {
+            this.parameters = params;
             if ("rootId" in params) {
                 this.setDisplayRoot(params.rootId);
             }
@@ -159,7 +158,7 @@ export class OntologyDrawer {
             let summit = stack.pop();
             for (let childId of Object.keys(summit.children)) {
                 summit.children[childId] = this.dataMap[childId];
-                if (alreadySeen.has(summit.children[childId] ))  {
+                if (alreadySeen.has(summit.children[childId])) {
                     console.log("cycle detected including node:" + childId);
                     delete summit.children[childId];
                 } else {
@@ -289,6 +288,23 @@ export class OntologyDrawer {
                     return "translate(" + d.y + "," + d.x + ")";
                 } else {
                     return "translate(" + d.x + "," + d.y + ")";
+                }
+            });
+        node
+            .append("title")
+            .text((d) => {
+                let result = "";
+                let first = true;
+                if ("nodePropertiesToDisplay" in this.parameters) {
+                    for (let prop of this.parameters.nodePropertiesToDisplay) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            result += `\n`;
+                        }
+                        result += `${prop}: ${this.dataMap[d.data.id][prop]}`;
+                    }
+                    return result;
                 }
             });
         node.on("contextmenu", (currentNode) => {

@@ -485,8 +485,10 @@ export class D3GraphVisualizer extends Observer {
     /** Visualisation of ontology.
      *  @param _results
      *  @param svgId Name of the svg id
+     *  @param parameters Parameters that can be defined by the application
+     *      -
      */
-    static drawOntology(_results, svgId) {
+    static drawOntology(_results, svgId, parameters = {}) {
         // menuNode settings
         var menuNode;
         window.setDisplayRoot = function (parameters) {
@@ -549,7 +551,8 @@ export class D3GraphVisualizer extends Observer {
             menuNode.displayOff();
         });
         // end of menu for the ontology graph background.
-        let drawer = new OntologyDrawer().setParameters({menuNode: menuNode}).setData(_results).draw(svgId);
+        parameters.menuNode = menuNode;
+        let drawer = new OntologyDrawer().setParameters(parameters).setData(_results).draw(svgId);
         return drawer;
     }
 

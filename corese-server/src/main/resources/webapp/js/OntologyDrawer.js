@@ -2,7 +2,7 @@
 
 export class OntologyDrawer {
     constructor() {
-        this.horizontalLayout = false;
+        this.horizontalLayout = true;
         this.setProperties(new Set(["-rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
     }
 
@@ -138,7 +138,7 @@ export class OntologyDrawer {
         if (!this.dataMap[node].isLeaf()) {
             this.dataMap[node].isFolded = !this.dataMap[node].isFolded;
             if (recursive) {
-                for (let child of this.dataMap[node].children()) {
+                for (let child in this.dataMap[node].children) {
                     this.switchVisibility(child, true);
                 }
             }
@@ -293,7 +293,7 @@ export class OntologyDrawer {
                         + " " + (d.x + d.parent.x) / 2 + "," + d.parent.y
                         + " " + d.parent.x + "," + d.parent.y;
                 }
-            });
+            }.bind(this));
         link.append("title")
             .text((d) => {
                 // return `link between ${d.parent.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
@@ -334,7 +334,7 @@ export class OntologyDrawer {
                 } else {
                     return "translate(" + d.x + "," + d.y + ")";
                 }
-            });
+            }.bind(this));
         node
             .append("title")
             .text((d) => {

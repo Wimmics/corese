@@ -134,14 +134,21 @@ export class OntologyDrawer {
         return this;
     }
 
+    setVisibility(node, value, recursive) {
+        if (!this.dataMap[node].isLeaf()) {
+            this.dataMap[node].isFolded = value;
+            if (recursive) {
+                for (let child in this.dataMap[node].children) {
+                    this.setVisibility(child, value, true);
+                }
+            }
+        }
+    }
+
     switchVisibility(node, recursive) {
         if (!this.dataMap[node].isLeaf()) {
             this.dataMap[node].isFolded = !this.dataMap[node].isFolded;
-            if (recursive) {
-                for (let child in this.dataMap[node].children) {
-                    this.switchVisibility(child, true);
-                }
-            }
+            this.setVisibility(node, this.dataMap[node].isFolded, recursive );
         }
     }
 
@@ -334,7 +341,12 @@ export class OntologyDrawer {
                 } else {
                     return "translate(" + d.x + "," + d.y + ")";
                 }
+
             }.bind(this));
+        node.on("click", (d) => {
+            if (d.data.url !== undefined) window.open(d.url);
+            if (d.data.link !== undefined) trans(d.link);
+        });
         node
             .append("title")
             .text((d) => {

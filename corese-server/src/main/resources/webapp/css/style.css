@@ -1,4 +1,20 @@
 /*
+ * Style for the result table of the SHACL validator
+ */
+.shacl-div {
+	max-height: 75%;
+	overflow: auto;
+}
+.shacl-div table { 
+	table-layout: fixed;
+	width: 100%;
+	height: 200px;
+}
+.shacl-div table td {
+	width: 33%; /* Assume there is three columns */
+	overflow: auto;
+}
+/*
  *  Style for the tree layout of the ontology.
  */
 .node circle { fill: #fff; stroke: steelblue; stroke-width: 3px; }

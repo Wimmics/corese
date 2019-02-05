@@ -3,7 +3,7 @@
 export class OntologyDrawer {
     constructor() {
         this.horizontalLayout = false;
-        this.setProperties({"rdfs:subClassOf": true});
+        this.setProperties(new Set(["-rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
     }
 
     setData(data) {
@@ -39,10 +39,16 @@ export class OntologyDrawer {
             this.edgesMapId[e.id] = e;
             let s = e.source.id;
             let t = e.target.id;
-            if (e.label in this.properties) {
-                this.dataMap[s].valChildren[t] = true;
-                this.dataMap[t].parent = s;
-                this.dataMap[t].parentEdge = e;
+            if (this.properties.has(e.label)) {
+                if (this.invertProperties[e.label]) {
+                    this.dataMap[t].valChildren[s] = true;
+                    this.dataMap[s].parent = t;
+                    this.dataMap[s].parentEdge = e;
+                } else {
+                    this.dataMap[s].valChildren[t] = true;
+                    this.dataMap[t].parent = s;
+                    this.dataMap[t].parentEdge = e;
+                }
             }
         }
 
@@ -144,6 +150,22 @@ export class OntologyDrawer {
      */
     setProperties(properties) {
         this.properties = properties;
+        this.invertProperties = {};
+        let newProperties = new Set();
+        for (let currentProp of this.properties.values()) {
+            if (currentProp[0] === '-') {
+                this.properties.delete(currentProp);
+                currentProp = currentProp.substring(1, currentProp.length);
+                this.invertProperties[currentProp] = true;
+            } else {
+                if (currentProp[0] === '+') {
+                    currentProp = currentProp.substring(1, currentProp.length);
+                }
+                this.invertProperties[currentProp] = false;
+            }
+            newProperties.add(currentProp);
+        }
+        this.properties = newProperties;
     }
 
     computeHierarchy() {
@@ -176,7 +198,7 @@ export class OntologyDrawer {
             let data = tree.dataMap[nodeId];
             let height = 0;
             let width = 0;
-            if (Object.keys(data.children).length == 0) {
+            if (Object.keys(data.children).length === 0) {
                 height = 1;
                 width = 1;
             } else {
@@ -284,7 +306,9 @@ export class OntologyDrawer {
                         } else {
                             result += `\n`;
                         }
-                        result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
+                        if (this.dataMap[d.data.id].parentEdge !== undefined) {
+                            result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
+                        }
                     }
                 }
                 return result;

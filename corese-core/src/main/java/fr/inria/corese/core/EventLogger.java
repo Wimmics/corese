@@ -92,7 +92,7 @@ public class EventLogger {
                 }
                 break;
             case Finish:
-                logger.info(type + " " + e);
+                logger.info(type + " " + e + pretty(o));
                 break;
         }
         log(type, e, o);

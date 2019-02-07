@@ -40,6 +40,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
+import fr.inria.corese.sparql.api.QueryVisitor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -658,6 +659,9 @@ public class QueryProcess extends QuerySolver {
     Mappings query(Query q, Mapping m, Dataset ds) throws EngineException {
         m = createMapping(m, ds);
         pragma(q);
+        for (QueryVisitor vis : getAST(q).getVisitorList()) {
+            vis.visit(q, getGraph());
+        }
         if (q.getService() != null) {
             //@federate <http://dbpedia.org/sparql>
             //select where {}

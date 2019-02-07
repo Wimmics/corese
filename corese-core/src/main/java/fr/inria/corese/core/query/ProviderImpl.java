@@ -223,7 +223,10 @@ public class ProviderImpl implements Provider {
                 // select appropriate subset of distinct Mappings with service URI 
                 input = getMappings(q, exp, exp.getServiceNode(), service, map, eval.getEnvironment());
                 if (input.size() > 0) {
-                    g.getEventManager().process(Event.Service, input.toString(true, false, 20));
+                    g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 10));
+                }
+                else {
+                    g.getEventManager().process(Event.Service, "no input" );
                 }
             }
             
@@ -253,7 +256,7 @@ public class ProviderImpl implements Provider {
         if (list.size() > 1) {
             eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
         }
-        g.getEventManager().finish(Event.Service);
+        g.getEventManager().finish(Event.Service, "result: " + ((res!= null) ? res.size(): 0));
         return res;
     }
     

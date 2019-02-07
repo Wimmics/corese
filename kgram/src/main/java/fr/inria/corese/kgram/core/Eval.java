@@ -128,12 +128,9 @@ public class Eval implements ExpType, Plugin {
         match = m;
         plugin = this;
         lPathFinder = new ArrayList<PathFinder>();
-        setVisitor(new DefaultProcessVisitor());
+        setVisitor(new ProcessVisitorDefault());
         e.setKGRAM(this);
         initCallback();
-    }
-
-    class DefaultProcessVisitor implements ProcessVisitor {
     }
 
     void initCallback() {

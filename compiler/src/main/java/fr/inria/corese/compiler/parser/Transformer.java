@@ -316,6 +316,9 @@ public class Transformer implements ExpType {
         if (ast.hasMetadata(Metadata.METADATA)){
             add(new MetadataVisitor());
         }
+        if (ast.hasMetadata(Metadata.LDPATH)) {
+            ast.getMetadata().add(Metadata.VISITOR, "fr.inria.corese.core.visitor.ldpath.LinkedDataPath");
+        }
         if (ast.hasMetadata(Metadata.VISITOR)) {
             for (String name : ast.getMetadata().getValues(Metadata.VISITOR)) {
                 try {

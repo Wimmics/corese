@@ -6,14 +6,14 @@ import fr.inria.corese.kgram.core.Query;
 
 public interface QueryVisitor {
 	
-	void visit(ASTQuery ast);
+	default void visit(ASTQuery ast) {}
 	
-	void visit(Query query);
+        default void visit(Query query) {}
         
-        default void before(Query q) {
-        }
+        default void visit(Query q, Graph g) {}
         
-        default void after(Mappings map) {
-        }
+        default void before(Query q) {}
+        
+        default void after(Mappings map) {}
 
 }

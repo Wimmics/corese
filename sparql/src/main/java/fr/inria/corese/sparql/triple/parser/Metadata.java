@@ -50,6 +50,9 @@ public class Metadata extends ASTObject
     public static final int SERVER  = 32;
     public static final int PROVENANCE  = 33;
     public static final int DUPLICATE= 34;
+    public static final int LDPATH  = 35;
+    public static final int ENDPOINT  = 36;
+    public static final int FILE      = 37;
     
     
     public static final int EVENT   = 50;
@@ -137,6 +140,9 @@ public class Metadata extends ASTObject
         define("@metadata", METADATA);      
         define("@visitor",  VISITOR); 
         define("@trap",     TRAP); 
+        define("@ldpath",   LDPATH); 
+        define("@endpoint",   ENDPOINT); 
+        define("@file",     FILE); 
         
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  
@@ -182,6 +188,14 @@ public class Metadata extends ASTObject
         String name = name(type);
         if (name != null){
             add(name);
+        }
+        return this;
+    }
+    
+    public Metadata remove(int type) {
+        String name = name(type);
+        if (name != null){
+            map.remove(name);
         }
         return this;
     }

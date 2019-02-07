@@ -3351,4 +3351,8 @@ public class ASTQuery
     public void setVisitorList(List<QueryVisitor> visitList) {
         this.visitList = visitList;
     }
+    
+    public void addVisitor(QueryVisitor vis) {
+        visitList.add(vis);
+    }
 }

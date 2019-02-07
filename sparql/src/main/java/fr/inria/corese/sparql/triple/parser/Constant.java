@@ -330,7 +330,8 @@ public class Constant extends Atom {
         if (dt.isLiteral()) {
             cst = create(dt.getLabel(), dt.getDatatype().getLabel(), dt.getLang());
         } else if (dt.isURI()) {
-            cst = create(dt.getLabel());
+            cst = createResource(nsm.toPrefix(dt.getLabel(), true), dt.getLabel());
+            //cst.setQName(! cst.getName().equals(cst.getLongName()));
         } else {
             cst = createBlank(dt.getLabel());
         }

@@ -611,6 +611,11 @@ public class Term extends Expression {
     public void setDistinct(boolean b) {
         isDistinct = b;
     }
+    
+    public Term distinct(boolean b) {
+        setDistinct(b);
+        return this;
+    }
 
     @Override
     public boolean isDistinct() {

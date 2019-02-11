@@ -13,7 +13,7 @@ public class Binary extends Exp {
     }
     
     @Override
-    public boolean add(Exp exp) {
+    public Exp add(Exp exp) {
         return super.add((exp.isBGP()) ? exp : BasicGraphPattern.create(exp));
     }
 

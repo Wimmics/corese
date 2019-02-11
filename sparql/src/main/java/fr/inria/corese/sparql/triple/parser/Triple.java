@@ -715,8 +715,19 @@ public class Triple extends Exp {
 	public Atom getObject(){
 		return object;
 	}
-	
-	
+        
+        public Atom object() {
+            return object;
+        }
+        
+        public Atom subject() {
+            return subject;
+        }
+        
+        public Atom predicate() {
+            return getPredicate();
+        }
+		
 	public void setDirect(boolean b) {
 		isdirect = b;
 	}

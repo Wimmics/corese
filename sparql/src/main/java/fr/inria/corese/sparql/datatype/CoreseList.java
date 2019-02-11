@@ -110,6 +110,27 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
         }
         return super.equalsWE(dt);
     }
+    
+    @Override
+    public int compareTo(IDatatype dt) {
+        if (dt.isList()) {
+            int res = Integer.compare(size(), dt.size());
+            if (res != 0) {
+                return res;
+            }
+            int i = 0;
+            for (IDatatype val1 : getValues()) {
+                res = val1.compareTo(dt.get(i++));
+                if (res != 0) {
+                    return res;
+                }
+            }
+            return 0;
+        }
+        else {
+            return super.compareTo(dt);
+        }
+    }
 
     @Override
     public boolean isList() {

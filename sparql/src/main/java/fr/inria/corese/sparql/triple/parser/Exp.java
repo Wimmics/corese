@@ -36,7 +36,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		body = new ArrayList<Exp>();
 	}
 	
-	public  boolean add(Exp exp){
+	public  Exp add(Exp exp){
 		if (exp.isBinary() && exp.size() == 1){
                     BasicGraphPattern bgp;
                     
@@ -55,21 +55,28 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
                     return add(exp);
                     
 		}
-		return body.add(exp);
+             body.add(exp);
+             return this;
 	}
         
-        public  boolean add2(Exp exp){
-		if (exp.isBinary() && exp.size() == 1){
-			BasicGraphPattern bgp = BasicGraphPattern.create();
-			for (Exp e : body){
-				bgp.add(e);
-			}
-			exp.add(0, bgp);
-			body.clear();
-			return add(exp);
-		}
-		return body.add(exp);
-	}
+        // exp is a filter
+        public Exp add(Expression exp) {
+            add(Triple.create(exp));
+            return this;
+        }
+        
+//        public  boolean add2(Exp exp){
+//		if (exp.isBinary() && exp.size() == 1){
+//			BasicGraphPattern bgp = BasicGraphPattern.create();
+//			for (Exp e : body){
+//				bgp.add(e);
+//			}
+//			exp.add(0, bgp);
+//			body.clear();
+//			return add(exp);
+//		}
+//		return body.add(exp);
+//	}
         
         // for structured exp only
         public void include(Exp exp) {

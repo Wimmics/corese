@@ -3355,4 +3355,102 @@ public class ASTQuery
     public void addVisitor(QueryVisitor vis) {
         visitList.add(vis);
     }
+    
+    
+    /***************************************
+    * AST API
+    ****************************************/
+       
+    public ASTQuery nsm(NSManager nsm) {
+        setNSM(nsm);
+        return this;
+    }
+    
+    public ASTQuery select(Variable var) {
+        setSelect(var);
+        return this;
+    }
+    
+    public ASTQuery select(Variable var, Expression exp) {
+        setSelect(var, exp);
+        return this;
+    }
+    
+    public ASTQuery distinct(boolean b) {
+        setDistinct(b);
+        return this;
+    }
+    
+    public ASTQuery orderby(Expression e) {
+        setSort(e);
+        return this;
+    }
+    
+     public ASTQuery groupby(Expression e) {
+        setGroup(e);
+        return this;
+    }
+    
+    public ASTQuery where(Exp... exp) {
+        if (exp.length == 1) {
+            setBody(abgp(exp[0]));
+        }
+        else {
+            setBody(bgp(exp));
+        }
+        return this;
+    }
+    
+    public Exp where() {
+        return getBody();
+    }
+    
+    public Variable variable(String name) {
+        return Variable.create(name);
+    }
+    
+    public Constant uri(String name) {
+        return Constant.create(name);
+    }
+    
+    public BasicGraphPattern bgp(Exp... exp) {
+        BasicGraphPattern bgp = BasicGraphPattern.create();
+        for (Exp e : exp) {
+            bgp.add(e);
+        }
+        return bgp;
+    }
+    
+    Exp abgp(Exp e) {
+        return (e.isBGP()) ? e : bgp(e);
+    }
+    
+    public Service service(Atom serv, Exp exp) {
+        return Service.create(serv, abgp(exp));
+    }
+    
+    public Source graph(Atom name, Exp exp) {
+        return new Source(name, abgp(exp));
+    }
+       
+    public Union union(Exp e1, Exp e2) {
+        return new Union (abgp(e1), abgp(e2));
+    }
+    
+    public Optional optional(Exp e1, Exp e2) {
+        return new Optional(abgp(e1), abgp(e2));
+    }
+    
+    public Minus minus(Exp e1, Exp e2) {
+        return new Minus(abgp(e1), abgp(e2));
+    }
+    
+    public Triple filter(Expression e) {
+        return Triple.create(e);
+    }
+    
+    public Term count(Expression exp) {
+        return Term.function(Processor.COUNT, exp);
+    }
+    
 }

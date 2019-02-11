@@ -5,6 +5,13 @@ import java.util.List;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 
 public class Minus extends Binary {
+    
+    Minus() {}
+    
+    Minus(Exp e1, Exp e2) {
+        add(e1);
+        add(e2);
+    }
 	
 	public static Minus create(Exp exp){
 		Minus e = new Minus();

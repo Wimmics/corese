@@ -20,12 +20,14 @@ import java.util.List;
  */
 public class AST {
     
-    static String PROPERTY_VARIABLE = "?p";
-    static String COUNT_VARIABLE = "?count";
-    static String COUNT_DISTINCT_VARIABLE = "?count2";
-    static String SERVICE_VARIABLE = "?uri2";
-    static String TRIPLE_VARIABLE = "?s";
-    
+    static final String PROPERTY_VARIABLE = "?p";
+    static final String COUNT_VARIABLE = "?count";
+    static final String DISTINCT_VARIABLE = "?count2";
+    static final String SERVICE_VARIABLE = "?uri2";
+    static final String LOCAL_VARIABLE = "?uri1";
+    static final String TRIPLE_VARIABLE = "?s";
+    static final String COUNT_FUNCTION = "count";
+   
     
     AST() {
     }
@@ -42,71 +44,50 @@ public class AST {
      * }.
      */
     
-    ASTQuery service (ASTQuery a, String uri1, String uri2, int i) {
-        ASTQuery ast = ASTQuery.create();
-        ast.setNSM(a.getNSM());
+    ASTQuery service (ASTQuery aa, String uri1, String uri2, int i) {
+        ASTQuery a = ASTQuery.create().nsm(aa.getNSM());
                         
-        ASTQuery sub = ast.subCreate();
+        ASTQuery sub = a.subCreate();
         Triple t = tripleVariable(sub, i);
-        Triple t2 = sub.createTriple(t.getObject(), t.getPredicate(), t.getSubject());        
-        Union union = Union.create(BasicGraphPattern.create(t), BasicGraphPattern.create(t2));
+        Triple t2 = sub.createTriple(t.object(), t.predicate(), t.subject());        
         
-        sub.setBody(BasicGraphPattern.create(union));
-        sub.setSelect(t.getSubject().getVariable());
-        sub.setDistinct(true);
+        sub.where(sub.union(t, t2));
+        sub.select(t.subject().getVariable()).distinct(true);
         
-        Service s2 = Service.create(Constant.create(uri2), BasicGraphPattern.create(Query.create(sub)));      
+        Service s1 = a.service(a.uri(uri1), aa.where());
+        Service s2 = a.service(a.uri(uri2), Query.create(sub));                     
+        a.where(s1, s2);
         
-        Service s1 = Service.create(Constant.create(uri1), a.getBody());
-        
-        BasicGraphPattern bgp = BasicGraphPattern.create(s1, s2);
-        ast.setBody(bgp);
-        Term count = Term.function("count", t.getSubject());
-        count.setDistinct(true);
-        ast.setSelect(Variable.create(COUNT_VARIABLE), count);
-        ast.setSelect(Variable.create("?uri1"), Constant.create(uri1));
-        ast.setSelect(Variable.create(SERVICE_VARIABLE), Constant.create(uri2));
-        return ast;
+        a.select(a.variable(COUNT_VARIABLE), a.count(t.subject()).distinct(true))
+                .select(a.variable(LOCAL_VARIABLE), a.uri(uri1))
+                .select(a.variable(SERVICE_VARIABLE), a.uri(uri2));
+        return a;
     }
     
     /**
-     * select ?p (count(distinct ?si) as ?count) (s1 as ?uri1) (s2 as ?uri2) 
+     * select ?p (count(distinct ?sj) as ?dist) (count(?sj) as ?count) (s1 as ?uri1) (s2 as ?uri2) 
      * where {
      * s1: service s1 EXP 
-     * s2: service s2 {
-     * sub: select distinct ?si ?p where {{?si ?p ?sj} union {?sj ?p ?si}}
+     * s2: service s2 { ?si ?p ?sj }
      * }
      * group by ?p
     */
-     ASTQuery servicePath (ASTQuery a, String uri1, String uri2, int i) {
-        ASTQuery ast = ASTQuery.create();
-        ast.setNSM(a.getNSM());
-                        
-        ASTQuery sub = ast.subCreate();
-        Triple t = tripleVariable(sub, i);
-        Triple t2 = sub.createTriple(t.getObject(), t.getPredicate(), t.getSubject());        
-        Union union = Union.create(BasicGraphPattern.create(t), BasicGraphPattern.create(t2));
+     ASTQuery servicePath (ASTQuery aa, String uri1, String uri2, int i) {
+        ASTQuery a = ASTQuery.create().nsm(aa.getNSM());
+                               
+        Triple t = tripleVariable(a, i);       
+        Service s1 = a.service(a.uri(uri1), aa.where());
+        Service s2 = a.service(a.uri(uri2), t);                   
+        a.where(s1, s2).groupby(t.predicate());
         
-        sub.setBody(BasicGraphPattern.create(union));
-        sub.setSelect(t.getSubject().getVariable());
-        sub.setSelect(t.getVariable());
-        sub.setDistinct(true);
+        a.select(a.variable(DISTINCT_VARIABLE), a.count(t.object()).distinct(true));
+        a.select(a.variable(COUNT_VARIABLE), a.count(t.object()));
         
-        Service s2 = Service.create(Constant.create(uri2), BasicGraphPattern.create(Query.create(sub)));      
-        
-        Service s1 = Service.create(Constant.create(uri1), a.getBody());
-        
-        BasicGraphPattern bgp = BasicGraphPattern.create(s1, s2);
-        ast.setBody(bgp);
-        Term count = Term.function("count", t.getSubject());
-        count.setDistinct(true);
-        ast.setGroup(t.getPredicate());
-        ast.setSelect(Variable.create(COUNT_VARIABLE), count);
-        ast.setSelect(t.getVariable());
-        ast.setSelect(t.getSubject().getVariable());
-        ast.setSelect(Variable.create("?uri1"), Constant.create(uri1));
-        ast.setSelect(Variable.create(SERVICE_VARIABLE), Constant.create(uri2));
-        return ast;
+        a.select(t.predicate().getVariable());
+        a.select(t.subject().getVariable()); // documentation
+        a.select(a.variable(LOCAL_VARIABLE), a.uri(uri1));
+        a.select(a.variable(SERVICE_VARIABLE), a.uri(uri2));
+        return a;
     }
 
 
@@ -114,23 +95,17 @@ public class AST {
      * complete with 
      * select distinct ?p where { EXP ?si ?p ?sj }
      */
-    ASTQuery variable(ASTQuery a, int i) {
-       ASTQuery ast = copy(a);
+    ASTQuery variable(ASTQuery aa, int i) {
+       ASTQuery a = copy(aa);
                
-        Triple t = tripleVariable(ast, i);        
+        Triple t = tripleVariable(a, i);        
         Expression term = filter(1, i+1);
-        Expression isuri = Term.function("isURI", variable(i+1));
+        Expression isuri = Term.function("isURI", variable(i));
         
-        ast.getBody().add(Triple.create(term));
-        ast.getBody().add(Triple.create(isuri));
-        
-        ast.getBody().add(t);
+        a.where().add(term).add(isuri).add(t);
+        a.select(t.getVariable()).distinct(true).orderby(t.getVariable());
 
-        ast.setSelect(t.getVariable());
-        ast.setSort(t.getVariable());
-        ast.setDistinct(true);
-
-        return ast;
+        return a;
     }
     
     Triple tripleVariable(ASTQuery ast, int i) {
@@ -142,8 +117,8 @@ public class AST {
     }
     
     Triple tripleProperty(ASTQuery ast, Constant p, int i) {
-        Triple l = ast.getBody().get(ast.getBody().size() -1).getTriple();
-        Triple t = ast.createTriple(l.getSubject(), p, l.getObject());
+        Triple l = ast.where().get(ast.where().size() -1).getTriple();
+        Triple t = ast.createTriple(l.subject(), p, l.object());
         return t;
     }
    
@@ -151,21 +126,17 @@ public class AST {
      * replace last triple ?si ?p ?sj by ?si p ?sj
      * return select (count(*) as ?count) where { EXP ?si p ?sj }
      */
-    ASTQuery property(ASTQuery a, Constant p, int i) {
-        ASTQuery ast = copy(a);
+    ASTQuery property(ASTQuery aa, Constant p, int i) {
+        ASTQuery a = copy(aa);
         
         // replace last triple with copy with p as property 
-        Triple t = tripleProperty(ast, p, i);
-        ast.getBody().set(ast.getBody().size() -1, t);
+        Triple t = tripleProperty(a, p, i);
+        a.where().set(a.where().size() -1, t);
         
-        Term count = Term.function("count", t.getSubject());
-        ast.setSelect(Variable.create(COUNT_VARIABLE), count);
+        a.select(a.variable(COUNT_VARIABLE), a.count(t.object()));        
+        a.select(a.variable(DISTINCT_VARIABLE), a.count(t.object()).distinct(true));
         
-        Term count2 = Term.function("count", t.getSubject());
-        count2.setDistinct(true);
-        ast.setSelect(Variable.create(COUNT_DISTINCT_VARIABLE), count2);
-        
-        return ast;
+        return a;
     }
     
     ASTQuery propertyVariable(ASTQuery a, Constant p, int i) {
@@ -196,23 +167,27 @@ public class AST {
         ASTQuery ast = ASTQuery.create();
         ast.setNSM(a.getNSM());
         ast.addMetadata(a.getMetadata());
-        // copy body
-        ast.setBody(BasicGraphPattern.create());
-        for (Exp exp : a.getBody()) {
-            ast.getBody().add(exp);
-        }       
+        ast.where(copyBody(a));    
         return ast;
+    }
+    
+    BasicGraphPattern copyBody(ASTQuery ast) {
+        BasicGraphPattern exp = ast.bgp();
+        for (Exp ee : ast.where()) {
+            exp.add(ee);
+        }
+        return exp;
     }
     
      // nb triples with two variables ?si ?sj
     int length(ASTQuery ast) {
         int i = 0;
-        for (Exp exp : ast.getBody()) {
+        for (Exp exp : ast.where()) {
             if (exp.isTriple() && !exp.isFilter()) {
                 Triple t = exp.getTriple();
-                if (t.getSubject().isVariable() && t.getObject().isVariable()
-                        && t.getSubject().getLabel().startsWith(TRIPLE_VARIABLE)
-                        && t.getObject().getLabel().startsWith(TRIPLE_VARIABLE)) {
+                if (t.subject().isVariable() && t.object().isVariable()
+                        && t.subject().getLabel().startsWith(TRIPLE_VARIABLE)
+                        && t.object().getLabel().startsWith(TRIPLE_VARIABLE)) {
                     i++;
                 }
             }
@@ -220,19 +195,18 @@ public class AST {
         return i;
     }
     
-  
+    // modify ast
     ASTQuery complete(ASTQuery ast, List<Constant> list, int i) {
+        ast.where(copyBody(ast));
         for (Constant p : list) {
             Variable s = variable(i++);
             Variable o = variable(i);
             Triple t = ast.createTriple(s, p, o);
             Expression f = filter(1, i);
             Expression isuri = Term.function("isURI", o);
-            ast.getBody().add(Triple.create(f));
-            ast.getBody().add(Triple.create(isuri));
-            ast.getBody().add(t);
+            ast.where().add(f).add(f).add(t);
         }
         return ast;
-    }
+    }   
     
 }

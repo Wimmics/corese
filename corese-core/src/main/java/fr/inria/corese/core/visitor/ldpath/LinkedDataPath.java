@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,18 +103,16 @@ public class LinkedDataPath implements QueryVisitor {
     public void visit(Query q, fr.inria.corese.sparql.api.Graph g) {
     }
 
-    public Result ldp(ASTQuery ast) throws IOException, EngineException, InterruptedException {
-        Logger.getLogger(LinkedDataPath.class.getName()).info("Start Linked Data Path");
-        process(ast);
-        return result;
+    Result ldp(ASTQuery ast) throws IOException, EngineException, InterruptedException {
+        return process(ast);
     }
     
     public void setFile(String name) {
         file = name;
     }
     
-    public HashMap<ASTQuery, Mappings> getResult() {
-        return result.getResult();
+    public Result getResult() {
+        return result;
     }
 
     void start(ASTQuery ast) throws EngineException {
@@ -124,6 +121,7 @@ public class LinkedDataPath implements QueryVisitor {
         result.setLinkedDataPath(this);
         result.setFile(file);
         if (ast.isDebug()) {
+            ast.setDebug(false);
             trace = true;
         }
         exec = QueryProcess.create(graph);
@@ -155,6 +153,9 @@ public class LinkedDataPath implements QueryVisitor {
                 getEndpointList().add(uri);
             }
         }
+        if (ast.hasMetadata(Metadata.DEBUG)) {
+            ast.getMetadata().remove(Metadata.DEBUG);
+        }
         if (ast.hasMetadata(Metadata.FILE)) {
             setFile(ast.getMetadata().getValue(Metadata.FILE));
         }
@@ -175,22 +176,27 @@ public class LinkedDataPath implements QueryVisitor {
         return uri;
     }
     
-    
-    void process(ASTQuery ast) throws EngineException, InterruptedException, IOException {
-        start(ast);
-        federate(ast, getLocalList());
-        if (getPathLength() == 0 && ! getEndpointList().isEmpty()) {
-            // @ldpath <uri1@0> @endpoint <uri2>
-            // keep ast query as is on uri1 and join on remote endpoint uri2
-            join(ast, astq.length(ast));
-        } else {
-            process(ast, 1);
-        }
+    public Result process(String q) throws EngineException, InterruptedException, IOException {
+        Query qq = exec.compile(q);
+        return process(exec.getAST(qq));
     }
     
-    public void complete(ASTQuery ast, List<Constant> list, int i) throws EngineException, InterruptedException, IOException {
-         ast = astq.complete(ast, list, i);
-         process(ast);
+    public Result process(ASTQuery ast) throws EngineException, InterruptedException, IOException {
+        return process(ast, 1);
+    }
+    
+    public Result process(ASTQuery ast, int varIndex) throws EngineException, InterruptedException, IOException {
+        Logger.getLogger(LinkedDataPath.class.getName()).info("Start Linked Data Path");
+        start(ast);
+        federate(ast, getLocalList());
+        if (getPathLength() == 0 && !getEndpointList().isEmpty()) {
+            // @ldpath <uri1@0> @endpoint <uri2>
+            // keep ast query as is on uri1 and join on remote endpoint uri2
+            join(ast, astq.length(ast) + 1);
+        } else {
+            process(ast, 1, varIndex);
+        }
+        return result;
     }
 
     /**
@@ -201,9 +207,9 @@ public class LinkedDataPath implements QueryVisitor {
      *
      * Results recorded in table ASTQuery -> Mappings
      */
-    void process(ASTQuery ast, int i) throws InterruptedException {
+    void process(ASTQuery ast, int i, int varIndex) throws InterruptedException {
         // add: ?s ?p ?v
-        ASTQuery ast1 = astq.variable(ast, i);
+        ASTQuery ast1 = astq.variable(ast, varIndex);
         if (trace) {
             System.out.println(ast1);
         }
@@ -212,14 +218,43 @@ public class LinkedDataPath implements QueryVisitor {
             System.out.println(map);
         }
         List<Constant> list = getPropertyList(map);
-        process(ast1, list, i);
+        process(ast1, list, i, varIndex);
+    }
+
+    /**
+     * ast has a path q1/q2/../qi consider additional predicates
+     * path/p1..path/pn in pList
+     */
+    void process(ASTQuery ast, List<Constant> pList, int i, int varIndex) throws InterruptedException {
+        // for all p in pList: @federate s1 select (count(*) as ?count) where { EXP ?si p ?sj }
+        property(ast, pList, varIndex);
+
+        if (i < getPathLength()) {
+            // for all p in pList: @federate s1 select distinct ?p { EXP ?si p ?sj ?sj ?p ?sk }
+            List<Mappings> mapList = variable(ast, pList, varIndex);
+            // mapList is, for each p,  the next predicate list to consider
+            for (Mappings map : mapList) {
+                // newList is the new predicate list (for p) to consider recursively 
+                List<Constant> newList = getPropertyList(map);
+                process(exec.getAST(map), newList, i + 1, varIndex + 1);
+            }
+        }
+    }
+    
+    /**
+     * varIndex : index of variable where to start the path with list
+     * varIndex is the subject of first predicate in list
+     */
+    public ASTQuery complete(ASTQuery ast, List<Constant> list, int varIndex) throws EngineException, InterruptedException, IOException {
+         return astq.complete(ast, list, varIndex);
+         //process(ast, varIndex + list.size());
     }
 
     /**
      * compute join of ast with remote endpoint
      */
-    void join(ASTQuery ast, int i) {
-        ASTQuery serv = endpoint(ast, i+1);
+    public void join(ASTQuery ast, int varIndex) {
+        ASTQuery serv = endpoint(ast, varIndex);
         if (trace) {
             System.out.println(serv);
         }
@@ -231,33 +266,16 @@ public class LinkedDataPath implements QueryVisitor {
         result.record(qpe.getAST(), mm);
     }
     
-    ASTQuery endpoint(ASTQuery ast, int i) {
+    public ASTQuery endpoint(ASTQuery ast, int varIndex) {
         if (getEndpointPathLength() == 0) {
-            return astq.service(ast, getLocalList().get(0), getEndpointList().get(0), i);
+            return astq.service(ast, getLocalList().get(0), getEndpointList().get(0), varIndex);
         } else {
-            return astq.servicePath(ast, getLocalList().get(0), getEndpointList().get(0), i);
+            return astq.servicePath(ast, getLocalList().get(0), getEndpointList().get(0), varIndex);
         }
     }
 
-    /**
-     * ast has a path q1/q2/../qi consider additional predicates
-     * path/p1..path/pn in pList
-     */
-    void process(ASTQuery ast, List<Constant> pList, int i) throws InterruptedException {
-        // for all p in pList: @federate s1 select (count(*) as ?count) where { EXP ?si p ?sj }
-        property(ast, pList, i);
-
-        if (i < getPathLength()) {
-            // for all p in pList: @federate s1 select distinct ?p { EXP ?si p ?sj ?sj ?p ?sk }
-            List<Mappings> mapList = variable(ast, pList, i);
-            // mapList is, for each p,  the next predicate list to consider
-            for (Mappings map : mapList) {
-                // newList is the new predicate list (for p) to consider recursively 
-                List<Constant> newList = getPropertyList(map);
-                process(exec.getAST(map), newList, i + 1);
-            }
-        }
-    }
+    
+    
 
     List<Constant> getPropertyList(Mappings map) {
         ArrayList<Constant> list = new ArrayList<>();
@@ -310,10 +328,10 @@ public class LinkedDataPath implements QueryVisitor {
         for (QueryProcessThread qp : plist) {
             qp.join(timeout);
             Mappings mm = qp.getMappings();
-//            if (qp.isJoin() && mm != null) {
-//                if (trace) System.out.println("Res: " + mm.size());
-//                //System.out.println(mm);
-//            }
+            if (qp.isJoin() && mm != null) {
+                if (trace) System.out.println("Res: " + mm.get(0));
+                //System.out.println(mm);
+            }
             if (trace) {
                 System.out.println(String.format("%s/%s: nb res: %s", j++, plist.size(), (mm == null) ? "" : mm.size()));
             }
@@ -442,6 +460,10 @@ public class LinkedDataPath implements QueryVisitor {
      */
     public void setLocalList(List<String> localList) {
         this.localList = localList;
+    }
+    
+    public void setDebug(boolean b) {
+        trace  = b;
     }
 
 }

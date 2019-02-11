@@ -23,7 +23,8 @@ import java.util.List;
  */
 public class Result {
     static final String NL = System.getProperty("line.separator");
-
+    static final String LDP = "http://ns.inria.fr/ldpath/" ;
+    
     HashMap<ASTQuery, Mappings> table;
     ArrayList<ASTQuery> alist;
     ASTQuery ast;
@@ -81,7 +82,7 @@ public class Result {
     int process(ASTQuery ast, Mappings map, int i) throws IOException {
         DatatypeValue dt = map.getValue(COUNT_VARIABLE);
         if (dt != null){ 
-            DatatypeValue dt2 = map.getValue(AST.COUNT_DISTINCT_VARIABLE);
+            DatatypeValue dt2 = map.getValue(AST.DISTINCT_VARIABLE);
             DatatypeValue dtp = map.getValue(AST.PROPERTY_VARIABLE);
             Constant uri = getEndpoint(map);
             if (uri == null) {
@@ -99,7 +100,7 @@ public class Result {
                         List<Constant> list = new ArrayList<>();
                         list.add(Constant.create(dtpred));
                         dt  = m.getValue(COUNT_VARIABLE);
-                        dt2 = m.getValue(AST.COUNT_DISTINCT_VARIABLE);
+                        dt2 = m.getValue(AST.DISTINCT_VARIABLE);
                         result(i++, path, list, uri, dt, dt2);
                     }
                 }
@@ -183,7 +184,7 @@ public class Result {
     
     void prolog(StringBuilder sb) {
         sb.append(String.format("# Linked Data Path %s \n", new Date()));
-        sb.append("@prefix rs: <http://ns.inria.fr/ldpath/> \n");
+        sb.append(String.format("@prefix rs: <%s> \n", LDP));
         if (!ldp.getLocalList().isEmpty()) {
             sb.append(String.format("[] rs:first <%s> ; rs:length %s \n", ldp.getLocalList().get(0), ldp.getPathLength()));
         }

@@ -52,7 +52,7 @@ public class ProviderImpl implements Provider {
 
     private static final String DB = "db:";
     private static final String SERVICE_ERROR = "Service error: ";
-    private static Logger logger = LoggerFactory.getLogger(ProviderImpl.class);
+    static Logger logger = LoggerFactory.getLogger(ProviderImpl.class);
     static final String LOCALHOST = "http://localhost:8080/sparql";
     static final String LOCALHOST2 = "http://localhost:8090/sparql";
     static final String DBPEDIA = "http://fr.dbpedia.org/sparql";

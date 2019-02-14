@@ -314,10 +314,10 @@ public class CompileService {
     Term filter(ASTQuery ast, Variable var, IDatatype dt) {
         if (dt.isBlank()) {
             return Term.function(Processor.ISBLANK, var);
+        } else if (dt.isURI() && dt.getLabel().contains(" ")) {
+            //ProviderImpl.logger.warn("URI with space: " + dt);
+            return Term.create(Term.SEQ, var, Constant.create(dt.getLabel().replace(" ", "%20")));
         }
-//        else if (dt.isURI()) {
-//            return Term.create(Term.SEQ, var, ast.createQNameURI(dt.getLabel()));
-//        }
         return Term.create(Term.SEQ, var, Constant.create(dt));
     }
     

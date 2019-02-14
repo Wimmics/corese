@@ -367,6 +367,11 @@ public class QueryProcess extends QuerySolver {
     public Query compile(String squery) throws EngineException {
         return compile(squery, null);
     }
+    
+    public ASTQuery ast(String q) throws EngineException {
+        Query qq = compile(q);
+        return getAST(qq);
+    }
 
     public Mappings query(String squery, Dataset ds) throws EngineException {
         return query(squery, null, ds);

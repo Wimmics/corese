@@ -53,6 +53,10 @@ public class Metadata extends ASTObject
     public static final int LDPATH  = 35;
     public static final int ENDPOINT  = 36;
     public static final int FILE      = 37;
+    public static final int DETAIL    = 38;
+    public static final int ACCEPT    = 39;
+    public static final int REJECT    = 40;
+    public static final int OPTION    = 41;
     
     
     public static final int EVENT   = 50;
@@ -141,8 +145,13 @@ public class Metadata extends ASTObject
         define("@visitor",  VISITOR); 
         define("@trap",     TRAP); 
         define("@ldpath",   LDPATH); 
-        define("@endpoint",   ENDPOINT); 
+        define("@endpoint", ENDPOINT); 
         define("@file",     FILE); 
+        define("@detail",   DETAIL); 
+        define("@accept",   ACCEPT); 
+        define("@reject",   REJECT); 
+        define("@option",   OPTION); 
+        
         
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  

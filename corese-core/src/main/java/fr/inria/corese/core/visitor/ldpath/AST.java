@@ -1,15 +1,16 @@
 package fr.inria.corese.core.visitor.ldpath;
 
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.List;
 
@@ -20,16 +21,23 @@ import java.util.List;
  */
 public class AST {
     
-    static final String PROPERTY_VARIABLE = "?p";
-    static final String COUNT_VARIABLE = "?count";
-    static final String DISTINCT_VARIABLE = "?count2";
-    static final String SERVICE_VARIABLE = "?uri2";
-    static final String LOCAL_VARIABLE = "?uri1";
-    static final String TRIPLE_VARIABLE = "?s";
+    static final String PROPERTY_VAR = "?p";
+    static final String COUNT_VAR = "?count";
+    static final String DISTINCT_VAR = "?count2";
+    static final String SERVICE_VAR = "?uri2";
+    static final String LOCAL_VAR = "?uri1";
+    static final String TRIPLE_VAR = "?s";
     static final String COUNT_FUNCTION = "count";
-   
     
-    AST() {
+    static final String OPTION   = NSManager.USER;
+    static final String LITERAL  = OPTION + "literal";
+    static final String SUBJECT  = OPTION + "subject";
+    static final String DISTINCT = OPTION + "distinct";
+   
+    LinkedDataPath ldp;
+    
+    AST(LinkedDataPath ldp) {
+        this.ldp = ldp;
     }
     
  
@@ -45,6 +53,10 @@ public class AST {
      */
     
     ASTQuery service (ASTQuery aa, String uri1, String uri2, int i) {
+        return service(aa, uri1, uri2, i, true);
+    }
+    
+    ASTQuery service (ASTQuery aa, String uri1, String uri2, int i, boolean count) {
         ASTQuery a = ASTQuery.create().nsm(aa.getNSM());
                         
         ASTQuery sub = a.subCreate();
@@ -53,18 +65,38 @@ public class AST {
         
         sub.where(sub.union(t, t2));
         sub.select(t.subject().getVariable()).distinct(true);
-        
-        Service s1 = a.service(a.uri(uri1), aa.where());
+        Exp body = copyBody(aa);
+        body = uri(body, i);
+        Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), Query.create(sub));                     
         a.where(s1, s2);
         
-        a.select(a.variable(COUNT_VARIABLE), a.count(t.subject()).distinct(true))
-                .select(a.variable(LOCAL_VARIABLE), a.uri(uri1))
-                .select(a.variable(SERVICE_VARIABLE), a.uri(uri2));
+        if (count) {
+            a.select(a.variable(COUNT_VAR), a.count(t.subject()).distinct(true))
+             .select(a.variable(LOCAL_VAR), a.uri(uri1))
+             .select(a.variable(SERVICE_VAR), a.uri(uri2));
+        }
+        else {
+            a.select(t.subject().getVariable()).distinct(true);
+            a.orderby(t.subject());
+        }
         return a;
     }
     
     /**
+     * Return predicate and count subject or object
+     */
+    ASTQuery servicePath(ASTQuery aa, String uri1, String uri2, int i) {
+        if (ldp.hasOption(SUBJECT)) {
+            return servicePathSubject(aa, uri1, uri2, i);
+        } else {
+            return servicePathObject(aa, uri1, uri2, i);
+        }
+    }
+
+    
+    /**
+     * count object on remote endpoint
      * select ?p (count(distinct ?sj) as ?dist) (count(?sj) as ?count) (s1 as ?uri1) (s2 as ?uri2) 
      * where {
      * s1: service s1 EXP 
@@ -72,24 +104,78 @@ public class AST {
      * }
      * group by ?p
     */
-     ASTQuery servicePath (ASTQuery aa, String uri1, String uri2, int i) {
+     ASTQuery servicePathObject (ASTQuery aa, String uri1, String uri2, int i) {
         ASTQuery a = ASTQuery.create().nsm(aa.getNSM());
                                
-        Triple t = tripleVariable(a, i);       
-        Service s1 = a.service(a.uri(uri1), aa.where());
-        Service s2 = a.service(a.uri(uri2), t);                   
+        Triple t = tripleVariable(a, i); 
+        Exp body = copyBody(aa);
+        body = uri(body, i);
+        Service s1 = a.service(a.uri(uri1), body);
+        Service s2 = a.service(a.uri(uri2), t);  
+        
         a.where(s1, s2).groupby(t.predicate());
         
-        a.select(a.variable(DISTINCT_VARIABLE), a.count(t.object()).distinct(true));
-        a.select(a.variable(COUNT_VARIABLE), a.count(t.object()));
+        a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
+        a.select(a.variable(COUNT_VAR), a.count(t.object()));
         
         a.select(t.predicate().getVariable());
         a.select(t.subject().getVariable()); // documentation
-        a.select(a.variable(LOCAL_VARIABLE), a.uri(uri1));
-        a.select(a.variable(SERVICE_VARIABLE), a.uri(uri2));
+        a.select(a.variable(LOCAL_VAR), a.uri(uri1));
+        a.select(a.variable(SERVICE_VAR), a.uri(uri2));
         return a;
     }
+     
+    Exp uri(Exp body, int i) {
+        if (! ldp.hasOption(LITERAL)) {
+            body.add(Term.function("isURI", variable(i)));
+        }
+        return body;
+    }
+    
+     
+    /**
+     * count subject on remote endpoint
+     * select ?p (count(distinct ?si) as ?dist) (count(?si) as ?count) (s1 as ?uri1) (s2 as ?uri2) 
+     * where {
+     * s1: service s1 EXP 
+     * s2: service s2 { select distinct ?si ?p where { ?si ?p ?sj } }
+     * }
+     * group by ?p
+    */ 
+    ASTQuery servicePathSubject(ASTQuery aa, String uri1, String uri2, int i) {
+        ASTQuery a = ASTQuery.create().nsm(aa.getNSM());
 
+        Triple t = tripleVariable(a, i);
+        Variable subject = t.subject().getVariable();
+        ASTQuery sub = a.subCreate();        
+        sub.where(t);
+        sub.select(subject);
+        sub.select(t.predicate().getVariable());
+        if (isDistinct()) {
+            sub.distinct(true);
+        }
+        
+        Exp body = copyBody(aa);
+        body = uri(body, i);
+        Service s1 = a.service(a.uri(uri1), body);
+        Service s2 = a.service(a.uri(uri2), Query.create(sub));
+        a.where(s1, s2).groupby(t.predicate());
+
+        a.select(a.variable(DISTINCT_VAR), a.count(subject).distinct(true));
+        if (! isDistinct()) {
+            a.select(a.variable(COUNT_VAR), a.count(subject));
+        }
+        a.select(t.predicate().getVariable());
+        a.select(t.subject().getVariable()); // documentation
+        a.select(a.variable(LOCAL_VAR), a.uri(uri1));
+        a.select(a.variable(SERVICE_VAR), a.uri(uri2));
+        return a;
+    }
+    
+    // count only distinct subject on remote endpoint for path 
+    boolean isDistinct() {
+        return ldp.hasOption(DISTINCT);
+    }
 
      /**
      * complete with 
@@ -110,7 +196,7 @@ public class AST {
     
     Triple tripleVariable(ASTQuery ast, int i) {
         Variable s = variable(i);
-        Variable p = Variable.create(PROPERTY_VARIABLE);
+        Variable p = Variable.create(PROPERTY_VAR);
         Variable v = variable(i + 1);
         Triple t = ast.createTriple(s, p, v);
         return t;
@@ -133,8 +219,8 @@ public class AST {
         Triple t = tripleProperty(a, p, i);
         a.where().set(a.where().size() -1, t);
         
-        a.select(a.variable(COUNT_VARIABLE), a.count(t.object()));        
-        a.select(a.variable(DISTINCT_VARIABLE), a.count(t.object()).distinct(true));
+        a.select(a.variable(COUNT_VAR), a.count(t.object()));        
+        a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
         
         return a;
     }
@@ -159,7 +245,7 @@ public class AST {
     }
     
     Variable  variable(int i) {
-        return Variable.create(TRIPLE_VARIABLE + i);
+        return Variable.create(TRIPLE_VAR + i);
     }
     
       
@@ -186,8 +272,8 @@ public class AST {
             if (exp.isTriple() && !exp.isFilter()) {
                 Triple t = exp.getTriple();
                 if (t.subject().isVariable() && t.object().isVariable()
-                        && t.subject().getLabel().startsWith(TRIPLE_VARIABLE)
-                        && t.object().getLabel().startsWith(TRIPLE_VARIABLE)) {
+                        && t.subject().getLabel().startsWith(TRIPLE_VAR)
+                        && t.object().getLabel().startsWith(TRIPLE_VAR)) {
                     i++;
                 }
             }
@@ -196,15 +282,16 @@ public class AST {
     }
     
     // modify ast
-    ASTQuery complete(ASTQuery ast, List<Constant> list, int i) {
+    ASTQuery complete(ASTQuery ast, List<IDatatype> list, int i) {
         ast.where(copyBody(ast));
-        for (Constant p : list) {
+        for (IDatatype dt : list) {
+            Constant p = Constant.create(dt);
             Variable s = variable(i++);
             Variable o = variable(i);
             Triple t = ast.createTriple(s, p, o);
             Expression f = filter(1, i);
             Expression isuri = Term.function("isURI", o);
-            ast.where().add(f).add(f).add(t);
+            ast.where().add(isuri).add(f).add(t);
         }
         return ast;
     }   

@@ -6,7 +6,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
-import static fr.inria.corese.core.visitor.ldpath.AST.COUNT_VARIABLE;
 import fr.inria.corese.kgram.core.Mapping;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,8 +55,9 @@ public class Result {
 
     void record(ASTQuery ast, Mappings map) {
         if (map != null && map.size() > 0) {
-            DatatypeValue dt = map.getValue(COUNT_VARIABLE);
-            if (dt != null && dt.intValue() > 0) {
+            DatatypeValue dt  = map.getValue(AST.COUNT_VAR);
+            DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
+            if ((dt != null && dt.intValue() > 0) || dt2 != null && dt2.intValue() > 0) {
                 alist.add(ast);
                 table.put(ast, map);
             }
@@ -80,10 +80,10 @@ public class Result {
     
     
     int process(ASTQuery ast, Mappings map, int i) throws IOException {
-        DatatypeValue dt = map.getValue(COUNT_VARIABLE);
-        if (dt != null){ 
-            DatatypeValue dt2 = map.getValue(AST.DISTINCT_VARIABLE);
-            DatatypeValue dtp = map.getValue(AST.PROPERTY_VARIABLE);
+        DatatypeValue dt  = map.getValue(AST.COUNT_VAR);
+        DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
+        if (dt != null || dt2 != null){ 
+            DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
             Constant uri = getEndpoint(map);
             if (uri == null) {
                 result(i++, path(ast), empty, uri, dt, dt2);
@@ -95,12 +95,12 @@ public class Result {
                 List<Constant> path = path(ast);
                 for (Mapping m : map) {
                     // each Mapping contains ?p = predicate ; ?count = n
-                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VARIABLE);
+                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
                     if (dtpred != null) {
                         List<Constant> list = new ArrayList<>();
                         list.add(Constant.create(dtpred));
-                        dt  = m.getValue(COUNT_VARIABLE);
-                        dt2 = m.getValue(AST.DISTINCT_VARIABLE);
+                        dt  = m.getValue(AST.COUNT_VAR);
+                        dt2 = m.getValue(AST.DISTINCT_VAR);
                         result(i++, path, list, uri, dt, dt2);
                     }
                 }
@@ -159,19 +159,19 @@ public class Result {
         
         sb.append("rs:path").append(" ");
         path(path, sb, nbTriple);
-        sb.append("; ");
         
         if (!list.isEmpty()) {
-            sb.append("rs:path2").append(" ");
+            sb.append("; ").append("rs:path2").append(" ");
             path(list, sb, 0);
-            sb.append("; ");
         }
         
         if (uri != null && list.isEmpty()) {
-           sb.append("rs:endpoint").append(" ").append(uri).append("; "); 
+           sb.append("; ").append("rs:endpoint").append(" ").append(uri); 
         }
         
-        sb.append("rs:count").append(" ").append(dt.intValue());
+        if (dt != null) {
+            sb.append("; ").append("rs:count").append(" ").append(dt.intValue());
+        }
         
         if (dt2 != null) {
             sb.append("; ").append("rs:distinct").append(" ").append(dt2.intValue());
@@ -210,7 +210,7 @@ public class Result {
     // remote endpoint uri
     Constant getEndpoint(Mappings map){
         if (map.size() > 0) {
-            IDatatype dt = (IDatatype) map.getValue(AST.SERVICE_VARIABLE);
+            IDatatype dt = (IDatatype) map.getValue(AST.SERVICE_VAR);
             if (dt != null) {
                 return Constant.create(dt);
             }

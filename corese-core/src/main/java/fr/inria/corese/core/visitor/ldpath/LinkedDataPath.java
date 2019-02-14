@@ -36,9 +36,10 @@ import java.util.logging.Logger;
  */
 public class LinkedDataPath implements QueryVisitor {
 
+    
+
     static final String RDF_TYPE = RDF.RDF + "type";
     static final String RDFS_LABEL = RDF.RDFS + "label";
-    static final String[] exclude = {}; //RDF_TYPE};
 
     Graph graph;
     QueryProcess exec;
@@ -57,16 +58,24 @@ public class LinkedDataPath implements QueryVisitor {
     List<Constant> serverList;
     ASTQuery ast;
     String file;
+    private List<String> reject;
+    private List<String> accept;
+    private List<String> option;
+    
 
     boolean parallel = true;
+    boolean detail = false;
 
 
     public LinkedDataPath() {
         graph = Graph.create();
-        astq = new AST();
+        astq = new AST(this);
         localList = new ArrayList<>();
         endpointList = new ArrayList<>();
         serverList = new ArrayList<>();
+        accept = new ArrayList<>();
+        reject = new ArrayList<>();
+        option = new ArrayList<>();
     }
     
     public LinkedDataPath(String uri) {
@@ -77,7 +86,9 @@ public class LinkedDataPath implements QueryVisitor {
     public LinkedDataPath(String uri1, String uri2) {
         this();
         getLocalList().add(uri1);
-        getEndpointList().add(uri2);
+        if (uri2 != null) {
+            getEndpointList().add(uri2);
+        }
     }
 
     @Override
@@ -153,12 +164,31 @@ public class LinkedDataPath implements QueryVisitor {
                 getEndpointList().add(uri);
             }
         }
+        if (ast.hasMetadata(Metadata.ACCEPT)) {
+            setAccept(ast.getMetadata().getValues(Metadata.ACCEPT));
+            System.out.println("Accept: " + getAccept());
+        }
+        if (ast.hasMetadata(Metadata.REJECT)) {
+            setReject(ast.getMetadata().getValues(Metadata.REJECT));
+            System.out.println("Reject: " + getReject());
+        }
+        if (ast.hasMetadata(Metadata.OPTION)) {
+            setOption(ast.getMetadata().getValues(Metadata.OPTION));
+            System.out.println("Option: " + getOption());
+        }
         if (ast.hasMetadata(Metadata.DEBUG)) {
             ast.getMetadata().remove(Metadata.DEBUG);
         }
         if (ast.hasMetadata(Metadata.FILE)) {
             setFile(ast.getMetadata().getValue(Metadata.FILE));
         }
+        if (ast.hasMetadata(Metadata.DETAIL)) {
+            detail = true;
+        }
+    }
+    
+    boolean hasOption(String name) {
+        return getOption().contains(name);
     }
 
     int getLength(String uri) {
@@ -177,8 +207,7 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     public Result process(String q) throws EngineException, InterruptedException, IOException {
-        Query qq = exec.compile(q);
-        return process(exec.getAST(qq));
+        return process(exec.ast(q));
     }
     
     public Result process(ASTQuery ast) throws EngineException, InterruptedException, IOException {
@@ -241,14 +270,6 @@ public class LinkedDataPath implements QueryVisitor {
         }
     }
     
-    /**
-     * varIndex : index of variable where to start the path with list
-     * varIndex is the subject of first predicate in list
-     */
-    public ASTQuery complete(ASTQuery ast, List<Constant> list, int varIndex) throws EngineException, InterruptedException, IOException {
-         return astq.complete(ast, list, varIndex);
-         //process(ast, varIndex + list.size());
-    }
 
     /**
      * compute join of ast with remote endpoint
@@ -267,9 +288,18 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     public ASTQuery endpoint(ASTQuery ast, int varIndex) {
-        if (getEndpointPathLength() == 0) {
+        return endpoint(ast, varIndex, true);
+    }
+    
+    public ASTQuery endpoint(ASTQuery ast, int varIndex, boolean count) {
+        if (!  count) {
+            return astq.service(ast, getLocalList().get(0), getEndpointList().get(0), varIndex, false);
+        }
+        else if (getEndpointPathLength() == 0) {
+            // total number of joins
             return astq.service(ast, getLocalList().get(0), getEndpointList().get(0), varIndex);
         } else {
+            // number oj joins for each remote property 
             return astq.servicePath(ast, getLocalList().get(0), getEndpointList().get(0), varIndex);
         }
     }
@@ -280,7 +310,7 @@ public class LinkedDataPath implements QueryVisitor {
     List<Constant> getPropertyList(Mappings map) {
         ArrayList<Constant> list = new ArrayList<>();
         for (Mapping m : map) {
-            IDatatype dt = (IDatatype) m.getValue(AST.PROPERTY_VARIABLE);
+            IDatatype dt = (IDatatype) m.getValue(AST.PROPERTY_VAR);
             if (dt != null) {
                 Constant p = Constant.create(dt);
                 list.add(p);
@@ -300,6 +330,10 @@ public class LinkedDataPath implements QueryVisitor {
         ArrayList<QueryProcessThread> plist = new ArrayList<>();
 
         for (Constant p : list) {
+            if (! acceptable (p)) {
+                continue;
+            }
+            
             ASTQuery ast2 = astq.property(ast1, p, i);
             if (trace) {
                 System.out.println(ast2);
@@ -310,7 +344,7 @@ public class LinkedDataPath implements QueryVisitor {
             plist.add(qp);
             qp.start();
 
-            if (!getEndpointList().isEmpty() && i >= 1 && accept(p.getLabel())) {
+            if (!getEndpointList().isEmpty()) {
                 // try link with second remote endpoint
 
                 ASTQuery serv = endpoint(ast2, i+1);
@@ -329,8 +363,10 @@ public class LinkedDataPath implements QueryVisitor {
             qp.join(timeout);
             Mappings mm = qp.getMappings();
             if (qp.isJoin() && mm != null) {
-                if (trace) System.out.println("Res: " + mm.get(0));
-                //System.out.println(mm);
+                if (trace) System.out.println("Endpoint result: \n" + mm.get(0));
+                if (detail && hasCount(mm)) {
+                    detail(ast1, qp.getPredicate(), i);
+                }
             }
             if (trace) {
                 System.out.println(String.format("%s/%s: nb res: %s", j++, plist.size(), (mm == null) ? "" : mm.size()));
@@ -338,14 +374,55 @@ public class LinkedDataPath implements QueryVisitor {
             result.record(qp.getAST(), mm);
         }
     }
-
-    boolean accept(String uri) {
-        for (String name : exclude) {
-            if (uri.equals(name)) {
-                return false;
+    
+    boolean hasCount(Mappings map) {
+        return map != null  
+                && ((map.getValue(AST.COUNT_VAR) != null
+                    && map.getValue(AST.COUNT_VAR).intValue() > 0)
+                || (map.getValue(AST.DISTINCT_VAR) != null
+                    && map.getValue(AST.DISTINCT_VAR).intValue() > 0)
+                );
+    }
+    
+    /**
+     * Exec endpoint query without count and display result Mappings
+     */
+    void detail(ASTQuery ast1, Constant p, int i) {
+        ASTQuery ast2 = astq.property(ast1, p, i);
+        ASTQuery aa = endpoint(ast2, i + 1, false);
+        System.out.println(aa);
+        QueryProcessThread qpe = new QueryProcessThread(graph, aa, p);
+        qpe.process();
+        System.out.println(qpe.getMappings());
+    }
+    
+    boolean acceptable(Constant p) {
+        return acceptable(p.getLabel());
+    }
+    
+     boolean acceptable(String p) {
+        return accept(p) && ! reject(p);
+    }
+    
+    boolean accept(String p) {        
+        if (getAccept().isEmpty()) {
+            return true;
+        }
+        for (String name : getAccept()) {
+            if (p.startsWith(name)) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    
+    boolean reject(String p) {
+        for (String name : getReject()) {
+            if (p.startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // in ast add ?sj ?p ?sk
@@ -464,6 +541,60 @@ public class LinkedDataPath implements QueryVisitor {
     
     public void setDebug(boolean b) {
         trace  = b;
+    }
+    
+    /**
+     * @return the accept
+     */
+    public List<String> getAccept() {
+        return accept;
+    }
+
+    /**
+     * @param accept the accept to set
+     */
+    public void setAccept(List<String> accept) {
+        this.accept = accept;
+    }
+    
+    public void setAccept(String uri) {
+        accept.add(uri);
+    }
+
+    /**
+     * @return the reject
+     */
+    public List<String> getReject() {
+        return reject;
+    }
+
+    /**
+     * @param reject the reject to set
+     */
+    public void setReject(List<String> reject) {
+        this.reject = reject;
+    }
+    
+    public void setReject(String uri) {
+        reject.add(uri);
+    }
+
+    /**
+     * @return the option
+     */
+    public List<String> getOption() {
+        return option;
+    }
+
+    /**
+     * @param option the option to set
+     */
+    public void setOption(List<String> option) {
+        this.option = option;
+    }
+    
+    AST ast() {
+        return astq;
     }
 
 }

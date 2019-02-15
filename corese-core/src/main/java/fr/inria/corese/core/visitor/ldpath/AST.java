@@ -6,7 +6,6 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
@@ -28,12 +27,7 @@ public class AST {
     static final String LOCAL_VAR = "?uri1";
     static final String TRIPLE_VAR = "?s";
     static final String COUNT_FUNCTION = "count";
-    
-    static final String OPTION   = NSManager.USER;
-    static final String LITERAL  = OPTION + "literal";
-    static final String SUBJECT  = OPTION + "subject";
-    static final String DISTINCT = OPTION + "distinct";
-   
+          
     LinkedDataPath ldp;
     
     AST(LinkedDataPath ldp) {
@@ -87,7 +81,7 @@ public class AST {
      * Return predicate and count subject or object
      */
     ASTQuery servicePath(ASTQuery aa, String uri1, String uri2, int i) {
-        if (ldp.hasOption(SUBJECT)) {
+        if (ldp.hasOption(LinkedDataPath.SUBJECT)) {
             return servicePathSubject(aa, uri1, uri2, i);
         } else {
             return servicePathObject(aa, uri1, uri2, i);
@@ -126,7 +120,7 @@ public class AST {
     }
      
     Exp uri(Exp body, int i) {
-        if (! ldp.hasOption(LITERAL)) {
+        if (! ldp.hasOption(LinkedDataPath.LITERAL)) {
             body.add(Term.function("isURI", variable(i)));
         }
         return body;
@@ -174,7 +168,7 @@ public class AST {
     
     // count only distinct subject on remote endpoint for path 
     boolean isDistinct() {
-        return ldp.hasOption(DISTINCT);
+        return ldp.hasOption(LinkedDataPath.DISTINCT);
     }
 
      /**

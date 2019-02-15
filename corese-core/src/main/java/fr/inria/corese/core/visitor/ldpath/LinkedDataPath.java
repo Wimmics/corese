@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +36,13 @@ import java.util.logging.Logger;
  *
  */
 public class LinkedDataPath implements QueryVisitor {
-
+   
+    public static final String OPTION = NSManager.USER;
+    public static final String LITERAL  = OPTION + "literal";
+    public static final String SUBJECT  = OPTION + "subject";
+    public static final String DISTINCT = OPTION + "distinct";
     
-
-    static final String RDF_TYPE = RDF.RDF + "type";
-    static final String RDFS_LABEL = RDF.RDFS + "label";
-
+    
     Graph graph;
     QueryProcess exec;
     Result result;
@@ -139,29 +141,26 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     void metadata(ASTQuery ast) {
-        if (ast.hasMetadata(Metadata.LDPATH)) {
-            String uri = ast.getMetadata().getValue(Metadata.LDPATH);
+        if (ast.getMetadata() != null && ast.getMetadata().hasValue(Metadata.LDPATH)) {
+            List<String> list = ast.getMetadata().getValues(Metadata.LDPATH);
             ast.getMetadata().remove(Metadata.LDPATH);
-            if (uri != null) {
-                int n = getLength(uri);
-                if (n != -1) {
-                    setPathLength(n);
-                    uri = clean(uri);
-                }
-                System.out.println("LDP first: " + getPathLength() + " " + uri);
-                getLocalList().add(uri);
+            String uri = list.get(0);
+            int n = getLength(uri);
+            if (n != -1) {
+                setPathLength(n);
+                uri = clean(uri);
             }
-        }
-        if (ast.hasMetadata(Metadata.ENDPOINT)) {
-            String uri = ast.getMetadata().getValue(Metadata.ENDPOINT);
-            if (uri != null) {
-                int n = getLength(uri);
+            System.out.println("LDP first: " + getPathLength() + " " + uri);
+            getLocalList().add(uri);
+            if (list.size() > 1) {
+                String uri2 = list.get(1);
+                n = getLength(uri2);
                 if (n != -1) {
                     setEndpointPathLength(n);
-                    uri = clean(uri);
+                    uri2 = clean(uri2);
                 }
-                System.out.println("LDP remote: " + getEndpointPathLength() + " " + uri);
-                getEndpointList().add(uri);
+                System.out.println("LDP remote: " + getEndpointPathLength() + " " + uri2);
+                getEndpointList().add(uri2);
             }
         }
         if (ast.hasMetadata(Metadata.ACCEPT)) {
@@ -434,6 +433,9 @@ public class LinkedDataPath implements QueryVisitor {
         for (Constant p : list) {
             // replace former ?si ?p ?sj by ?si p ?sj
             // add ?sj ?p ?sk
+            if (! acceptable (p)) {
+                continue;
+            }
             ASTQuery ast2 = astq.propertyVariable(ast, p, i);
             if (trace) {
                 System.out.println(ast2);
@@ -591,6 +593,10 @@ public class LinkedDataPath implements QueryVisitor {
      */
     public void setOption(List<String> option) {
         this.option = option;
+    }
+    
+    public void setOption(String uri) {
+        option.add(uri);
     }
     
     AST ast() {

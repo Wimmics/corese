@@ -186,10 +186,10 @@ public class Result {
         sb.append(String.format("# Linked Data Path %s \n", new Date()));
         sb.append(String.format("@prefix rs: <%s> \n", LDP));
         if (!ldp.getLocalList().isEmpty()) {
-            sb.append(String.format("[] rs:first <%s> ; rs:length %s \n", ldp.getLocalList().get(0), ldp.getPathLength()));
+            sb.append(String.format("[] rs:first <%s> ; rs:length %s .\n", ldp.getLocalList().get(0), ldp.getPathLength()));
         }
         if (!ldp.getEndpointList().isEmpty()) {
-            sb.append(String.format("[] rs:rest  <%s> ; rs:length %s \n", ldp.getEndpointList().get(0), ldp.getEndpointPathLength()));
+            sb.append(String.format("[] rs:rest  <%s> ; rs:length %s .\n", ldp.getEndpointList().get(0), ldp.getEndpointPathLength()));
         }
     }
         

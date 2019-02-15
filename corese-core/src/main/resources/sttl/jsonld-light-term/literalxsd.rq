@@ -1,0 +1,19 @@
+#
+# default literal template 
+#
+template  {
+
+  "{"
+    "\"@value\": \""   us:escape(?in) "\", "
+    "\"@type\": \""    st:turtle(datatype(?in)) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    strstarts(datatype(?in), xsd:) && datatype(?in) != xsd:string
+  )
+  
+}
+pragma { kg:template kg:priority 100 }

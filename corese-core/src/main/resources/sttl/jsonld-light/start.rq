@@ -1,0 +1,21 @@
+#
+# JSON LD Transformation: in this transformation, string literals are translated into:
+#   "field": "string value"
+# Whereas in the existing JSON-LD transformation, string literals are translated into:
+#   "field": {"@type": "xsd:string", "@value": "string value"}
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+# Franck Michel - Wimmics Inria, CNRS, I3S, 2019  
+#
+
+template st:start {
+
+  st:call-template(st:head)
+  
+  str(?body)
+  
+  st:call-template(st:tail)
+}
+where {
+   bind(st:call-template(st:main) as ?body )
+}

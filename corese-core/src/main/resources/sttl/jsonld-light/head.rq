@@ -1,0 +1,15 @@
+template st:head {
+
+"""{
+"@context": {"""
+  ibox {       
+    st:call-template(st:prefix)    
+  }
+"\n},"
+
+st:nl()
+st:nl()
+}
+where {
+
+}

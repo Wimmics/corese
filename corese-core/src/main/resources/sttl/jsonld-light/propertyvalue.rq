@@ -1,0 +1,33 @@
+template st:propertyvalue(?x, ?p) {
+
+     '"' 
+     if (?p = rdf:type,
+     '@type',
+     st:turtle(?p, true))
+     
+     '": '   
+     
+    if (?mult, "[", "") 
+    
+    group { 
+    
+     if (?p = rdf:type, 
+       st:turtle(str(?y)),
+       st:apply-templates-with(st:jsonld-light-term, ?y))  
+      
+      ; separator = ", "
+      
+    } 
+    
+    if (?mult, "]", "") 
+          
+}
+where {
+
+  {select ?x ?p (count(*) as ?c) where { ?x ?p ?y }}
+  
+  bind (?c > 1 as ?mult)
+  
+  ?x ?p ?y  
+}
+order by ?y

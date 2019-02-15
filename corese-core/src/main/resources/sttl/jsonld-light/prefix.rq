@@ -1,0 +1,12 @@
+template st:prefix {
+
+ st:nl()
+ 
+ "\"" str(?p) "\": \""  str(?n) "\""  
+
+ ; separator = ","
+ 
+}
+where {
+  bind (unnest(st:prefix()) as (?p, ?n))
+}

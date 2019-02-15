@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Feb 15 13:46:26 CET 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+function us:escape(?str) {
+    replace(replace(?str, "\n", "\\\\n"), "\"", "\\\\\"")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "{\"@id\": \""  str(?in)  "\"}"
+  
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter ( 
+    not exists { ?in rdf:rest ?r } ||
+	exists { ?y  rdf:first ?in }
+  )
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "{\"@list\": [" 
+  
+  group { 
+    st:apply-templates(?e) 
+    ; separator = ", "
+  }
+  
+  "]}"
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
+  ?in rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  str(?in)
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
+  )
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template  {
+
+  "{"
+    "\"@value\": \""       us:escape(?in) "\", "
+    "\"@language\": \""    lang(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = rdf:langString)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "\"" us:escape(?in) "\""
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = xsd:string)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template  {
+
+  "{"
+    "\"@value\": \""   us:escape(?in) "\", "
+    "\"@type\": \""    datatype(?in) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    ! strstarts(datatype(?in), xsd:) &&
+    ! strstarts(datatype(?in), rdf:) 
+  )
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# default literal template 
+#
+template  {
+
+  "{"
+    "\"@value\": \""   us:escape(?in) "\", "
+    "\"@type\": \""    st:turtle(datatype(?in)) "\""
+  "}"
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (
+    strstarts(datatype(?in), xsd:) && datatype(?in) != xsd:string
+  )
+  
+}
+pragma { kg:template kg:priority 100 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "{\"@id\": \""  us:escape(?in)  "\"}"
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter isURI(?in)
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

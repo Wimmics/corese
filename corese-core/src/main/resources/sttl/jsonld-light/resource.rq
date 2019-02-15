@@ -1,0 +1,20 @@
+template {
+
+"{" 
+
+   box {
+     "\"@id\": \""  us:escape(?in)  "\""
+     
+     st:call-template(st:type, ?in)
+     st:call-template(st:property, ?in)
+   }
+
+"}" 
+
+}
+where {
+  
+  bind (st:getFocusNode() as ?in)
+  
+}
+

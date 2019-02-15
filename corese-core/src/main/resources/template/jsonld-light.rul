@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Feb 15 13:46:26 CET 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+template st:body {
+
+   st:apply-templates(?in)
+   
+   ; separator = concat(",", st:nl(), st:nl())
+   
+}
+where {
+
+   select distinct ?in where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (
+       isURI(?in) ||
+       (
+       # skip list
+        (?p not in (rdf:first, rdf:rest) && 
+        ! (?p = rdf:type && ?y = rdf:List))
+        
+       # except nested list
+        || exists { ?x rdf:first ?in }
+        
+       # except top level list
+        || not exists { ?x ?q ?in }
+       ))    
+   }
+   order by ?in
+   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:type(?in) {
+
+  "," st:nl()
+  st:call-template(st:propertyvalue, ?in, rdf:type) 
+   
+}
+where {
+    filter exists { ?in rdf:type ?y } 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main {
+
+"""\"@graph\":
+["""
+
+  box {
+    st:call-template(st:body)
+  }
+  
+"""]
+"""
+   
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:start {
+
+  st:call-template(st:head)
+  
+  str(?body)
+  
+  st:call-template(st:tail)
+}
+where {
+   bind(st:call-template(st:main) as ?body )
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+
+  format { 
+    """<h3>JSON</h3>
+    <pre>%s</pre>"""
+    st:call-template(st:start)
+  }
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:tail {
+
+  "}"
+  
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prefix {
+
+ st:nl()
+ 
+ "\"" str(?p) "\": \""  str(?n) "\""  
+
+ ; separator = ","
+ 
+}
+where {
+  bind (unnest(st:prefix()) as (?p, ?n))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:property(?in) {
+
+  "," st:nl()
+   st:call-template(st:propertyvalue, ?in, ?p)
+   
+   ; separator=""
+   
+}
+where {
+  select distinct ?in ?p 
+  where {
+    ?in ?p ?y 
+    filter (?p != rdf:type)
+  }
+}
+order by ?p 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:head {
+
+"""{
+"@context": {"""
+  ibox {       
+    st:call-template(st:prefix)    
+  }
+"\n},"
+
+st:nl()
+st:nl()
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:propertyvalue(?x, ?p) {
+
+     '"' 
+     if (?p = rdf:type,
+     '@type',
+     st:turtle(?p, true))
+     
+     '": '   
+     
+    if (?mult, "[", "") 
+    
+    group { 
+    
+     if (?p = rdf:type, 
+       st:turtle(str(?y)),
+       st:apply-templates-with(st:jsonld-light-term, ?y))  
+      
+      ; separator = ", "
+      
+    } 
+    
+    if (?mult, "]", "") 
+          
+}
+where {
+
+  {select ?x ?p (count(*) as ?c) where { ?x ?p ?y }}
+  
+  bind (?c > 1 as ?mult)
+  
+  ?x ?p ?y  
+}
+order by ?y
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+function us:escape(?str) {
+    replace(replace(?str, "\n", "\\\\n"), "\"", "\\\\\"")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+"{" 
+
+   box {
+     "\"@id\": \""  us:escape(?in)  "\""
+     
+     st:call-template(st:type, ?in)
+     st:call-template(st:property, ?in)
+   }
+
+"}" 
+
+}
+where {
+  
+  bind (st:getFocusNode() as ?in)
+  
+}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

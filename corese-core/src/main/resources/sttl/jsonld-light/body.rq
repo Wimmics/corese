@@ -1,0 +1,30 @@
+template st:body {
+
+   st:apply-templates(?in)
+   
+   ; separator = concat(",", st:nl(), st:nl())
+   
+}
+where {
+
+   select distinct ?in where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (
+       isURI(?in) ||
+       (
+       # skip list
+        (?p not in (rdf:first, rdf:rest) && 
+        ! (?p = rdf:type && ?y = rdf:List))
+        
+       # except nested list
+        || exists { ?x rdf:first ?in }
+        
+       # except top level list
+        || not exists { ?x ?q ?in }
+       ))    
+   }
+   order by ?in
+   
+}

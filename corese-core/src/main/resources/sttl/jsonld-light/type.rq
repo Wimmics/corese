@@ -1,0 +1,9 @@
+template st:type(?in) {
+
+  "," st:nl()
+  st:call-template(st:propertyvalue, ?in, rdf:type) 
+   
+}
+where {
+    filter exists { ?in rdf:type ?y } 
+}

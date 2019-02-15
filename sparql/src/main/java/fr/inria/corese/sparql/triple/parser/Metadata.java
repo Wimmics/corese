@@ -273,6 +273,10 @@ public class Metadata extends ASTObject
         return NSManager.nstrip(value);
     }
     
+    public boolean hasValue(int meta) {
+        return getValue(meta) != null;
+    }
+    
     public boolean hasValue(int meta, String value){
         String str = getValue(meta);
         return str != null && str.equals(value);

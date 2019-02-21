@@ -510,8 +510,7 @@ export class D3GraphVisualizer extends Observer {
         let root = d3.select(d3.select(svgId).node().parentNode);
         menuNode = ContextMenu.create(root, "nodeMenu")
             .addEntry("set as root", setDisplayRoot)
-            .addEntry("Mask/Unmask the subtree", switchMaskSubtree)
-            .addEntry("Mask/Unmask all nodes in the subtree", switchMaskAllSubtree)
+            .addEntry("Mask/Unmask the subtree", switchMaskAllSubtree)
         ;
         // end of menuNode settings.
 

@@ -74,7 +74,7 @@ function error(response, err, url) {
 
 //when ajax returns '200 ok', display the response text on the page
 function success(response, url) {
-    const text = '<div class="container">' + response + '</div>';
+    const text =  response ;
     const range = document.createRange();
     const contentNode = document.getElementById("contentOfSite");
     range.selectNode(contentNode);
@@ -120,8 +120,7 @@ function loadContent() {
     //2 load template from server
     var url = location.pathname + location.search;
     var index = url.indexOf(srv);
-    if (index === -1) {
-        alert("The url does not contain '/srv' service.");
+    if (index !== -1) {
         return;
     }
     url = url.substr(index + srv.length);

@@ -1,14 +1,18 @@
 <div class="col-md-12 shacl-div">
-	<table>
-		<tr>
-			<th class="center"><h3>Shape Graph</h3></th>
-			<th class="center"><h3>Validation Report</h3></th>
-			<th class="center"><h3>RDF Graph</h3></th>
-		</tr>
-		<tr class="top">
+	<ul class="nav nav-tabs">
+		<li class="active"><a data-toggle="tab" href="#shape_graph">Shape Graph</a></li>
+		<li><a data-toggle="tab" href="#validation_report">Validation Report</a></li>
+		<li><a data-toggle="tab" href="#rdf_graph">RDF Graph</a></li>
+	</ul>
+	<div class="tab-content">
+		<div id="shape_graph" class="tab-pane fade in active">
 			<td>%1$s</td>
+		</div>
+		<div id="validation_report" class="tab-pane fade">
 			<td>%2$s</td>
+		</div>
+		<div id="rdf_graph" class="tab-pane fade">
 			<td>%3$s</td>
-		</tr>
-	</table>
+		</div>
+	</div>
 </div>

@@ -179,15 +179,25 @@ export class OntologyDrawer {
         if (this.displayRoot === undefined) {
             this.displayRoot = this.root;
         }
+        this.slices = {}; // in order to know which nodes are at the same depth.
+
         // Fill the children map with { id: dataMap[id] }, in order to make the dataMap structure compatible
         // with the layout algorithm.
         this.hierarchy = this.dataMap[this.displayRoot];
+        this.hierarchy.depth = 0;
         let stack = [];
         stack.push(this.hierarchy);
         let alreadySeen = new Set();
         alreadySeen.add(this.hierarchy);
         while (stack.length !== 0) {
             let summit = stack.pop();
+            if (summit.parent !== undefined) {
+                summit.depth = this.dataMap[summit.parent].depth + 1;
+            }
+            if (this.slices[summit.depth] === undefined) {
+                this.slices[summit.depth] = [];
+            }
+            this.slices[summit.depth].push( summit );
             for (let childId of Object.keys(summit.children)) {
                 summit.children[childId] = this.dataMap[childId];
                 if (alreadySeen.has(summit.children[childId])) {
@@ -197,6 +207,13 @@ export class OntologyDrawer {
                     stack.push(summit.children[childId]);
                     alreadySeen.add(summit.children[childId]);
                 }
+            }
+        }
+        for (let slice in this.slices) {
+            let i = 0;
+            for (let n of this.slices[slice]) {
+                this.dataMap[n.id].evenNode = (i % 2 === 0);
+               i++;
             }
         }
 
@@ -260,10 +277,12 @@ export class OntologyDrawer {
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
-            .size([width, height]);
-        // if (!this.horizontalLayout) {
-        //     treemap.nodeSize([100,50]);
-        // }
+            // .separation(function(a, b) { return 10000; })
+            // .separation(function(a, b) { return a.parent == b.parent ? 1 : 2;})
+                .separation(function(a, b) { return (a.data.label.length + b.data.label.length)/20; })
+                .nodeSize( [50, 150] )
+            // .size([width, height])
+        ;
 
 //  assigns the data to a hierarchy using parent-child relationships
         var nodes = d3.hierarchy(this.hierarchy
@@ -282,7 +301,13 @@ export class OntologyDrawer {
         svg.selectAll("g").remove();
         this.g = svg.append("g")
             .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                function() {
+                    if (this.horizontalLayout) {
+                        return "translate(" + (margin.left) + "," + (margin.top + this.width * 50) + ")";
+                    } else {
+                        return "translate(" + (margin.left+ this.width * 50) + "," + (margin.top)  + ")";
+                    }
+                }.bind(this));
         // adds the links between the nodes
         var link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
@@ -378,14 +403,21 @@ export class OntologyDrawer {
 // adds the text to the node
         let textNode = node.append("text");
         textNode.attr("dy", ".35em")
-            .attr("y", "20")
+            .attr("y", function(d) {
+                    if (!this.horizontalLayout) {
+                        return d.data.evenNode ? "20" : "-20";
+                    } else {
+                        return "20";
+                    }
+                }.bind(this)
+            )
             .style("text-anchor", "middle")
             .text(function (d) {
                 return d.data.label;
             });
-        if (!this.horizontalLayout) {
-            textNode.attr("transform", "rotate(90)");
-        }
+        // if (!this.horizontalLayout) {
+        //     textNode.attr("transform", "rotate(90)");
+        // }
 // end: draw each node.
 
 

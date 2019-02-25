@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Results managed in a table ASTQuery -> Mappings
@@ -53,13 +55,18 @@ public class Result {
         this.ldp = ldp;
     }
 
-    void record(ASTQuery ast, Mappings map) {
+    synchronized void record(ASTQuery ast, Mappings map) {
         if (map != null && map.size() > 0) {
             DatatypeValue dt  = map.getValue(AST.COUNT_VAR);
             DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
             if ((dt != null && dt.intValue() > 0) || dt2 != null && dt2.intValue() > 0) {
                 alist.add(ast);
                 table.put(ast, map);
+                try {
+                    process((ASTQuery)map.getAST(), map, alist.size());
+                } catch (IOException ex) {
+                    Logger.getLogger(Result.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -80,28 +87,39 @@ public class Result {
     
     
     int process(ASTQuery ast, Mappings map, int i) throws IOException {
-        DatatypeValue dt  = map.getValue(AST.COUNT_VAR);
+        DatatypeValue dt1 = map.getValue(AST.COUNT_VAR);
         DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
-        if (dt != null || dt2 != null){ 
+        if (dt1 != null || dt2 != null){ 
+            List<Constant> path = path(ast);
             DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
-            Constant uri = getEndpoint(map);
-            if (uri == null) {
-                result(i++, path(ast), empty, uri, dt, dt2);
-            } else if (dtp == null) {
-                // remote endpoint with just ?count = n
-                result(i++, path(ast), empty, uri, dt, dt2);
+            Constant uri2 = getEndpoint(map);
+            if (dtp == null) {
+                // // path with constant p as predicate
+                result(i++, path, empty, uri2, dt1, dt2);
+            } else if (uri2 == null) {
+                // local path with variable ?p as predicate
+                for (Mapping m : map) {
+                    // each Mapping contains ?p = predicate ; ?count = n
+                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
+                    if (dtpred != null) {
+                        path.add(Constant.create(dtpred));
+                        dt1 = m.getValue(AST.COUNT_VAR);
+                        dt2 = m.getValue(AST.DISTINCT_VAR);
+                        result(i++, path, empty, uri2, dt1, dt2);
+                        path.remove(path.size() -1);
+                    }
+                }
             } else {
-                // remote endpoint with path
-                List<Constant> path = path(ast);
+                // remote endpoint with variable ?p as predicate
                 for (Mapping m : map) {
                     // each Mapping contains ?p = predicate ; ?count = n
                     IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
                     if (dtpred != null) {
                         List<Constant> list = new ArrayList<>();
                         list.add(Constant.create(dtpred));
-                        dt  = m.getValue(AST.COUNT_VAR);
+                        dt1 = m.getValue(AST.COUNT_VAR);
                         dt2 = m.getValue(AST.DISTINCT_VAR);
-                        result(i++, path, list, uri, dt, dt2);
+                        result(i++, path, list, uri2, dt1, dt2);
                     }
                 }
             }
@@ -183,7 +201,7 @@ public class Result {
     
     
     void prolog(StringBuilder sb) {
-        sb.append(String.format("# Linked Data Path %s \n", new Date()));
+        sb.append(String.format("# Linked Data Path Finder %s \n", new Date()));
         sb.append(String.format("@prefix rs: <%s> \n", LDP));
         if (!ldp.getLocalList().isEmpty()) {
             sb.append(String.format("[] rs:first <%s> ; rs:length %s .\n", ldp.getLocalList().get(0), ldp.getPathLength()));
@@ -227,7 +245,7 @@ public class Result {
         ArrayList<Constant> list = new ArrayList<>();
         for (Exp exp : body) {
             if (exp.isFilter()) {
-            } else if (exp.isTriple()) {
+            } else if (exp.isTriple() && exp.getTriple().predicate().isConstant()) {
                 list.add(exp.getTriple().getProperty());
 
             } else if (exp.isService()) {

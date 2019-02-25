@@ -8,7 +8,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -29,7 +28,7 @@ import java.util.logging.Logger;
  * With two endpoint URI, return two paths
  * Result is in Turtle format, may be written in a file
  * 
- * This program may also be used as a visitor with @ldpath and @endpoint annotations
+ * This program may also be used as a visitor with @ldpath annotation
  * path lengths are given with @length at the end of endpoint URI: http://dbpedia.org/sparql@2
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2019
@@ -37,10 +36,12 @@ import java.util.logging.Logger;
  */
 public class LinkedDataPath implements QueryVisitor {
    
-    public static final String OPTION = NSManager.USER;
-    public static final String LITERAL  = OPTION + "literal";
-    public static final String SUBJECT  = OPTION + "subject";
-    public static final String DISTINCT = OPTION + "distinct";
+    public static final String OPTION       = NSManager.USER;
+    public static final String URI          = OPTION + "uri";
+    public static final String BNODE        = OPTION + "bnode";
+    public static final String LITERAL      = OPTION + "literal";
+    public static final String SUBJECT      = OPTION + "subject";
+    public static final String DISTINCT     = OPTION + "distinct";
     
     
     Graph graph;
@@ -67,7 +68,7 @@ public class LinkedDataPath implements QueryVisitor {
 
     boolean parallel = true;
     boolean detail = false;
-
+    boolean test = false;
 
     public LinkedDataPath() {
         graph = Graph.create();
@@ -127,17 +128,26 @@ public class LinkedDataPath implements QueryVisitor {
     public Result getResult() {
         return result;
     }
+    
+    ASTQuery getAST() {
+        return ast;
+    }
+            
 
     void start(ASTQuery ast) throws EngineException {
+        this.ast = ast;
         metadata(ast);
         result = new Result(ast);
         result.setLinkedDataPath(this);
-        result.setFile(file);
         if (ast.isDebug()) {
             ast.setDebug(false);
             trace = true;
         }
         exec = QueryProcess.create(graph);
+    }
+    
+    void finish(ASTQuery ast) {
+         result.setFile(file);
     }
     
     void metadata(ASTQuery ast) {
@@ -184,6 +194,9 @@ public class LinkedDataPath implements QueryVisitor {
         if (ast.hasMetadata(Metadata.DETAIL)) {
             detail = true;
         }
+        if (ast.hasMetadata(Metadata.NEW)) {
+            test = true;
+        }
     }
     
     boolean hasOption(String name) {
@@ -206,6 +219,7 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     public Result process(String q) throws EngineException, InterruptedException, IOException {
+        exec = QueryProcess.create(graph);
         return process(exec.ast(q));
     }
     
@@ -214,17 +228,41 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     public Result process(ASTQuery ast, int varIndex) throws EngineException, InterruptedException, IOException {
-        Logger.getLogger(LinkedDataPath.class.getName()).info("Start Linked Data Path");
+        Logger.getLogger(LinkedDataPath.class.getName()).info("Start Linked Data Path Finder");
         start(ast);
         federate(ast, getLocalList());
         if (getPathLength() == 0 && !getEndpointList().isEmpty()) {
             // @ldpath <uri1@0> @endpoint <uri2>
             // keep ast query as is on uri1 and join on remote endpoint uri2
             join(ast, astq.length(ast) + 1);
-        } else {
+        } else 
+        if (test) {
+            step(ast, 1, varIndex);
+        }
+        else {
             process(ast, 1, varIndex);
         }
+        finish(ast);
         return result;
+    }
+    
+    
+    void step(ASTQuery ast, int i, int varIndex) {
+        if (trace) {
+            System.out.println(ast);
+        }
+        ASTQuery ast2 = astq.step(ast, varIndex);
+        Mappings map = exec.query(ast2);
+        result.record(ast2, map);
+        if (i < getPathLength()) {
+            List<Constant> list = getPropertyList(map);
+            for (Constant p : list) {
+                if (acceptable(p)) {
+                    ASTQuery ast3 = astq.property(ast2, p, varIndex);
+                    step(ast3, i+1, varIndex+1);
+                }
+            }
+        }
     }
 
     /**
@@ -270,6 +308,66 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
 
+    /**
+     * for all p in list : consider path with additional triple pattern ?si p
+     * ?sj a) @federate s1 select (count(*) as ?count) where { EXP ?si p ?sj }
+     * b) select (count(distinct ?sj) as ?count) where { service s1 {EXP ?si p
+     * ?sj} service s2 { ?sj ?p ?sk }}
+     */
+    void property(ASTQuery ast1, List<Constant> list, int varIndex) throws InterruptedException {
+        int timeout = 10000;
+        ArrayList<QueryProcessThread> plist = new ArrayList<>();
+        for (Constant p : list) {
+            if (! acceptable (p)) {
+                continue;
+            }
+            
+            ASTQuery ast2 = astq.property(ast1, p, varIndex);
+            astq.filter(ast2, varIndex+1);
+            
+            if (trace) {
+                System.out.println(ast2);
+            }
+
+            // predicates are processed in parallel threads
+            QueryProcessThread qp = new QueryProcessThread(graph, ast2, p);
+            plist.add(qp);
+            qp.start();
+
+            if (!getEndpointList().isEmpty()) {
+                // try link with second remote endpoint
+
+                //ASTQuery serv = endpoint(ast2, varIndex+1);
+                ASTQuery serv = endpoint(astq.property(ast1, p, varIndex), varIndex+1);
+                if (trace) {
+                    System.out.println(serv);
+                }
+                ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
+                QueryProcessThread qpe = new QueryProcessThread(graph, serv, p);
+                qpe.setJoin(true);
+                plist.add(qpe);
+                qpe.start();
+            }
+        }
+        int j = 1;
+        for (QueryProcessThread qp : plist) {
+            qp.join(timeout);
+            Mappings mm = qp.getMappings();
+            if (qp.isJoin() && mm != null) {
+                if (trace) System.out.println("Endpoint result: \n" + mm.get(0));
+                if (detail && hasCount(mm)) {
+                    detail(ast1, qp.getPredicate(), varIndex);
+                }
+            }
+            if (trace) {
+                System.out.println(String.format("%s/%s: nb res: %s", j++, plist.size(), (mm == null) ? "" : mm.size()));
+            }
+            result.record(qp.getAST(), mm);
+        }
+    }
+    
+    
+    
     /**
      * compute join of ast with remote endpoint
      */
@@ -318,61 +416,6 @@ public class LinkedDataPath implements QueryVisitor {
         return list;
     }
 
-    /**
-     * for all p in list : consider path with additional triple pattern ?si p
-     * ?sj a) @federate s1 select (count(*) as ?count) where { EXP ?si p ?sj }
-     * b) select (count(distinct ?sj) as ?count) where { service s1 {EXP ?si p
-     * ?sj} service s2 { ?sj ?p ?sk }}
-     */
-    void property(ASTQuery ast1, List<Constant> list, int i) throws InterruptedException {
-        int timeout = 10000;
-        ArrayList<QueryProcessThread> plist = new ArrayList<>();
-
-        for (Constant p : list) {
-            if (! acceptable (p)) {
-                continue;
-            }
-            
-            ASTQuery ast2 = astq.property(ast1, p, i);
-            if (trace) {
-                System.out.println(ast2);
-            }
-
-            // predicates are processed in parallel threads
-            QueryProcessThread qp = new QueryProcessThread(graph, ast2, p);
-            plist.add(qp);
-            qp.start();
-
-            if (!getEndpointList().isEmpty()) {
-                // try link with second remote endpoint
-
-                ASTQuery serv = endpoint(ast2, i+1);
-                if (trace) {
-                    System.out.println(serv);
-                }
-                ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
-                QueryProcessThread qpe = new QueryProcessThread(graph, serv, p);
-                qpe.setJoin(true);
-                plist.add(qpe);
-                qpe.start();
-            }
-        }
-        int j = 1;
-        for (QueryProcessThread qp : plist) {
-            qp.join(timeout);
-            Mappings mm = qp.getMappings();
-            if (qp.isJoin() && mm != null) {
-                if (trace) System.out.println("Endpoint result: \n" + mm.get(0));
-                if (detail && hasCount(mm)) {
-                    detail(ast1, qp.getPredicate(), i);
-                }
-            }
-            if (trace) {
-                System.out.println(String.format("%s/%s: nb res: %s", j++, plist.size(), (mm == null) ? "" : mm.size()));
-            }
-            result.record(qp.getAST(), mm);
-        }
-    }
     
     boolean hasCount(Mappings map) {
         return map != null  
@@ -425,7 +468,7 @@ public class LinkedDataPath implements QueryVisitor {
     }
 
     // in ast add ?sj ?p ?sk
-    List<Mappings> variable(ASTQuery ast, List<Constant> list, int i) throws InterruptedException {
+    List<Mappings> variable(ASTQuery ast, List<Constant> list, int varIndex) throws InterruptedException {
         ArrayList<Mappings> mapList = new ArrayList<>();
         ArrayList<QueryProcessThread> plist = new ArrayList<>();
         int timeout = 10000;
@@ -436,7 +479,7 @@ public class LinkedDataPath implements QueryVisitor {
             if (! acceptable (p)) {
                 continue;
             }
-            ASTQuery ast2 = astq.propertyVariable(ast, p, i);
+            ASTQuery ast2 = astq.propertyVariable(ast, p, varIndex);
             if (trace) {
                 System.out.println(ast2);
             }

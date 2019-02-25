@@ -1,6 +1,8 @@
 package fr.inria.corese.core.visitor.ldpath;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -11,6 +13,7 @@ import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +29,10 @@ public class AST {
     static final String SERVICE_VAR = "?uri2";
     static final String LOCAL_VAR = "?uri1";
     static final String TRIPLE_VAR = "?s";
-    static final String COUNT_FUNCTION = "count";
+    static final String COUNT_FUN = "count";
+    
+    static final String NS = LinkedDataPath.OPTION;
+    static final String OBJECT_FUN = NS + "object";
           
     LinkedDataPath ldp;
     
@@ -60,7 +66,7 @@ public class AST {
         sub.where(sub.union(t, t2));
         sub.select(t.subject().getVariable()).distinct(true);
         Exp body = copyBody(aa);
-        body = uri(body, i);
+        body = filter(body, i);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), Query.create(sub));                     
         a.where(s1, s2);
@@ -103,7 +109,7 @@ public class AST {
                                
         Triple t = tripleVariable(a, i); 
         Exp body = copyBody(aa);
-        body = uri(body, i);
+        body = filter(body, i);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), t);  
         
@@ -119,11 +125,57 @@ public class AST {
         return a;
     }
      
-    Exp uri(Exp body, int i) {
-        if (! ldp.hasOption(LinkedDataPath.LITERAL)) {
-            body.add(Term.function("isURI", variable(i)));
+    Exp filter(Exp body, int i) {
+        Expression exp = filter(i);
+        if (exp != null) {
+            body.add(exp);
         }
         return body;
+    }
+   
+    Expression filter(int i) {
+        Expression exp = function(i);
+        if (exp != null) {
+            return exp;
+        } else {
+            return option(i);
+        }
+    }
+
+    Expression option(int i) {
+        List<Expression> list = new ArrayList<>();
+        if (ldp.hasOption(LinkedDataPath.LITERAL)) {
+            list.add(Term.function("isLiteral", variable(i)));
+        }
+        if (ldp.hasOption(LinkedDataPath.URI)) {
+            list.add(Term.function("isURI", variable(i)));
+        }
+        if (ldp.hasOption(LinkedDataPath.BNODE)) {
+            list.add(Term.function("isBlank", variable(i)));
+        }
+        if (list.size() == 1) {
+            return list.get(0);
+        } else if (list.size() == 2) {
+            return Term.term("||", list.get(0), list.get(1));
+        }
+        return null;
+    }
+    
+    
+    Expression function(int i) {
+        ASTExtension ext = ldp.getAST().getDefine();
+        if (ext != null) {
+            Function exp = (Function) ext.get(OBJECT_FUN);
+            if (exp != null) {
+                if (exp.getSignature().size() == 1) {
+                    Variable var = variable(i);
+                    Variable arg = exp.getSignature().getArg(0).getVariable();
+                    Expression ee = exp.rewrite(arg, var);
+                    return ee;
+                }
+            }
+        }
+        return null;
     }
     
      
@@ -150,7 +202,7 @@ public class AST {
         }
         
         Exp body = copyBody(aa);
-        body = uri(body, i);
+        body = filter(body, i);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), Query.create(sub));
         a.where(s1, s2).groupby(t.predicate());
@@ -179,12 +231,31 @@ public class AST {
        ASTQuery a = copy(aa);
                
         Triple t = tripleVariable(a, i);        
-        Expression term = filter(1, i+1);
+        Expression term = AST.this.filter(1, i+1);
         Expression isuri = Term.function("isURI", variable(i));
         
         a.where().add(term).add(isuri).add(t);
         a.select(t.getVariable()).distinct(true).orderby(t.getVariable());
 
+        return a;
+    }
+    
+    /**
+     * select ?p  (count(?sj) as ?count) (count(distinct ?sj) as ?dist) (<uri> as ?uri1) where { 
+     * EXP ?si ?p ?sj } group by ?p order by ?p
+     */
+    ASTQuery step(ASTQuery aa, int i) {
+        ASTQuery a = copy(aa);
+               
+        Triple t = tripleVariable(a, i);        
+        Expression term = AST.this.filter(1, i+1);
+        Expression isuri = Term.function("isURI", t.subject());
+        
+        a.where().add(term).add(isuri).add(t);
+        a.select(t.predicate().getVariable());
+        a.select(a.variable(COUNT_VAR),    a.count(t.object()));
+        a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
+        a.groupby(t.predicate()).orderby(t.predicate());
         return a;
     }
     
@@ -219,6 +290,14 @@ public class AST {
         return a;
     }
     
+    ASTQuery filter(ASTQuery ast, int i) {
+        Expression exp = filter(i);
+        if (exp != null) {
+            ast.where().add(exp);
+        }
+        return ast;
+    }
+    
     ASTQuery propertyVariable(ASTQuery a, Constant p, int i) {
         // add ?si p ?sj
         ASTQuery ast2 = property(a, p, i);
@@ -235,7 +314,7 @@ public class AST {
         if (i+1 >= n) {
             return t;
         }
-        return Term.create("&&", t, filter (i+1, n));
+        return Term.create("&&", t, AST.this.filter (i+1, n));
     }
     
     Variable  variable(int i) {
@@ -283,7 +362,7 @@ public class AST {
             Variable s = variable(i++);
             Variable o = variable(i);
             Triple t = ast.createTriple(s, p, o);
-            Expression f = filter(1, i);
+            Expression f = AST.this.filter(1, i);
             Expression isuri = Term.function("isURI", o);
             ast.where().add(isuri).add(f).add(t);
         }

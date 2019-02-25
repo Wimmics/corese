@@ -457,7 +457,7 @@ public class Mapping
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Node e : nodes) {
-            sb.append(qNodes[i]).append("[").append(qNodes[i].getIndex()).append("]");
+            sb.append(qNodes[i]); //.append("[").append(qNodes[i].getIndex()).append("]");
             sb.append(" = ").append(e).append(sep);
             if (e != null && e.getObject() != null && e.getObject() != this) {
                 sb.append(sep).append(e.getObject()).append(sep);

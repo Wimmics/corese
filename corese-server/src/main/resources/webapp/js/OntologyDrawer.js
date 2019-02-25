@@ -302,11 +302,14 @@ export class OntologyDrawer {
         this.g = svg.append("g")
             .attr("transform",
                 function() {
+                    let result = "";
                     if (this.horizontalLayout) {
-                        return "translate(" + (margin.left) + "," + (margin.top + this.width * 50) + ")";
+                        result += `translate( ${margin.left} , ${margin.top + this.width * 5})`;
                     } else {
-                        return "translate(" + (margin.left+ this.width * 50) + "," + (margin.top)  + ")";
+                        result += `translate( ${margin.left+ this.width * 5} , ${margin.top})`;
                     }
+                    result += "scale(1)";
+                    return result;
                 }.bind(this));
         // adds the links between the nodes
         var link = this.g.selectAll(".link")
@@ -498,7 +501,7 @@ export class OntologyDrawer {
             .data(root.descendants())
             .enter().append("g")
             .attr("transform", function (d) {
-                return "translate(" + d.x + "," + d.y + ")";
+                return "translate(" + d.x + "," + d.y + ") scale(1)";
             })
             .attr("class", function (d) {
                 return "node" + (!d.children ? " node--leaf" : d.depth ? "" : " node--root");

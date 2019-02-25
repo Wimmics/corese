@@ -6,17 +6,21 @@ function us:start() {
 }
 
 function us:kind(?s) {
-    if (st:cget(st:group, ?s, st:other), 2,
-    if (isURI(?s), 1, 
-    if (isBlank(?s), 2, 3)))
+    coalesce (st:getgroup(?s), 
+        if (isURI(?s), "uri", 
+        if (isBlank(?s), "bnode", "literal")))
 }
 
 function us:record(?s) {
-   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', kg:number())))
+   xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
 }
 
 function us:get(?s) {
     xt:get(?map, ?s)
+}
+
+function us:getNodes() {
+    return (?map)
 }
 
 function us:declare(?fun) {
@@ -33,8 +37,7 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (st:get(st:mode, st:literal), "", 
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true)))
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
 }
 
 function us:shorten(?l) {
@@ -42,16 +45,37 @@ function us:shorten(?l) {
 }
 
 function us:literal(?l) {
-    if (st:get(st:mode, st:uri), "", 
     let (?s = us:shorten(?l)) {
         replace(replace(str(?s), "\n", ""), "\"", "'")
     }
-    )
 }
 
+function us:nodeClass(?s) {
+    coalesce(st:getclass(?s), 
+        if (isLiteral(?s), "literal", if (isURI(?s), "uri", "bnode") ) )
+} 
+
+function us:prefix(?p) {
+    if (strstarts(?p, rdf:),  "rdf", 
+    if (strstarts(?p, rdfs:), "rdfs", 
+    if (strstarts(?p, owl:),  "owl", 
+    if (strstarts(?p, foaf:), "foaf", 
+    if (strstarts(?p, skos:), "skos", 
+    if (strstarts(?p, dc:),   "dc", 
+    "default") ) ))))
+}
+
+function us:edgeClass(?g, ?p) {
+    coalesce(st:getclass(?g), us:prefix(?p))
+}
+
+function us:edgeGroup(?g, ?p) {
+    coalesce(st:getgroup(?g), us:prefix(?p))
+}
+    
 function us:plist(?list) {
     reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
         maplist(lambda(?name) { st:format("\"%s\":true", st:turtle(?name)) }, ?list)
     )
 }
-
+   

@@ -4,8 +4,8 @@ template st:edges {
   group { 
   
     format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number()
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
     }
     
     ; separator = ",\n"
@@ -14,8 +14,10 @@ template st:edges {
   "\n]\n"
 } 
 where {
-  select * where {
-    ?s ?p ?o 
-  }
-  order by ?s ?o ?p
+    select * where {
+        graph ?g { ?s ?p ?o }
+        bind (us:record(?s) as ?ss)
+        bind (us:record(?o) as ?oo)
+    } 
+    limit 5000
 }

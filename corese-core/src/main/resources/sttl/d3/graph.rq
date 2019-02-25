@@ -1,8 +1,15 @@
 template st:graph {
-  st:call-template(st:nodes)
+  str(?node)
   ","
-  st:call-template(st:edges)
+  str(?edge)
 } 
 where {
     bind (xt:print('graph size', xt:size(xt:graph())) as ?tmp)
+    
+    bind (us:start() as ?start)
+    
+    bind (st:call-template(st:edges) as ?edge)
+    
+    bind (st:call-template(st:nodes) as ?node)
+    
 }

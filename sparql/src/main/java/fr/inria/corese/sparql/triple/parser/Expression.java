@@ -862,6 +862,17 @@ public class Expression extends TopExp
         return this;
     }
     
+    public Expression duplicate() {
+        return this;
+    }
+    
+    public Expression replace(Variable arg, Variable var) {
+        for (Expression e : getArgs()) {
+            e.replace(arg, var);
+        }
+        return this;
+    }
+    
     public void visit(ExpressionVisitor v) {
     }
 

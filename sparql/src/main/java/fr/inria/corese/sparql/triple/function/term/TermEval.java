@@ -61,14 +61,7 @@ public class TermEval extends Term {
     public IDatatype value(int value){
         return DatatypeMap.newInstance(value);
     }
-    
-    public void fill(Term term){
-        basicFill(term);
-        term.setArg(getArg());
-        term.setArgs(getArgs());
-        term.setExpList(getExpList());
-    }
-       
+          
     /**
      * Compatibility for strbefore (no lang or same lang)
      */

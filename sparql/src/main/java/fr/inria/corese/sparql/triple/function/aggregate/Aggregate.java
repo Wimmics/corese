@@ -37,14 +37,13 @@ public class Aggregate extends TermEval {
         setArity(1);
     } 
     
-    Aggregate duplicate() {
+    @Override
+    public Aggregate duplicate() {
         try {
             Aggregate agg = getClass().newInstance();
             fill(agg);
             return agg;
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(Aggregate.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this;

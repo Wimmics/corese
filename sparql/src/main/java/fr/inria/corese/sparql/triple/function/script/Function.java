@@ -354,5 +354,16 @@ public class Function extends Statement {
     private Expression lastStatement() {
         return this;
     }
+    
+    
+    /**
+     * Replace arg by var in the body 
+     */
+    public Expression rewrite(Variable arg, Variable var) {
+        Expression exp = getBody().duplicate();
+        return exp.replace(arg, var);
+    }
+    
+    
 
 }

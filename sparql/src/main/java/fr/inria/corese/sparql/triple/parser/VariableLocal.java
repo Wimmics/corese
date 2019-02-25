@@ -20,6 +20,11 @@ public class VariableLocal extends Variable {
     }
     
     @Override
+    public VariableLocal duplicate() {
+        return new VariableLocal(getLabel());
+    }
+    
+    @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
         return b.get(this);
     }

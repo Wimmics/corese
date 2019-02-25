@@ -120,7 +120,7 @@ public class Term extends Expression {
         return term(name, exp1, exp2);
     }
 
-    static Term term(String name, Expression exp1, Expression exp2) {
+    public static Term term(String name, Expression exp1, Expression exp2) {
         switch (Processor.getOper(name)) {
             case ExprType.IN:
                 return new In(name, exp1, exp2);
@@ -1004,6 +1004,22 @@ public class Term extends Expression {
         setDistinct(t.isDistinct());
     }
     
+    @Override
+    public Term duplicate() {
+        try {
+            Term t = getClass().newInstance();
+            fill(t);
+            t.setArgs(new ArrayList<>());
+            for (Expression e : getArgs()) {
+                t.add(e.duplicate());
+            }
+            return t;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(Term.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
+    }
+       
     /**
      * Copy as is except exists where BGP is copied
      * TODO: check all subclasses of TermEval with special data to be copied
@@ -1043,6 +1059,13 @@ public class Term extends Expression {
         t.setFunction(isFunction());
         t.setModality(getModality());
         t.setDistinct(isDistinct());
+    }
+    
+     public void fill(Term term){
+        basicFill(term);
+        term.setArg(getArg());
+        term.setArgs(getArgs());
+        term.setExpList(getExpList());
     }
     
     public void complete(Term t) {

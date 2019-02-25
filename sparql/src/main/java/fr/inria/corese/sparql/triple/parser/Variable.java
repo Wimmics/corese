@@ -49,6 +49,20 @@ public class Variable extends Atom {
     public static Variable create(String str) {
         return new Variable(str);
     }
+    
+    @Override
+    public Variable duplicate() {
+        return new Variable(getLabel());
+    }
+    
+    @Override
+    public Variable replace(Variable arg, Variable var) {
+        if (getName().equals(arg.getName())){
+            setName(var.getLabel());
+        }
+        return this;
+    }
+
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {

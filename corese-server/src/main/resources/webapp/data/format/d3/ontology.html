@@ -1,0 +1,54 @@
+<style> /* set the CSS */
+
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.node--internal text {
+	text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 2px;
+}
+
+</style>
+<div>
+	<div class="panel" style="overflow:auto;resize:both;">
+		<div class="panel-heading" align="center"><strong>D3.js Graph</strong></div>
+		<div class="panel-body" align="left" >
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#ontologyDisplay">Ontology</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="ontologyDisplay" class="tab-pane fade in active">
+					<svg id='ontology%1$s' width="100%%" height="100%%"></svg>       
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var data%1$s = {
+		%3$s
+	};
+</script>
+
+<script type="module">
+	import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
+	D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s', 
+	{"properties": { %2$s } });
+</script>
+
+<script nomodule>
+    D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s');
+</script>
+
+<!-- {"properties": { "rdfs:subClassOf":true, "us:subTaskOf":true, "us:subPartOf":true} }); -->

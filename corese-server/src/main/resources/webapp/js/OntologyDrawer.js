@@ -3,7 +3,7 @@
 export class OntologyDrawer {
     constructor() {
         this.horizontalLayout = true;
-        this.setProperties(new Set(["-rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
+        this.setProperties(new Set(["rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
     }
 
     setData(data) {
@@ -160,16 +160,16 @@ export class OntologyDrawer {
         this.invertProperties = {};
         let newProperties = new Set();
         for (let currentProp of this.properties.values()) {
-            if (currentProp[0] === '-') {
-                this.properties.delete(currentProp);
-                currentProp = currentProp.substring(1, currentProp.length);
+            //if (currentProp[0] === '-') {
+            //    this.properties.delete(currentProp);
+            //    currentProp = currentProp.substring(1, currentProp.length);
+            //    this.invertProperties[currentProp] = true;
+            //} else {
+            //    if (currentProp[0] === '+') {
+            //        currentProp = currentProp.substring(1, currentProp.length);
+            //    }
                 this.invertProperties[currentProp] = true;
-            } else {
-                if (currentProp[0] === '+') {
-                    currentProp = currentProp.substring(1, currentProp.length);
-                }
-                this.invertProperties[currentProp] = false;
-            }
+            //}
             newProperties.add(currentProp);
         }
         this.properties = newProperties;

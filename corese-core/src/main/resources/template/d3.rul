@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Feb 26 13:23:09 CET 2019
+Tue Feb 26 14:12:22 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -90,7 +90,7 @@ template st:frame {
   format {
       ft:frame.html
       ?id
-      us:plist2(?list)
+      us:plist(?list)
       st:call-template(st:graph)
   }
 } 
@@ -111,13 +111,15 @@ template st:ontology {
   format {
       ft:ontology.html
       ?id
-      us:plist2(?list)
+      us:plist(?list)
+      us:plist(?plist)
       st:call-template(st:graph)
   }
 } 
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodeProperty), xt:list("url")) as ?plist)
 }
 
 ]]>
@@ -237,17 +239,15 @@ function us:edgeClass(?g, ?p) {
 function us:edgeGroup(?g, ?p) {
     coalesce(st:getgroup(?g), us:prefix(?p))
 }
-    
+
 function us:plist(?list) {
     reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
-        maplist(lambda(?name) { st:format("\"%s\":true", st:turtle(?name)) }, ?list)
+        maplist(lambda(?name) { st:format("\"%s\"", us:pname(?name)) }, ?list)
     )
 }
-   
-function us:plist2(?list) {
-    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
-        maplist(lambda(?name) { st:format("\"%s\"", st:turtle(?name)) }, ?list)
-    )
+
+function us:pname(?x) {
+    if (isURI(?x), st:turtle(?x), ?x)
 }
   
 ]]>

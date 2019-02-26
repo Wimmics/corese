@@ -3,12 +3,14 @@ template st:ontology {
   format {
       ft:ontology.html
       ?id
-      us:plist2(?list)
+      us:plist(?list)
+      us:plist(?plist)
       st:call-template(st:graph)
   }
 } 
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodeProperty), xt:list("url")) as ?plist)
 }
 

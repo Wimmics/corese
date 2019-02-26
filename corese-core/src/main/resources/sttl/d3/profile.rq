@@ -72,16 +72,14 @@ function us:edgeClass(?g, ?p) {
 function us:edgeGroup(?g, ?p) {
     coalesce(st:getgroup(?g), us:prefix(?p))
 }
-    
+
 function us:plist(?list) {
     reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
-        maplist(lambda(?name) { st:format("\"%s\":true", st:turtle(?name)) }, ?list)
+        maplist(lambda(?name) { st:format("\"%s\"", us:pname(?name)) }, ?list)
     )
 }
-   
-function us:plist2(?list) {
-    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
-        maplist(lambda(?name) { st:format("\"%s\"", st:turtle(?name)) }, ?list)
-    )
+
+function us:pname(?x) {
+    if (isURI(?x), st:turtle(?x), ?x)
 }
   

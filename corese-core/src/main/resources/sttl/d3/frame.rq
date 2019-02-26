@@ -3,7 +3,7 @@ template st:frame {
   format {
       ft:frame.html
       ?id
-      us:plist2(?list)
+      us:plist(?list)
       st:call-template(st:graph)
   }
 } 

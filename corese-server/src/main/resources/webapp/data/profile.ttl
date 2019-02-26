@@ -798,10 +798,16 @@ sw:body (
 st:ontology a st:Server ;
 st:service "ontology" ;
 st:workflow st:ontology ;
+st:param [
+    st:title "Ontology" ;
+    st:hierarchy (rdfs:subClassOf rdfs:subPropertyOf) ;
+   # st:hierarchy (rdfs:subClassOf ) ;
+] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
     [ a sw:Query ; sw:uri <query/subclass.rq> ] 
+    [ a sw:Query ; sw:uri <query/subproperty.rq> ] 
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .

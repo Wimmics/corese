@@ -79,3 +79,9 @@ function us:plist(?list) {
     )
 }
    
+function us:plist2(?list) {
+    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
+        maplist(lambda(?name) { st:format("\"%s\"", st:turtle(?name)) }, ?list)
+    )
+}
+  

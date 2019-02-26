@@ -19,5 +19,6 @@ where {
         bind (us:record(?s) as ?ss)
         bind (us:record(?o) as ?oo)
     } 
+    order by ?p ?s ?o
     limit 5000
 }

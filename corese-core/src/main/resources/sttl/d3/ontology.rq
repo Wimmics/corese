@@ -3,7 +3,7 @@ template st:ontology {
   format {
       ft:ontology.html
       ?id
-      us:plist(?list)
+      us:plist2(?list)
       st:call-template(st:graph)
   }
 } 

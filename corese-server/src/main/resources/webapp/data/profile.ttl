@@ -839,8 +839,9 @@ st:property a st:Server ;
 st:service "property" ;
 st:workflow st:property ;
 st:param [
-    st:title "Class" ;
+    st:title "Property" ;
     st:hierarchy (rdfs:subPropertyOf) ;
+    st:nodeProperty ("url")
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 

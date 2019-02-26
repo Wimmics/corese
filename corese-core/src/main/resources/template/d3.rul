@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Feb 25 14:13:41 CET 2019
+Tue Feb 26 10:04:56 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -112,7 +112,7 @@ template st:ontology {
   format {
       ft:ontology.html
       ?id
-      us:plist(?list)
+      us:plist2(?list)
       st:call-template(st:graph)
   }
 } 
@@ -245,6 +245,12 @@ function us:plist(?list) {
     )
 }
    
+function us:plist2(?list) {
+    reduce(lambda(?a, ?b) {concat(?a, ", " , ?b) }, 
+        maplist(lambda(?name) { st:format("\"%s\"", st:turtle(?name)) }, ?list)
+    )
+}
+  
 ]]>
 </body>
 </rule>
@@ -273,6 +279,7 @@ where {
         bind (us:record(?s) as ?ss)
         bind (us:record(?o) as ?oo)
     } 
+    order by ?p ?s ?o
     limit 5000
 }
 ]]>

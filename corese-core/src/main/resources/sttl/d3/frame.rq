@@ -1,14 +1,13 @@
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:frame(?pretty) {
+template st:frame {
   format {
       ft:frame.html
       ?id
-      us:plist(?list)
+      us:plist2(?list)
       st:call-template(st:graph)
   }
 } 
 where {
-    bind (if (bound(?pretty), us:declare(?pretty), true) as ?tmp)
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
     bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
 }

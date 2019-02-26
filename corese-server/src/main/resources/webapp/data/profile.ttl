@@ -819,6 +819,41 @@ sw:body (
 .
 
 
+st:class a st:Server ;
+st:service "class" ;
+st:workflow st:class ;
+st:param [
+    st:title "Class" ;
+    st:hierarchy (rdfs:subClassOf ) ;
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/subclass.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+st:property a st:Server ;
+st:service "property" ;
+st:workflow st:property ;
+st:param [
+    st:title "Class" ;
+    st:hierarchy (rdfs:subPropertyOf) ;
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/subproperty.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+
+
+
 st:lod a st:Server ;
 st:service "lod" ;
 st:workflow st:lodworkflow ;

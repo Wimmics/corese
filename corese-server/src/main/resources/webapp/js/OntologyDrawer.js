@@ -372,8 +372,8 @@ export class OntologyDrawer {
 
             }.bind(this));
         node.on("click", (d) => {
-            if (d.data.url !== undefined) window.open(d.url);
-            if (d.data.link !== undefined) trans(d.link);
+            if (d.data.url !== undefined) window.open(d.data.url);
+            if (d.data.link !== undefined) trans(d.data.link);
         });
         node
             .append("title")

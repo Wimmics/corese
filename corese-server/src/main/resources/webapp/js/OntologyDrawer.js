@@ -424,7 +424,6 @@ export class OntologyDrawer {
 // end: draw each node.
 
 
-        this.addOptionButton();
 
         let zoomed = function () {
             this.g.attr("transform", d3.event.transform);
@@ -449,21 +448,6 @@ export class OntologyDrawer {
     up() {
         if (this.dataMap[this.displayRoot].parent !== undefined) {
             this.displayRoot = this.dataMap[this.displayRoot].parent;
-        }
-    }
-
-    addOptionButton() {
-        "use strict";
-        let selectButtonId = "selectButton";
-        if (d3.select(`#${selectButtonId}`).empty()) {
-            var fo = d3.select(this.svgId).append('foreignObject').attr("width", "100%").attr("height", "34px");
-            this.selectButton = fo.append("xhtml:select").attr("id", selectButtonId).attr("class", "select");
-            this.selectButton.selectAll("option").data(Object.keys(this.dataMap)).enter().append("option").attr("value", (d) => d).text((d) => this.dataMap[d].label);
-            this.selectButton.on("change", (d) => {
-                const selectValue = d3.select(`#${selectButtonId}`).property('value')
-                this.setDisplayRoot(selectValue);
-                this.draw(this.svgId);
-            });
         }
     }
 

@@ -29,7 +29,9 @@ export class OntologyDrawer {
                 return Object.keys(this.valChildren).length === 0;
             };
             Object.defineProperty(this.dataMap[d.id], "children", {
-                get: function () { return this.getVisibleChildren(); }
+                get: function () {
+                    return this.getVisibleChildren();
+                }
             });
             this.dataMap[d.id].valChildren = function () {
             }
@@ -148,7 +150,7 @@ export class OntologyDrawer {
     switchVisibility(node, recursive) {
         if (!this.dataMap[node].isLeaf()) {
             this.dataMap[node].isFolded = !this.dataMap[node].isFolded;
-            this.setVisibility(node, this.dataMap[node].isFolded, recursive );
+            this.setVisibility(node, this.dataMap[node].isFolded, recursive);
         }
     }
 
@@ -168,7 +170,7 @@ export class OntologyDrawer {
             //    if (currentProp[0] === '+') {
             //        currentProp = currentProp.substring(1, currentProp.length);
             //    }
-                this.invertProperties[currentProp] = true;
+            this.invertProperties[currentProp] = true;
             //}
             newProperties.add(currentProp);
         }
@@ -197,7 +199,7 @@ export class OntologyDrawer {
             if (this.slices[summit.depth] === undefined) {
                 this.slices[summit.depth] = [];
             }
-            this.slices[summit.depth].push( summit );
+            this.slices[summit.depth].push(summit);
             for (let childId of Object.keys(summit.children)) {
                 summit.children[childId] = this.dataMap[childId];
                 if (alreadySeen.has(summit.children[childId])) {
@@ -213,7 +215,7 @@ export class OntologyDrawer {
             let i = 0;
             for (let n of this.slices[slice]) {
                 this.dataMap[n.id].evenNode = (i % 2 === 0);
-               i++;
+                i++;
             }
         }
 
@@ -260,25 +262,20 @@ export class OntologyDrawer {
         this.computeHierarchy();
         // set the dimensions and margins of the diagram
         let margin = {top: 20, right: 20, bottom: 20, left: 20};
-        let width;
-        let height;
-        if (this.horizontalLayout) {
-            width = Math.max(this.getWidth(), 5) * 45 - margin.left - margin.right;
-            height = Math.max(this.getHeight(), 5) * 125 - margin.top - margin.bottom;
-        } else {
-            width = Math.max(this.getWidth(), 5) * 45 - margin.left - margin.right;
-            height = Math.max(this.getHeight(), 5) * 125 - margin.top - margin.bottom;
-        }
+        let width = Math.max(this.getWidth(), 5) * 45 - margin.left - margin.right;
+        let height = Math.max(this.getHeight(), 5) * 125 - margin.top - margin.bottom;
         if (!this.horizontalLayout) {
             let temp = width;
             width = height;
-            height = width;
+            height = temp;
         }
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
-                .separation(function(a, b) { return (a.data.label.length + b.data.label.length)/20; })
-                .nodeSize( [50, 150] )
+            .separation(function (a, b) {
+                return (a.data.label.length + b.data.label.length) / 20;
+            })
+            .nodeSize([50, 150])
         ;
 
 //  assigns the data to a hierarchy using parent-child relationships
@@ -298,19 +295,20 @@ export class OntologyDrawer {
         if (this.g === undefined) {
             this.g = this.svg
                 .append("g")
-                .attr("transform",
-                    function () {
-                        let result = "";
-                        if (this.horizontalLayout) {
-                            result += `translate( ${margin.left} , ${margin.top + this.width * 5})`;
-                        } else {
-                            result += `translate( ${margin.left + this.width * 5} , ${margin.top})`;
-                        }
-                        result += "scale(1)";
-                        return result;
-                    }.bind(this));
         }
+        this.g.attr("transform",
+            function () {
+                let result = "";
+                if (this.horizontalLayout) {
+                    result += `translate( ${margin.left} , ${margin.top + width})`;
+                } else {
+                    result += `translate( ${margin.left + width} , ${margin.top})`;
+                }
+                result += "scale(1)";
+                return result;
+            }.bind(this));
         // adds the links between the nodes
+        this.g.selectAll(".link").remove();
         var link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
             .enter().append("path")
@@ -330,26 +328,27 @@ export class OntologyDrawer {
             }.bind(this));
         link.append("title")
             .text((d) => {
-                // return `link between ${d.parent.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
-                let result = "";
-                let first = true;
-                if ("edgePropertiesToDisplay" in this.parameters) {
-                    for (let prop of this.parameters.edgePropertiesToDisplay) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            result += `\n`;
-                        }
-                        if (this.dataMap[d.data.id].parentEdge !== undefined) {
-                            result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
+                    // return `link between ${d.parent.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
+                    let result = "";
+                    let first = true;
+                    if ("edgePropertiesToDisplay" in this.parameters) {
+                        for (let prop of this.parameters.edgePropertiesToDisplay) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                result += `\n`;
+                            }
+                            if (this.dataMap[d.data.id].parentEdge !== undefined) {
+                                result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
+                            }
                         }
                     }
+                    return result;
                 }
-                return result;
-            }
-        );
+            );
 
 // begin: draw each node.
+        this.g.selectAll(".node").remove();
         var node = this.g.selectAll(".node")
             .data(nodes.descendants())
             .enter().append("g")
@@ -405,7 +404,7 @@ export class OntologyDrawer {
 // adds the text to the node
         let textNode = node.append("text");
         textNode.attr("dy", ".35em")
-            .attr("y", function(d) {
+            .attr("y", function (d) {
                     if (!this.horizontalLayout) {
                         return d.data.evenNode ? "20" : "-20";
                     } else {

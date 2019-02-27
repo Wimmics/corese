@@ -277,11 +277,8 @@ export class OntologyDrawer {
 
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
-            // .separation(function(a, b) { return 10000; })
-            // .separation(function(a, b) { return a.parent == b.parent ? 1 : 2;})
                 .separation(function(a, b) { return (a.data.label.length + b.data.label.length)/20; })
                 .nodeSize( [50, 150] )
-            // .size([width, height])
         ;
 
 //  assigns the data to a hierarchy using parent-child relationships
@@ -297,20 +294,22 @@ export class OntologyDrawer {
 // append the svg object to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-        let svg = d3.select(svgId);
-        svg.selectAll("g").remove();
-        this.g = svg.append("g")
-            .attr("transform",
-                function() {
-                    let result = "";
-                    if (this.horizontalLayout) {
-                        result += `translate( ${margin.left} , ${margin.top + this.width * 5})`;
-                    } else {
-                        result += `translate( ${margin.left+ this.width * 5} , ${margin.top})`;
-                    }
-                    result += "scale(1)";
-                    return result;
-                }.bind(this));
+        this.svg = d3.select(svgId);
+        if (this.g === undefined) {
+            this.g = this.svg
+                .append("g")
+                .attr("transform",
+                    function () {
+                        let result = "";
+                        if (this.horizontalLayout) {
+                            result += `translate( ${margin.left} , ${margin.top + this.width * 5})`;
+                        } else {
+                            result += `translate( ${margin.left + this.width * 5} , ${margin.top})`;
+                        }
+                        result += "scale(1)";
+                        return result;
+                    }.bind(this));
+        }
         // adds the links between the nodes
         var link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
@@ -418,18 +417,14 @@ export class OntologyDrawer {
             .text(function (d) {
                 return d.data.label;
             });
-        // if (!this.horizontalLayout) {
-        //     textNode.attr("transform", "rotate(90)");
-        // }
 // end: draw each node.
 
-
-
-        let zoomed = function () {
+        this.zoomed = function () {
             this.g.attr("transform", d3.event.transform);
         };
-        var zoom_handler = d3.zoom().on("zoom", zoomed.bind(this));
-        zoom_handler(svg);
+        this.zoomListener = d3.zoom().on("zoom", this.zoomed.bind(this));
+
+        this.svg.call(this.zoomListener);
         return this;
     }
 
@@ -438,7 +433,7 @@ export class OntologyDrawer {
     }
 
     centerDisplay() {
-        this.g.attr("transform", "translate( 0, 0)");
+        this.svg.call(this.zoomListener.transform, d3.zoomIdentity);
     }
 
     goTop() {

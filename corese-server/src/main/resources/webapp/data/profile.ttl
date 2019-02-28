@@ -844,7 +844,9 @@ st:workflow st:individual ;
 st:param [
     st:title "Class" ;
     st:hierarchy ( rdfs:subClassOf rdf:type ) ;
-    st:nodeProperty ("url" "property") ;
+    # to be displayed on mouse over
+    st:nodePropertyDisplay ("url" "property") ;
+    st:nodePropertyList (("property" us:value)) ;
     st:export true ;
     st:trace false
 ] ;
@@ -865,7 +867,7 @@ st:workflow st:property ;
 st:param [
     st:title "Property" ;
     st:hierarchy (rdfs:subPropertyOf) ;
-    st:nodeProperty ("url" "domain" "range")
+    st:nodePropertyDisplay ("url" "domain" "range")
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 

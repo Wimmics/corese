@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Feb 26 14:12:22 CET 2019
+Wed Feb 27 19:12:00 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -36,7 +36,7 @@ where {
     bind (st:call-template(st:edges) as ?edge)
     
     bind (st:call-template(st:nodes) as ?node)
-    
+        
 }
 ]]>
 </body>
@@ -113,13 +113,15 @@ template st:ontology {
       ?id
       us:plist(?list)
       us:plist(?plist)
-      st:call-template(st:graph)
+      ?graph
   }
 } 
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
     bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
     bind (coalesce(st:get(st:nodeProperty), xt:list("url")) as ?plist)
+    bind (st:call-template(st:graph) as ?graph)
+    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
 }
 
 ]]>
@@ -134,10 +136,13 @@ template st:nodes {
   group {
   
      format {
-            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
+            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s %s %s %s}'        
             ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
              us:url(?s)
             coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
+            coalesce(st:format(', "domain": "%s"',   st:cget(rdfs:domain, ?s)), "")
+            coalesce(st:format(', "range": "%s"',    st:cget(rdfs:range, ?s)), "")
+            coalesce(st:format(', "property": "%s"', st:cget(us:value, ?s)), "")
       }
         
     ; separator = ",\n"
@@ -181,6 +186,20 @@ function us:kind(?s) {
 function us:record(?s) {
    xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
 }
+
+function us:triple(?s, ?p, ?o) {
+    us:record(?s) ;
+    us:record(?o) 
+}
+
+function us:process(?s, ?p, ?o) {
+    if (?p = rdfs:domain || ?p = rdfs:range,  us:store(?s, ?p, ?o), true)
+}
+
+function us:store(?s, ?p, ?o) {
+    st:cset(?p, ?s, coalesce(concat(st:cget(?p, ?s), " ", st:turtle(?o)), st:turtle(?o)))
+}
+ 
 
 function us:get(?s) {
     xt:get(?map, ?s)
@@ -275,8 +294,7 @@ template st:edges {
 where {
     select * where {
         graph ?g { ?s ?p ?o }
-        bind (us:record(?s) as ?ss)
-        bind (us:record(?o) as ?oo)
+        bind (us:triple(?s, ?p, ?o) as ?ss)
     } 
     order by ?p ?s ?o
     limit 5000

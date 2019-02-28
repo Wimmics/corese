@@ -3,10 +3,13 @@ template st:nodes {
   group {
   
      format {
-            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
+            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s %s %s %s}'        
             ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
              us:url(?s)
             coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
+            coalesce(st:format(', "domain": "%s"',   st:cget(rdfs:domain, ?s)), "")
+            coalesce(st:format(', "range": "%s"',    st:cget(rdfs:range, ?s)), "")
+            coalesce(st:format(', "property": "%s"', st:cget(us:value, ?s)), "")
       }
         
     ; separator = ",\n"

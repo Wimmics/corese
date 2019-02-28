@@ -11,5 +11,5 @@ where {
     bind (st:call-template(st:edges) as ?edge)
     
     bind (st:call-template(st:nodes) as ?node)
-    
+        
 }

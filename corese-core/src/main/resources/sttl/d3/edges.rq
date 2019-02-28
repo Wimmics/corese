@@ -16,8 +16,7 @@ template st:edges {
 where {
     select * where {
         graph ?g { ?s ?p ?o }
-        bind (us:record(?s) as ?ss)
-        bind (us:record(?o) as ?oo)
+        bind (us:triple(?s, ?p, ?o) as ?ss)
     } 
     order by ?p ?s ?o
     limit 5000

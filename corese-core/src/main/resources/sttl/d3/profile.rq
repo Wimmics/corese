@@ -15,6 +15,20 @@ function us:record(?s) {
    xt:set(?map, ?s, coalesce(xt:get(?map, ?s), concat('n', xt:size(?map))))
 }
 
+function us:triple(?s, ?p, ?o) {
+    us:record(?s) ;
+    us:record(?o) 
+}
+
+function us:process(?s, ?p, ?o) {
+    if (?p = rdfs:domain || ?p = rdfs:range,  us:store(?s, ?p, ?o), true)
+}
+
+function us:store(?s, ?p, ?o) {
+    st:cset(?p, ?s, coalesce(concat(st:cget(?p, ?s), " ", st:turtle(?o)), st:turtle(?o)))
+}
+ 
+
 function us:get(?s) {
     xt:get(?map, ?s)
 }

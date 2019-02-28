@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <style> /* set the CSS */
-
+/*
 .node circle {
 	fill: #fff;
 	stroke: steelblue;
@@ -20,6 +20,7 @@
 	stroke-width: 2px;
 }
 
+*/
 </style>
 
 	<head>
@@ -51,18 +52,18 @@ import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
 var data = {
 			"nodes":[
 {"id": "n16", "label": "n16", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#BasicContainer" },
-{"id": "n15", "label": "n15", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container" },
-{"id": "n17", "label": "n17", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container", "myNodeValue": "special message n17"  },
-{"id": "n18", "label": "n18", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container" },
+{"id": "n15", "label": "n15", "group": "uri", "class": "bnode" ,  "url": "http://www.w2.org/ns/ldp#Container" },
+{"id": "n17", "label": "n17", "group": "uri", "class": "litteral" ,  "url": "http://www.w2.org/ns/ldp#Container", "myNodeValue": "special message n17"  },
+{"id": "n18", "label": "n18", "group": "uri", "class": "other" ,  "url": "http://www.w2.org/ns/ldp#Container" },
 {"id": "n19", "label": "n19", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container", "myNodeValue": "special message n19"  },
 ]
 ,"edges":[
-{"source": {"id":"n16"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs", "group": "rdfs", "myEdgeValue": "special message e1"  },
-{"source": {"id":"n17"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs", "group": "rdfs", "myEdgeValue": "special message e2" },
-{"source": {"id":"n18"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs", "group": "rdfs", "myEdgeValue": "special message e3"  },
-{"source": {"id":"n19"}, "target": {"id":"n16"}, "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs", "group": "rdfs", "myEdgeValue": "special message e4"  },
-{"source": {"id":"n19"}, "target": {"id":"n17"}, "label": "rdfs:subClassOf", "id": "e5", "class": "rdfs", "group": "rdfs", "myEdgeValue": "special message e5"  },
-{"source": {"id":"n19"}, "target": {"id":"n18"}, "label": "rdfs:subClassOf", "id": "e6", "class": "rdfs", "group": "rdfs" }
+{"source": {"id":"n16"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs_subclassof", "group": "rdfs", "myEdgeValue": "special message e1"  },
+{"source": {"id":"n17"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs_instanceof", "group": "rdfs", "myEdgeValue": "special message e2" },
+{"source": {"id":"n18"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs_prop1", "group": "rdfs", "myEdgeValue": "special message e3"  },
+{"source": {"id":"n19"}, "target": {"id":"n16"}, "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs_prop2", "group": "rdfs", "myEdgeValue": "special message e4"  },
+{"source": {"id":"n19"}, "target": {"id":"n17"}, "label": "rdfs:subClassOf", "id": "e5", "class": "rdfs_prop3", "group": "rdfs", "myEdgeValue": "special message e5"  },
+{"source": {"id":"n19"}, "target": {"id":"n18"}, "label": "rdfs:subClassOf", "id": "e6", "class": "rdfs_prop4", "group": "rdfs" }
 ]
 
 		};

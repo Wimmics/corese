@@ -99,6 +99,7 @@ export class OntologyDrawer {
             for (let child of this.roots) {
                 this.dataMap["Root"].valChildren[child] = true;
                 this.dataMap[child].parent = "Root";
+                this.dataMap[child].parentEdge = {class: "root"};
             }
             this.root = "Root";
         } else {
@@ -312,7 +313,13 @@ export class OntologyDrawer {
         var link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
             .enter().append("path")
-            .attr("class", "link")
+            .attr("class", function(d) {
+                let result = "link";
+                if (d.data.parentEdge.class !== undefined) {
+                    result = `${result} ${d.data.parentEdge.class}`;
+                }
+                return result;
+            })
             .attr("d", function (d) {
                 if (this.horizontalLayout) {
                     return "M" + d.y + "," + d.x
@@ -354,10 +361,14 @@ export class OntologyDrawer {
             .enter().append("g")
             .attr("class", function (_dataMap) {
                     return function (d) {
-                        return "node" +
+                        let result = "node" +
                             (_dataMap[d.data.id].isFolded ?
                                 " node--folded" :
                                 (_dataMap[d.data.id].isLeaf() ? " node--leaf" : " node--internal"));
+                        if (_dataMap[d.data.id].class !== undefined) {
+                            result = `${result} ${_dataMap[d.data.id].class} `;
+                        }
+                        return result;
                     }
                 }(this.dataMap)
             )

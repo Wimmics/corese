@@ -3,13 +3,15 @@ template st:nodes {
   group {
   
      format {
-            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s %s %s %s}'        
+            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
             ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
              us:url(?s)
-            coalesce(st:format(', "bg_image": "%s"', st:cget(st:img, ?s)), "")
-            coalesce(st:format(', "domain": "%s"',   st:cget(rdfs:domain, ?s)), "")
-            coalesce(st:format(', "range": "%s"',    st:cget(rdfs:range, ?s)), "")
-            coalesce(st:format(', "property": "%s"', st:cget(us:value, ?s)), "")
+            concat(
+                us:property(?s, "bg_image", st:img),
+                us:property(?s, "domain", rdfs:domain),
+                us:property(?s, "range", rdfs:range),
+                us:property(?s, "property", us:value)            
+            )
       }
         
     ; separator = ",\n"
@@ -29,4 +31,8 @@ function us:url(?s) {
         st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
         if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
     )
+}
+
+function us:property(?s, ?name, ?uri) {
+    coalesce(st:format(', "%s": "%s"', ?name, st:cget(?uri, ?s)), "")
 }

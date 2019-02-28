@@ -794,8 +794,8 @@ st:param [
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
-    [ a sw:Query ; sw:uri <query/subclass.rq> ] 
-    [ a sw:Query ; sw:uri <query/subproperty.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subproperty.rq> ] 
     [ a sw:Transformation ; sw:uri d3:frame ] 
 )
 .
@@ -812,8 +812,9 @@ st:param [
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
-    [ a sw:Query ; sw:uri <query/subclass.rq> ] 
-    [ a sw:Query ; sw:uri <query/subproperty.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subproperty.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/signature.rq> ] 
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .
@@ -829,7 +830,30 @@ st:param [
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
-    [ a sw:Query ; sw:uri <query/subclass.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+
+
+st:individual a st:Server ;
+st:service "individual" ;
+st:workflow st:individual ;
+st:param [
+    st:title "Class" ;
+    st:hierarchy ( rdfs:subClassOf rdf:type ) ;
+    st:nodeProperty ("url" "property") ;
+    st:export true ;
+    st:trace true
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/individual.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/property.rq> ] 
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .
@@ -841,12 +865,13 @@ st:workflow st:property ;
 st:param [
     st:title "Property" ;
     st:hierarchy (rdfs:subPropertyOf) ;
-    st:nodeProperty ("url")
+    st:nodeProperty ("url" "domain" "range")
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
-    [ a sw:Query ; sw:uri <query/subproperty.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subproperty.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/signature.rq> ] 
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .

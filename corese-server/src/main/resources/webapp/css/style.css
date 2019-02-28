@@ -17,10 +17,15 @@
 /*
  *  Style for the tree layout of the ontology.
  */
-.node.circle {fill: #fff;stroke: blue;stroke-width: 3px;}
+.node.circle {fill: #fff;stroke: steelblue;stroke-width: 3px;}
 .node--leaf circle {}
 .node--folded circle { fill: #fff; stroke: red; stroke-width: 4px; }
 .node text { font: 12px sans-serif; }
+
+
+/**
+ *  path.rdfs_subclassof {stroke: lime;stroke-dasharray: 1,2,3,5,8;stroke-width:10px}
+*/
 
 .context-menu {
     display: none;
@@ -49,11 +54,15 @@ path.rdfs_instanceof {stroke: green;stroke-dasharray: 3,3;}
 path.rdfs_prop1 {stroke: blue;stroke-dasharray: 1,2,3;}
 path.rdfs_prop4 {stroke: lime;stroke-dasharray: 1,2,3,5,8;stroke-width:10px}
 
-g.uri {stroke: blue;fill: yellow;}
-g.literal { fill: lightgreen ; }
-g.bnode   { fill: orange; }
-g.other   { fill: blue; }
-g.main    { fill: green; }
+g circle  { fill: #fff; stroke: steelblue; stroke-width: 2px; }
+g.uri circle    { fill: #fff; stroke: steelblue;  }
+g.literal circle{ fill: #fff; stroke: steelblue;  }
+g.bnode  circle { fill: #fff; stroke: steelblue;  }
+g.other  circle { fill: #fff; stroke: steelblue;  }
+g.main  circle  { fill: #fff; stroke: steelblue;  }
+
+g.individual circle {fill: #fff;stroke: green; }
+
 
 text.literal { fill: lightgreen; }
 text.main    { fill: green; }

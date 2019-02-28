@@ -5,6 +5,17 @@ function us:start() {
     set(?map = xt:map())
 }
 
+function us:nodePropertyList() {
+    coalesce(st:get(st:nodePropertyList), us:defaultNodePropertyList())
+}
+
+function us:defaultNodePropertyList() {
+    let (?list = @(("bg_image" st:img) ("domain" rdfs:domain) ("range" rdfs:range) ("property" us:value))) {
+        ?list
+    }
+}
+
+
 function us:kind(?s) {
     coalesce (st:getgroup(?s), 
         if (isURI(?s), "uri", 

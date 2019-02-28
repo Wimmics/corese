@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<style> /* set the CSS */
+	/*
+<style> 
 
 .node circle {
 	fill: #fff;
@@ -21,6 +22,7 @@
 }
 
 </style>
+*/
 
 	<head>
   <title>Corese Web Server</title>
@@ -59,11 +61,11 @@ var data = {
 			]
 	,"edges":[
 		// {"source": {"id":"n3"}, "target": {"id":"n"}, "label": "rdfs:subClassOf", "id": "e", "class": "rdfs", "group": "rdfs" },
-		{"source": {"id":"n0"}, "target": {"id":"n1"}, "label": "rdfs:subClassOf", "id": "e0", "class": "rdfs", "group": "rdfs" },
-		{"source": {"id":"n1"}, "target": {"id":"n2"}, "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs", "group": "rdfs" },
-		{"source": {"id":"n2"}, "target": {"id":"n3"}, "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs", "group": "rdfs" },
-		{"source": {"id":"n3"}, "target": {"id":"n4"}, "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs", "group": "rdfs" },
-		{"source": {"id":"n4"}, "target": {"id":"n0"}, "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs", "group": "rdfs" }
+		{"source": {"id":"n0"}, "target": {"id":"n1"}, "label": "rdfs:subClassOf", "id": "e0", "class": "rdfs_subclassof", "group": "rdfs" },
+		{"source": {"id":"n1"}, "target": {"id":"n2"}, "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs_instanceof", "group": "rdfs" },
+		{"source": {"id":"n2"}, "target": {"id":"n3"}, "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs_prop1", "group": "rdfs" },
+		{"source": {"id":"n3"}, "target": {"id":"n4"}, "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs_prop2", "group": "rdfs" },
+		{"source": {"id":"n4"}, "target": {"id":"n0"}, "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs_prop3", "group": "rdfs" }
 	]
 
 };

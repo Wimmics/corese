@@ -17,11 +17,15 @@
 /*
  *  Style for the tree layout of the ontology.
  */
-.node.circle {fill: #fff;stroke: steelblue;stroke-width: 3px;}
+.node circle {fill: #fff;stroke: steelblue;stroke-width: 3px;}
 .node--leaf circle {}
 .node--folded circle { fill: #fff; stroke: red; stroke-width: 4px; }
 .node text { font: 12px sans-serif; }
-
+.nodes circle.literal { fill: lightgreen ; }
+.nodes circle.bnode   { fill: orange; }
+.nodes circle.uri     { fill: lightblue; }
+.nodes circle.other   { fill: blue; }
+.nodes circle.main    { fill: green; }
 
 /**
  *  path.rdfs_subclassof {stroke: lime;stroke-dasharray: 1,2,3,5,8;stroke-width:10px}

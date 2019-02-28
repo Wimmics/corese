@@ -542,7 +542,6 @@ export class D3GraphVisualizer extends Observer {
         }
         d3.select(svgId).on('contextmenu', function (e) {
             d3.event.stopPropagation()
-            console.log("hello world");
             menu.displayOn();
         });
         d3.select(svgId).on('click', function (e) {

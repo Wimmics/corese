@@ -1,0 +1,13 @@
+insert {
+    ?x rdfs:subClassOf owl:Thing
+}
+where {
+select * where {
+   { { ?x a rdfs:Class } union { ?x a owl:Class }
+    minus { ?x rdfs:subClassOf ?y }
+    minus { ?z rdfs:subClassOf ?x } }
+    union 
+    { ?z rdfs:subClassOf ?x minus { ?x rdfs:subClassOf ?y } }
+}
+order by ?x
+}

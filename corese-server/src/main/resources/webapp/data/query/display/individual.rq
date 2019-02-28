@@ -1,0 +1,15 @@
+delete {
+    ?x rdf:type ?c
+}
+where {
+    ?x rdf:type ?c
+    filter (us:system(?c))
+}
+
+function us:system(?c) {
+    mapany (us:starts, ?c, xt:list(owl:, rdf:, rdfs:))
+}
+
+function us:starts(?c, ?v) {
+    strstarts(?c, ?v)
+}

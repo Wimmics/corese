@@ -1,0 +1,16 @@
+insert {
+    ?x rdfs:subPropertyOf owl:Property
+}
+where {
+select * where {
+    {
+        { ?x a owl:DatatypeProperty } union { ?x a owl:ObjectProperty } 
+        union { ?x a owl:AnnotationProperty }
+        union { ?x a rdf:Property }
+        minus { ?x rdfs:subPropertyOf ?y }
+    }
+    union 
+    { ?y rdfs:subPropertyOf ?x minus { ?x rdfs:subPropertyOf ?z } }
+}
+order by ?x
+}

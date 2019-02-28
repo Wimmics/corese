@@ -1,0 +1,13 @@
+select *
+where {
+    {select distinct ?x where { ?x a ?c }}
+    ?x ?p ?v
+    filter (?p not in ( rdf:type, rdfs:subClassOf))
+    bind (us:value(?x, ?p, ?v) as ?t)
+}
+
+
+function us:value(?x, ?p, ?v) {
+     st:cset(us:value, ?x, concat(coalesce(concat(st:cget(us:value, ?x), "; "), ""), 
+        st:turtle(?p), " = ", if (isURI(?v), st:turtle(?v), replace(?v, "\"", "\\\\\"") ) ) ) 
+}

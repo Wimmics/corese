@@ -1,0 +1,13 @@
+select * 
+where {
+    {?x rdfs:domain ?y  bind (us:store(?x, rdfs:domain, ?y) as ?b) } 
+    union 
+    {?x rdfs:range ?y   bind (us:store(?x, rdfs:range, ?y) as ?b)} 
+}
+
+
+
+
+function us:store(?s, ?p, ?o) {
+    st:cset(?p, ?s, coalesce(concat(st:cget(?p, ?s), " ", st:turtle(?o)), st:turtle(?o)))
+}

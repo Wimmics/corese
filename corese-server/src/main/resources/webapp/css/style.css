@@ -66,6 +66,7 @@ g.other  circle { fill: #fff; stroke: steelblue;  }
 g.main  circle  { fill: #fff; stroke: steelblue;  }
 
 g.individual circle {fill: #fff;stroke: green; }
+g.property circle {fill: #fff;stroke: orange; }
 
 
 text.literal { fill: lightgreen; }

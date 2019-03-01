@@ -4,6 +4,7 @@ where {
     ?x ?p ?v
     filter (?p not in ( rdf:type, rdfs:subClassOf))
     bind (us:value(?x, ?p, ?v) as ?t)
+    bind (st:setclass(?x, "individual") as ?i)
 }
 
 

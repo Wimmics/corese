@@ -881,6 +881,24 @@ sw:body (
 .
 
 
+st:signature a st:Server ;
+st:service "signature" ;
+st:workflow st:signature ;
+st:param [
+    st:title "Property" ;
+    st:hierarchy (rdfs:domain rdfs:isRangeOf) ;
+    st:nodePropertyDisplay ("url" ) ;
+    st:trace false
+
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/display/domain.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/range.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
 
 
 

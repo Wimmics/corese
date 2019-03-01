@@ -1,0 +1,9 @@
+insert {
+    ?y rdfs:isRangeOf ?x  
+} 
+where {
+    ?x rdfs:range ?y  
+    bind (st:setclass(?x, "property") as ?b)
+}
+
+

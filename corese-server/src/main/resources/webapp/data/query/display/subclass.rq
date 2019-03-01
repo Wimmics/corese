@@ -8,6 +8,7 @@ select * where {
     minus { ?z rdfs:subClassOf ?x } }
     union 
     { ?z rdfs:subClassOf ?x minus { ?x rdfs:subClassOf ?y } }
+    filter (?x != owl:Thing)
 }
 order by ?x
 }

@@ -297,17 +297,22 @@ export class OntologyDrawer {
             this.g = this.svg
                 .append("g")
         }
-        this.g.attr("transform",
-            function () {
-                let result = "";
-                if (this.horizontalLayout) {
-                    result += `translate( ${margin.left} , ${margin.top + width})`;
-                } else {
-                    result += `translate( ${margin.left + width} , ${margin.top})`;
-                }
-                result += "scale(1)";
-                return result;
-            }.bind(this));
+        // this.g.attr("transform",
+        //     function () {
+        //         // let t = d3.zoom();
+        //         // let result = "";
+        //         // if (!this.horizontalLayout) {
+        //         //     t = t.translate(-margin.left, margin.top + width);
+        //         //     // result += `translate( ${margin.left} , ${margin.top + width})`;
+        //         // } else {
+        //         //     t = t.translate(-margin.left + width, margin.top );
+        //         //     // result += `translate( ${margin.left + width} , ${margin.top})`;
+        //         // }
+        //         this.svg.call(this.zoomListener.transform, t);
+        //         // result += "scale(1)";
+        //         return result;
+        //     }.bind(this));
+        // this.centerDisplay();
         // adds the links between the nodes
         this.g.selectAll(".link").remove();
         var link = this.g.selectAll(".link")

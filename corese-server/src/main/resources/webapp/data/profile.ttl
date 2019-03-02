@@ -826,6 +826,7 @@ st:workflow st:class ;
 st:param [
     st:title "Class" ;
     st:hierarchy (rdfs:subClassOf ) ;
+    st:trace false
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -887,7 +888,7 @@ st:workflow st:signature ;
 st:param [
     st:title "Property" ;
     st:hierarchy (rdfs:domain rdfs:isRangeOf) ;
-    st:nodePropertyDisplay ("url" ) ;
+    st:nodePropertyDisplay ("url" "class" ) ;
     st:trace false
 
 ] ;

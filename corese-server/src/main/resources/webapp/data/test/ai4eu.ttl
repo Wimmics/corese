@@ -6,8 +6,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://www.ai4eu.eu/ontologies/core> .
 
-<http://www.ai4eu.eu/ontologies/core> rdf:type owl:Ontology .
-#<http://www.ai4eu.eu/ontologies/core> owl:imports <http://xmlns.com/foaf/0.1/> .
+<http://www.ai4eu.eu/ontologies/core> rdf:type owl:Ontology ;
+                                       owl:imports <http://xmlns.com/foaf/0.1/> .
 
 #################################################################
 #    Annotation properties

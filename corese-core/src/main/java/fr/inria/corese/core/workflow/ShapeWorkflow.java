@@ -1,12 +1,16 @@
 package fr.inria.corese.core.workflow;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +38,8 @@ public class ShapeWorkflow extends SemanticWorkflow {
     // draft: evaluate shape4shape on the shape
     ShapeWorkflow validator;
     private boolean validate = false;
+    
+    public ShapeWorkflow() {}
     
     public ShapeWorkflow(String shape, String data){
         create(shape, data, resultFormat, false, -1, false);
@@ -115,6 +121,94 @@ public class ShapeWorkflow extends SemanticWorkflow {
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
         }        
+    }
+    
+    
+    Graph graph(IDatatype dt) {
+        if (dt.isURI()) {
+            return parse(dt.getLabel());
+        }
+        else if (dt.pointerType() == Pointerable.GRAPH_POINTER){
+            return (Graph) dt.getPointerObject();
+        }
+        Logger.getLogger(ShapeWorkflow.class.getName()).warning("Empty graph: " + dt);
+        return Graph.create();
+    }
+    
+    Graph parse(String uri) {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        try {
+            ld.parse(uri);
+            g.init();
+            return g;
+        } catch (LoadException ex) {
+            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Graph.create();
+    }
+    
+    public IDatatype process(IDatatype g, IDatatype s, IDatatype... ldt) {
+        Graph res = process(graph(g), graph(s), true,  ldt);
+        return DatatypeMap.createObject(res);
+    }
+    
+    public IDatatype processGraph(Graph g, IDatatype s, IDatatype... ldt) {
+        Graph res = process(g, graph(s), true, ldt);
+        return DatatypeMap.createObject(res);
+    }
+    
+    public IDatatype processNode(Graph g, IDatatype s, IDatatype... ldt) {
+        Graph res = process(g, graph(s), false, ldt);
+        return DatatypeMap.createObject(res);
+    }
+    
+    public Graph process(String g, String s) {
+        return process(parse(g), parse(s), true);
+    }
+    
+    public Graph process(Graph g, String shape) {
+        Graph s = parse(shape);
+        return process(g, s, true);
+    }
+    
+    /**
+     * graph = true means check whole graph, false means check uri
+     * ldt = shape | uri | uri, shape
+     */
+    public Graph process(Graph g, Graph s, boolean graph, IDatatype... param) {
+        Transformer t = Transformer.create(g, SHAPE_TRANS);
+        t.getContext().export(SHAPE_NAME, DatatypeMap.createObject(s));
+
+        if (graph) {
+            // check whole graph
+            if (param.length == 0) {
+                // whole shape graph
+                t.process();
+            } else {
+                // TBD: param[0] = specific shape
+                t.process();
+            }
+        } else {
+            // check node in graph
+            switch (param.length) {
+                case 1:
+                    // param = {node}
+                    t.template(Transformer.STL_START, param[0]);
+                    break;
+                case 2:
+                    // TBD: param = {node, shape}
+                    t.template(Transformer.STL_START, param[0]);
+                    break;
+            }
+        }
+
+        if (t.getVisitor() == null || t.getVisitor().visitedGraph() == null) {
+            return Graph.create();
+        }
+        Graph res = t.getVisitor().visitedGraph();
+        res.init();
+        return res;
     }
     
     /**

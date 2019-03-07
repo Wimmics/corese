@@ -58,6 +58,7 @@ import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -753,6 +754,37 @@ public class PluginImpl
         re.setProfile(RuleEngine.OWL_RL);
         re.process();
         return DatatypeMap.createObject(g);
+    }
+    
+    /**
+     * param[0] = shapeGrah
+     */
+    @Override
+    public IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param) {
+        switch (exp.oper()) {
+            case XT_SHAPE_GRAPH:
+                return shapeGraph(getGraph(p), param);
+            case XT_SHAPE_NODE:
+                return shapeNode(getGraph(p), param);
+        }
+        return null;
+    }
+    
+    // param[0] = shapeGrah ; param [1] = shape
+    IDatatype shapeGraph(Graph g, IDatatype[] param) {
+        if (param.length ==  2) {
+            return new ShapeWorkflow().processGraph(g, param[0], param[1]);
+        }
+        return new ShapeWorkflow().processGraph(g, param[0]);
+    }
+    
+    // param[0] = shapeGrah = s ; param.length >= 2
+    IDatatype shapeNode(Graph g, IDatatype[] param) {
+        switch (param.length) {
+            case 2: return new ShapeWorkflow().processNode(g, param[0], param[1]);
+            case 3: return new ShapeWorkflow().processNode(g, param[0], param[1], param[2]);
+        }
+       return null;
     }
     
     @Override

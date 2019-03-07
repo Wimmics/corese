@@ -48,6 +48,7 @@ import fr.inria.corese.core.api.ValueResolver;
 import fr.inria.corese.core.query.QueryCheck;
 import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -71,6 +72,7 @@ public class Graph extends GraphObject implements
     }
 
     private static Logger logger = LoggerFactory.getLogger(Graph.class);
+    private static final String SHAPE_CONFORM = NSManager.SHAPE + "conforms";
     public static final String TOPREL
             = fr.inria.corese.sparql.triple.cst.RDFS.RootPropertyURI;
     static final ArrayList<Edge> EMPTY = new ArrayList<Edge>(0);
@@ -261,6 +263,15 @@ public class Graph extends GraphObject implements
             return true;
         }
         return getEntailment().typeCheck();
+    }
+    
+    // Shape result graph, return sh:conforms value
+    public boolean conform() {
+        Edge e = getEdge(SHAPE_CONFORM);
+        if (e == null) {
+            return false;
+        }
+        return e.getNode(1).getDatatypeValue().booleanValue();
     }
 
     /**

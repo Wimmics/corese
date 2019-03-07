@@ -356,6 +356,8 @@ public interface ExprType {
         public static int XT_XML         = 463;
         public static int XT_JSON        = 464;
         public static int XT_SPIN        = 465;
+        public static int XT_SHAPE_GRAPH = 466;
+        public static int XT_SHAPE_NODE  = 467;
      
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

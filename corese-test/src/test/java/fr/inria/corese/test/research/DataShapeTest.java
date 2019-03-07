@@ -244,13 +244,16 @@ public class DataShapeTest {
         IDatatype shapedt = (IDatatype) map.getValue("?shape");
 //        System.out.println(datadt.getLabel());
 //        System.out.println(shapedt.getLabel());
-        ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), false, lds);
+        ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), false, lds);       
         Data res = wf.process();
+        Graph greport = res.getVisitedGraph();
+        
+        //greport = new ShapeWorkflow().process(datadt.getLabel(), shapedt.getLabel());
 
-        QueryProcess exec0 = QueryProcess.create(res.getVisitedGraph());
+        QueryProcess exec0 = QueryProcess.create(greport);
         Mappings mm = exec0.query(qcheck);
 
-        QueryProcess exec1 = QueryProcess.create(res.getVisitedGraph());
+        QueryProcess exec1 = QueryProcess.create(greport);
         Mappings mapkgram = exec1.query(qres);
 
         QueryProcess exec2 = QueryProcess.create(g);
@@ -279,20 +282,20 @@ public class DataShapeTest {
                 error++;
             }
         } else {
-            trace(g, res.getVisitedGraph());
+            trace(g, greport);
             report.result(mapw3c, false);
         }
     }
-
+    
     void result(Mappings map) {
     }
 
     void trace(Graph w3c, Graph kg) {
         Transformer t1 = Transformer.create(w3c, Transformer.TURTLE);
         Transformer t2 = Transformer.create(kg, Transformer.TURTLE);
-//        System.out.println("w3c report: ");
-//        System.out.println(t1.transform());
-//        System.out.println("__");
+        System.out.println("w3c report: ");
+        System.out.println(t1.transform());
+        System.out.println("__");
         System.out.println("kgram report: ");
         System.out.println(t2.transform());
         System.out.println("==");

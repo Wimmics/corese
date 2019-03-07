@@ -831,6 +831,7 @@ st:param [
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/display/toplevel.rq> ] 
     [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
@@ -854,6 +855,7 @@ st:param [
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
     [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/display/toplevel.rq> ] 
     [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
     [ a sw:Query ; sw:uri <query/display/individual.rq> ] 
     [ a sw:Query ; sw:uri <query/display/property.rq> ] 

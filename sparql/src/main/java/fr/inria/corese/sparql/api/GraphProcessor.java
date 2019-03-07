@@ -40,6 +40,8 @@ public interface GraphProcessor {
     
     IDatatype entailment(Environment env, Producer p, IDatatype graph);
     
+    IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param);
+
     IDatatype sparql(Environment env, Producer p, IDatatype[] param);
     
     IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);

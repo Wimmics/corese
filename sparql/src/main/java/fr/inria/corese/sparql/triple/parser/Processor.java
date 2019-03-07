@@ -147,6 +147,8 @@ public class Processor {
         public static  final String XT_MAIN      = EXT + "main";
         public static  final String FUN_XT_MAIN  = EXT_PREF + "main";
         private static final String XT_ENTAILMENT = EXT + "entailment";
+        private static final String XT_SHAPE_GRAPH = EXT + "shapeGraph";
+        private static final String XT_SHAPE_NODE  = EXT + "shapeNode";
         private static final String XT_DATATYPE = EXT + "datatype";
         private static final String XT_KIND     = EXT + "kind";
         private static final String XT_METHOD   = "method";
@@ -707,6 +709,8 @@ public class Processor {
 		defoper(XT_ANNOTATION,   ExprType.XT_METADATA);
 		defoper(XT_NSMANAGER,    ExprType.STL_PREFIX);
 		defoper(XT_ENTAILMENT,   ExprType.XT_ENTAILMENT);
+		defoper(XT_SHAPE_GRAPH,  ExprType.XT_SHAPE_GRAPH);
+		defoper(XT_SHAPE_NODE,   ExprType.XT_SHAPE_NODE);
 		defoper(XT_DATATYPE,     ExprType.XT_DATATYPE);
 		defoper(XT_KIND,         ExprType.XT_KIND);
 		defoper(XT_METHOD,       ExprType.XT_METHOD);

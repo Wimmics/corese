@@ -24,6 +24,8 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.GraphProcessor;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_GRAPH;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
 
 /**
  *
@@ -92,6 +94,10 @@ public class GraphSpecificFunction extends TermEval {
                 
             case XT_ENTAILMENT:
                 return entailment(proc, env, p, param);
+                
+            case XT_SHAPE_GRAPH:
+            case XT_SHAPE_NODE:
+                return proc.shape(this, env, p, param);
                 
             case KGRAM:
                 return proc.sparql(env, p, param);

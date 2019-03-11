@@ -1278,7 +1278,7 @@ public class Eval implements ExpType, Plugin {
         MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
         set.setDebug(query.isDebug());
         set.start();
-
+        
         for (Mapping map : map1) {
             if (stop) {
                 return STOP;
@@ -1309,7 +1309,7 @@ public class Eval implements ExpType, Plugin {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();
+        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();       
         if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
@@ -1331,7 +1331,15 @@ public class Eval implements ExpType, Plugin {
 
     boolean isFederate(Exp exp) {
         return memory.getQuery().getGlobalQuery().isFederate()
-                || exp.size() == 1 && exp.get(0).isService();
+                || (exp.size() == 1 && 
+                    (exp.get(0).isService()
+                ||  (exp.get(0).isUnion() &&  isFederate2(exp.get(0)))))
+                ;
+    }
+    
+    // binary such as union
+    boolean isFederate2(Exp exp) {
+        return exp.size() == 2 && isFederate(exp.get(0)) && isFederate(exp.get(1));
     }
 
     Exp complete(Exp exp, Mappings map) {
@@ -1455,7 +1463,6 @@ public class Eval implements ExpType, Plugin {
 
                         env.pop(m1);
                     } else {
-                        //System.out.println("fail push");
                     }
                 }
             }
@@ -1597,7 +1604,7 @@ public class Eval implements ExpType, Plugin {
         Mappings map2 = unionBranch(p, gNode, exp.rest(), exp, data);
 
         getVisitor().union(this, getGraphNode(gNode), exp, map1, map2);
-
+             
         int b1 = unionPush(p, gNode, exp, stack, n, map1);
         int b2 = unionPush(p, gNode, exp, stack, n, map2);
 

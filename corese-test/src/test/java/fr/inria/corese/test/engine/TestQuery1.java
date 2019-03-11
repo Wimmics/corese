@@ -292,6 +292,31 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+             @Test 
+    public void testBB() throws EngineException {
+
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jim  foaf:knows us:James ."
+                + "}"; 
+        
+        String q = "select * where {"
+                + "?a foaf:knows  ?b "
+                + "{select * where  { ?a foaf:knows ?c }}"
+                + "{select ?d where { ?a foaf:knows ?d }}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(4, map.size());
+    }
+    
+    
+    
      @Test 
     public void testUpdate() throws EngineException {
         Graph g = Graph.create();
@@ -5764,28 +5789,20 @@ public class TestQuery1 {
                 + "}";
 
 
-        String q = "select "
-                + "(group_concat"
-                + "(exists {"
-                + "select "
-                + "(group_concat(exists {"
-                + "select "
-                + "(group_concat(exists {"
-                + "?x rdfs:label ?ll"
-                + "}) as ?temp) "
-                + "where {"
-                + "?x rdfs:label ?l "
-                + "}"
-                + "}) as ?temp) "
-                + "where {"
-                + "?x rdfs:label ?l "
-                + "}"
-                + "}"
-                + ") "
-                + "as ?res) where {"
-                + "?x rdfs:label ?l "
-                + ""
-                + "}";
+        String q = 
+"select "
++"(group_concat (exists {"
+                
++"select (group_concat(exists {"
+    +"select (group_concat(exists {?x rdfs:label ?ll}) as ?temp) "                
+    +"where { ?x rdfs:label ?l } } ) as ?temp) "
++"where {?x rdfs:label ?l}"
+                
++"} ) as ?res) "
+                
++ "where {"
++"?x rdfs:label ?l "
++"}";
 
         exec.query(init1);
         exec2.query(init2);
@@ -8858,7 +8875,7 @@ public class TestQuery1 {
         Mappings map = exec.query(query);
         Query q = map.getQuery();
         //System.out.println("NB Procesor: " + Processor.count);
-        assertEquals("Result", 20, q.nbNodes());
+        assertEquals("Result", 17, q.nbNodes());
     }
 
     @Test

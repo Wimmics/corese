@@ -2,6 +2,7 @@ package fr.inria.corese.core.visitor.ldpath;
 
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -105,6 +106,8 @@ public class LinkedDataPath implements QueryVisitor {
         } catch (EngineException ex) {
             Logger.getLogger(LinkedDataPath.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
+            Logger.getLogger(LinkedDataPath.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (LoadException ex) {
             Logger.getLogger(LinkedDataPath.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

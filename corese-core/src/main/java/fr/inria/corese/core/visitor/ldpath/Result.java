@@ -1,5 +1,9 @@
 package fr.inria.corese.core.visitor.ldpath;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -25,6 +29,8 @@ import java.util.logging.Logger;
 public class Result {
     static final String NL = System.getProperty("line.separator");
     static final String LDP = "http://ns.inria.fr/ldpath/" ;
+    static final String TTL = ".ttl";
+    static final String JSON = ".json"; 
     
     HashMap<ASTQuery, Mappings> table;
     ArrayList<ASTQuery> alist;
@@ -72,8 +78,13 @@ public class Result {
     }
 
     
-   public void process() throws IOException {
-        open(file);
+   public void process() throws IOException, LoadException {
+       turtle();
+       json();
+   }
+   
+   public void turtle() throws IOException {
+        open(turtle(file));
         int log = (int) Math.log10(alist.size());
         //    %[argument_index$][flags][width][.precision]conversion
         String format = "%1$0" + (log + 2) + "d: %2$s %3$s %4$s";
@@ -84,6 +95,38 @@ public class Result {
         }
         close(fw);
     }
+   
+   void json() throws LoadException, IOException {
+       Graph g = Graph.create();
+       Load ld = Load.create(g);
+       ld.parse(turtle(file));
+       Transformer t = Transformer.create(g, Transformer.JSON);
+       t.write(json(file));
+   }
+   
+   String json(String file) {
+       if (file.endsWith(JSON)) {
+           return file;
+       }
+       return root(file).concat(JSON);
+   }
+   
+   String turtle(String file) {
+      if (file.endsWith(TTL)) {
+          return file;
+      }
+      return root(file).concat(TTL);
+   }
+   
+   String root(String file) {
+       if (file.endsWith(TTL)) {
+           return file.substring(0, file.indexOf(TTL));
+       }
+       if (file.endsWith(JSON)) {
+           return file.substring(0, file.indexOf(JSON));
+       }
+       return file;
+   }
     
     
     int process(ASTQuery ast, Mappings map, int i) throws IOException {

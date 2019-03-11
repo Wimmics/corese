@@ -81,6 +81,7 @@ public class Term extends Expression {
     private ExpressionList nestedList;
     // additional system arg:
     Expression exp;
+    ExpPattern pattern;
     boolean isFunction = false,
             isCount = false,
             isPlus = false;
@@ -1542,16 +1543,18 @@ public class Term extends Expression {
 
     @Override
     public ExpPattern getPattern() {
-        if (proc == null) {
-            return null;
-        }
-        return proc.getPattern();
+//        if (proc == null) {
+//            return null;
+//        }
+//        return proc.getPattern();
+        return pattern;
     }
 
     public void setPattern(ExpPattern pat) {
-        if (proc != null) {
-            proc.setPattern(pat);
-        }
+        pattern = pat;
+//        if (proc != null) {            
+//            proc.setPattern(pat);
+//        }
     }
 
     void setExist(Exist exp) {

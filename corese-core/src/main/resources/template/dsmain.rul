@@ -2,10 +2,41 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Mar 06 19:45:30 CET 2019
+Mon Mar 11 08:30:16 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Data Shape Validator
+# http://w3c.github.io/data-shapes/shacl/
+#
+# main: shapes with targets
+# core: shape constraints (property, path, constraint, and, or, not, closed)
+# property:   property predicate constraint
+# path:       property path constraint
+# constraint: node constraint
+#
+# Olivier Corby - Inria I3S - 2016
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:main(?shape, ?name, ?s) {
+    ?suc
+}
+where {
+  bind (sh:starter() as ?st)
+  #bind (coalesce(st:get(st:shape), st:shape) as ?shape)
+  bind (xt:focus(?shape, sh:sibling()) as ?sib)
+  bind (funcall(?name, ?shape, ?s) as ?suc) 
+  bind (sh:success(?suc) as ?b)
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -51,15 +82,14 @@ where {
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template st:start(?s) {
+template st:start(?shapeGraph) {
     ?suc
 }
 where {
-  bind (st:visit(st:start, st:trace) as ?vis) 
-  bind (coalesce(st:get(st:shape), st:shape) as ?shape)
   bind (sh:starter() as ?st)
+  bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
   bind (xt:focus(?shape, sh:sibling()) as ?sib)
-  bind (if (bound(?s), sh:target(?shape, ?s), sh:target(?shape)) as ?suc) 
+  bind (sh:target(?shape) as ?suc) 
   bind (sh:success(?suc) as ?b)
 }
 ]]>
@@ -309,6 +339,7 @@ function sh:graphbnode(?var){
 }
 
 function sh:starter(){
+    st:visit(st:start, st:trace) ;
     sh:init()
 }
 
@@ -442,12 +473,70 @@ for (
 }
   
   
-function sh:target(?shape, ?s) {
+function sh:shapeNode(?shape, ?s) {
 let (?suc = true) {
 for (
    select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
    where { 
-   values ?s {UNDEF}
+   
+    values ?s {UNDEF}
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } group by ?sh ) {
+  
+  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
+        set(?suc = false) , true)
+        
+  } ;
+  return(?suc)
+  }
+} 
+
+
+function sh:shapeGraph(?shape, ?sh) {
+let (?suc = true) {
+for (
+   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   where { 
+   
+    values ?s {UNDEF}
+    
     {graph ?shape {
         ?sh sh:targetSubjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
@@ -494,6 +583,7 @@ for (
   return(?suc)
   }
 }  
+
 
 function sh:isdefby(?name){
     st:cget(sh:def, ?name)

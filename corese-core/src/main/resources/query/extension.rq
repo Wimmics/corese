@@ -1,4 +1,6 @@
-@public package { 
+prefix sh: <http://www.w3.org/ns/shacl#>
+
+@public { 
 
 # Specify focus node of transformation 
 # default is st:get(st:uri) as usual
@@ -42,6 +44,28 @@ function st:list(?t) {
         else { ?l }
     }
 }
+
+function xt:conform(?g) {
+    xt:focus(?g,
+    let (select * where { ?x sh:conforms ?b } ) {
+        ?b
+    }
+    )
+}
+
+
+function xt:graphShape(?shape) {
+    #st:export(st:shape, ?shape) ;
+    st:call-template-with(st:dsmain, st:start, ?shape) ;
+    return (st:visitedGraph())
+}
+
+function xt:nodeShape(?shape, ?uri) {
+    #st:export(st:shape, ?shape) ;
+    st:call-template-with(st:dsmain, st:main, ?shape, sh:shapeNode, ?uri) ;
+    return (st:visitedGraph())
+}
+
 
 }
 

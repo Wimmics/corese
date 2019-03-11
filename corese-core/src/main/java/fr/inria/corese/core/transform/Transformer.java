@@ -81,6 +81,7 @@ public class Transformer implements TransformProcessor {
     public static final String SPINTYPECHECK = STL + "spintypecheck";
     public static final String STL_PROFILE = STL + "profile";
     public static final String STL_START = STL + "start";
+    public static final String STL_MAIN = STL + "main";
     public static final String STL_TRACE = STL + "trace";
     public static final String STL_DEFAULT = Processor.STL_DEFAULT;
     public static final String STL_DEFAULT_NAMED = STL + "defaultNamed";
@@ -662,6 +663,11 @@ public class Transformer implements TransformProcessor {
     public IDatatype template(String temp, IDatatype dt) {
         return process(dt, null, temp, false, null, null);
     }
+    
+    public IDatatype process(String temp, IDatatype... ldt) {
+        return process(temp, false, null, null, null, ldt[0], (ldt.length == 1) ? null : ldt);
+    }
+
 
     public static int getCount() {
         return count;
@@ -681,6 +687,7 @@ public class Transformer implements TransformProcessor {
      * of evaluation: it is an extension function of a SPARQL query select
      * (st:apply-templates(?x) as ?px) (concat (?px ...) as ?out) where {}.
      */
+    
     public IDatatype process(IDatatype dt, IDatatype[] args, String temp,
             boolean allTemplates, String sep, Expr exp) {
         return process(temp, allTemplates, sep, exp, null, dt, args);

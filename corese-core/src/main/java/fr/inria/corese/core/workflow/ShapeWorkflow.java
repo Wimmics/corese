@@ -31,6 +31,12 @@ public class ShapeWorkflow extends SemanticWorkflow {
     public static final String FORMAT_HTML          = Transformer.TURTLE_HTML;
     private static final String NL                  = System.getProperty("line.separator");
     
+    static final String MAIN = Transformer.STL_MAIN;
+    static final String SHAPE_NODE  = NSManager.SHAPE + "shapeNode";
+    static final String SHAPE_GRAPH = NSManager.SHAPE + "shapeGraph";
+    static final IDatatype dtnode  = DatatypeMap.newResource(SHAPE_NODE);
+    static final IDatatype dtgraph = DatatypeMap.newResource(SHAPE_GRAPH);
+    
     private String resultFormat = FORMAT;
     private String shape ;
     TransformationProcess transformer;
@@ -172,9 +178,13 @@ public class ShapeWorkflow extends SemanticWorkflow {
         return process(g, s, true);
     }
     
+    IDatatype[] array(IDatatype... ldt) {
+        return ldt;
+    }
+    
     /**
      * graph = true means check whole graph, false means check uri
-     * ldt = shape | uri | uri, shape
+     * param = shape | uri | uri, shape
      */
     public Graph process(Graph g, Graph s, boolean graph, IDatatype... param) {
         Transformer t = Transformer.create(g, SHAPE_TRANS);
@@ -186,19 +196,20 @@ public class ShapeWorkflow extends SemanticWorkflow {
                 // whole shape graph
                 t.process();
             } else {
-                // TBD: param[0] = specific shape
-                t.process();
+                // param = {shape}
+                //t.template(MAIN, param[0]);
+                t.process(MAIN, dtgraph, param[0]);
             }
         } else {
             // check node in graph
             switch (param.length) {
                 case 1:
                     // param = {node}
-                    t.template(Transformer.STL_START, param[0]);
+                    t.process(MAIN, dtnode, param[0]);
                     break;
                 case 2:
                     // TBD: param = {node, shape}
-                    t.template(Transformer.STL_START, param[0]);
+                    t.process(MAIN, dtnode, param[0], param[1]);
                     break;
             }
         }

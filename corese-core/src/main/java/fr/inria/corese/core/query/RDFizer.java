@@ -61,6 +61,7 @@ public class RDFizer {
         try {
             ld.loadString(rdf, Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
+            System.out.println(rdf);
             LoggerFactory.getLogger(SPINProcess.class.getName()).error("", ex);
         } 
         g.prepare();

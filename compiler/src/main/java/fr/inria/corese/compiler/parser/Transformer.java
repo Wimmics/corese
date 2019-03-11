@@ -747,6 +747,8 @@ public class Transformer implements ExpType {
         // new
         Compiler save = compiler;
         compiler = fac.newInstance();
+        // share nodes
+        compiler.share(save);
         compiler.setAST(ast);
 
         Query q = compile(ast);

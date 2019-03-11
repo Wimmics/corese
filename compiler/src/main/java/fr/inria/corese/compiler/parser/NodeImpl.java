@@ -72,7 +72,7 @@ public class NodeImpl implements Node {
 
     @Override
     public String toString() {
-        return atom.toSparql();
+        return atom.toSparql(); // + "[" + getIndex() +"]";
     }
 
     @Override

@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Triple;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -51,5 +52,8 @@ public interface Compiler {
 
   int getMax(Filter f);
 
+  HashMap<String, Node> getVarTable();
+  
+  void share (Compiler cp);
 
 }

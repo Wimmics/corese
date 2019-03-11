@@ -18,7 +18,7 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,20 +36,29 @@ public class CompilerKgram implements ExpType, Compiler {
     Node node;
     //boolean test = false;
 
-    Hashtable<String, Node> varTable;
-    Hashtable<String, Node> resTable;
+    HashMap<String, Node> varTable;
+    HashMap<String, Node> resTable;
 
-    List<IDatatype> consList;
+    //List<IDatatype> consList;
 
 
     public CompilerKgram() {
-        varTable = new Hashtable<String, Node>();
-        resTable = new Hashtable<String, Node>();
-        consList = new ArrayList<IDatatype>();
+        varTable = new HashMap<String, Node>();
+        resTable = new HashMap<String, Node>();
+        //consList = new ArrayList<IDatatype>();
     }
 
     public static CompilerKgram create() {
         return new CompilerKgram();
+    }
+    
+    @Override
+    public HashMap<String, Node> getVarTable() {
+        return varTable;
+    }
+    
+    public void share(Compiler cp) {
+        varTable = cp.getVarTable();
     }
 
 

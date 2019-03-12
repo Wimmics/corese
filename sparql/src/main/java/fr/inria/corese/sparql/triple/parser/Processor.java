@@ -147,8 +147,8 @@ public class Processor {
         public static  final String XT_MAIN      = EXT + "main";
         public static  final String FUN_XT_MAIN  = EXT_PREF + "main";
         private static final String XT_ENTAILMENT = EXT + "entailment";
-        private static final String XT_SHAPE_GRAPH = EXT + "shapeGraph";
-        private static final String XT_SHAPE_NODE  = EXT + "shapeNode";
+        private static final String XT_SHAPE_GRAPH = EXT + "shaclGraph";
+        private static final String XT_SHAPE_NODE  = EXT + "shaclNode";
         private static final String XT_DATATYPE = EXT + "datatype";
         private static final String XT_KIND     = EXT + "kind";
         private static final String XT_METHOD   = "method";

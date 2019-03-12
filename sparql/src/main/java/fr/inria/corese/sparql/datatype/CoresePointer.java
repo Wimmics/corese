@@ -153,5 +153,14 @@ public class CoresePointer extends CoreseUndefLiteral {
         }        
         return getPointerObject().equals(dt.getPointerObject());
     }
+    
+    /**
+     * Pragma: they have same pointer type
+     */
+    @Override
+    public int defaultCompare(IDatatype d2) {
+        return getPointerObject().compare(d2.getPointerObject());
+    }
+    
 
 }

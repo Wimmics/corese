@@ -53,16 +53,29 @@ function xt:conform(?g) {
     )
 }
 
+function us:ldGraph(?shape) {
+    if (isURI(?shape), xt:load(?shape), ?shape)
+}
 
-function xt:graphShape(?shape) {
-    #st:export(st:shape, ?shape) ;
-    st:call-template-with(st:dsmain, st:start, ?shape) ;
+
+function xt:shapeGraph(?shape) {
+    st:call-template-with(st:dsmain, st:start, us:ldGraph(?shape)) ;
     return (st:visitedGraph())
 }
 
-function xt:nodeShape(?shape, ?uri) {
-    #st:export(st:shape, ?shape) ;
-    st:call-template-with(st:dsmain, st:main, ?shape, sh:shapeNode, ?uri) ;
+function xt:shapeGraph(?shape, ?sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeGraph, ?sh) ;
+    return (st:visitedGraph())
+}
+
+
+function xt:shapeNode(?shape, ?uri) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri) ;
+    return (st:visitedGraph())
+}
+
+function xt:shapeNode(?shape, ?uri, ?sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
     return (st:visitedGraph())
 }
 

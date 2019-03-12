@@ -2,7 +2,7 @@
 
 export class OntologyDrawer {
     constructor() {
-        this.horizontalLayout = true;
+        this.horizontalLayout = false;
         this.setProperties(new Set(["rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
         /** !Object */ this.rawData = undefined;
         /** !Object */ this.dataMap = undefined;

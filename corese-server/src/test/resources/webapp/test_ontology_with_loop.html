@@ -58,6 +58,20 @@
                 "group": "uri",
                 "class": "uri",
                 "url": "http://www.w2.org/ns/ldp#Container"
+            },
+            {
+                "id": "n2",
+                "label": "ns1:BasicContainer2",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#BasicContainer"
+            },
+            {
+                "id": "n3",
+                "label": "ns1:Container3",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#Container"
             }
         ]
         , "edges": [
@@ -80,6 +94,14 @@
             {
                 "source": {"id": "n0"},
                 "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e1",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n2"},
+                "target": {"id": "n3"},
                 "label": "rdfs:subClassOf",
                 "id": "e1",
                 "class": "rdfs",

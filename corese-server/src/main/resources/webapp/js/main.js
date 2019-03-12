@@ -177,7 +177,7 @@ $('#tbDataSources').on("click", "#delBtn", function(e) {
     var endpointUrl = $(this).closest("tr").children(":first").html(); // table row ID 
     validDataSources.remove(endpointUrl);
     console.log(validDataSources);
-    $(this).parent().parent().remove();
+    $(this).parents().parents().remove();
     resetDQP();
 });
 
@@ -669,8 +669,8 @@ function renderD3(data, htmlCompId) {
     var mappings = data.mappings;
     var sMaps = JSON.stringify(mappings);
 
-    var width = $(htmlCompId).parent().width();
-//        var height = $("svg").parent().height();
+    var width = $(htmlCompId).parents().width();
+//        var height = $("svg").parents().height();
     var height = 400;
     var color = d3.scale.category20();
 

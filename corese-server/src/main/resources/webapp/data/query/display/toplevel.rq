@@ -1,0 +1,20 @@
+prefix ai4eu: <http://www.ai4eu.eu/ontologies/core#> .
+insert {
+    ?x rdfs:subClassOf ?top
+}
+where {
+select * where {
+   { { ?x a rdfs:Class } union { ?x a owl:Class }  minus { ?x rdfs:subClassOf ?y } }
+    union 
+    { ?z rdfs:subClassOf ?x minus { ?x rdfs:subClassOf ?y } }
+    
+    bind (if (strstarts(?x, ai4eu:), ai4eu:Thing,
+          if (strstarts(?x, foaf:),  foaf:Thing,
+          if (strstarts(?x, dc:),  dc:Thing,
+          error()))) as ?top)
+          
+    filter bound(?top)
+    
+    bind (st:setclass(?top, "fake") as ?f)
+}
+}

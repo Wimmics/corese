@@ -79,5 +79,9 @@ public interface Pointerable extends Loopable {
     default String getDatatypeLabel() {
         return Integer.toString(hashCode());
     }
+    
+    default int compare(Pointerable obj) {
+        return Integer.compare(hashCode(), obj.hashCode());
+    }
    
 }

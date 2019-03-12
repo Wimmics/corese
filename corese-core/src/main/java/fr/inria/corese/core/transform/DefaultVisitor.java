@@ -61,8 +61,12 @@ public class DefaultVisitor implements TemplateVisitor {
         value    = new HashMap();
         list     = new ArrayList();
         errors   = new HashMap<IDatatype, List<IDatatype>>();
+        initVisitedGraph();
+    }
+    
+    void initVisitedGraph() {
         visitedGraph = Graph.create();
-        visitedNode = DatatypeMap.createObject("graph", visitedGraph);
+        visitedNode = DatatypeMap.createObject(visitedGraph);
     }
     
     /*
@@ -72,12 +76,14 @@ public class DefaultVisitor implements TemplateVisitor {
     //*/
     
     @Override
-    public void visit(IDatatype name, IDatatype obj, IDatatype arg){
-        if (name.getLabel().equals(TRACE) || name.getLabel().equals(START)){
+    public void visit(IDatatype name, IDatatype obj, IDatatype arg) {
+        if (name.getLabel().equals(START)) {
+            initVisitedGraph();
             define(name, obj.getLabel(), arg);
-        }
-        else {
-           process(name, obj, arg);
+        } else if (name.getLabel().equals(TRACE)) {
+            define(name, obj.getLabel(), arg);
+        } else {
+            process(name, obj, arg);
         }
     }
     

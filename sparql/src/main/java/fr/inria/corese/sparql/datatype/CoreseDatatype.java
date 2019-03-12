@@ -835,7 +835,7 @@ public class CoreseDatatype
                 if (code == UNDEF) {
                     int res = getDatatypeURI().compareTo(d2.getDatatypeURI());
                     if (res == 0) {
-                        return number(getLabel().compareTo(d2.getLabel()));
+                        return defaultCompare(d2);
                     } else {
                         return number(res);
                     }
@@ -941,6 +941,10 @@ public class CoreseDatatype
         } else {
             return GREATER;
         }
+    }
+    
+    public int defaultCompare(IDatatype d2) {
+        return number(getLabel().compareTo(d2.getLabel()));
     }
     
     int number(int val) {

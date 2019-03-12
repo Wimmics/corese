@@ -136,9 +136,10 @@ public class Result {
             List<Constant> path = path(ast);
             DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
             Constant uri2 = getEndpoint(map);
+            Constant type = type(ast);
             if (dtp == null) {
                 // // path with constant p as predicate
-                result(i++, path, empty, uri2, dt1, dt2);
+                result(i++, type, path, empty, uri2, dt1, dt2);
             } else if (uri2 == null) {
                 // local path with variable ?p as predicate
                 for (Mapping m : map) {
@@ -148,7 +149,7 @@ public class Result {
                         path.add(Constant.create(dtpred));
                         dt1 = m.getValue(AST.COUNT_VAR);
                         dt2 = m.getValue(AST.DISTINCT_VAR);
-                        result(i++, path, empty, uri2, dt1, dt2);
+                        result(i++, type, path, empty, uri2, dt1, dt2);
                         path.remove(path.size() -1);
                     }
                 }
@@ -162,7 +163,7 @@ public class Result {
                         list.add(Constant.create(dtpred));
                         dt1 = m.getValue(AST.COUNT_VAR);
                         dt2 = m.getValue(AST.DISTINCT_VAR);
-                        result(i++, path, list, uri2, dt1, dt2);
+                        result(i++, type, path, list, uri2, dt1, dt2);
                     }
                 }
             }
@@ -176,8 +177,8 @@ public class Result {
         System.out.println(String.format(format, i, path, dt.intValue(), (dt2 == null) ? "" : dt2.intValue()));
     }
     
-    void result(int i, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) throws IOException {
-        write(rdf(i, path, list, uri, dt, dt2));
+    void result(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) throws IOException {
+        write(rdf(i, type, path, list, uri, dt, dt2));
     }
     
     void write(String str) throws IOException {
@@ -209,7 +210,7 @@ public class Result {
         }
     }
     
-    String rdf(int i, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) {
+    String rdf(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) {
         StringBuilder sb = new StringBuilder();
         
         if (i == 1) {
@@ -217,6 +218,10 @@ public class Result {
         }
 
         sb.append ("_:b").append(i).append(" ");
+        
+        if (type != null) {
+            sb.append("rs:type").append(" <").append(type.getLongName()).append(">; ");
+        }
         
         sb.append("rs:path").append(" ");
         path(path, sb, nbTriple);
@@ -297,6 +302,20 @@ public class Result {
             }
         }
         return list;
+    }
+    
+    Constant type(ASTQuery ast) {
+        return type(ast.where());
+    }
+    
+    Constant type(Exp body) {
+        for (Exp exp : body) {
+            if (exp.isFilter()) {
+            } else if (exp.isTriple() && exp.getTriple().isType() && exp.getTriple().getObject().isConstant()) {
+                return exp.getTriple().getObject().getConstant();
+            }
+        }
+        return null;
     }
 
     

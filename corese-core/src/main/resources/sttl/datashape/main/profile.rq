@@ -428,13 +428,72 @@ for (
 } 
 
 
+function sh:shapeNode(?shape, ?s, ?sh) {
+let (?suc = true) {
+for (
+   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   where { 
+   
+    values (?shape ?s ?sh) { (UNDEF UNDEF UNDEF) }
+    
+    
+   {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                          
+  } group by ?sh ) {
+  
+  
+  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
+        set(?suc = false) , true)
+        
+  } ;
+  return(?suc)
+  }
+} 
+
+
+
 function sh:shapeGraph(?shape, ?sh) {
 let (?suc = true) {
 for (
    select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
    where { 
    
-    values ?s {UNDEF}
+    values ?sh {UNDEF}
     
     {graph ?shape {
         ?sh sh:targetSubjectsOf ?p 				

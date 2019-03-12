@@ -1,0 +1,17 @@
+template {
+
+  "{\"@list\": [" 
+  
+  group { 
+    st:apply-templates(?e) 
+    ; separator = ", "
+  }
+  
+  "]}"
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
+  ?in rdf:rest*/rdf:first ?e
+}

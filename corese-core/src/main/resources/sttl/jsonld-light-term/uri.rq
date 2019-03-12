@@ -1,0 +1,7 @@
+template {
+  "{\"@id\": \""  us:escape(?in)  "\"}"
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter isURI(?in)
+}

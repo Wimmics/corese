@@ -23,54 +23,137 @@
 */
 </style>
 
-	<head>
-  <title>Corese Web Server</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./css/style.css">
+<head>
+    <title>Corese Web Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="module" src="./js/d3-graph-visualizer.js"></script>
-	</head>
-	<body>
-	<div id="graph">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				hello
-			</div>
-			<div class="panel-body" style="resize:vertical;overflow:auto">
-				<svg id="graph1" width="1000px" height="1000px"/>
-				<svg id="graph2" width="960" height="960"><g transform="translate(1,1)"></g></svg>
-			</div>
-		</div>
-	</div>
-		<script type="module">
-import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+</head>
+<body>
+<div id="graph">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            hello
+        </div>
+        <div class="panel-body" style="resize:vertical;overflow:auto">
+            <svg id="graph1" width="1000px" height="1000px"/>
+            <svg id="graph2" width="960" height="960">
+                <g transform="translate(1,1)"></g>
+            </svg>
+        </div>
+    </div>
+</div>
+<script type="module">
+    import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+
+    var data = {
+        "nodes": [
+            {
+                "id": "n16",
+                "label": "n16",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#BasicContainer"
+            },
+            {
+                "id": "n15",
+                "label": "n15",
+                "group": "uri",
+                "class": "bnode",
+                "url": "http://www.w2.org/ns/ldp#Container"
+            },
+            {
+                "id": "n17",
+                "label": "n17",
+                "group": "uri",
+                "class": "litteral",
+                "url": "http://www.w2.org/ns/ldp#Container",
+                "myNodeValue": "special message n17"
+            },
+            {
+                "id": "n18",
+                "label": "n18",
+                "group": "uri",
+                "class": "other",
+                "url": "http://www.w2.org/ns/ldp#Container"
+            },
+            {
+                "id": "n19",
+                "label": "n19",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#Container",
+                "myNodeValue": "special message n19"
+            },
+        ]
+        , "edges": [
+            {
+                "source": {"id": "n16"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e1",
+                "class": "rdfs_subclassof",
+                "group": "rdfs",
+                "myEdgeValue": "special message e1"
+            },
+            {
+                "source": {"id": "n17"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e2",
+                "class": "rdfs_instanceof",
+                "group": "rdfs",
+                "myEdgeValue": "special message e2"
+            },
+            {
+                "source": {"id": "n18"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e3",
+                "class": "rdfs_prop1",
+                "group": "rdfs",
+                "myEdgeValue": "special message e3"
+            },
+            {
+                "source": {"id": "n19"},
+                "target": {"id": "n16"},
+                "label": "rdfs:subClassOf",
+                "id": "e4",
+                "class": "rdfs_prop2",
+                "group": "rdfs",
+                "myEdgeValue": "special message e4"
+            },
+            {
+                "source": {"id": "n19"},
+                "target": {"id": "n17"},
+                "label": "rdfs:subClassOf",
+                "id": "e5",
+                "class": "rdfs_prop3",
+                "group": "rdfs",
+                "myEdgeValue": "special message e5"
+            },
+            {
+                "source": {"id": "n19"},
+                "target": {"id": "n18"},
+                "label": "rdfs:subClassOf",
+                "id": "e6",
+                "class": "rdfs_prop4",
+                "group": "rdfs"
+            }
+        ]
+
+    };
 
 
-var data = {
-			"nodes":[
-{"id": "n16", "label": "n16", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#BasicContainer" },
-{"id": "n15", "label": "n15", "group": "uri", "class": "bnode" ,  "url": "http://www.w2.org/ns/ldp#Container" },
-{"id": "n17", "label": "n17", "group": "uri", "class": "litteral" ,  "url": "http://www.w2.org/ns/ldp#Container", "myNodeValue": "special message n17"  },
-{"id": "n18", "label": "n18", "group": "uri", "class": "other" ,  "url": "http://www.w2.org/ns/ldp#Container" },
-{"id": "n19", "label": "n19", "group": "uri", "class": "uri" ,  "url": "http://www.w2.org/ns/ldp#Container", "myNodeValue": "special message n19"  },
-]
-,"edges":[
-{"source": {"id":"n16"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e1", "class": "rdfs_subclassof", "group": "rdfs", "myEdgeValue": "special message e1"  },
-{"source": {"id":"n17"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e2", "class": "rdfs_instanceof", "group": "rdfs", "myEdgeValue": "special message e2" },
-{"source": {"id":"n18"}, "target": {"id":"n15"}, "label": "rdfs:subClassOf", "id": "e3", "class": "rdfs_prop1", "group": "rdfs", "myEdgeValue": "special message e3"  },
-{"source": {"id":"n19"}, "target": {"id":"n16"}, "label": "rdfs:subClassOf", "id": "e4", "class": "rdfs_prop2", "group": "rdfs", "myEdgeValue": "special message e4"  },
-{"source": {"id":"n19"}, "target": {"id":"n17"}, "label": "rdfs:subClassOf", "id": "e5", "class": "rdfs_prop3", "group": "rdfs", "myEdgeValue": "special message e5"  },
-{"source": {"id":"n19"}, "target": {"id":"n18"}, "label": "rdfs:subClassOf", "id": "e6", "class": "rdfs_prop4", "group": "rdfs" }
-]
+    D3GraphVisualizer.drawOntology(data, '#graph1', {
+        "nodePropertiesToDisplay": ["myNodeValue", "url"],
+        "edgePropertiesToDisplay": ["myEdgeValue", "label", "id", "group"]
+    });
+    // D3GraphVisualizer.drawCircle(data, '#graph2');
 
-		};
-
-
-D3GraphVisualizer.drawOntology(data, '#graph1', { "nodePropertiesToDisplay": ["myNodeValue", "url"], "edgePropertiesToDisplay": ["myEdgeValue", "label", "id", "group"]} );
-// D3GraphVisualizer.drawCircle(data, '#graph2');
-
-		</script>
+</script>
 </html>

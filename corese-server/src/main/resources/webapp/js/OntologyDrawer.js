@@ -4,6 +4,8 @@ export class OntologyDrawer {
     constructor() {
         this.horizontalLayout = true;
         this.setProperties(new Set(["rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
+        /** !Object */ this.rawData = undefined;
+        /** !Object */ this.dataMap = undefined;
     }
 
     setData(data) {
@@ -22,7 +24,7 @@ export class OntologyDrawer {
                 if (!this.isFolded) {
                     return this.valChildren;
                 } else {
-                    return {};
+                    return [];
                 }
             };
             this.dataMap[d.id].isLeaf = function () {
@@ -33,24 +35,26 @@ export class OntologyDrawer {
                     return this.getVisibleChildren();
                 }
             });
-            this.dataMap[d.id].valChildren = function () {
-            }
+            this.dataMap[d.id].valChildren = [];
+            this.dataMap[d.id].edgeChildren = [];
+            /** !Set<string> */ this.dataMap[d.id].parents = new Set();
         }
         this.edgesMapId = {};
+        /** @TODO this should be moved to computeHierarchy(). The dataMap structure should be a read-only data
+         * structure keeping the graph returned by Corese. */
         for (let e of data.edges) {
             this.edgesMapId[e.id] = e;
-            let s = e.source.id;
-            let t = e.target.id;
             if (this.properties.has(e.label)) {
+                let s = e.source.id;
+                let t = e.target.id;
                 if (this.invertProperties[e.label]) {
-                    this.dataMap[t].valChildren[s] = true;
-                    this.dataMap[s].parent = t;
-                    this.dataMap[s].parentEdge = e;
-                } else {
-                    this.dataMap[s].valChildren[t] = true;
-                    this.dataMap[t].parent = s;
-                    this.dataMap[t].parentEdge = e;
+                    let temp = s;
+                    s = t;
+                    t = temp;
                 }
+                this.dataMap[s].valChildren.push(t);
+                this.dataMap[s].edgeChildren.push(e);
+                this.dataMap[t].parents.add(s);
             }
         }
 
@@ -58,9 +62,12 @@ export class OntologyDrawer {
         this.nbRoots = 0;
         this.roots = [];
         for (let d of data.nodes) {
-            this.dataMap[d.id].value = Object.keys(this.dataMap[d.id].valChildren).length;
+            this.dataMap[d.id].value = this.dataMap[d.id].valChildren.length;
             this.dataMap[d.id].r = 10;
-            if (this.dataMap[d.id].parent === undefined && Object.keys(this.dataMap[d.id].valChildren).length !== 0) {
+            if (this.dataMap[d.id].parents.size == 0 || (this.dataMap[d.id].parents.size == 1 && this.dataMap[d.id].parents.has(d.id))) {
+                if (this.dataMap[d.id].valChildren.length == 0) {
+                    continue;
+                }
                 console.log(`new tree root : ${d.id}`);
                 this.nbRoots++;
                 this.roots.push(d.id);
@@ -85,7 +92,7 @@ export class OntologyDrawer {
                     if (!this.isFolded) {
                         return this.valChildren;
                     } else {
-                        return {};
+                        return [];
                     }
                 },
                 isLeaf: function () {
@@ -94,12 +101,14 @@ export class OntologyDrawer {
                 get children() {
                     return this.getVisibleChildren();
                 },
-                valChildren: {}
-            }
+                valChildren: [],
+                edgeChildren: []
+            };
             for (let child of this.roots) {
-                this.dataMap["Root"].valChildren[child] = true;
-                this.dataMap[child].parent = "Root";
-                this.dataMap[child].parentEdge = {class: "root"};
+                this.dataMap["Root"].valChildren.push(child);
+                this.dataMap["Root"].edgeChildren.push({source:"Root", target:child, label:"root", class:"root"});
+                this.dataMap[child].parents.add("Root");
+                // this.dataMap[child].parentEdge = {class: "root"}; // @TODO ajouter des arcs dans dataMap
             }
             this.root = "Root";
         } else {
@@ -129,11 +138,13 @@ export class OntologyDrawer {
         return this;
     }
 
-    /*
+    /**
      *  Set the root used by the tree layout algorithm. I.e. draw the subtree below root (included).
+     *  @param {!string} root
      */
     setDisplayRoot(root) {
-        this.displayRoot = root;
+        this.displayRoot = root.id;
+        this.displayRootNode = root;
         return this;
     }
 
@@ -141,7 +152,7 @@ export class OntologyDrawer {
         if (!this.dataMap[node].isLeaf()) {
             this.dataMap[node].isFolded = value;
             if (recursive) {
-                for (let child in this.dataMap[node].children) {
+                for (let child of this.dataMap[node].children) {
                     this.setVisibility(child, value, true);
                 }
             }
@@ -178,76 +189,125 @@ export class OntologyDrawer {
         this.properties = newProperties;
     }
 
+    /**
+     * The method builds a *tree* from the graph stored in this.dataRaw and this.dataMap.
+     * @returns {OntologyDrawer}
+     */
     computeHierarchy() {
         if (this.displayRoot === undefined) {
             this.displayRoot = this.root;
         }
-        this.slices = {}; // in order to know which nodes are at the same depth.
+
+        /**
+         *  Represents a tree node.
+         */
+        class Node {
+
+            constructor(id, depth, parent, uplink) {
+                /** string */ this.id = id;
+                /** !number */ this.depth = depth;
+                /** !Node */   this.parent = parent;
+                /** Edge  */   this.uplink = uplink;
+                /** !Array<Node> */ this.children = [];
+                /** !boolean */ this.evenNode = undefined;
+                /** string */  this.label = Node.dataMap[this.id].label;
+                /** string */ this.url = Node.dataMap[this.id].url;
+                /** string */ this.link = Node.dataMap[this.id].link;
+            }
+
+            addChild(newChild) {
+                this.children.push(newChild);
+            }
+
+            /** @return {string} */ toString() {
+                let /** !string */ s = "";
+                for (let k of ["id", "depth", "evenNode"]) {
+                    s += `${k}: ${this[k]} `;
+                }
+                if (this.parent !== undefined) {
+                    s += `parent ${this.parent.id} `;
+                } else {
+                    s += `no parent `;
+                }
+                s += "children [";
+                for (let k of this.children) {
+                    s += `${k.id} `;
+                }
+                s += "]";
+                return s;
+            }
+        }
+        Node.dataMap = this.dataMap;
 
         // Fill the children map with { id: dataMap[id] }, in order to make the dataMap structure compatible
         // with the layout algorithm.
-        this.hierarchy = this.dataMap[this.displayRoot];
-        this.hierarchy.depth = 0;
-        let stack = [];
+        /** !Object<number, Array<string>> */ this.slices = {}; // in order to know which nodes are at the same depth.
+        /** !Node */ this.hierarchy = new Node(this.displayRoot, 0, undefined, undefined);
+        let /** !Array<Node> */ stack = [];
         stack.push(this.hierarchy);
-        let alreadySeen = new Set();
-        alreadySeen.add(this.hierarchy);
+        let /** !Set<number> */ alreadySeen = new Set();
         while (stack.length !== 0) {
-            let summit = stack.pop();
-            if (summit.parent !== undefined) {
-                summit.depth = this.dataMap[summit.parent].depth + 1;
-            }
+            let /** !Node */ summit = stack.pop();
+            console.log(`summit ${summit}`);
             if (this.slices[summit.depth] === undefined) {
                 this.slices[summit.depth] = [];
             }
             this.slices[summit.depth].push(summit);
-            for (let childId of Object.keys(summit.children)) {
-                summit.children[childId] = this.dataMap[childId];
-                if (alreadySeen.has(summit.children[childId])) {
-                    console.log("cycle detected including node:" + childId);
-                    delete summit.children[childId];
-                } else {
-                    stack.push(summit.children[childId]);
-                    alreadySeen.add(summit.children[childId]);
+            let /** !DataNode */ node = this.dataMap[summit.id];
+            if (alreadySeen.has(summit.id)) {
+                console.log("cycle detected including node:" + summit.id);
+            } else {
+                alreadySeen.add(summit.id);
+                let /** !Object */ data = this.dataMap[summit.id];
+                for (let i = 0; i<data.children.length; i++) {
+                    let /** number */ childId = data.children[i];
+                    let /** !Edge */ childEdge = data.edgeChildren[i];
+                    let /** !Node */ childNode = new Node(childId, summit.depth + 1, summit, childEdge);
+                    summit.addChild(childNode);
+                    stack.push(childNode);
                 }
             }
         }
-        for (let slice in this.slices) {
-            let i = 0;
-            for (let n of this.slices[slice]) {
-                this.dataMap[n.id].evenNode = (i % 2 === 0);
+        for (let /** number */ slice in this.slices) {
+            console.log(`slice: ${slice}`);
+            let /** number */ i = 0;
+            for (let /** !number */ node of this.slices[slice]) {
+                node.evenNode = (i % 2 === 0);
                 i++;
+                console.log(`${node} `);
             }
         }
 
-        // compute width and height of the tree
-        let recurNode = function (tree, nodeId) {
-            let data = tree.dataMap[nodeId];
+        /** compute width and height of the tree.
+         *  @param {!Node} tree
+         *  @return {Object}
+         * */
+        let recurNode = function (tree) {
             let height = 0;
             let width = 0;
-            if (Object.keys(data.children).length === 0) {
-                height = 1;
-                width = 1;
-            } else {
-                for (let childId of Object.keys(data.children)) {
-                    let result = recurNode(tree, childId);
+            if (tree !== undefined) {
+                for (let /** !Node */ child of tree.children) {
+                    let result = recurNode(child);
                     height = Math.max(height, result.height);
                     width += result.width;
                 }
                 height += 1; // count "node" itself.
+                width = Math.max(width, 1);
             }
             return {"height": height, "width": width};
-        }
-        let geomTree = recurNode(this, this.displayRoot);
+        }.bind(this);
+        let geomTree = recurNode(this.hierarchy);
         this.width = geomTree.width;
         this.height = geomTree.height;
         return this;
     }
 
+    /** return {number} */
     getWidth() {
         return this.width;
     }
 
+    /** return {number} */
     getHeight() {
         return this.height;
     }
@@ -274,17 +334,15 @@ export class OntologyDrawer {
 // declares a tree layout and assigns the size
         var treemap = d3.tree()
             .separation(function (a, b) {
-                return (a.data.label.length + b.data.label.length) / 20;
-            })
+                let nodeA = this.dataMap[a.data.id];
+                let nodeB = this.dataMap[b.data.id];
+                return (nodeA.label.length + nodeB.label.length) / 20;
+            }.bind(this))
             .nodeSize([50, 150])
         ;
 
-//  assigns the data to a hierarchy using parent-child relationships
-        var nodes = d3.hierarchy(this.hierarchy
-            , function children(d) {
-                return Object.values(d.getVisibleChildren());
-            }
-        );
+//  assigns the data to a hierarchy using parents-child relationships
+        var nodes = d3.hierarchy(this.hierarchy);
 
 // maps the node data to the tree layout
         nodes = treemap(nodes);
@@ -315,13 +373,13 @@ export class OntologyDrawer {
         // this.centerDisplay();
         // adds the links between the nodes
         this.g.selectAll(".link").remove();
-        var link = this.g.selectAll(".link")
+        const link = this.g.selectAll(".link")
             .data(nodes.descendants().slice(1))
             .enter().append("path")
-            .attr("class", function(d) {
+            .attr("class", function (d) {
                 let result = "link";
-                if (d.data.parentEdge.class !== undefined) {
-                    result = `${result} ${d.data.parentEdge.class}`;
+                if (d.data.uplink.class !== undefined) {
+                    result = `${result} ${d.data.uplink.class}`;
                 }
                 return result;
             })
@@ -340,7 +398,7 @@ export class OntologyDrawer {
             }.bind(this));
         link.append("title")
             .text((d) => {
-                    // return `link between ${d.parent.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
+                    // return `link between ${d.parents.data.id} -- [${this.dataMap[d.data.id].parentEdge.label}] --> ${d.data.id}` ;
                     let result = "";
                     let first = true;
                     if ("edgePropertiesToDisplay" in this.parameters) {
@@ -348,7 +406,7 @@ export class OntologyDrawer {
                             if (first) {
                                 first = false;
                             } else {
-                                result += `\n`;
+                                result += "\n";
                             }
                             if (this.dataMap[d.data.id].parentEdge !== undefined) {
                                 result += `${prop}: ${this.dataMap[d.data.id].parentEdge[prop]}`;
@@ -361,7 +419,7 @@ export class OntologyDrawer {
 
 // begin: draw each node.
         this.g.selectAll(".node").remove();
-        var node = this.g.selectAll(".node")
+        const node = this.g.selectAll(".node")
             .data(nodes.descendants())
             .enter().append("g")
             .attr("class", function (_dataMap) {
@@ -399,7 +457,7 @@ export class OntologyDrawer {
                         if (first) {
                             first = false;
                         } else {
-                            result += `\n`;
+                            result += "\n";
                         }
                         result += `${prop}: ${this.dataMap[d.data.id][prop]}`;
                     }
@@ -456,8 +514,11 @@ export class OntologyDrawer {
     }
 
     up() {
-        if (this.dataMap[this.displayRoot].parent !== undefined) {
-            this.displayRoot = this.dataMap[this.displayRoot].parent;
+        if (this.displayRootNode.parent !== undefined) {
+            this.displayRoot = this.displayRootNode.parent.id;
+            this.displayRootNode = this.displayRootNode.parent;
+        } else if (this.dataMap["Root"] !== undefined){
+            this.displayRoot = "Root";
         }
     }
 

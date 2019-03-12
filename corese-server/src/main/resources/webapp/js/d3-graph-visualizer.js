@@ -492,7 +492,7 @@ export class D3GraphVisualizer extends Observer {
         // menuNode settings
         var menuNode;
         window.setDisplayRoot = function (parameters) {
-            drawer.setDisplayRoot(parameters.data.id);
+            drawer.setDisplayRoot(parameters.data);
             drawer.draw(svgId);
             menuNode.displayOff();
         }

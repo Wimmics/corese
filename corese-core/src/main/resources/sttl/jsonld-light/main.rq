@@ -1,0 +1,21 @@
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main {
+
+"""\"@graph\":
+["""
+
+  box {
+    st:call-template(st:body)
+  }
+  
+"""]
+"""
+   
+}
+where {
+  
+}

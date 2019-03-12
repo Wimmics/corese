@@ -55,7 +55,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.test.dev.TestUnit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,7 +67,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 
 
-//import static junit.TestUnit.root;
 import static org.junit.Assert.*;
 
 /**
@@ -181,7 +179,7 @@ public class TestQuery1 {
         try {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
-            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
         QuerySolver.setVisitorable(true);
@@ -244,7 +242,7 @@ public class TestQuery1 {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
             System.out.println(ex);
-            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
     }

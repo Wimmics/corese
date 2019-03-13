@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 

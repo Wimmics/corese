@@ -904,6 +904,32 @@ sw:body (
 .
 
 
+@prefix rs: <http://ns.inria.fr/ldpath/> 
+
+st:ldpath a st:Server ;
+st:service "ldpath" ;
+st:workflow st:ldpath ;
+st:param [
+    st:title "Property" ;
+    st:hierarchy (us:path us:distinct) ;
+    st:nodePropertyDisplay ("url" "class") ;
+    st:export true ;
+    st:trace true
+
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Load ] # sw:uri = st:param 
+    [ a sw:Query ; sw:uri <query/ldp/pathnode1.rq> ] 
+    [ a sw:Query ; sw:uri <query/ldp/pathnode.rq> ] 
+    [ a sw:Query ; sw:uri <query/ldp/clean.rq> ] 
+    [ a sw:Query ; sw:uri <query/ldp/property.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+
 
 st:lod a st:Server ;
 st:service "lod" ;

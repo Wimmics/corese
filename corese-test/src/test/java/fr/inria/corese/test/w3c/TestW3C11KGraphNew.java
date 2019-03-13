@@ -56,7 +56,6 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.core.print.TemplateFormat;
 import fr.inria.corese.core.util.SPINProcess;
-import fr.inria.corese.test.dev.TestUnit;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -205,7 +204,7 @@ public class TestW3C11KGraphNew {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
             System.out.println(ex);
-            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(TestW3C11KGraphNew.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
     }
@@ -281,7 +280,7 @@ public class TestW3C11KGraphNew {
             //exec.funcall(NSManager.USER + "start", new IDatatype[0]);
         } catch (EngineException ex) {
             System.out.println(ex);
-            Logger.getLogger(TestUnit.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(TestW3C11KGraphNew.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
     }

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Feb 28 11:58:48 CET 2019
+Wed Mar 13 11:13:57 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -229,7 +229,7 @@ function us:declare(?fun) {
 }
 
 function us:label(?s) {
-    if (bound(?pretty), us:pretty(funcall(?pretty, ?s)), us:pretty(?s))
+    us:pretty(coalesce(st:cget(st:label, ?s), ?s))
 }
 
 function us:pretty(?s) {

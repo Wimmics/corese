@@ -57,6 +57,7 @@ public class Metadata extends ASTObject
     public static final int ACCEPT    = 39;
     public static final int REJECT    = 40;
     public static final int OPTION    = 41;
+    public static final int SPLIT     = 42;
     
     
     public static final int EVENT   = 50;
@@ -101,7 +102,7 @@ public class Metadata extends ASTObject
     
     HashMap<String, String> map;
     HashMap<String, List<String>> value;
-    
+    HashMap<String, IDatatype> literal; 
     
      static {
         initAnnotate();
@@ -151,6 +152,7 @@ public class Metadata extends ASTObject
         define("@accept",   ACCEPT); 
         define("@reject",   REJECT); 
         define("@option",   OPTION); 
+        define("@split",    SPLIT); 
         
         
         define("@event",    EVENT);  
@@ -169,6 +171,7 @@ public class Metadata extends ASTObject
     public Metadata(){
         map   = new HashMap<String, String>();
         value = new HashMap();               
+        literal = new HashMap<>();
     }
     
     @Override
@@ -230,7 +233,12 @@ public class Metadata extends ASTObject
     }
     
     public void add(String name, Constant val){
-        add(name, val.getLongName());
+        if (val.isResource()) {
+            add(name, val.getLongName());
+        }
+        else if (val.isLiteral()) {
+            literal.put(name, val.getDatatypeValue());
+        }
     }
     
     public boolean hasMetadata(int type){
@@ -263,6 +271,22 @@ public class Metadata extends ASTObject
        
     public String getValue(int type){
         return getValue(name(type)); 
+    }
+    
+    public IDatatype getDatatypeValue(int type) {       
+        return getDatatypeValue(name(type));
+    }
+    
+    public IDatatype getDatatypeValue(String type) {       
+        return literal.get(type);
+    }
+    
+    public boolean hasDatatypeValue(int type) {
+        return getDatatypeValue(type) != null;
+    }
+    
+    public boolean hasDatatypeValue(String type) {
+        return getDatatypeValue(type) != null;
     }
     
     public String getStringValue(int type){

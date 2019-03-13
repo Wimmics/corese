@@ -2789,7 +2789,7 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
                 | 
-                ((s = IRIrefConst() { list.add(t.image, s); } ) *)   
+                ((s = Constant() { list.add(t.image, s); } ) *)   
             )
        )
     )*
@@ -2893,6 +2893,12 @@ Expression PrimaryExpression(Exp stack) : { Expression expression1; }
   { return expression1; }
 }
 
+Constant Constant() : { Constant c; } 
+{
+    (c = StringLiteral() | c = NumericLiteral() | c = BooleanLiteral() | c = IRIrefConst())
+    { return c;}
+}
+
 Constant NumericLiteral() : { Token t; String datatype; }
 {
    ( t = <INTEGER> { datatype = RDFS.qxsdInteger; } 
@@ -2911,6 +2917,12 @@ Constant RDFLiteral() : { Constant res; String iriref, s, lang; Token t; }
   )?
   { res = astq.createConstant(s, iriref, lang); }
   { return res; }
+}
+
+Constant StringLiteral() : { String s; }
+{
+  s = String()  
+  { return Constant.createString(s); }
 }
 
 Constant BooleanLiteral() : { Token t1, t2; Constant cst; String iriref, lang;}

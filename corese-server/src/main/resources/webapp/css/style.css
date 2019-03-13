@@ -23,7 +23,6 @@
  */
 .node circle {fill: #fff;stroke: steelblue;stroke-width: 3px;}
 .node--leaf circle {}
-.node--folded circle { fill: #fff; stroke: red; stroke-width: 4px; }
 .node text { font: 12px sans-serif; }
 .nodes circle.literal { fill: lightgreen ; }
 .nodes circle.bnode   { fill: orange; }
@@ -72,6 +71,7 @@ g.main  circle  { fill: #fff; stroke: steelblue;  }
 g.individual circle {fill: #fff;stroke: green; }
 g.property circle {fill: #fff;stroke: orange; }
 g.fake circle {fill: #fff;stroke: yellow; }
+g.node--folded circle {stroke: red;stroke-width: 2px; fill: lightblue;}
 
 
 text.literal { fill: lightgreen; }

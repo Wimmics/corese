@@ -494,6 +494,7 @@ export class D3GraphVisualizer extends Observer {
         window.setDisplayRoot = function (parameters) {
             drawer.setDisplayRoot(parameters.data);
             drawer.draw(svgId);
+            drawer.centerDisplay();
             menuNode.displayOff();
         }
         window.switchMaskSubtree = function (parameters) {
@@ -524,6 +525,7 @@ export class D3GraphVisualizer extends Observer {
             .addEntry("Up one level", function () {
                 drawer.up();
                 drawer.draw(svgId);
+                drawer.centerDisplay();
                 menu.displayOff();
             })
             .addEntry("Reset centering", function () {
@@ -534,6 +536,7 @@ export class D3GraphVisualizer extends Observer {
             .addEntry("Switch horizontal/vertical layout", function () {
                 drawer.switchLayout();
                 drawer.draw(svgId);
+                drawer.centerDisplay();
                 menu.displayOff();
             })
         ;

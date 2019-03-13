@@ -44,6 +44,8 @@ public class LinkedDataPath implements QueryVisitor {
     public static final String SUBJECT      = OPTION + "subject";
     public static final String DISTINCT     = OPTION + "distinct";
     
+    public static final String SPLIT        = "@split";
+    public static final String SLICE        = "@slice";
     
     Graph graph;
     QueryProcess exec;
@@ -53,6 +55,7 @@ public class LinkedDataPath implements QueryVisitor {
     private int length = 1;
     // path length on remote endpoint
     private int endpointLength = 0;
+    int maxQuery = Integer.MAX_VALUE;
     boolean trace = !true;
 
     // find links between local and endpoint
@@ -185,8 +188,17 @@ public class LinkedDataPath implements QueryVisitor {
             System.out.println("Reject: " + getReject());
         }
         if (ast.hasMetadata(Metadata.OPTION)) {
-            setOption(ast.getMetadata().getValues(Metadata.OPTION));
+            processOption(ast.getMetadata().getValues(Metadata.OPTION));
             System.out.println("Option: " + getOption());
+        }
+        if (ast.getMetadata().hasMetadata(SPLIT)) {
+            setMaxQuery(ast.getMetadata().getDatatypeValue(SPLIT).intValue());
+            System.out.println("Split: " + getMaxQuery());
+        }
+        if (ast.getMetadata().hasMetadata(SLICE)) {
+            int slice = ast.getMetadata().getDatatypeValue(SLICE).intValue();
+            ProcessVisitorDefault.SLICE_DEFAULT_VALUE = slice;
+            System.out.println("Slice: " + slice);
         }
         if (ast.hasMetadata(Metadata.DEBUG)) {
             ast.getMetadata().remove(Metadata.DEBUG);
@@ -200,6 +212,10 @@ public class LinkedDataPath implements QueryVisitor {
         if (ast.hasMetadata(Metadata.NEW)) {
             test = true;
         }
+    }
+    
+    void processOption(List<String> list) {
+         setOption(list);
     }
     
     boolean hasOption(String name) {
@@ -318,6 +334,36 @@ public class LinkedDataPath implements QueryVisitor {
      * ?sj} service s2 { ?sj ?p ?sk }}
      */
     void property(ASTQuery ast1, List<Constant> list, int varIndex) throws InterruptedException {
+        if (list.size() > maxQuery) {  
+            ArrayList<ArrayList<Constant>> newList = split(list, maxQuery);
+            for (List<Constant> subList : newList) {
+                propertyBasic(ast1, subList, varIndex);
+            }
+        }
+        else {
+            propertyBasic(ast1, list, varIndex);
+        }
+    }
+    
+    ArrayList<ArrayList<Constant>> split(List<Constant> list, int max) {
+        ArrayList<ArrayList<Constant>> newList = new ArrayList<>();
+        ArrayList<Constant> subList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            subList.add(list.get(i));
+            if (subList.size() == max) {
+                newList.add(subList);
+                subList = new ArrayList<>();
+            }
+        }
+        if (! subList.isEmpty()) {
+            newList.add(subList);
+        }
+        //System.out.println("split: " + newList);
+        return newList;
+    }
+
+    
+    void propertyBasic(ASTQuery ast1, List<Constant> list, int varIndex) throws InterruptedException {
         int timeout = 10000;
         ArrayList<QueryProcessThread> plist = new ArrayList<>();
         for (Constant p : list) {
@@ -345,7 +391,7 @@ public class LinkedDataPath implements QueryVisitor {
                 if (trace) {
                     System.out.println(serv);
                 }
-                ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
+                //ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
                 QueryProcessThread qpe = new QueryProcessThread(graph, serv, p);
                 qpe.setJoin(true);
                 plist.add(qpe);
@@ -380,7 +426,7 @@ public class LinkedDataPath implements QueryVisitor {
             System.out.println(serv);
         }
         //if (trace) System.out.println(serv);
-        ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
+        //ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
         QueryProcessThread qpe = new QueryProcessThread(graph, serv, null);
         qpe.process();
         Mappings mm = qpe.getMappings();
@@ -469,9 +515,25 @@ public class LinkedDataPath implements QueryVisitor {
         }
         return false;
     }
+    
+    
+    List<Mappings> variable(ASTQuery ast, List<Constant> list, int varIndex) throws InterruptedException {
+        if (list.size() > maxQuery) {  
+            ArrayList<Mappings> res = new ArrayList<>();
+            ArrayList<ArrayList<Constant>> newList = split(list, maxQuery);
+            for (List<Constant> subList : newList) {
+                List<Mappings> sol = variableBasic(ast, subList, varIndex);
+                res.addAll(sol);
+            }
+            return res;
+        }
+        else {
+            return variableBasic(ast, list, varIndex);
+        }
+    }
 
     // in ast add ?sj ?p ?sk
-    List<Mappings> variable(ASTQuery ast, List<Constant> list, int varIndex) throws InterruptedException {
+    List<Mappings> variableBasic(ASTQuery ast, List<Constant> list, int varIndex) throws InterruptedException {
         ArrayList<Mappings> mapList = new ArrayList<>();
         ArrayList<QueryProcessThread> plist = new ArrayList<>();
         int timeout = 10000;
@@ -647,6 +709,14 @@ public class LinkedDataPath implements QueryVisitor {
     
     AST ast() {
         return astq;
+    }
+    
+    public void setMaxQuery(int n) {
+        maxQuery = n;
+    }
+    
+    int getMaxQuery() {
+        return maxQuery;
     }
 
 }

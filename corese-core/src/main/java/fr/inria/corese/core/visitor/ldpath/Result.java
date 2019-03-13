@@ -80,11 +80,15 @@ public class Result {
     
    public void process() throws IOException, LoadException {
        turtle();
-       json();
+       if (file != null) {
+           json();
+       }
    }
    
    public void turtle() throws IOException {
-        open(turtle(file));
+        if (file != null) {
+            open(turtle(file));
+        }
         int log = (int) Math.log10(alist.size());
         //    %[argument_index$][flags][width][.precision]conversion
         String format = "%1$0" + (log + 2) + "d: %2$s %3$s %4$s";
@@ -313,6 +317,12 @@ public class Result {
             if (exp.isFilter()) {
             } else if (exp.isTriple() && exp.getTriple().isType() && exp.getTriple().getObject().isConstant()) {
                 return exp.getTriple().getObject().getConstant();
+            }
+            else if (exp.isService()) {
+                Constant t = type(exp.getBodyExp());
+                if (t != null) {
+                    return t;
+                }
             }
         }
         return null;

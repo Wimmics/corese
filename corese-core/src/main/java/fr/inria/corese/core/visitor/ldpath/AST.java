@@ -66,7 +66,7 @@ public class AST {
         sub.where(sub.union(t, t2));
         sub.select(t.subject().getVariable()).distinct(true);
         Exp body = copyBody(aa);
-        body = filter(body, i);
+        body = filter(body, i, true);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), Query.create(sub));                     
         a.where(s1, s2);
@@ -109,7 +109,7 @@ public class AST {
                                
         Triple t = tripleVariable(a, i); 
         Exp body = copyBody(aa);
-        body = filter(body, i);
+        body = filter(body, i, true);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), t);  
         
@@ -125,24 +125,24 @@ public class AST {
         return a;
     }
      
-    Exp filter(Exp body, int i) {
-        Expression exp = filter(i);
+    Exp filter(Exp body, int i, boolean service) {
+        Expression exp = filter(i, service);
         if (exp != null) {
             body.add(exp);
         }
         return body;
     }
    
-    Expression filter(int i) {
+    Expression filter(int i, boolean service) {
         Expression exp = function(i);
         if (exp != null) {
             return exp;
         } else {
-            return option(i);
+            return option(i, service);
         }
     }
 
-    Expression option(int i) {
+    Expression option(int i, boolean service) {
         List<Expression> list = new ArrayList<>();
         if (ldp.hasOption(LinkedDataPath.LITERAL)) {
             list.add(Term.function("isLiteral", variable(i)));
@@ -157,6 +157,9 @@ public class AST {
             return list.get(0);
         } else if (list.size() == 2) {
             return Term.term("||", list.get(0), list.get(1));
+        }
+        if (service) {
+            return Term.function("isURI", variable(i));
         }
         return null;
     }
@@ -202,7 +205,7 @@ public class AST {
         }
         
         Exp body = copyBody(aa);
-        body = filter(body, i);
+        body = filter(body, i, true);
         Service s1 = a.service(a.uri(uri1), body);
         Service s2 = a.service(a.uri(uri2), Query.create(sub));
         a.where(s1, s2).groupby(t.predicate());
@@ -234,7 +237,8 @@ public class AST {
         Expression term = AST.this.filter(1, i+1);
         Expression isuri = Term.function("isURI", variable(i));
         
-        a.where().add(term).add(isuri).add(t);
+       //a.where().add(term).add(isuri).add(t);
+        a.where().add(term).add(t);
         a.select(t.getVariable()).distinct(true).orderby(t.getVariable());
 
         return a;
@@ -251,7 +255,8 @@ public class AST {
         Expression term = AST.this.filter(1, i+1);
         Expression isuri = Term.function("isURI", t.subject());
         
-        a.where().add(term).add(isuri).add(t);
+        //a.where().add(term).add(isuri).add(t);
+        a.where().add(term).add(t);
         a.select(t.predicate().getVariable());
         a.select(a.variable(COUNT_VAR),    a.count(t.object()));
         a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
@@ -291,7 +296,7 @@ public class AST {
     }
     
     ASTQuery filter(ASTQuery ast, int i) {
-        Expression exp = filter(i);
+        Expression exp = filter(i, false);
         if (exp != null) {
             ast.where().add(exp);
         }

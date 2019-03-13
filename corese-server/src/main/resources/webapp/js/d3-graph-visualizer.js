@@ -551,6 +551,7 @@ export class D3GraphVisualizer extends Observer {
         // end of menu for the ontology graph background.
         parameters.menuNode = menuNode;
         let drawer = new OntologyDrawer().setParameters(parameters).setData(_results).draw(svgId);
+        drawer.centerDisplay();
         return drawer;
     }
 

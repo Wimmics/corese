@@ -53,7 +53,7 @@ function us:declare(?fun) {
 }
 
 function us:label(?s) {
-    if (bound(?pretty), us:pretty(funcall(?pretty, ?s)), us:pretty(?s))
+    us:pretty(coalesce(st:cget(st:label, ?s), ?s))
 }
 
 function us:pretty(?s) {

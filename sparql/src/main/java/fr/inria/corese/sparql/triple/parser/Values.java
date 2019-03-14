@@ -114,7 +114,7 @@ public class Values extends Exp {
 
     @Override
     void getVariables(List<Variable> list) {
-        for (Variable var : getVariables()) {
+        for (Variable var : getVarList()) {
             add(var, list);
         }
     }
@@ -127,9 +127,8 @@ public class Values extends Exp {
     public void setVariables(List<Variable> lvar) {
         this.lvar = lvar;
     }
-
-    @Override
-    public List<Variable> getVariables() {
+   
+    public List<Variable> getVarList() {
         return lvar;
     }
 

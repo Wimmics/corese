@@ -613,7 +613,7 @@ public class SPIN implements ASTVisitor {
     // TODO
     public void visit(Values values) {
 
-        List<Variable> varList = values.getVariables();
+        List<Variable> varList = values.getVarList();
         List<List<Constant>> constList = values.getValues();
 
         sb.append(tab() + OSBRACKET + SPACE + ATAB);
@@ -622,7 +622,7 @@ public class SPIN implements ASTVisitor {
 
         //variables
         sb.append(tab() + "sp:variables" + SPACE + OPAREN);
-        for (Variable var : values.getVariables()){
+        for (Variable var : values.getVarList()){
             visit(var);
             sb.append(SPACE);
         }

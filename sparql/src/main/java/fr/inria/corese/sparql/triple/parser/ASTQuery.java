@@ -600,7 +600,7 @@ public class ASTQuery
     // collect values for select *
     void collect() {
         if (getValues() != null) {
-            for (Variable var : getValues().getVariables()) {
+            for (Variable var : getValues().getVarList()) {
                 defSelect(var);
             }
         }
@@ -2884,7 +2884,7 @@ public class ASTQuery
 
     public List<Variable> getVariableBindings() {
         if (values != null) {
-            return values.getVariables();
+            return values.getVarList();
         }
         return null;
     }
@@ -2904,12 +2904,12 @@ public class ASTQuery
         if (val.hasExpression()){
             Variable meta;
             
-            if (val.getVariables().size() == 1){
-                meta = val.getVariables().get(0);                
+            if (val.getVarList().size() == 1){
+                meta = val.getVarList().get(0);                
             }
             else {
                meta = metaVariable();
-               for (Variable var : val.getVariables()){
+               for (Variable var : val.getVarList()){
                    meta.addVariable(var);
                }
             }

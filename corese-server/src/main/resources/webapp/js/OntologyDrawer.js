@@ -198,6 +198,7 @@ export class OntologyDrawer {
                 /** string */  this.label = Node.dataMap[this.id].label;
                 /** string */ this.url = Node.dataMap[this.id].url;
                 /** string */ this.link = Node.dataMap[this.id].link;
+                /** boolean */ this.isFolded = false;
             }
 
             addChild(newChild) {
@@ -222,7 +223,6 @@ export class OntologyDrawer {
                 return s;
             }
 
-            isFolded = false;
 
             getVisibleChildren() {
                 if (this.isFolded) {

@@ -498,12 +498,12 @@ export class D3GraphVisualizer extends Observer {
             menuNode.displayOff();
         }
         window.switchMaskSubtree = function (parameters) {
-            drawer.switchVisibility(parameters.data.id, false);
+            drawer.switchVisibility(parameters.data, false);
             drawer.draw(svgId);
             menuNode.displayOff();
         }
         window.switchMaskAllSubtree = function (parameters) {
-            drawer.switchVisibility(parameters.data.id, true);
+            drawer.switchVisibility(parameters.data, true);
             drawer.draw(svgId);
             menuNode.displayOff();
         }

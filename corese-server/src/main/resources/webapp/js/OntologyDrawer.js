@@ -174,16 +174,16 @@ export class OntologyDrawer {
         this.invertProperties = {};
         let newProperties = new Set();
         for (let currentProp of this.properties.values()) {
-            //if (currentProp[0] === '-') {
-            //    this.properties.delete(currentProp);
-            //    currentProp = currentProp.substring(1, currentProp.length);
-            //    this.invertProperties[currentProp] = true;
-            //} else {
-            //    if (currentProp[0] === '+') {
-            //        currentProp = currentProp.substring(1, currentProp.length);
-            //    }
-            this.invertProperties[currentProp] = true;
-            //}
+            if (currentProp[0] === "-") {
+               // this.properties.delete(currentProp);
+               currentProp = currentProp.substring(1, currentProp.length);
+               this.invertProperties[currentProp] = false;
+            } else {
+               if (currentProp[0] === "+") {
+                   currentProp = currentProp.substring(1, currentProp.length);
+               }
+                this.invertProperties[currentProp] = true;
+            }
             newProperties.add(currentProp);
         }
         this.properties = newProperties;

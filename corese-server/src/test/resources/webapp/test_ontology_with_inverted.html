@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<style> /* set the CSS */
+
+.node {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+}
+
+.node--leaf {
+    fill: #fff;
+    stroke: blue;
+    stroke-width: 1px;
+}
+
+.node--folded {
+    fill: #fff;
+    stroke: red;
+    stroke-width: 4px;
+}
+
+.node text {
+    font: 12px sans-serif;
+}
+
+
+.node--internal text {
+    text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+</style>
+
+<head>
+    <title>Corese Web Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/d3-graph-visualizer.js"></script>
+    <script type="module" src="./js/ConfGraphModal.mjs"></script>
+</head>
+<body>
+<div> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae vestibulum turpis, sed bibendum lorem. Nunc nisl diam, hendrerit ac molestie sit amet, gravida nec turpis. Fusce ac dictum orci. Cras tempor dolor eu dolor vulputate molestie. Nullam mi risus, interdum eget diam non, condimentum ultrices lectus. Fusce sit amet blandit justo. Nullam in accumsan arcu, vel elementum lectus. Pellentesque dolor ex, pellentesque vitae nisl quis, dapibus iaculis diam. Mauris ut consectetur dui, sed varius tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent eget pharetra elit. Sed commodo nisl sit amet elit faucibus pulvinar. Nullam lobortis dui dolor, vitae rhoncus enim volutpat ac. Nullam feugiat risus in vehicula sagittis. Proin ac semper arcu, at eleifend ante.
+
+    Integer purus nisi, finibus a convallis in, imperdiet quis nunc. Nunc faucibus risus id nulla porta ullamcorper. Pellentesque semper nisl vitae vehicula tempus. Donec faucibus lacus vitae sollicitudin consectetur. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis vestibulum, ligula vitae sollicitudin faucibus, tellus enim scelerisque risus, vitae mollis elit est et nisi. Maecenas quis orci sed tortor efficitur vehicula a at nulla.
+
+    Suspendisse in mauris lorem. Aliquam vestibulum id est eu tempor. Sed porttitor, urna vitae faucibus lacinia, arcu ipsum scelerisque erat, vel varius ligula nisl sed velit. Phasellus elementum consectetur fermentum. Morbi lectus lectus, cursus eu leo id, consequat faucibus lacus. Vestibulum blandit elit sit amet lorem aliquam, in sollicitudin nibh semper. Integer eget augue at nisl lobortis laoreet non at neque. Ut ultricies, turpis vel imperdiet fringilla, lacus neque varius tellus, a lacinia nisl eros in massa. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec at massa risus. Aliquam suscipit ligula sed imperdiet ornare.
+
+    Proin pellentesque posuere condimentum. Aenean pharetra, sem eu molestie sagittis, diam lectus gravida nisl, ultrices mattis sem ante et augue. Quisque sollicitudin, erat eget aliquet ultricies, mauris odio finibus purus, at vestibulum dui lectus et sem. Vivamus in efficitur nulla. Pellentesque mi odio, suscipit nec ante id, lacinia imperdiet erat. Proin ac orci tempus, commodo felis nec, finibus mauris. Curabitur sit amet tempor tellus, eu suscipit urna. Duis in quam a ex consectetur ornare quis nec nibh.
+
+    Nulla ex sem, gravida id sapien quis, rutrum sagittis mauris. Nunc pharetra, ipsum at elementum congue, neque lacus elementum nisi, non venenatis metus ante in elit. Nulla dapibus dolor vel velit gravida condimentum. Nulla facilisi. Etiam quis vulputate augue, sit amet egestas orci. Sed faucibus ante suscipit, laoreet metus non, porttitor ante. Praesent bibendum venenatis nisl. Curabitur in posuere leo, in volutpat quam. Sed molestie nulla dapibus elementum ornare.</div>
+<div id="graph">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            hello
+        </div>
+        <div class="panel-body" style="resize:vertical;overflow:auto">
+            <svg id="graph1" width="100%" height="100%"/>
+            <!--<svg id="graph2" width="960" height="960">-->
+                <!--<g transform="translate(1,1)"></g>-->
+            <!--</svg>-->
+        </div>
+    </div>
+</div>
+<script type="module">
+    window.stopLink = function (event) {
+        event.preventDefault();
+    }
+    import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+
+
+    var data = {
+        "nodes": [
+            {
+                "id": "n16",
+                "label": "ns1:BasicContainer",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#BasicContainer"
+            },
+            {
+                "id": "n15",
+                "label": "ns1:Container",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#Container"
+            },
+            {
+                "id": "n14",
+                "label": "ns1:DirectContainer",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#DirectContainer"
+            },
+            {
+                "id": "n17",
+                "label": "ns1:IndirectContainer",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w2.org/ns/ldp#IndirectContainer"
+            },
+            {
+                "id": "n1",
+                "label": "rdf:Property",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+            },
+            {
+                "id": "n9",
+                "label": "rdfs:Class",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2000/01/rdf-schema#Class"
+            },
+            {
+                "id": "n3",
+                "label": "owl:AnnotationProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#AnnotationProperty"
+            },
+            {
+                "id": "n8",
+                "label": "owl:Class",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#Class"
+            },
+            {
+                "id": "n5",
+                "label": "owl:DatatypeProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#DatatypeProperty"
+            },
+            {
+                "id": "n10",
+                "label": "owl:DeprecatedClass",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#DeprecatedClass"
+            },
+            {
+                "id": "n6",
+                "label": "owl:DeprecatedProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#DeprecatedProperty"
+            },
+            {
+                "id": "n0",
+                "label": "owl:FunctionalProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#FunctionalProperty"
+            },
+            {
+                "id": "n11",
+                "label": "owl:InverseFunctionalProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#InverseFunctionalProperty"
+            },
+            {
+                "id": "n4",
+                "label": "owl:ObjectProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#ObjectProperty"
+            },
+            {
+                "id": "n2",
+                "label": "owl:OntologyProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#OntologyProperty"
+            },
+            {
+                "id": "n7",
+                "label": "owl:Restriction",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#Restriction"
+            },
+            {
+                "id": "n12",
+                "label": "owl:SymmetricProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#SymmetricProperty"
+            },
+            {
+                "id": "n13",
+                "label": "owl:TransitiveProperty",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#TransitiveProperty"
+            },
+            {
+                "id": "n103",
+                "label": "owl:n103",
+                "group": "uri",
+                "class": "uri",
+                "url": "http://www.w3.org/2002/07/owl#TransitiveProperty"
+            }
+        ]
+        , "edges": [
+            {
+                "source": {"id": "n0"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e0",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n2"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e1",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n3"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e2",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n4"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e3",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n5"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e4",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n6"},
+                "target": {"id": "n1"},
+                "label": "rdfs:subClassOf",
+                "id": "e5",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n7"},
+                "target": {"id": "n8"},
+                "label": "rdfs:subClassOf",
+                "id": "e6",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n8"},
+                "target": {"id": "n9"},
+                "label": "rdf:type",
+                "id": "e7",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n10"},
+                "target": {"id": "n9"},
+                "label": "rdfs:subClassOf",
+                "id": "e8",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n11"},
+                "target": {"id": "n4"},
+                "label": "rdfs:subClassOf",
+                "id": "e9",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n12"},
+                "target": {"id": "n4"},
+                "label": "rdfs:subClassOf",
+                "id": "e10",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n13"},
+                "target": {"id": "n4"},
+                "label": "rdfs:subClassOf",
+                "id": "e11",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n14"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e12",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n16"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e13",
+                "class": "rdfs",
+                "group": "rdfs"
+            },
+            {
+                "source": {"id": "n17"},
+                "target": {"id": "n15"},
+                "label": "rdfs:subClassOf",
+                "id": "e14",
+                "class": "rdfs",
+                "group": "rdfs"
+            }
+        ]
+
+    };
+
+
+    var drawer = D3GraphVisualizer.drawOntology(data, '#graph1', {properties:["-rdfs:subClassOf","rdfs:of"]});
+
+
+</script>
+
+</body>
+
+</html>

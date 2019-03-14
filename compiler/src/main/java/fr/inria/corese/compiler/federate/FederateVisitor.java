@@ -198,6 +198,7 @@ public class FederateVisitor implements QueryVisitor {
             simplify = false;
         }
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.EXIST)) {
+            System.out.println("exist: true");
             exist = true;
         }
         if (ast.hasMetadata(Metadata.BOUNCE)) {
@@ -228,9 +229,17 @@ public class FederateVisitor implements QueryVisitor {
      * Rewrite select (exists {BGP} as ?b) order by group by having body
      */
     void rewrite(ASTQuery ast) {
+        prepare(ast);
         rewrite(null, ast);
         variable(ast);
         ast.getVisitorList().add(this);
+    }
+    
+    void prepare(ASTQuery ast) {
+        if (ast.getValues() != null) {
+            ast.where().add(0, ast.getValues());
+            ast.setValues(null);
+        }
     }
     
     void variable(ASTQuery ast) {
@@ -291,7 +300,7 @@ public class FederateVisitor implements QueryVisitor {
             // body may be modified
             // triples may be replaced by service URI { t1 t2 }
             // these service clauses will not be rewritten afterward
-            rew.prepare(name, body, filterList);
+            rew.groupTripleInServiceWithOneURI(name, body, filterList);
         }
         
         ArrayList<Exp> expandList = new ArrayList<> ();

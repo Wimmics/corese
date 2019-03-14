@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exist;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -23,6 +24,8 @@ import java.util.List;
  *
  */
 public class RewriteBGP {
+    
+    static final String FAKE_SERVER = "http://ns.inria.fr/_fake_";
    
     FederateVisitor visitor;
     private boolean debug = false;
@@ -69,21 +72,25 @@ public class RewriteBGP {
      * modify the body (replace triples by BGPs)
      * filterList: list to be filled with filters that are copied into service
      */
-    void prepare(Atom name, Exp body, List<Exp> filterList) {
+    void groupTripleInServiceWithOneURI(Atom name, Exp body, List<Exp> filterList) {
         ServiceBGP map = new ServiceBGP();
         boolean tripleFilter = true;
         // create BGPs for triples that share same service URI
         // create a table service -> BGP
         for (int i = 0; i<body.size(); i++) {
             Exp exp = body.get(i);
-            if (exp.isFilter()) {
+            if (exp.isFilter() || exp.isValues()) {
                 // do nothing
             }
             else if (exp.isTriple()) {
                 Triple triple = exp.getTriple();
                 List<Atom> list = visitor.getServiceList(triple);
                 if (list.size() == 1) {
-                   process(map, triple, list.get(0));
+                   assignTripleToConnectedBGP(map, triple, list.get(0).getLabel());
+                }
+                else {
+                   //tripleFilter = false;
+                   assignTripleToConnectedBGP(map, triple, FAKE_SERVER);
                 }
             }
             else {
@@ -95,14 +102,17 @@ public class RewriteBGP {
         HashMap<BasicGraphPattern, Service> done  = new HashMap<>();
         
         // record triples that are member of created BGPs
-        for (List<BasicGraphPattern> list : map.getMap().values()) {
-            for (BasicGraphPattern bgp : list) {
-                for (Exp exp : bgp) {
-                    table.put(exp.getTriple(), bgp);
+        for (String uri : map.getMap().keySet()) {
+            if (!uri.equals(FAKE_SERVER)) {
+                List<BasicGraphPattern> list = map.get(uri);
+                for (BasicGraphPattern bgp : list) {
+                    for (Exp exp : bgp) {
+                        table.put(exp.getTriple(), bgp);
+                    }
                 }
             }
         }
-        
+
         // for each triple member of created BGP
         // replace first triple by service s { BGP }
         // move simple filters into BGP
@@ -123,6 +133,15 @@ public class RewriteBGP {
             }
         }
         
+        // create local fake service for triple with several URI
+        // just for testing filter below
+        List<BasicGraphPattern> list = map.get(FAKE_SERVER);
+        for (BasicGraphPattern bgp : list) {
+            Service serv = Service.create(Constant.createResource(FAKE_SERVER), bgp);
+            done.put(bgp, serv);
+        }
+        
+        
         // remove triples member of a created service 
         for (Triple t : table.keySet()) {
             body.getBody().remove(t);
@@ -134,21 +153,21 @@ public class RewriteBGP {
     /**
      * Add triple in appropriate serv -> (BGP)
      */
-    void process2(ServiceBGP map, Triple triple, Atom serv) {
-        List<BasicGraphPattern> bgpList = map.get(serv.getLabel());
-        if (bgpList.isEmpty()) {
-            bgpList.add(BasicGraphPattern.create());
-        }
-        bgpList.get(0).add(triple);
-    }
+//    void process2(ServiceBGP map, Triple triple, Atom serv) {
+//        List<BasicGraphPattern> bgpList = map.get(serv.getLabel());
+//        if (bgpList.isEmpty()) {
+//            bgpList.add(BasicGraphPattern.create());
+//        }
+//        bgpList.get(0).add(triple);
+//    }
 
     /**
      * Add triple in appropriate BGP in serv -> (BGP1 , BGPn)
      * where triple is connected to BGP
      * merge BGPs that are connected with triple.
      */
-    void process(ServiceBGP map, Triple triple, Atom serv) {
-        List<BasicGraphPattern> bgpList = map.get(serv.getLabel());
+    void assignTripleToConnectedBGP(ServiceBGP map, Triple triple, String serv) {
+        List<BasicGraphPattern> bgpList = map.get(serv);
         boolean isConnected = false;
         int i = 0;
         
@@ -199,11 +218,14 @@ public class RewriteBGP {
                 }
                 else {
                     for (BasicGraphPattern bgp : bgpList.keySet()) {
-                        List<Variable> varList = bgp.getVariables();
-                        if (exp.getFilter().isBound(varList)) {
-                            bgp.add(exp);
-                            if (!filterList.contains(exp)) {
-                                filterList.add(exp);
+                        Service serv = bgpList.get(bgp);
+                        if (! serv.getServiceName().getLabel().equals(FAKE_SERVER)) {
+                            List<Variable> varList = bgp.getVariables();
+                            if (exp.getFilter().isBound(varList)) {
+                                bgp.add(exp);
+                                if (!filterList.contains(exp)) {
+                                    filterList.add(exp);
+                                }
                             }
                         }
                     }
@@ -227,6 +249,9 @@ public class RewriteBGP {
      * does not work if there were existing service before rewrite
      * because they are not in bgpMap
      * In this case, this function is not called
+     * TODO:
+     * does not work if some triples are not yet in a service clause
+     * because we are in the prepare phase
      */
     void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
         boolean isNotExist = visitor.isNotExist(filterExist);
@@ -264,14 +289,18 @@ public class RewriteBGP {
                     }
                     
                     if (servExist.getServiceName().equals(servBGP.getServiceName())) {
-                        if (previousIntersection == null) {
-                             previousIntersection = currentIntersection;
-                        }                        
-                        if (equal(previousIntersection, currentIntersection)) {
+                        if (equal(currentIntersection, existVarList)) {
                             bgpList.add(bgp);
                         } else {
-                            // two BGP intersect differently the exists clause
-                            return;
+                            if (previousIntersection == null) {
+                                previousIntersection = currentIntersection;
+                            }
+                            if (equal(previousIntersection, currentIntersection)) {
+                                bgpList.add(bgp);
+                            } else {
+                                // two BGP intersect differently the exists clause
+                                return;
+                            }
                         }
                     }
                     // service with another URI

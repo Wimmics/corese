@@ -3,12 +3,14 @@ package fr.inria.corese.compiler.federate;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,26 +106,43 @@ public class Simplify {
          *  annotated as @local and if there is a service s2 with 
          * one of the URI of s1, s1 can be merged with s2
          */
-        ArrayList<Service> list = new ArrayList<>();
-        for (Exp exp : bgp) {
-            if (exp.isService() && isLocalizable(exp.getService())) {
-                Service serv = getCandidate(exp.getService(), map2);
-                if (serv != null) {
-                    serv.getBodyExp().include(exp.getService().getBodyExp());
-                    list.add(exp.getService());
-                }               
+        boolean go = true;
+        while (go) {
+            go = false;
+            ArrayList<Service> list = new ArrayList<>();
+            for (Exp exp : bgp) {
+                if (exp.isService() && isMoveable(exp.getService())) {
+                    Service serv = getCandidate(exp.getService(), map2);
+                    if (serv != null) {
+                        serv.getBodyExp().include(exp.getService().getBodyExp());
+                        list.add(exp.getService());
+                        go = true;
+                    }
+                }
             }
-        }
-  
-        for (Service s : list) {
-            bgp.getBody().remove(s);
+
+            for (Service s : list) {
+                bgp.getBody().remove(s);
+            }
         }
                
         return bgp;
     }
     
-    
-    Service getCandidate(Service serv, ServiceList map) {
+     Service getCandidate(Service serv, ServiceList map) {
+        for (Atom name : serv.getServiceList()) {
+            List<Service> list = map.getMap().get(name.getLabel());
+            if (list != null) {
+                Service res = list.get(0);
+                if (serv.getBodyExp().isConnected(res.getBodyExp())) {
+                    return res;
+                }
+            }
+        }
+        return null;
+    }
+     
+    Service getCandidate2(Service serv, ServiceList map) {
         Service res = null;       
         for (Atom name : serv.getServiceList()) {
             List<Service> list = map.getMap().get(name.getLabel());
@@ -141,12 +160,42 @@ public class Simplify {
         return res;
     }
     
-    boolean isLocalizable(Service exp) {
+    boolean isMoveable(Service exp) {
         Exp body = exp.getBodyExp();
-        return exp.isFederate()
-                && body.size() == 1 && body.get(0).isTriple()
-                && body.get(0).getTriple().getPredicate().isConstant()
-                && visitor.getAST().hasMetadata(Metadata.LOCAL, body.get(0).getTriple().getPredicate().getLabel());
+        if (!exp.isFederate()) {
+            return false;
+        }
+        Triple t = getUniqueTriple(body);
+        if (t == null) {
+            return false;
+        }
+        return t.getPredicate().isConstant()
+                && isMoveable(t.getPredicate().getConstant());
+    }
+    
+    Triple getUniqueTriple(Exp body) {
+        Triple t = null;
+        for (Exp exp : body) {
+            if (exp.isFilter()) {}
+            else if (exp.isTriple()) {
+                if (t == null) {
+                    t = exp.getTriple();
+                }
+                else {
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
+        }
+        return t;
+    }
+    
+    boolean isMoveable(Constant predicate) {
+        return visitor.getAST().hasMetadata(Metadata.MOVE)
+                && (visitor.getAST().hasMetadataValue(Metadata.MOVE, predicate.getLabel())
+                 || visitor.getAST().getMetadata().getValues(Metadata.MOVE) == null);
     }
     
     /**
@@ -292,7 +341,7 @@ public class Simplify {
    }
     
     Exp simplifyService2(Exp exp, Service s1, Service s2) {
-        if (!s1.isFederate() && isLocalizable(s2)
+        if (!s1.isFederate() && isMoveable(s2)
                 && s2.getServiceList().contains(s1.getServiceName())) {
             exp.set(0, s1.getBodyExp());
             exp.set(1, s2.getBodyExp());

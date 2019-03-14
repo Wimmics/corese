@@ -448,7 +448,7 @@ public class Transformer implements ExpType {
         if (!t.getArg(1).isVariable()) {
             return false;
         }
-        for (Variable var : values.getVariables()) {
+        for (Variable var : values.getVarList()) {
             if (var.equals(t.getArg(1))) {
                 return true;
             }
@@ -919,7 +919,7 @@ public class Transformer implements ExpType {
         Mappings lMap = new Mappings();
 
         for (List<Constant> lVal : values.getValues()) {
-            if (values.getVariables().size() != lVal.size()) {
+            if (values.getVarList().size() != lVal.size()) {
                 // error: not right number of values
                 return null;
             } else {
@@ -939,7 +939,7 @@ public class Transformer implements ExpType {
 
         List<Node> lNode = new ArrayList<Node>();
 
-        for (Variable var : values.getVariables()) {
+        for (Variable var : values.getVarList()) {
             Node qNode = compiler.createNode(var);
             lNode.add(qNode);
         }

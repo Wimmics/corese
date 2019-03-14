@@ -201,7 +201,7 @@ public class CompileService {
     }
         
     boolean success(Values values) {
-        return values.getVariables().size() > 0 && 
+        return values.getVarList().size() > 0 && 
             values.getValues().size() > 0;
     }
     

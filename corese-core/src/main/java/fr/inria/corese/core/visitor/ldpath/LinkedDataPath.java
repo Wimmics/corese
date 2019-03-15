@@ -12,6 +12,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class LinkedDataPath implements QueryVisitor {
     
     public static final String SPLIT        = "@split";
     public static final String SLICE        = "@slice";
+    public static final String GRAPH        = "@graph";
     
     Graph graph;
     QueryProcess exec;
@@ -68,7 +70,7 @@ public class LinkedDataPath implements QueryVisitor {
     private List<String> reject;
     private List<String> accept;
     private List<String> option;
-    
+    List<String> graphList;
 
     boolean parallel = true;
     boolean detail = false;
@@ -199,6 +201,10 @@ public class LinkedDataPath implements QueryVisitor {
             int slice = ast.getMetadata().getDatatypeValue(SLICE).intValue();
             ProcessVisitorDefault.SLICE_DEFAULT_VALUE = slice;
             System.out.println("Slice: " + slice);
+        }
+        if (ast.hasMetadata(GRAPH)) {
+            graphList = ast.getMetadata().getValues(GRAPH);
+            System.out.println("Graph: " + graphList);
         }
         if (ast.hasMetadata(Metadata.DEBUG)) {
             ast.getMetadata().remove(Metadata.DEBUG);
@@ -374,7 +380,10 @@ public class LinkedDataPath implements QueryVisitor {
             ASTQuery ast2 = astq.property(ast1, p, varIndex);
             astq.filter(ast2, varIndex+1);
             
+            astq.complete(ast2);
+            
             if (trace) {
+                System.out.println("first endpoint");
                 System.out.println(ast2);
             }
 
@@ -389,6 +398,7 @@ public class LinkedDataPath implements QueryVisitor {
                 //ASTQuery serv = endpoint(ast2, varIndex+1);
                 ASTQuery serv = endpoint(astq.property(ast1, p, varIndex), varIndex+1);
                 if (trace) {
+                    System.out.println("second endpoint");
                     System.out.println(serv);
                 }
                 //ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
@@ -717,6 +727,13 @@ public class LinkedDataPath implements QueryVisitor {
     
     int getMaxQuery() {
         return maxQuery;
+    }
+    
+    String getGraph(int n) {
+        if (graphList == null || graphList.size() <= n) {
+            return null;
+        }
+        return graphList.get(n);
     }
 
 }

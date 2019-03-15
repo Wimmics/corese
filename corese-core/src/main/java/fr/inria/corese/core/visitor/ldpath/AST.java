@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -23,13 +24,22 @@ import java.util.List;
  */
 public class AST {
     
-    static final String PROPERTY_VAR = "?p";
-    static final String COUNT_VAR = "?count";
-    static final String DISTINCT_VAR = "?count2";
-    static final String SERVICE_VAR = "?uri2";
-    static final String LOCAL_VAR = "?uri1";
-    static final String TRIPLE_VAR = "?s";
-    static final String COUNT_FUN = "count";
+    static final String PROPERTY_VAR    = "?p";
+    static final String COUNT_VAR       = "?count";
+    static final String DISTINCT_VAR    = "?count2";
+    static final String SERVICE_VAR     = "?uri2";
+    static final String LOCAL_VAR       = "?uri1";
+    static final String TRIPLE_VAR      = "?s";
+    static final String SOURCE_VAR      = "?s1";
+    static final String COUNT_FUN       = "count";
+    static final String COUNT_SOURCE_VAR = "?source";
+    static final String GRAPH1_VAR      = "?graph1";
+    
+    static final String DATATYPE_VAR    = "?datatype";
+    static final String AVG_VAR         = "?avg";
+    static final String MIN_VAR         = "?min";
+    static final String MAX_VAR         = "?max";
+    static final String LEN_VAR         = "?len";
     
     static final String NS = LinkedDataPath.OPTION;
     static final String OBJECT_FUN = NS + "object";
@@ -122,6 +132,10 @@ public class AST {
         a.select(t.subject().getVariable()); // documentation
         a.select(a.variable(LOCAL_VAR), a.uri(uri1));
         a.select(a.variable(SERVICE_VAR), a.uri(uri2));
+        a.select(a.variable(COUNT_SOURCE_VAR), a.count(variable(1)).distinct(true));
+        
+        datatype(a, t.object());
+        
         return a;
     }
      
@@ -291,8 +305,32 @@ public class AST {
         
         a.select(a.variable(COUNT_VAR), a.count(t.object()));        
         a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
+        a.select(a.variable(COUNT_SOURCE_VAR), a.count(variable(1)).distinct(true));
+        
+        datatype(a, t.object());
         
         return a;
+    }
+    
+    ASTQuery complete(ASTQuery a) {
+        String g = ldp.getGraph(0);
+        if (g != null) {
+            Constant g1 = Constant.createResource(g);
+            a.select(a.variable(GRAPH1_VAR), g1);
+            a.where(a.graph(g1, a.where()));
+        }
+        return a;
+    }
+    
+    void datatype(ASTQuery a, Atom node) {
+        Term t = a.function("if", a.function("isLiteral", node), node, Constant.createString(""));
+
+        a.select(a.variable(AVG_VAR), a.function("avg", node)); 
+        a.select(a.variable(MIN_VAR), a.function("min", t));      
+        a.select(a.variable(MAX_VAR), a.function("max", t));      
+        a.select(a.variable(LEN_VAR), a.function("avg", a.function("strlen", node)));      
+        a.select(a.variable(DATATYPE_VAR), a.function("sample", a.function("datatype", node)));      
+        a.groupby(a.function("datatype", node));
     }
     
     ASTQuery filter(ASTQuery ast, int i) {

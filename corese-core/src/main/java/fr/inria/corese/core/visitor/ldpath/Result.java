@@ -32,6 +32,15 @@ public class Result {
     static final String TTL = ".ttl";
     static final String JSON = ".json"; 
     
+    static final String[] VAR = {
+        AST.GRAPH1_VAR, AST.COUNT_SOURCE_VAR, AST.DATATYPE_VAR, AST.AVG_VAR, AST.MIN_VAR, AST.MAX_VAR, AST.LEN_VAR, AST.COUNT_VAR, AST.DISTINCT_VAR
+    };
+    static final String[] SLOT = {
+        "rs:graph1", "rs:subject", "rs:datatype", "rs:avg", "rs:min", "rs:max", "rs:length",  "rs:count", "rs:distinct"
+    };
+        
+
+    
     HashMap<ASTQuery, Mappings> table;
     ArrayList<ASTQuery> alist;
     ASTQuery ast;
@@ -143,7 +152,9 @@ public class Result {
             Constant type = type(ast);
             if (dtp == null) {
                 // // path with constant p as predicate
-                result(i++, type, path, empty, uri2, dt1, dt2);
+                for (Mapping m : map) {
+                    result(i++, type, path, empty, uri2, m);
+                }
             } else if (uri2 == null) {
                 // local path with variable ?p as predicate
                 for (Mapping m : map) {
@@ -151,9 +162,7 @@ public class Result {
                     IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
                     if (dtpred != null) {
                         path.add(Constant.create(dtpred));
-                        dt1 = m.getValue(AST.COUNT_VAR);
-                        dt2 = m.getValue(AST.DISTINCT_VAR);
-                        result(i++, type, path, empty, uri2, dt1, dt2);
+                        result(i++, type, path, empty, uri2, m);
                         path.remove(path.size() -1);
                     }
                 }
@@ -165,9 +174,7 @@ public class Result {
                     if (dtpred != null) {
                         List<Constant> list = new ArrayList<>();
                         list.add(Constant.create(dtpred));
-                        dt1 = m.getValue(AST.COUNT_VAR);
-                        dt2 = m.getValue(AST.DISTINCT_VAR);
-                        result(i++, type, path, list, uri2, dt1, dt2);
+                        result(i++, type, path, list, uri2, m);
                     }
                 }
             }
@@ -181,8 +188,8 @@ public class Result {
         System.out.println(String.format(format, i, path, dt.intValue(), (dt2 == null) ? "" : dt2.intValue()));
     }
     
-    void result(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) throws IOException {
-        write(rdf(i, type, path, list, uri, dt, dt2));
+    void result(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, Mapping m) throws IOException {
+        write(rdf(i, type, path, list, uri, m));
     }
     
     void write(String str) throws IOException {
@@ -214,7 +221,8 @@ public class Result {
         }
     }
     
-    String rdf(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, DatatypeValue dt, DatatypeValue dt2) {
+    String rdf(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, Mapping m) {
+        
         StringBuilder sb = new StringBuilder();
         
         if (i == 1) {
@@ -236,19 +244,40 @@ public class Result {
         }
         
         if (uri != null && list.isEmpty()) {
-           sb.append("; ").append("rs:endpoint").append(" ").append(uri); 
+           slot(sb, "rs:endpoint", uri.toString());
         }
         
-        if (dt != null) {
-            sb.append("; ").append("rs:count").append(" ").append(dt.intValue());
-        }
-        
-        if (dt2 != null) {
-            sb.append("; ").append("rs:distinct").append(" ").append(dt2.intValue());
-        }
-        
+        slot(sb, m);
+
         sb.append(" .");
         return sb.toString();
+    }
+    
+    
+    void slot(StringBuilder sb, Mapping m) {
+        IDatatype ddt = (IDatatype) m.getValue(AST.DATATYPE_VAR);
+
+        int j = 0;
+        for (String name : VAR) {
+            IDatatype dd = (IDatatype) m.getValue(name);
+            if (dd != null) {
+                String slot = SLOT[j];
+                if (ddt == null && (slot.contains("min") || slot.contains("max"))) {
+                    // skip
+                } else if (dd.getCode() == IDatatype.DECIMAL) {
+                    slot(sb, slot, String.format("%.3f", dd.doubleValue()));
+                }
+                else {
+                    slot(sb, slot, dd.toString());
+                }
+            }
+            j++;
+        }
+    }
+    
+    
+    void slot(StringBuilder sb, String name, String value) {
+        sb.append("; ").append(name).append(" ").append(value);
     }
     
     
@@ -300,7 +329,7 @@ public class Result {
             } else if (exp.isTriple() && exp.getTriple().predicate().isConstant()) {
                 list.add(exp.getTriple().getProperty());
 
-            } else if (exp.isService()) {
+            } else if (exp.isService() || exp.isNamedGraph()) {
                 ArrayList<Constant> l = path(exp.getBodyExp());
                 return l;
             }
@@ -318,7 +347,7 @@ public class Result {
             } else if (exp.isTriple() && exp.getTriple().isType() && exp.getTriple().getObject().isConstant()) {
                 return exp.getTriple().getObject().getConstant();
             }
-            else if (exp.isService()) {
+            else if (exp.isService() || exp.isNamedGraph()) {
                 Constant t = type(exp.getBodyExp());
                 if (t != null) {
                     return t;

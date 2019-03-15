@@ -3386,10 +3386,15 @@ public class ASTQuery
         return this;
     }
     
-     public ASTQuery groupby(Expression e) {
+    public ASTQuery groupby(Expression e) {
         setGroup(e);
         return this;
     }
+     
+     public ASTQuery groupby(Expression e, Variable var) {
+        setGroup(e, var);
+        return this;
+    } 
     
     public ASTQuery where(Exp... exp) {
         if (exp.length == 1) {
@@ -3451,6 +3456,14 @@ public class ASTQuery
     
     public Term count(Expression exp) {
         return Term.function(Processor.COUNT, exp);
+    }
+    
+    public Term function(String name, Expression... exp) {
+        Term t = Term.function(name);
+        for (Expression e : exp) {
+            t.add(e);
+        }
+        return t;
     }
     
 }

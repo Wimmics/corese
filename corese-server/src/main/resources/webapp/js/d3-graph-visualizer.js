@@ -493,6 +493,7 @@ export class D3GraphVisualizer extends Observer {
         var menuNode;
         window.setDisplayRoot = function (parameters) {
             drawer.setDisplayRoot(parameters.data);
+            drawer.computeHierarchy();
             drawer.draw(svgId);
             drawer.centerDisplay();
             menuNode.displayOff();
@@ -519,11 +520,13 @@ export class D3GraphVisualizer extends Observer {
         let menu = ContextMenu.create(root, "graphMenu")
             .addEntry("Go to top level", function () {
                 drawer.goTop();
+                drawer.computeHierarchy();
                 drawer.draw(svgId);
                 menu.displayOff();
             })
             .addEntry("Up one level", function () {
                 drawer.up();
+                drawer.computeHierarchy();
                 drawer.draw(svgId);
                 drawer.centerDisplay();
                 menu.displayOff();

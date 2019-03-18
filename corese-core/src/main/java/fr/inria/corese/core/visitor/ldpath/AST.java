@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
@@ -34,6 +35,7 @@ public class AST {
     static final String COUNT_FUN       = "count";
     static final String COUNT_SOURCE_VAR = "?source";
     static final String GRAPH1_VAR      = "?graph1";
+    static final String GRAPH2_VAR      = "?graph2";
     
     static final String DATATYPE_VAR    = "?datatype";
     static final String AVG_VAR         = "?avg";
@@ -138,6 +140,33 @@ public class AST {
         
         return a;
     }
+     
+     
+     ASTQuery graphPathObject (ASTQuery aa, String uri1, String uri2, int i) {
+        ASTQuery a = copy(aa);
+                               
+        Triple t = tripleVariable(a, i); 
+        Exp body = aa.where();
+        body = filter(body, i, true);
+        Source g1 = a.graph(a.uri(uri1), body);
+        Source g2 = a.graph(a.uri(uri2), t);  
+        
+        a.where(g1, g2).groupby(t.predicate());
+        
+        a.select(a.variable(DISTINCT_VAR), a.count(t.object()).distinct(true));
+        a.select(a.variable(COUNT_VAR), a.count(t.object()));
+        
+        a.select(t.predicate().getVariable());
+        a.select(t.subject().getVariable()); // documentation
+        a.select(a.variable(GRAPH1_VAR), a.uri(uri1));
+        a.select(a.variable(GRAPH2_VAR), a.uri(uri2));
+        a.select(a.variable(COUNT_SOURCE_VAR), a.count(variable(1)).distinct(true));
+        
+        datatype(a, t.object());
+        
+        return a;
+    }
+     
      
     Exp filter(Exp body, int i, boolean service) {
         Expression exp = filter(i, service);
@@ -315,22 +344,26 @@ public class AST {
     ASTQuery complete(ASTQuery a) {
         String g = ldp.getGraph(0);
         if (g != null) {
-            Constant g1 = Constant.createResource(g);
-            a.select(a.variable(GRAPH1_VAR), g1);
-            a.where(a.graph(g1, a.where()));
+            a.select(a.variable(GRAPH1_VAR), a.uri(g));
+            a.where(a.graph(a.uri(g), a.where()));
         }
         return a;
     }
     
     void datatype(ASTQuery a, Atom node) {
-        Term t = a.function("if", a.function("isLiteral", node), node, Constant.createString(""));
-
-        a.select(a.variable(AVG_VAR), a.function("avg", node)); 
-        a.select(a.variable(MIN_VAR), a.function("min", t));      
-        a.select(a.variable(MAX_VAR), a.function("max", t));      
-        a.select(a.variable(LEN_VAR), a.function("avg", a.function("strlen", node)));      
-        a.select(a.variable(DATATYPE_VAR), a.function("sample", a.function("datatype", node)));      
-        a.groupby(a.function("datatype", node));
+        if (ldp.isAggregate()) {
+            Term tm = a.function("if", a.function("isLiteral", node), node, Constant.createString(""));
+            Term ta = a.function("if", a.function("isNumeric", node), node, Constant.create(0));
+            
+            a.select(a.variable(AVG_VAR), a.function("avg", ta));
+            a.select(a.variable(MIN_VAR), a.function("min", tm));
+            a.select(a.variable(MAX_VAR), a.function("max", tm));
+            a.select(a.variable(LEN_VAR), a.function("avg", a.function("strlen", a.function("str", node))));
+        }
+        if (ldp.isDatatype()) {
+            a.select(a.variable(DATATYPE_VAR), a.function("sample", a.function("datatype", node)));
+            a.groupby(a.function("datatype", node));
+        }
     }
     
     ASTQuery filter(ASTQuery ast, int i) {

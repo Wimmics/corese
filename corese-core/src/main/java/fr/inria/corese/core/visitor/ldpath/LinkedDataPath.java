@@ -44,6 +44,8 @@ public class LinkedDataPath implements QueryVisitor {
     public static final String LITERAL      = OPTION + "literal";
     public static final String SUBJECT      = OPTION + "subject";
     public static final String DISTINCT     = OPTION + "distinct";
+    public static final String AGGREGATE    = OPTION + "aggregate";
+    public static final String DATATYPE     = OPTION + "datatype";
     
     public static final String SPLIT        = "@split";
     public static final String SLICE        = "@slice";
@@ -75,6 +77,8 @@ public class LinkedDataPath implements QueryVisitor {
     boolean parallel = true;
     boolean detail = false;
     boolean test = false;
+    boolean datatype = true;
+    boolean aggregate = true;
 
     public LinkedDataPath() {
         graph = Graph.create();
@@ -206,6 +210,9 @@ public class LinkedDataPath implements QueryVisitor {
             graphList = ast.getMetadata().getValues(GRAPH);
             System.out.println("Graph: " + graphList);
         }
+        if (ast.hasMetadata(Metadata.SKIP)) {
+            skip(ast);
+        }
         if (ast.hasMetadata(Metadata.DEBUG)) {
             ast.getMetadata().remove(Metadata.DEBUG);
         }
@@ -218,6 +225,31 @@ public class LinkedDataPath implements QueryVisitor {
         if (ast.hasMetadata(Metadata.NEW)) {
             test = true;
         }
+    }
+    
+    void skip(ASTQuery ast) {
+        for (String name : ast.getMetadata().getValues(Metadata.SKIP)) {
+           switch (name) {
+               case AGGREGATE: setAggregate(false); break;
+               case DATATYPE:  setDatatype(false); break;
+           }
+        }
+    }
+    
+    void setAggregate(boolean b) {
+        aggregate = b;
+    }
+    
+    boolean isAggregate() {
+        return aggregate;
+    }
+    
+    void setDatatype(boolean b) {
+        datatype = b;
+    }
+    
+    boolean isDatatype() {
+        return datatype;
     }
     
     void processOption(List<String> list) {
@@ -380,6 +412,7 @@ public class LinkedDataPath implements QueryVisitor {
             ASTQuery ast2 = astq.property(ast1, p, varIndex);
             astq.filter(ast2, varIndex+1);
             
+            //  named graph
             astq.complete(ast2);
             
             if (trace) {
@@ -403,6 +436,17 @@ public class LinkedDataPath implements QueryVisitor {
                 }
                 //ProcessVisitorDefault.SLICE_DEFAULT_VALUE = 50;
                 QueryProcessThread qpe = new QueryProcessThread(graph, serv, p);
+                qpe.setJoin(true);
+                plist.add(qpe);
+                qpe.start();
+            }
+            else if (getGraph(1) != null) {
+                ASTQuery aa = astq.graphPathObject(astq.property(ast1, p, varIndex), getGraph(0), getGraph(1), varIndex+1);
+                if (trace) {
+                    System.out.println("second graph");
+                    System.out.println(aa);
+                }
+                QueryProcessThread qpe = new QueryProcessThread(graph, aa, p);
                 qpe.setJoin(true);
                 plist.add(qpe);
                 qpe.start();

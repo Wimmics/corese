@@ -31,15 +31,9 @@ public class Result {
     static final String LDP = "http://ns.inria.fr/ldpath/" ;
     static final String TTL = ".ttl";
     static final String JSON = ".json"; 
-    
-    static final String[] VAR = {
-        AST.GRAPH1_VAR, AST.COUNT_SOURCE_VAR, AST.DATATYPE_VAR, AST.AVG_VAR, AST.MIN_VAR, AST.MAX_VAR, AST.LEN_VAR, AST.COUNT_VAR, AST.DISTINCT_VAR
-    };
-    static final String[] SLOT = {
-        "rs:graph1", "rs:subject", "rs:datatype", "rs:avg", "rs:min", "rs:max", "rs:length",  "rs:count", "rs:distinct"
-    };
-        
-
+            
+    HashMap <String, String> map;
+    List<String> varList;
     
     HashMap<ASTQuery, Mappings> table;
     ArrayList<ASTQuery> alist;
@@ -56,6 +50,27 @@ public class Result {
         alist = new ArrayList<>();
         nbTriple = nbTriple(ast);
         empty = new ArrayList<>();
+        map = new HashMap<>();
+        varList = new ArrayList<>();
+        init();
+    }
+    
+    void init() {        
+        define(AST.COUNT_SOURCE_VAR, "rs:subject");
+        define(AST.DATATYPE_VAR,    "rs:datatype");
+        define(AST.AVG_VAR,         "rs:avg");
+        define(AST.MIN_VAR,         "rs:min");
+        define(AST.MAX_VAR,         "rs:max");
+        define(AST.LEN_VAR,         "rs:length");
+        define(AST.COUNT_VAR,       "rs:count");
+        define(AST.DISTINCT_VAR,    "rs:distinct");
+        define(AST.GRAPH1_VAR,      "rs:graph1");
+        define(AST.GRAPH2_VAR,      "rs:graph2");
+    }
+    
+    void define(String var, String slot) {
+        map.put(var, slot);
+        varList.add(var);
     }
     
     public HashMap<ASTQuery, Mappings> getResult() {
@@ -148,6 +163,7 @@ public class Result {
         if (dt1 != null || dt2 != null){ 
             List<Constant> path = path(ast);
             DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
+            DatatypeValue dtg = map.getValue(AST.GRAPH2_VAR);
             Constant uri2 = getEndpoint(map);
             Constant type = type(ast);
             if (dtp == null) {
@@ -155,7 +171,7 @@ public class Result {
                 for (Mapping m : map) {
                     result(i++, type, path, empty, uri2, m);
                 }
-            } else if (uri2 == null) {
+            } else if (uri2 == null && dtg == null) {
                 // local path with variable ?p as predicate
                 for (Mapping m : map) {
                     // each Mapping contains ?p = predicate ; ?count = n
@@ -257,12 +273,11 @@ public class Result {
     void slot(StringBuilder sb, Mapping m) {
         IDatatype ddt = (IDatatype) m.getValue(AST.DATATYPE_VAR);
 
-        int j = 0;
-        for (String name : VAR) {
+        for (String name : varList) {
             IDatatype dd = (IDatatype) m.getValue(name);
             if (dd != null) {
-                String slot = SLOT[j];
-                if (ddt == null && (slot.contains("min") || slot.contains("max"))) {
+                String slot = map.get(name);
+                if (ddt == null && (slot.contains("min") || slot.contains("max") || slot.contains("avg"))) {
                     // skip
                 } else if (dd.getCode() == IDatatype.DECIMAL) {
                     slot(sb, slot, String.format("%.3f", dd.doubleValue()));
@@ -271,7 +286,6 @@ public class Result {
                     slot(sb, slot, dd.toString());
                 }
             }
-            j++;
         }
     }
     
@@ -307,15 +321,21 @@ public class Result {
     }
     
     // remote endpoint uri
-    Constant getEndpoint(Mappings map){
+    Constant getEndpoint(Mappings map) {
+        return getVariable(map, AST.SERVICE_VAR);
+    }
+    
+    Constant getVariable(Mappings map, String name){
         if (map.size() > 0) {
-            IDatatype dt = (IDatatype) map.getValue(AST.SERVICE_VAR);
+            IDatatype dt = (IDatatype) map.getValue(name);
             if (dt != null) {
                 return Constant.create(dt);
             }
         }
         return null;
     }
+    
+    
     
 
     ArrayList<Constant> path(ASTQuery ast) {

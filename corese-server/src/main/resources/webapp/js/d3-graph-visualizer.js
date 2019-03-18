@@ -2,6 +2,8 @@ import {GraphModel} from "./GraphModel.js";
 import {Observer} from "./Observer.mjs";
 import {ConfGraphModal} from "./ConfGraphModal.mjs";
 import {OntologyDrawer} from "./OntologyDrawer.js";
+import {TagCloudDrawer} from "./TagCloudDrawer.js";
+export * from "./TagCloudDrawer.js";
 import {ContextMenu} from "./ContextMenu.mjs";
 
 
@@ -564,6 +566,16 @@ export class D3GraphVisualizer extends Observer {
     static drawCircle(_results, svgId, parameters) {
         let drawer2 = new OntologyDrawer().setParameters(parameters).setData(_results).drawCircle(svgId);
         return drawer2;
+    }
+
+    /**
+     * @param _results JSON_LD results.
+     * @param svgId    Name of the svg field to use (do not forget the '#').
+     * @param parameters TagCloud parameters.
+     */
+    static drawTagCloud(_results, svgId, parameters) {
+        const tagCloudDrawer = new TagCloudDrawer().setParameters(parameters).setData(_results).draw(svgId);
+        return tagCloudDrawer;
     }
 }
 

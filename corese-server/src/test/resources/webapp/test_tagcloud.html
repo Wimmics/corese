@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Corese Web Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/d3-graph-visualizer.js"></script>
+    <script type="module" src="./js/ConfGraphModal.mjs"></script>
+
+    <!--<script type="module" src="./js/d3.layout.cloud.js.bak"></script>-->
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+</head>
+<body>
+<div> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae vestibulum turpis, sed bibendum lorem. Nunc nisl diam, hendrerit ac molestie sit amet, gravida nec turpis. Fusce ac dictum orci. Cras tempor dolor eu dolor vulputate molestie. Nullam mi risus, interdum eget diam non, condimentum ultrices lectus. Fusce sit amet blandit justo. Nullam in accumsan arcu, vel elementum lectus. Pellentesque dolor ex, pellentesque vitae nisl quis, dapibus iaculis diam. Mauris ut consectetur dui, sed varius tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent eget pharetra elit. Sed commodo nisl sit amet elit faucibus pulvinar. Nullam lobortis dui dolor, vitae rhoncus enim volutpat ac. Nullam feugiat risus in vehicula sagittis. Proin ac semper arcu, at eleifend ante.
+    Integer purus nisi, finibus a convallis in, imperdiet quis nunc. Nunc faucibus risus id nulla porta ullamcorper. Pellentesque semper nisl vitae vehicula tempus. Donec faucibus lacus vitae sollicitudin consectetur. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis vestibulum, ligula vitae sollicitudin faucibus, tellus enim scelerisque risus, vitae mollis elit est et nisi. Maecenas quis orci sed tortor efficitur vehicula a at nulla.
+<div id="graph">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            hello
+        </div>
+        <div class="panel-body" style="resize:vertical;overflow:auto">
+            <svg id="graph1" width="100%" height="100%"/>
+            <!--<svg id="graph2" width="960" height="960">-->
+                <!--<g transform="translate(1,1)"></g>-->
+            <!--</svg>-->
+        </div>
+    </div>
+</div>
+<script type="module">
+    window.stopLink = function (event) {
+        event.preventDefault();
+    }
+    import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+    import {TagCloudDrawer} from "./js/TagCloudDrawer.js";
+
+    var data =
+        { "head": { "link": [], "vars": ["s", "p", "o"] },
+            "results": { "distinct": false, "ordered": true, "bindings": [
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/deathDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/birthDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/acceleration" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/acceleration" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/acceleration" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/displacement" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/ontology/foalDate" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/2002/07/owl#FunctionalProperty" }},
+                    { "s": { "type": "uri", "value": "http://dbpedia.org/property/enthronement" }	, "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" }	, "o": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" }} ] } }
+    ;
+
+
+    var drawer = D3GraphVisualizer.drawTagCloud(data, '#graph1', TagCloudDrawer.createParameters().setVarName("s").setSpiralStyle("archimedean"));
+
+
+</script>
+
+</body>
+
+</html>

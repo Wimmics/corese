@@ -1,6 +1,8 @@
 "use strict";
+import {SvgDrawer} from "./SvgDrawer.js";
 export class OntologyDrawer {
     constructor() {
+        super();
         this.radius = 2;
         this.horizontalLayout = false;
         this.setProperties(new Set(["rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.

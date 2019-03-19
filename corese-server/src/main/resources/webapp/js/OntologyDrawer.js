@@ -1,7 +1,7 @@
 "use strict";
-
 export class OntologyDrawer {
     constructor() {
+        this.radius = 2;
         this.horizontalLayout = false;
         this.setProperties(new Set(["rdfs:subClassOf"])); // - minus means that the representation of the link must be inverted.
         /** !Object */ this.rawData = undefined;
@@ -17,25 +17,6 @@ export class OntologyDrawer {
             for (let p in d) {
                 this.dataMap[d.id][p] = d[p];
             }
-            // this.dataMap[d.id].isFolded = false;
-            // this.dataMap[d.id].getActualChildren = function () {
-            //     return this.valChildren;
-            // };
-            // this.dataMap[d.id].getVisibleChildren = function () {
-            //     if (!this.isFolded) {
-            //         return this.valChildren;
-            //     } else {
-            //         return [];
-            //     }
-            // };
-            // this.dataMap[d.id].isLeaf = function () {
-            //     return Object.keys(this.valChildren).length === 0;
-            // };
-            // Object.defineProperty(this.dataMap[d.id], "children", {
-            //     get: function () {
-            //         return this.getVisibleChildren();
-            //     }
-            // });
             this.dataMap[d.id].children = [];
             this.dataMap[d.id].edgeChildren = [];
             /** !Set<string> */ this.dataMap[d.id].parents = new Set();
@@ -64,9 +45,9 @@ export class OntologyDrawer {
         this.roots = [];
         for (let d of data.nodes) {
             this.dataMap[d.id].value = this.dataMap[d.id].children.length;
-            this.dataMap[d.id].r = 10;
-            if (this.dataMap[d.id].parents.size == 0 || (this.dataMap[d.id].parents.size == 1 && this.dataMap[d.id].parents.has(d.id))) {
-                if (this.dataMap[d.id].children.length == 0) {
+            this.dataMap[d.id].r = this.radius;
+            if (this.dataMap[d.id].parents.size === 0 || (this.dataMap[d.id].parents.size === 1 && this.dataMap[d.id].parents.has(d.id))) {
+                if (this.dataMap[d.id].children.length === 0) {
                     continue;
                 }
                 console.log(`new tree root : ${d.id}`);
@@ -83,7 +64,7 @@ export class OntologyDrawer {
             this.dataMap["Root"] = {
                 id: "Root",
                 label: "Root",
-                r: 10,
+                r: this.radius,
                 value: 1,
                 isFolded: false,
                 children: [],
@@ -199,6 +180,8 @@ export class OntologyDrawer {
                 /** string */ this.url = Node.dataMap[this.id].url;
                 /** string */ this.link = Node.dataMap[this.id].link;
                 /** boolean */ this.isFolded = false;
+                /** boolean */ this.isCycle = false; // Whether the node begins a new cycle.
+                /** number */  this.nbChildren = 0; // Used only when a cycle is detected (to be able to say how many childs are hidden).
             }
 
             addChild(newChild) {
@@ -255,6 +238,8 @@ export class OntologyDrawer {
             this.slices[summit.depth].push(summit);
             if (alreadySeen.has(summit.id)) {
                 console.log("cycle detected including node:" + summit.id);
+                summit.isCycle = true;
+                summit.nbChildren = this.dataMap[summit.id].children.length;
             } else {
                 alreadySeen.add(summit.id);
                 let /** !Object */ data = this.dataMap[summit.id];
@@ -410,8 +395,11 @@ export class OntologyDrawer {
                         (d.data.isFolded ?
                             " node--folded" :
                             (d.data.isLeaf() ? " node--leaf" : " node--internal"));
-                    if (d.data.class !== undefined) {
-                        result = `${result} ${d.data.class}`;
+                    if (d.data.isCycle) {
+                        result = `${result} node--cycle`;
+                    }
+                    if (this.dataMap[d.data.id].class !== undefined) {
+                        result = `${result} ${this.dataMap[d.data.id].class}`;
                     }
                     return result;
                 }.bind(this)
@@ -454,7 +442,7 @@ export class OntologyDrawer {
 
 // adds the circle to the node
         node.append("circle")
-            .attr("r", (d) => 10);
+            .attr("r", (d) => this.radius);
 
 // adds the text to the node
         let textNode = node.append("text");
@@ -471,6 +459,14 @@ export class OntologyDrawer {
             .text(function (d) {
                 return d.data.label;
             });
+        node.filter(function (d) {
+            return d.data.isCycle;
+        }).
+        append("text").text(function (d) {
+            return d.data.nbChildren;
+        }).attr("dx", "-.30em")
+            .attr("dy", ".30em")
+            .attr("fill", "red");
 // end: draw each node.
 
         this.zoomed = function () {

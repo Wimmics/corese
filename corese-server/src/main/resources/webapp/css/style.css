@@ -72,6 +72,7 @@ g.individual circle {fill: #fff;stroke: green; }
 g.property circle {fill: #fff;stroke: orange; }
 g.fake circle {fill: #fff;stroke: yellow; }
 g.node--folded circle {stroke: red;stroke-width: 2px; fill: lightblue;}
+g.node--cycle circle {stroke: lightblue;stroke-width: 2px; fill: lightblue;}
 
 
 text.literal { fill: lightgreen; }

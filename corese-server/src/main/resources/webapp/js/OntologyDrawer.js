@@ -457,16 +457,13 @@ export class OntologyDrawer {
             )
             .style("text-anchor", "middle")
             .text(function (d) {
-                return d.data.label;
+                let result = d.data.label;
+                if (d.data.isCycle && d.data.nbChildren > 0) {
+                    result += ` (${d.data.nbChildren})`;
+                }
+                return result;
             });
-        node.filter(function (d) {
-            return d.data.isCycle;
-        }).
-        append("text").text(function (d) {
-            return d.data.nbChildren;
-        }).attr("dx", "-.30em")
-            .attr("dy", ".30em")
-            .attr("fill", "red");
+
 // end: draw each node.
 
         this.zoomed = function () {

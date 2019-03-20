@@ -1,6 +1,6 @@
 "use strict";
 import {SvgDrawer} from "./SvgDrawer.js";
-export class OntologyDrawer {
+export class OntologyDrawer extends SvgDrawer {
     constructor() {
         super();
         this.radius = 2;

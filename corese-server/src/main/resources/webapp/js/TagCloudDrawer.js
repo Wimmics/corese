@@ -1,6 +1,7 @@
 "use strict";
 
 import {SvgDrawer, SvgDrawerParameters} from "./SvgDrawer.js";
+import {Enumeration} from "./Enumeration.js";
 
 export class TagCloudDrawer extends SvgDrawer {
 

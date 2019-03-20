@@ -3,6 +3,7 @@ import {Observer} from "./Observer.mjs";
 import {ConfGraphModal} from "./ConfGraphModal.mjs";
 import {OntologyDrawer} from "./OntologyDrawer.js";
 import {TagCloudDrawer} from "./TagCloudDrawer.js";
+import {SelectDrawer} from "./SelectDrawer.js";
 export * from "./TagCloudDrawer.js";
 import {ContextMenu} from "./ContextMenu.mjs";
 
@@ -572,10 +573,19 @@ export class D3GraphVisualizer extends Observer {
      * @param _results JSON_LD results.
      * @param svgId    Name of the svg field to use (do not forget the '#').
      * @param parameters TagCloud parameters.
+     * @TODO to be merged with drawSelect
      */
     static drawTagCloud(_results, svgId, parameters) {
         const tagCloudDrawer = new TagCloudDrawer().setParameters(parameters).setData(_results).draw(svgId);
         return tagCloudDrawer;
+    }
+
+    static drawSelect(results, svgId, parameters) {
+        const selectDrawer = SelectDrawer.build(parameters);
+        selectDrawer.setData(results);
+        selectDrawer.setParameters(parameters)
+        selectDrawer.draw(svgId);
+
     }
 }
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Corese Web Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="module" src="./js/CoreseD3.js"></script>
+    <script type="module" src="./js/d3sparql.js"></script>
+    <script src="./js/d3sparql.js"></script>
+
+    <!--<script type="module" src="./js/d3.layout.cloud.js.bak"></script>-->
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+</head>
+<body>
+<div> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae vestibulum turpis, sed bibendum lorem. Nunc nisl diam, hendrerit ac molestie sit amet, gravida nec turpis. Fusce ac dictum orci. Cras tempor dolor eu dolor vulputate molestie. Nullam mi risus, interdum eget diam non, condimentum ultrices lectus. Fusce sit amet blandit justo. Nullam in accumsan arcu, vel elementum lectus. Pellentesque dolor ex, pellentesque vitae nisl quis, dapibus iaculis diam. Mauris ut consectetur dui, sed varius tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent eget pharetra elit. Sed commodo nisl sit amet elit faucibus pulvinar. Nullam lobortis dui dolor, vitae rhoncus enim volutpat ac. Nullam feugiat risus in vehicula sagittis. Proin ac semper arcu, at eleifend ante.
+    Integer purus nisi, finibus a convallis in, imperdiet quis nunc. Nunc faucibus risus id nulla porta ullamcorper. Pellentesque semper nisl vitae vehicula tempus. Donec faucibus lacus vitae sollicitudin consectetur. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis vestibulum, ligula vitae sollicitudin faucibus, tellus enim scelerisque risus, vitae mollis elit est et nisi. Maecenas quis orci sed tortor efficitur vehicula a at nulla.
+<div id="graph">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            hello
+        </div>
+        <div class="panel-body" style="resize:vertical;overflow:auto">
+            <svg id="graph1" width="100%" height="100%"/>
+            <!--<svg id="graph2" width="960" height="960">-->
+                <!--<g transform="translate(1,1)"></g>-->
+            <!--</svg>-->
+        </div>
+    </div>
+</div>
+<script type="module">
+    window.stopLink = function (event) {
+        event.preventDefault();
+    }
+    // import {D3GraphVisualizer} from "./js/d3-graph-visualizer.js";
+    // import {TagCloudDrawer} from "./js/TagCloudDrawer.js";
+    import * as corese_d3 from "./js/CoreseD3.js";
+
+    var endpoint = "http://dbpedia.org/sparql"
+    var sparql = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+        "PREFIX yago: <http://dbpedia.org/class/yago/>\n" +
+        "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n" +
+        "\n" +
+        "SELECT ?pref ?area\n" +
+        "WHERE {\n" +
+        "  ?s a yago:WikicatPrefecturesOfJapan ;\n" +
+        "     rdfs:label ?pref ;\n" +
+        "     dbpedia-owl:areaTotal ?area_total .\n" +
+        "  FILTER (lang(?pref) = 'en')\n" +
+        "  BIND ((?area_total / 1000 / 1000) AS ?area)\n" +
+        "}\n" +
+        "ORDER BY DESC(?area)";
+    d3sparql.query(endpoint, sparql, function(data) {
+        corese_d3.D3GraphVisualizer.drawSelect(data, '#graph1', {
+            "diagram": corese_d3.SelectDrawer.Type.barchart,
+            "label_x": "Prefecture",
+            "label_y": "Area",
+            "var_x": "pref",
+            "var_y": "area",
+            "width": 700,  // canvas width
+            "height": 300,  // canvas height
+            "margin": 80,  // canvas margin
+        });
+    });
+
+
+</script>
+
+</body>
+
+</html>

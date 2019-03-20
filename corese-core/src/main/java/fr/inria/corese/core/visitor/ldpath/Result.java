@@ -158,55 +158,80 @@ public class Result {
     
     
     int process(ASTQuery ast, Mappings map, int i) throws IOException {
-        DatatypeValue dt1 = map.getValue(AST.COUNT_VAR);
-        DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
-        if (dt1 != null || dt2 != null){ 
-            List<Constant> path = path(ast);
-            DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
-            DatatypeValue dtg = map.getValue(AST.GRAPH2_VAR);
-            Constant uri2 = getEndpoint(map);
-            Constant type = type(ast);
-            if (dtp == null) {
-                // // path with constant p as predicate
-                for (Mapping m : map) {
-                    result(i++, type, path, empty, uri2, m);
-                }
-            } else if (uri2 == null && dtg == null) {
-                // local path with variable ?p as predicate
-                for (Mapping m : map) {
-                    // each Mapping contains ?p = predicate ; ?count = n
-                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
-                    if (dtpred != null) {
-                        path.add(Constant.create(dtpred));
-                        result(i++, type, path, empty, uri2, m);
-                        path.remove(path.size() -1);
-                    }
-                }
-            } else {
-                // remote endpoint with variable ?p as predicate
-                for (Mapping m : map) {
-                    // each Mapping contains ?p = predicate ; ?count = n
-                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
-                    if (dtpred != null) {
-                        List<Constant> list = new ArrayList<>();
-                        list.add(Constant.create(dtpred));
-                        result(i++, type, path, list, uri2, m);
-                    }
-                }
-            }
+        for (Mapping m : map) {
+            result(i++, ast, m);
         }
         return i;
     }
     
-    
-
-    void print(String format, int i, List<Constant> path, DatatypeValue dt, DatatypeValue dt2) {
-        System.out.println(String.format(format, i, path, dt.intValue(), (dt2 == null) ? "" : dt2.intValue()));
+    void result(int i, ASTQuery ast, Mapping map) throws IOException {
+        List<Constant> path1 = path(ast);
+        List<Constant> path2 = empty;
+        IDatatype dtp = (IDatatype) map.getValue(AST.PROPERTY_VAR);
+        IDatatype dtg = (IDatatype) map.getValue(AST.GRAPH2_VAR);
+        IDatatype dtu = (IDatatype) map.getValue(AST.SERVICE_VAR);
+        Constant type = type(ast);
+        Constant uri  = (dtu==null)?null:Constant.create(dtu);
+        
+        if (dtp == null) {
+            write(rdf(i, type, path1, path2, uri, map));
+        }
+        else if (dtu == null && dtg == null) {
+            path1.add(Constant.create(dtp));
+            write(rdf(i, type, path1, path2, uri, map));
+            path1.remove(path1.size() - 1);
+        }
+        else {
+            path2 = new ArrayList<>();
+            path2.add(Constant.create(dtp));
+            write(rdf(i, type, path1, path2, uri, map));
+        }
     }
     
-    void result(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, Mapping m) throws IOException {
-        write(rdf(i, type, path, list, uri, m));
-    }
+//    int process2(ASTQuery ast, Mappings map, int i) throws IOException {
+//        DatatypeValue dt1 = map.getValue(AST.COUNT_VAR);
+//        DatatypeValue dt2 = map.getValue(AST.DISTINCT_VAR);
+//        if (dt1 != null || dt2 != null){ 
+//            List<Constant> path = path(ast);
+//            DatatypeValue dtp = map.getValue(AST.PROPERTY_VAR);
+//            DatatypeValue dtg = map.getValue(AST.GRAPH2_VAR);
+//            Constant uri2 = getEndpoint(map);
+//            Constant type = type(ast);
+//            if (dtp == null) {
+//                // // path with constant p as predicate
+//                for (Mapping m : map) {
+//                    result(i++, type, path, empty, uri2, m);
+//                }
+//            } else if (uri2 == null && dtg == null) {
+//                // local path with variable ?p as predicate
+//                for (Mapping m : map) {
+//                    // each Mapping contains ?p = predicate ; ?count = n
+//                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
+//                    if (dtpred != null) {
+//                        path.add(Constant.create(dtpred));
+//                        result(i++, type, path, empty, uri2, m);
+//                        path.remove(path.size() -1);
+//                    }
+//                }
+//            } else {
+//                // remote endpoint with variable ?p as predicate
+//                for (Mapping m : map) {
+//                    // each Mapping contains ?p = predicate ; ?count = n
+//                    IDatatype dtpred = (IDatatype) m.getValue(AST.PROPERTY_VAR);
+//                    if (dtpred != null) {
+//                        List<Constant> list = new ArrayList<>();
+//                        list.add(Constant.create(dtpred));
+//                        result(i++, type, path, list, uri2, m);
+//                    }
+//                }
+//            }
+//        }
+//        return i;
+//    }
+    
+//    void result(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, Mapping m) throws IOException {
+//        write(rdf(i, type, path, list, uri, m));
+//    }
     
     void write(String str) throws IOException {
         if (file != null) {
@@ -237,7 +262,7 @@ public class Result {
         }
     }
     
-    String rdf(int i, Constant type, List<Constant> path, List<Constant> list, Constant uri, Mapping m) {
+    String rdf(int i, Constant type, List<Constant> path1, List<Constant> path2, Constant uri, Mapping m) {
         
         StringBuilder sb = new StringBuilder();
         
@@ -252,14 +277,14 @@ public class Result {
         }
         
         sb.append("rs:path").append(" ");
-        path(path, sb, nbTriple);
+        path(path1, sb, nbTriple);
         
-        if (!list.isEmpty()) {
+        if (!path2.isEmpty()) {
             sb.append("; ").append("rs:path2").append(" ");
-            path(list, sb, 0);
+            path(path2, sb, 0);
         }
         
-        if (uri != null && list.isEmpty()) {
+        if (uri != null && path2.isEmpty()) {
            slot(sb, "rs:endpoint", uri.toString());
         }
         
@@ -322,15 +347,16 @@ public class Result {
     
     // remote endpoint uri
     Constant getEndpoint(Mappings map) {
-        return getVariable(map, AST.SERVICE_VAR);
-    }
-    
-    Constant getVariable(Mappings map, String name){
         if (map.size() > 0) {
-            IDatatype dt = (IDatatype) map.getValue(name);
-            if (dt != null) {
-                return Constant.create(dt);
-            }
+            return getVariable(map.get(0), AST.SERVICE_VAR);
+        }
+        return null;
+    }
+
+    Constant getVariable(Mapping map, String name) {
+        IDatatype dt = (IDatatype) map.getValue(name);
+        if (dt != null) {
+            return Constant.create(dt);
         }
         return null;
     }

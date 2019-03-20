@@ -14,6 +14,9 @@
 	width: 33%; /* Assume there is three columns */
 	overflow: auto;
 }
+
+.myselect { width: 400px }
+
 /*
  *  Style for the tree layout of the ontology.
  */

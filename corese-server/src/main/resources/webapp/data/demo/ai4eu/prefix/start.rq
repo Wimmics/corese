@@ -1,0 +1,5 @@
+prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+template st:start {
+     "<h2>Result</h2>"
+}
+where {}

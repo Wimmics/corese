@@ -8,11 +8,23 @@ prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:selectparam2(?n, ?select) {
 
 format {
-  ft:selectparam.html 
+  ft:selectparam2.html 
+  
+  coalesce(?title, "")
   ?name
+  
+  if (bound (?default), 
+    st:format(
+        if (st:get(?uri, ?default), 
+            '<option value="%s" selected="true">%s</option>', 
+            '<option value="%s">%s</option>'), 
+            
+            ?default, coalesce(?defaultLabel, "Any")),
+    "")
+            
   group { 
     format { 
-        if (st:get(?uri, ?value), 
+        if (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false), 
             '<option value="%s" selected="true">%s</option>', 
             '<option value="%s">%s</option>')
             
@@ -35,13 +47,42 @@ where {
   union 
   {
     graph ?g { 
-        ?select st:graph ?gname ; st:predicate ?p
+        ?select st:graph ?gname 
+        optional { ?select st:title   ?title } 
+        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
+        
         # get graph object ?gg in context corresponding to graph name ?gname
         bind (st:get(?gname) as ?gg)
         filter bound(?gg)
-    } 
-       
-    graph ?gg { 
-        select distinct ?p ?value where { ?x ?p ?value } order by ?value }
+        
+        { ?select st:predicate ?p 
+           graph ?gg { 
+            select distinct ?p ?value 
+            where { ?x ?p ?value}  
+            order by ?value }
+        }
+        union 
+        { ?select st:predicate [ ?p ?object ] 
+          graph ?gg { 
+            select distinct ?p ?object ?value 
+            where { ?value ?p ?object } 
+            order by ?value }
+        }
+    }            
    }
+   union
+   {
+    graph ?g { 
+        ?select st:graph ?gname ; st:function ?fun 
+        optional { ?select st:title   ?title } 
+        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
+        
+        # get graph object ?gg in context corresponding to graph name ?gname
+        bind (st:get(?gname) as ?gg)
+        filter bound(?gg)
+        
+        values ?value { unnest (xt:focus(?gg, funcall(?fun))) }
+        
+    }
+  }
 }

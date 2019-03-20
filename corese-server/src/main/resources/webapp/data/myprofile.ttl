@@ -1,0 +1,80 @@
+
+
+st:ai4eu a st:Server ;
+st:service "ai4eu" ;
+st:shareContent st:ai4euContent ;
+st:workflow st:ai4euwf ;
+st:param [
+    st:lang 'en' ;
+    st:sttl st:combine ; 
+    st:transformations (
+        <demo/ai4eu/prefix/prefix.rul> st:hturtle  d3:frame  
+        ) ; 
+    st:hyperlink true ; 
+    #st:number true ;
+    st:title "AI4EU";
+    st:export true ;
+    st:focus false ;
+     st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal) 
+        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
+        ("*" st:lod)
+    ) 
+] 
+.
+
+
+st:ai4eusparql a st:Server ;
+st:service "ai4eusparql" ;
+st:shareContent st:ai4euContent ;
+st:param [
+    st:lang 'en' ;    
+    st:hyperlink true ; 
+    #st:number true ;
+    st:title "AI4EU";
+    st:export true ;
+    st:focus false ;
+     st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal) 
+        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
+        ("*" st:lod)
+    ) 
+] 
+.
+
+
+
+st:ai4euwf a sw:Workflow ;
+sw:body (
+    [ a sw:Transformation ; sw:uri st:web ]
+
+)
+
+
+
+st:ai4euContent a sw:Workflow ; 
+sw:body ( 
+    [ a sw:Parallel ; sw:body ( 
+      # main is empty
+
+      [ a sw:Workflow ; sw:body ( 
+        [ a sw:Load ; sw:path <demo/ai4eu/ai4eu.ttl> ] 
+        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl> ] 
+        [ a sw:RuleBase ;  sw:uri sw:owlrl ]
+        ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <demo/ai4eu/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+                	  
+      ) ]  
+      
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+

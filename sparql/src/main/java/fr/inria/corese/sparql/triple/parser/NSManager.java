@@ -97,7 +97,7 @@ public class NSManager extends ASTObject {
     private static final String DOT = ".";
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
-    static final char[] END_CHAR = {'#', '/', '?', ':'}; // may end an URI ...
+    static final char[] END_CHAR = {'#', '/', '?'} ; //, ':'}; // may end an URI ...
     static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
     static final String pchar = ":";
     int count = 0;
@@ -170,7 +170,9 @@ public class NSManager extends ASTObject {
      * Import nsm definitions     
      */
     public NSManager complete(NSManager nsm){
-       setBase(nsm.getBase());
+       if (getBase() == null) {
+           setBase(nsm.getBase());
+       }
        for (String p : nsm.getPrefixSet()) {
             definePrefix(p, nsm.getNamespace(p));
        }
@@ -413,7 +415,7 @@ public class NSManager extends ASTObject {
 
     public String toPrefix(String nsname, boolean skip, boolean xml) {
         String ns = namespace(nsname);
-        if (ns == null || ns.equals("")) {
+        if (ns == null || ns.equals("") || ns.equals(nsname)) {
             return nsname;
         }
         String p = getPrefix(ns);
@@ -695,7 +697,7 @@ public class NSManager extends ASTObject {
         for (int i = 0; i < END_CHAR.length; i++) {
             index = name.lastIndexOf(END_CHAR[i]);// ???
             if (index != -1) {
-                return name.substring(index + 1);
+                return  name.substring(index + 1);
             }
         }
         return name;
@@ -731,7 +733,9 @@ public class NSManager extends ASTObject {
             index = type.lastIndexOf(END_CHAR[i]);
             if (index != -1) {
                 String str = type.substring(0, index + 1);
-                return str;
+                if (! str.equals("http://")) {
+                    return str;
+                }
             }
         }
         return "";

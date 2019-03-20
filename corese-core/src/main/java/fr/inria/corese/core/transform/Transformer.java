@@ -580,9 +580,14 @@ public class Transformer implements TransformProcessor {
         
         for (Query qq : list) {
 
-            if (!nsm.isUserDefine()) {
-                // PPrinter NSM is empty : borrow template NSM
-                setNSM(((ASTQuery) qq.getAST()).getNSM());
+//            if (! getNSM().isUserDefine()) {
+//                // PPrinter is empty : borrow template NSM
+//                setNSM(((ASTQuery) qq.getAST()).getNSM()); 
+//            }
+            
+            if (nsm(qq).isUserDefine()) {
+                // import prefix from st:start template
+                getNSM().complete(nsm(qq));
             }
 
             if (isDebug) {
@@ -617,6 +622,14 @@ public class Transformer implements TransformProcessor {
         }
 
         return isBoolean() ? defaultBooleanResult() : EMPTY;
+    }
+    
+    ASTQuery ast(Query q) {
+        return (ASTQuery) q.getAST();
+    }
+    
+    NSManager nsm(Query q) {
+        return ast(q).getNSM();
     }
     
     void save(Mappings map) {

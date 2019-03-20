@@ -738,6 +738,10 @@ public class Exp extends PointerObject
     public boolean isJoin() {
         return type == JOIN;
     }
+    
+    public boolean isBinary() {
+        return isUnion() || isOptional() || isMinus() || isJoin();
+    }
 
     public boolean isGraph() {
         return type == GRAPH;

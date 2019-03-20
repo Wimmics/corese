@@ -1330,16 +1330,27 @@ public class Eval implements ExpType, Plugin {
     }
 
     boolean isFederate(Exp exp) {
-        return memory.getQuery().getGlobalQuery().isFederate()
-                || (exp.size() == 1 && 
-                    (exp.get(0).isService()
-                ||  (exp.get(0).isUnion() &&  isFederate2(exp.get(0)))))
-                ;
+        if (memory.getQuery().getGlobalQuery().isFederate()) {
+            return true;
+        }
+        return isRecFederate(exp);
     }
-    
+        
+        
+    boolean isRecFederate(Exp exp){ 
+        if (exp.isService()) {
+            return true;
+        }
+        if (exp.size() != 1) {
+            return false;
+        }
+        Exp ee = exp.get(0);
+        return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee)));       
+    }
+       
     // binary such as union
     boolean isFederate2(Exp exp) {
-        return exp.size() == 2 && isFederate(exp.get(0)) && isFederate(exp.get(1));
+        return exp.size() == 2 && isRecFederate(exp.get(0)) && isRecFederate(exp.get(1));
     }
 
     Exp complete(Exp exp, Mappings map) {

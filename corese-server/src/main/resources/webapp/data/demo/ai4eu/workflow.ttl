@@ -1,0 +1,236 @@
+#
+# Query definitions for a Workflow with st:web transformation
+# To be used with /tutorial/tutohal
+# This graph is stored in named graph st:context
+# It is available in query and transformation with bind (st:get(st:context) as ?g)
+#
+# Olivier Corby - Wimmics Inria I3S - 2018
+#
+
+@prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix dbo: <http://fr.dbpedia.org/ontology/>
+# where to find preprocess function fun:country 
+@prefix fun: <process.rq/>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+@prefix dc: <http://purl.org/dc/terms/>
+@prefix de: <http://purl.org/dc/elements/1.1/>
+@prefix fun: <process.rq/>
+
+#
+# List of Query
+#
+us:ai4eu a sw:Workflow ;
+sw:display true;
+sw:debug true;
+sw:collect true;
+sw:body (
+    st:intro
+    st:simple1
+    st:simple2
+    st:simple20
+
+)
+.
+
+
+
+st:intro a sw:Query ;
+    st:name st:intro ;
+    rdfs:label "Introduction" ;
+
+    rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server."""@en ;
+
+    rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+    'Submit' soumet la requête SPARQL au serveur. """@fr ;
+
+    st:query ""
+.
+
+
+
+
+
+st:simple1 a sw:Query ;
+st:name st:simple1 ;
+rdfs:label "Type Keyword Name" ;
+rdfs:comment """Select AI resource by type, keyword, name."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+construct {
+  ?x ?p ?y  
+} 
+where {
+  ?x a ?type  ;
+  foaf:name ?name ;
+  ai:keyword ?kw .  
+  filter (?type = $mode)
+  filter regex(?kw, "$param")
+  filter regex(?name, "$arg")  
+  ?x ?p ?y  
+} 
+
+""" ;
+
+
+
+st:select [
+    st:title "Type" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:function fun:projectType
+    #st:predicate [ rdfs:subClassOf ai:AIResource ]
+] ;
+
+st:select [
+    st:title "Keyword" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "param" ;
+    st:uri st:param ;
+    st:graph st:dataset ;
+    st:predicate ai:keyword
+] ;
+
+st:select [
+    st:title "Name" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "arg" ;
+    st:uri st:arg ;
+    st:graph st:dataset ;
+    st:function fun:projectName
+] ;
+.
+
+
+
+
+
+
+
+
+
+
+st:simple2 a sw:Query ;
+st:name st:simple2 ;
+rdfs:label "Creator Keyword Simple" ;
+rdfs:comment """Select AI resource by creator and/or keyword."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+
+construct {
+ ?x a ai:AIResource ;
+  ai:distributed_as ?z ;
+  ai:keyword ?kw   ;
+  ai:uses ?v .
+  ?x ?p ?w  .
+  ?z dc:creator ?create
+}
+where {
+  ?x a ?type  ;
+  ai:distributed_as ?z ;
+  ai:keyword ?kw ;
+  ai:uses ?v .
+  ?z de:creator ?create
+
+  filter (?create = $mode)
+  filter regex(?kw, "$param")
+  
+  ?x ?p ?w  
+} 
+
+""" ;
+
+
+
+st:select [
+    st:title "Creator" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:predicate de:creator
+] ;
+
+st:select [
+    st:title "Keyword" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "param" ;
+    st:uri st:param ;
+    st:graph st:dataset ;
+    st:predicate ai:keyword
+] ;
+.
+
+
+
+
+
+st:simple20 a sw:Query ;
+st:name st:simple20 ;
+rdfs:label "Type Keyword Name, Detail" ;
+rdfs:comment """Select AI resource by type, keyword, name. Display the content of the resource."""@en ;
+rdfs:comment """Detail"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+
+construct {
+ ?x a ?type ;
+  ai:distributed_as ?z ;
+  ai:keyword ?kw   ;
+  ai:uses ?v .
+  ?x ?p ?w  
+  ?z ?q ?t
+}
+where {
+  ?x a ?type  ;
+  ai:distributed_as ?z ;
+  ai:keyword ?kw ;
+  ai:uses ?v .
+  
+  filter (?type = $mode)
+  filter regex(?kw, "$param")
+  
+  ?x ?p ?w  
+  ?z ?q ?t
+} 
+
+""" ;
+
+
+
+st:select [
+    st:title "Type" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:predicate [ rdfs:subClassOf ai:AIResource ]
+] ;
+
+st:select [
+    st:title "Keyword" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "param" ;
+    st:uri st:param ;
+    st:graph st:dataset ;
+    st:predicate ai:keyword
+] ;
+.
+
+
+
+
+
+
+
+
+
+
+

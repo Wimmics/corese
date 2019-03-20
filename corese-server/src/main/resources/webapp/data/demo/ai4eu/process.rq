@@ -1,0 +1,23 @@
+@prefix fun: <>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+
+@public {
+
+function fun:projectName() {
+    let (select (aggregate(?name) as ?list) 
+        where { ?x a ai:AIResource ; foaf:name ?name } 
+        order by ?name ) {
+        ?list
+    }
+}
+
+
+function fun:projectType() {
+    let (select (aggregate(distinct ?type) as ?list) 
+        where { ?x a ai:AIResource , ?type filter (! strstarts(?type, owl:)) } 
+        order by ?type ) {
+        ?list
+    }
+}
+
+}

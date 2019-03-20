@@ -1,0 +1,27 @@
+@prefix :   <http://www.ai4eu.eu/ontologies/core#>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+@prefix de: <http://purl.org/dc/elements/1.1/> 
+@prefix dc: <http://purl.org/dc/terms/>
+
+<https://jena.apache.org/> rdf:type :SoftwareComponent ;
+         :distributed_as :jena-distrib ;
+         :uses :CPU ;
+         :keyword "Semantic Web"@en ,
+                  "Linked Data"@en, "Web of Data"@en ;
+         <http://xmlns.com/foaf/0.1/name> "Jena"^^xsd:string ;
+         <http://purl.org/dc/elements/1.1/creator> <http://www.apache.org/> ;
+         <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/SemanticWeb> .
+
+
+###  http://www.ai4eu.eu/ontologies/core#jena-distrib
+:dbpedia-distrib rdf:type :Service ;
+                :atTRL :TRL9 ;
+                :under_license :Apache ;
+                <http://purl.org/dc/elements/1.1/creator> <http://www.apache.org/> .
+
+
+
+
+###  http://www.ai4eu.eu/ontologies/core#ncsr
+<http://www.apache.org/>  rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
+      <http://xmlns.com/foaf/0.1/name> "The Apache Software Foundation"^^xsd:string .

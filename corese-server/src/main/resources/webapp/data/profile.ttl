@@ -904,6 +904,14 @@ sw:body (
 .
 
 
+#
+# AI4EU
+#
+[] owl:imports <myprofile.ttl>
+
+
+
+
 @prefix rs: <http://ns.inria.fr/ldpath/> 
 
 st:ldpath a st:Server ;

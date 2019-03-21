@@ -3,25 +3,19 @@
 st:ai4eu a st:Server ;
 st:service "ai4eu" ;
 st:shareContent st:ai4euContent ;
-st:workflow st:ai4euwf ;
+#st:workflow st:ai4euwf ;
+st:transform st:web ;
 st:param [
     st:lang 'en' ;
-    st:sttl st:combine ; 
+    # st:sttl st:combine ; 
     st:transformations (
-        <demo/ai4eu/prefix/prefix.rul> st:hturtle  d3:frame  
+        <demo/ai4eu/prefix/prefix.rul> st:hturtle
         ) ; 
     st:hyperlink true ; 
     #st:number true ;
     st:title "AI4EU";
-    st:export true ;
-    st:focus false ;
-     st:lodprofile (
-        (<https://aurehal.archives-ouvertes.fr/> st:hal)
-        (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal) 
-        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
-        ("*" st:lod)
-    ) 
+    #st:export true ;
+    #st:focus false 
 ] 
 .
 
@@ -69,7 +63,8 @@ sw:body (
       
       # context dataset with predefined queries in a specific graph
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-        [ a sw:Load ; sw:path <demo/ai4eu/workflow.ttl>  ; sw:name st:context ]
+        [ a sw:Query ; sw:uri  <demo/ai4eu/process.rq> ] # function definition
+        [ a sw:Load  ; sw:path <demo/ai4eu/workflow.ttl>  ; sw:name st:context ]
         st:indexQuery ) ]
                 	  
       ) ]  

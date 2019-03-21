@@ -2,10 +2,39 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Mar 20 09:03:46 CET 2019
+Thu Mar 21 09:33:18 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
+   
+   format { 
+        "<table>%s</table>"
+        group { st:call-template(st:selectparam2, ?n, ?select) }
+   }
+   
+      
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n 
+        optional { ?qt st:select ?select }
+    }
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -215,7 +244,7 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
-    group { coalesce(st:call-template(st:selectparam2, ?n, ?select), "") ; separator = "<br/> " }
+    st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
     str(?q)
     }
    
@@ -224,7 +253,6 @@ where {
     bind (st:get(st:context) as ?g)
     graph ?g {  
         ?qt st:name ?n 
-        optional { ?qt st:select ?select }
     }
 }
 ]]>
@@ -310,19 +338,13 @@ format {
   
   if (bound (?default), 
     st:format(
-        if (st:get(?uri, ?default), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>'), 
-            
-            ?default, coalesce(?defaultLabel, "Any")),
+        us:format (st:get(?uri, ?default)),             
+        ?default, coalesce(?label, "Any")),
     "")
             
   group { 
     format { 
-        if (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>')
-            
+        us:format (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false))                        
         ?value ?value
     } 
 }
@@ -380,6 +402,12 @@ where {
         
     }
   }
+}
+
+function us:format(?b) {
+    if (?b, 
+        '<option value="%s" selected="true">%s</option>', 
+        '<option value="%s">%s</option>')
 }
 ]]>
 </body>

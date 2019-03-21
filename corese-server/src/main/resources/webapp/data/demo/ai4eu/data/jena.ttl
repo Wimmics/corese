@@ -14,7 +14,7 @@
 
 
 ###  http://www.ai4eu.eu/ontologies/core#jena-distrib
-:dbpedia-distrib rdf:type :Service ;
+:jena-distrib rdf:type :Service ;
                 :atTRL :TRL9 ;
                 :under_license :Apache ;
                 <http://purl.org/dc/elements/1.1/creator> <http://www.apache.org/> .

@@ -14,7 +14,7 @@
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 @prefix dc: <http://purl.org/dc/terms/>
 @prefix de: <http://purl.org/dc/elements/1.1/>
-@prefix fun: <process.rq/>
+@prefix fun: <>
 
 #
 # List of Query

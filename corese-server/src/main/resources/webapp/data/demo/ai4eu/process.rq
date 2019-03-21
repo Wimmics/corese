@@ -1,6 +1,9 @@
 @prefix fun: <>
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 
+select (xt:print("define function", fun:projectName) as ?t)
+where {}
+
 @public {
 
 function fun:projectName() {

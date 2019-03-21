@@ -15,19 +15,13 @@ format {
   
   if (bound (?default), 
     st:format(
-        if (st:get(?uri, ?default), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>'), 
-            
-            ?default, coalesce(?defaultLabel, "Any")),
+        us:format (st:get(?uri, ?default)),             
+        ?default, coalesce(?label, "Any")),
     "")
             
   group { 
     format { 
-        if (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>')
-            
+        us:format (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false))                        
         ?value ?value
     } 
 }
@@ -85,4 +79,10 @@ where {
         
     }
   }
+}
+
+function us:format(?b) {
+    if (?b, 
+        '<option value="%s" selected="true">%s</option>', 
+        '<option value="%s">%s</option>')
 }

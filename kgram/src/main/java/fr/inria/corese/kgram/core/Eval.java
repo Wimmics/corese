@@ -942,7 +942,7 @@ public class Eval implements ExpType, Plugin {
                         backtrack = join(p, gNode, exp, getMappings(), stack, n);
                         break;
                     case QUERY:
-                        backtrack = query(p, gNode, exp, stack, n);
+                        backtrack = query(p, gNode, exp, getMappings(), stack, n); // use getMappings()
                         break;    
                     case FILTER:
                         backtrack = filter(p, gNode, exp, stack, n);
@@ -1165,7 +1165,7 @@ public class Eval implements ExpType, Plugin {
 
         if (main.isGraph() && main.getNodeList() != null) {
             bindExpNodeList(mem, main, main.getGraphName());
-        } else if ((bind || main.isJoin() || main.isOptional() || main.isUnion() || main.isMinus()) && exp.getNodeList() != null) {
+        } else if ((bind || main.isBinary()) && exp.getNodeList() != null) {
             // A optional B
             // bind variables of A from environment
             bindExpNodeList(mem, exp, null);
@@ -1303,7 +1303,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * exp a Join, Minus or Optional
+     * exp a Join, Minus, Optional, Union
      */
     Exp prepareRest(Exp exp, MappingSet set1) {
         Exp rest = exp.rest();
@@ -1336,16 +1336,26 @@ public class Eval implements ExpType, Plugin {
         return isRecFederate(exp);
     }
         
-        
+    /**
+     * exp is rest of minus, optional, union: exp is AND
+     * exp is rest of join: AND is not mandatory, it may be a service
+     * 
+     */ 
     boolean isRecFederate(Exp exp){ 
         if (exp.isService()) {
             return true;
         }
-        if (exp.size() != 1) {
+        if (exp.size() == 1) {
+            Exp ee = exp.get(0);
+            return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee)));        
+        }
+        else if (exp.isBGPAnd() && exp.size() > 0) {
+            Exp ee = exp.get(0);
+            return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee))); 
+        }
+        else {
             return false;
         }
-        Exp ee = exp.get(0);
-        return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee)));       
     }
        
     // binary such as union
@@ -1902,7 +1912,7 @@ public class Eval implements ExpType, Plugin {
             }
         } else {
             Query q = exp.rest().getQuery();
-            return query(p, gNode, q, stack, n);
+            return query(p, gNode, q, data, stack, n);
         }
 
         return backtrack;
@@ -2346,11 +2356,11 @@ public class Eval implements ExpType, Plugin {
      * new memory, share only sub query select variables
      *
      */
-    private int query(Producer p, Node gNode, Exp exp, Stack stack, int n) {
-        return query(p, p, gNode, exp, stack, n);
+    private int query(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
+        return query(p, p, gNode, exp, data, stack, n);
     }
 
-    private int query(Producer p1, Producer p2, Node gNode, Exp exp, Stack stack, int n) {
+    private int query(Producer p1, Producer p2, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1, evENUM = Event.ENUM;
         boolean isEvent = hasEvent;
         Query subQuery = exp.getQuery();
@@ -2361,7 +2371,7 @@ public class Eval implements ExpType, Plugin {
         // bind sub query select nodes in new memory
         Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);
         // draft federated query
-        ev.getMemory().setJoinMappings(memory.getJoinMappings());
+        ev.getMemory().setJoinMappings(data); //memory.getJoinMappings());
         Node subNode = null;
 
         if (gNode != null) {

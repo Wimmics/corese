@@ -2,16 +2,17 @@
 @prefix de: <http://purl.org/dc/elements/1.1/> 
 @prefix dc: <http://purl.org/dc/terms/>
 
-<http://project.inria.fr/corese> a ai:SoftwareComponent ;
+ai:corese a ai:SoftwareComponent ;
   ai:described_by _:b2273 ;
-  ai:distributed_as <http://project.inria.fr/corese/soft> ;
+  ai:distributed_as <http://project.inria.fr/corese> ;
   ai:keyword "Semantic Web"@en, "Linked Data"@en, "Web of Data"@en ;
   ai:refers_to _:b2275 ;
   ai:used_in <http://corese.inria.fr> ;
   foaf:name "Corese" ;
+  de:creator  <http://www.inria.fr/> ;
   ai:uses ai:CPU .
   
-<http://project.inria.fr/corese/soft> a ai:Library, ai:StandAlone ;
+<http://project.inria.fr/corese> a ai:Library, ai:StandAlone ;
   dc:license ai:CeCILLC ;
   ai:accompanied_by <http://project.inria.fr/corese/documentation/> ;
   ai:atTRL ai:TRL1 ;

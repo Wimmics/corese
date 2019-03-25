@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.update;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.TopExp;
 
@@ -62,6 +63,10 @@ public class Update  extends TopExp {
 		String res = getNSM().toNamespaceB(name);
 		return res;
 	}
+        
+        public Constant getGraphName() {
+            return null;
+        }
 	
 	public boolean isComposite(){
 		return this instanceof Composite;

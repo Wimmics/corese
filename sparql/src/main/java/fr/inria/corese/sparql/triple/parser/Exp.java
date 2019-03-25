@@ -85,6 +85,18 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
         
+        public Constant getGraphName() {
+            for (Exp exp : this) {
+                if (exp.isNamedGraph()) {
+                    Atom name = exp.getNamedGraph().getSource();
+                    if (name.isConstant()) {
+                        return name.getConstant();
+                    }
+                }
+            }
+            return null;
+        }
+        
         @Override
         public Iterator<Exp> iterator(){
             return body.iterator();

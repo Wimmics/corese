@@ -1468,11 +1468,12 @@ Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
  { astq.setBody(exp); q = Query.create(astq); astq = ast; return q;} 
 }
 
-Exp SubUpdate() : {ASTQuery ast; Query q; Exp exp;}
+Exp SubUpdate() : {ASTQuery ast; ASTUpdate up, save; Query q; Exp exp;}
 {
- { ast = astq; astq = gast.subCreate(); astq.setBody(BasicGraphPattern.create()); } 
+ { ast = astq; save = astu; astu = astu.subCreate(); astq = gast.subCreate(); astq.set(astu); 
+   astq.setBody(BasicGraphPattern.create()); } 
   UpdateQuery(null) 
- { q = Query.create(astq); astq = ast; return q;} 
+ { q = Query.create(astq); astq = ast; astu = save; return q;} 
 }
 
 

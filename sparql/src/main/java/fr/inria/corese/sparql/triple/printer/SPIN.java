@@ -1271,9 +1271,9 @@ public class SPIN implements ASTVisitor {
                     sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
                 }
 
-                if (basic.getCGraph() != null) {
+                if (basic.getGraphName() != null) {
                     sb.append(tab() + "sp:graphIRI" + SPACE);
-                    visit(basic.getCGraph());
+                    visit(basic.getGraphName());
                     sb.append(NL);
                 }
                 
@@ -1298,9 +1298,9 @@ public class SPIN implements ASTVisitor {
                     sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
                 }
 
-                if (basic.getCGraph() != null) {
+                if (basic.getGraphName() != null) {
                     sb.append(tab() + "sp:graphIRI" + SPACE);
-                    visit(basic.getCGraph());
+                    visit(basic.getGraphName());
                     sb.append(NL);
                 } 
                 else if (basic.isAll()) {
@@ -1329,8 +1329,8 @@ public class SPIN implements ASTVisitor {
                     sb.append(tab() + "sp:silent" + SPACE + TRUE + PT_COMMA);
                 }
                 
-                if (basic.getCGraph() != null){
-                       sb.append(tab() + "sp:from" + SPACE + basic.getCGraph() + PT_COMMA);
+                if (basic.getGraphName() != null){
+                       sb.append(tab() + "sp:from" + SPACE + basic.getGraphName() + PT_COMMA);
                 }
                 else {
                        sb.append(tab() + "sp:from" + SPACE + "sp:default" + PT_COMMA);

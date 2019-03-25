@@ -198,7 +198,8 @@ public class Basic extends Update {
             return auri;
         }
         
-         public Constant getCGraph(){
+        @Override
+         public Constant getGraphName(){
             return agraph;
         }
 	

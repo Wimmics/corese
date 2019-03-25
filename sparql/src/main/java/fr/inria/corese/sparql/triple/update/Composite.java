@@ -132,6 +132,18 @@ public class Composite extends Update {
 	public Constant getWith(){
 		return with;
 	}
+        
+        // TODO: insert { graph uri {} } where {}
+        @Override
+        public Constant getGraphName() {
+            if  (getWith() != null) {
+                return getWith();
+            }
+            if (getData() != null) {
+                return getData().getGraphName();
+            }
+            return null;
+        }
 	
 	public void addUsing(Constant uri){
 		ds.addFrom(uri);

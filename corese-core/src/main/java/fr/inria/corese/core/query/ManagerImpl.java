@@ -9,7 +9,6 @@ import fr.inria.corese.sparql.triple.update.Update;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.logic.Entailment;
 
 /**
  * SPARQL 1.1 Update

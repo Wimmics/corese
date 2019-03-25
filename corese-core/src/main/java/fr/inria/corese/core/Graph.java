@@ -2370,6 +2370,15 @@ public class Graph extends GraphObject implements
         }
         return table.size(pred);
     }
+    
+    public Node getGraphNode() {
+        for (Node node :getGraphNodes()) {
+            if (! node.getLabel().startsWith(NSManager.KGRAM)) {
+                return node;
+            }
+        }
+        return null;
+    }
 
     public Iterable<Node> getGraphNodes() {
         return graph.values();

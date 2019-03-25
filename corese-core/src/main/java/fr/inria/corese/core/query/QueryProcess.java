@@ -32,6 +32,7 @@ import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.Event;
+import static fr.inria.corese.core.Event.Update;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.Entailment;
@@ -41,6 +42,10 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.sparql.api.QueryVisitor;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.update.ASTUpdate;
+import fr.inria.corese.sparql.triple.update.Basic;
+import fr.inria.corese.sparql.triple.update.Update;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -84,6 +89,8 @@ public class QueryProcess extends QuerySolver {
         dbmap = new HashMap<>();
         new Extension().process();
     }
+    
+    private static boolean overWrite = false;
 
     public QueryProcess() {
     }
@@ -762,18 +769,75 @@ public class QueryProcess extends QuerySolver {
         return (getMode() == SERVER_MODE || getAST(q).isUserQuery()); 
     }
     
+    boolean isOverwrite() {
+        return overWrite;
+    }
+    
+    public static void setOverwrite(boolean b) {
+        overWrite = b;
+    }
+    
+    /**
+     * Create a new graph where to perform update
+     * Store it as named graph of main dataset
+     */
+    Mappings overWrite(Query query, Mapping m, Dataset ds) throws EngineException {
+        String name = getWithName(query);
+        //System.out.println("Process named graph: " + name);
+                
+        Graph g  = getGraph();
+        Graph gg = g.getNamedGraph(name);
+        if (gg == null) {
+            gg = Graph.create();
+        }
+        
+        QueryProcess exec = QueryProcess.create(gg);
+        Mappings map = exec.update(query, m, ds);        
+        //gg.init();
+        g.setNamedGraph(name, gg);
+        complete(exec.getAST(query).getUpdate(), g);
+        return map;
+    }
+    
+    void complete(ASTUpdate up, Graph g) {
+        String name = up.getGraphName();
+        for (Update act : up.getUpdates()) {
+            switch (act.type()) {
+                case Basic.DROP:
+                    if (act.getBasic().getGraph() != null && act.getBasic().getGraph().equals(name)) {
+                        g.setNamedGraph(name, null);
+                        return;
+                    }
+            }
+        }
+    }
+    
+    String getWithName(Query query) {
+        return getAST(query).getUpdate().getGraphName();
+    }
+    
     Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         if (isProtected(query)) {
             return new Mappings();
         }
         Graph g = getGraph();
         GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
+        
+        if (isOverwrite()) {
+            if (lock.getReadLockCount() > 0 || g.getNamedGraph(getWithName(query)) != null) {
+                // draft: get/create a graph and store it as named graph
+                return overWrite(query, m, ds);
+            }
+        }
+                             
         try {
-            if (!isSynchronized()) { // && ! query.isSynchronized()){
-                // TRICKY:
+            if (isSynchronized()) { 
                 // if query comes from workflow or from RuleEngine cleaner, 
                 // it is synchronized by graph.init()
-                // and it already has a lock by synQuery/synUpdate                           
+                // and it already has a lock by synQuery/synUpdate 
+                // hence do nothing
+            }
+            else {
                 writeLock();
             }
             if (gl != null) {
@@ -785,12 +849,16 @@ public class QueryProcess extends QuerySolver {
             } else {
                 return update(query, m, ds);
             }
-        } finally {
+        } 
+        finally {
             //g.logFinish(query);
             if (gl != null) {
                 g.removeListener(gl);
             }
-            if (!isSynchronized()) { // && ! query.isSynchronized()){
+            if (isSynchronized()) { 
+                // do nothing
+            }
+            else {
                 writeUnlock();
             }
         }

@@ -291,6 +291,38 @@ public class TestQuery1 {
     }
     
     
+     @Test
+    public void testLock() throws EngineException {
+
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+
+        exec.setOverwrite(true);
+
+        String i = "select * where { "
+                + "bind (us:test()  as ?r) "
+                + "graph us:g1 { ?s ?p ?o }"
+                + "}"
+                + "function us:test() {"
+                + "query(insert data { graph us:g1 { us:Jack foaf:name 'Jack' } } ) "
+                + "}";
+
+        String q2 = "drop graph us:g1";
+
+        String q3 = "select * where {"
+                + "graph us:g1 { ?s ?p ?o }"
+                + "}";
+
+        Mappings map = exec.query(i);
+        assertEquals(1, map.size());
+        exec.query(q2);
+        Mappings m = exec.query(q3);
+        assertEquals(0, m.size());
+        
+        exec.setOverwrite(false);
+
+    }
+    
              @Test 
     public void testBB() throws EngineException {
 
@@ -8815,17 +8847,16 @@ public class TestQuery1 {
         QueryEngine qe = QueryEngine.create(g);
         g.addEngine(qe);
 
-        String init =
-                "prefix c: <http://example.org/>"
-                        + "insert data {"
-                        + "[ c:hasParent [] ]"
-                        + "}";
+        String init
+                = "prefix c: <http://example.org/>"
+                + "insert data {"
+                + "[ c:hasParent [] ]"
+                + "}";
 
-
-        String update =
-                "prefix c: <http://example.org/>"
-                        + "insert {?y c:hasChild ?x}"
-                        + "where { ?x c:hasParent ?y}";
+        String update
+                = "prefix c: <http://example.org/>"
+                + "insert {?y c:hasChild ?x}"
+                + "where { ?x c:hasParent ?y}";
 
         qe.addQuery(update);
 //		qe.setDebug(true);
@@ -8840,17 +8871,18 @@ public class TestQuery1 {
 
             Mappings map = exec.query(query);
 //			////System.out.println(map);
-//			////System.out.println(map.size());
-
+//
+            System.out.println("*****************");
+            System.out.println(map);
             assertEquals("Result", 2, map.size());
-
 
         } catch (EngineException e) {
             assertEquals("Result", true, false);
         }
 
-
     }
+
+    
 
     @Test
     public void testCompile() throws EngineException {

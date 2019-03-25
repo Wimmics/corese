@@ -269,7 +269,8 @@ public class UpdateProcess {
         ast.setNSM(ope.getNSM());
         ast.setPragma(ga.getPragma());
         ast.setPrefixExp(ga.getPrefixExp());
-        ast.setDefine(ga.getDefine());
+        //ast.setDefine(ga.getDefine());
+        ast.shareFunction(ga);
         ast.setAnnotation(ga.getMetadata());
         ast.setSelectAll(true);
         // where {pat}

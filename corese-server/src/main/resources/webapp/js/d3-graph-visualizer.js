@@ -493,16 +493,18 @@ export class D3GraphVisualizer extends Observer {
         var menuNode;
         window.setDisplayRoot = function (parameters) {
             drawer.setDisplayRoot(parameters.data);
+            drawer.computeHierarchy();
             drawer.draw(svgId);
+            drawer.centerDisplay();
             menuNode.displayOff();
         }
         window.switchMaskSubtree = function (parameters) {
-            drawer.switchVisibility(parameters.data.id, false);
+            drawer.switchVisibility(parameters.data, false);
             drawer.draw(svgId);
             menuNode.displayOff();
         }
         window.switchMaskAllSubtree = function (parameters) {
-            drawer.switchVisibility(parameters.data.id, true);
+            drawer.switchVisibility(parameters.data, true);
             drawer.draw(svgId);
             menuNode.displayOff();
         }
@@ -518,12 +520,15 @@ export class D3GraphVisualizer extends Observer {
         let menu = ContextMenu.create(root, "graphMenu")
             .addEntry("Go to top level", function () {
                 drawer.goTop();
+                drawer.computeHierarchy();
                 drawer.draw(svgId);
                 menu.displayOff();
             })
             .addEntry("Up one level", function () {
                 drawer.up();
+                drawer.computeHierarchy();
                 drawer.draw(svgId);
+                drawer.centerDisplay();
                 menu.displayOff();
             })
             .addEntry("Reset centering", function () {
@@ -534,6 +539,7 @@ export class D3GraphVisualizer extends Observer {
             .addEntry("Switch horizontal/vertical layout", function () {
                 drawer.switchLayout();
                 drawer.draw(svgId);
+                drawer.centerDisplay();
                 menu.displayOff();
             })
         ;
@@ -551,6 +557,7 @@ export class D3GraphVisualizer extends Observer {
         // end of menu for the ontology graph background.
         parameters.menuNode = menuNode;
         let drawer = new OntologyDrawer().setParameters(parameters).setData(_results).draw(svgId);
+        drawer.centerDisplay();
         return drawer;
     }
 

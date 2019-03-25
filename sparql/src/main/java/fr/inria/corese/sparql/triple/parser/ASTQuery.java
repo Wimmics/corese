@@ -351,8 +351,17 @@ public class ASTQuery
         this.define = define;
     }
     
-     public void setDefineLambda(ASTExtension define) {
+    public void setDefineLambda(ASTExtension define) {
         this.lambdaDefine = define;
+    }
+    
+    public void shareFunction(ASTQuery ast) {
+        setDefine(ast.getDefine());
+        setDefineLambda(ast.getDefineLambda());
+    }
+    
+    public void shareForUpdate(ASTQuery ast) {
+        shareFunction(ast);
     }
 
     /**

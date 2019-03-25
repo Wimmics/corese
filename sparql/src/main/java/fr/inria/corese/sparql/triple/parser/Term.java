@@ -1510,6 +1510,9 @@ public class Term extends Expression {
 
     @Override
     public int arity() {
+        if (lExp == null) {
+            return args.size();
+        }
         return lExp.size();
     }
 

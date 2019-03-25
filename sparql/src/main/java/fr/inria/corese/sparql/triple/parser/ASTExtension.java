@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ASTExtension {
+
     private static Logger logger = LoggerFactory.getLogger(ASTExtension.class);	
 
     static final String NL = System.getProperty("line.separator");
@@ -28,6 +29,7 @@ public class ASTExtension {
     private Constant pack;
     ArrayList<Function> funList;
     int nbfun = 0;
+    private boolean compiled = false;
     
     public class ASTFunMap extends HashMap<String, Function> {}
 
@@ -197,6 +199,20 @@ public class ASTExtension {
      */
     public void setPackage(Constant pack) {
         this.pack = pack;
+    }
+    
+        /**
+     * @return the compiled
+     */
+    public boolean isCompiled() {
+        return compiled;
+    }
+
+    /**
+     * @param compiled the compiled to set
+     */
+    public void setCompiled(boolean compiled) {
+        this.compiled = compiled;
     }
 }
 

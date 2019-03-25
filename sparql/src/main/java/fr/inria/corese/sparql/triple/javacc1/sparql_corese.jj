@@ -1471,6 +1471,7 @@ Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
 Exp SubUpdate() : {ASTQuery ast; ASTUpdate up, save; Query q; Exp exp;}
 {
  { ast = astq; save = astu; astu = astu.subCreate(); astq = gast.subCreate(); astq.set(astu); 
+   astq.shareForUpdate(gast);
    astq.setBody(BasicGraphPattern.create()); } 
   UpdateQuery(null) 
  { q = Query.create(astq); astq = ast; astu = save; return q;} 

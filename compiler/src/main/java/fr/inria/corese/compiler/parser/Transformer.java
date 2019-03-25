@@ -568,8 +568,15 @@ public class Transformer implements ExpType {
     }
     
     void compileFunction(Query q, ASTQuery ast, ASTExtension ext) {
-        for (Function fun : ext.getFunList()) {
-            compileFunction(q, ast, fun);
+        if (ext.isCompiled()) {
+            // recursion from subquery in function: do nothing
+        }
+        else {
+            ext.setCompiled(true);
+            for (Function fun : ext.getFunList()) {
+                compileFunction(q, ast, fun);
+            }
+            ext.setCompiled(false);
         }
     }
     
@@ -737,6 +744,11 @@ public class Transformer implements ExpType {
         Transformer t = Transformer.create();
         t.setAlgebra(isAlgebra());
         return t.transform(ast);
+    }
+    
+    Query updateQuery(ASTQuery ast) {
+        Query q = constructQuery(ast);
+        return q;
     }
 
     /**
@@ -1374,7 +1386,7 @@ public class Transformer implements ExpType {
                     exp = constructQuery(query.getQuery());
                 } 
                 else if (query.getQuery().isUpdate()) {
-                    exp = constructQuery(query.getQuery());
+                    exp = updateQuery(query.getQuery());
                 }
                 else {
                     exp = compileQuery(query.getQuery());

@@ -490,6 +490,10 @@ public class ASTQuery
         }
         return globalAST;
     }
+    
+    public ASTQuery getGlobalASTBasic() {
+        return globalAST;
+    }
 
     public List<Constant> getFrom() {
         return dataset.getFrom();

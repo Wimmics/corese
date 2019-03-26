@@ -38,6 +38,7 @@ public class Context extends ASTObject {
     public static final String STL_CONTEXT_LIST  = STL + "contextlist";    //  context graph list for tutorial 
     public static final String STL_DATASET  = STL + "dataset";    // dataset named graph
     public static final String STL_EXPORT   = STL + "export";   
+    public static final String STL_EXPORT_LIST   = STL + "exportlist";   
     public static final String STL_IMPORT   = STL + "import";   
     public static final String STL_PARAM    = STL + "param";   
     public static final String STL_ARG      = STL + "arg";   
@@ -68,6 +69,7 @@ public class Context extends ASTObject {
     public static final String STL_PATTERN_OPTION = STL + "patternoption";
     public static final String STL_PROCESS_QUERY  = STL + "processquery";
     public static final String STL_METADATA       = STL + "metadata";
+    public static final String STL_PREFIX         = STL + "prefix";
     
     
     HashMap<String, IDatatype> table;
@@ -259,9 +261,26 @@ public class Context extends ASTObject {
     
     public Context export(String name, IDatatype value) {
         table.put(name, value);
-        export.put(name, true);
+        defineExport(name);
         return this;
     }
+    
+    void defineExport(String name) {
+        export.put(name, true);
+    }
+    
+    public void init() {
+        defineExport();
+    }
+    
+    public void defineExport() {
+        if (hasValue(STL_EXPORT_LIST)) {
+            for (IDatatype def : get(STL_EXPORT_LIST).getValueList()) {
+                defineExport(def.getLabel());
+            }
+        }
+    }
+
     
     public Context exportName(String name, IDatatype value) {
         return export(NSManager.STL+name, value);

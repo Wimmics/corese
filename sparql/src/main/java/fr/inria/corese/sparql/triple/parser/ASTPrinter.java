@@ -9,9 +9,10 @@ import java.util.List;
  *
  */
 public class ASTPrinter {
-    
+
     ASTQuery ast;
     private boolean prefix = true;
+    private boolean lambda = false;
     
     public ASTPrinter(ASTQuery a){
         ast = a;
@@ -304,19 +305,30 @@ public class ASTPrinter {
             ast.getPragma().toString(sb);
         }
 
-        for (Expression fun : ast.getDefine().getFunList()) {
+        if (ast.getGlobalASTBasic()!= null) {
+            // ast is a subquery, do not print functions
+        }
+        else {
+            function(sb);
+        }
+        
+    }
+    
+    void function(ASTBuffer sb) {
+        function(sb, ast.getDefine());
+        if (isLambda()) {
+            function(sb, ast.getDefineLambda());
+        }
+    }
+    
+    void function(ASTBuffer sb, ASTExtension ext) {
+        for (Expression fun : ext.getFunList()) {
             sb.nl();
             fun.toString(sb);
             sb.nl();
         }
-        
-//        for (Expression fun : ast.getDefineLambda().getFunList()) {
-//            sb.nl();
-//            fun.toString(sb);
-//            sb.nl();
-//        }
     }
-
+    
     /**
      * @return the prefix
      */
@@ -331,6 +343,19 @@ public class ASTPrinter {
         this.prefix = prefix;
     }
     
+    /**
+     * @return the lambda
+     */
+    public boolean isLambda() {
+        return lambda;
+    }
+
+    /**
+     * @param lambda the lambda to set
+     */
+    public void setLambda(boolean lambda) {
+        this.lambda = lambda;
+    }
     
 
 }

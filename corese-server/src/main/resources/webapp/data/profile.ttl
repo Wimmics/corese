@@ -800,6 +800,8 @@ sw:body (
 )
 .
 
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+
 
 st:ontology a st:Server ;
 st:service "ontology" ;
@@ -807,6 +809,7 @@ st:workflow st:ontology ;
 st:param [
     st:title "Ontology" ;
     st:hierarchy (rdfs:subClassOf rdfs:subPropertyOf) ;
+    st:prefix (("ai" ai:))
    # st:hierarchy (rdfs:subClassOf ) ;
 ] ;
 sw:body ( 
@@ -826,7 +829,8 @@ st:workflow st:class ;
 st:param [
     st:title "Class" ;
     st:hierarchy (rdfs:subClassOf ) ;
-    st:trace false
+    st:trace false ;
+    st:prefix (("ai" ai:))
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -836,7 +840,6 @@ sw:body (
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .
-
 
 
 
@@ -850,7 +853,8 @@ st:param [
     st:nodePropertyDisplay ("url" "property" "class") ;
     st:nodePropertyList (("property" us:value)) ;
     st:export true ;
-    st:trace false
+    st:trace false ;
+    st:prefix (("ai" ai:))
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -858,7 +862,7 @@ sw:body (
     [ a sw:Query ; sw:uri <query/display/toplevel.rq> ] 
     [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
     [ a sw:Query ; sw:uri <query/display/individual.rq> ] 
-    [ a sw:Query ; sw:uri <query/display/property.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/property.rq> ]
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .
@@ -871,7 +875,8 @@ st:param [
     st:title "Property" ;
     st:hierarchy (rdfs:subPropertyOf) ;
     st:nodePropertyDisplay ("url" "domain" "range") ;
-    st:trace false
+    st:trace false ;
+    st:prefix (("ai" ai:))
 
 ] ;
 sw:body ( 
@@ -891,7 +896,8 @@ st:param [
     st:title "Property" ;
     st:hierarchy (rdfs:domain rdfs:isRangeOf) ;
     st:nodePropertyDisplay ("url" "class" ) ;
-    st:trace false
+    st:trace false ;
+    st:prefix (("ai" ai:))
 
 ] ;
 sw:body ( 

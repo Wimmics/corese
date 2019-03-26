@@ -1,3 +1,6 @@
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+
+
 
 
 st:ai4eu a st:Server ;
@@ -7,14 +10,22 @@ st:shareContent st:ai4euContent ;
 st:transform st:web ;
 st:param [
     st:lang 'en' ;
-    # st:sttl st:combine ; 
-    st:transformations (
-        <demo/ai4eu/prefix/prefix.rul> st:hturtle
-        ) ; 
+    
+    st:lodprofile (
+        (ai: st:sparql)         
+        (dc: st:sparql)  
+        (<http://purl.org/dc/elements/1.1/> st:sparql)
+        (foaf: st:sparql)  
+        (rdf: st:sparql) 
+        (rdfs: st:sparql)
+        (owl: st:sparql)
+        ("*" st:lod)
+    ) ;
+    
     st:hyperlink true ; 
-    #st:number true ;
     st:title "AI4EU";
-    #st:export true ;
+    st:prefix (("ai" ai:)) ;
+    st:exportlist (st:lodprofile) ;
     #st:focus false 
 ] 
 .
@@ -31,12 +42,9 @@ st:param [
     st:export true ;
     st:focus false ;
      st:lodprofile (
-        (<https://aurehal.archives-ouvertes.fr/> st:hal)
-        (<https://data.archives-ouvertes.fr/> st:hal)
-        (<http://www.w3c.org/ns/org> st:hal) 
-        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
+        (ai: st:sparql)         
         ("*" st:lod)
-    ) 
+    ) ;
 ] 
 .
 
@@ -57,7 +65,7 @@ sw:body (
 
       [ a sw:Workflow ; sw:body ( 
         [ a sw:Load ; sw:path <demo/ai4eu/ai4eu.ttl> ] 
-        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl> ] 
+        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>] 
         [ a sw:RuleBase ;  sw:uri sw:owlrl ]
         ) ]
       

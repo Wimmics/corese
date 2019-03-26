@@ -3,25 +3,25 @@
 @prefix de: <http://purl.org/dc/elements/1.1/> 
 @prefix dc: <http://purl.org/dc/terms/>
 
-<http://fr.dbpedia.org/> rdf:type :SoftwareComponent, ai:Dataset ;
-         :distributed_as :dbpedia-distrib ;
+ai:dbpediafr rdf:type :SoftwareComponent, ai:Dataset ;
+         :distributed_as <http://fr.dbpedia.org> ;
          :uses :CPU ;
          :keyword "Knowledge Graph"@en ,
                   "Dataset"@en ;
          <http://xmlns.com/foaf/0.1/name> "DBpedia"^^xsd:string ;
-         <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr/> ;
+         <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr> ;
          <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/KnowledgeGraph> .
 
 
 ###  http://www.ai4eu.eu/ontologies/core#dbpedia-distrib
-:dbpedia-distrib rdf:type :Service ;
+<http://fr.dbpedia.org> rdf:type :Service ;
                 :atTRL :TRL9 ;
                 :under_license :CeCILLC ;
-                <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr/> .
+                <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr> .
 
 
 
 
 ###  http://www.ai4eu.eu/ontologies/core#ncsr
-<http://www.inria.fr/>  rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
+<http://www.inria.fr>  rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
       <http://xmlns.com/foaf/0.1/name> "Institut National de Recherche en Informatique et Automatique"^^xsd:string .

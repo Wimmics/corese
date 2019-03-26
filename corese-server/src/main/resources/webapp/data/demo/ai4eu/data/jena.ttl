@@ -3,8 +3,8 @@
 @prefix de: <http://purl.org/dc/elements/1.1/> 
 @prefix dc: <http://purl.org/dc/terms/>
 
-<https://jena.apache.org/> rdf:type :SoftwareComponent ;
-         :distributed_as :jena-distrib ;
+ai:jena rdf:type :SoftwareComponent ;
+         :distributed_as <https://jena.apache.org/> ;
          :uses :CPU ;
          :keyword "Semantic Web"@en ,
                   "Linked Data"@en, "Web of Data"@en ;
@@ -14,7 +14,7 @@
 
 
 ###  http://www.ai4eu.eu/ontologies/core#jena-distrib
-:jena-distrib rdf:type :Service ;
+<https://jena.apache.org/> rdf:type :Service ;
                 :atTRL :TRL9 ;
                 :under_license :Apache ;
                 <http://purl.org/dc/elements/1.1/creator> <http://www.apache.org/> .

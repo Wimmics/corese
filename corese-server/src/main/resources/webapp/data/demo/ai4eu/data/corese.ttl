@@ -9,15 +9,15 @@ ai:corese a ai:SoftwareComponent ;
   ai:refers_to _:b2275 ;
   ai:used_in <http://corese.inria.fr> ;
   foaf:name "Corese" ;
-  de:creator  <http://www.inria.fr/> ;
+  de:creator  <http://www.inria.fr> ;
   ai:uses ai:CPU .
   
 <http://project.inria.fr/corese> a ai:Library, ai:StandAlone ;
   dc:license ai:CeCILLC ;
   ai:accompanied_by <http://project.inria.fr/corese/documentation/> ;
   ai:atTRL ai:TRL1 ;
-  ai:provider <http://www.inria.fr/> ;
-  de:creator  <http://www.inria.fr/> ;
+  ai:provider <http://www.inria.fr> ;
+  de:creator  <http://www.inria.fr> ;
   ai:under_license ai:CeCILLC . 
   
   

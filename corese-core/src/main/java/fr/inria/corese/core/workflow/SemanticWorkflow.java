@@ -160,6 +160,9 @@ public class SemanticWorkflow extends  CompositeProcess {
     // local before
     void before(Data data){
         prepare(data);
+        if (getContext() != null) {
+            getContext().init();
+        }
     }
     
     void prepare(Data data){

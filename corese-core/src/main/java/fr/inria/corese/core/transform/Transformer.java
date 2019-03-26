@@ -90,6 +90,8 @@ public class Transformer implements TransformProcessor {
     public static final String STL_PROCESS = Processor.STL_PROCESS;
     public static final String STL_AGGREGATE = Processor.STL_AGGREGATE;
     public static final String STL_TRANSFORM = Context.STL_TRANSFORM;
+    public static final String STL_PREFIX = Context.STL_PREFIX;
+    
     // default
     public static final String PPRINTER = TURTLE;
     private static final String OUT = ASTQuery.OUT;
@@ -168,7 +170,7 @@ public class Transformer implements TransformProcessor {
     }
 
     Transformer(QueryProcess qp, String p) {
-        context = new Context();
+        setContext(new Context());
         setTransformation(p);
         set(qp);
         nsm = NSManager.create();
@@ -1362,6 +1364,23 @@ public class Transformer implements TransformProcessor {
      */
     public void setContext(Context context) {
         this.context = context;
+        initContext();
+    }
+    
+    void initContext() {
+        if (getContext() != null) {
+            if (getContext().hasValue(STL_PREFIX)) {
+                definePrefix();
+            }
+        }
+    }
+    
+    void definePrefix() {
+        for (IDatatype def : getContext().get(STL_PREFIX).getValueList()) {
+            if (def.isList() && def.size() >= 2) {
+                getNSM().definePrefix(def.get(0).getLabel(), def.get(1).getLabel());
+            }
+        }
     }
 
     /**

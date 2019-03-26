@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Mar 13 11:13:57 CET 2019
+Tue Mar 26 11:18:20 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -89,14 +89,18 @@ prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:frame {
   format {
       ft:frame.html
-      ?id
+     ?id
       us:plist(?list)
-      st:call-template(st:graph)
+      us:plist(?plist)
+      ?graph
   }
 } 
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
+    bind (st:call-template(st:graph) as ?graph)
+    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
 }
 
 ]]>

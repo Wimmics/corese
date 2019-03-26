@@ -1,10 +1,12 @@
 prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:pageselect {
+    st:call-template(st:d3selectviewer)
     format {
         ft:select.html
         st:call-template(st:variable)
         st:call-template(st:table)
-    }    
+    }
 }
 where {
 }
+

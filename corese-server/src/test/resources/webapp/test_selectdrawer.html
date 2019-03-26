@@ -57,7 +57,7 @@
         "ORDER BY DESC(?area)";
     d3sparql.query(endpoint, sparql, function(data) {
         corese_d3.D3GraphVisualizer.drawSelect(data, '#graph1', {
-            "diagram": corese_d3.SelectDrawer.Type.barchart,
+            "diagram": corese_d3.SelectDrawer.Type.scatterplot,
             "label_x": "Prefecture",
             "label_y": "Area",
             "var_x": "pref",

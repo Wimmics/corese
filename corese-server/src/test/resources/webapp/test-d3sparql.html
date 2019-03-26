@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/d3sparql.js"></script>
+    <script>
+    function exec() {
+      var graphChoice = +d3.select("#graphChoice").node().value;
+      let render = undefined;
+      if (graphChoice === 0) {
+        render = renderDendogram;
+      } else if (graphChoice === 1) {
+        render = renderRoundTree;
+      }
+      var endpoint = d3.select("#endpoint").property("value")
+      var sparql = d3.select("#sparql").property("value")
+
+      d3sparql.query(endpoint, sparql, render)
+    }
+    function renderDendogram(json) {
+      var config = {
+        // for d3sparql.tree()
+        "root": "root_name",
+        "parent": "parent_name",
+        "child": "child_name",
+        // for d3sparql.dendrogram()
+        "width": 900,
+        "height": 4500,
+        "margin": 350,
+        "radius": 5,
+        "selector": "#result"
+      }
+      d3sparql.dendrogram(json, config)
+    }
+
+    function renderRoundTree(json) {
+      var config = {
+        // for d3sparql.tree()
+        "root": "root_name",
+        "parent": "parent_name",
+        "child": "child_name",
+        // for d3sparql.roundtree()
+        "diameter": 800,
+        "angle": 360,
+        "depth": 200,
+        "radius": 5,
+        "selector": "#result"
+      }
+      d3sparql.roundtree(json, config)
+    }
+
+
+
+    function exec_offline() {
+      d3.json("cache/taxonomy/tardigrada.json", render)
+    }
+    function toggle() {
+      d3sparql.toggle()
+    }
+    </script>
+  </head>
+  <body>
+    <div id="query" style="margin: 10px">
+        <select id="graphChoice">
+          <option value="0">dendogram</option>
+          <option value="1">roundtree</option>
+        </select>
+      <form class="form-inline">
+        <label>SPARQL endpoint:</label>
+        <div class="input-append">
+          <input id="endpoint" class="span5" value="http://togostanza.org/sparql" type="text">
+          <button class="btn" type="button" onclick="exec()">Query</button>
+          <button class="btn" type="button" onclick="toggle()"><i id="button" class="icon-chevron-up"></i></button>
+        </div>
+      </form>
+      <textarea id="sparql" class="span9" rows=15>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
+
+SELECT DISTINCT ?root_name ?parent_name ?child_name
+FROM <http://togogenome.org/graph/taxonomy>
+WHERE
+{
+  VALUES ?root_name { "Tardigrada" }
+  ?root tax:scientificName ?root_name .
+  ?child rdfs:subClassOf+ ?root .
+  ?child rdfs:subClassOf ?parent .
+  ?child tax:scientificName ?child_name .
+  ?parent tax:scientificName ?parent_name .
+}
+      </textarea>
+    </div>
+    <div id="result"></div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+prefix d3: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:d3selectviewer {
+    format {
+        d3:frameselect.html
+        ?id
+#        us:plist(?list)
+    }
+}
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+#    bind () # Send the results in json-ld
+}

@@ -32,6 +32,7 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
+import java.nio.file.Files;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine Compute graph homomorphism and
@@ -911,9 +912,11 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case AND:
-                        getVisitor().bgp(this, getGraphNode(gNode), exp, null);
-                        stack = stack.and(exp, n);
-                        backtrack = eval(p, gNode, stack, n);
+//                        getVisitor().bgp(this, getGraphNode(gNode), exp, null);
+//                        stack = stack.and(exp, n);
+//                        backtrack = eval(p, gNode, stack, n);
+                        
+                        backtrack = and(p, gNode, exp, stack, n);
                         break;
 
                     case BGP:
@@ -1309,7 +1312,7 @@ public class Eval implements ExpType, Plugin {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = exp.rest().getRecordInScopeNodes();       
+        List<Node> nodeListInScope = rest.getRecordInScopeNodes();
         if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
@@ -1318,15 +1321,34 @@ public class Eval implements ExpType, Plugin {
             Mappings map = set1.getMappings().distinct(nodeListInScope);
             //Mappings map = set1.getMappings();                      
             map.setNodeList(nodeListInScope);
-            if (exp.isJoin() || isFederate(rest)) {
+            if (exp.isJoin() || isAndJoin(rest) || isFederate(rest)) {
                 // service clause in rest may take Mappings into account
                 set1.setJoinMappings(map);
             } else {
                 // inject Mappings in copy of rest as a values clause            
-                rest = complete(exp.rest(), map);
+                rest = complete(rest, map);
             }
         }
         return rest;
+    }
+    
+    
+    // exp = and(join(and(edge) service()))
+    boolean isAndJoin(Exp exp){
+        if (exp.isAnd()) {
+            if (exp.size() != 1) {
+                return false;
+            }
+            return isAndJoin(exp.get(0));
+        }
+        else if (exp.isJoin()) {
+            Exp fst = exp.get(0);
+            if (fst.isAnd() && fst.size() > 0 && fst.get(0).isEdgePath()) {
+                fst.setMappings(true);
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean isFederate(Exp exp) {
@@ -1380,7 +1402,6 @@ public class Eval implements ExpType, Plugin {
     private int join(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Memory env = memory;
-        
         Mappings map1 = subEval(p, gNode, gNode, exp.first(), exp, data);
         if (map1.size() == 0) {
             getVisitor().join(this, getGraphNode(gNode), exp, map1, map1);
@@ -1401,7 +1422,7 @@ public class Eval implements ExpType, Plugin {
         if (map2.size() == 0) {
             return backtrack;
         }
-
+       
         return join(p, gNode, stack, env, map1, map2, n);
     }
 
@@ -1813,6 +1834,20 @@ public class Eval implements ExpType, Plugin {
         Mappings lMap = eval.subEval(query, null, Stack.create(exp), 0);
         return lMap;
     }
+    
+    
+    private int and(Producer p, Node gNode, Exp exp, Stack stack, int n) {
+        getVisitor().bgp(this, getGraphNode(gNode), exp, null);
+        if (exp.isMappings()) {
+            Mappings data = getMappings();
+            if (data != null) {
+                exp = complete(exp, data);
+            }
+        }
+        stack = stack.and(exp, n);
+        return eval(p, gNode, stack, n);
+    }
+
 
     private int bgp(Producer p, Node gNode, Exp exp, Stack stack, int n) {
         int backtrack = n - 1;

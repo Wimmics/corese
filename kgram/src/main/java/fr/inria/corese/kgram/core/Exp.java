@@ -25,6 +25,20 @@ public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
 
     /**
+     * @return the mappings
+     */
+    public boolean isMappings() {
+        return mappings;
+    }
+
+    /**
+     * @param mappings the mappings to set
+     */
+    public void setMappings(boolean mappings) {
+        this.mappings = mappings;
+    }
+
+    /**
      * @return the generated
      */
     public boolean isGenerated() {
@@ -125,6 +139,7 @@ public class Exp extends PointerObject
     int min = -1, max = -1;
     private int level = -1;
     private boolean isSystem = false;
+    private boolean mappings = false;
 
     /**
      * @return the bind
@@ -716,6 +731,10 @@ public class Exp extends PointerObject
     public boolean isEdge() {
         return type == EDGE;
     }
+    
+    public boolean isEdgePath() {
+        return isEdge() || isPath();
+    }
 
     public boolean isEdgesOrFilter() {
         boolean result = true;
@@ -737,6 +756,14 @@ public class Exp extends PointerObject
 
     public boolean isJoin() {
         return type == JOIN;
+    }
+    
+    public boolean isAndJoin() {
+        return isJoin() || (isBGPAnd() && size() == 1 && get(0).isJoin());
+    }
+    
+    public boolean isAnd() {
+        return type == AND;
     }
     
     public boolean isBinary() {

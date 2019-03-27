@@ -9,11 +9,11 @@
 
 @prefix db:  <http://fr.dbpedia.org/resource/>
 @prefix dbo: <http://fr.dbpedia.org/ontology/>
-# where to find preprocess function fun:country 
-@prefix fun: <process.rq/>
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 @prefix dc: <http://purl.org/dc/terms/>
 @prefix de: <http://purl.org/dc/elements/1.1/>
+
+# where to find preprocess function fun:projectName 
 @prefix fun: <>
 
 #
@@ -25,6 +25,8 @@ sw:debug true;
 sw:collect true;
 sw:body (
     st:intro
+    st:simple01
+    st:simple02
     st:simple1
     st:simple2
     st:simple20
@@ -49,11 +51,144 @@ st:intro a sw:Query ;
 
 
 
+st:selectType 
+    st:title "Type" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:function fun:projectType
+    #st:predicate [ rdfs:subClassOf ai:AIResource ]
+ .
+
+st:selectKeyword 
+    st:title "Keyword" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "param" ;
+    st:uri st:param ;
+    st:graph st:dataset ;
+    st:predicate ai:keyword
+.
+
+st:selectName 
+    st:title "Name" ;
+    st:default "" ; st:defaultLabel "Any" ;
+    st:name "arg" ;
+    st:uri st:arg ;
+    st:graph st:dataset ;
+    st:function fun:projectName
+.
+
+st:selectCreator 
+    st:title "Creator" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:predicate de:creator
+.
+
+
+
+
+st:simple01 a sw:Query ;
+st:name st:simple01 ;
+rdfs:label "Select Type Keyword Name" ;
+rdfs:comment """Select AI resource by type, keyword, name."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+select ?a ?name ?type  (group_concat(?w ; separator = "; ") as ?ww) ?place
+where {
+  ?a a ?type  ;
+  foaf:name ?name ;
+  ai:keyword ?w .  
+  filter (?type = $mode)
+  filter regex(?w, "$param")
+  filter regex(?name, "$arg")  
+  
+  optional {
+    ?a ai:country ?place
+        service <http://fr.dbpedia.org/sparql> {
+            ?place geo:lat ?lat ; geo:long ?lon             
+        }
+    }
+    
+   bind (us:location(?place, ?lat, ?lon) as ?tmp)
+}
+group by ?a
+
+
+""" ;
+
+st:select st:selectType ;
+st:select st:selectKeyword ;
+st:select st:selectName
+.
+
+
+
+
+st:simple02 a sw:Query ;
+st:name st:simple02 ;
+rdfs:label "Select Creator Keyword Simple" ;
+rdfs:comment """Select AI resource by creator and/or keyword."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+select ?a ?name ?distrib ?creator (group_concat(?kw ; separator = "; ") as ?ww)
+where {
+  ?a foaf:name ?name ;
+  ai:distributed_as ?distrib ;
+  ai:keyword ?kw .
+  ?distrib de:creator ?creator
+
+  filter (?creator = $mode)
+  filter regex(?kw, "$param")
+  
+  optional {
+    ?a ai:country ?place
+        service <http://fr.dbpedia.org/sparql> {
+                ?place geo:lat ?lat ; geo:long ?lon 
+        }
+    }
+    
+   bind (us:location(?place, ?lat, ?lon) as ?tmp)
+  
+} 
+group by ?a
+
+""" ;
+
+st:select st:selectCreator ;
+st:select st:selectKeyword 
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 st:simple1 a sw:Query ;
 st:name st:simple1 ;
-rdfs:label "Type Keyword Name" ;
-rdfs:comment """Select AI resource by type, keyword, name."""@en ;
+rdfs:label "Construct Type Keyword Name" ;
+rdfs:comment """Construct AI resource by type, keyword, name."""@en ;
 rdfs:comment """Simple"""@fr ;
 
 st:query 
@@ -73,48 +208,17 @@ where {
 
 """ ;
 
-
-
-st:select [
-    st:title "Type" ;
-    st:name "mode" ;
-    st:uri st:mode ;
-    st:graph st:dataset ;
-    st:function fun:projectType
-    #st:predicate [ rdfs:subClassOf ai:AIResource ]
-] ;
-
-st:select [
-    st:title "Keyword" ;
-    st:default "" ; st:defaultLabel "Any" ;
-    st:name "param" ;
-    st:uri st:param ;
-    st:graph st:dataset ;
-    st:predicate ai:keyword
-] ;
-
-st:select [
-    st:title "Name" ;
-    st:default "" ; st:defaultLabel "Any" ;
-    st:name "arg" ;
-    st:uri st:arg ;
-    st:graph st:dataset ;
-    st:function fun:projectName
-] ;
+st:select st:selectType ;
+st:select st:selectKeyword ;
+st:select st:selectName
 .
-
-
-
-
-
-
 
 
 
 
 st:simple2 a sw:Query ;
 st:name st:simple2 ;
-rdfs:label "Creator Keyword Simple" ;
+rdfs:label "Construct Creator Keyword Simple" ;
 rdfs:comment """Select AI resource by creator and/or keyword."""@en ;
 rdfs:comment """Simple"""@fr ;
 
@@ -146,24 +250,8 @@ where {
 
 """ ;
 
-
-
-st:select [
-    st:title "Creator" ;
-    st:name "mode" ;
-    st:uri st:mode ;
-    st:graph st:dataset ;
-    st:predicate de:creator
-] ;
-
-st:select [
-    st:title "Keyword" ;
-    st:default "" ; st:defaultLabel "Any" ;
-    st:name "param" ;
-    st:uri st:param ;
-    st:graph st:dataset ;
-    st:predicate ai:keyword
-] ;
+st:select st:selectCreator ;
+st:select st:selectKeyword 
 .
 
 

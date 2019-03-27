@@ -1540,6 +1540,7 @@ xsd:date rdf:type rdfs:Datatype .
                   :SoftwareComponent ;
          :distributed_as :ellogon-distro ;
          :uses :CPU ;
+         :country <http://fr.dbpedia.org/resource/Grèce> ;
          <http://purl.org/dc/terms/bibliographicCitation> "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
          :keyword "Language Engineering Platform"@en ,
                   "Linguistic Pipelines"@en ,

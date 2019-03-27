@@ -1,16 +1,18 @@
-@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
-
+@prefix ai:     <http://www.ai4eu.eu/ontologies/core#>
+@prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
 
 
 
 st:ai4eu a st:Server ;
 st:service "ai4eu" ;
 st:shareContent st:ai4euContent ;
-#st:workflow st:ai4euwf ;
 st:transform st:web ;
+#st:workflow st:ai4euwf ;
 st:param [
     st:lang 'en' ;
-    
+    st:sttl st:combine ;
+    st:transformations (spq:result navlab:map) ;
     st:lodprofile (
         (ai: st:sparql)         
         (dc: st:sparql)  
@@ -21,13 +23,23 @@ st:param [
         (owl: st:sparql)
         ("*" st:lod)
     ) ;
-    
+    st:mapzoom 4 ;
+    st:mapsize "mapmedium" ;
     st:hyperlink true ; 
     st:title "AI4EU";
     st:prefix (("ai" ai:)) ;
-    st:exportlist (st:lodprofile) ;
+    st:exportlist (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize) ;
+    #st:export true ;
     #st:focus false 
 ] 
+.
+
+
+
+st:ai4euwf a sw:Workflow ; 
+sw:body (
+    [ a sw:Transformation ; sw:uri st:web ]
+)
 .
 
 
@@ -50,12 +62,6 @@ st:param [
 
 
 
-st:ai4euwf a sw:Workflow ;
-sw:body (
-    [ a sw:Transformation ; sw:uri st:web ]
-
-)
-
 
 
 st:ai4euContent a sw:Workflow ; 
@@ -65,7 +71,7 @@ sw:body (
 
       [ a sw:Workflow ; sw:body ( 
         [ a sw:Load ; sw:path <demo/ai4eu/ai4eu.ttl> ] 
-        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>] 
+        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>, <demo/ai4eu/data/agroportal.ttl>] 
         [ a sw:RuleBase ;  sw:uri sw:owlrl ]
         ) ]
       

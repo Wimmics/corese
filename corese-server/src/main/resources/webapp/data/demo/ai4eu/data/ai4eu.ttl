@@ -8,6 +8,7 @@ ai:ai4eu rdf:type :SoftwareComponent ;
          :uses :CPU ;
          :keyword "Artificial Intelligence"@en ,
                   "Semantic Web"@en ;
+         ai:country <http://fr.dbpedia.org/resource/Bruxelles> ;
          <http://xmlns.com/foaf/0.1/name> "AI4EU"^^xsd:string ;
          <http://purl.org/dc/elements/1.1/creator> <https://www.ai4eu.eu>  .
 

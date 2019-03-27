@@ -8,6 +8,7 @@ ai:dbpediafr rdf:type :SoftwareComponent, ai:Dataset ;
          :uses :CPU ;
          :keyword "Knowledge Graph"@en ,
                   "Dataset"@en ;
+        ai:country <http://fr.dbpedia.org/resource/France> ;
          <http://xmlns.com/foaf/0.1/name> "DBpedia"^^xsd:string ;
          <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr> ;
          <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/KnowledgeGraph> .

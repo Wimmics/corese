@@ -8,6 +8,7 @@ ai:sparklis rdf:type :SoftwareComponent ;
          :uses :CPU ;
          :keyword "Semantic Web"@en ,
                   "Linked Data"@en, "Web of Data"@en ;
+         ai:country <http://fr.dbpedia.org/resource/France> ;
          <http://xmlns.com/foaf/0.1/name> "Sparklis"^^xsd:string ;
          <http://purl.org/dc/elements/1.1/creator> <http://www.inria.fr> ;
          <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/SemanticWeb> .

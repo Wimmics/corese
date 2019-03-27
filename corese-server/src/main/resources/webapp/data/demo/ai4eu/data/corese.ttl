@@ -10,6 +10,7 @@ ai:corese a ai:SoftwareComponent ;
   ai:used_in <http://corese.inria.fr> ;
   foaf:name "Corese" ;
   de:creator  <http://www.inria.fr> ;
+  ai:country <http://fr.dbpedia.org/resource/France> ;
   ai:uses ai:CPU .
   
 <http://project.inria.fr/corese> a ai:Library, ai:StandAlone ;

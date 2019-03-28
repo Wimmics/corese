@@ -40,7 +40,8 @@ st:intro a sw:Query ;
     st:name st:intro ;
     rdfs:label "Introduction" ;
 
-    rdfs:comment """Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server."""@en ;
+    rdfs:comment """This is a mockup of SPARQL endpoint for the <a href='https://www.ai4eu.eu/'>AI4EU</a> project ontology.
+    Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server."""@en ;
 
     rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
     'Submit' soumet la requête SPARQL au serveur. """@fr ;
@@ -99,7 +100,7 @@ st:query
 """prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-select ?a ?name ?type  (group_concat(?w ; separator = "; ") as ?ww) ?place
+select ?a ?name ?type  (group_concat(?w ; separator = "; ") as ?ww) ?location
 where {
   ?a a ?type  ;
   foaf:name ?name ;
@@ -109,13 +110,13 @@ where {
   filter regex(?name, "$arg")  
   
   optional {
-    ?a ai:country ?place
+    ?a ai:country ?location
         service <http://fr.dbpedia.org/sparql> {
-            ?place geo:lat ?lat ; geo:long ?lon             
+            ?location geo:lat ?lat ; geo:long ?lon             
         }
     }
     
-   bind (us:location(?place, ?lat, ?lon) as ?tmp)
+   bind (us:location(?location, ?lat, ?lon) as ?tmp)
 }
 group by ?a
 
@@ -154,13 +155,13 @@ where {
   filter regex(?kw, "$param")
   
   optional {
-    ?a ai:country ?place
+    ?a ai:country ?location
         service <http://fr.dbpedia.org/sparql> {
-                ?place geo:lat ?lat ; geo:long ?lon 
+                ?location geo:lat ?lat ; geo:long ?lon 
         }
     }
     
-   bind (us:location(?place, ?lat, ?lon) as ?tmp)
+   bind (us:location(?location, ?lat, ?lon) as ?tmp)
   
 } 
 group by ?a

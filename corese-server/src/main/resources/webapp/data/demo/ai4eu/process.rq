@@ -24,12 +24,12 @@ function fun:projectType() {
 }
 
 function us:location(?country, ?lat, ?lon) {
-    if (st:get(?country, ?country)) {}
+    if (st:cget(st:country, ?country, ?country)) {}
     else {
-        st:set(?country, ?country) ;
+        st:cset(st:country, ?country, ?country) ;
         st:set(st:location, 
             xt:cons(xt:list(?country, ?lat, ?lon), 
-             coalesce(st:get(st:location), xt:list() ) ) )
+             coalesce(st:get(st:location), xt:list() ) ) ) 
     }
         
 }

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.corese.core.workflow;
 
 import fr.inria.corese.sparql.exceptions.EngineException;

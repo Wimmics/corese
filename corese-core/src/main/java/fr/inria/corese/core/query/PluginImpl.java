@@ -57,6 +57,7 @@ import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
+import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.GraphProcessor;
@@ -465,6 +466,32 @@ public class PluginImpl
             java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    @Override
+    public IDatatype graph(IDatatype dt) {
+        if (dt.getPointerObject() == null) {
+            return null;
+        }
+        Graph g;
+        
+        switch (dt.pointerType()) {
+            case Pointerable.MAPPINGS_POINTER:
+                g = graph(dt.getPointerObject().getMappings());
+                if (g == null) {
+                    return null;
+                }
+                return DatatypeMap.createObject(g);
+                
+            case Pointerable.GRAPH_POINTER:
+                return dt; 
+        }
+        
+        return null;
+    }
+    
+    Graph graph(Mappings map) {
+        return MappingsGraph.create(map).getGraph();
     }
     
     @Override

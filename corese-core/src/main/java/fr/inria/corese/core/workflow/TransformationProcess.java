@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -77,6 +78,9 @@ public class TransformationProcess extends  WorkflowProcess {
     void init(Transformer t, Data data, Context c) {
         if (c != null){
             t.setContext(c);
+        }
+        if (data.getMappings() != null) {
+            t.getContext().set(Context.STL_MAPPINGS, DatatypeMap.createObject(data.getMappings()));
         }
         if (data.getVisitor() != null){
             t.setVisitor(data.getVisitor());

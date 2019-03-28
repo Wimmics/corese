@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JSON;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_RDF;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_XML;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -29,7 +30,9 @@ public class ResultFormater extends TermEval {
         Mappings map = dt.getPointerObject().getMappings();
         switch (oper()){
             case XT_XML: return eval.getGraphProcessor().format(map, ResultFormatDef.XML_FORMAT);
-            case XT_JSON:return eval.getGraphProcessor().format(map, ResultFormatDef.JSON_FORMAT);               
+            case XT_JSON:return eval.getGraphProcessor().format(map, ResultFormatDef.JSON_FORMAT);
+            case XT_RDF: return eval.getGraphProcessor().format(map, ResultFormatDef.RDF_FORMAT);
+            
             default:   
                 return dt;
         }

@@ -70,6 +70,8 @@ public class Context extends ASTObject {
     public static final String STL_PROCESS_QUERY  = STL + "processquery";
     public static final String STL_METADATA       = STL + "metadata";
     public static final String STL_PREFIX         = STL + "prefix";
+    public static final String STL_MAPPINGS       = STL + "mappings";
+    
     
     
     HashMap<String, IDatatype> table;

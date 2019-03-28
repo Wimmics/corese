@@ -227,8 +227,11 @@ public class Term extends Expression {
                 return new Display(name);
             case ExprType.XT_XML:
             case ExprType.XT_JSON:
+            case ExprType.XT_RDF:
+                // return text format for Mappings
                 return new ResultFormater(name);
             case ExprType.XT_SPIN:
+                // return SPIN graph for query
                 return new SPINFormater(name);
             case ExprType.EXTERNAL:
                 return new Extern(name);
@@ -519,7 +522,8 @@ public class Term extends Expression {
             case ExprType.XT_SHAPE_GRAPH:    
             case ExprType.XT_SHAPE_NODE:    
             case ExprType.KGRAM: 
-            case ExprType.STL_INDEX:    
+            case ExprType.STL_INDEX: 
+            case ExprType.XT_TOGRAPH:
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALUE:

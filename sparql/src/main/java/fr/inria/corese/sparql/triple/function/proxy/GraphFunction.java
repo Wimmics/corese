@@ -6,6 +6,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECT;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
@@ -49,7 +50,7 @@ public class GraphFunction extends TermEval {
                 else {
                     return access(param[0], p);
                 }
-
+                
             default:
                 switch (param.length) {
                     case 1: return access(param[0], p);

@@ -26,6 +26,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 
 /**
  *
@@ -101,6 +102,9 @@ public class GraphSpecificFunction extends TermEval {
                 
             case KGRAM:
                 return proc.sparql(env, p, param);
+                
+            case XT_TOGRAPH:
+                return proc.graph(param[0]);
                 
             default: return null;
                 

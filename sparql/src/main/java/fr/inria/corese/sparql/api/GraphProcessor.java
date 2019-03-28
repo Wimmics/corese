@@ -20,6 +20,8 @@ public interface GraphProcessor {
     IDatatype format(Mappings map, int format);
     
     IDatatype spin(IDatatype dt);
+    
+    IDatatype graph(IDatatype dt);    
         
     IDatatype similarity(Environment env, Producer p);
     

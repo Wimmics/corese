@@ -123,6 +123,7 @@ public class Processor {
         private static final String XT_MAPPING  = EXT + "mapping";
         public static final String XT_SIZE      = EXT + "size";      
         private static final String XT_FOCUS    = EXT + "focus";
+        private static final String XT_TOGRAPH    = EXT + "tograph";
         private static final String XT_GRAPH    = EXT + "graph";
         private static final String XT_SUBJECT  = EXT + "subject";
         private static final String XT_PROPERTY = EXT + "property";
@@ -390,6 +391,7 @@ public class Processor {
         public static final String XT_PRINT 	= EXT + "print";
         static final String XT_PRETTY   = EXT + "pretty";
         static final String XT_XML      = EXT + "xml";
+        static final String XT_RDF      = EXT + "rdf";
         static final String XT_JSON     = EXT + "json";
         static final String XT_SPIN     = EXT + "spin";        
         static final String XT_GDISPLAY = EXT + "gdisplay";
@@ -692,6 +694,7 @@ public class Processor {
                
 		defoper(XT_FOCUS,        ExprType.XT_FOCUS);
 		defoper(XT_SIZE,         ExprType.XT_COUNT);		
+		defoper(XT_TOGRAPH,      ExprType.XT_TOGRAPH);
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
 		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
 		defoper(XT_PROPERTY,     ExprType.XT_PROPERTY);
@@ -891,6 +894,7 @@ public class Processor {
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_PRINT,  ExprType.XT_PRINT);  
                 defoper(XT_XML,    ExprType.XT_XML);
+                defoper(XT_RDF,    ExprType.XT_RDF);
                 defoper(XT_JSON,   ExprType.XT_JSON);
                 defoper(XT_SPIN,   ExprType.XT_SPIN);
                 defoper(XT_GDISPLAY,ExprType.XT_DISPLAY);  

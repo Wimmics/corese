@@ -280,7 +280,7 @@ public class QuerySolver  implements SPARQLEngine {
 		init(query);
 		debug(query);
 		
-                if (producer instanceof MetaProducer){
+                if (getProducer() instanceof MetaProducer){
 			query.setDistribute(true);			
 		}
 

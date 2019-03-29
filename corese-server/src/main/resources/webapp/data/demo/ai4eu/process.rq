@@ -23,15 +23,6 @@ function fun:projectType() {
     }
 }
 
-function us:location(?country, ?lat, ?lon) {
-    if (st:cget(st:country, ?country, ?country)) {}
-    else {
-        st:cset(st:country, ?country, ?country) ;
-        st:set(st:location, 
-            xt:cons(xt:list(?country, ?lat, ?lon), 
-             coalesce(st:get(st:location), xt:list() ) ) ) 
-    }
-        
-}
+
 
 }

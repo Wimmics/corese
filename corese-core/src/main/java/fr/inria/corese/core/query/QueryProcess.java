@@ -32,7 +32,6 @@ import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.Event;
-import static fr.inria.corese.core.Event.Update;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.Entailment;
@@ -42,13 +41,13 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.sparql.api.QueryVisitor;
-import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,6 +326,26 @@ public class QueryProcess extends QuerySolver {
 	eval.setProducer(p);
         return eval;
     }
+    
+    
+    /**
+     * query = select from g where 
+     * g is an external named graph
+     * return a new QueryProcess with Producer(g)
+     */
+    QueryProcess focusFrom(Query q) {
+        List<Node> from = q.getFrom();
+        if (from != null && from.size() == 1) {
+            String name = from.get(0).getLabel();
+            Graph g = getGraph().getNamedGraph(name);
+            if (g != null) {
+                q.getFrom().clear();
+                return create(g);
+            }
+        }
+        return this;
+    }
+    
     
     /**
 	 * *************************************************************
@@ -742,8 +761,7 @@ public class QueryProcess extends QuerySolver {
         try {
             readLock();
             logStart(query);
-            map = query(query, m);
-
+            map = focusFrom(query).query(query, m);
             return map;
         } finally {
             logFinish(query, map);

@@ -157,7 +157,7 @@ public class SPARQLRestAPI {
             // path with extension : use extension
             // path with no extension : load as turtle
             // use case: rdf: is in Turtle
-            if (getTripleStore().getMode() != QueryProcess.SERVER_MODE) {
+            if (getTripleStore().getMode() != QueryProcess.PROTECT_SERVER_MODE) {
                 getTripleStore().load(remotePath, source);
             }
         } catch (LoadException ex) {

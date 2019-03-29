@@ -116,7 +116,7 @@ where {
         }
     }
     
-   bind (us:location(?location, ?lat, ?lon) as ?tmp)
+   bind (st:location(?location, ?lat, ?lon) as ?tmp)
 }
 group by ?a
 
@@ -161,7 +161,7 @@ where {
         }
     }
     
-   bind (us:location(?location, ?lat, ?lon) as ?tmp)
+   bind (st:location(?location, ?lat, ?lon) as ?tmp)
   
 } 
 group by ?a

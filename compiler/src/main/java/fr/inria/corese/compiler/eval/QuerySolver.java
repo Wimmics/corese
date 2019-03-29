@@ -60,7 +60,7 @@ public class QuerySolver  implements SPARQLEngine {
 	public static final int RDFS_ENTAILMENT = 2;
         
         public static final int DEFAULT_MODE = 0;
-        public static final int SERVER_MODE  = 1;
+        public static final int PROTECT_SERVER_MODE  = 1;
         static int INIT_SERVER_MODE  = DEFAULT_MODE;
 
         private static int QUERY_PLAN  = Query.QP_DEFAULT;

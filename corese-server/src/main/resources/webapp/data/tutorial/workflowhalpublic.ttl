@@ -153,15 +153,9 @@ where {
     }
     bind (xt:lowercase(?subject) as ?src)
     bind (if (strstarts(?src, " "), strafter(?src, " "), ?src) as ?topic)
+    bind (st:setclass(?topic, "main",  "topic") as ?a)
+    bind (st:setclass(?name,  "other", "team")  as ?b)
 } 
-
-@result
-function us:result(?map, ?m) {
-    let ((?topic ?name) = ?m) {
-        st:setclass(?topic, "main", "topic") ;
-        st:setclass(?name,  "other", "team")
-    }
-}
 """ 
 ;
 st:select st:prefLabel, st:topicList
@@ -206,12 +200,8 @@ service <https://data.archives-ouvertes.fr/sparql> {
 
     bind (xt:lowercase(?text) as ?src)
     bind (if (strstarts(?src, " "), strafter(?src, " "), ?src) as ?source)
-    bind (us:style(?source, ?name)  as ?a)   
-}
-
-function us:style(?source, ?name) {
-    st:setclass(?source, "main", "title") ;
-    st:setclass(?name, "other", "team")
+    bind (st:setclass(?source, "main",  "title") as ?a)
+    bind (st:setclass(?name,   "other", "team")  as ?b)
 }
 """  ;
 st:select st:prefLabel, st:topicList
@@ -298,13 +288,9 @@ service <https://data.archives-ouvertes.fr/sparql> {
     limit 2500
 }
 
-    bind(us:style(?name, ?ll) as ?a)
-}
-
-function us:style(?name, ?ll) {
-    st:setclass(?name, "other", "local");
-    st:setclass(?ll,   "main",  "lab")
-}
+    bind (st:setclass(?name, "other", "local") as ?a)
+    bind (st:setclass(?ll,   "main",  "lab") as ?b)
+    }
 """ ;
 
 st:select st:prefLabel, st:yearList
@@ -358,12 +344,9 @@ service <https://data.archives-ouvertes.fr/sparql> {
     limit 4000
 }
 
-    bind(us:style(?name, ?ll) as ?a)
-}
-
-function us:style(?name, ?ll) {
-    st:setclass(?name, "other", "team");
-    st:setclass(?ll,   "other", "team")
+    bind (st:setclass(?name, "other", "team") as ?a)
+    bind (st:setclass(?ll,   "other", "team") as ?b)
+    
 }
 """ ;
 
@@ -418,16 +401,7 @@ service <http://fr.dbpedia.org/sparql> {
     bind (st:setclass(?city, "other", "city")   as ?b)
     bind (st:setimg(?country, ?img)             as ?c)
     bind (st:setimg(?city, ?icon)               as ?d)
-}
-
-
-#
-# Record country location in a list of (country lat lon)
-# List of location can be retrieved with st:get(st:location)
-#
-@after
-function us:after(?map) {
-    st:location(?map)
+    bind (st:location(?country, ?lat, ?lon) as ?tmp)
 }
 """ ;
 
@@ -498,23 +472,11 @@ service <http://fr.dbpedia.org/sparql> {
     } 
 }
 
-    bind (us:style(?name, ?n)     as ?a)
+    bind (st:setclass(?name, "main",  "country") as ?aa)
+    bind (st:setclass(?n,    "other", "team") as ?bb)
     bind (st:setimg(?name, ?img)  as ?b)
     bind (st:cset(st:url, ?n, ?x) as ?c)
-}
-
-function us:style(?name, ?n) {
-    st:setclass(?name, "main",  "country");
-    st:setclass(?n,    "other", "team")
-}
-
-#
-# Record country location in a list of (country lat lon)
-# List of location can be retrieved with st:get(st:location)
-#
-@after
-function us:after(?map) {
-       st:location(?map)
+    bind (st:location(?country, ?lat, ?lon) as ?tmp)
 }
 """ ;
 
@@ -586,24 +548,12 @@ service <http://fr.dbpedia.org/sparql> {
     } 
 }
 
-    bind (us:style(?name, ?n)     as ?a)
+    bind (st:setclass(?name, "main",  "country") as ?aa)
+    bind (st:setclass(?n,    "other", "team") as ?bb)
     bind (st:setimg(?name, ?img)  as ?b)
     bind (st:cset(st:url, ?n, ?x) as ?c)
+    bind (st:location(?country, ?lat, ?lon) as ?tmp)
 }
-
-function us:style(?name, ?n) {
-    st:setclass(?name, "main",  "country");
-    st:setclass(?n,    "other", "team")
-}
-
-#
-# Record country location in a list of (country lat lon)
-# List of location can be retrieved with st:get(st:location)
-#
-@after
-function us:after(?map) {
-       st:location(?map)
-} 
 """ ;
 
 # name of function to preprocess the query : replace $pattern by appropriate code

@@ -134,7 +134,7 @@ public class Param {
             ctx.setServer(getHostname());
             ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
         }
-        ctx.setUserQuery(isUserQuery());
+        //ctx.setUserQuery(isUserQuery());
         
         if (getRequest() != null){
             ctx.setRemoteHost(getRequest().getRemoteHost());

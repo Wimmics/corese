@@ -89,12 +89,14 @@ public class TransformerEngine {
         SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
+        logger.info("Workflow Context:\n" + context);
         wp.setLog(true);
         IDatatype swdt    = context.get(Context.STL_WORKFLOW);
         IDatatype querydt = context.get(Context.STL_QUERY);
         IDatatype uridt   = context.get(Context.STL_URI);
         String query      = (querydt == null) ? null : querydt.stringValue();
         String transform  = context.getTransform();
+        boolean protect = param.isUserQuery();
         logger.info("Parse workflow: " + swdt);
         if (swdt != null) {
             // there is a workflow            
@@ -105,19 +107,19 @@ public class TransformerEngine {
             query = getQuery(wp, query);
             if (query != null) {
                 logger.warn("Workflow query: " + query);
-                wp.addQuery(query, 0);
+                wp.addQuery(query, 0, protect);
             }  
         } 
         else if (query != null) {          
             if (transform == null) {
                 logger.info("SPARQL endpoint");
-                wp.addQueryMapping(query);
+                wp.addQueryMapping(query, protect);
                 wp.add(new ResultProcess());
                 return wp;
             } else {
                 // select where return Graph Mappings
                 logger.info("Transformation: " + transform);
-                wp.addQueryGraph(query);
+                wp.addQueryGraph(query, protect);
             }
         }
         defaultTransform(wp, transform);

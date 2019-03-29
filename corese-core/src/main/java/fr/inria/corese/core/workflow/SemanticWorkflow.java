@@ -58,11 +58,14 @@ public class SemanticWorkflow extends  CompositeProcess {
        return add(new SPARQLProcess(q));
     }
     
-    public SemanticWorkflow addQuery(String q, int n){
+    public SemanticWorkflow addQuery(String q, int n, boolean protect){
         SPARQLProcess wp = getEmptyQuery();
         if (wp == null) {
-            return add(new SPARQLProcess(q), n);
+            wp = new SPARQLProcess(q);
+            wp.setUserQuery(protect);
+            return add(wp, n);
         }
+        wp.setUserQuery(protect);
         wp.setQuery(q);
         return this;
     }
@@ -93,14 +96,16 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
     
     // select return Graph Mappings
-    public SemanticWorkflow addQueryGraph(String q){
+    public SemanticWorkflow addQueryGraph(String q, boolean protect){
        SPARQLProcess sp = new SPARQLProcess(q);
+       sp.setUserQuery(protect);
        sp.setResult(GRAPH);
        return add(sp);
     }
     
-    public SemanticWorkflow addQueryMapping(String q){
+    public SemanticWorkflow addQueryMapping(String q, boolean protect){
        SPARQLProcess sp = new SPARQLProcess(q);
+       sp.setUserQuery(protect);
        return add(sp);
     }
     

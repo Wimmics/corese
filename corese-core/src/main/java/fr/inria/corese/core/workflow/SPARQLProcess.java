@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class SPARQLProcess extends  WorkflowProcess {
-   
+
     private static Logger logger = LoggerFactory.getLogger(SPARQLProcess.class);
     static final String NL = System.getProperty("line.separator");
     static final NSManager nsm = NSManager.create();
@@ -36,6 +36,7 @@ public class SPARQLProcess extends  WorkflowProcess {
     private static final String ARG      = "$arg";
     private static final String MODE     = "$mode";
     private static final String PATTERN  = "$pattern";
+    private boolean userQuery = false;
     private IDatatype param;    
     private IDatatype value;
     private IDatatype option;
@@ -64,6 +65,9 @@ public class SPARQLProcess extends  WorkflowProcess {
             System.out.println("Query: " + getQuery());
         }
         data.getEventManager().start(Event.WorkflowQuery);
+        if (getContext() != null) {
+            getContext().setUserQuery(isUserQuery());
+        }       
     }
     
      @Override
@@ -77,6 +81,9 @@ public class SPARQLProcess extends  WorkflowProcess {
             }
         }
         data.getEventManager().finish(Event.WorkflowQuery);
+        if (getContext() != null) {
+            getContext().setUserQuery(false);
+        }
     }
     
     
@@ -401,6 +408,21 @@ public class SPARQLProcess extends  WorkflowProcess {
     public void setProcess(IDatatype process) {
         this.process = process;
     }
+    
+        /**
+     * @return the userQuery
+     */
+    public boolean isUserQuery() {
+        return userQuery;
+    }
+
+    /**
+     * @param userQuery the userQuery to set
+     */
+    public void setUserQuery(boolean userQuery) {
+        this.userQuery = userQuery;
+    }
+   
   
         
 }

@@ -106,6 +106,9 @@ public class Context extends ASTObject {
             sb.append((table.get(key) == null) ? "null" : table.get(key));
             sb.append(NL);
         }
+        if (isUserQuery()) {
+            sb.append("user query: true");
+        }
         return sb.toString();
     }
     

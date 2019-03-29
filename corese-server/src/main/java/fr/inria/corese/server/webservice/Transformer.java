@@ -163,7 +163,7 @@ public class Transformer {
             engine.setDebug(EmbeddedJettyServer.isDebug());
             context = engine.getContext();
                        
-            if (store != null && store.getMode() == QueryProcess.SERVER_MODE) {
+            if (store != null && store.getMode() == QueryProcess.PROTECT_SERVER_MODE) {
                 // check profile, transform and query
                 String prof = context.getProfile();
                 if (prof != null && !nsm.toNamespace(prof).startsWith(NSManager.STL)) {

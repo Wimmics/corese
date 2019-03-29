@@ -152,7 +152,7 @@ public class QueryProcess extends QuerySolver {
     @Override
     public void initMode() {
         switch (getMode()) {
-            case SERVER_MODE:
+            case PROTECT_SERVER_MODE:
                 PluginImpl.readWriteAuthorized = false;
         }
     }
@@ -765,8 +765,15 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
+    /**
+     * return true if this query is a query submitted by a user on a protected corese server
+     * In this case, Update query is rejected
+     * PROTECT_SERVER_MODE means this QueryProcess is a protected SPARQL endpoint
+     * isUserQuery() = true means this query is submitted by a user on a protected server
+     * and this QueryProcess is a Workflow processor; In this case, function definition is also rejected.
+     */
     boolean isProtected(Query q) {
-        return (getMode() == SERVER_MODE || getAST(q).isUserQuery()); 
+        return (getMode() == PROTECT_SERVER_MODE || getAST(q).isUserQuery()); 
     }
     
     boolean isOverwrite() {

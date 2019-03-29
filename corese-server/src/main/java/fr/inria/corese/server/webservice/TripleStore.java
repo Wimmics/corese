@@ -97,7 +97,7 @@ public class TripleStore {
     void init(boolean b) {
 
         if (b){
-            exec.setMode(QueryProcess.SERVER_MODE);
+            exec.setMode(QueryProcess.PROTECT_SERVER_MODE);
         }
 
         if (rdfs) {

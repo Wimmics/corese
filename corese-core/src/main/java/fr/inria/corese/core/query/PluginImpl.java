@@ -68,6 +68,7 @@ import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import static fr.inria.corese.kgram.api.core.Pointerable.GRAPH_POINTER;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
 
 
@@ -656,7 +657,7 @@ public class PluginImpl
          }
          Load ld = Load.create(g);
          try {
-             if (readWriteAuthorized){
+             if (readWriteAuthorized()){
                  if (requiredFormat == null) {
                     ld.parse(dt.getLabel(), getFormat(expectedFormat));
                  }
@@ -680,14 +681,17 @@ public class PluginImpl
     
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
-        if (readWriteAuthorized){
+        if (readWriteAuthorized()){
             QueryLoad ql = QueryLoad.create();
             ql.write(dtfile.getLabel(), dt.getLabel());
         }
         return dt;
     }
    
-
+    static boolean readWriteAuthorized() {
+        //return readWriteAuthorized;
+        return Access.provide(Access.Feature.READ_WRITE_JAVA);
+    }
 
     Path getPath(Expr exp, Environment env){
         Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
@@ -1094,7 +1098,7 @@ public class PluginImpl
 
     @Deprecated
     IDatatype load(Graph g, Object o) {
-        if (! readWriteAuthorized){
+        if (! readWriteAuthorized()){
             return FALSE;
         }
         loader(g);
@@ -1136,6 +1140,9 @@ public class PluginImpl
      */
     @Override
     public IDatatype sparql(Environment env, Producer p, IDatatype[] param) {
+        if (! readWriteAuthorized()) {
+            return null;
+        }
         return kgram(env, getGraph(p), param[0].getLabel(), 
                 (param.length == 1) ? null : createMapping(p, param, 1));
     }
@@ -1250,7 +1257,7 @@ public class PluginImpl
   
     
     IDatatype read(IDatatype dt, Environment env, Producer p){
-        if (! readWriteAuthorized){
+        if (! readWriteAuthorized()){
             return null;
         }
         QueryLoad ql = QueryLoad.create();

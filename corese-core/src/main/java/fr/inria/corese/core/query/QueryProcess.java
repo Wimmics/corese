@@ -41,6 +41,9 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.sparql.api.QueryVisitor;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
@@ -150,10 +153,11 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public void initMode() {
-        switch (getMode()) {
-            case PROTECT_SERVER_MODE:
-                PluginImpl.readWriteAuthorized = false;
-        }
+//        switch (getMode()) {
+//            case PROTECT_SERVER_MODE:
+//                Access.protect();
+//                PluginImpl.readWriteAuthorized = false;
+//        }
     }
 
     public void setManager(Manager man) {
@@ -510,8 +514,8 @@ public class QueryProcess extends QuerySolver {
     Function getLinkedFunction(String name,  IDatatype[] param) {
         Function function = getFunction(name, param);
         if (function == null) {
-            setLinkedFunction(true);
-            getLinkedFunction(name);
+            //setLinkedFunction(true);
+            getLinkedFunctionBasic(name);
             function = getFunction(name, param);
         }
         return function;
@@ -551,6 +555,10 @@ public class QueryProcess extends QuerySolver {
     @Override
     public void getLinkedFunction(String label) {
         getTransformer().getLinkedFunction(label);
+    }
+    
+    void getLinkedFunctionBasic(String label) {
+        getTransformer().getLinkedFunctionBasic(label);
     }
     
     Transformer getTransformer() {
@@ -793,7 +801,7 @@ public class QueryProcess extends QuerySolver {
     boolean isProtected(Query q) {
         return (getMode() == PROTECT_SERVER_MODE || getAST(q).isUserQuery()); 
     }
-    
+          
     boolean isOverwrite() {
         return overWrite;
     }
@@ -842,7 +850,7 @@ public class QueryProcess extends QuerySolver {
     }
     
     Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
-        if (isProtected(query)) {
+        if (Access.reject(Feature.SPARQL_UPDATE, getAST(query).getLevel())) { //(isProtected(query)) {
             return new Mappings();
         }
         Graph g = getGraph();

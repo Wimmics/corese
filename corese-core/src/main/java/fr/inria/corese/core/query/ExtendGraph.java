@@ -161,7 +161,7 @@ public class ExtendGraph {
          Graph g = Graph.create();
          Load ld = Load.create(g);
          try {
-             if (PluginImpl.readWriteAuthorized){
+             if (PluginImpl.readWriteAuthorized()){
                 ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
              }
          } catch (LoadException ex) {

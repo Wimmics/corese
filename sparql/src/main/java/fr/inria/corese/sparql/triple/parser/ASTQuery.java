@@ -24,6 +24,7 @@ import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.sparql.api.QueryVisitor;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -307,6 +308,13 @@ public class ASTQuery
             return false;
         }
         return c.isUserQuery();
+    }
+    
+    public Level getLevel() {
+        if (isUserQuery()) {
+            return Level.PUBLIC;
+        }
+        return Level.DEFAULT;
     }
 
     @Override

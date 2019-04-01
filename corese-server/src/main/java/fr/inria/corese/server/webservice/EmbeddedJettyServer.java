@@ -6,6 +6,7 @@ package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -221,22 +222,30 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				logger.info("debug");
 				setDebug(true);
 			}
-			if (cmd.hasOption("protect")) {
-				logger.info("protect");
-				SPARQLRestAPI.isProtected = true;
-			}
                         if (cmd.hasOption("string")) {
 				logger.info("string with xsd:string");
 				Constant.setString(true);
 			}
+                        
+                        if (cmd.hasOption("protect")) {
+				logger.info("protect");
+				SPARQLRestAPI.isProtected = true;
+                                Access.protect();
+			}
+                        Access.setMode(Access.Mode.SERVER);
+                        
                         if (cmd.hasOption("lf")) {
                             logger.info("Linked Function");
-                            QuerySolver.setLinkedFunctionDefault(true);
+                            //QuerySolver.setLinkedFunctionDefault(true);
+                            // still not available with protect mode
+                            Access.setLinkedFunction(true);
                         }
                         if (cmd.hasOption("re")) {
                             logger.info("Reentrant query");
                             QueryProcess.setOverwrite(true);
                         }
+                        
+                        
 			URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
 			BASE_URI = baseUri.toString();
 			logger.info("BASE_URI = {}", BASE_URI);

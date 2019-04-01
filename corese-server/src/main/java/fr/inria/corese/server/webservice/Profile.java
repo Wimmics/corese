@@ -219,7 +219,7 @@ public class Profile {
                 query = loadQuery(par.getName());
             }
         }
-        else if (isProtected) {
+        else { //if (isProtected) {
             par.setUserQuery(true);
         }
 

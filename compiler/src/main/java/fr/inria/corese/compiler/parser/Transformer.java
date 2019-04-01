@@ -32,6 +32,8 @@ import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -550,7 +552,7 @@ public class Transformer implements ExpType {
         if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
             return;
         }
-        if (ast.isUserQuery()) {
+        if (Access.reject(Feature.FUNCTION_DEFINITION, ast.getLevel())){ //(ast.isUserQuery()) {
             System.out.println("Compiler: extension function not available in server mode");
             return;
         }
@@ -602,8 +604,8 @@ public class Transformer implements ExpType {
             boolean ok = Interpreter.isDefined(exp);
             if (ok) { } 
             else {
-                ok = !ast.isUserQuery()
-                        && (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
+                ok = Access.accept(Feature.LINKED_FUNCTION, ast.getLevel()) //!ast.isUserQuery()
+                        //&& (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
                         && importFunction(q, exp);
                 if (!ok) {
                     ast.addError("undefined expression: " + exp);
@@ -613,7 +615,7 @@ public class Transformer implements ExpType {
     }
      
     boolean importFunction(Query q, Expression exp) {
-        boolean b = getLinkedFunction(exp.getLabel());
+        boolean b = getLinkedFunctionBasic(exp.getLabel());
         if (b) {
             return Interpreter.isDefined(exp);
         }
@@ -621,9 +623,13 @@ public class Transformer implements ExpType {
     }
     
     public boolean getLinkedFunction(String label) {
-        if (! isLinkedFunction()){
+        if (Access.reject(Feature.LINKED_FUNCTION, Level.DEFAULT)) { //(! isLinkedFunction()){
             return false;
         }
+        return getLinkedFunctionBasic(label);
+    }
+        
+    public boolean getLinkedFunctionBasic(String label) {
         String path = NSManager.namespace(label);  
         if (loaded.containsKey(path)) {
             return true;

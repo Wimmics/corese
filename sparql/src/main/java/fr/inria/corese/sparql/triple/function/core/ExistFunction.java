@@ -6,6 +6,8 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Expression;
 
 /**
  *
@@ -28,6 +30,15 @@ public class ExistFunction extends TermEval {
     @Override
     public boolean isTermExist() {
         return true;
+    }
+    
+     @Override
+    public Expression prepare(ASTQuery ast) {
+        if (isSystem()) {
+            ast.setLDScript(true);
+            ast.getGlobalAST().setLDScript(true);
+        }
+        return super.prepare(ast);
     }
    
 }

@@ -5,13 +5,13 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.aggregate.Distinct.TreeData;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Group;
 import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.sparql.triple.function.script.LDScript;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Aggregate extends TermEval {
+public class Aggregate extends LDScript {
     static final String NL = System.getProperty("line.separator");
     static boolean compareIndex = false;
     Group group;

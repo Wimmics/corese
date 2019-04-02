@@ -6,7 +6,6 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Expression;
 
 /**
@@ -14,7 +13,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class Eval extends TermEval {
+public class Eval extends LDScript {
 
     public Eval() {}
     

@@ -46,7 +46,7 @@ import java.util.UUID;
 public class ASTQuery 
         extends ASTObject 
         implements Keyword, ASTVisitable, Graphable {
-
+   
     /**
      * Use to keep the class version, to be consistent with the interface
      * Serializable.java
@@ -163,6 +163,7 @@ public class ASTQuery
     boolean isAdd = false;
     boolean describeAll = false;
     boolean isBind = false;
+    private boolean ldscript = false;
     /**
      * max cg result
      */
@@ -3375,6 +3376,20 @@ public class ASTQuery
     
     public void addVisitor(QueryVisitor vis) {
         visitList.add(vis);
+    }
+    
+    /**
+     * @return the ldscript
+     */
+    public boolean isLDScript() {
+        return ldscript;
+    }
+
+    /**
+     * @param ldscript the ldscript to set
+     */
+    public void setLDScript(boolean ldscript) {
+        this.ldscript = ldscript;
     }
     
     

@@ -20,20 +20,20 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
+import fr.inria.corese.sparql.triple.function.script.LDScript;
 
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class GraphSpecificFunction extends TermEval {  
+public class GraphSpecificFunction extends LDScript {  
     
     public GraphSpecificFunction(String name){
         super(name);

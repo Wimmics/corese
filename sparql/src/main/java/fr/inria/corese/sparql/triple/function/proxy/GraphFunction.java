@@ -6,24 +6,23 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECT;
-import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.script.LDScript;
 
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class GraphFunction extends TermEval {
+public class GraphFunction extends LDScript {
 
     public GraphFunction(String name) {
         super(name);

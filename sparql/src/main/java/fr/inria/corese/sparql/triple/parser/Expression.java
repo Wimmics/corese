@@ -254,6 +254,10 @@ public class Expression extends TopExp
     public boolean isTerm() {
         return false;
     }
+    
+    public boolean isLDScript() {
+        return false;
+    }
 
     public boolean isStatement() {
         return false;

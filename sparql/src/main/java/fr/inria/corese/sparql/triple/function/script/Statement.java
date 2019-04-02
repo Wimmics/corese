@@ -2,7 +2,6 @@ package fr.inria.corese.sparql.triple.function.script;
 
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 
 /**
  *
@@ -12,7 +11,7 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class Statement  extends TermEval {
+public class Statement  extends LDScript {
     int nbVariable = 0;
     
     public Statement(){}

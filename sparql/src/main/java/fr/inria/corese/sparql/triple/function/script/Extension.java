@@ -5,11 +5,9 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.ComputerEval;
 import java.util.List;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,7 @@ import org.slf4j.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Extension extends TermEval {
+public class Extension extends LDScript {
 
     private static Logger logger = LoggerFactory.getLogger(Extension.class);
     Function function;

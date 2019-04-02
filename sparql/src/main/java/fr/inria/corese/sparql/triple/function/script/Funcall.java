@@ -4,14 +4,12 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import java.util.List;
 
 /**
  * funcall(fun, exp) apply(fun, list)
@@ -19,7 +17,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Funcall extends TermEval {
+public class Funcall extends LDScript {
 
     public Funcall() {}
     

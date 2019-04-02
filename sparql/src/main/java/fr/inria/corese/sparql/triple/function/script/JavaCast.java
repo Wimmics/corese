@@ -3,7 +3,6 @@ package fr.inria.corese.sparql.triple.function.script;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 
@@ -13,7 +12,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class JavaCast extends TermEval {  
+public class JavaCast extends LDScript {  
     
     public JavaCast(){}
     

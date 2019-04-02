@@ -73,7 +73,7 @@ public class Access {
     
     private FeatureLevel table;
     
-    static boolean protect = false;
+    private static boolean protect = false;
     
     private static Access singleton;
     
@@ -155,7 +155,7 @@ public class Access {
      */
     public static Level getLevel(Level actionLevel) {
         if (actionLevel == PUBLIC) {
-            if (protect) {
+            if (isProtect()) {
                 return PUBLIC;
             }
             return DEFAULT;
@@ -165,10 +165,10 @@ public class Access {
     
     // protect DEFAULT level
     public static void protect() {
-        protect = true;
+        setProtect(true);
         set(READ_WRITE_JAVA, SUPER_USER);
     }
-    
+        
     public static void setLinkedFunction(boolean b) {
         if (b) {
             set(LINKED_FUNCTION, DEFAULT);
@@ -222,6 +222,20 @@ public class Access {
         // everything is private except:
         set(LINKED_FUNCTION, SUPER_USER);
         set(LD_SCRIPT, PUBLIC);
+    }
+    
+      /**
+     * @return the protect
+     */
+    public static boolean isProtect() {
+        return protect;
+    }
+
+    /**
+     * @param aProtect the protect to set
+     */
+    public static void setProtect(boolean aProtect) {
+        protect = aProtect;
     }
     
  

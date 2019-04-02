@@ -1,10 +1,8 @@
 package fr.inria.corese.sparql.triple.function.script;
 
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class JavaDScall extends TermEval {
+public class JavaDScall extends JavaFunction {
     
     String javaName;
 
@@ -35,6 +33,9 @@ public class JavaDScall extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        if (reject(b, env)) {
+            return null;
+        }
         IDatatype dt   = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);  
         if (dt == null || param == null) {

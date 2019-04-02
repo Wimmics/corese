@@ -136,8 +136,16 @@ public class Access {
         return getLevel(actionLevel).provide(get(feature));
     }
     
-     public static boolean reject(Feature feature, Level actionLevel) {
+    public static boolean accept(Feature feature) {
+        return DEFAULT.provide(get(feature));
+    }
+    
+    public static boolean reject(Feature feature, Level actionLevel) {
         return ! accept(feature, actionLevel);
+    }
+    
+    public static boolean reject(Feature feature) {
+        return ! accept(feature);
     }
     
     /**

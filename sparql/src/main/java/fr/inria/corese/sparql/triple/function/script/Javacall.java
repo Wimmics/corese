@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class Javacall extends TermEval {
+public class Javacall extends JavaFunction {
     
     private static final String NODE     = NSManager.CAST+"node";
     private static final String DATATYPE = NSManager.CAST+"datatype";
@@ -42,6 +42,9 @@ public class Javacall extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        if (reject(b, env)) {
+            return null;
+        }
         IDatatype dt   = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);  
         if (dt == null || param == null) {

@@ -458,6 +458,13 @@ public class Context extends ASTObject {
     public boolean isUserQuery() {
         return userQuery;
     }
+    
+    public Access.Level getLevel() {
+        if (isUserQuery()) {
+            return Access.Level.PUBLIC;
+        }
+        return Access.Level.DEFAULT;
+    }
 
     /**
      * @param userQuery the userQuery to set

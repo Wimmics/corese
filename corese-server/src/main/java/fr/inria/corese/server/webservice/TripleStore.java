@@ -137,6 +137,9 @@ public class TripleStore {
     }
     
     Mappings query(String query, Dataset ds) throws EngineException {
+        if (ds == null) {
+            ds = new Dataset();
+        }
         if (ds.getContext() == null) {
             ds.setContext(new Context());
         }

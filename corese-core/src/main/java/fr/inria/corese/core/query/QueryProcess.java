@@ -822,10 +822,17 @@ public class QueryProcess extends QuerySolver {
         Graph gg = g.getNamedGraph(name);
         if (gg == null) {
             gg = Graph.create();
+            if (g.isVerbose()) {
+                gg.setVerbose(true);
+            }
         }
         
         QueryProcess exec = QueryProcess.create(gg);
-        Mappings map = exec.update(query, m, ds);        
+        Mappings map = exec.update(query, m, ds); 
+        if (gg.isVerbose()) {
+            System.out.println("name: " + name);
+            System.out.println(gg);
+        }
         //gg.init();
         g.setNamedGraph(name, gg);
         complete(exec.getAST(query).getUpdate(), g);

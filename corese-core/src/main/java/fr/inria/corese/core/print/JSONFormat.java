@@ -5,9 +5,7 @@ import java.util.Vector;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 
@@ -57,6 +55,7 @@ public class JSONFormat extends XMLFormat {
         return res;
     }
 
+    @Override
     public String getTitle(Title t) {
         switch (t) {
             case OHEADER:
@@ -90,6 +89,7 @@ public class JSONFormat extends XMLFormat {
         }
     }
 
+    @Override
     void printVariables(Vector<String> select) {
         int n = 1;
         for (String var : select) {
@@ -100,6 +100,7 @@ public class JSONFormat extends XMLFormat {
         }
     }
 
+    @Override
     public void printAsk() {
         String res = "true";
         if (lMap == null || lMap.size() == 0) {
@@ -109,6 +110,7 @@ public class JSONFormat extends XMLFormat {
         println(res);
     }
 
+    @Override
     void display(String var, IDatatype dt) {
         if (dt == null) {
             // do nothing
@@ -160,6 +162,7 @@ public class JSONFormat extends XMLFormat {
         }
     }
 
+    @Override
     void newResult() {
         nBind = 0;
         if (nResult++ > 0) {
@@ -175,6 +178,7 @@ public class JSONFormat extends XMLFormat {
         return nBind;
     }
 
+    @Override
     void printLink(String name) {
         print("\"link\": [\"" + name + "\"],");
     }

@@ -696,6 +696,13 @@ public class QueryProcess extends QuerySolver {
      ***************************************************************************
      */
     Mappings query(Query q, Mapping m, Dataset ds) throws EngineException {
+        ASTQuery ast = getAST(q);
+        if (ast.isLDScript()) {
+            if (Access.reject(Feature.LD_SCRIPT)) {
+                logger.info("LDScript rejected");
+                return Mappings.create(q);
+            }
+        }
         m = createMapping(m, ds);
         pragma(q);
         for (QueryVisitor vis : getAST(q).getVisitorList()) {

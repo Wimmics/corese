@@ -55,6 +55,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -4294,7 +4295,8 @@ public class TestQuery1 {
                         + "(ex:sigma(xt:iota(5)) as ?s)"
                         + ""
                         + "where {}";
-        exec.setLinkedFunction(true);
+        //exec.setLinkedFunction(true);
+        Access.setLinkedFunction(true);
         Mappings map = exec.query(q);
         IDatatype dm = (IDatatype) map.getValue("?m");
         IDatatype ds = (IDatatype) map.getValue("?s");

@@ -218,7 +218,7 @@ where {
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:pageselect {
-    st:call-template(st:d3selectviewer)
+    #st:call-template(st:d3selectviewer)
     format {
         ft:select.html
         st:call-template(st:variable)

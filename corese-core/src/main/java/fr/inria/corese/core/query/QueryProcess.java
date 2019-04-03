@@ -442,14 +442,34 @@ public class QueryProcess extends QuerySolver {
     }
     
     /**
-     * Use case: LDScript function execute query(construct where)
+     * Use case: LDScript function execute query(construct where) or query(insert where)
      */
     @Override
     public Mappings eval(Query query, Mapping m, Producer p) {
-        if (p != getProducer()){
-            return create(p).qquery(query, m, null);
+        Dataset ds = getUpdateDataset(query);
+        if (p == getProducer()) {
+            return protectQuery(query, m, ds);
         }
-        return qquery(query, m, null);
+        return create(p).protectQuery(query, m, ds);
+    }
+    
+    Mappings protectQuery(Query query, Mapping m, Dataset ds) {
+        if (query.isUpdate()) {
+            if (lock.getReadLockCount() > 0 && ! isOverwrite()) {
+                return Mappings.create(query);
+            }
+        }
+        return qquery(query, m, ds);
+    }
+    
+    Dataset getUpdateDataset(Query q) {
+        Context c = getContext(q);
+        if (c != null && q.isUpdate()) {
+            Dataset ds = new Dataset();
+            ds.setContext(c);
+            return ds;
+        }
+        return null;
     }
     
     /**
@@ -805,9 +825,9 @@ public class QueryProcess extends QuerySolver {
      * isUserQuery() = true means this query is submitted by a user on a protected server
      * and this QueryProcess is a Workflow processor; In this case, function definition is also rejected.
      */
-    boolean isProtected(Query q) {
-        return (getMode() == PROTECT_SERVER_MODE || getAST(q).isUserQuery()); 
-    }
+//    boolean isProtected(Query q) {
+//        return (getMode() == PROTECT_SERVER_MODE || getAST(q).isUserQuery()); 
+//    }
           
     boolean isOverwrite() {
         return overWrite;
@@ -863,8 +883,24 @@ public class QueryProcess extends QuerySolver {
         return getAST(query).getUpdate().getGraphName();
     }
     
+    Context getContext(Query q) {
+        Context c = (Context) q.getContext();
+        if (c == null) {
+            return getAST(q).getContext();
+        }
+        return c;
+    }
+    
+    Level getLevel(Query q) {
+        Context c = getContext(q);
+        if (c == null) {
+            return Level.DEFAULT;
+        }
+        return c.getLevel();
+    }
+    
     Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
-        if (Access.reject(Feature.SPARQL_UPDATE, getAST(query).getLevel())) { //(isProtected(query)) {
+        if (Access.reject(Feature.SPARQL_UPDATE, getLevel(query))) { //getAST(query).getLevel())) { //(isProtected(query)) {
             return new Mappings();
         }
         Graph g = getGraph();

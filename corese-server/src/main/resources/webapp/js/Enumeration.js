@@ -11,7 +11,7 @@ export class Enumeration {
         }
         return Object.freeze(this)
     }
-    has = (key) => {
+    has(key) {
         return this.hasOwnProperty(key)
     }
 }

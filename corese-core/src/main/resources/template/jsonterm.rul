@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 18 13:50:35 CET 2019
+Sat Mar 30 00:03:40 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -22,16 +22,18 @@ function us:escape(?str) {
 <rule>
 <body>
 <![CDATA[
-template {
+template  {
 
-  str(?in)
+  "{"
+    "\"@value\": \""       us:escape(?in) "\", "
+    "\"@language\": \""    lang(?in) "\""
+  "}"
   
 }
 where {
   bind (st:getFocusNode() as ?in)
-  filter (
-    datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
-  )
+  filter (datatype(?in) = rdf:langString)
+  
 }
 ]]>
 </body>
@@ -42,20 +44,31 @@ where {
 <![CDATA[
 template {
 
-  "{\"@list\": [" 
+  "{\"@id\": \""  str(?in)  "\"}"
   
-  group { 
-    st:apply-templates(?e) 
-    ; separator = ", "
-  }
-  
-  "]}"
 }
 where {
   ?x ?p ?in
   filter isBlank(?in)
-  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
-  ?in rdf:rest*/rdf:first ?e
+  filter ( 
+    not exists { ?in rdf:rest ?r } ||
+	exists { ?y  rdf:first ?in }
+  )
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "{\"@id\": \""  us:escape(?in)  "\"}"
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter isURI(?in)
 }
 ]]>
 </body>
@@ -93,26 +106,6 @@ pragma { kg:template kg:priority 100 }
 template  {
 
   "{"
-    "\"@value\": \""       us:escape(?in) "\", "
-    "\"@language\": \""    lang(?in) "\""
-  "}"
-  
-}
-where {
-  bind (st:getFocusNode() as ?in)
-  filter (datatype(?in) = rdf:langString)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template  {
-
-  "{"
     "\"@value\": \""   us:escape(?in) "\", "
     "\"@type\": \""    datatype(?in) "\""
   "}"
@@ -134,33 +127,16 @@ where {
 <body>
 <![CDATA[
 template {
-  "{\"@id\": \""  us:escape(?in)  "\"}"
-}
-where {
-  bind (st:getFocusNode() as ?in)
-  filter isURI(?in)
-}
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
-<![CDATA[
-template {
-
-  "{\"@id\": \""  str(?in)  "\"}"
+  str(?in)
   
 }
 where {
-  ?x ?p ?in
-  filter isBlank(?in)
-  filter ( 
-    not exists { ?in rdf:rest ?r } ||
-	exists { ?y  rdf:first ?in }
+  bind (st:getFocusNode() as ?in)
+  filter (
+    datatype(?in)  in (xsd:integer, xsd:double, xsd:boolean)
   )
 }
-limit 1
 ]]>
 </body>
 </rule>
@@ -170,12 +146,36 @@ limit 1
 <![CDATA[
 template {
 
-  us:escape(?in)
+  "\"" us:escape(?in) "\""
   
 }
 where {
   bind (st:getFocusNode() as ?in)
   filter (datatype(?in) = xsd:string)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "{\"@list\": [" 
+  
+  group { 
+    st:apply-templates(?e) 
+    ; separator = ", "
+  }
+  
+  "]}"
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
+  ?in rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>

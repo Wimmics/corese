@@ -2,10 +2,33 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 24 14:57:24 CET 2019
+Sat Mar 30 00:03:40 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  bind (sh:path(?shape, ?s, ?p) as ?l1)
+  bind (sh:path(?shape, ?s, ?q) as ?l2)
+  
+  values ?o { unnest(?l1) }  
+  bind (! xt:member(?o, ?l2) as ?suc) 
+  
+  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -43,29 +66,6 @@ where {
   bind (! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o) as ?suc)
   
   bind (st:report(sh:not, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (sh:path(?shape, ?s, ?p) as ?l1)
-  bind (sh:path(?shape, ?s, ?q) as ?l2)
-  
-  values ?o { unnest(?l1) }  
-  bind (! xt:member(?o, ?l2) as ?suc) 
-  
-  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
-  
 }
 ]]>
 </body>
@@ -115,25 +115,6 @@ where {
 }
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:equals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
-  if (bound(?o), 
-    st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?q, ?o),
-    st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?q))
-}
-where {
-
-  values ?oper {sh:equals1 sh:equals2}
-
-}
 ]]>
 </body>
 </rule>
@@ -201,6 +182,25 @@ function sh:variable(?uri) {
 # pseudo declare variables in case they are not in a triple of query ?q
 function sh:values(?oper){
     concat("values (?this ", ?oper, ") { (UNDEF UNDEF) }")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:equals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
+  if (bound(?o), 
+    st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?q, ?o),
+    st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?q))
+}
+where {
+
+  values ?oper {sh:equals1 sh:equals2}
+
 }
 ]]>
 </body>
@@ -360,31 +360,6 @@ function sh:qualified(?shape, ?qsh, ?s, ?p){
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:or (?shape, ?sh, ?vis, ?s, ?p, ?or, ?o) {
-    sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  
-    values ?o { unnest(sh:path(?shape, ?s, ?p)) }
-    
-    bind (sh:or(?or, ?s, ?p, ?o, ?shape) as ?count)
-	bind (! bound(?count) AS ?failure) .
-	bind ( IF (?failure, false, ?count)  as ?suc)
-
-    bind (st:report(sh:or, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
-  
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
 template sh:pattern (?shape, ?sh, ?vis, ?s, ?p, ?exp, ?o) {
   sh:safe(?shape, ?sh, ?suc)
 }
@@ -403,6 +378,31 @@ where {
 
   bind (st:report(sh:pattern, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:or (?shape, ?sh, ?vis, ?s, ?p, ?or, ?o) {
+    sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  
+    values ?o { unnest(sh:path(?shape, ?s, ?p)) }
+    
+    bind (sh:or(?or, ?s, ?p, ?o, ?shape) as ?count)
+	bind (! bound(?count) AS ?failure) .
+	bind ( IF (?failure, false, ?count)  as ?suc)
+
+    bind (st:report(sh:or, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
+  
+}
+
 
 ]]>
 </body>
@@ -536,26 +536,6 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (xt:size(sh:path(?shape, ?s, ?p)) as ?val) 
-  bind (?val >= ?m as ?suc) 
-
-  bind (st:report(sh:minCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis) as ?b)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
 template sh:lessThan(?shape, ?sh, ?vis, ?s, ?p, ?q, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
@@ -578,24 +558,17 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
-  if (bound(?o), 
-    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value, ?o),
-    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value))
+template sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o){
+  sh:safe(?shape, ?sh, ?suc)
 }
 where {
-  graph ?shape {  
-    ?sh ?oper ?value    
-    filter (! sh:isPredicate(?oper))
-  }
-  
-  values ?s { unnest(?ls) }
 
+  bind (xt:size(sh:path(?shape, ?s, ?p)) as ?val) 
+  bind (?val >= ?m as ?suc) 
+
+  bind (st:report(sh:minCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis) as ?b)
 }
 
-function sh:isPredicate(?p) {
-    strstarts(?p, sh:)
-}
 ]]>
 </body>
 </rule>
@@ -624,6 +597,33 @@ where {
   
   values ?s { unnest(?ls) }
 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
+  if (bound(?o), 
+    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value, ?o),
+    st:call-template(sh:sparqlvalidp, ?shape, ?sh, ?vis, ?s, ?p, ?oper, ?value))
+}
+where {
+  graph ?shape {  
+    ?sh ?oper ?value    
+    filter (! sh:isPredicate(?oper))
+  }
+  
+  values ?s { unnest(?ls) }
+
+}
+
+function sh:isPredicate(?p) {
+    strstarts(?p, sh:)
 }
 ]]>
 </body>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Nov 15 08:46:41 CET 2018
+Sat Mar 30 00:03:43 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -419,34 +419,6 @@ where {
 <body>
 <![CDATA[
 #
-# Geolocate  resources on a map 
-# ?list = list(list(uri, lat, lon))
-#
-prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
-template st:map2(?list) {
-  format {
-    ft:map2.html
-    
-    st:number()
-    str(?lat)
-    str(?lon)
-    coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    st:plink(?r)
-  }
-}
-where {
-
-  values  (?r ?lat ?lon) { unnest(?list) }
- 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Geolocate resource on a map given lat et long
 #
 prefix p: <http://fr.dbpedia.org/property/>
@@ -481,6 +453,34 @@ where {
    }
    filter(! bound(?res) || ?in != ?res)
 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate  resources on a map 
+# ?list = list(list(uri, lat, lon))
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+template st:map2(?list) {
+  format {
+    ft:map2.html
+    
+    st:number()
+    str(?lat)
+    str(?lon)
+    coalesce(st:get(st:mapicon2), "/img/smarker.png")
+    st:plink(?r)
+  }
+}
+where {
+
+  values  (?r ?lat ?lon) { unnest(?list) }
+ 
 }
 ]]>
 </body>
@@ -747,36 +747,6 @@ prefix p:    <http://fr.dbpedia.org/property/>
 template {
 
   st:call-template(st:frame, ?label, coalesce(?ic, ""), 
-     st:call-template(st:descplace, ?in))
-   
-  st:call-template(st:glocate, ?in)
-
-}
-where {
-
-  ?in a o:Place
-  minus { ?in a o:Resource }
-    
-  ?in rdfs:label ?label 
-  	      
-  optional { ?in o:thumbnail  ?ic  }
-    
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-prefix p:    <http://fr.dbpedia.org/property/>
-
-template {
-
-  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
      st:call-template(st:descresource, ?in))
 
 
@@ -819,6 +789,36 @@ where {
   optional { ?in o:thumbnail  ?ic  }
   
   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+prefix p:    <http://fr.dbpedia.org/property/>
+
+template {
+
+  st:call-template(st:frame, ?label, coalesce(?ic, ""), 
+     st:call-template(st:descplace, ?in))
+   
+  st:call-template(st:glocate, ?in)
+
+}
+where {
+
+  ?in a o:Place
+  minus { ?in a o:Resource }
+    
+  ?in rdfs:label ?label 
+  	      
+  optional { ?in o:thumbnail  ?ic  }
+    
 }
 ]]>
 </body>

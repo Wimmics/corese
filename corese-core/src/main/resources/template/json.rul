@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jan 18 13:50:35 CET 2019
+Sat Mar 30 00:03:40 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -195,28 +195,6 @@ order by ?p
 <rule>
 <body>
 <![CDATA[
-template st:head {
-
-"""{
-"@context": {"""
-  ibox {       
-    st:call-template(st:prefix)    
-  }
-"\n},"
-
-st:nl()
-st:nl()
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:propertyvalue(?x, ?p) {
 
      '"' 
@@ -250,6 +228,28 @@ where {
   ?x ?p ?y  
 }
 order by ?y
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:head {
+
+"""{
+"@context": {"""
+  ibox {       
+    st:call-template(st:prefix)    
+  }
+"\n},"
+
+st:nl()
+st:nl()
+}
+where {
+
+}
 ]]>
 </body>
 </rule>

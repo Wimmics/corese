@@ -2,10 +2,12 @@
 // d3sparql.js - utilities for visualizing SPARQL results with the D3 library
 //
 //   Web site: http://github.com/ktym/d3sparql/
+//   Fork: https://github.com/ErwanDemairy/d3sparql
 //   Copyright: 2013-2015 (C) Toshiaki Katayama (ktym@dbcls.jp)
 //   License: BSD license (same as D3.js)
 //   Initial version: 2013-01-28
 //
+
 var d3sparql = {
   version: "d3sparql.js version 2018-05-04",
   debug: false  // set to true for showing debug information
@@ -57,11 +59,18 @@ var d3sparql = {
 d3sparql.fetch = function(url, callback) {
   if (d3sparql.debug) { console.log(url) }
   var mime = "application/sparql-results+json"
-  d3.xhr(url, mime, function(request) {
-    var json = request.responseText
-    if (d3sparql.debug) { console.log(json) }
-    callback(JSON.parse(json))
-  })
+  d3.request(url)
+      .mimeType(mime)
+      .response(function(request) {
+        var json = request.responseText
+        if (d3sparql.debug) { console.log(json) }
+        callback(JSON.parse(json))
+      }).get() ;
+  // d3.xhr(url, mime, function(request) {
+  //   var json = request.responseText
+  //   if (d3sparql.debug) { console.log(json) }
+  //   callback(JSON.parse(json))
+  // })
 /*
   // d3.json sometimes fails to retrieve "application/sparql-results+json" as it is designed for "application/json"
   d3.json(url, function(error, json) {
@@ -433,14 +442,19 @@ d3sparql.barchart = function(json, config) {
     "selector": config.selector || null
   }
 
-  var scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1)
-  var scale_y = d3.scale.linear().range([opts.height - opts.margin, 0])
-  var axis_x = d3.svg.axis().scale(scale_x).orient("bottom")
-  var axis_y = d3.svg.axis().scale(scale_y).orient("left")  // .ticks(10, "%")
+  // var scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1)
+  var scale_x = d3.scaleBand().range([0, opts.width - opts.margin]).round(0.1);
+  // var scale_y = d3.scale.linear().range([opts.height - opts.margin, 0])
+  var scale_y = d3.scaleLinear().range([opts.height - opts.margin, 0]);
+  var axis_x = d3.axisBottom(scale_x);
+  var axis_y = d3.axisLeft(scale_y);
+  // var axis_x = d3.svg.axis().scale(scale_x).orient("bottom")
+  // var axis_y = d3.svg.axis().scale(scale_y).orient("left")  // .ticks(10, "%")
   scale_x.domain(data.map(function(d) { return d[opts.var_x].value }))
   scale_y.domain(d3.extent(data, function(d) { return parseInt(d[opts.var_y].value) }))
 
-  var svg = d3sparql.select(opts.selector, "barchart").append("svg")
+  // var svg = d3sparql.select(opts.selector, "barchart").append("svg")
+  var svg = d3.select(opts.selector)
     .attr("width", opts.width)
     .attr("height", opts.height)
 //    .append("g")
@@ -461,7 +475,8 @@ d3sparql.barchart = function(json, config) {
     .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
     .attr("class", "bar")
     .attr("x", function(d) { return scale_x(d[opts.var_x].value) })
-    .attr("width", scale_x.rangeBand())
+    // .attr("width", scale_x.rangeBand())
+      .attr("width", scale_x.bandwidth())
     .attr("y", function(d) { return scale_y(d[opts.var_y].value) })
     .attr("height", function(d) { return opts.height - scale_y(parseInt(d[opts.var_y].value)) - opts.margin })
 /*
@@ -491,15 +506,15 @@ d3sparql.barchart = function(json, config) {
     .attr("y", 0 - (opts.margin - 20))
 
   // default CSS/SVG
-  bar.attr({
+  bar.attrs({
     "fill": "steelblue",
   })
-  svg.selectAll(".axis").attr({
+  svg.selectAll(".axis").attrs({
     "stroke": "black",
     "fill": "none",
     "shape-rendering": "crispEdges",
   })
-  svg.selectAll("text").attr({
+  svg.selectAll("text").attrs({
     "stroke": "none",
     "fill": "black",
     "font-size": "8pt",
@@ -561,17 +576,18 @@ d3sparql.piechart = function(json, config) {
 
   var radius = Math.min(opts.width, opts.height) / 2 - opts.margin
   var hole = Math.max(Math.min(radius - 50, opts.hole), 0)
-  var color = d3.scale.category20()
+  var color = d3.schemeCategory20
 
-  var arc = d3.svg.arc()
+  var arc = d3.arc()
     .outerRadius(radius)
     .innerRadius(hole)
 
-  var pie = d3.layout.pie()
+  var pie = d3.pie()
     //.sort(null)
     .value(function(d) { return d[opts.size].value })
 
-  var svg = d3sparql.select(opts.selector, "piechart").append("svg")
+  // var svg = d3sparql.select(opts.selector, "piechart").append("svg")
+  var svg = d3.select(opts.selector)
     .attr("width", opts.width)
     .attr("height", opts.height)
     .append("g")
@@ -584,7 +600,7 @@ d3sparql.piechart = function(json, config) {
     .attr("class", "arc")
   var slice = g.append("path")
     .attr("d", arc)
-    .attr("fill", function(d, i) { return color(i) })
+    .attr("fill", function(d, i) { return color[i % 20] })
   var text = g.append("text")
     .attr("class", "label")
     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")" })
@@ -593,11 +609,11 @@ d3sparql.piechart = function(json, config) {
     .text(function(d) { return d.data[opts.label].value })
 
   // default CSS/SVG
-  slice.attr({
+  slice.attrs({
     "stroke": "#ffffff",
   })
   // TODO: not working?
-  svg.selectAll("text").attr({
+  svg.selectAll("text").attrs({
     "stroke": "none",
     "fill": "black",
     "font-size": "20px",
@@ -2046,4 +2062,4 @@ d3sparql.frameheight = function(height) {
 }
 
 /* for Node.js */
-// module.exports = d3sparql
+//module.exports = d3sparql

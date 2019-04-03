@@ -2,31 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 24 14:57:24 CET 2019
+Sat Mar 30 00:03:40 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:equals1 (?shape, ?sh, ?vis, ?s, ?p){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (sh:path(?shape, ?s, ?p) as ?l)
-
-  bind (xt:member(?s, ?l) as ?suc) 
-  
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
-  
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -42,6 +21,27 @@ where {
   bind (! xt:member(?s, ?l) as ?suc) 
   
   bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template sh:equals1 (?shape, ?sh, ?vis, ?s, ?p){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+
+  bind (sh:path(?shape, ?s, ?p) as ?l)
+
+  bind (xt:member(?s, ?l) as ?suc) 
+  
+  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
   
 }
 ]]>
@@ -184,6 +184,24 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
+template sh:datatype (?shape, ?sh, ?vis, ?s, ?d){
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+  
+  bind (sh:datatype(?s, ?d)  as ?suc)
+  
+  bind (st:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
 template st:profile {}
 where {}
 
@@ -209,24 +227,6 @@ function st:optimize(?shape, ?sh){
 
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:datatype (?shape, ?sh, ?vis, ?s, ?d){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  
-  bind (sh:datatype(?s, ?d)  as ?suc)
-  
-  bind (st:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-}
 ]]>
 </body>
 </rule>

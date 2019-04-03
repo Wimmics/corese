@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:34 CEST 2018
+Sat Mar 30 00:03:43 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -69,6 +69,22 @@ where {
 <rule>
 <body>
 <![CDATA[
+template {
+  true
+}
+where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p ;
+	owl:hasValue ?v 	        
+}
+	    
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # Check if there is an unauthorized OWL property for equivClassExpression ?in
 # return false in this case, otherwise template fails (return nothing)
@@ -91,22 +107,6 @@ where {
       filter (! ?suc)
 }
 limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  true
-}
-where {
-   ?in a owl:Restriction ;
-	owl:onProperty ?p ;
-	owl:hasValue ?v 	        
-}
-	    
 ]]>
 </body>
 </rule>

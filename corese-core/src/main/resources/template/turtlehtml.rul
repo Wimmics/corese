@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:33 CEST 2018
+Sat Mar 30 00:03:43 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -238,23 +238,6 @@ order by ?x
 <rule>
 <body>
 <![CDATA[
-template st:pperror(?in) {
-	format {
-        "<span class='fail'>%s</span>"
-	
-        ?in
-	}
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 #
 # defaut processing of a variable is st:apply-templates 
 #
@@ -362,48 +345,16 @@ function st:display2(?x){
 <rule>
 <body>
 <![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template  {
-    if (st:visited(?in), 
-        st:call-template(st:pperror, st:call-template(st:list, ?in)),
-        st:call-template(st:list, ?in)
-  )
+template st:pperror(?in) {
+	format {
+        "<span class='fail'>%s</span>"
+	
+        ?in
+	}
 }
 where {
-    ?in rdf:first ?e
-}
-]]>
-</body>
-</rule>
 
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template {
-
-  if (st:visited(?in), "<span class='fail'>", "")
-  ?in 
-  if (st:visited(?in), "</span>", "")      
-     
-ibox { 
-	st:nl()
-	st:call-template(st:value, ?in)
-} 
-            
-" ."      
 }
-where {
-  ?in ?p ?y   
-  filter isUri(?in)
-}
-limit 1
 ]]>
 </body>
 </rule>
@@ -448,6 +399,55 @@ where {
   as ?refer)
 }
 limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template {
+
+  if (st:visited(?in), "<span class='fail'>", "")
+  ?in 
+  if (st:visited(?in), "</span>", "")      
+     
+ibox { 
+	st:nl()
+	st:call-template(st:value, ?in)
+} 
+            
+" ."      
+}
+where {
+  ?in ?p ?y   
+  filter isUri(?in)
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template  {
+    if (st:visited(?in), 
+        st:call-template(st:pperror, st:call-template(st:list, ?in)),
+        st:call-template(st:list, ?in)
+  )
+}
+where {
+    ?in rdf:first ?e
+}
 ]]>
 </body>
 </rule>

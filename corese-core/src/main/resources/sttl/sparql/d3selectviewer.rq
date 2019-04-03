@@ -3,10 +3,9 @@ template st:d3selectviewer {
     format {
         d3:frameselect.html
         ?id
-#        us:plist(?list)
+        coalesce(xt:json(st:get(st:mappings)), "{ error: 'error when reading st:mappings'}")
     }
 }
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-#    bind () # Send the results in json-ld
 }

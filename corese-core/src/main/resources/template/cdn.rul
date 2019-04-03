@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Nov 01 16:23:18 CET 2018
+Sat Mar 30 00:03:43 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -260,6 +260,40 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Timeline SPARQL Template - Olivier Corby - 2018
+#
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template  cn:global {
+
+  st:call-template(cn:head, cn:XX, "XX")
+
+  us:table(aggregate(?cell), 10)
+
+}
+where {
+
+    {select * where {
+        graph ?g { [] cn:topic ?topic . 
+            { ?uri cn:date ?date } union { ?uri cn:begin ?date }
+        }
+    }
+    order by ?date ?topic
+    }
+    filter xt:print(?uri, ?date)
+    bind (st:apply-templates(?uri) as ?cell)
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix cn: <http://cdn.fr/schema/>
 prefix ft: <http://ns.inria.fr/sparql-template/format/cdn/>
 template cn:icon {
@@ -299,40 +333,6 @@ values ?i {
 
 
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Timeline SPARQL Template - Olivier Corby - 2018
-#
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template  cn:global {
-
-  st:call-template(cn:head, cn:XX, "XX")
-
-  us:table(aggregate(?cell), 10)
-
-}
-where {
-
-    {select * where {
-        graph ?g { [] cn:topic ?topic . 
-            { ?uri cn:date ?date } union { ?uri cn:begin ?date }
-        }
-    }
-    order by ?date ?topic
-    }
-    filter xt:print(?uri)
-    bind (st:apply-templates(?uri) as ?cell)
-
-}
-
 ]]>
 </body>
 </rule>
@@ -388,36 +388,6 @@ where {
 <body>
 <![CDATA[
 #
-# Get list st:topic from profile.ttl st:param
-#
-prefix cn: <http://cdn.fr/schema/>
-template cn:row(?d) {
-
-  format {
-    "<td>%s</td>"
-    
-    group {
-	st:call-template(cn:date, ?d, ?topic)
-    } 
-  }
-  
-
-}
-where {  
-  values ?topicList { unnest(st:get(st:topic)) }
-  bind (kg:number() as ?n)
-  values ?topic  { unnest(?topicList) }
-}
-group by ?topicList
-order by ?n
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
@@ -441,6 +411,36 @@ function us:dbclean(?s) {
     if (contains(?s, ".gif") || contains(?s, ".JPG") || contains(?s, ".jpg") || contains(?s, ".jpeg") || contains(?s, ".svg") || contains(?s, ".png"), "icon", ?s))
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Get list st:topic from profile.ttl st:param
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:row(?d) {
+
+  format {
+    "<td>%s</td>"
+    
+    group {
+	st:call-template(cn:date, ?d, ?topic)
+    } 
+  }
+  
+
+}
+where {  
+  values ?topicList { unnest(st:get(st:topic)) }
+  bind (kg:number() as ?n)
+  values ?topic  { unnest(?topicList) }
+}
+group by ?topicList
+order by ?n
 ]]>
 </body>
 </rule>
@@ -672,6 +672,35 @@ pragma {kg:query kg:detail true}
 <body>
 <![CDATA[
 #
+# Get list st:period from profile.ttl st:param
+#
+prefix cn: <http://cdn.fr/schema/>
+template cn:rowtitle(?c) {
+
+   format { 
+    "<th>%s</th>"
+    
+    if (?label = "Antiquité", 
+    if (?max <= 500, str(?label), "&nbsp;"),
+    str(?label))
+   }
+}  
+where {
+
+  ?c cn:start ?min ; cn:finish ?max
+   
+  bind (unnest(st:get(st:text)) as ?label)
+  
+}
+    
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Timeline SPARQL Template - Olivier Corby - 2014
 #
 prefix cn: <http://cdn.fr/schema/>
@@ -737,35 +766,6 @@ values (?query ?title){
 <rule>
 <body>
 <![CDATA[
-#
-# Get list st:period from profile.ttl st:param
-#
-prefix cn: <http://cdn.fr/schema/>
-template cn:rowtitle(?c) {
-
-   format { 
-    "<th>%s</th>"
-    
-    if (?label = "Antiquité", 
-    if (?max <= 500, str(?label), "&nbsp;"),
-    str(?label))
-   }
-}  
-where {
-
-  ?c cn:start ?min ; cn:finish ?max
-   
-  bind (unnest(st:get(st:text)) as ?label)
-  
-}
-    
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix cn: <http://cdn.fr/schema/>
 template cn:style(?in) {
   if (?d <= 1000, "s09",
@@ -783,6 +783,66 @@ where {
     bind(?in as ?d)
 }
 	
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn:   <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix o:    <http://dbpedia.org/ontology/>
+prefix w:    <http://fr.wikipedia.org/wiki/>
+prefix r:    <http://fr.dbpedia.org/resource/>
+
+template {
+    st:call-template(cn:href, 
+      ?in, coalesce(?link, ?in), ?mds, ?ic)
+        
+    coalesce(str(?cc), "")
+  
+}
+where {
+  ?in cn:begin ?d ; rdfs:label ?mds .  
+  optional { ?in cn:link ?lnk }
+  optional { ?in st:icon ?ii }
+  optional { ?in rdfs:comment ?cc }
+  
+  bind (
+    if (bound(?ii), ?ii,
+    if (isURI(?in), st:call-template(cn:geticon, ?in), "")) 
+    as ?ic)
+    
+   bind (
+    if (isURI(?in) && strstarts(?in, r:), 
+      concat(w:, (substr(?in, strlen(r:) + 1))),
+      ?lnk) 
+    as ?link)  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix cn: <http://cdn.fr/schema/>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+template {
+    if (bound(?lnk), 
+      st:call-template(cn:href, ?lnk, ?c), 
+      ?c)
+}
+where {
+
+  ?in rdf:rest*/rdf:first ?elem
+  
+  { ?elem rdfs:label ?c ; cn:link ?lnk }
+  union 
+  { ?elem rdfs:comment ?c }
+}
 ]]>
 </body>
 </rule>
@@ -822,66 +882,6 @@ where {
       ?lnk) 
     as ?link)
       
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn: <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-template {
-    if (bound(?lnk), 
-      st:call-template(cn:href, ?lnk, ?c), 
-      ?c)
-}
-where {
-
-  ?in rdf:rest*/rdf:first ?elem
-  
-  { ?elem rdfs:label ?c ; cn:link ?lnk }
-  union 
-  { ?elem rdfs:comment ?c }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix cn:   <http://cdn.fr/schema/>
-prefix foaf: <http://xmlns.com/foaf/0.1/>
-prefix o:    <http://dbpedia.org/ontology/>
-prefix w:    <http://fr.wikipedia.org/wiki/>
-prefix r:    <http://fr.dbpedia.org/resource/>
-
-template {
-    st:call-template(cn:href, 
-      ?in, coalesce(?link, ?in), ?mds, ?ic)
-        
-    coalesce(str(?cc), "")
-  
-}
-where {
-  ?in cn:begin ?d ; rdfs:label ?mds .  
-  optional { ?in cn:link ?lnk }
-  optional { ?in st:icon ?ii }
-  optional { ?in rdfs:comment ?cc }
-  
-  bind (
-    if (bound(?ii), ?ii,
-    if (isURI(?in), st:call-template(cn:geticon, ?in), "")) 
-    as ?ic)
-    
-   bind (
-    if (isURI(?in) && strstarts(?in, r:), 
-      concat(w:, (substr(?in, strlen(r:) + 1))),
-      ?lnk) 
-    as ?link)  
 }
 ]]>
 </body>

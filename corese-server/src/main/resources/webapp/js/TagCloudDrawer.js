@@ -9,9 +9,21 @@ export class TagCloudDrawer extends SvgDrawer {
         return new TagCloudParameters();
     }
 
+    constructor(type) {
+        super();
+        this.type = type;
+    }
+    setupConfigurationPanel(divId, data) {
+        const panel = d3.select(`#${divId}`);
+        const div = panel.append("div");
+        div.append("label").text("keyname");
+        div.append("select").attr("id", "keyname_select").selectAll("option").data(data.head.vars)
+            .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;})
+        this.data = data;
+    }
     draw(svgId) {
         super.draw(svgId);
-        const keyName = this.parameters.getVarName();
+        const keyName = this.parameters.label = d3.select("#keyname_select").node().value;//this.parameters.getVarName();
         const freqTable = this.computeFrequency(this.data, keyName);
 
         var margin = {top: 30, right: 50, bottom: 30, left: 50};
@@ -19,6 +31,8 @@ export class TagCloudDrawer extends SvgDrawer {
         var height = 2 * 500 - margin.top - margin.bottom;
 
         var g = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         var color = d3.scaleOrdinal(d3.schemeCategory20);

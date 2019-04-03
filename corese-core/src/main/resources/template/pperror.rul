@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Apr 13 13:41:34 CEST 2018
+Sat Mar 30 00:03:43 CET 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -129,6 +129,19 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:mainRL(?tag) {
+	st:call-template(st:allRL, ?tag)
+}
+where {
+	
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:main(?in) {
     ?res  
 }
@@ -180,45 +193,12 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:mainRL(?tag) {
-	st:call-template(st:allRL, ?tag)
-}
-where {
-	
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:mainQL(?tag) {
 	st:call-template(st:allQL, ?tag)
 }
 where {
 
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:profile {
-
-}
-where {}
-
-function st:linkPro(?x) { 
-  URI(concat("http://www.w3.org/TR/owl2-profiles/#", str(?x)))
-}
-	
-function st:linkOWL(?x) { 
-  URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
-}
-
 ]]>
 </body>
 </rule>
@@ -240,6 +220,26 @@ where {
 	### axiom ###
 	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+
+}
+where {}
+
+function st:linkPro(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-profiles/#", str(?x)))
+}
+	
+function st:linkOWL(?x) { 
+  URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
+}
+
 ]]>
 </body>
 </rule>

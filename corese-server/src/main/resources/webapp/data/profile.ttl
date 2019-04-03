@@ -470,7 +470,9 @@ st:tutorial1 a st:Server ;
 .
 
 st:tutorial2 a st:Server ;
-  st:param [ st:lang 'en' ] ;
+  st:param [ st:lang 'en';
+    st:exportlist( st:mappings )
+  ] ;
   st:service "sparql" ;
   st:transform st:web ;
   st:content st:tutocontent

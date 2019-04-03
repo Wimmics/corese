@@ -9,6 +9,7 @@
 @prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
 @prefix db:  <http://fr.dbpedia.org/resource/>
 @prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+@prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
 @prefix fun: <query/hal/process/>
 
 
@@ -471,7 +472,9 @@ st:tutorial1 a st:Server ;
 
 st:tutorial2 a st:Server ;
   st:param [ st:lang 'en';
-    st:exportlist( st:mappings )
+    st:sttl st:combine ;
+    st:transformations (<sttl/chart.rul> spq:result) ;
+    st:exportlist( st:sttl st:transformations st:mappings )
   ] ;
   st:service "sparql" ;
   st:transform st:web ;
@@ -910,6 +913,29 @@ sw:body (
     [ a sw:Transformation ; sw:uri d3:ontology ] 
 )
 .
+
+
+
+st:gclass a st:Server ;
+st:service "gclass" ;
+st:workflow st:gclass ;
+st:param [
+    st:title "Class" ;
+    st:hierarchy (rdfs:subClassOf ) ;
+    st:trace false ;
+    st:prefix (("ai" ai:))
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Query ] # 
+    [ a sw:Query ; sw:uri <query/display/toplevel.rq> ] 
+    [ a sw:Query ; sw:uri <query/display/subclass.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+
 
 
 #

@@ -74,7 +74,7 @@ function xt:shapeNode(?shape, ?uri) {
     return (st:visitedGraph())
 }
 
-function xt:shapeNode(?shape, ?uri, ?sh) {
+function xt:shapeNode(?shape, ?sh, ?uri) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
     return (st:visitedGraph())
 }

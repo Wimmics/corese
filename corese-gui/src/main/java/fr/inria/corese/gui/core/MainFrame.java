@@ -52,6 +52,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.TemplatePrinter;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,7 +77,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-03-22";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-04-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -326,7 +327,6 @@ public class MainFrame extends JFrame implements ActionListener {
         for (int i = 0; i < listJMenuItems.size(); i++) {
             listJMenuItems.get(i).setEnabled(false);
         }
-        
         process(cmd);
     }
 
@@ -1551,6 +1551,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void process(Command cmd) {
+        Access.setMode(Access.Mode.GUI);
         String path = cmd.get(Command.WORKFLOW);
         if (path != null) {
             execWF(path, false);

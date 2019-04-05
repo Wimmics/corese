@@ -1,5 +1,6 @@
 package fr.inria.corese.gui.core;
 
+import fr.inria.corese.core.query.QueryProcess;
 import java.util.HashMap;
 
 /**
@@ -15,6 +16,7 @@ public class Command extends HashMap<String, String> {
     public static final String METADATA         = "-metadata";
     public static final String STRING           = "-string";
     public static final String WORKFLOW         = "-wf";
+    public static final String REENTRANT        = "-re";
         
     
     Command (String[] args) {
@@ -46,6 +48,10 @@ public class Command extends HashMap<String, String> {
                 case WORKFLOW:
                    put(WORKFLOW, args[i++]);
                    break; 
+                   
+                case REENTRANT:
+                    put(REENTRANT, "true");
+                    break;
                    
                 default:
                     put(str, "true");

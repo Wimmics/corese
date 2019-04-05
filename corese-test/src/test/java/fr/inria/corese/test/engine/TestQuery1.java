@@ -292,6 +292,40 @@ public class TestQuery1 {
     }
     
     
+         @Test
+    public void testRee() throws EngineException {
+
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        exec.setOverwrite(true);
+        
+        String i1 = "insert data { graph <http://example.org/g>  { us:John rdfs:label 'John'  } }";
+        String i2 = 
+                 "with <http://example.org/g> " +
+                 "insert  { ?x foaf:name ?n } where { ?x rdfs:label ?n }";
+        
+        String q = "select * "
+               + "from  <http://example.org/g> "
+                + "where { ?x ?p ?y  }"
+                ;
+        
+         String q2 = "select * "
+               + "from  <http://example.org/g> "
+                + "where { ?x foaf:name ?y  }"
+                ;
+        
+        exec.query(i1);
+        Mappings m1 = exec.query(q);
+        exec.query(i2);
+        Mappings m2 = exec.query(q);
+        assertEquals(2, m2.size());
+        Graph g = graph.getNamedGraph("http://example.org/g");
+        assertEquals(true, g != null);
+        assertEquals(2, g.size());
+        Mappings m3 = exec.query(q2);
+        assertEquals(1, m3.size());
+    }
+    
      @Test
     public void testLock() throws EngineException {
 

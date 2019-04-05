@@ -72,14 +72,13 @@ public class ASTUpdate {
     }
 
     public String getGraphName() {
-        String name = "default";
         for (Update up : getUpdates()) {
             Constant cst = up.getGraphName();
             if (cst != null) {
                 return cst.getLabel();
             }
         }
-        return name;
+        return null;
     }
 
     public void defNamespace(String p, String ns) {

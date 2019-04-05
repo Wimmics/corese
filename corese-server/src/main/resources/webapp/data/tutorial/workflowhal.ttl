@@ -123,32 +123,35 @@ prefix hsc: <http://data.archives-ouvertes.fr/schema/>
 prefix dc:  <http://purl.org/dc/terms/>
 prefix de:  <http://purl.org/dc/elements/1.1/> 
 construct {
-    ?n dc:coauthor ?n2
+    ?n1 dc:coauthor ?n2
 }
 where {
 service <https://data.archives-ouvertes.fr/sparql> {
-select distinct ?n ?n2 where {
+select distinct ?n1 ?n2 where {
     ?x skos:altLabel ?l
-    filter (?l in ("SPARKS", "WIMMICS")) .
+    filter (?l in ("WIMMICS")) .
 
-    ?s hsc:structure ?x .
-    ?s hsc:person ?p .
-    ?p foaf:name ?n
+    ?s1 hsc:structure ?x .
+    ?s1 hsc:person ?p1 .
+    ?p1 foaf:name  ?n1
 
     ?s2 hsc:structure ?x .
     ?s2 hsc:person ?p2 .
     ?p2 foaf:name ?n2
 
-    filter (?n != ?n2)
+    filter (?n1 != ?n2)
 
-    ?doc dc:creator ?s
+    ?doc dc:creator ?s1
     ?doc dc:creator ?s2
-    #?doc de:subject ?topic
     ?doc dc:title ?title
-}
-}
-}
+    ?doc dc:issued ?date 
+    filter (?date >= "2016-01-01"^^xsd:date && ?date <= "2019-12-31"^^xsd:date)
 
+}
+}
+bind (st:setclass(?n1, "uri") as ?a)
+bind (st:setclass(?n2, "uri") as ?b)
+}
 """ 
 ]
 

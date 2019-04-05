@@ -12,7 +12,7 @@ st:transform st:web ;
 st:param [
     st:lang 'en' ;
     st:sttl st:combine ;
-    st:transformations (spq:result navlab:map) ;
+    st:transformations (spq:result navlab:map <sttl/chart.rul> ) ;
     st:lodprofile (
         (ai: st:sparql)         
         (dc: st:sparql)  
@@ -28,7 +28,8 @@ st:param [
     st:hyperlink true ; 
     st:title "AI4EU";
     st:prefix (("ai" ai:)) ;
-    st:exportlist (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize) ;
+    st:exportlist 
+      (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize st:mappings) ;
     #st:export true ;
     #st:focus false 
 ] 

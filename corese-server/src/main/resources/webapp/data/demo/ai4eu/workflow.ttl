@@ -25,8 +25,12 @@ sw:debug true;
 sw:collect true;
 sw:body (
     st:intro
+    
     st:simple01
     st:simple02
+    st:simple03
+    st:simple04
+    
     st:simple1
     st:simple2
     st:simple20
@@ -175,10 +179,76 @@ st:select st:selectKeyword
 
 
 
+st:simple03 a sw:Query ;
+st:name st:simple03 ;
+rdfs:label "Keywords" ;
+rdfs:comment """Select AI resource by  keyword."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+select ?w (count(distinct ?a) as ?count)
+where {
+  ?a a ?type  ;
+  foaf:name ?name ;
+  ai:keyword ?w .  
+ 
+  optional {
+    ?a ai:country ?location
+        service <http://fr.dbpedia.org/sparql> {
+            ?location geo:lat ?lat ; geo:long ?lon             
+        }
+    }
+    
+   bind (st:location(?location, ?lat, ?lon) as ?tmp)
+}
+group by ?w
+order by desc(?count)
+
+
+""" 
+.
 
 
 
+st:simple04 a sw:Query ;
+st:name st:simple04 ;
+rdfs:label "Creator" ;
+rdfs:comment """Select AI resource by creator ."""@en ;
+rdfs:comment """Simple"""@fr ;
 
+st:query 
+"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+prefix dc:  <http://purl.org/dc/terms/>
+prefix de:  <http://purl.org/dc/elements/1.1/> 
+prefix o:   <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+select (strafter(?creator, "http://") as ?author) (count(distinct ?distrib) as ?count)
+where {
+  ?a foaf:name ?name ;
+  ai:distributed_as ?distrib .
+  ?distrib de:creator ?creator
+  
+  optional {
+    ?a ai:country ?location
+        service <http://fr.dbpedia.org/sparql> {
+                ?location geo:lat ?lat ; geo:long ?lon 
+        }
+    }
+    
+   bind (st:location(?location, ?lat, ?lon) as ?tmp)
+  
+} 
+group by ?creator
+order by desc(?count)
+
+""" ;
+
+st:select st:selectCreator ;
+st:select st:select
 
 
 

@@ -263,7 +263,7 @@ public class EdgeManagerIndexer
 
     @Override
     public void clear() {
-        isUpdate = true;
+        recordUpdate(true);
         if (index == 0) {
             logClear();
         }
@@ -309,7 +309,6 @@ public class EdgeManagerIndexer
             // never happens for subject object and graph
             return null;
         }
-
         Edge internal = internal(edge); 
         EdgeManager el = define(edge.getEdgeNode());
        
@@ -355,7 +354,7 @@ public class EdgeManagerIndexer
         }
         index(p);
         if (index == 0) {
-            isUpdate = true;
+            recordUpdate(true);
         }
     }
 
@@ -714,15 +713,32 @@ public class EdgeManagerIndexer
 
     void logDelete(Edge ent) {
         if (ent != null) {
-            isUpdate = true;
+            recordUpdate(true);
             if (getIndex() == 0) {
                 graph.logDelete(ent);
             }
         }
     }
+    
+    void recordUpdate(boolean b) {
+        setUpdate(b);
+        if (index == 0) {
+            // tell all Index that update occur
+            graph.declareUpdate(b);
+        }
+    }
+    
+    @Override
+    public void declareUpdate(boolean b) {
+        setUpdate(b);
+    }
+    
+    void setUpdate(boolean b) {
+        isUpdate = b;
+    }
 
     void logInsert(Edge ent) {
-        isUpdate = true;
+        recordUpdate(true);
         if (getIndex() == 0) {
             graph.logInsert(ent);
         }

@@ -338,9 +338,8 @@ public class QueryProcess extends QuerySolver {
      * return a new QueryProcess with Producer(g)
      */
     QueryProcess focusFrom(Query q) {
-        List<Node> from = q.getFrom();
-        if (from != null && from.size() == 1) {
-            String name = from.get(0).getLabel();
+        String name = getFromName(q);
+        if (name != null && isExternal(name)) {
             Graph g = getGraph().getNamedGraph(name);
             if (g != null) {
                 q.getFrom().clear();
@@ -456,6 +455,7 @@ public class QueryProcess extends QuerySolver {
     Mappings protectQuery(Query query, Mapping m, Dataset ds) {
         if (query.isUpdate()) {
             if (lock.getReadLockCount() > 0 && ! isOverwrite()) {
+                logger.info("Update rejected to avoid deadlock");
                 return Mappings.create(query);
             }
         }
@@ -796,8 +796,9 @@ public class QueryProcess extends QuerySolver {
         try {
             readLock();
             logStart(query);
-            map = focusFrom(query).query(query, m);
-            return map;
+            // select from g where
+            // if g is an external named graph, create specific Producer(g)
+            return focusFrom(query).query(query, m);
         } finally {
             logFinish(query, map);
             readUnlock();
@@ -880,7 +881,21 @@ public class QueryProcess extends QuerySolver {
     }
     
     String getWithName(Query query) {
-        return getAST(query).getUpdate().getGraphName();
+        String name = getAST(query).getUpdate().getGraphName();
+        return name;
+    }
+    
+    String getFromName(Query query) {
+        List<Node> from = query.getFrom();
+        if (from != null && from.size() == 1) {
+           return from.get(0).getLabel();
+        }
+        return null;
+    }
+    
+    // place holder to have specific external URI
+    boolean isExternal(String name) {
+        return true;
     }
     
     Context getContext(Query q) {
@@ -905,10 +920,14 @@ public class QueryProcess extends QuerySolver {
         }
         Graph g = getGraph();
         GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
-        
-        if (isOverwrite()) {
-            if (lock.getReadLockCount() > 0 || g.getNamedGraph(getWithName(query)) != null) {
+        if (isOverwrite()) {           
+            String name = getWithName(query);
+            if (name != null && isExternal(name)) {     
                 // draft: get/create a graph and store it as named graph
+                // with name insert where
+                // insert data { graph name }
+                // drop graph name
+                // old: (lock.getReadLockCount() > 0 || g.getNamedGraph(name) != null) {
                 return overWrite(query, m, ds);
             }
         }

@@ -39,7 +39,7 @@ import java.util.HashMap;
  * Producer Implement getEdges() for KGRAM interpreter rely on
  * graph.getDataStore().getDefault() graph.getDataStore().getNamed()
  *
- * @author Olivier Corby, Edelweiss INRIA 2010
+ * @author Olivier Corby, Edelweiss INRIA 2010ta
  *
  */
 public class ProducerImpl implements Producer, IProducerQP {

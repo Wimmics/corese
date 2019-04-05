@@ -37,6 +37,8 @@ public interface Index {
         void indexNodeManager();       
         
         void setByIndex(boolean b);
+        
+        void declareUpdate(boolean b);
 
 	Iterable<Node> getProperties();
 	

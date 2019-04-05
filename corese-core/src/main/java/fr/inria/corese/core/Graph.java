@@ -3269,6 +3269,12 @@ public class Graph extends GraphObject implements
             }
         }
     }
+    
+    public void declareUpdate(boolean b) {
+        for (Index ind : getIndexList()) {
+            ind.declareUpdate(b);
+        }
+    }
 
     public void logStart(Query q) {
         if (listen != null) {

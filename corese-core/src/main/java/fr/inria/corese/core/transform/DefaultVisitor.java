@@ -163,7 +163,6 @@ public class DefaultVisitor implements TemplateVisitor {
             if (! distinct.containsKey(obj)){
                 list.add(obj);
                 distinct.put(obj, obj);
-                
                 //storeGraph(name, obj);
             }
         }
@@ -182,23 +181,6 @@ public class DefaultVisitor implements TemplateVisitor {
             list.add(name);
         }
     }
-    
-//    void storeErrors2(IDatatype name, IDatatype obj){
-//    	if(errors.get(obj) == null) {
-//    		errors.put(obj, new ArrayList<IDatatype>());
-//    		errors.get(obj).add(name);
-//    	} else {
-//    		int arr_size = errors.get(obj).size();
-//	    	for(int i=0; i<arr_size;i++) {
-//	    		//if name is already present
-//	    		if(errors.get(obj).get(i).getLabel().equals(name.getLabel()) == true) break;
-//	    		//else if name not found adds it
-//	    		else if(i+1 == arr_size) {
-//	    			errors.get(obj).add(name);
-//	    		}
-//	        }
-//    	}
-//    }
     
     void addGraph(Graph g){
         visitedGraph.copy(g);
@@ -338,5 +320,14 @@ public class DefaultVisitor implements TemplateVisitor {
             return errors.get(dt);
     	}
     	else return new ArrayList<IDatatype>(0);
+    }
+    
+    @Override
+    public IDatatype errors() {
+        IDatatype map = DatatypeMap.map();
+        for (IDatatype key : errors.keySet()) {
+            map.set(key, DatatypeMap.newList(errors.get(key)));
+        }
+        return map;
     }
 }

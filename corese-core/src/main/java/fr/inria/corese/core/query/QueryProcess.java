@@ -34,6 +34,7 @@ import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
@@ -849,7 +850,8 @@ public class QueryProcess extends QuerySolver {
         Graph g  = getGraph();
         Graph gg = g.getNamedGraph(name);
         if (gg == null) {
-            gg = Graph.create();
+            gg = GraphStore.create();
+            gg.setNamedGraph(Context.STL_DATASET, g);
             if (g.isVerbose()) {
                 gg.setVerbose(true);
             }

@@ -780,7 +780,10 @@ public class PluginImpl
         if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == Pointerable.GRAPH_POINTER){
             g = (Graph) dt.getPointerObject().getTripleStore();
         }
-        g = g.copy();
+        if (g.getLock().getReadLockCount() > 0 || g.getLock().isWriteLocked()) {
+            logger.info("Graph locked, perform entailment on copy");
+            g = g.copy();
+        }
         RuleEngine re = RuleEngine.create(g);
         re.setProfile(RuleEngine.OWL_RL);
         re.process();

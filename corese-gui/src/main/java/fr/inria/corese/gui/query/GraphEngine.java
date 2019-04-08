@@ -25,7 +25,6 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import sun.awt.datatransfer.DataTransferer;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram

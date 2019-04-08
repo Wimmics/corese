@@ -1,6 +1,5 @@
 package fr.inria.corese.core.print;
 
-import java.text.NumberFormat;
 import java.util.Vector;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -33,7 +32,6 @@ public class JSONFormat extends XMLFormat {
     private static final String BLANK = "_:";
 
     int nBind = 0, nResult = 0;
-    NumberFormat nf = NumberFormat.getInstance();
 
     JSONFormat(Mappings lm) {
         super(lm);
@@ -142,7 +140,7 @@ public class JSONFormat extends XMLFormat {
                 print("\"literal\"");
             } else {
                 if (DatatypeMap.isDouble(dt)) {
-                    str = nf.format(dt.doubleValue());
+                    str = String.format("%1.5g",dt.doubleValue());
                 }
                 print("\"typed-literal\", \"datatype\": \"" + dt.getDatatype().getLabel() + "\"");
             }

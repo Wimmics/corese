@@ -169,10 +169,7 @@ class PieChartDrawer extends SvgDrawer {
     draw(svgId) {
         this.parameters.selector = svgId;
         this.parameters.label = d3.select("#label_select").node().value;
-        this.parameters.size = d3.select("#size_select").node().value;
-        for (let i in this.data.results.bindings) {
-            this.data.results.bindings[i][this.parameters.size].value= this.data.results.bindings[i][this.parameters.size].value.replace(/,/g,'');
-        }
+        this.parameters.size = Number( d3.select("#size_select").node().value );
         d3sparql[this.type](this.data, this.parameters);
         return this;
     }

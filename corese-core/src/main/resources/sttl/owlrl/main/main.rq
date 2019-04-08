@@ -1,0 +1,25 @@
+#
+# Check OWL RL conformance using STTL
+# axiom:    OWL class and property axioms
+# subexp:   subClassExpression
+# superexp: superClassExpression
+# equivexp: equivClassExpression
+# http://www.w3.org/TR/owl2-profiles/#OWL_2_RL
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+template st:main {
+    ?map
+}
+where {
+    bind (st:visit(st:start, st:trace) as ?vis)
+    bind (st:call-template(st:start)   as ?b)
+    bind (st:errormap()                as ?map)
+}  
+
+function st:process(?x) {
+    ?x
+}
+
+
+

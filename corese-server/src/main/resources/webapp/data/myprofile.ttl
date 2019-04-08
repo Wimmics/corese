@@ -7,12 +7,14 @@
 st:ai4eu a st:Server ;
 st:service "ai4eu" ;
 st:shareContent st:ai4euContent ;
-st:transform st:web ;
-#st:workflow st:ai4euwf ;
+#st:transform st:web ;
+st:workflow st:ai4euwf ;
 st:param [
     st:lang 'en' ;
-    st:sttl st:combine ;
-    st:transformations (spq:result navlab:map <sttl/chart.rul> ) ;
+    # transformation for the result of the query in the st:web transformation
+    st:sttl <sttl/combine.rul> ;
+    # list of transformations for the st:combine transformation
+    st:transformations (spq:result <sttl/map.rul> <sttl/chart.rul> ) ;
     st:lodprofile (
         (ai: st:sparql)         
         (dc: st:sparql)  
@@ -28,10 +30,10 @@ st:param [
     st:hyperlink true ; 
     st:title "AI4EU";
     st:prefix (("ai" ai:)) ;
-    st:exportlist 
-      (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize st:mappings) ;
-    #st:export true ;
-    #st:focus false 
+    #st:exportlist (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize st:mappings) ;
+    st:export true ;
+    # do not focus sttl result on st:uri because it is the URI of the query not of a target resource
+    st:focus false 
 ] 
 .
 
@@ -39,6 +41,7 @@ st:param [
 
 st:ai4euwf a sw:Workflow ; 
 sw:body (
+    [ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
     [ a sw:Transformation ; sw:uri st:web ]
 )
 .

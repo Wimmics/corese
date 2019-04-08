@@ -45,6 +45,22 @@ function st:list(?t) {
     }
 }
 
+function xt:rdftolist(?l) {
+  let (
+    select ?l 
+      (aggregate(if (?b, xt:rdftolist(?e), 
+                 if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+    where {
+        ?l rdf:rest*/rdf:first ?e
+        bind (exists { ?e rdf:rest ?a } as ?b)
+    }) {
+    ?list
+  }
+}
+
+
+
+
 function xt:conform(?g) {
     xt:focus(?g,
     let (select * where { ?x sh:conforms ?b } ) {
@@ -77,6 +93,10 @@ function xt:shapeNode(?shape, ?uri) {
 function xt:shapeNode(?shape, ?sh, ?uri) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
     return (st:visitedGraph())
+}
+
+function xt:profileowlrl() {
+    st:call-template-with(st:owlrl, st:main) 
 }
 
 

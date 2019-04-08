@@ -24,4 +24,6 @@ public interface TransformVisitor {
         
     Collection<IDatatype> getErrors(IDatatype dt);
     
+    IDatatype errors();
+    
 }

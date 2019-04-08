@@ -257,6 +257,7 @@ public class Processor {
 	static final String STL_VGET                = STL + "vget"; 
         static final String STL_VISIT               = STL + "visit"; 
 	static final String STL_ERRORS              = STL + "errors";
+	static final String STL_ERROR_MAP           = STL + "errormap";        
 	static final String STL_VISITED             = STL + "visited";        
 	static final String STL_VISITED_GRAPH       = STL + "visitedGraph";        
 	static final String STL_BOOLEAN             = STL + "boolean"; 
@@ -831,6 +832,7 @@ public class Processor {
                 defoper(STL_VISITED,            ExprType.STL_VISITED);
                 defoper(STL_VISITED_GRAPH,      ExprType.STL_VISITED_GRAPH);
                 defoper(STL_ERRORS,             ExprType.STL_ERRORS);
+                defoper(STL_ERROR_MAP,          ExprType.STL_ERROR_MAP);
                 defoper(STL_BOOLEAN,            ExprType.STL_BOOLEAN);
 
 		defoper(LEVEL,          ExprType.LEVEL);

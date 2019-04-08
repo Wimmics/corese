@@ -58,6 +58,8 @@ public class TemplateVisitor extends TemplateFunction {
             
             case ExprType.STL_ERRORS: return DatatypeMap.createList(visitor.getErrors(param[0]));
             
+            case ExprType.STL_ERROR_MAP: return visitor.errors();
+            
             case ExprType.STL_VISITED_GRAPH: return visitor.visitedGraphNode();
                 
 

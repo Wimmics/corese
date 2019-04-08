@@ -502,6 +502,7 @@ public class Term extends Expression {
             case ExprType.STL_VGET:
             case ExprType.STL_VSET:
             case ExprType.STL_ERRORS:
+            case ExprType.STL_ERROR_MAP:
             case ExprType.STL_VISITED_GRAPH:               
                 return new TemplateVisitor(name);            
                 

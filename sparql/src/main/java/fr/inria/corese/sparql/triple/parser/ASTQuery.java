@@ -1454,15 +1454,14 @@ public class ASTQuery
                 else if (lastElement >= 0 && i >= lastElement) {
                     l.add(defGenericGetLast(arg.getVariable(), var, last - i));
                 }
-                
-//                if (isRest && i == match.getArgs().size() - 1) {
-//                    l.add(defRest(arg.getVariable(), var, i));
-//                } 
                 else {
                     l.add(defGenericGet(arg.getVariable(), var, i));
                 }
-            }                        
-
+            } 
+            if (l.isEmpty()) {
+                Term t = defLet(Variable.create("?_tmp_"), Constant.create(true));
+                l.add(t);
+            }
             Term let = defineLet(l, term.getBody(), 0);
             term.setArgs(let.getArgs());
         }

@@ -48,6 +48,8 @@ import fr.inria.corese.core.api.ValueResolver;
 import fr.inria.corese.core.query.QueryCheck;
 import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
@@ -440,8 +442,8 @@ public class Graph extends GraphObject implements
     }
 
     @Override
-    public int pointerType() {
-        return GRAPH_POINTER;
+    public PointerType pointerType() {
+        return GRAPH;
     }
 
     /**

@@ -7,6 +7,8 @@ import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.core.GraphObject;
 import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 
 /**
  *
@@ -93,8 +95,8 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     @Override
-    public int pointerType() {
-        return Pointerable.EDGE_POINTER;
+    public PointerType pointerType() {
+        return TRIPLE;
     }
 
     @Override

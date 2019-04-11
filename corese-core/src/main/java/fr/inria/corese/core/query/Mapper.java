@@ -76,28 +76,28 @@ public class Mapper {
     
     Mappings map(List<Node> nodes, Pointerable obj) { 
         switch (obj.pointerType()){
-            case Pointerable.GRAPH_POINTER: 
+            case GRAPH: 
                 return map(nodes, (Graph) obj.getTripleStore());
                 
-            case Pointerable.MAPPINGS_POINTER:
+            case MAPPINGS:
                 return map(nodes, obj.getMappings());
                 
-            case Pointerable.EDGE_POINTER:
+            case TRIPLE:
                  return map(nodes, obj.getEdge()); 
                 
-            case Pointerable.NSMANAGER_POINTER:
+            case NSMANAGER:
                  return map(nodes, (NSManager) obj);   
                 
-             case Pointerable.QUERY_POINTER:
+             case QUERY:
                  return map(nodes, obj.getQuery());
                  
-             case Pointerable.CONTEXT_POINTER:
+             case CONTEXT:
                  return map(nodes, (Context) obj);
                  
-             case Pointerable.METADATA_POINTER:
+             case METADATA:
                  return map(nodes, (Metadata) obj); 
                  
-             case Pointerable.DATAPRODUCER_POINTER:
+             case PRODUCER:
                  return map(nodes, (DataProducer) obj);                  
         }
         

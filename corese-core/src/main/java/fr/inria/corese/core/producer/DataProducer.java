@@ -11,6 +11,8 @@ import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphObject;
 import fr.inria.corese.core.edge.EdgeTop;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.PRODUCER;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
 
@@ -251,10 +253,10 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     }
     
     @Override
-    public int pointerType() {
-        return DATAPRODUCER_POINTER;
+    public PointerType pointerType() {
+        return PRODUCER;
     }
-    
+   
     public IDatatype getList() {
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge edge : this) {

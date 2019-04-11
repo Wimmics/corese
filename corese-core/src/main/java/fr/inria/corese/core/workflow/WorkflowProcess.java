@@ -17,6 +17,7 @@ import static fr.inria.corese.core.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.core.workflow.WorkflowParser.COLLECT;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Date;
@@ -577,7 +578,7 @@ public class WorkflowProcess implements AbstractProcess {
      */
     public IDatatype getContextParamValue(IDatatype subject, String property) {
         IDatatype dtgraph = getContext().get(Context.STL_CONTEXT);
-        if (dtgraph != null && dtgraph.pointerType() == Pointerable.GRAPH_POINTER && subject!= null) {
+        if (dtgraph != null && dtgraph.pointerType() == PointerType.GRAPH && subject!= null) {
             Graph g = (Graph) dtgraph.getPointerObject();
             IDatatype dt = g.getValue(property, subject);
             if (dt != null && getContext().isList(property)) {

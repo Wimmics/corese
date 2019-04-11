@@ -67,7 +67,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
-import static fr.inria.corese.kgram.api.core.Pointerable.GRAPH_POINTER;
+import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
+import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
+import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
 
@@ -477,14 +479,14 @@ public class PluginImpl
         Graph g;
         
         switch (dt.pointerType()) {
-            case Pointerable.MAPPINGS_POINTER:
+            case MAPPINGS:
                 g = graph(dt.getPointerObject().getMappings());
                 if (g == null) {
                     return null;
                 }
                 return DatatypeMap.createObject(g);
                 
-            case Pointerable.GRAPH_POINTER:
+            case GRAPH:
                 return dt; 
         }
         
@@ -649,7 +651,7 @@ public class PluginImpl
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat) {
          Graph g;
-         if (graph == null || graph.pointerType() != Pointerable.GRAPH_POINTER) {
+         if (graph == null || graph.pointerType() != GRAPH) {
              g = Graph.create();
          }
          else {
@@ -777,7 +779,7 @@ public class PluginImpl
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) { 
         Graph g = getGraph(p);
-        if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == Pointerable.GRAPH_POINTER){
+        if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == GRAPH){
             g = (Graph) dt.getPointerObject().getTripleStore();
         }
         if (g.getLock().getReadLockCount() > 0 || g.getLock().isWriteLocked()) {
@@ -878,9 +880,9 @@ public class PluginImpl
         if (dt.isPointer()){
             Pointerable obj = dt.getPointerObject();
            switch (dt.pointerType()){
-               case Pointerable.EDGE_POINTER:
+               case TRIPLE:
                    return (IDatatype) obj.getEdge().getGraph().getValue();
-               case Pointerable.MAPPINGS_POINTER:                   
+               case MAPPINGS:                   
                    return DatatypeMap.createObject(obj.getMappings().getGraph());
            }           
         }
@@ -888,7 +890,7 @@ public class PluginImpl
     }
     
     private IDatatype access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (! (dt.isPointer() && dt.pointerType() == Pointerable.EDGE_POINTER)){
+        if (! (dt.isPointer() && dt.pointerType() == TRIPLE)){
             return null;
         }
         Edge ent = dt.getPointerObject().getEdge();        
@@ -933,11 +935,11 @@ public class PluginImpl
             return null;
         }
         
-        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
+        if (dt1.pointerType() == MAPPINGS){
             return algebra(exp, env, p, dt1, dt2);
         }
         
-        if (dt1.pointerType() == Pointerable.GRAPH_POINTER){
+        if (dt1.pointerType() == GRAPH){
             Graph g1 = (Graph) dt1.getPointerObject();
             Graph g2 = (Graph) dt2.getPointerObject();
             Graph g = g1.union(g2);
@@ -954,7 +956,7 @@ public class PluginImpl
             return null;
         }
         
-        if (dt1.pointerType() == Pointerable.MAPPINGS_POINTER){
+        if (dt1.pointerType() == MAPPINGS){
             Mappings m1 = dt1.getPointerObject().getMappings();
             Mappings m2 = dt2.getPointerObject().getMappings();
             

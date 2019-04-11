@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.IDatatype;
 import java.util.logging.Level;
@@ -134,7 +135,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
         if (dt.isURI()) {
             return parse(dt.getLabel());
         }
-        else if (dt.pointerType() == Pointerable.GRAPH_POINTER){
+        else if (dt.pointerType() == PointerType.GRAPH){
             return (Graph) dt.getPointerObject();
         }
         Logger.getLogger(ShapeWorkflow.class.getName()).warning("Empty graph: " + dt);

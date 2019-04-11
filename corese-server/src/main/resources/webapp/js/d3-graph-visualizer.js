@@ -123,13 +123,6 @@ export class D3GraphVisualizer extends Observer {
         ;
 
 
-        visualizer.graph.zoomed = function () {
-            var copieTransform = new d3.event.transform.constructor(d3.event.transform.k, d3.event.transform.x, d3.event.transform.y);
-            copieTransform.k = 1;
-            g.attr("transform", copieTransform);
-            visualizer.graph.ticked(d3.event.transform.k);
-        };
-
         var scale = 1;
         var fo = visualizer.graph.append('foreignObject').attr("width", "40px").attr("height", "34px");
         var button = fo.append("xhtml:button")
@@ -147,7 +140,7 @@ export class D3GraphVisualizer extends Observer {
         results.links = results.edges;
 
         var rootConfPanel = d3.select(d3.select(svgId).node().parentNode, visualizer.graph);
-
+        let firstTicked = true;
         visualizer.graph.ticked = function (s) {
             scale = (s === undefined) ? scale : s;
             links.attr("d",
@@ -200,7 +193,6 @@ export class D3GraphVisualizer extends Observer {
                         }
                     }
                 );
-
             if (true) { // @TODO : à réécrire pour parcourir les groupes à afficher.
                 textNodes
                     .attr("x",
@@ -227,6 +219,30 @@ export class D3GraphVisualizer extends Observer {
                 pathLabels
                     .attr("d", visualizer.buildPathFromEdge(scale, svgId, confGraphModal.model)(results.links));
             }
+            if (firstTicked) {
+                // Search for the first container of visualizer.graph with a non empty size (Important remark: an element in a not visible html element
+                // returns a null size, so this hack is required.
+                let currentNode = visualizer.graph.node();
+                let bboxView;
+                while (currentNode !== undefined) {
+                    bboxView = currentNode.getBoundingClientRect();
+                    if (bboxView.width === 0 && bboxView.height === 0) {
+                        currentNode = currentNode.parentNode;
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+                if (currentNode !== undefined && bboxView.width !== 0 && bboxView.height !== 0) {
+                    const tx = bboxView.width / 2;
+                    const ty = bboxView.height / 2;
+                    let zoomed = function () {
+                        g.attr("transform", d3.event.transform);
+                    };
+                    visualizer.graph.call(d3.zoom().on("zoom", zoomed).transform, d3.zoomIdentity.translate(tx,ty));
+                    firstTicked = false;
+                }
+            }
         };
 
 
@@ -242,7 +258,6 @@ export class D3GraphVisualizer extends Observer {
             }
             updateSet("nodes", textNodes);
             updateSet("edges", textEdges);
-            // textEdges.attr("visibility", confGraphModal.edgesCheckbox.property("checked") ? "visible" : "hidden");
         };
 
         var maxLen = [];
@@ -287,23 +302,16 @@ export class D3GraphVisualizer extends Observer {
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
             }))
-            // .force("charge", d3.forceManyBody())
-            // .force("charge",
-            //     n => -2000
-            // )
             .force("collide", d3.forceCollide().radius(function (d, i, nodes) {
                     return d.r * 2;
                 }
             ).iterations(2))
-            .force("center", d3.forceCenter(800, 500))
             .on("tick", visualizer.graph.ticked);
-        var width = +visualizer.graph.node().getBoundingClientRect().width;
-        var height = +visualizer.graph.node().getBoundingClientRect().height;
         visualizer.simulation
             .force("link")
             .links(results.links);
-        visualizer.simulation
-            .force("center", d3.forceCenter(width / 2, height / 2));
+        visualizer.simulation.force("center", d3.forceCenter(0,0));
+
 
 
         var defs = visualizer.graph.append("defs");
@@ -477,12 +485,21 @@ export class D3GraphVisualizer extends Observer {
                     return (edge, i, edges) => `${prefix}${edge.id}_path`
                 }(visualizer.model.prefix))
             .attr("d", visualizer.buildPathFromEdge(1, svgId, visualizer.model)(results.links));
-        //add zoom capabilities
-        var zoom_handler = d3.zoom()
-            .on("zoom", visualizer.graph.zoomed);
-        zoom_handler(visualizer.graph);
+        visualizer.setupZoomHandler(visualizer);
+    }
 
-
+    setupZoomHandler(visualizer) {
+        let g = visualizer.graph.select("g");
+        let zoomed = function () {
+            g.attr("transform", d3.event.transform);
+        };
+        let bbox = g.node().getBBox();
+        let extent = [[bbox.x - bbox.width, bbox.y - bbox.height], [bbox.x+2*bbox.width, bbox.y+2*bbox.height]];
+        let zoom_handler = d3.zoom()
+            .scaleExtent([0.1,10])
+            // .translateExtent(extent)
+            .on("zoom", zoomed);
+        visualizer.graph.call(zoom_handler);
     }
 
     /** Visualisation of ontology.
@@ -512,7 +529,8 @@ export class D3GraphVisualizer extends Observer {
             menuNode.displayOff();
         }
 
-        let root = d3.select(d3.select(svgId).node().parentNode);
+        let svg = d3.select(svgId);
+        let root = d3.select(svg.node().parentNode);
         menuNode = ContextMenu.create(root, "nodeMenu")
             .addEntry("set as root", setDisplayRoot)
             .addEntry("Mask/Unmask the subtree", switchMaskAllSubtree)
@@ -546,21 +564,37 @@ export class D3GraphVisualizer extends Observer {
                 menu.displayOff();
             })
         ;
-        d3.select(svgId).node().oncontextmenu = function () {
+        svg.node().oncontextmenu = function () {
             return false;
         }
-        d3.select(svgId).on('contextmenu', function (e) {
+        svg.on('contextmenu', function (e) {
             d3.event.stopPropagation()
             menu.displayOn();
         });
-        d3.select(svgId).on('click', function (e) {
+        svg.on('click', function (e) {
             menu.displayOff();
             menuNode.displayOff();
         });
+
+
         // end of menu for the ontology graph background.
         parameters.menuNode = menuNode;
         let drawer = new OntologyDrawer().setParameters(parameters).setData(_results).draw(svgId);
         drawer.centerDisplay();
+
+        // Setup zoom handler
+        let g = svg.select("g");
+        let zoomed = function () {
+            g.attr("transform", d3.event.transform);
+        };
+        let bbox = g.node().getBBox();
+        let extent = [[bbox.x, bbox.y], [bbox.x+bbox.width, bbox.y+bbox.height]];
+        let zoom_handler = d3.zoom()
+            .scaleExtent([0.1,100])
+            // .translateExtent(extent)
+            .on("zoom", zoomed);
+        svg.call(zoom_handler);
+
         return drawer;
     }
 

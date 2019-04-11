@@ -188,7 +188,7 @@ public interface ExprType {
 	
 
 	public static int TURTLE 	= 227;
-	public static int LEVEL 	= 228;
+	public static int LEVEL         = 228;
 	public static int INDENT 	= 229;
 	public static int PPURI 	= 230;
 	public static int URILITERAL 	= 231;
@@ -206,7 +206,7 @@ public interface ExprType {
 	public static int STL_PREFIX 	= 242;
 	public static int STL_AGGREGATE = 243;
 	public static int STL_CONCAT    = 244;
-	public static int STL_GROUPCONCAT= 245;
+	public static int STL_GROUPCONCAT=245;
 	public static int STL_AND       = 246;
 	public static int STL_NUMBER    = 247;
 	public static int STL_LOAD      = 248;
@@ -287,7 +287,8 @@ public interface ExprType {
 	public static int XT_SORT       = 330;
 	public static int JAVACALL      = 331;
 	public static int DSCALL        = 332;
-	public static int JAVACAST       = 333;
+	public static int JAVACAST      = 333;
+        public static int ISEXTENSION   = 334;
         
         public static int XT_MAPPING     = 400;
         public static int XT_ADD         = 401;
@@ -361,6 +362,8 @@ public interface ExprType {
         public static int XT_SHAPE_GRAPH = 467;
         public static int XT_SHAPE_NODE  = 468;
         public static int XT_TOGRAPH     = 469;
+        public static int XT_EXPAND      = 470;
+        
      
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

@@ -575,7 +575,7 @@ public class Eval implements ExpType, Plugin {
         level = n;
     }
 
-    void setDebug(boolean b) {
+    public void setDebug(boolean b) {
         debug = b;
     }
 

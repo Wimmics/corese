@@ -2077,12 +2077,12 @@ public class TestQuery1 {
         assertEquals(18.8496, p.doubleValue(), 1e-5);
     }
 
-
+@Test
     public void testdh() throws EngineException {
         String init = "insert data { us:John rdfs:label 'John' }";
 
         String q =
-                "@test "
+                "@method "
                         + "select "
                         + "(method(us:display, 1.5) as ?dec)"
                         + "(method(us:display, us:John) as ?uri)"
@@ -2169,7 +2169,7 @@ public class TestQuery1 {
                 + "[] a us:Person "
                 + "}";
 
-        String q = "@test "
+        String q = "@method "
                 + "select ?x (method(us:test, ?x) as ?t) (method(us:test, ?ll) as ?l) "
                 + "where { ?x a ?type optional { ?x rdfs:label ?ll }}"
 

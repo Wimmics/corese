@@ -45,8 +45,13 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QuerySolverVisitor extends PointerObject implements ProcessVisitor {
+
     private static Logger logger = LoggerFactory.getLogger(QuerySolverVisitor.class);
-   
+    
+    public static boolean REENTRANT_DEFAULT = false;
+    
+    public static final String RECURSION= "@recursion";
+
     public static final String SHARE    = "@share";
     public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
@@ -93,6 +98,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         AGGREGATE, HAVING, FUNCTION, ORDERBY, DISTINCT
     };
     private boolean active = false;
+    private boolean reentrant = REENTRANT_DEFAULT;
     boolean select = false;
     private boolean shareable = false;
     private boolean debug = false;
@@ -128,6 +134,10 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     void initialize() {
+        ASTQuery ast = (ASTQuery) query.getAST();
+        if (ast.hasMetadata(RECURSION)) {
+            setReentrant(true);
+        }
     }
     
     Hierarchy getHierarchy() {
@@ -309,7 +319,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         return produce1(eval, g, q);
     }
     
-     public IDatatype produce1(Eval eval, Node g, Edge q) {  
+    public IDatatype produce1(Eval eval, Node g, Edge q) {  
         return callback(eval, PRODUCE, toArray(g, q));
     }
       
@@ -457,7 +467,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     @Override
     public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
         // prevent overload within overload
-        return ! isActive() && overload.overload(exp, (IDatatype)res, (IDatatype)dt1, (IDatatype)dt2);
+        return ! isRunning() && overload.overload(exp, (IDatatype)res, (IDatatype)dt1, (IDatatype)dt2);
     }
        
    @Override
@@ -467,7 +477,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     @Override
     public int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) {
-        if (! isActive() && overload.overload((IDatatype)dt1, (IDatatype)dt2)) {
+        if (! isRunning() && overload.overload((IDatatype)dt1, (IDatatype)dt2)) {
             return overload.compare(eval, res, (IDatatype)dt1, (IDatatype)dt2);
         }
         return res;
@@ -507,7 +517,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
      * function execute a query (which would trigger Visitor recursively)
      */
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
-        if (isActive() || ! accept(metadata)) {
+        if (isRunning() || ! accept(metadata)) {
             return null;
         }
         trace(ev, metadata, param);
@@ -540,7 +550,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     
     // param = Mappings map
     IDatatype sort(Eval ev, String metadata, IDatatype[] param) {
-        if (isActive() || ! accept(metadata)) {
+        if (isRunning() || ! accept(metadata)) {
             return null;
         }
         // function us:compare(?m1, ?m2)
@@ -561,7 +571,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     public IDatatype method(Eval ev, String name, IDatatype type, IDatatype[] param) {
-        if (isActive()) {
+        if (isRunning()) {
             return null;
         }
         Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
@@ -631,6 +641,13 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         this.shareable = shareable;
     }
     
+    boolean isRunning() {
+        if (isReentrant()) {
+            return false;
+        }
+        return isActive();
+    }
+    
      /**
      * @return the active
      */
@@ -661,6 +678,20 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+    
+        /**
+     * @return the reentrant
+     */
+    public boolean isReentrant() {
+        return reentrant;
+    }
+
+    /**
+     * @param reentrant the reentrant to set
+     */
+    public void setReentrant(boolean reentrant) {
+        this.reentrant = reentrant;
     }
     
    

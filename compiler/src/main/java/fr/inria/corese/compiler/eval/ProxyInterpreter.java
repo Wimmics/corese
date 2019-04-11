@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.PointerType;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -1972,7 +1973,7 @@ public class ProxyInterpreter implements Proxy,  ExprType {
      * return value of variable in first Mapping
      */
     public IDatatype gget(IDatatype dtmap, IDatatype dtvar){
-        if (! dtmap.isPointer() || dtmap.pointerType() != PointerObject.MAPPINGS_POINTER){
+        if (! dtmap.isPointer() || dtmap.pointerType() != PointerType.MAPPINGS){
             return null;
         }
         Mappings map = dtmap.getPointerObject().getMappings();
@@ -2012,7 +2013,7 @@ public class ProxyInterpreter implements Proxy,  ExprType {
      
     
     IDatatype reject(Environment env, IDatatype dtm){
-        if (dtm.pointerType() == Pointerable.MAPPING_POINTER){
+        if (dtm.pointerType() == PointerType.MAPPING){
             env.getMappings().reject(dtm.getPointerObject().getMapping()); 
         }
         return TRUE;

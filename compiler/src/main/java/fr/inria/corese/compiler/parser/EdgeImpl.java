@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.PointerObject;
 
@@ -245,8 +246,8 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public int pointerType() {
-        return Pointerable.EDGE_POINTER;
+    public PointerType pointerType() {
+        return PointerType.TRIPLE;
     }
 
 }

@@ -40,6 +40,11 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
         return true;
     }
     
+    @Override
+    public boolean isExtension() {
+        return true;
+    }
+    
     void setStep(int step) {
         this.step = step;
     }

@@ -112,6 +112,11 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
     }
     
     @Override
+    public boolean isExtension() {
+        return true;
+    }
+     
+    @Override
     public int compareTo(IDatatype dt) {
         if (dt.isList()) {
             int res = Integer.compare(size(), dt.size());

@@ -39,8 +39,12 @@ public class GraphFunction extends LDScript {
         switch (oper()) {
 
             case XT_VALUE:
+                // xt:value(subject, predicate) : value of object
                 int index = (param.length == 3) ? param[2].intValue() : 1;
                 Node node = p.getGraph().value(param[0], param[1], index);
+                if (node == null) {
+                    return null;
+                }
                 return (IDatatype) node.getDatatypeValue();
 
             case XT_GRAPH:

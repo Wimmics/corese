@@ -37,6 +37,7 @@ public class UnaryFunction extends TermEval {
             case ExprType.ISNUMERIC:    return value(dt.isNumber());
             case ExprType.ISUNDEFINED:  return value(dt.isUndefined());
             case ExprType.ISSKOLEM:     return value(dt.isSkolem());
+            case ExprType.ISEXTENSION:  return value(dt.isExtension());
                 
             case ExprType.CEILING:      return ceil(dt);
             case ExprType.ABS:          return abs(dt);

@@ -33,8 +33,10 @@ public class Namespace extends TermEval {
         }
 
         switch (oper()) {
+            case ExprType.XT_EXPAND: return uri(env, dt);
             case ExprType.QNAME:
                 if (arity() == 2) {
+                    // deprecated, use xt:expand(x)
                     return uri(env, dt);
                 }
                 return qname(env, dt);

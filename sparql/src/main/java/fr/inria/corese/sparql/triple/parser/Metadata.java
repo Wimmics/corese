@@ -97,6 +97,8 @@ public class Metadata extends ASTObject
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
     public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
+    
+    public static final String METHOD = "@method";
              
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

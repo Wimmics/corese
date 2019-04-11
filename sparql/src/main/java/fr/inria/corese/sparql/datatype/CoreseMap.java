@@ -42,6 +42,11 @@ public class CoreseMap extends CoreseUndefLiteral {
     }
     
     @Override
+    public boolean isExtension() {
+        return true;
+    }
+    
+    @Override
     public String toString() {
         return display().toString();
     }

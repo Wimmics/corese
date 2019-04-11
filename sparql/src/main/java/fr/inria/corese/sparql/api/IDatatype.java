@@ -114,6 +114,8 @@ public interface IDatatype
     
     boolean isPointer();
     
+    boolean isExtension();
+    
     PointerType pointerType();
     
     Pointerable getPointerObject();

@@ -531,6 +531,11 @@ public class CoreseDatatype
     public boolean isPointer() {
         return false;
     }
+    
+    @Override
+    public boolean isExtension() {
+        return false;
+    }
 
     @Override
     public Pointerable getPointerObject() {

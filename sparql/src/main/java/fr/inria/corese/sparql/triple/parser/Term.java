@@ -258,6 +258,7 @@ public class Term extends Expression {
             case ExprType.ISWELLFORMED:
             case ExprType.ISUNDEFINED:
             case ExprType.ISSKOLEM:
+            case ExprType.ISEXTENSION:
                 return new UnaryFunction(name);
 
             case ExprType.CONCAT:
@@ -447,6 +448,7 @@ public class Term extends Expression {
                 return new Prefix(name);
                 
             case ExprType.QNAME:
+            case ExprType.XT_EXPAND:
                 return new Namespace(name);
                 
             //case ExprType.STL_INDEX:

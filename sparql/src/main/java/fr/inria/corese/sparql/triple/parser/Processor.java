@@ -334,13 +334,13 @@ public class Processor {
 	static final String LCASE 	= "lcase";
 	static final String ENDS 	= "strends";
 	static final String STARTS 	= "strstarts";
-	static final String CONTAINS = "contains";
+	static final String CONTAINS    = "contains";
 	static final String ENCODE 	= "encode_for_uri";
-	public static final String CONCAT 	= "concat"; 
+	public static final String CONCAT="concat"; 
 	static final String STRBEFORE 	= "strbefore"; 
 	static final String STRAFTER 	= "strafter"; 
 	static final String STRREPLACE 	= "replace"; 
-	static final String UUID 		= "uuid"; 
+	static final String UUID 	= "uuid"; 
 	static final String STRUUID 	= "struuid"; 
 
 	
@@ -362,7 +362,7 @@ public class Processor {
 	static final String TIMEZONE    = "timezone";
 	static final String TZ 		= "tz";
 
-	static final String MD5 	= "md5";
+	static final String MD5     	= "md5";
 	static final String SHA1 	= "sha1";
 	static final String SHA224 	= "sha224";
 	static final String SHA256	= "sha256";
@@ -640,6 +640,7 @@ public class Processor {
 		defoper(INLIST,         ExprType.INLIST);
 		defoper(ISSKOLEM,       ExprType.ISSKOLEM);
 		defoper("isSkolem",     ExprType.ISSKOLEM);
+                defoper("isExtension",  ExprType.ISEXTENSION);
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
@@ -757,6 +758,9 @@ public class Processor {
 		defoper(EXT+"write",    ExprType.WRITE);
 		defoper(WRITE,          ExprType.WRITE);
 		defoper(QNAME,          ExprType.QNAME);
+                defoper(EXT+"contract", ExprType.QNAME);
+		defoper(EXT+"expand",   ExprType.XT_EXPAND);
+                
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);
  		defoper(INDEX,          ExprType.INDEX);
  		//defoper(EXT+"index",    ExprType.INDEX);
@@ -913,7 +917,9 @@ public class Processor {
                 
 		defoper(DISPLAY, ExprType.DISPLAY);
 		defoper(EXTEQUAL,ExprType.EXTEQUAL);
+                defoper(EXT+"similar",ExprType.EXTEQUAL);
 		defoper(EXTCONT, ExprType.EXTCONT);
+                defoper(EXT+"contains", ExprType.EXTCONT);
 		defoper(PROCESS, ExprType.PROCESS);
 		defoper(ENV, 	 ExprType.ENV);
 		defoper(XT_ENV,  ExprType.ENV);

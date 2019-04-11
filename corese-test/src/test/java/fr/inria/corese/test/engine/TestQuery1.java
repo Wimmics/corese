@@ -1,6 +1,7 @@
 package fr.inria.corese.test.engine;
 
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -49,11 +50,13 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
+import fr.inria.corese.sparql.datatype.CoresePointer;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 
@@ -128,40 +131,7 @@ public class TestQuery1 {
     }
     
     
-    static void before3() {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-
-        String q = "@public {"
-                
-                + "@filter "
-                + "function us:filter(?g, ?e, ?v) {"
-                + "us:eval(?e)"
-                + "}"
-                
-                + "function us:eval(?e) {"
-                + "if (ds:isTerm(?e) && ds:getLabel(?e) != 'exists' ) {"
-                + "let ((|?lvar) = ?e, ?lval = maplist(us:eval, ?lvar)) {"
-                + "apply(ds:getLabel(?e), ?lval)"
-                + "}"
-                + "}"
-                + "else { eval(?e) }"
-                + "}"
-                
-                + "}"
-                                
-                ;
-
-        try {
-            Query qq = exec.compile(q);
-            //System.out.println(qq.getAST());
-        } catch (EngineException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
-            System.out.println(ex);
-        }
-        
-        QuerySolver.setVisitorable(true);
-    }
+    
     
     
      static void before() {
@@ -238,7 +208,6 @@ public class TestQuery1 {
                 + "}"
                                               
                 ;
-
         try {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
@@ -290,6 +259,10 @@ public class TestQuery1 {
 
         return graph;
     }
+    
+    
+    
+    
     
     
          @Test
@@ -1716,6 +1689,20 @@ public class TestQuery1 {
         Graph gg = (Graph) dt.getObject();
         assertEquals(14, gg.size());
     } 
+    
+    @Test
+    public void testEnt2() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (xt:entailment() as ?g) where {"
+                + "}";
+
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?g");
+        Graph gg = (Graph) dt.getObject();
+        assertEquals(14, gg.size());
+    } 
+    
 
     
     @Test
@@ -2294,14 +2281,14 @@ public class TestQuery1 {
         IDatatype ds = (IDatatype) map.getValue("?s");
         IDatatype dm = (IDatatype) map.getValue("?m");
         IDatatype dl = (IDatatype) map.getValue("?l");
-        assertEquals(IDatatype.GRAPH_DATATYPE, dg.stringValue());
-        assertEquals(IDatatype.TRIPLE_DATATYPE, dt.stringValue());
-        assertEquals(IDatatype.MAPPINGS_DATATYPE, ds.stringValue());
-        assertEquals(IDatatype.MAPPING_DATATYPE, dm.stringValue());
+        assertEquals(CoresePointer.getDatatype(PointerType.GRAPH), dg);
+        assertEquals(CoresePointer.getDatatype(PointerType.TRIPLE), dt);
+        assertEquals(CoresePointer.getDatatype(PointerType.MAPPINGS), ds);
+        assertEquals(CoresePointer.getDatatype(PointerType.MAPPING), dm);
         assertEquals(IDatatype.LIST_DATATYPE, dl.stringValue());
     }
 
-    //@Test
+   // @Test
     public void testExtFun19() throws EngineException {
 
         String init = "prefix ex: <http://example.org/> "
@@ -2312,6 +2299,7 @@ public class TestQuery1 {
         String q = "prefix sol: <http://ns.inria.fr/sparql-datatype/mappings#>"
                 + "prefix map: <http://ns.inria.fr/sparql-datatype/mapping#>"
                 + "prefix ls: <http://ns.inria.fr/sparql-datatype/list#>"
+                + "@event @recursion "
                 + "select (us:foo() as ?t) "
                 + "where {}"
 
@@ -2319,17 +2307,20 @@ public class TestQuery1 {
                 + "query(select ?x ?y where {?x ?p ?y}) = query(select ?x ?y where {?x ?q ?y})"
                 + "}"
 
-                + "function sol:equal(?s1, ?s2) {"
+                + "@type dt:mappings "
+                + "function us:eq(?s1, ?s2) {"
                 + " xt:size(?s1) = xt:size(?s2) &&  mapevery(lambda(?t1, ?t2) { ?t1 = ?t2 }, ?s1, ?s2)"
                 + "}"
 
-                + "function map:equal(?m1, ?m2) {"
+                + "@type dt:mapping "
+                + "function us:eq(?m1, ?m2) {"
                 + "sol:equal(?m1, ?m2)"
                 + "}"
 
-                + "function ls:equal(?l1, ?l2) {"
-                + "sol:equal(?l1, ?l2)"
-                + "}";
+//                + "function ls:equal(?l1, ?l2) {"
+//                + "sol:equal(?l1, ?l2)"
+//                + "}"
+                ;
 
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
@@ -2340,7 +2331,7 @@ public class TestQuery1 {
     }
 
 
-    //@Test
+    @Test
     public void testExtFun18() throws EngineException {
 
         String init = "prefix ex: <http://example.org/> "
@@ -2350,26 +2341,37 @@ public class TestQuery1 {
 
         String q = "prefix tr: <http://ns.inria.fr/sparql-datatype/triple#>"
                 + "prefix gr: <http://ns.inria.fr/sparql-datatype/graph#>"
+                + "@event @recursion "
                 + "select (us:foo() as ?t) "
                 + "where {}"
 
                 + "function us:foo() {"
-                + "query(construct where {?x ?p ?y}) = query(construct where {?x ?p ?y})"
+                + "let (?g1 = construct where {?x ?p ?y}, ?g2 = construct where {?x ?p ?y}) {"
+                + "?g1 = ?g2"
+                + "}"
                 + "}"
 
-                + "function gr:equal(?g1, ?g2) {"
+                + "@type dt:graph dt:triple "
+                + "function us:eq(?g1, ?g2) {"
                 + "  mapevery(lambda(?t1, ?t2) { ?t1 = ?t2 }, ?g1, ?g2)"
                 + "}"
+                
+                //+ "@limit function us:limit(?m) { xt:print('limit') ; return (false) }"
+                
+//                + "@type  dt:triple "
+//                + "function us:eq(?g1, ?g2) {"
+//                + "  mapevery(lambda(?t1, ?t2) { ?t1 = ?t2 }, ?g1, ?g2)"
+//                + "}"
 
-                + "function tr:equal(?t1, ?t2) {"
-                + "  gr:equal(?t1, ?t2)"
-                + "}";
+               ;
 
         Graph g = createGraph();
+        //QuerySolverVisitor.REENTRANT_DEFAULT = true;
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?t");
+        //System.out.println(map);
         assertEquals(true, dt.booleanValue());
     }
 
@@ -2382,6 +2384,7 @@ public class TestQuery1 {
                 + "}";
 
         String q = "prefix tr: <http://ns.inria.fr/sparql-datatype/triple#>"
+                + "@event "
                 + "select (us:foo() as ?t) "
                 + "where {}"
 
@@ -2389,8 +2392,8 @@ public class TestQuery1 {
                 + "mapevery(lambda(?t) { ?t = ?t }, query(construct where {?x ?p ?y}))"
                 + "}"
 
-                + "function tr:equal(?t1, ?t2) {"
-                + "  mapevery(lambda(?x, ?y) { ?x = ?y }, ?t1, ?t2)"
+                + "@type dt:triple function us:eq(?t1, ?t2) {"
+                + "  mapevery(lambda(?x, ?y) { xt:print(?x, ?y) ; ?x = ?y }, ?t1, ?t2)"
                 + "}";
 
         Graph g = createGraph();

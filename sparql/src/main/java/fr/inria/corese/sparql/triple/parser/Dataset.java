@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.DATASET;
 
 /**
  * 
@@ -222,8 +224,8 @@ public class Dataset extends ASTObject {
     }
     
     @Override
-    public int pointerType() {
-        return DATASET_POINTER;
+    public PointerType pointerType() {
+        return DATASET;
     } 
  
     

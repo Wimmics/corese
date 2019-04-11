@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -30,7 +31,7 @@ public class Eval extends LDScript {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype dt = getBasicArg(0).eval(eval, b, env, p); 
-        if (dt == null || dt.pointerType() != Pointerable.EXPRESSION_POINTER) {
+        if (dt == null || dt.pointerType() != PointerType.EXPRESSION) {
             return dt;
         }
         Expression exp = (Expression) dt.getPointerObject();

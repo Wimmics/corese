@@ -18,6 +18,8 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.EXPRESSION;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -976,8 +978,8 @@ public class Expression extends TopExp
     }
 
     @Override
-    public int pointerType() {
-        return Pointerable.EXPRESSION_POINTER;
+    public PointerType pointerType() {
+        return EXPRESSION;
     }
 
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
@@ -1035,7 +1037,8 @@ public class Expression extends TopExp
         ArrayList<IDatatype> list = new ArrayList<>();
         if (getArgs() == null){
         }
-        else {
+        else { 
+            list.add(DatatypeMap.createResource(getLabel()));
             for (Expression exp : getArgs()) {
                 list.add(exp.getExpressionDatatypeValue());
             }
@@ -1048,7 +1051,10 @@ public class Expression extends TopExp
         if (getArgs() == null) {
             return null; 
         }
-        Expression exp = getArg(n);
+        if (n == 0) {
+            return DatatypeMap.createResource(getLabel());
+        }
+        Expression exp = getArg(n -1);
         if (exp == null) {
             return null;
         }

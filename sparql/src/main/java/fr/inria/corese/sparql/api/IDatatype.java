@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
+import fr.inria.corese.kgram.api.core.PointerType;
 import java.util.List;
 
 /**
@@ -67,20 +68,7 @@ public interface IDatatype
     public static final String MAP_DATATYPE      = ExpType.DT + "map";   
     public static final String LIST_DATATYPE     = ExpType.DT + "list";   
     public static final String SYSTEM            = ExpType.DT + "system";
-    public static final String POINTER           = ExpType.DT + "pointer";
-    public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";
-    public static final String TRIPLE_DATATYPE   = ExpType.DT + "triple";
-    public static final String QUERY_DATATYPE    = ExpType.DT + "query";
-    public static final String MAPPINGS_DATATYPE = ExpType.DT + "mappings";
-    public static final String MAPPING_DATATYPE  = ExpType.DT + "mapping";
-    public static final String CONTEXT_DATATYPE  = ExpType.DT + "context";
-    public static final String NSM_DATATYPE      = ExpType.DT + "nsmanager";
-    public static final String METADATA_DATATYPE = ExpType.DT + "annotation";
-    public static final String EXPRESSION_DATATYPE = ExpType.DT + "expression";
-    public static final String DATAPRODUCER_DATATYPE = ExpType.DT + "producer";
-    public static final String PATH_DATATYPE       = ExpType.DT + "path";
-    public static final String VISITOR_DATATYPE    = ExpType.DT + "visitor";
-      
+     
     boolean isSkolem();
 
     boolean isXMLLiteral();
@@ -96,6 +84,7 @@ public interface IDatatype
 
     List<IDatatype> getValues();
     List<IDatatype> getValueList();
+    IDatatype getValue(String var, int n);
     IDatatype toList();
     IDatatypeList getList();  
     default IDatatype member(IDatatype elem) {
@@ -125,7 +114,7 @@ public interface IDatatype
     
     boolean isPointer();
     
-    int pointerType();
+    PointerType pointerType();
     
     Pointerable getPointerObject();
 

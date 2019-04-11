@@ -64,7 +64,7 @@ public class ListSort extends Funcall {
     
     IDatatype toList(List<IDatatype> list, IDatatype dt) {
         switch (dt.pointerType()) {
-            case Pointerable.MAPPINGS_POINTER:
+            case MAPPINGS:
                 return toListMappings(list, dt);
         }
         return DatatypeMap.newList(list);

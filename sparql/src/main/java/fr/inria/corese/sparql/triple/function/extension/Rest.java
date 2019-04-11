@@ -6,6 +6,7 @@
 
 package fr.inria.corese.sparql.triple.function.extension;
 
+import static fr.inria.corese.kgram.api.core.PointerType.EXPRESSION;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -43,7 +44,7 @@ public class Rest extends TermEval {
             return null;
         }
         
-        if (dt.isMap() || dt.pointerType() == Pointerable.EXPRESSION_POINTER) {
+        if (dt.isMap() || dt.pointerType() == EXPRESSION) {
             dt = dt.toList();
         }
         if (dt.isList()) {

@@ -8,6 +8,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -61,7 +62,7 @@ public class GraphFunction extends LDScript {
     }
     
     IDatatype access(IDatatype dt, Producer p) {
-        if (!(dt.isPointer() && dt.pointerType() == Pointerable.EDGE_POINTER)) {
+        if (!(dt.isPointer() && dt.pointerType() == PointerType.TRIPLE)) {
             switch (oper()) {
                 case XT_INDEX: return index(dt, p);
                 default: return null;

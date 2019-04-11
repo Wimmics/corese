@@ -16,6 +16,7 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
@@ -395,6 +396,11 @@ public class CoreseDatatype
     }
     
     @Override
+    public IDatatype getValue(String var, int n) {
+        return get(n);
+    }
+    
+    @Override
     public IDatatype toList(){
         return DatatypeMap.newInstance(getValueList());
     }
@@ -532,8 +538,8 @@ public class CoreseDatatype
     }
 
     @Override
-    public int pointerType() {
-        return Pointerable.UNDEF_POINTER;
+    public PointerType pointerType() {
+        return PointerType.UNDEF;
     }
 
     public boolean isDecimal() {

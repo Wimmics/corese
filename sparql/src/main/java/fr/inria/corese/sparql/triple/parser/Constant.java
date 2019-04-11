@@ -453,6 +453,12 @@ public class Constant extends Atom {
     public IDatatype getValue() {
         return dt;
     }
+    
+//    @Override
+//    IDatatype getExpressionDatatypeValue() {
+//        //return DatatypeMap.createObject(this);
+//        return getDatatypeValue();
+//    }
 
     @Override
     public void visit(ExpressionVisitor v) {

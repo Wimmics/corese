@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
 import fr.inria.corese.sparql.datatype.XSD;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -821,8 +823,8 @@ public class NSManager extends ASTObject {
     }
 
     @Override
-    public int pointerType() {
-        return NSMANAGER_POINTER;
+    public PointerType pointerType() {
+        return NSMANAGER;
     } 
     
     

@@ -26,6 +26,7 @@ import fr.inria.corese.sparql.api.GraphProcessor;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 
 /**
@@ -119,7 +120,7 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.load(param[0], null, null, null);
             default:
                 IDatatype dt = param[1];
-                if (dt.pointerType() == Pointerable.GRAPH_POINTER) {
+                if (dt.pointerType() == PointerType.GRAPH) {
                     return proc.load(param[0], dt, getParam(param, 2), getParam(param, 3));
                 } else {
                     return proc.load(param[0], null, dt, getParam(param, 2));

@@ -464,7 +464,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -493,7 +493,7 @@
                     <configuration>
                         <!--<forkMode>once</forkMode>-->
                         <!--<forkCount>1</forkCount>-->
-                        <argLine>@{jacocoArgLine} -Xmx2048m</argLine>
+                        <argLine>${jacocoArgLine} -Xmx2048m</argLine>
                         <reuseForks>true</reuseForks>
                         <trimStackTrace>false</trimStackTrace>
                         <testFailureIgnore>true</testFailureIgnore>
@@ -758,7 +758,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.7.0</version>
+                        <version>3.8.0</version>
                         <executions>
                             <execution>
                                 <id>default-compile</id>
@@ -814,7 +814,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.7.0</version>
+                        <version>3.8.0</version>
                         <executions>
                             <execution>
                                 <id>default-compile</id>

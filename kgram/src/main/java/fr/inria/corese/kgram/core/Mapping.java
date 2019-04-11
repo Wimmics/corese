@@ -10,6 +10,8 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.MAPPING;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -1314,8 +1316,8 @@ public class Mapping
     }
 
     @Override
-    public int pointerType() {
-        return MAPPING_POINTER;
+    public PointerType pointerType() {
+        return MAPPING;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -12,25 +13,9 @@ import java.util.ArrayList;
  */
 public interface Pointerable extends Loopable {
     static final ArrayList empty = new ArrayList(0);
-    
-    public static final int UNDEF_POINTER    = -1;
-    public static final int MAPPINGS_POINTER = 1;
-    public static final int MAPPING_POINTER  = 2;
-    public static final int EDGE_POINTER     = 3;
-    public static final int GRAPH_POINTER    = 4;
-    public static final int NSMANAGER_POINTER= 5;
-    public static final int CONTEXT_POINTER  = 6;
-    public static final int QUERY_POINTER    = 7;
-    public static final int METADATA_POINTER = 8;
-    public static final int DATASET_POINTER  = 9;
-    public static final int EXPRESSION_POINTER  = 10;
-    public static final int DATAPRODUCER_POINTER  = 11;
-    public static final int PATH_POINTER  = 12;
-    public static final int VISITOR_POINTER  = 13;
-    
-     
-    default int pointerType() {
-        return UNDEF_POINTER;
+          
+    default PointerType pointerType() {
+        return PointerType.UNDEF;
     }
     
     default Object getPointerObject() {
@@ -51,6 +36,10 @@ public interface Pointerable extends Loopable {
     }
         
     default Query getQuery() {
+        return null;
+    }
+    
+    default Exp getStatement() {
         return null;
     }
     

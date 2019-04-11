@@ -18,6 +18,8 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Binder;
 import java.util.Map;
 
@@ -1595,8 +1597,8 @@ public class Mappings extends PointerObject
     }
 
     @Override
-    public int pointerType() {
-        return MAPPINGS_POINTER;
+    public PointerType pointerType() {
+        return MAPPINGS;
     }
 
     @Override

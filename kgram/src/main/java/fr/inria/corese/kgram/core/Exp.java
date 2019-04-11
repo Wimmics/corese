@@ -11,6 +11,8 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.STATEMENT;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.api.query.Producer;
 import java.util.HashMap;
@@ -2217,4 +2219,28 @@ public class Exp extends PointerObject
     public void setDebug(boolean b) {
         isDebug = b;
     }
+    
+    @Override
+    public PointerType pointerType(){
+        return STATEMENT;
+    }
+    
+     @Override
+    public String getDatatypeLabel() {
+        return String.format("[Statement]");
+    }
+    
+    @Override
+    public Exp getStatement() {
+        return this;
+    }
+    
+    @Override
+    public Object getValue(String var, int n) {
+        if (n < size()) {
+            return get(n);
+        }
+        return null;
+    }
+    
 }

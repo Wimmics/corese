@@ -6,6 +6,8 @@ import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
+import static fr.inria.corese.kgram.api.core.PointerType.PATH;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -71,8 +73,8 @@ public class Path extends ProducerDefault implements Pointerable {
     }
     
     @Override
-    public int pointerType() {
-        return PATH_POINTER;
+    public PointerType pointerType() {
+        return PATH;
     }
 
     void setIsShort(boolean b) {

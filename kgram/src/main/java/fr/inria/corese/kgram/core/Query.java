@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.DQPFactory;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -2660,8 +2661,8 @@ public class Query extends Exp implements Graphable {
     }
     
     @Override
-    public int pointerType(){
-        return QUERY_POINTER;
+    public PointerType pointerType(){
+        return PointerType.QUERY;
     }
 
     @Override

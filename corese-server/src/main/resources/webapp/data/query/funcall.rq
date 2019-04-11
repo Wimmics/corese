@@ -81,7 +81,7 @@ function us:parseLang(?text) {
 }
 
 function us:qname(?text) {
-    kg:qname(?text, true)
+    xt:expand(?text)
 }
 
 function us:parseLiteralSyntax(?text) {

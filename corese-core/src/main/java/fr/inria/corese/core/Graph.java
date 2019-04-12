@@ -1609,9 +1609,18 @@ public class Graph extends GraphObject implements
      * it exists
      *
      */
+    @Override
     public Node getNode(Node node) {
         IDatatype dt = getDatatypeValue(node);
         return getNode(dt, false, false);
+    }
+    
+    @Override
+    public Node getVertex(Node node) {
+        if (node.getDatatypeValue().isURI()) {
+            return getNode(node.getLabel());
+        }
+        return getNode(node);      
     }
 
     public Node createNode(IDatatype dt) {
@@ -1786,23 +1795,13 @@ public class Graph extends GraphObject implements
     }
 
     Node basicAddResource(String label) {
-        String key = getID(label);
-        Node node = getNode(key, label);
-        if (node != null) {
-            return node;
-        }
-        node = getGraphNode(key, label);
-        if (node == null) {
-            node = getPropertyNode(label);
-        }
-        if (node == null){
-            node = getSystemNode(label);
-        }
+        Node node = getResource(label);
         if (node != null) {
             add(getDatatypeValue(node), node);
             return node;
         }
         IDatatype dt = DatatypeMap.createResource(label);
+        String key = getID(label);
         node = createNode(key, dt);
         add(dt, node);
         return node;

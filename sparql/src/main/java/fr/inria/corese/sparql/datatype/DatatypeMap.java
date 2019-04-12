@@ -603,6 +603,10 @@ public class DatatypeMap implements Cst, RDF {
         if (obj instanceof Node) {
             return (IDatatype) ((Node) obj).getDatatypeValue();
         }      
+        return createObjectBasic(name, obj);
+    }
+    
+    public static IDatatype createObjectBasic(String name, Object obj) { 
         if (obj instanceof Pointerable) {
             Pointerable ptr = (Pointerable) obj;            
             return new CoresePointer(name==null?defaultName(ptr):name, ptr);

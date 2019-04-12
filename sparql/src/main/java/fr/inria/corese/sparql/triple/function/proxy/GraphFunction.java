@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.function.proxy;
 import fr.inria.corese.kgram.api.core.Edge;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_GRAPH;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INDEX;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECT;
@@ -55,6 +56,15 @@ public class GraphFunction extends LDScript {
                     return access(param[0], p);
                 }
                 
+            case XT_NODE:
+                //Node n = p.getNode(param[0]);
+                Node n = p.getGraph().getVertex(param[0]);
+                if (n == null) {
+                    return null;
+                }
+                return DatatypeMap.createObjectBasic(null, n);
+                
+                
             default:
                 switch (param.length) {
                     case 1: return access(param[0], p);
@@ -66,7 +76,7 @@ public class GraphFunction extends LDScript {
     }
     
     IDatatype access(IDatatype dt, Producer p) {
-        if (!(dt.isPointer() && dt.pointerType() == PointerType.TRIPLE)) {
+        if (dt.pointerType() != PointerType.TRIPLE) {
             switch (oper()) {
                 case XT_INDEX: return index(dt, p);
                 default: return null;
@@ -93,7 +103,7 @@ public class GraphFunction extends LDScript {
     }
     
     IDatatype index(IDatatype dt, Producer p) {
-        Node n = p.getNode(dt);
+        Node n = getNode(dt, p);
         if (n == null) {
             return null;
         }

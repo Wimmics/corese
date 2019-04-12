@@ -705,6 +705,7 @@ public class Processor {
 		defoper(XT_INDEX,        ExprType.XT_INDEX);
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
 		defoper(XT_EDGE,         ExprType.XT_EDGE);
+                defoper(EXT+"node",      ExprType.XT_NODE);
 		defoper(XT_NAME,         ExprType.XT_NAME);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
 		defoper(XT_QUERY,        ExprType.XT_QUERY);

@@ -534,7 +534,8 @@ public class Term extends Expression {
             case ExprType.XT_SUBJECT:
             case ExprType.XT_OBJECT:
             case ExprType.XT_PROPERTY:
-            case ExprType.XT_INDEX:                 
+            case ExprType.XT_INDEX: 
+            case ExprType.XT_NODE:              
                 return new GraphFunction(name);
                 
             case ExprType.XT_METADATA:

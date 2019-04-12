@@ -439,7 +439,8 @@ d3sparql.barchart = function(json, config) {
     "width":    config.width    || 750,
     "height":   config.height   || 300,
     "margin":   config.margin   || 80,  // TODO: to make use of {top: 10, right: 10, bottom: 80, left: 80}
-    "selector": config.selector || null
+    "selector": config.selector || null,
+    "custom_extent": config.custom_extent || null
   }
 
   // var scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1)
@@ -451,7 +452,13 @@ d3sparql.barchart = function(json, config) {
   // var axis_x = d3.svg.axis().scale(scale_x).orient("bottom")
   // var axis_y = d3.svg.axis().scale(scale_y).orient("left")  // .ticks(10, "%")
   scale_x.domain(data.map(function(d) { return d[opts.var_x].value }))
-  scale_y.domain(d3.extent(data, function(d) { return parseInt(d[opts.var_y].value) }))
+  if (config.custom_extent) {
+    scale_y.domain(config.custom_extent)
+  } else {
+    scale_y.domain(d3.extent(data, function (d) {
+      return parseInt(d[opts.var_y].value)
+    }))
+  }
 
   // var svg = d3sparql.select(opts.selector, "barchart").append("svg")
   var svg = d3.select(opts.selector)

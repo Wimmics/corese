@@ -134,6 +134,12 @@ class BarChartDrawer extends SvgDrawer {
         div.append("select").attr("id", "var_y_select").selectAll("option").data(data.head.vars)
             .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;});
         d3.select("#var_y_select").property("value", data.head.vars[1])
+        // div.append("div").attr("class", "custom-control custom-switch ")
+        //     .append("label").text("")
+        //     "<div class=\"custom-control custom-switch\">\n" +
+        //     "  <input type=\"checkbox\" class=\"custom-control-input\" id=\"customSwitches\">\n" +
+        //     "  <label class=\"custom-control-label\" for=\"customSwitches\">Toggle this switch element</label>\n" +
+        //     "</div>")
         this.data = data;
     }
     draw(svgId) {
@@ -141,9 +147,14 @@ class BarChartDrawer extends SvgDrawer {
         this.parameters.var_x = d3.select("#var_x_select").node().value;
         this.parameters.var_y = d3.select("#var_y_select").node().value;
 
-        for (let i in this.data.results.bindings) {
-            this.data.results.bindings[i][this.parameters.var_y].value= this.data.results.bindings[i][this.parameters.var_y].value.replace(/,/g,'');
-        }
+        let nbColumns = this.data.results.bindings.length;
+        this.parameters.width = Math.min((nbColumns+1)*50, this.parameters.width);
+        let range = d3.extent(this.data.results.bindings, function (d) {
+            return parseInt(d[this.parameters.var_y].value)
+        }.bind(this));
+        range[0] = range[0] - 0.05*(range[1] - range[0])
+        this.parameters.custom_extent = range;
+
         d3sparql[this.type](this.data, this.parameters);
         return this;
     }

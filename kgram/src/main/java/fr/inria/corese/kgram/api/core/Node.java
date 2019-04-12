@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import static fr.inria.corese.kgram.api.core.PointerType.NODE;
 import fr.inria.corese.kgram.path.Path;
 
 /**
@@ -9,7 +10,7 @@ import fr.inria.corese.kgram.path.Path;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Node {
+public interface Node extends Pointerable {
         public static final String INITKEY = "";
 
 	public static final int DEPTH 	= 0;
@@ -21,6 +22,11 @@ public interface Node {
 	public static final int PSIZE 	= 4;
 
 	public static final int STATUS 	= 4;
+        
+        @Override
+        default PointerType pointerType(){
+            return NODE;
+        }
 
 	/**
 	 * Query nodes have an index computed by KGRAM

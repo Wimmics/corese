@@ -12,6 +12,7 @@ public interface Graph {
     Node getPropertyNode(Node dt);
     
     Node getNode(Node dt);
-
     
+    Node getVertex(Node dt);
+ 
 }

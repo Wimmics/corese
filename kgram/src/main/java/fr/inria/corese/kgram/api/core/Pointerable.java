@@ -34,6 +34,10 @@ public interface Pointerable extends Loopable {
     default Edge getEdge() {
         return null;
     }
+    
+    default Node getNode() {
+        return null;
+    }
         
     default Query getQuery() {
         return null;

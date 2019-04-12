@@ -363,6 +363,7 @@ public interface ExprType {
         public static int XT_SHAPE_NODE  = 468;
         public static int XT_TOGRAPH     = 469;
         public static int XT_EXPAND      = 470;
+        public static int XT_NODE        = 471;
         
      
         public static int SLICE       = 500;

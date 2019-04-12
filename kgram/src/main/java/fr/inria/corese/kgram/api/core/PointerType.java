@@ -13,6 +13,7 @@ public enum PointerType {
         MAPPINGS("mappings"),
         MAPPING("mapping"),
         GRAPH("graph"),
+        NODE("node"),
         TRIPLE("triple"),
         PATH("path"),
         QUERY("query"),

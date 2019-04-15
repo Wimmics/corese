@@ -488,7 +488,7 @@ export class OntologyDrawer extends SvgDrawer {
         let tx = -bbox.x;
         let ty = -bbox.y;
         let scale = Math.min(divHeight / bbox.height, divWidth / bbox.width);
-        let zoom = d3.zoomIdentity.translate(tx*scale, ty*scale+divHeight/2).scale(scale);
+        let zoom = d3.zoomIdentity.translate(tx*scale, ty*scale+divHeight/3).scale(scale);
         this.svg.call(this.zoomListener.transform, zoom);
     }
 

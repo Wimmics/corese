@@ -274,18 +274,26 @@ public class Transformer implements ExpType {
     }
     
     
-    void metadata(ASTQuery ast, Query q){
-        if (ast.hasMetadata(Metadata.TRACE)){
-            System.out.println(ast);
-        }
-        if (ast.hasMetadata(Metadata.TEST)){
-            q.setTest(true);
-        }       
-        if (ast.hasMetadata(Metadata.PARALLEL)) {
-            q.setParallel(true);
-        }
-        if (ast.hasMetadata(Metadata.SEQUENCE)) {
-            q.setParallel(false);
+    void metadata(ASTQuery ast, Query q) {
+        Metadata meta = ast.getMetadata();
+        if (meta != null) {
+            if (ast.hasMetadata(Metadata.TRACE)) {
+                System.out.println(ast);
+            }
+            if (ast.hasMetadata(Metadata.TEST)) {
+                q.setTest(true);
+            }
+            if (ast.hasMetadata(Metadata.PARALLEL)) {
+                q.setParallel(true);
+            }
+            if (ast.hasMetadata(Metadata.SEQUENCE)) {
+                q.setParallel(false);
+            }
+            if (meta.hasMetadata(Metadata.UNLOCK) || 
+                    (meta.getDatatypeValue(Metadata.LOCK) != null
+                    && !meta.getDatatypeValue(Metadata.LOCK).booleanValue())) {
+                q.setLock(false);
+            }
         }
     }
     

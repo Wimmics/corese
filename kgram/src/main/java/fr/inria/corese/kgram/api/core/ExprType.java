@@ -311,7 +311,7 @@ public interface ExprType {
         public static int XT_REJECT      = 417;
         public static int XT_VARIABLES   = 418;
         public static int XT_VALUES      = 419;
-        public static int XT_EDGE        = 420;
+        public static int XT_EDGES        = 420;
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
@@ -364,6 +364,7 @@ public interface ExprType {
         public static int XT_TOGRAPH     = 469;
         public static int XT_EXPAND      = 470;
         public static int XT_NODE        = 471;
+        public static int XT_VERTEX      = 472;
         
      
         public static int SLICE       = 500;

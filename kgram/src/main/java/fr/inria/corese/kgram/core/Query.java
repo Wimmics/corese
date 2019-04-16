@@ -30,6 +30,20 @@ import org.slf4j.LoggerFactory;
 public class Query extends Exp implements Graphable {
 
     /**
+     * @return the lock
+     */
+    public boolean isLock() {
+        return lock;
+    }
+
+    /**
+     * @param lock the lock to set
+     */
+    public void setLock(boolean lock) {
+        this.lock = lock;
+    }
+
+    /**
      * @return the parallel
      */
     public boolean isParallel() {
@@ -251,6 +265,7 @@ public class Query extends Exp implements Graphable {
     private boolean isBind = false;
 
     private boolean isSynchronized = false;
+    private boolean lock = true;
 
     private boolean isTemplate = false;
     private boolean isTransformationTemplate = false;

@@ -8,6 +8,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_VERTEX;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
@@ -57,12 +58,18 @@ public class GraphFunction extends LDScript {
                 }
                 
             case XT_NODE:
-                //Node n = p.getNode(param[0]);
-                Node n = p.getGraph().getVertex(param[0]);
+                Node n = p.getGraph().getNode(param[0]);
                 if (n == null) {
                     return null;
                 }
                 return DatatypeMap.createObjectBasic(null, n);
+                
+            case XT_VERTEX:
+                Node v = p.getGraph().getVertex(param[0]);
+                if (v == null) {
+                    return null;
+                }
+                return DatatypeMap.createObjectBasic(null, v);    
                 
                 
             default:

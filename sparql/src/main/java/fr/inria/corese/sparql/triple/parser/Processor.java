@@ -133,7 +133,7 @@ public class Processor {
         private static final String XT_CAST     = EXT + "cast";        
         private static final String XT_REJECT   = EXT + "reject";
         private static final String XT_VARIABLES= EXT + "variables";
-        private static final String XT_EDGE     = EXT + "edge";
+        private static final String XT_EDGES     = EXT + "edges";
         private static final String XT_NAME     = EXT + "name";        
         private static final String XT_QUERY    = EXT + "query";
         private static final String XT_AST      = EXT + "ast";
@@ -704,12 +704,13 @@ public class Processor {
 		defoper(XT_VALUE,        ExprType.XT_VALUE);                
 		defoper(XT_INDEX,        ExprType.XT_INDEX);
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
-		defoper(XT_EDGE,         ExprType.XT_EDGE);
+		defoper(XT_EDGES,        ExprType.XT_EDGES);
                 defoper(EXT+"node",      ExprType.XT_NODE);
+                defoper(EXT+"vertex",    ExprType.XT_VERTEX);
 		defoper(XT_NAME,         ExprType.XT_NAME);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
 		defoper(XT_QUERY,        ExprType.XT_QUERY);
-		defoper(XT_AST,          ExprType.XT_AST);
+		//defoper(XT_AST,          ExprType.XT_AST);
 		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
 		defoper(XT_METADATA,     ExprType.XT_METADATA);
 		defoper(XT_ANNOTATION,   ExprType.XT_METADATA);

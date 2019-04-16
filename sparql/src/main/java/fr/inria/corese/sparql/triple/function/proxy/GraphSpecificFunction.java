@@ -9,14 +9,12 @@ import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.STL_INDEX;
-import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINUS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OPTIONAL;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_UNION;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -28,6 +26,9 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 
 /**
  *
@@ -80,7 +81,7 @@ public class GraphSpecificFunction extends LDScript {
             case XT_TUNE:
                 return proc.tune(this, env, p, param[0], param[1]);
                 
-            case XT_EDGE:
+            case XT_EDGES:
                 return edge(proc, env, p, param);
                 
             case XT_EXISTS:
@@ -152,7 +153,6 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.edge(env, p, param[0], param[1], null);
             default:
                 return proc.edge(env, p, param[0], param[1], param[2]);
-
         }
     }
     

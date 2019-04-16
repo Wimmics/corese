@@ -515,7 +515,7 @@ public class Term extends Expression {
             case ExprType.APP_SIM:                
             case ExprType.APPROXIMATE:
             case ExprType.DEPTH:
-            case ExprType.XT_EDGE:
+            case ExprType.XT_EDGES:
             case ExprType.XT_EXISTS: 
             case ExprType.XT_MINUS:
             case ExprType.XT_JOIN:
@@ -536,6 +536,7 @@ public class Term extends Expression {
             case ExprType.XT_PROPERTY:
             case ExprType.XT_INDEX: 
             case ExprType.XT_NODE:              
+            case ExprType.XT_VERTEX:              
                 return new GraphFunction(name);
                 
             case ExprType.XT_METADATA:

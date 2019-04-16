@@ -38,7 +38,7 @@ public abstract class EdgeBinary extends EdgeTop
 
     @Override
     public boolean contains(Node node) {
-        // TODO Auto-generated method stub
+        
         return getNode(0).same(node) || getNode(1).same(node);
     }
 
@@ -93,14 +93,12 @@ public abstract class EdgeBinary extends EdgeTop
 
 
     @Override
-    public Node getNode() {
-        // TODO Auto-generated method stub
+    public Node getNode() {      
         return DatatypeMap.createObject(this.toString(), this);
     }
 
     @Override
-    public Node getEdgeVariable() {
-        // TODO Auto-generated method stub
+    public Node getEdgeVariable() { 
         return null;
     }
 

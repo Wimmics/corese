@@ -92,13 +92,13 @@ public class EdgeFactory {
             case Graph.RULE_INDEX: return ent;
             
             case Graph.ENTAIL_INDEX:
-                return EdgeInternalEntail.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
+                return EdgeInternalEntail.create(ent);
                 
             case Graph.DEFAULT_INDEX:
-                return EdgeInternalDefault.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
+                return EdgeInternalDefault.create(ent);
 
             default: 
-                return EdgeInternal.create(ent.getGraph(), ent.getNode(0), ent.getEdgeNode(), ent.getNode(1));
+                return EdgeInternal.create(ent);
         }
     }
        

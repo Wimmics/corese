@@ -2,7 +2,6 @@ package fr.inria.corese.core.edge;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.core.GraphObject;
 import java.util.ArrayList;

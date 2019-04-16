@@ -1,5 +1,6 @@
 package fr.inria.corese.core.edge;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
 /**
@@ -23,6 +24,10 @@ public  class EdgeInternal extends EdgeBinary {
     
     public static EdgeInternal create(Node graph, Node subject, Node predicate, Node object){
         return new EdgeInternal(graph, subject, object);
+    }
+    
+    public static EdgeInternal create(Edge edge){
+        return new EdgeInternal(edge.getGraph(), edge.getNode(0), edge.getNode(1));
     }
     
      @Override

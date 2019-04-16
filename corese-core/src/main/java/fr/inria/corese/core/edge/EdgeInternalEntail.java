@@ -2,6 +2,7 @@ package fr.inria.corese.core.edge;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 /**
  * Graph Edge for internal storage
@@ -21,6 +22,10 @@ public  class EdgeInternalEntail extends EdgeBinary {
     
     public static EdgeInternalEntail create(Node graph, Node subject, Node predicate, Node object){
         return new EdgeInternalEntail(subject, object);
+    }
+    
+     public static EdgeInternalEntail create(Edge edge){
+        return new EdgeInternalEntail(edge.getNode(0), edge.getNode(1));
     }
     
      @Override

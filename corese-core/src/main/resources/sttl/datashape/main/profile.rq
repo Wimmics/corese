@@ -190,14 +190,14 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
 
 # within graph ?shape {}
 function sh:severity(?sh) {
-    for ((?s, ?p, ?o) in xt:edge(?sh, sh:severity)){
+    for ((?s, ?p, ?o) in xt:edges(?sh, sh:severity)){
         return (?o)
     } ;
     return (sh:Violation)
 }
 
 function sh:message(?sh){
-    for ((?s, ?p, ?o) in xt:edge(?sh, sh:message)){
+    for ((?s, ?p, ?o) in xt:edges(?sh, sh:message)){
         return (?o)
     } ;
     return (error())

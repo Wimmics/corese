@@ -1708,10 +1708,26 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
   |
   	expression1 = TriplesNode(stack)
   	stack = PropertyList(expression1, stack)
-  	
+  | stack = RDFstar(stack)	
   | stack = tuple(stack)
   | stack = triple(stack)
   )
+}
+
+
+Exp RDFstar(Exp stack) : {Expression sub, obj; Atom exp, pred; List<Atom>list; Triple t;}
+{
+    { list = new ArrayList<Atom>(); }
+    <LT><LT> 
+        sub = VarOrTerm(stack) pred = Verb() obj = VarOrTerm(stack) 
+        { exp = astq.createTripleReference() ;
+          list.add(sub.getAtom()); list.add(obj.getAtom()); list.add(exp);
+          t = createTriple(pred, list);
+          stack.add(t);
+        }
+    <GT><GT>
+    stack = PropertyListNotEmpty(exp, stack)
+    { return stack; }
 }
 
 // tuple(p s o v)

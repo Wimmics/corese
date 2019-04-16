@@ -26,6 +26,7 @@ import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
+import java.nio.channels.Channels;
 import java.util.Map;
 import java.util.UUID;
 
@@ -182,6 +183,7 @@ public class ASTQuery
      */
     int Offset = 0;
     int nbBNode = 0;
+    int nbtriple = 0; // rdf*
     int nbd = 0; // to generate an unique id for a variable if needed
     int nbfun = 0, nbvar = 0;
     int resultForm = QT_SELECT;
@@ -633,6 +635,13 @@ public class ASTQuery
             createDataBlank();
         }
         dataBlank.put(blank.getLabel(), blank);
+    }
+    
+    public Atom createTripleReference() {
+        if (isSelect()) {
+            return Variable.create("?triple" + nbvar++);
+        }
+        return  Constant.createResource(NSManager.USER + "triple" + nbtriple++);
     }
 
     public void createDataBlank() {

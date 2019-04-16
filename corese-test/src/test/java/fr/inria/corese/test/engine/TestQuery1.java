@@ -1349,7 +1349,7 @@ public class TestQuery1 {
         
         String q = "select * "             
                 + "where {"
-                + "values ?t { unnest(xt:edge(us:age)) }"
+                + "values ?t { unnest(xt:edges(us:age)) }"
                 + "}"
             
                ;

@@ -1,5 +1,3 @@
-select 
-where {}
 @public {
 
 function xt:div(?a, ?b) {  xsd:integer(floor(?a / ?b)) }
@@ -18,6 +16,18 @@ function xt:prime(?x) {
                              
 function xt:divisible(?x, ?n) { 
    (xt:mod(?x, ?n) = 0)
+}
+
+function xt:ast(?q) {
+    java:getAST(?q)
+}
+
+function xt:namedgraph(?name, ?graph){
+    java:setNamedGraph(xt:graph(), ?name, ?graph)
+}
+
+function xt:values(?s, ?p) {
+    maplist(xt:object, xt:edges(?s, ?p))
 }
 
 }

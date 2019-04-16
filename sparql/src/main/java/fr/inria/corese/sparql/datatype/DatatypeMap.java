@@ -611,17 +611,17 @@ public class DatatypeMap implements Cst, RDF {
             Pointerable ptr = (Pointerable) obj;            
             return new CoresePointer(name==null?defaultName(ptr):name, ptr);
         }       
-        return genericPointer2(name, obj);
+        return genericPointer(name, obj);
     }
     
-    @Deprecated
-    static IDatatype genericPointer1(String name, Object obj){
-        IDatatype dt = createLiteral(name==null?defaultName(obj):name, XMLLITERAL, null);
-        dt.setObject(obj);
-        return dt;
-    }
+//    @Deprecated
+//    static IDatatype genericPointer1(String name, Object obj){
+//        IDatatype dt = createLiteral(name==null?defaultName(obj):name, XMLLITERAL, null);
+//        dt.setObject(obj);
+//        return dt;
+//    }
     
-    static IDatatype genericPointer2(String name, Object obj){
+    static IDatatype genericPointer(String name, Object obj){
         return new CoresePointer(name==null?defaultName(obj):name, new PointerObject(obj));
     }
     
@@ -722,10 +722,11 @@ public class DatatypeMap implements Cst, RDF {
      * str) use case: template with st:number()
      */
     public static IDatatype createFuture(Object obj) {
-        CoreseUndefLiteral dt = new CoreseUndefLiteral();
+        //CoreseUndefLiteral dt = new CoreseUndefLiteral();
+        //dt.setFuture(true);
+        CoreseUndefFuture dt = new CoreseUndefFuture();
         dt.setDatatype(xsdstring);
         dt.setObject(obj);
-        dt.setFuture(true);
         return dt;
     }
 

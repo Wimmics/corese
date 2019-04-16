@@ -113,15 +113,15 @@ public class QueryProcess extends QuerySolver {
 	 * True means SPARQL semantics (default value) False means Corese
 	 * semantics (deprecated)
      */
-    public static void setOptional(boolean b) {
-        if (b) {
-            Optional.isOptional = true;
-            Query.isOptional = true;
-        } else {
-            Optional.isOptional = false;
-            Query.isOptional = false;
-        }
-    }
+//    public static void setOptional(boolean b) {
+//        if (b) {
+//            Optional.isOptional = true;
+//            Query.isOptional = true;
+//        } else {
+//            Optional.isOptional = false;
+//            Query.isOptional = false;
+//        }
+//    }
    
     protected QueryProcess(Producer p, Evaluator e, Matcher m) {
         super(p, e, m);
@@ -795,14 +795,14 @@ public class QueryProcess extends QuerySolver {
     Mappings synQuery(Query query, Mapping m) {
         Mappings map = null;
         try {
-            readLock();
+            readLock(query);
             logStart(query);
             // select from g where
             // if g is an external named graph, create specific Producer(g)
             return focusFrom(query).query(query, m);
         } finally {
             logFinish(query, map);
-            readUnlock();
+            readUnlock(query);
         }
     }
 
@@ -942,7 +942,7 @@ public class QueryProcess extends QuerySolver {
                 // hence do nothing
             }
             else {
-                writeLock();
+                writeLock(query);
             }
             if (gl != null) {
                 g.addListener(gl);
@@ -963,7 +963,7 @@ public class QueryProcess extends QuerySolver {
                 // do nothing
             }
             else {
-                writeUnlock();
+                writeUnlock(query);
             }
         }
     }
@@ -1119,20 +1119,28 @@ public class QueryProcess extends QuerySolver {
         return lock.writeLock();
     }
 
-    private void readLock() {
-        getReadLock().lock();
+    private void readLock(Query q) {
+        if (q.isLock()){
+            getReadLock().lock();
+        }
     }
 
-    private void readUnlock() {
-        getReadLock().unlock();
+    private void readUnlock(Query q) {
+        if (q.isLock()){
+            getReadLock().unlock();
+        }
     }
 
-    private void writeLock() {
-        getWriteLock().lock();
+    private void writeLock(Query q) {
+        if (q.isLock()) {
+            getWriteLock().lock();
+        }
     }
 
-    private void writeUnlock() {
-        getWriteLock().unlock();
+    private void writeUnlock(Query q) {
+        if (q.isLock()) {
+            getWriteLock().unlock();
+        }
     }
 
     /**

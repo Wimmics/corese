@@ -226,7 +226,7 @@ public class PluginImpl
             case DESCRIBE:
                 return ext.describe(p, exp, env); 
                 
-             case XT_EDGE:
+             case XT_EDGES:
                  return edge(env, p, null, null, null);
                  
              case XT_EXISTS:
@@ -333,7 +333,7 @@ public class PluginImpl
              case XT_INDEX:
                  return access(exp, env, p, dt);
                  
-             case XT_EDGE:
+             case XT_EDGES:
                  return edge(env, p, null, dt, null);
                  
              case XT_EXISTS:
@@ -396,7 +396,7 @@ public class PluginImpl
              case XT_VALUE:
                  return value(p, dt1, dt2, DatatypeMap.ONE);
                  
-              case XT_EDGE:
+              case XT_EDGES:
                  return edge(env, p, dt1, dt2, null); 
                  
               case XT_EXISTS:
@@ -436,7 +436,7 @@ public class PluginImpl
             case APPROXIMATE:
                 return pas.eval(exp, env, p, param);
                                
-            case XT_EDGE:
+            case XT_EDGES:
                 return edge(env, p, param[0], param[1], param[2]);
                 
             case XT_EXISTS:
@@ -847,16 +847,31 @@ public class PluginImpl
      * Return Loopable with edges
      */
     @Override
-    public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {   
-       return DatatypeMap.createObject(getDataProducer(p, subj, pred, obj));        
+    public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) { 
+        if (subj==null || obj==null || subj.isBlank() || obj.isBlank()) {
+            return DatatypeMap.createObject(getDataProducer(p, subj, pred, obj));
+        }
+        return edgeList(p, subj, pred, obj);
     }
     
     public IDatatype edge(IDatatype subj, IDatatype pred) {   
        return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, null));        
     }
     
-    public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) {   
-       return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, obj));        
+    public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) { 
+        return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, obj));  
+    }
+    
+    // iterator may return null value at the end
+    IDatatype edgeList(Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+        DataProducer dp = getDataProducer(p, subj, pred, obj);
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : dp) {
+            if (edge != null) {
+                list.add(DatatypeMap.createObject(edge));
+            }
+        }
+        return DatatypeMap.newList(list);
     }
           
     DataProducer getDataProducer(Producer p, IDatatype subj, IDatatype pred, IDatatype obj){

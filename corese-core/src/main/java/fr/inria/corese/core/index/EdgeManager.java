@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.util.HashMap;
 
 /**
  * Edge List of a predicate
@@ -40,6 +42,7 @@ public class EdgeManager implements Iterable<Edge> {
     ArrayList<Edge> list;
     Comparator<Edge> comp;
     int index = 0, other = 0, next = IGRAPH;
+    int meta = 2;
     boolean indexedByNode = false;
 
     EdgeManager(EdgeManagerIndexer indexer, Node p, int i) {
@@ -105,6 +108,63 @@ public class EdgeManager implements Iterable<Edge> {
         }
         list = l;
         return count;
+    }
+      
+    /**
+     * additional node for RDF*
+     * check duplicates
+     * merge different metadata node for same triple
+     * index = 0
+     */
+    
+     void metadata() {
+        ArrayList<Edge> l = new ArrayList<>();
+        Edge e1 = null;
+        
+        for (Edge e2 : list) { 
+            if (e1 == null) {
+                e1 = e2;
+                l.add(e2);
+            }
+            else if (compare(e1, e2) == 0){
+                if (e1.getNode(meta) == null) { 
+                    e1 = e2;
+                    l.set(l.size()-1, e2);
+                }  
+                else {
+                    merge(e1, e2);
+                }
+            }
+            else {
+                e1 = e2;
+                l.add(e2);
+            }
+        }  
+        list = l;
+    }
+     
+    void merge(Edge e1, Edge e2) {
+        Node n1 = e1.getNode(meta);
+        Node n2 = e2.getNode(meta);
+        IDatatype dt1 = (IDatatype) n1.getDatatypeValue();
+        IDatatype dt2 = (IDatatype) n2.getDatatypeValue();
+        dt1.getList().add(dt2.get(0));
+    }
+      
+    void complete() {
+        sort();
+        reduce(indexer.getNodeManager());
+    }
+    
+    int compare(Edge e1, Edge e2) {
+        int res = compareNodeTerm(e1.getNode(index), e2.getNode(index));
+        if (res == 0) {
+            res = compareNodeTerm(e1.getNode(other), e2.getNode(other));
+        }
+        if (res == 0) {
+            res = compareNodeTerm(e1.getNode(next), e2.getNode(next));
+        }
+        return res;
     }
     
     /**

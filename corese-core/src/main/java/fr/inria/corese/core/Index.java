@@ -7,6 +7,7 @@ import fr.inria.corese.core.index.PredicateList;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import java.util.HashMap;
 
 /**
  * Interface for Index for Graph 
@@ -84,7 +85,9 @@ public interface Index {
 	Iterable<Edge> getEdges(Node pred, Node node, Node node2);
         
         NodeManager getNodeManager();
-	
+        
+        void finishUpdate();
+        	
 	// ************** Update
 	
 	

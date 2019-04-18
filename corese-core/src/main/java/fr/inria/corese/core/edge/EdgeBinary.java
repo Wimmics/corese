@@ -69,6 +69,7 @@ public abstract class EdgeBinary extends EdgeTop
        return null;
     }
     
+    @Override
     public void setNode(int i, Node n){
         switch (i){
             case 0: subject = n; break;

@@ -7,6 +7,7 @@ import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;
 import static fr.inria.corese.core.Event.Start;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.sparql.triple.update.Update;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -110,6 +111,9 @@ public class EventManager {
                 graph.startUpdate();
                 break;
                 
+            case UpdateStep:                
+                break;    
+                
             case LoadUpdate:
             case LoadAPI:
                 startLoad();
@@ -177,6 +181,12 @@ public class EventManager {
             case Construct: 
             case LoadUpdate:    
                 graph.indexGraph();            
+                break;
+                
+            case UpdateStep: 
+                if (o instanceof Update) {
+                    getGraph().finishUpdate();
+                }
                 break;
                 
             case Rule:

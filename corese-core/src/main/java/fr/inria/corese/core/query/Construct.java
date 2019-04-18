@@ -402,7 +402,7 @@ public class Construct
     Node construct(Node gNode, Node qNode, Environment map) {
         // search target node
         Node node = table.get(qNode);
-
+        
         if (node == null) {
             // target node not yet created
             // search map node

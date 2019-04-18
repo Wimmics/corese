@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.core.Event;
 import fr.inria.corese.kgram.core.Mapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,8 @@ public class UpdateProcess {
                         u.setLocalNSM(nsm);
                     }
             }
+            
+            exec.getEventManager().start(Event.UpdateStep, u);
 
             if (u.isBasic()) {
                 // load copy ...
@@ -90,6 +93,8 @@ public class UpdateProcess {
                 Composite c = u.getComposite();
                 map = process(q, c, m);
             }
+            
+            exec.getEventManager().finish(Event.UpdateStep, u);
 
             if (!suc) {
                 q.setCorrect(false);

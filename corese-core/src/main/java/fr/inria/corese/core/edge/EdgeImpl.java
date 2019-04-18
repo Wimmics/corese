@@ -98,6 +98,7 @@ public class EdgeImpl extends EdgeTop
         return nodes;
     }
 
+    @Override
     public void setNode(int i, Node node) {
         nodes[i] = node;       
     }

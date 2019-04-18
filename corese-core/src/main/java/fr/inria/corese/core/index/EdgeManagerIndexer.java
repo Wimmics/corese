@@ -57,6 +57,7 @@ public class EdgeManagerIndexer
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
     NodeManager nodeManager;
+    HashMap<Node, Node> map;
     private boolean debug = false;
 
     public EdgeManagerIndexer(Graph g, boolean bi, int index) {
@@ -875,4 +876,29 @@ public class EdgeManagerIndexer
     @Override
     public void delete(Node pred) {
     }
+    
+    /**
+     *
+     */
+    @Override
+    public void finishUpdate() {
+        if (graph.isEdgeMetadata()) {
+            metadata();
+        }
+    }
+    
+    void metadata() {
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        graph.cleanIndex();
+        graph.clearNodeManager();
+        for (Node p : getProperties()) {
+            // merge duplicate triples with metadata node
+            get(p).metadata();
+        }
+        graph.indexNodeManager();
+        map.clear();
+    }
+      
 }

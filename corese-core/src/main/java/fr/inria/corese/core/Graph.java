@@ -201,6 +201,7 @@ public class Graph extends GraphObject implements
     private boolean hasTag = false;
     private boolean isTuple = false;
     private boolean metadata = METADATA_DEFAULT;
+    private boolean edgeMetadata = false;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
 
@@ -1081,6 +1082,14 @@ public class Graph extends GraphObject implements
     public boolean isVerbose() {
         return getEventManager().isVerbose(); 
     }
+    
+    public boolean isEdgeMetadata() {
+        return edgeMetadata;
+    }
+    
+    public void setEdgeMetadata(boolean b) {
+        edgeMetadata = b;
+    }
    
     /**
      * send e.g. by kgram eval() before every query execution restore
@@ -1180,6 +1189,12 @@ public class Graph extends GraphObject implements
         return table;
     }
     
+    public void finishUpdate() {
+        getIndex().finishUpdate();
+    }
+    
+     
+    
     /**
      * Graph updated, nodeManager content is obsolete
      */
@@ -1196,7 +1211,7 @@ public class Graph extends GraphObject implements
     }
     
    
-    void clearNodeManager() {
+    public void clearNodeManager() {
         for (Index id : getIndexList()) {
             id.getNodeManager().desactivate();
         }
@@ -1244,7 +1259,7 @@ public class Graph extends GraphObject implements
         }
     }
     
-    void cleanIndex() {
+    public void cleanIndex() {
         for (Index ei : getIndexList()) {
             if (ei.getIndex() != 0) {
                 ei.clean();

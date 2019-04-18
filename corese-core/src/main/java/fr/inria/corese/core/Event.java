@@ -19,7 +19,7 @@ public enum Event {
     Query, Construct, Rule, 
     Service,
     LoadAPI, LoadStep, // load()
-    Update,
+    Update, UpdateStep,
     LoadUpdate, // SPARQL Update load
     DeleteInsert, DeleteData, InsertData, 
     Delete, Insert,

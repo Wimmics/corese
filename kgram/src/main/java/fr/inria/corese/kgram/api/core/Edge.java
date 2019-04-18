@@ -27,7 +27,9 @@ public interface Edge extends  Pointerable {
 	 * @param n
 	 * @return
 	 */
-	Node getNode(int n);
+	Node getNode(int i);
+        
+        default void setNode(int i, Node n)  {}
 	
 	/**
 	 * Additional Node that represents the label of the edge as a Node.

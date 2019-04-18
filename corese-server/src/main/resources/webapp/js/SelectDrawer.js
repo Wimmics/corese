@@ -193,7 +193,7 @@ export class SelectDrawerParameters extends SvgDrawerParameters {
 
 };
 
-SelectDrawer.register(SelectDrawer.Type.barchart, BarChartDrawer);
-SelectDrawer.register(SelectDrawer.Type.piechart, PieChartDrawer);
-SelectDrawer.register(SelectDrawer.Type.tagcloud, TagCloudDrawer);
-SelectDrawer.register(SelectDrawer.Type.scatterplot, TagCloudDrawer);
+SelectDrawer.register(SelectDrawer.Type.BARCHART, BarChartDrawer);
+SelectDrawer.register(SelectDrawer.Type.PIECHART, PieChartDrawer);
+SelectDrawer.register(SelectDrawer.Type.TAGCLOUD, TagCloudDrawer);
+SelectDrawer.register(SelectDrawer.Type.SCATTERPLOT, TagCloudDrawer);

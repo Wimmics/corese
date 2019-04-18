@@ -38,6 +38,7 @@ public class CompilerKgram implements ExpType, Compiler {
 
     HashMap<String, Node> varTable;
     HashMap<String, Node> resTable;
+    HashMap<String, Node> bnodeTable;
 
     //List<IDatatype> consList;
 
@@ -45,6 +46,7 @@ public class CompilerKgram implements ExpType, Compiler {
     public CompilerKgram() {
         varTable = new HashMap<String, Node>();
         resTable = new HashMap<String, Node>();
+        bnodeTable = new HashMap<>();
         //consList = new ArrayList<IDatatype>();
     }
 
@@ -134,6 +136,7 @@ public class CompilerKgram implements ExpType, Compiler {
      * different target classes
      */
     Node getNode(Atom at, boolean isReuse) {
+        
         if (at.isVariable()) {
             Node node = varTable.get(at.getName());
             if (node == null) {
@@ -146,6 +149,14 @@ public class CompilerKgram implements ExpType, Compiler {
             if (node == null) {
                 node = new NodeImpl(at);
                 resTable.put(at.getName(), node);
+            }
+            return node;
+        }
+        else if (at.isBlank()) {
+            Node node = bnodeTable.get(at.getName());
+            if (node == null) {
+                node = new NodeImpl(at);
+                bnodeTable.put(at.getName(), node);
             }
             return node;
         }

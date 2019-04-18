@@ -443,14 +443,10 @@ d3sparql.barchart = function(json, config) {
     "custom_extent": config.custom_extent || null
   }
 
-  // var scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1)
   var scale_x = d3.scaleBand().range([0, opts.width - opts.margin]).round(0.1);
-  // var scale_y = d3.scale.linear().range([opts.height - opts.margin, 0])
   var scale_y = d3.scaleLinear().range([opts.height - opts.margin, 0]);
   var axis_x = d3.axisBottom(scale_x);
   var axis_y = d3.axisLeft(scale_y);
-  // var axis_x = d3.svg.axis().scale(scale_x).orient("bottom")
-  // var axis_y = d3.svg.axis().scale(scale_y).orient("left")  // .ticks(10, "%")
   scale_x.domain(data.map(function(d) { return d[opts.var_x].value }))
   if (config.custom_extent) {
     scale_y.domain(config.custom_extent)
@@ -460,12 +456,11 @@ d3sparql.barchart = function(json, config) {
     }))
   }
 
-  // var svg = d3sparql.select(opts.selector, "barchart").append("svg")
   var svg = d3.select(opts.selector)
-    .attr("width", opts.width)
-    .attr("height", opts.height)
-//    .append("g")
-//    .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
+    .attr("width", opts.width + 2 * opts.margin )
+    .attr("height", opts.height + 2 * opts.margin)
+   .append("g")
+   .attr("transform", "translate(" + opts.margin + "," + opts.margin + ")")
 
   var ax = svg.append("g")
     .attr("class", "axis x")
@@ -476,16 +471,16 @@ d3sparql.barchart = function(json, config) {
     .attr("transform", "translate(" + opts.margin + ",0)")
     .call(axis_y)
   var bar = svg.selectAll(".bar")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
-    .attr("class", "bar")
-    .attr("x", function(d) { return scale_x(d[opts.var_x].value) })
-    // .attr("width", scale_x.rangeBand())
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
+      .attr("class", "bar")
+      .attr("x", function(d) { return scale_x(d[opts.var_x].value) })
       .attr("width", scale_x.bandwidth())
-    .attr("y", function(d) { return scale_y(d[opts.var_y].value) })
-    .attr("height", function(d) { return opts.height - scale_y(parseInt(d[opts.var_y].value)) - opts.margin })
+      .attr("y", function(d) { return scale_y(d[opts.var_y].value) })
+      .attr("height", function(d) { return opts.height - scale_y(parseInt(d[opts.var_y].value)) - opts.margin })
+      .on("click", function(d) {if (d.url) {window.open(d.url.value);}});
 /*
     .call(function(e) {
       e.each(function(d) {
@@ -494,23 +489,23 @@ d3sparql.barchart = function(json, config) {
     })
 */
   ax.selectAll("text")
-    .attr("dy", ".35em")
-    .attr("x", 10)
-    .attr("y", 0)
-    .attr("transform", "rotate(90)")
-    .style("text-anchor", "start")
+      .attr("dy", ".35em")
+      .attr("x", 10)
+      .attr("y", 0)
+      .attr("transform", "rotate(90)")
+      .style("text-anchor", "start");
   ax.append("text")
-    .attr("class", "label")
-    .text(opts.label_x)
-    .style("text-anchor", "middle")
-    .attr("transform", "translate(" + ((opts.width - opts.margin) / 2) + "," + (opts.margin - 5) + ")")
+      .attr("class", "label")
+      .text(opts.label_x)
+      .style("text-anchor", "middle")
+      .attr("transform", "translate(" + (opts.width - opts.margin / 2) + "," + 0 + ")")
   ay.append("text")
-    .attr("class", "label")
-    .text(opts.label_y)
-    .style("text-anchor", "middle")
-    .attr("transform", "rotate(-90)")
-    .attr("x", 0 - (opts.height / 2))
-    .attr("y", 0 - (opts.margin - 20))
+      .attr("class", "label")
+      .text(opts.label_y)
+      .style("text-anchor", "middle")
+      // .attr("transform", "rotate(-90)")
+      .attr("x", 0)
+      .attr("y", -opts.margin / 3)
 
   // default CSS/SVG
   bar.attrs({
@@ -606,8 +601,9 @@ d3sparql.piechart = function(json, config) {
     .append("g")
     .attr("class", "arc")
   var slice = g.append("path")
-    .attr("d", arc)
-    .attr("fill", function(d, i) { return color[i % 20] })
+      .attr("d", arc)
+      .attr("fill", function(d, i) { return color[i % 20] })
+      .on("click", function(d) {if (d.data.url) {window.open(d.data.url.value);}});
   var text = g.append("text")
     .attr("class", "label")
     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")" })

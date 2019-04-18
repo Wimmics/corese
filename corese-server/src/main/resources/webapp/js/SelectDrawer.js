@@ -58,7 +58,7 @@ export class SelectDrawer extends SvgDrawer {
                     "size": "area",
                     "width":  600,  // canvas width
                     "height": 600,  // canvas height
-                    "margin":  10,  // canvas margin
+                    "margin":  50,  // canvas margin
                     "hole":   200,  // doughnut hole: 0 for pie, r > 0 for doughnut
                     "selector": "#result"
                 });

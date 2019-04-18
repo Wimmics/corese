@@ -339,6 +339,14 @@ public class Constant extends Atom {
         return cst;
     }
     
+    public static Constant createList(Constant cst) {
+        IDatatype dt = cst.getDatatypeValue();
+        IDatatype list = DatatypeMap.newList(dt);
+        Constant res = Constant.create(list);
+        return res;
+    }
+    
+    @Override
      public Constant duplicate() {
         Constant cst;
         if (isLiteral()) {

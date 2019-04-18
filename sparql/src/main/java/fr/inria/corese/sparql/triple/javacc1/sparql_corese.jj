@@ -129,7 +129,11 @@ PARSER_BEGIN(SparqlCorese)
          catch(ParseException e) {
         	throw new JavaccParseException(e);
         }
-    }  
+    }
+
+    boolean isLoad() {
+        return create != null;
+    } 
     
     Exp createTriples(Exp stack, Expression e1, Atom p, ExpressionList list, int n) 
     throws ParseException {
@@ -164,6 +168,14 @@ PARSER_BEGIN(SparqlCorese)
 			Triple t = astq.createTriple(p, list);
    	   		return t;	    
    	   	}
+   }
+
+   Triple createTriple(Atom p, Atom s, Atom o, Atom v) {
+      ArrayList<Atom> list = new ArrayList<Atom>();
+      list.add(s);
+      list.add(o);
+      list.add(v);
+      return createTriple(p, list);
    }
     
     void graphPattern(Atom g){
@@ -1714,27 +1726,36 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
   )
 }
 
-
-Exp RDFstar(Exp stack) : {Expression sub, obj; Atom exp, pred; List<Atom>list; Triple t;}
+// << s p o >> q v .
+Exp RDFstar(Exp stack) : 
+{Variable refvar = null; Values val; Atom sub, obj; Atom ref, subref, pred; List<Atom>list; Triple t;}
 {
-    { list = new ArrayList<Atom>(); }
-    <LT><LT> 
-        sub = VarOrTerm(stack) pred = Verb() obj = VarOrTerm(stack) 
-        { exp = astq.createTripleReference() ;
-          list.add(sub.getAtom()); list.add(obj.getAtom()); list.add(exp);
-          t = createTriple(pred, list);
-          stack.add(t);
-        }
-    <GT><GT>
-    stack = PropertyListNotEmpty(exp, stack)
+    subref = RDFstarTerm(stack)
+    stack  = PropertyListNotEmpty(subref, stack)
     { return stack; }
 }
+
+Atom RDFstarTerm(Exp stack) : 
+{Variable refvar = null; Values val; Atom sub, obj; Atom ref, subref, pred; List<Atom>list; Triple t;}
+{
+    <LT><LT> 
+        sub = VarOrTerm(stack) pred = Verb() obj = VarOrTerm(stack) ( refvar = Var() ) ?
+        { ref = astq.createTripleReference(isLoad()) ;
+          t = createTriple(pred, sub, obj, ref);
+          if (t != null) { stack.add(t); }
+          subref = astq.completeTripleReference(refvar, ref, stack, isLoad());
+        }
+    <GT><GT>
+    { return subref; }
+}
+
+
 
 // tuple(p s o v)
 Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
 	<TUPLE> <LPAREN> 
 	
-	prop = Verb2()
+	prop = Verb()
 	expression1 = GraphNode(stack)
 	expression2 = GraphNode(stack)
 	{ 
@@ -1760,7 +1781,7 @@ Exp triple(Exp stack): { Expression expression1, expression2, expressioni; Array
 	<TRIPLE> <LPAREN> 
 	
 	expression1 = GraphNode(stack)
-	prop = Verb2()
+	prop = Verb()
 	expression2 = GraphNode(stack)
 	{ 
             list = new ArrayList<Atom>();
@@ -1815,70 +1836,33 @@ Exp PropertyListNotEmptyElem( Expression e1, Exp stack) :
 }
 
 
-Atom Verb2(): { Atom atom; String[] s; Token t; }
-{
-  s = PQualifier()
-  atom = Verb()
-  {
-  	if (s[0]!="") { atom.setIsone(true); }
-  	if (s[1]!="") { atom.setIsall(true); }
-  	if (s[2]!="") { atom.setIsdirect(true); }
-  }
- 
- 
-  { return atom; }
-}
-
-String[] PQualifier(): { String[] s; String s1, s2, s3; }
-{
-	{ s1=""; s2=""; s3=""; }
-	(
-		s1 = One2() ( ( s2 = All2() ( s3 = Direct2() )? ) | ( s3 = Direct2() ( s2 = All2() )? ) )?
-	  	| s2 = All2() ( ( s1 = One2() ( s3 = Direct2() )? ) | ( s3 = Direct2() ( s1 = One2() )? ) )? 
-	  	| ( s3 = Direct2() ( ( s1 = One2() ( s2 = All2() )? ) | ( s2 = All2() ( s1 = One2() )? ) )? )?
-	)
-	{ 
-		s = new String[3];
-		s[0] = s1; // one
-		s[1] = s2; // all
-		s[2] = s3; // direct
-	}
-  	{ return s; }
-}
-
-String One2(): { Token t; }
-{
-	( t = <ONE2> | t = <CURRENT> )
-	{ return t.image; }
-}
-
-String All2(): { Token t; }
-{
-	t = <ALL2>
-	{ return t.image; }
-}
-
-String Direct2(): { Token t; }
-{
-	t = <DIRECT2>
-	{ return t.image; }
-}
 
 ExpressionList ObjectList(Exp stack): { Expression expression1; ExpressionList v; }
 {
   { v = new ExpressionList(); }
   
-  expression1 = GraphNode(stack)
+  expression1 = PropertyValue(stack)
   { v.add(expression1); }
   
   ( 
   	 <COMMA> 
-     expression1 = GraphNode(stack)
+     expression1 = PropertyValue(stack)
      { v.add(expression1); }
   ) *
   
   { return v; }
 }
+
+
+Expression PropertyValue(Exp stack) : { Expression exp; }
+{
+    (
+        exp = GraphNode(stack)
+      | exp = RDFstarTerm(stack)
+    )
+    { return exp; }
+}
+
 
 Atom Verb() : { Atom atom; }
 {
@@ -2130,7 +2114,7 @@ Token Toper(): { Token t; }
 Expression TriplesNode(Exp stack) : { Expression expression1; }
 {
   ( 
-  	expression1 = Collection(stack) 
+  	  expression1 = Collection(stack) 
   	| expression1 = BlankNodePropertyList(stack) 
   )
   { return expression1; }

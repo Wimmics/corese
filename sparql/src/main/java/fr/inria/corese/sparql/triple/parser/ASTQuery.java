@@ -637,12 +637,57 @@ public class ASTQuery
         dataBlank.put(blank.getLabel(), blank);
     }
     
-    public Atom createTripleReference() {
-        if (isSelect()) {
+    /**
+     * Generate ref st:
+     * <<s p o>> q v
+     * triple(s p o ref) . ref q v
+     */
+  
+    public Atom createTripleReference(boolean isLoad) {
+        if (isLoad) {
+            return tripleReferenceList();
+        }
+        if (isSPARQLQuery()) {            
             return Variable.create("?triple" + nbvar++);
         }
-        return  Constant.createResource(NSManager.USER + "triple" + nbtriple++);
+        return tripleReferenceList();       
     }
+    
+    Constant tripleReferenceList() {
+        return Constant.createList(Constant.createResource(NSManager.USER+"triple"+nbt++)); 
+    }
+    
+    Constant tripleReference(Constant reflist) {
+        return Constant.create(reflist.getDatatypeValue().get(0));
+    }
+    
+    public Values createValues(Variable var, Expression exp) {
+        Values val = Values.create();
+        val.setVariable(var);
+        val.setExp(Term.function(Processor.UNNEST, exp));
+        complete(val);
+        return val;
+    }
+    
+    public Atom completeTripleReference(Variable var, Atom ref, Exp stack, boolean isLoad) {
+        if (isLoad) {
+            return tripleReference(ref.getConstant());
+        }
+        else if (isSPARQLQuery()) {
+            // values ?var { unnest(?reflist) }
+            if (var == null) {
+                var = createVariable();
+            }
+            Values val = createValues(var, ref);
+            stack.add(val);
+            return var;
+        }
+        else {
+            // ref = Constant(list)
+            return tripleReference(ref.getConstant());
+        }
+    }
+    
 
     public void createDataBlank() {
         dataBlank = new HashMap<String, Atom>();
@@ -1910,6 +1955,10 @@ public class ASTQuery
     public static Variable createVariable(String s) {
         return Variable.create(s);
     }
+    
+    public Variable createVariable() {
+        return Variable.create("?_var_" + nbvar++);
+    }
 
     public static Variable createVariable(String s, ASTQuery aq) {
         Variable var = createVariable(s);
@@ -2363,6 +2412,10 @@ public class ASTQuery
 
     public Variable newBlankNode() {
         return newBlankNode(BNVAR + getNbBNode());
+    }
+    
+    public Constant createBlankNode() {
+        return Constant.createBlank("_:b" + getNbBNode());
     }
 
     public Variable metaVariable() {

@@ -127,6 +127,12 @@ public class Values extends Exp {
     public void setVariables(List<Variable> lvar) {
         this.lvar = lvar;
     }
+    
+    public void setVariable(Variable var) {
+        ArrayList<Variable> l = new ArrayList<>();
+        l.add(var);
+        setVariables(l);
+    }
    
     public List<Variable> getVarList() {
         return lvar;

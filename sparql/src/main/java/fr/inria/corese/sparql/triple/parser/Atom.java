@@ -38,6 +38,7 @@ public class Atom extends Expression implements ElementClause{
 		return null;
 	}
 	
+        @Override
 	public Expression getExpression() {
         return null;
     }

@@ -26,7 +26,6 @@ import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
-import java.nio.channels.Channels;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,6 +72,7 @@ public class ASTQuery
     static final String FUN_PREF = NSManager.EXT_PREF+":";
     static final String NL = System.getProperty("line.separator");
     static int nbt = 0; // to generate an unique id for a triple if needed
+    static int nbbnode = 0; // createBlankNode()
     public final static int QT_SELECT = 0;
     public final static int QT_ASK = 1;
     public final static int QT_CONSTRUCT = 2;
@@ -165,6 +165,7 @@ public class ASTQuery
     boolean describeAll = false;
     boolean isBind = false;
     private boolean ldscript = false;
+    private boolean insideWhere = false;
     /**
      * max cg result
      */
@@ -637,39 +638,58 @@ public class ASTQuery
         dataBlank.put(blank.getLabel(), blank);
     }
     
+    public void enterWhere() {
+        insideWhere = true;
+    }
+    
+    public void leaveWhere() {
+        insideWhere = false;
+    }
+    
+    public boolean isInsideWhere() {
+        return insideWhere;
+    }
+    
     /**
      * Generate ref st:
      * <<s p o>> q v
      * triple(s p o ref) . ref q v
-     */
-    
-    public Atom createTripleReference(Variable var, boolean isLoad) {
+     */    
+    public Atom createTripleReference(Atom var, boolean isLoad) {
         if (isLoad) {
             return tripleReferenceConstant();
         }
-        if (isSPARQLQuery()) { 
-            if (var == null) {
-                return tripleReferenceVariable();
-            }
+        if (var != null) {
             return var;
         }
+        if (isInsideWhere()) { 
+            if (isUpdate()) {
+                // use case: delete where { <<s p o>> q v }
+                // delete works with a variable, not with a bnode
+                return tripleReferenceVariable();
+            }
+            else {
+                return tripleReferenceBnode();                
+            }
+        }
+        // insert delete -- data
+        // insert delete -- where
         return tripleReferenceConstant();       
     }
     
     Variable tripleReferenceVariable() {
-        //return Variable.create("?triple" + nbvar++);
+        return Variable.create("?t_" + nbvar++);
+    } 
+    
+    Variable tripleReferenceBnode() {
         return newBlankNode();
-    }  
+    } 
     
     Constant tripleReferenceConstant() {
-        return Constant.createResource(NSManager.USER+"triple"+nbt++); 
+        return createBlankNode();
+        //return Constant.createResource(NSManager.USER+"triple"+nbt++); 
     }
        
-    public Atom completeTripleReference(Variable var, Atom ref, Exp stack, boolean isLoad) {
-        return ref;
-    }
- 
-
     public void createDataBlank() {
         dataBlank = new HashMap<String, Atom>();
     }
@@ -2396,7 +2416,7 @@ public class ASTQuery
     }
     
     public Constant createBlankNode() {
-        return Constant.createBlank("_:b" + getNbBNode());
+        return Constant.createBlank("_:bb" + nbbnode++);
     }
 
     public Variable metaVariable() {

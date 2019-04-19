@@ -506,7 +506,7 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 			{ope = Composite.create(Update.DELETE, exp);}
 			
 			|
-			<WHERE>    exp = QuadPattern()
+			<WHERE>  { astq.enterWhere(); }  exp = QuadPattern() { astq.leaveWhere(); }
 			
 			{
 				upd = Composite.create(Update.COMPOSITE); upd.setBody(exp); 
@@ -565,7 +565,7 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri; Values va
 	          ) 
 	) *
 	
-	<WHERE> exp = GroupGraphPattern()
+	<WHERE> { astq.enterWhere(); } exp = GroupGraphPattern() { astq.leaveWhere(); }
 
         (values = Values() {upd.setValues(values); } ) ?
 	
@@ -867,7 +867,7 @@ Exp ConstructQuery(Metadata la) : { Exp stack1, stack2; boolean isRule = false;}
   (
   // without a construct pattern
   ( DatasetClause() )*
-  <WHERE> stack2 =  ConstructTemplate2()
+  <WHERE> { astq.enterWhere(); } stack2 =  ConstructTemplate2() { astq.leaveWhere(); }
   SolutionModifier()
   
   {	astq.duplicateConstruct(stack2); 
@@ -1144,8 +1144,7 @@ void DatasetClause() : { Constant s; }
 Exp WhereClause() : { Exp stack; }
 {
    (<WHERE> { astq.setWhere(true); } )? 
-   //{ stack = BasicGraphPattern.create(); }
-   stack = GroupGraphPattern()
+   { astq.enterWhere(); } stack = GroupGraphPattern() { astq.leaveWhere(); }
    { return stack; }
 }
 
@@ -1735,11 +1734,11 @@ Exp RDFstar(Exp stack) : {  Atom ref; }
 }
 
 Atom StarTriple(Exp stack) : 
-{Variable refvar = null; Atom sub, obj, ref, pred;  Triple t;}
+{Atom refatom = null; Atom sub, obj, ref, pred;  Triple t;}
 {
     <LT><LT> 
-        sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refvar = Var() )?
-        { ref = astq.createTripleReference(refvar, isLoad()) ;
+        sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refatom = VarOrTerm(stack)  )?
+        { ref = astq.createTripleReference(refatom, isLoad()) ;
           t = createTriple(pred, sub, obj, ref);
           if (t != null) { stack.add(t); }
         }

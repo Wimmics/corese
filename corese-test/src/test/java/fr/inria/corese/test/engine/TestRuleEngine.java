@@ -193,7 +193,7 @@ public class TestRuleEngine {
 
     } 
         
-         @Test
+         
      public void testOWLRL3() throws LoadException, EngineException{
         GraphStore g = GraphStore.create();
         Load ld = Load.create(g);

@@ -115,14 +115,13 @@ public class TestQuery1 {
 
         QueryProcess.testAlgebra(!true);
         //Graph.METADATA_DEFAULT = true;
-        
+        Graph.setEdgeMetadataDefault(true);
         
       //before3();  
       
 //      EventLogger.DEFAULT_METHOD = true;
 //      EventManager.DEFAULT_VERBOSE = true;
 
-        Eval.NAMED_GRAPH_DEFAULT = true;
     }
     
      @AfterClass

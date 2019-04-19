@@ -1716,10 +1716,10 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
 {
   ( LOOKAHEAD(2)
   	expression1 = VarOrTerm(stack)
-	stack = PropertyListNotEmpty(expression1, stack)
+	stack       = PropertyListNotEmpty(expression1, stack)
   |
   	expression1 = TriplesNode(stack)
-  	stack = PropertyList(expression1, stack)
+  	stack       = PropertyList(expression1, stack)
   | stack = RDFstar(stack)	
   | stack = tuple(stack)
   | stack = triple(stack)
@@ -1727,29 +1727,34 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
 }
 
 // << s p o >> q v .
-Exp RDFstar(Exp stack) : 
-{Variable refvar = null; Values val; Atom sub, obj; Atom ref, subref, pred; List<Atom>list; Triple t;}
+Exp RDFstar(Exp stack) : {  Atom ref; }
 {
-    subref = RDFstarTerm(stack)
-    stack  = PropertyListNotEmpty(subref, stack)
+    ref = StarTriple(stack)
+    stack  = PropertyListNotEmpty(ref, stack)
     { return stack; }
 }
 
-Atom RDFstarTerm(Exp stack) : 
-{Variable refvar = null; Values val; Atom sub, obj; Atom ref, subref, pred; List<Atom>list; Triple t;}
+Atom StarTriple(Exp stack) : 
+{Variable refvar = null; Atom sub, obj, ref, pred;  Triple t;}
 {
     <LT><LT> 
-        sub = VarOrTerm(stack) pred = Verb() obj = VarOrTerm(stack) ( refvar = Var() ) ?
-        { ref = astq.createTripleReference(isLoad()) ;
+        sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refvar = Var() )?
+        { ref = astq.createTripleReference(refvar, isLoad()) ;
           t = createTriple(pred, sub, obj, ref);
           if (t != null) { stack.add(t); }
-          subref = astq.completeTripleReference(refvar, ref, stack, isLoad());
         }
     <GT><GT>
-    { return subref; }
+    { return ref; }
 }
 
-
+Atom StarTerm(Exp stack) : { Atom term; }
+{
+    (
+        term = VarOrTerm(stack)
+      | term = StarTriple(stack)
+    )
+    { return term; }
+}
 
 // tuple(p s o v)
 Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
@@ -1858,7 +1863,7 @@ Expression PropertyValue(Exp stack) : { Expression exp; }
 {
     (
         exp = GraphNode(stack)
-      | exp = RDFstarTerm(stack)
+      | exp = StarTriple(stack)
     )
     { return exp; }
 }

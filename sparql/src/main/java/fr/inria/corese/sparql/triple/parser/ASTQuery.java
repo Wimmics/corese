@@ -642,52 +642,33 @@ public class ASTQuery
      * <<s p o>> q v
      * triple(s p o ref) . ref q v
      */
-  
-    public Atom createTripleReference(boolean isLoad) {
+    
+    public Atom createTripleReference(Variable var, boolean isLoad) {
         if (isLoad) {
-            return tripleReferenceList();
+            return tripleReferenceConstant();
         }
-        if (isSPARQLQuery()) {            
-            return Variable.create("?triple" + nbvar++);
-        }
-        return tripleReferenceList();       
-    }
-    
-    Constant tripleReferenceList() {
-        return Constant.createList(Constant.createResource(NSManager.USER+"triple"+nbt++)); 
-    }
-    
-    Constant tripleReference(Constant reflist) {
-        return Constant.create(reflist.getDatatypeValue().get(0));
-    }
-    
-    public Values createValues(Variable var, Expression exp) {
-        Values val = Values.create();
-        val.setVariable(var);
-        val.setExp(Term.function(Processor.UNNEST, exp));
-        complete(val);
-        return val;
-    }
-    
-    public Atom completeTripleReference(Variable var, Atom ref, Exp stack, boolean isLoad) {
-        if (isLoad) {
-            return tripleReference(ref.getConstant());
-        }
-        else if (isSPARQLQuery()) {
-            // values ?var { unnest(?reflist) }
+        if (isSPARQLQuery()) { 
             if (var == null) {
-                var = createVariable();
+                return tripleReferenceVariable();
             }
-            Values val = createValues(var, ref);
-            stack.add(val);
             return var;
         }
-        else {
-            // ref = Constant(list)
-            return tripleReference(ref.getConstant());
-        }
+        return tripleReferenceConstant();       
     }
     
+    Variable tripleReferenceVariable() {
+        //return Variable.create("?triple" + nbvar++);
+        return newBlankNode();
+    }  
+    
+    Constant tripleReferenceConstant() {
+        return Constant.createResource(NSManager.USER+"triple"+nbt++); 
+    }
+       
+    public Atom completeTripleReference(Variable var, Atom ref, Exp stack, boolean isLoad) {
+        return ref;
+    }
+ 
 
     public void createDataBlank() {
         dataBlank = new HashMap<String, Atom>();

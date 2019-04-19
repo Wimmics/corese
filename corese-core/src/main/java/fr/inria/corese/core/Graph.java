@@ -99,6 +99,7 @@ public class Graph extends GraphObject implements
     static final int TAGINDEX = 2;    
     static boolean byIndexDefault = true;
     public static boolean METADATA_DEFAULT = false;
+    public static boolean EDGE_METADATA_DEFAULT = false;
     
     private static final String[] PREDEFINED = {
         Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
@@ -201,7 +202,7 @@ public class Graph extends GraphObject implements
     private boolean hasTag = false;
     private boolean isTuple = false;
     private boolean metadata = METADATA_DEFAULT;
-    private boolean edgeMetadata = false;
+    private boolean edgeMetadata = EDGE_METADATA_DEFAULT;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
 
@@ -1089,6 +1090,10 @@ public class Graph extends GraphObject implements
     
     public void setEdgeMetadata(boolean b) {
         edgeMetadata = b;
+    }
+    
+    public static void setEdgeMetadataDefault(boolean b) {
+        EDGE_METADATA_DEFAULT = b;
     }
    
     /**

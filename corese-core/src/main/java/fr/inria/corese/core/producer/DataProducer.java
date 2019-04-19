@@ -41,6 +41,7 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     private DataFilter filter;
     DataFrom from;
     boolean isNamedGraph;
+    private boolean skipEdgeMetadata = false;
 
     public DataProducer(Graph g) {
         graph = g;
@@ -299,16 +300,33 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     public Edge next() {
 
         while (hasNext()) {
-            Edge ent = it.next();
+            Edge edge = it.next();
             
-
-            if (isNamedGraph) {
+            if (last == null) {
                 // ok
+            }
+            else if (isNamedGraph) {
+                if (skipEdgeMetadata) {
+                    // two edges in same graph: skip metadata, in different graph it is ok
+                    if (edge.getEdgeNode() == null || !same(last.getEdgeNode(), edge.getEdgeNode())) {
+                        // different properties: ok
+                    }
+                    else if (metadataDifferent(last, edge)) {
+                        // ok
+                    }
+                    else if (same(edge.getGraph(), last.getGraph())) {
+                        continue;
+                    }
+                }
             } 
-            else if (last != null && ! different(last, ent)){
+            else if (different(last, edge)){
+                // ok
+            }
+            else {
                 continue;
             }
-            if (filter != null && ! filter.eval(ent)) {
+            
+            if (filter != null && ! filter.eval(edge)) {
                 // filter process from() clause
                 if (filter.fail()) {
                     // RuleEngine edge level may fail
@@ -318,8 +336,8 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
                 continue;
             }
                     
-            record(ent);
-            return ent;
+            record(edge);
+            return edge;
         }
         return null;
     }
@@ -335,6 +353,9 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         }
         if (graph.isMetadata()) {
             return metadataDifferent(last, edge);
+        }
+        if (skipEdgeMetadata) {
+           return metadataDifferent(last, edge); 
         }
         int size = last.nbNode();
         if (size == edge.nbNode()) {
@@ -359,26 +380,41 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         return false;
     }
         
-    void record(Edge ent) {
-        if (ent.nbNode() == 2){
-            record2(ent);
+    void record(Edge edge) {
+        if (edge.nbNode() == 2){
+            last = duplicate(edge);
         }
         else {
-            last = ent;
+            last = edge;
         }
     }
 
-    // record a copy of ent for last
-    void record2(Edge ent) {
+    // record a copy of edge for last
+    Edge duplicate(Edge edge) {
         if (glast == null) {
-            glast = graph.getEdgeFactory().createDuplicate(ent);
-            last = glast;
+            glast = graph.getEdgeFactory().createDuplicate(edge);
         }
-        glast.duplicate(ent);
+        glast.duplicate(edge);
+        return glast;
     }
 
     @Override
     public void remove() {
+    }
+    
+        /**
+     * @return the edgeMetadata
+     */
+    public boolean isSkipEdgeMetadata() {
+        return skipEdgeMetadata;
+    }
+
+    /**
+     * @param edgeMetadata the edgeMetadata to set
+     */
+    public DataProducer setSkipEdgeMetadata(boolean b) {
+        this.skipEdgeMetadata = b;
+        return this;
     }
    
     

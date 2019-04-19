@@ -882,9 +882,6 @@ public class EdgeManagerIndexer
      */
     @Override
     public void finishUpdate() {
-        if (graph.isEdgeMetadata()) {
-            metadata();
-        }
     }
     
     void metadata() {

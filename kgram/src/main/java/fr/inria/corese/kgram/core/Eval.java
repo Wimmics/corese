@@ -32,7 +32,6 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
-import java.nio.file.Files;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine Compute graph homomorphism and

@@ -103,6 +103,9 @@ public class GraphEngine  {
                     case Command.REENTRANT:
                         QueryProcess.setOverwrite(true);
                         break;
+                    case Command.RDF_STAR:
+                        Graph.setEdgeMetadataDefault(true);
+                        break;
                 }
             }
         }

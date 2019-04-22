@@ -58,6 +58,7 @@ PARSER_BEGIN(SparqlCorese)
     ASTTemplate astt;
     Basic prolog;
     Creator create;
+    ParserHandler handler;
     
     /** should we say to the user when he uses something deprecated? (option, sort, or, source, as...) */
     boolean printDeprecated = true;
@@ -72,19 +73,22 @@ PARSER_BEGIN(SparqlCorese)
     boolean debug2 = show && false;
     static final String THIS = "?this";
 
-    static final String SQ1 = "\"";
-    static final String SQ3 = "\"\"\"";
-    static final String SSQ = "'";
-    static final String SSQ3 = "'''";
-
 	public void setASTQuery(ASTQuery aq) {
 		astq = aq;
 		gast = aq;
 	}
 	
 	public void set(Creator c){
-	   create = c;
+	    create = c;
+            if (handler != null) {
+                handler.setCreator(c);
+            }
 	}
+
+        public void setHandler(ParserHandler h) {
+            handler = h;
+            handler.setParser(this);
+        }
 	
 	/**
 	* @param s1 = the string deprecated
@@ -105,8 +109,6 @@ PARSER_BEGIN(SparqlCorese)
         Exp ex;
         astu = ASTUpdate.create();
         try {
-            //if (astq.isRule()) ex = Rule();
-        	//else 
         	ex = Start();
         } catch(ParseException e) {
         	throw new JavaccParseException(e);
@@ -134,75 +136,7 @@ PARSER_BEGIN(SparqlCorese)
     boolean isLoad() {
         return create != null;
     } 
-    
-    Exp createTriples(Exp stack, Expression e1, Atom p, ExpressionList list, int n) 
-    throws ParseException {
-        for (Expression e2 : list) {
-            Exp e = createTriple(e1, p, e2);
-            if (e != null){
-                stack.add(n++, e);
-            }      
-	}
-        return stack;
-    }
-
-     Triple createTriple(Expression s, Atom p, Expression o) throws ParseException {
- 	    if (create != null){
- 	    	if (! create.accept(s.getAtom(), p, o.getAtom())){
- 	   	 		throw generateParseException();
- 	   	 	}
- 	    	create.triple(s.getAtom(), p, o.getAtom());
- 	    	return null;
- 	    }
- 	    else {
- 	    	return astq.createTriple(s, p, o);
- 	    }
-     }
-    
-   Triple createTriple(Atom p, List<Atom> list){
-   		if (create != null){
-	    	create.triple(p, list);
-	    	return null;
-	    }
-	    else {
-			Triple t = astq.createTriple(p, list);
-   	   		return t;	    
-   	   	}
-   }
-
-   Triple createTriple(Atom p, Atom s, Atom o, Atom v) {
-      ArrayList<Atom> list = new ArrayList<Atom>();
-      list.add(s);
-      list.add(o);
-      list.add(v);
-      return createTriple(p, list);
-   }
-    
-    void graphPattern(Atom g){
-       if (create != null){
-           create.graph(g.getConstant());
-       }
-    }
-    
-    void endGraphPattern(Atom g){
-       if (create != null){
-           create.endGraph(g.getConstant());
-       }
-    }
-    
-    Expression list(Exp stack, List<Expression> l, int arobase){
-       RDFList rlist = astq.createRDFList(l, arobase);
-    
-       if (create != null){
-           create.list(rlist);
-       }
-       else {
-           stack.add(rlist);
-       }
-       
-       return rlist.head();
-    }
-    
+                 
     void defNamespace(String p, String ns){
     	astq.defNamespace(p, ns);
     	astu.defNamespace(p, ns);
@@ -212,75 +146,11 @@ PARSER_BEGIN(SparqlCorese)
     	astq.defBase(s);
     	astu.defBase(s);
     }
-    
-    
-    
-        /**
-	 * Replace escape char by target char
-	 * 
-	 */
-	String remEscapes(String str){
-		StringBuilder retval = new StringBuilder();
-
-                // remove leading/trailing " or '
-                int start = 1, end = str.length() - 1;
-		
-                if ((str.startsWith(SQ3)  && str.endsWith(SQ3)) ||
-		    (str.startsWith(SSQ3) && str.endsWith(SSQ3))){
-                    // remove leading/trailing """ or '''
-                    start = 3;
-                    end = str.length() - 3;
-                }
-
-		for (int i = start; i < end; i++) {
-			
-                    if (str.charAt(i) == '\\' && i+1 < str.length()){
-                             i += 1;       	
-                             switch (str.charAt(i)){
-
-                              case 'b':
-                                   retval.append('\b');
-                                   continue;
-                                case 't':
-                                   retval.append('\t');
-                                   continue;
-                                case 'n':
-                                   retval.append('\n');
-                                   continue;
-                                case 'f':
-                                   retval.append('\f');
-                                   continue;
-                                case 'r':
-                                   retval.append('\r');
-                                   continue;
-                                case '"':
-                                   retval.append('\"');
-                                   continue;
-                                case '\'':
-                                   retval.append('\'');
-                                   continue;
-                                case '\\':
-                                   retval.append('\\');
-                                   continue;
-                             }
-
-                     }
-                     else {
-                             retval.append(str.charAt(i));
-                     }
-		}
-		
-		return retval.toString();
-	}
-    
-    
+  
     
 }  
   
-  
-  
-  
-  
+ 
 PARSER_END(SparqlCorese)
 
 
@@ -506,7 +376,7 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 			{ope = Composite.create(Update.DELETE, exp);}
 			
 			|
-			<WHERE>  { astq.enterWhere(); }  exp = QuadPattern() { astq.leaveWhere(); }
+			<WHERE>  { handler.enterWhere(); }  exp = QuadPattern() { handler.leaveWhere(); }
 			
 			{
 				upd = Composite.create(Update.COMPOSITE); upd.setBody(exp); 
@@ -565,7 +435,7 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri; Values va
 	          ) 
 	) *
 	
-	<WHERE> { astq.enterWhere(); } exp = GroupGraphPattern() { astq.leaveWhere(); }
+	<WHERE> { handler.enterWhere(); } exp = GroupGraphPattern() { handler.leaveWhere(); }
 
         (values = Values() {upd.setValues(values); } ) ?
 	
@@ -867,7 +737,7 @@ Exp ConstructQuery(Metadata la) : { Exp stack1, stack2; boolean isRule = false;}
   (
   // without a construct pattern
   ( DatasetClause() )*
-  <WHERE> { astq.enterWhere(); } stack2 =  ConstructTemplate2() { astq.leaveWhere(); }
+  <WHERE> { handler.enterWhere(); } stack2 =  ConstructTemplate2() { handler.leaveWhere(); }
   SolutionModifier()
   
   {	astq.duplicateConstruct(stack2); 
@@ -1144,7 +1014,7 @@ void DatasetClause() : { Constant s; }
 Exp WhereClause() : { Exp stack; }
 {
    (<WHERE> { astq.setWhere(true); } )? 
-   { astq.enterWhere(); } stack = GroupGraphPattern() { astq.leaveWhere(); }
+   { handler.enterWhere(); } stack = GroupGraphPattern() { handler.leaveWhere(); }
    { return stack; }
 }
 
@@ -1573,7 +1443,7 @@ void GraphGraphPattern(Exp stack) :
 	 <GRAPH>
 	 
   	src = VarOrIRIref(stack) 
-  	{ graphPattern(src); }
+  	{ handler.graphPattern(src); }
   	e = GroupGraphPattern()
   	{ 
   		st =  Source.create(src, e);
@@ -1586,7 +1456,7 @@ void GraphGraphPattern(Exp stack) :
   		}
   		stack.add(st);
   	}
-  	{ endGraphPattern(src); }
+  	{ handler.endGraphPattern(src); }
 }
 
 void ServicePattern(Exp stack) : 
@@ -1721,7 +1591,6 @@ void TriplesSameSubject(Exp stack) : { Expression expression1; }
   	stack       = PropertyList(expression1, stack)
   | stack = RDFstar(stack)	
   | stack = tuple(stack)
-  | stack = triple(stack)
   )
 }
 
@@ -1738,8 +1607,8 @@ Atom StarTriple(Exp stack) :
 {
     <LT><LT> 
         sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refatom = VarOrTerm(stack)  )?
-        { ref = astq.createTripleReference(refatom, isLoad()) ;
-          t = createTriple(pred, sub, obj, ref);
+        { ref = handler.createTripleReference(astq, refatom) ;
+          t = handler.createTriple(astq, pred, sub, obj, ref);
           if (t != null) { stack.add(t); }
         }
     <GT><GT>
@@ -1749,61 +1618,39 @@ Atom StarTriple(Exp stack) :
 Atom StarTerm(Exp stack) : { Atom term; }
 {
     (
-        term = VarOrTerm(stack)
+        term = GraphNode(stack)
       | term = StarTriple(stack)
     )
     { return term; }
 }
 
-// tuple(p s o v)
-Exp tuple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
-	<TUPLE> <LPAREN> 
+// tuple(p s o v) triple(s p o v)
+Exp tuple(Exp stack): 
+{ Atom subject, object, term; Variable var; ArrayList<Atom> list; Atom prop; Triple triple;
+  boolean arity = false, isTriple = true;
+} {
+	( <TUPLE> { isTriple = false; } | <TRIPLE> ) <LPAREN> 
 	
 	prop = Verb()
-	expression1 = GraphNode(stack)
-	expression2 = GraphNode(stack)
-	{ 
-        list = new ArrayList<Atom>();
-        list.add(expression1.getAtom());
-        list.add(expression2.getAtom());       
-	}
+	subject = GraphNode(stack)
+	object  = GraphNode(stack)
+        { if (isTriple) { term = prop; prop = subject; subject = term; } } // triple(subject property objet)
+	{ list = new ArrayList<Atom>(); list.add(subject); list.add(object); }
 	
-	(  expressioni = GraphNode(stack)  
-	  { list.add(expressioni.getAtom()); } 
-	)*
+	(  term = GraphNode(stack)  { list.add(term); } )*
+
+        ( <BAR> var = Var() { var.setMatchNodeList(true) ; list.add(var); } (<BAR> { var.setMatchCardinality(true) ;} ) ?) ?
+
+        ( <DOT> { arity = true; }) ?
 	  
 	<RPAREN>
 	{ 
-	    triple = createTriple(prop, list); 
-	    if (triple != null){ stack.add(triple);	}	
-		return stack; 
+	    triple = handler.createTriple(astq, prop, list, arity); 
+	    if (triple != null) { stack.add(triple); }	
+	    return stack; 
 	}
 }
 
-// triple(s p o v)
-Exp triple(Exp stack): { Expression expression1, expression2, expressioni; ArrayList<Atom> list; Atom prop; Triple triple; } {
-	<TRIPLE> <LPAREN> 
-	
-	expression1 = GraphNode(stack)
-	prop = Verb()
-	expression2 = GraphNode(stack)
-	{ 
-            list = new ArrayList<Atom>();
-            list.add(expression1.getAtom());
-            list.add(expression2.getAtom());       
-	}
-	
-	(  expressioni = GraphNode(stack)  
-	  { list.add(expressioni.getAtom()); } 
-	)*
-	  
-	<RPAREN>
-	{ 
-	    triple = createTriple(prop, list); 
-	    if (triple != null){ stack.add(triple);	}	
-		return stack; 
-	}
-}
   
 Exp PropertyList(Expression expression1, Exp stack) : {}
 {  
@@ -1835,7 +1682,7 @@ Exp PropertyListNotEmptyElem( Expression e1, Exp stack) :
   // ObjectList() may fill the stack beyond n in case of [prop ?val] 
   // hence we store the index n to add the triple at n	
   list = ObjectList(stack)
-  { stack = createTriples(stack, e1, p, list, n);  
+  { stack = handler.createTriples(astq, stack, e1, p, list, n);  
     return stack ; }
 }
 
@@ -2115,7 +1962,7 @@ Token Toper(): { Token t; }
 // Anything that can stand in a node slot and which is
 // a number of triples
 
-Expression TriplesNode(Exp stack) : { Expression expression1; }
+Atom TriplesNode(Exp stack) : { Atom expression1; }
 {
   ( 
   	  expression1 = Collection(stack) 
@@ -2124,7 +1971,7 @@ Expression TriplesNode(Exp stack) : { Expression expression1; }
   { return expression1; }
 }
 
-Expression BlankNodePropertyList(Exp stack) : { Expression expression1; }
+Atom BlankNodePropertyList(Exp stack) : { Atom expression1; }
 {
   { 
   	// [ :p ?y ]
@@ -2152,16 +1999,16 @@ Expression BlankNodePropertyList(Exp stack) : { Expression expression1; }
 * _:b3 rdf:first _:b4	_:b3 rdf:rest rdf:nil	_:b4 rdf:first 3	_:b4 rdf:rest rdf:nil
 *
 */
-Expression Collection(Exp stack) : 
+Atom Collection(Exp stack) : 
 { 
-  ArrayList<Expression> list;
-  Expression node, head;
+  ArrayList<Atom> list;
+  Atom node, head;
   RDFList rlist;
   int arobase = ASTQuery.L_DEFAULT, save = ASTQuery.L_LIST;
 }
 {
 	{
-		list = new ArrayList<Expression>();
+		list = new ArrayList<Atom>();
                 save = astq.getListType();
 	}
 	
@@ -2187,7 +2034,7 @@ Expression Collection(Exp stack) :
   	) +
   	<RPAREN>
   	{ 
-  	    head = list(stack, list, arobase);
+  	    head = handler.list(astq, stack, list, arobase);
             astq.setListType(save);
   	    return head; 
   	}
@@ -2200,7 +2047,7 @@ Expression Collection(Exp stack) :
 
 // -------- Nodes in a graph pattern or template
 
-Expression GraphNode(Exp stack) : { Expression expression1; }
+Atom GraphNode(Exp stack) : { Atom expression1; }
 {
   (   LOOKAHEAD(2)
   	  expression1 = VarOrTerm(stack) 
@@ -2949,7 +2796,7 @@ String String() : { Token t; }
   |  t = <STRING_LITERAL_LONG1>
   |  t = <STRING_LITERAL_LONG2> 
   )
-  { return remEscapes(t.image); }
+  { return handler.remEscapes(t.image); }
 }
 
 String IRIref() : { String res; }

@@ -87,7 +87,10 @@ public class ASTQuery
     public static final String OUT = "?out";
     public static final String IN = "?in";
     public static final String IN2 = "?in_1";
-   
+    
+    public static boolean REFERENCE_DEFINITION_BNODE = true;
+    public static boolean REFERENCE_QUERY_BNODE      = true;
+
     /**
      * if graph rule
      */
@@ -231,7 +234,7 @@ public class ASTQuery
     List<Variable> argList = new ArrayList<Variable>();
     List<Expression> sort = new ArrayList<Expression>();
     List<Expression> lGroup = new ArrayList<Expression>();
-    List<Expression> relax = new ArrayList<Expression>();
+    List<Atom> relax = new ArrayList<Atom>();
     private List<QueryVisitor> visitList;
     private Dataset // Triple store default dataset
             defaultDataset,
@@ -637,44 +640,12 @@ public class ASTQuery
         }
         dataBlank.put(blank.getLabel(), blank);
     }
-    
-    public void enterWhere() {
-        insideWhere = true;
-    }
-    
-    public void leaveWhere() {
-        insideWhere = false;
-    }
-    
-    public boolean isInsideWhere() {
-        return insideWhere;
-    }
-    
-    /**
-     * Generate ref st:
-     * <<s p o>> q v
-     * triple(s p o ref) . ref q v
-     */    
-    public Atom createTripleReference(Atom var, boolean isLoad) {
-        if (isLoad) {
-            return tripleReferenceConstant();
+      
+    Variable tripleReferenceQuery() {
+        if (REFERENCE_QUERY_BNODE) {
+            return tripleReferenceBnode();
         }
-        if (var != null) {
-            return var;
-        }
-        if (isInsideWhere()) { 
-            if (isUpdate()) {
-                // use case: delete where { <<s p o>> q v }
-                // delete works with a variable, not with a bnode
-                return tripleReferenceVariable();
-            }
-            else {
-                return tripleReferenceBnode();                
-            }
-        }
-        // insert delete -- data
-        // insert delete -- where
-        return tripleReferenceConstant();       
+        return tripleReferenceVariable();
     }
     
     Variable tripleReferenceVariable() {
@@ -685,9 +656,19 @@ public class ASTQuery
         return newBlankNode();
     } 
     
-    Constant tripleReferenceConstant() {
+    Constant tripleReferenceDefinition() {
+        if (REFERENCE_DEFINITION_BNODE) {
+            return tripleReferenceConstantBnode();
+        }
+        return tripleReferenceConstantURI();
+    }
+    
+    Constant tripleReferenceConstantBnode() {
         return createBlankNode();
-        //return Constant.createResource(NSManager.USER+"triple"+nbt++); 
+    }
+    
+    Constant tripleReferenceConstantURI() {
+        return Constant.createResource(NSManager.USER+"triple"+nbt++); 
     }
        
     public void createDataBlank() {
@@ -840,15 +821,15 @@ public class ASTQuery
         this.more = more;
     }
 
-    public void setRelax(List<Expression> l) {
+    public void setRelax(List<Atom> l) {
         relax = l;
     }
 
-    public void addRelax(Expression e) {
+    public void addRelax(Atom e) {
         relax.add(e);
     }
 
-    public List<Expression> getRelax() {
+    public List<Atom> getRelax() {
         return relax;
     }
 
@@ -1845,7 +1826,7 @@ public class ASTQuery
         return Term.negation(e);
     }
 
-    public RDFList createRDFList(List<Expression> list) {
+    public RDFList createRDFList(List<Atom> list) {
         return createRDFList(list, 0);
     }
 
@@ -1871,7 +1852,7 @@ public class ASTQuery
      * starting first blank node with function head() i.e. the subject of first
      * triple
      */   
-    public RDFList createRDFList(List<Expression> list, int arobase) {
+    public RDFList createRDFList(List<Atom> list, int arobase) {
         RDFList rlist = new RDFList(newBlankNode(), list);
         if (arobase == L_DEFAULT) {
             arobase = listType;

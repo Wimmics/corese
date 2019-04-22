@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.datatype;
 
+import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.Hashtable;
 
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import java.util.List;
  *
  * @author Olivier Corby, Olivier Savoie
  */
-public class DatatypeMap implements Cst, RDF {
+public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
     /**
      * logger from log4j
@@ -672,8 +673,7 @@ public class DatatypeMap implements Cst, RDF {
         }
         return DatatypeMap.newList(l);
     }
-    
-    
+          
     public static IDatatype[] toArray(IDatatype dt) {
         List<IDatatype> list = dt.getValueList();
         IDatatype[] args = new IDatatype[list.size()];
@@ -1238,5 +1238,23 @@ public class DatatypeMap implements Cst, RDF {
     public static IDatatype getPublicDatatypeValue() {
         return TRUE.getPublicDatatypeValue();
     }
+    
+    
+    // DatatypeValueFactory
+    
+    public static DatatypeMap getDatatypeMap() {
+        return dm;
+    }
+    
+    @Override
+    public Node nodeList(List<Node> list) {
+        return toList(list);
+    }
+    
+    @Override
+    public IDatatype nodeValue(int n) {
+        return newInstance(n);
+    }
+ 
 
 }

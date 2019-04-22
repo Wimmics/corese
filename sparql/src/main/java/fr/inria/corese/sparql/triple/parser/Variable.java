@@ -30,7 +30,37 @@ import fr.inria.corese.kgram.api.query.Producer;
  */
 public class Variable extends Atom {
 
+    /**
+     * @return the matchCardinality
+     */
+    public boolean isMatchCardinality() {
+        return matchCardinality;
+    }
+
+    /**
+     * @param matchCardinality the matchCardinality to set
+     */
+    public void setMatchCardinality(boolean matchCardinality) {
+        this.matchCardinality = matchCardinality;
+    }
+
+    /**
+     * @return the matchNodeList
+     */
+    public boolean isMatchNodeList() {
+        return matchNodeList;
+    }
+
+    /**
+     * @param matchNodeList the matchNodeList to set
+     */
+    public void setMatchNodeList(boolean matchNodeList) {
+        this.matchNodeList = matchNodeList;
+    }
+
     private boolean isBlankNode = false;
+    private boolean matchNodeList = false;
+    private boolean matchCardinality = false;
     private boolean isPath = false; // use case ?x $path ?y
     private boolean isVisited = false;
     private int index = ExprType.UNBOUND;

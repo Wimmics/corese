@@ -33,6 +33,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.util.ValueCache;
+import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.HashMap;
 
 /**
@@ -889,5 +890,9 @@ public class ProducerImpl implements Producer, IProducerQP {
     @Override
     public void close() {
 
+    }
+    
+    public DatatypeValueFactory getDatatypeValueFactory() {
+        return DatatypeMap.getDatatypeMap();
     }
 }

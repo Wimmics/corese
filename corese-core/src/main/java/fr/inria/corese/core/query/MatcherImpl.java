@@ -117,13 +117,23 @@ public class MatcherImpl implements Matcher {
 
         int max = q.nbNode();
         if (max > r.nbNode()) {
-            return false;
+            if (max == r.nbNode() + 1 && q.getNode(q.nbNode() -1).isMatchNodeList()) {
+                //ok
+            }
+            else {
+                return false;
+            }
         }
         for (int i = 0; i < max; i++) {
             Node qNode = q.getNode(i);
-            Node node = r.getNode(i);
-            if (!match(qNode, node, env)) {
-                return false;
+            if (qNode.isMatchNodeList()) {
+                return true;
+            }
+            else {
+                Node node  = r.getNode(i);
+                if (!match(qNode, node, env)) {
+                    return false;
+                }
             }
         }
         return true;

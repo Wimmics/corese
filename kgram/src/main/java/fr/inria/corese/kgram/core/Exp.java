@@ -1430,6 +1430,18 @@ public class Exp extends PointerObject
 
             case EDGE:
             case PATH:
+                Edge edge = getEdge();
+                add(nodeList, edge.getNode(0), blank);
+                if (edge.getEdgeVariable() != null) {
+                    add(nodeList, edge.getEdgeVariable(), blank);
+                }
+                add(nodeList, edge.getNode(1), blank);
+                
+                for (int i = 2; i < edge.nbNode(); i++) {
+                    add(nodeList, edge.getNode(i), blank);
+                }
+                break;
+                
             case XPATH:
             case EVAL:
                 for (int i = 0; i < nbNode(); i++) {

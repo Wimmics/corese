@@ -1,6 +1,7 @@
 package fr.inria.corese.kgram.tool;
 
 import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,6 +170,11 @@ public class ProducerDefault implements Producer {
 
     @Override
     public void finish(Query q) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DatatypeValueFactory getDatatypeValueFactory() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

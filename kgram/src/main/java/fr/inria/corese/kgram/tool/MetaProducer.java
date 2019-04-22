@@ -1,6 +1,7 @@
 package fr.inria.corese.kgram.tool;
 
 import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -248,6 +249,11 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     @Override
     public void close() {
 
+    }
+
+    @Override
+    public DatatypeValueFactory getDatatypeValueFactory() {
+        return producer.getDatatypeValueFactory();
     }
 
 }

@@ -1492,6 +1492,17 @@ public class Query extends Exp implements Graphable {
 
             case EDGE:
             case PATH:
+                Edge edge = exp.getEdge();
+                store(edge.getNode(0), exist, false);
+                if (edge.getEdgeVariable() != null) {
+                    store(edge.getEdgeVariable(), exist, false);
+                }
+                store(edge.getNode(1), exist, false);
+                for (int i = 2; i < edge.nbNode(); i++) {
+                    store(edge.getNode(i), exist, false);
+                }
+                break;
+
             case XPATH:
             case EVAL:
                 for (int i = 0; i < exp.nbNode(); i++) {

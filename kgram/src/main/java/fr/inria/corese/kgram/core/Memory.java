@@ -569,17 +569,47 @@ public class Memory extends PointerObject implements Environment {
             n++;
         }
     }
+    
+    boolean pushNodeList(Producer p, Node node, Edge edge, int i) {
+        if (node.isMatchCardinality()) {
+            return pushCardinality(p, node, edge, i);
+        }
+        return pushList(p, node, edge, i);
+    }
+    
+    boolean pushList(Producer p, Node node, Edge edge, int i) {
+        ArrayList<Node> list = new ArrayList<>();
+        for (int j = i; j<edge.nbNode(); j++) {
+            list.add(edge.getNode(j));
+        }
+        Node target = (p == null) ? node : p.getDatatypeValueFactory().nodeList(list);       
+        return push(node, target, i);
+    }
+    
+    boolean pushCardinality(Producer p, Node node, Edge edge, int i) {
+        int n = edge.nbNode() - i;
+        Node target = (p == null) ? node : p.getDatatypeValueFactory().nodeValue(n);       
+        return push(node, target, i);
+    }
 
     /**
      * pop nodes when fail
      */
     boolean push(Edge q, Edge ent, int n) {
+        return push(null, q, ent, n);
+    }
+    
+    boolean push(Producer p, Edge q, Edge ent, int n) {
         boolean success = true;
         int max = q.nbNode();
         for (int i = 0; i < max; i++) {
             Node node = q.getNode(i);
             if (node != null) {
-                success = push(node, ent.getNode(i), n);
+                if (node.isMatchNodeList()) {
+                    success = pushNodeList(p, node, ent, i);
+                } else {
+                    success = push(node, ent.getNode(i), n);
+                }
 
                 if (!success) {
                     // it fail: pop right now

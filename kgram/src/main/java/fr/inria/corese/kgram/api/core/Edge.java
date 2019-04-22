@@ -91,5 +91,6 @@ public interface Edge extends  Pointerable {
         Object getProvenance();
         
         void setProvenance(Object obj);
-
+        
+        default boolean isMatchArity() { return false; }
 }

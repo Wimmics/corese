@@ -2217,6 +2217,7 @@ public class Eval implements ExpType, Plugin {
         List<Node> list = qq.getFrom(gNode);
         // the backtrack gNode
         Node bNode = gNode;
+        boolean matchNBNode = qEdge.isMatchArity();
 
         if (p.getMode() == Producer.EXTENSION) {
             // Producer is Extension only for the query that created it
@@ -2279,13 +2280,17 @@ public class Eval implements ExpType, Plugin {
 //				}
                 previous = edge;
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
+                
+                if (matchNBNode) {
+                    bmatch &= (qEdge.nbNode() == edge.nbNode());
+                }
 
                 if (bmatch) {
                     if (hasCandidate) {
                         getVisitor().candidate(this, getGraphNode(gNode), qEdge, edge);
                     }
 
-                    bmatch = push(qEdge, edge, gNode, graph, n);
+                    bmatch = push(p, qEdge, edge, gNode, graph, n);
                 }
 
                 if (isEvent) {
@@ -2764,9 +2769,9 @@ public class Eval implements ExpType, Plugin {
         return match.match(gNode, graphNode, memory);
     }
 
-    private boolean push(Edge qEdge, Edge ent, Node gNode, Node node, int n) {
+    private boolean push(Producer p, Edge qEdge, Edge ent, Node gNode, Node node, int n) {
         Memory env = memory;
-        if (!env.push(qEdge, ent, n)) {
+        if (!env.push(p, qEdge, ent, n)) {
             return false;
         }
         if (gNode != null && !env.push(gNode, node, n)) {

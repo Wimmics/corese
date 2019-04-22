@@ -65,6 +65,10 @@ public interface Node extends Pointerable {
 	boolean isBlank();
         
         boolean isFuture();
+        
+        default boolean isMatchNodeList() { return false; }
+        
+        default boolean isMatchCardinality() { return false; }
 	
 	// the target value for Matcher and Evaluator
 	// for KGRAM query it returns IDatatype

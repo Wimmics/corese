@@ -12,7 +12,6 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.PointerObject;
 
 public class EdgeImpl extends PointerObject implements Edge {
@@ -23,6 +22,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     String label;
     Triple triple;
     int index = -1;
+    boolean matchArity = false;
 
     public EdgeImpl() {
         this(TOP);
@@ -37,6 +37,7 @@ public class EdgeImpl extends PointerObject implements Edge {
         label = t.getProperty().getLongName();
         triple = t;
         nodes = new ArrayList<Node>();
+        setMatchArity(t.isMatchArity());
     }
 
     public static EdgeImpl create(String label, Node sub, Node obj) {
@@ -106,6 +107,15 @@ public class EdgeImpl extends PointerObject implements Edge {
                 }
         }
         return null;
+    }
+    
+    @Override
+    public boolean isMatchArity() {
+        return matchArity;
+    }
+    
+    public void setMatchArity(boolean b) {
+        matchArity = b;
     }
 
     public Node getPredicateNode() {

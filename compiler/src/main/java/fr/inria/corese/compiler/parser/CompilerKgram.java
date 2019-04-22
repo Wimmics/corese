@@ -127,6 +127,10 @@ public class CompilerKgram implements ExpType, Compiler {
     Node getNode(Atom at) {
         return getNode(at, false);
     }
+    
+    NodeImpl getNodeImpl(Atom at) {
+        return (NodeImpl) getNode(at, false);
+    }
 
 
     /**
@@ -191,7 +195,11 @@ public class CompilerKgram implements ExpType, Compiler {
 
         if (tt.getArgs() != null) {
             for (Atom arg : tt.getArgs()) {
-                Node sup = getNode(arg);
+                NodeImpl sup =  getNodeImpl(arg);
+                if (arg.isVariable()) {
+                    sup.setMatchNodeList(arg.getVariable().isMatchNodeList());
+                    sup.setMatchCardinality(arg.getVariable().isMatchCardinality());
+                }
                 edge.add(sup);
             }
         }

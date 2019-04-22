@@ -12,8 +12,39 @@ import fr.inria.corese.kgram.path.Path;
 
 public class NodeImpl implements Node {
 
+    /**
+     * @return the matchCardinality
+     */
+    public boolean isMatchCardinality() {
+        return matchCardinality;
+    }
+
+    /**
+     * @param matchCardinality the matchCardinality to set
+     */
+    public void setMatchCardinality(boolean matchCardinality) {
+        this.matchCardinality = matchCardinality;
+    }
+
+    /**
+     * @return the matchNodeList
+     */
+    @Override
+    public boolean isMatchNodeList() {
+        return matchNodeList;
+    }
+
+    /**
+     * @param matchNodeList the matchNodeList to set
+     */
+    public void setMatchNodeList(boolean matchNodeList) {
+        this.matchNodeList = matchNodeList;
+    }
+
     Atom atom;
     int index = -1;
+    private boolean matchNodeList = false;
+    private boolean matchCardinality = false;
 
     public NodeImpl(Atom at) {
         atom = at;

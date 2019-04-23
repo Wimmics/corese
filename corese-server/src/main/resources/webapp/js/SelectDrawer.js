@@ -32,27 +32,29 @@ export class SelectDrawer extends SvgDrawer {
         // this.setupPluginConfigurationPanel();
         // Build the nabtab header
         let firstTab =true;
+        let capitalizeFirstLetter = function(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
         for (let title of Object.keys(SelectDrawer.registry)) {
             d3.select(`#${this.NAVBAR_HEADER}`)
                 .append("li")
                 .html(function (d) {
-                    return `<a data-toggle="tab" href="#${title}_tab" aria-expanded="true">${title}</a>`;
+                    return `<a data-toggle="tab" href="#${title}_tab" aria-expanded="true">${capitalizeFirstLetter(title)}</a>`;
                 });
+
             d3.select(`#${this.NAVBAR_CONTENT}`)
                 .append("div")
                 .attr("id", (d) => `${title}_tab`)
                 .attr("class", "tab-pane container fade " + (firstTab ? "active in " : "") )
                 .html((d) =>
-                    `<button id="${title}-update-view" onclick="window.pageDrawer.update('${title}')">Update View</button>
-                     <div id="${title}-viewer-configuration"></div>
+                    `<div id="${title}-viewer-configuration"></div>
+                     <button id="${title}-update-view" onclick="window.pageDrawer.update('${title}')">Update View</button>
                      <div> <svg id="${title}-content"/> </div>`
                 );
             let titlePluginConstructor = SelectDrawer.getViewer(title);
             window[title] = new titlePluginConstructor(title);
             window[title].setupConfigurationPanel(`${title}-viewer-configuration`, this.data);
             window[title].setData(this.data);
-            let parameters = new SelectDrawerParameters();
-            window[title].setParameters(parameters);
             d3.select(`#${title}-content`).html("");
             window[title].draw(`#${title}-content`);
             firstTab = false;
@@ -82,60 +84,17 @@ export class SelectDrawer extends SvgDrawer {
         window[title].draw(`#${title}-content`);
     }
 
-    addViewer() {
-        const graphChoice = d3.select("#viewerSelector").select("#selector").node().value;
-        // let rendererConstructor = this.getViewer(graphChoice);
-        // const renderer = new rendererConstructor(graphChoice);
-        /** @TODO A remplacer par une lecture des résultats de la fenêtre de configuration. */
-        let parameters = null;
-        switch (graphChoice) {
-            case SelectDrawer.Type.piechart: {
-                // @TODO to be removed when configuration interface is ok.
-                parameters = new SelectDrawerParameters();
-                Object.assign(parameters,{
-                    "label": "pref",
-                    "size": "area",
-                    "width":  600,  // canvas width
-                    "height": 600,  // canvas height
-                    "margin":  50,  // canvas margin
-                    "hole":   200,  // doughnut hole: 0 for pie, r > 0 for doughnut
-                    "selector": "#result"
-                });
-                break;
-            }
-            case SelectDrawer.Type.barchart: {
-                // @TODO to be removed when configuration interface is ok.
-                parameters = new SelectDrawerParameters();
-                Object.assign(parameters,{
-                    // "label_x": "Prefecture",
-                    // "label_y": "Area",
-                    "width":  700,  // canvas width
-                    "height": 300,  // canvas height
-                    "margin":  80,  // canvas margin
-                    "selector": "#result"
-                });
-                break;
-            }
-            case SelectDrawer.Type.tagcloud: {
-                parameters = new TagCloudParameters();
-                Object.assign(parameters.parameters , {
-                        "label": "pref",
-                        "size": "area",
-                        "width":  600,  // canvas width
-                        "height": 600,  // canvas height
-                        "margin":  10,  // canvas margin
-                        "selector": "#result"
-                });
-                parameters.setVarName("pref");
-                break;
-            }
-        }
-        /** Fin du @TODO */
-        this.currentPlugin.setData(this.data)
-        this.currentPlugin.setParameters(parameters);
-        d3.select("#result").html("");
-        this.currentPlugin.draw("#result");
-    }
+    // addViewer() {
+    //     const graphChoice = d3.select("#viewerSelector").select("#selector").node().value;
+    //     // let rendererConstructor = this.getViewer(graphChoice);
+    //     // const renderer = new rendererConstructor(graphChoice);
+    //     /** @TODO A remplacer par une lecture des résultats de la fenêtre de configuration. */
+    //     let parameters = null;
+    //     /** Fin du @TODO */
+    //     this.currentPlugin.setData(this.data)
+    //     d3.select("#result").html("");
+    //     this.currentPlugin.draw("#result");
+    // }
 
 
     // Registry management functions
@@ -163,6 +122,12 @@ class BarChartDrawer extends SvgDrawer {
         super();
         this.type = "barchart";
         this.prefix = prefix || "default";
+        this.parameters = new SelectDrawerParameters();
+        Object.assign(this.parameters,{
+            "width":  600,  // canvas width
+            "height": 600,  // canvas height
+            "margin":  50,  // canvas margin
+        });
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
@@ -184,7 +149,7 @@ class BarChartDrawer extends SvgDrawer {
         this.parameters.var_y = d3.select(`#${this.prefix}-size-select`).node().value;
 
         let nbColumns = this.data.results.bindings.length;
-        this.parameters.width = Math.min((nbColumns+1)*50, this.parameters.width);
+        this.parameters.width = Math.min((nbColumns+1)*100, this.parameters.width);
         let range = d3.extent(this.data.results.bindings, function (d) {
             return parseInt(d[this.parameters.var_y].value)
         }.bind(this));
@@ -192,6 +157,7 @@ class BarChartDrawer extends SvgDrawer {
         this.parameters.custom_extent = range;
 
         d3sparql[this.type](this.data, this.parameters);
+        this.setupZoomHandler(d3.select(`${svgId}`));
         return this;
     }
 }
@@ -201,6 +167,13 @@ class PieChartDrawer extends SvgDrawer {
         super();
         this.type = "piechart";
         this.prefix = prefix || "default";
+        this.parameters = new SelectDrawerParameters();
+        Object.assign(this.parameters,{
+            "width":  600,  // canvas width
+            "height": 600,  // canvas height
+            "margin":  50,  // canvas margin
+            "hole":   100,  // doughnut hole: 0 for pie, r > 0 for doughnut
+        });
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
@@ -221,6 +194,7 @@ class PieChartDrawer extends SvgDrawer {
         this.parameters.label = d3.select(`#${this.prefix}-label-select`).node().value;
         this.parameters.size = Number( d3.select(`#${this.prefix}-size-select`).node().value );
         d3sparql[this.type](this.data, this.parameters);
+        this.setupZoomHandler(d3.select(`${svgId}`));
         return this;
     }
 }

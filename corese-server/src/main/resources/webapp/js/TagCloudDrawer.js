@@ -12,7 +12,14 @@ export class TagCloudDrawer extends SvgDrawer {
     constructor(type) {
         super();
         this.type = type;
+        this.parameters = new TagCloudParameters();
+        Object.assign(this.parameters , {
+            "width":  600,  // canvas width
+            "height": 600,  // canvas height
+            "margin":  10,  // canvas margin
+        });
     }
+
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
         const div = panel.append("div");

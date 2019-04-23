@@ -499,14 +499,17 @@ d3sparql.barchart = function(json, config) {
       .attr("class", "label")
       .text(opts.label_x)
       .style("text-anchor", "middle")
-      .attr("transform", "translate(" + (opts.width - opts.margin / 2) + "," + 0 + ")")
+      // .attr("transform", "translate(" + (opts.width - opts.margin / 2) + "," + 0 + ")")
+      .attr("x", 0)
+      .attr("y", opts.margin / 2);
   ay.append("text")
       .attr("class", "label")
       .text(opts.label_y)
-      .style("text-anchor", "middle")
+      .style("text-anchor", "left")
       // .attr("transform", "rotate(-90)")
-      .attr("x", 0)
-      .attr("y", -opts.margin / 3)
+      .attr("x", -opts.margin / 2)
+      .attr("y", opts.height - opts.margin );
+
 
   // default CSS/SVG
   bar.attrs({

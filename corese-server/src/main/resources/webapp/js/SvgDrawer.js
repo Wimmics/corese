@@ -19,11 +19,11 @@ export class SvgDrawer {
         let zoomed = function () {
             g.attr("transform", d3.event.transform);
         };
-        let zoom_handler = d3.zoom()
+        this.zoomHandler = d3.zoom()
             .scaleExtent([0.1,10])
             // .translateExtent(extent)
             .on("zoom", zoomed);
-        svg.call(zoom_handler);
+        svg.call(this.zoomHandler);
     }
 };
 export class SvgDrawerParameters {

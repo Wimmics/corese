@@ -73,7 +73,12 @@ export class TagCloudDrawer extends SvgDrawer {
             .fontWeight(["bold"])
             .text(function(d) { return d.key; })
             .spiral(spiralStyle) // "archimedean" or "rectangular"
-            .on("end", (words) => { draw(words); this.setupZoomHandler(svg); } )
+            .on("end", function(words) {
+                draw(words);
+                this.setupZoomHandler(svg);
+                let zoom = d3.zoomIdentity;
+                svg.call(this.zoomHandler.transform, zoom);
+            }.bind(this) )
             .start();
         g.append("g")
             .attr("class", "axis")
@@ -102,20 +107,11 @@ export class TagCloudDrawer extends SvgDrawer {
         let zoomed = function () {
             g.attr("transform", d3.event.transform);
         };
-        // for bug #62 (begin)
-        let bbox = {x:0, y:0, width:0, height:0};
-        try {
-            let bbox = g.node().getBBox();
-        } catch (exception) {
-            console.warn(`An exception was caught: ${exception}`)
-        }
-        // for bug #62 (end)
-        let extent = [[bbox.x - bbox.width, bbox.y - bbox.height], [bbox.x+2*bbox.width, bbox.y+2*bbox.height]];
-        let zoom_handler = d3.zoom()
+        this.zoomHandler = d3.zoom()
             .scaleExtent([0.1,10])
             // .translateExtent(extent)
             .on("zoom", zoomed);
-        svg.call(zoom_handler);
+        svg.call(this.zoomHandler);
     }
 
     computeFrequency(data, keyName, valueName) {

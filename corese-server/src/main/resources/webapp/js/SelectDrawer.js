@@ -40,7 +40,8 @@ export class SelectDrawer extends SvgDrawer {
                 .append("li")
                 .html(function (d) {
                     return `<a data-toggle="tab" href="#${title}_tab" aria-expanded="true">${capitalizeFirstLetter(title)}</a>`;
-                });
+                })
+                .attr("class", (d) => firstTab ? "active " : "" );
 
             d3.select(`#${this.NAVBAR_CONTENT}`)
                 .append("div")
@@ -52,7 +53,7 @@ export class SelectDrawer extends SvgDrawer {
                      <div> <svg id="${title}-content"/> </div>`
                 );
             let titlePluginConstructor = SelectDrawer.getViewer(title);
-            window[title] = new titlePluginConstructor(title);
+            window[title] = new titlePluginConstructor(title, `#${title}-content`);
             window[title].setupConfigurationPanel(`${title}-viewer-configuration`, this.data);
             window[title].setData(this.data);
             d3.select(`#${title}-content`).html("");
@@ -118,16 +119,18 @@ SelectDrawer.registry  = {};
 
 
 class BarChartDrawer extends SvgDrawer {
-    constructor(prefix) {
+    constructor(prefix, svgId) {
         super();
         this.type = "barchart";
         this.prefix = prefix || "default";
         this.parameters = new SelectDrawerParameters();
         Object.assign(this.parameters,{
-            "width":  600,  // canvas width
-            "height": 600,  // canvas height
+            "width":  500,  // canvas width
+            "height": 500,  // canvas height
             "margin":  50,  // canvas margin
+            "selector": svgId
         });
+        this.svg = d3.select(`${svgId}`);
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
@@ -144,7 +147,6 @@ class BarChartDrawer extends SvgDrawer {
         this.data = data;
     }
     draw(svgId) {
-        this.parameters.selector = svgId;//d3.select(svgId).node().parentNode;
         this.parameters.var_x = d3.select(`#${this.prefix}-label-select`).node().value;
         this.parameters.var_y = d3.select(`#${this.prefix}-size-select`).node().value;
 
@@ -155,25 +157,31 @@ class BarChartDrawer extends SvgDrawer {
         }.bind(this));
         range[0] = range[0] - 0.05*(range[1] - range[0])
         this.parameters.custom_extent = range;
-
+        this.svg.selectAll("g").remove();
         d3sparql[this.type](this.data, this.parameters);
-        this.setupZoomHandler(d3.select(`${svgId}`));
+        this.setupZoomHandler(this.svg);
+        let zoom = d3.zoomIdentity.translate( this.parameters.margin, this.parameters.margin );
+        this.svg.call(this.zoomHandler.transform, zoom);
+
         return this;
     }
 }
 
 class PieChartDrawer extends SvgDrawer {
-    constructor(prefix) {
+    constructor(prefix, svgId) {
         super();
         this.type = "piechart";
         this.prefix = prefix || "default";
         this.parameters = new SelectDrawerParameters();
         Object.assign(this.parameters,{
-            "width":  600,  // canvas width
-            "height": 600,  // canvas height
+            "width":  500,  // canvas width
+            "height": 500,  // canvas height
             "margin":  50,  // canvas margin
             "hole":   100,  // doughnut hole: 0 for pie, r > 0 for doughnut
+            "selector": svgId
         });
+        this.svg = d3.select(`${svgId}`);
+
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
@@ -193,8 +201,12 @@ class PieChartDrawer extends SvgDrawer {
         this.parameters.selector = svgId;
         this.parameters.label = d3.select(`#${this.prefix}-label-select`).node().value;
         this.parameters.size = Number( d3.select(`#${this.prefix}-size-select`).node().value );
+
+        this.svg.selectAll("g").remove();
         d3sparql[this.type](this.data, this.parameters);
-        this.setupZoomHandler(d3.select(`${svgId}`));
+        this.setupZoomHandler(this.svg);
+        let zoom = d3.zoomIdentity.translate(this.parameters.width / 2, this.parameters.height / 2);
+        this.svg.call(this.zoomHandler.transform, zoom);
         return this;
     }
 }

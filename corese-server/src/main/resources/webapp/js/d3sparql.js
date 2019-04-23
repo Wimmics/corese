@@ -460,8 +460,7 @@ d3sparql.barchart = function(json, config) {
   var svg = d3.select(opts.selector)
     .attr("width", opts.width + 2 * opts.margin )
     .attr("height", opts.height + 2 * opts.margin)
-   .append("g")
-   .attr("transform", "translate(" + opts.margin + "," + opts.margin + ")")
+    .append("g");
 
   var ax = svg.append("g")
     .attr("class", "axis x")
@@ -597,8 +596,8 @@ d3sparql.piechart = function(json, config) {
   var svg = d3.select(opts.selector)
     .attr("width", opts.width)
     .attr("height", opts.height)
-    .append("g")
-    .attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")")
+    .append("g");
+    // .attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")")
   var g = svg.selectAll(".arc")
     .data(pie(data))
     .enter()

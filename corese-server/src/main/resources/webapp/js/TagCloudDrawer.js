@@ -43,9 +43,10 @@ export class TagCloudDrawer extends SvgDrawer {
         var width = 960 - margin.left - margin.right;
         var height =  500 - margin.top - margin.bottom;
 
-        var svg = d3.select("svg")
+        var svg = d3.select(svgId)
             .attr("width", width)
             .attr("height", height);
+        svg.selectAll("g").remove();
         var g = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         var color = d3.scaleOrdinal(d3.schemeCategory20);
@@ -67,10 +68,6 @@ export class TagCloudDrawer extends SvgDrawer {
             .spiral(spiralStyle) // "archimedean" or "rectangular"
             .on("end", (words) => { draw(words); this.setupZoomHandler(svg); } )
             .start();
-
-
-
-
         g.append("g")
             .attr("class", "axis")
             .attr("transform", "translate(0," + height + ")")
@@ -80,7 +77,7 @@ export class TagCloudDrawer extends SvgDrawer {
             .style('font','sans-serif');
 
         function draw(words) {
-            wordcloud.selectAll("g text")
+            wordcloud.selectAll("text")
                 .data(words)
                 .enter().append("text")
                 .attr("class","wod")
@@ -98,11 +95,18 @@ export class TagCloudDrawer extends SvgDrawer {
         let zoomed = function () {
             g.attr("transform", d3.event.transform);
         };
-        let bbox = g.node().getBBox();
-        let extent = [[bbox.x, bbox.y], [bbox.x+bbox.width, bbox.y+bbox.height]];
+        // for bug #62 (begin)
+        let bbox = {x:0, y:0, width:0, height:0};
+        try {
+            let bbox = g.node().getBBox();
+        } catch (exception) {
+            console.warn(`An exception was caught: ${exception}`)
+        }
+        // for bug #62 (end)
+        let extent = [[bbox.x - bbox.width, bbox.y - bbox.height], [bbox.x+2*bbox.width, bbox.y+2*bbox.height]];
         let zoom_handler = d3.zoom()
             .scaleExtent([0.1,10])
-            .translateExtent(extent)
+            // .translateExtent(extent)
             .on("zoom", zoomed);
         svg.call(zoom_handler);
     }

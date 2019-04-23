@@ -11,24 +11,59 @@ export class SelectDrawer extends SvgDrawer {
      */
     constructor(data, panelId) {
         super();
-        this.CHOICE_CONFIG_PANEL_ID = "selectDrawerConfigurationPanel";
-        this.SELECTOR_PANEL_ID = "viewerSelector";
-        this.SELECTOR_BUTTON_ID = "selector";
-        d3.select("#selector").selectAll("option").data(Object.keys(SelectDrawer.registry))
-            .enter()
-            .append('option')
-            .text(function (d) { return d; }) // text showed in the menu
-            .attr("value", function (d) { return d; });
-        d3.select("#selector").on("change", function() {this.setupPluginConfigurationPanel()}.bind(this));
-        d3.select(`${panelId}`).append("div").attr("id", this.CHOICE_CONFIG_PANEL_ID);
+        this.NAVBAR_HEADER = "navbar-header";
+        this.NAVBAR_CONTENT = "navbar-content";
+
         this.data = data;
-        this.setupPluginConfigurationPanel();
+        // First panel, allowing to add a new tab.
+        // this.CHOICE_CONFIG_PANEL_ID = "selectDrawerConfigurationPanel";
+        // this.SELECTOR_PANEL_ID = "viewerSelector";
+        // this.SELECTOR_BUTTON_ID = "selector";
+        // d3.select(`#${this.SELECTOR_BUTTON_ID}`)
+        //     .selectAll("option")
+        //     .data(Object.keys(SelectDrawer.registry))
+        //     .enter()
+        //     .append('option')
+        //     .text(function (d) { return d; }) // text showed in the menu
+        //     .attr("value", function (d) { return d; });
+        // d3.select(`#${this.SELECTOR_BUTTON_ID}`)
+        //     .on("change", function() {this.setupPluginConfigurationPanel()}.bind(this));
+        // d3.select(`#${this.SELECTOR_PANEL_ID}`).append("div").attr("id", this.CHOICE_CONFIG_PANEL_ID);
+        // this.setupPluginConfigurationPanel();
+        // Build the nabtab header
+        let firstTab =true;
+        for (let title of Object.keys(SelectDrawer.registry)) {
+            d3.select(`#${this.NAVBAR_HEADER}`)
+                .append("li")
+                .html(function (d) {
+                    return `<a data-toggle="tab" href="#${title}_tab" aria-expanded="true">${title}</a>`;
+                });
+            d3.select(`#${this.NAVBAR_CONTENT}`)
+                .append("div")
+                .attr("id", (d) => `${title}_tab`)
+                .attr("class", "tab-pane container fade " + (firstTab ? "active in " : "") )
+                .html((d) =>
+                    `<button id="${title}-update-view" onclick="window.pageDrawer.update('${title}')">Update View</button>
+                     <div id="${title}-viewer-configuration"></div>
+                     <div> <svg id="${title}-content"/> </div>`
+                );
+            let titlePluginConstructor = SelectDrawer.getViewer(title);
+            window[title] = new titlePluginConstructor(title);
+            window[title].setupConfigurationPanel(`${title}-viewer-configuration`, this.data);
+            window[title].setData(this.data);
+            let parameters = new SelectDrawerParameters();
+            window[title].setParameters(parameters);
+            d3.select(`#${title}-content`).html("");
+            window[title].draw(`#${title}-content`);
+            firstTab = false;
+        };
+
     }
 
     setupPluginConfigurationPanel() {
         const graphChoice = d3.select(`#${this.SELECTOR_PANEL_ID}`).select(`#${this.SELECTOR_BUTTON_ID}`).node().value;
         let rendererConstructor = SelectDrawer.getViewer(graphChoice);
-        this.currentPlugin = new rendererConstructor();
+        this.currentPlugin = new rendererConstructor("global");
         d3.select(`#${this.CHOICE_CONFIG_PANEL_ID}`).html("");
         this.currentPlugin.setupConfigurationPanel(this.CHOICE_CONFIG_PANEL_ID, this.data);
     }
@@ -41,6 +76,10 @@ export class SelectDrawer extends SvgDrawer {
     static manage(data, panelId) {
         const manager = new SelectDrawer(data, panelId);
         return manager;
+    }
+
+    update(title) {
+        window[title].draw(`#${title}-content`);
     }
 
     addViewer() {
@@ -120,32 +159,29 @@ SelectDrawer.registry  = {};
 
 
 class BarChartDrawer extends SvgDrawer {
-    constructor() {
+    constructor(prefix) {
         super();
         this.type = "barchart";
+        this.prefix = prefix || "default";
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
         const div = panel.append("div");
-        div.append("label").text("var_x");
-        div.append("select").attr("id", "var_x_select").selectAll("option").data(data.head.vars)
+        div.append("label").text("label");
+        div.append("select").attr("id", `${this.prefix}-label-select`).selectAll("option").data(data.head.vars)
             .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;})
-        div.append("label").text("var_y");
-        div.append("select").attr("id", "var_y_select").selectAll("option").data(data.head.vars)
+        d3.select(`#${this.prefix}-label-select`).property("value", data.head.vars[0])
+
+        div.append("label").text("size");
+        div.append("select").attr("id", `${this.prefix}-size-select`).selectAll("option").data(data.head.vars)
             .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;});
-        d3.select("#var_y_select").property("value", data.head.vars[1])
-        // div.append("div").attr("class", "custom-control custom-switch ")
-        //     .append("label").text("")
-        //     "<div class=\"custom-control custom-switch\">\n" +
-        //     "  <input type=\"checkbox\" class=\"custom-control-input\" id=\"customSwitches\">\n" +
-        //     "  <label class=\"custom-control-label\" for=\"customSwitches\">Toggle this switch element</label>\n" +
-        //     "</div>")
+        d3.select(`#${this.prefix}-size-select`).property("value", data.head.vars[1])
         this.data = data;
     }
     draw(svgId) {
         this.parameters.selector = svgId;//d3.select(svgId).node().parentNode;
-        this.parameters.var_x = d3.select("#var_x_select").node().value;
-        this.parameters.var_y = d3.select("#var_y_select").node().value;
+        this.parameters.var_x = d3.select(`#${this.prefix}-label-select`).node().value;
+        this.parameters.var_y = d3.select(`#${this.prefix}-size-select`).node().value;
 
         let nbColumns = this.data.results.bindings.length;
         this.parameters.width = Math.min((nbColumns+1)*50, this.parameters.width);
@@ -161,26 +197,29 @@ class BarChartDrawer extends SvgDrawer {
 }
 
 class PieChartDrawer extends SvgDrawer {
-    constructor() {
+    constructor(prefix) {
         super();
         this.type = "piechart";
+        this.prefix = prefix || "default";
     }
     setupConfigurationPanel(divId, data) {
         const panel = d3.select(`#${divId}`);
         const div = panel.append("div");
         div.append("label").text("label");
-        div.append("select").attr("id", "label_select").selectAll("option").data(data.head.vars)
+        div.append("select").attr("id", `${this.prefix}-label-select`).selectAll("option").data(data.head.vars)
             .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;})
+        d3.select(`#${this.prefix}-label-select`).property("value", data.head.vars[0])
+
         div.append("label").text("size");
-        div.append("select").attr("id", "size_select").selectAll("option").data(data.head.vars)
+        div.append("select").attr("id", `${this.prefix}-size-select`).selectAll("option").data(data.head.vars)
             .enter().append("option").text(function(d) {return d;}).attr("value", function(d) { return d;});
-        d3.select("#size_select").property("value", data.head.vars[1])
+        d3.select(`#${this.prefix}-size-select`).property("value", data.head.vars[1])
         this.data = data;
     }
     draw(svgId) {
         this.parameters.selector = svgId;
-        this.parameters.label = d3.select("#label_select").node().value;
-        this.parameters.size = Number( d3.select("#size_select").node().value );
+        this.parameters.label = d3.select(`#${this.prefix}-label-select`).node().value;
+        this.parameters.size = Number( d3.select(`#${this.prefix}-size-select`).node().value );
         d3sparql[this.type](this.data, this.parameters);
         return this;
     }
@@ -196,4 +235,4 @@ export class SelectDrawerParameters extends SvgDrawerParameters {
 SelectDrawer.register(SelectDrawer.Type.BARCHART, BarChartDrawer);
 SelectDrawer.register(SelectDrawer.Type.PIECHART, PieChartDrawer);
 SelectDrawer.register(SelectDrawer.Type.TAGCLOUD, TagCloudDrawer);
-SelectDrawer.register(SelectDrawer.Type.SCATTERPLOT, TagCloudDrawer);
+// SelectDrawer.register(SelectDrawer.Type.SCATTERPLOT, TagCloudDrawer);

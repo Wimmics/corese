@@ -479,6 +479,8 @@ d3sparql.barchart = function(json, config) {
       .attr("x", function(d) { return scale_x(d[opts.var_x].value) })
       .attr("width", scale_x.bandwidth())
       .attr("y", function(d) { return scale_y(d[opts.var_y].value) })
+      .attr("stroke", "black")
+      .attr("stroke-width", "0.1px")
       .attr("height", function(d) { return opts.height - scale_y(parseInt(d[opts.var_y].value)) - opts.margin })
       .on("click", function(d) {if (d.url) {window.open(d.url.value);}});
 /*

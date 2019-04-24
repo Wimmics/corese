@@ -35,6 +35,20 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public class EdgeManagerIndexer 
         implements Index {
+
+    /**
+     * @return the loopMetadata
+     */
+    public boolean isLoopMetadata() {
+        return loopMetadata;
+    }
+
+    /**
+     * @param loopMetadata the loopMetadata to set
+     */
+    public void setLoopMetadata(boolean loopMetadata) {
+        this.loopMetadata = loopMetadata;
+    }
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -59,6 +73,7 @@ public class EdgeManagerIndexer
     NodeManager nodeManager;
     HashMap<Node, Node> map;
     private boolean debug = false;
+    private boolean loopMetadata = false;
 
     public EdgeManagerIndexer(Graph g, boolean bi, int index) {
         init(g, bi, index);
@@ -882,20 +897,58 @@ public class EdgeManagerIndexer
      */
     @Override
     public void finishUpdate() {
+        if (graph.isEdgeMetadata()) {
+            metadata();
+        }
     }
     
+    /**
+     * Merge duplicate rdf* triples:
+     * triple(s p o [q v]) triple(s p o [r s])
+     * ->
+     * triple(s p o [q v ; r s])
+     */
     void metadata() {
         if (map == null) {
             map = new HashMap<>();
         }
         graph.cleanIndex();
         graph.clearNodeManager();
-        for (Node p : getProperties()) {
-            // merge duplicate triples with metadata node
-            get(p).metadata();
+        setLoopMetadata(true);
+        
+        // loop because edge merge may lead to duplicate triple(t1 p t2 t3) triple (t1 p t2 t3)
+        while (isLoopMetadata()) {
+            setLoopMetadata(false);
+            for (Node p : getProperties()) {
+                // merge duplicate triples with metadata nodes
+                // keep only one triple with one metadata node
+                get(p).metadata();
+            }
+            if (map.size() > 0) {
+                // replace nodes that have been merged
+                replace();
+            }
         }
+        
         graph.indexNodeManager();
         map.clear();
+    }
+    
+    // record that n1 be replaced by n2
+    void replace(Node n1, Node n2) {
+        map.put(n1, n2);
+    }
+    
+     /**
+      * replace nodes that have been merged
+      * _:b1 q v _:b2 r s 
+      * ->
+      * _:b1 q v ; r s
+     */
+    void replace() {
+        for (Node p : getProperties()) {
+            get(p).replace(map);
+        }
     }
       
 }

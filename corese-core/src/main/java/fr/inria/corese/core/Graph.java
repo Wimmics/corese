@@ -3367,6 +3367,10 @@ public class Graph extends GraphObject implements
     public boolean isMetadata() {
         return metadata;
     }
+    
+    public boolean isMetadataNode() {
+        return isEdgeMetadata() || isMetadata();
+    }
 
     /**
      * @param metadata the metadata to set

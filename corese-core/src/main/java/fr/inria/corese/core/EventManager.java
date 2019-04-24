@@ -192,7 +192,9 @@ public class EventManager {
             case Rule:
                 break;
                 
-            case LoadAPI: break;
+            case LoadAPI: 
+                getGraph().finishUpdate();
+                break;
                 
             case ActivateRDFSEntailment:
                 setEntailment(false);

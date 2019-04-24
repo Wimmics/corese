@@ -14,7 +14,7 @@ st:param [
     # transformation for the result of the query in the st:web transformation
     st:sttl <sttl/combine.rul> ;
     # list of transformations for the st:combine transformation
-    st:transformations (spq:result <sttl/map.rul> <sttl/chart.rul> ) ;
+    st:transformations (spq:result navlab:map <sttl/chart.rul> ) ;
     st:lodprofile (
         (ai: st:sparql)         
         (dc: st:sparql)  

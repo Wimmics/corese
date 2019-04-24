@@ -473,7 +473,7 @@ st:tutorial1 a st:Server ;
 st:tutorial2 a st:Server ;
   st:param [ st:lang 'en';
     st:sttl st:combine ;
-    st:transformations (<sttl/chart.rul> spq:result) ;
+    st:transformations (spq:result) ;
     st:exportlist( st:sttl st:transformations st:mappings )
   ] ;
   st:service "sparql" ;

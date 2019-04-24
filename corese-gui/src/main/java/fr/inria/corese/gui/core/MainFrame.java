@@ -123,7 +123,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem map;
     private JMenuItem success;
     private JMenuItem quit;
-    private JMenuItem iselect, igraph, iconstruct, iask, idescribe,
+    private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
             iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, irdfxml, ijson, itrig, ispin, iowl, itypecheck,
@@ -150,6 +150,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private String textQuery;
     // Texte par défaut dans l'onglet requête
     private static final String DEFAULT_SELECT_QUERY = "select.rq";
+    private static final String DEFAULT_TUPLE_QUERY = "selecttuple.rq";
     private static final String DEFAULT_GRAPH_QUERY = "graph.rq";
     private static final String DEFAULT_CONSTRUCT_QUERY = "construct.rq";
     private static final String DEFAULT_ASK_QUERY = "ask.rq";
@@ -461,6 +462,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itable = new HashMap<Object, String>();
 
         iselect = defItem("Select", DEFAULT_SELECT_QUERY);
+        iselecttuple = defItem("Select Tuple", DEFAULT_TUPLE_QUERY);
         igraph = defItem("Graph", DEFAULT_GRAPH_QUERY);
         iconstruct = defItem("Construct", DEFAULT_CONSTRUCT_QUERY);
         iask = defItem("Ask", DEFAULT_ASK_QUERY);
@@ -589,6 +591,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadStyle);
 
         queryMenu.add(iselect);
+        queryMenu.add(iselecttuple);
         queryMenu.add(igraph);
         queryMenu.add(iconstruct);
         queryMenu.add(iask);

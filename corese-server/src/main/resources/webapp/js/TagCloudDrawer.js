@@ -59,7 +59,7 @@ export class TagCloudDrawer extends SvgDrawer {
         var color = d3.scaleOrdinal(d3.schemeCategory20);
         var categories = d3.keys(d3.nest().key(function(d) { return d.key; }).map(freqTable));
         const domainFreqTable = [freqTable[0].freq,freqTable[freqTable.length-1].freq];
-        var fontSize = d3.scaleLog().domain(domainFreqTable).range([10,80]);
+        var fontSize = d3.scaleLinear().domain(domainFreqTable).range([10,80]);
 
         var wordcloud = g.append("g")
             .attr('class','wordcloud')
@@ -135,7 +135,7 @@ export class TagCloudDrawer extends SvgDrawer {
                 "url": freqTable[key].url
             };
         })
-        freqArray.sort((a,b) => a.freq <= b.freq);
+        freqArray.sort((a,b) => a.freq - b.freq);
         return freqArray;
     }
 };

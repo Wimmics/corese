@@ -51,8 +51,8 @@ export class TagCloudDrawer extends SvgDrawer {
         var height =  500 - margin.top - margin.bottom;
 
         var svg = d3.select(svgId)
-            .attr("width", width)
-            .attr("height", height);
+            .attr("width", "90%")
+            .attr("height", "90%");
         svg.selectAll("g").remove();
         var g = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

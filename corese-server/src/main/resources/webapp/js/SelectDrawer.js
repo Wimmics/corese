@@ -151,7 +151,7 @@ class BarChartDrawer extends SvgDrawer {
         this.parameters.var_y = d3.select(`#${this.prefix}-size-select`).node().value;
 
         let nbColumns = this.data.results.bindings.length;
-        this.parameters.width = Math.min((nbColumns+1)*100, this.parameters.width);
+        this.parameters.width = Math.min((nbColumns+1)*50, this.parameters.width);
         let range = d3.extent(this.data.results.bindings, function (d) {
             return parseInt(d[this.parameters.var_y].value)
         }.bind(this));

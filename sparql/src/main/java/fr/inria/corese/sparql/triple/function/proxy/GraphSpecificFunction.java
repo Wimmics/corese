@@ -26,8 +26,6 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_NODE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 
 /**

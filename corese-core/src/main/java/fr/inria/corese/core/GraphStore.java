@@ -1,6 +1,5 @@
 package fr.inria.corese.core;
 
-import fr.inria.corese.kgram.api.core.ExpType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -41,6 +40,7 @@ public class GraphStore extends Graph {
         return g;
     }
     
+    @Override
     public GraphStore empty(){
         GraphStore g = new GraphStore();
         g.inherit(this);

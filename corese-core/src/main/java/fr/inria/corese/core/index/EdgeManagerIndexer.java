@@ -1,5 +1,6 @@
 package fr.inria.corese.core.index;
 
+import fr.inria.corese.core.Event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -509,11 +510,7 @@ public class EdgeManagerIndexer
     }
 
     private void reduce(Node pred) {
-        EdgeManager el = get(pred);
-        int rem = el.reduce(nodeManager);
-        if (rem > 0) {
-            graph.setSize(graph.size() - rem);
-        }
+        get(pred).reduce(nodeManager);
     }
     
     @Override
@@ -907,17 +904,20 @@ public class EdgeManagerIndexer
      * triple(s p o [q v]) triple(s p o [r s])
      * ->
      * triple(s p o [q v ; r s])
+     * PRAGMA: graph must be indexed (edges must be sorted)
      */
-    void metadata() {
+    @Override
+    public void metadata() {
         if (map == null) {
             map = new HashMap<>();
         }
         graph.cleanIndex();
         graph.clearNodeManager();
         setLoopMetadata(true);
-        
+        graph.getEventManager().start(Event.IndexMetadata);
         // loop because edge merge may lead to duplicate triple(t1 p t2 t3) triple (t1 p t2 t3)
         while (isLoopMetadata()) {
+            graph.getEventManager().process(Event.IndexMetadata);
             setLoopMetadata(false);
             for (Node p : getProperties()) {
                 // merge duplicate triples with metadata nodes
@@ -929,8 +929,8 @@ public class EdgeManagerIndexer
                 replace();
             }
         }
-        
-        graph.indexNodeManager();
+        graph.getEventManager().finish(Event.IndexMetadata);
+        //graph.indexNodeManager();
         map.clear();
     }
     

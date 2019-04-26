@@ -1248,12 +1248,16 @@ public class Graph extends GraphObject implements
      */
     public void index() {
         if (size() > 0) {
-            getEventManager().start(Event.IndexGraph);
-            for (Index ei : getIndexList()) {
-                ei.index();
-            }
+            getEventManager().start(Event.IndexGraph);            
+            basicIndex(); 
             getEventManager().finish(Event.IndexGraph);
             setIndex(false);
+        }
+    }
+    
+    void basicIndex() {
+        for (Index ei : getIndexList()) {
+            ei.index();
         }
     }
     
@@ -3027,10 +3031,16 @@ public class Graph extends GraphObject implements
     }
     
     public Graph empty(){
-        Graph g = Graph.create();
+        Graph g = create();
         g.inherit(this);
         return g;
     }
+    
+    public Graph construct() {
+        Graph g = create();
+        g.setEdgeMetadata(isEdgeMetadata());
+        return g;
+    } 
     
     void inherit(Graph g){
         setSkolem(g.isSkolem());

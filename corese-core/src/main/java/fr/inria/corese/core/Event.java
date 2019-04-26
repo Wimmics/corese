@@ -14,7 +14,7 @@ public enum Event {
     
     InitGraph,
     IndexNodeManager, IndexNodeManagerReduce, ClearNodeManager,
-    IndexGraph,
+    IndexGraph, IndexMetadata,
     
     Query, Construct, Rule, 
     Service,

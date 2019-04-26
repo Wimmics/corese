@@ -178,24 +178,22 @@ public class EventManager {
          switch (e) {
             case Insert:
             case Delete:             
-            case Construct: 
             case LoadUpdate:    
                 graph.indexGraph();            
-                break;
+                break; 
                 
-            case UpdateStep: 
-                if (o instanceof Update) {
-                    getGraph().finishUpdate();
-                }
-                break;
+            case Construct: 
+                graph.indexGraph();
+                // continue
+                
+            case LoadAPI: 
+            case UpdateStep:                
+                graph.finishUpdate();
+                break;            
                 
             case Rule:
                 break;
-                
-            case LoadAPI: 
-                getGraph().finishUpdate();
-                break;
-                
+                                
             case ActivateRDFSEntailment:
                 setEntailment(false);
                 break;
@@ -209,13 +207,17 @@ public class EventManager {
                 
             case CleanOntology:
                 break;
+                
+            case IndexMetadata:
+                break;
         }
     }
 
     public void process(Event e, Object o) {
         trace(Process, e, o);        
         switch(e) {
-            case Insert: setUpdate(true); break;
+            case Insert: 
+                setUpdate(true); break;
             case Delete: setDelete(true); break;
             case Finish: finish(); break;
         }

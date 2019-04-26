@@ -104,6 +104,10 @@ public class PluginImpl
     public static final String SHOW     = EXT+"show";
     public static final String HIDE     = EXT+"hide";
     public static final String NODE_MGR = EXT+"nodeManager";
+    public static final String RDF_STAR = EXT+"rdfstar";
+    public static final String VARIABLE = EXT+"variable";
+    public static final String URI      = EXT+"uri";
+    
     private static final String QM      = "?";
     
     String PPRINTER = DEF_PPRINTER;
@@ -993,7 +997,8 @@ public class PluginImpl
     public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         String label = dt1.getLabel();
-        if (label.equals(LISTEN)){  
+        switch (label) {
+            case LISTEN: 
             if (dt2.booleanValue()){
                 if (env.getEval() != null){
                     g.addListener(new GraphListen(env.getEval()));
@@ -1002,44 +1007,56 @@ public class PluginImpl
             else {
                 g.removeListener();
             }
-        }
-        else if (label.equals(DEBUG)){
+            break;
+        case DEBUG:
             getEvaluator().setDebug(dt2.booleanValue());
-        }
-        else if (label.equals(EVENT)) {
+            break;
+        case EVENT:
             getEventManager(p).setVerbose(dt2.booleanValue());
             getGraph(p).setDebugMode(dt2.booleanValue());
-        }
-        else if (label.equals(EVENT_LOW)) {
+            break;
+        case EVENT_LOW: 
             getEventManager(p).setVerbose(dt2.booleanValue());
             getEventManager(p).hide(Event.Insert);
             getEventManager(p).hide(Event.Construct);
             getGraph(p).setDebugMode(dt2.booleanValue());
-        }
-        else if (label.equals(METHOD)) {
+            break;
+        case METHOD: 
             getEventManager(p).setMethod(dt2.booleanValue());
-        }
-        else if (label.equals(SHOW)) { 
+            break;
+        case SHOW:  
             getEventManager(p).setVerbose(true);
             Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).show(e);
             }            
-        }
-        else if (label.equals(HIDE)) {           
+            break;
+        case HIDE:            
             getEventManager(p).setVerbose(true);
-            Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
+            e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
             if (e != null) {
                 getEventManager(p).hide(e);
-            }             
-        }
-        else if (label.equals(NODE_MGR)) {     
+            }   
+            break;
+        case NODE_MGR:      
             getGraph(p).tuneNodeManager(dt2.booleanValue());
-        }
-        else if (label.equals(VISITOR)) {
+            break;
+        case VISITOR: 
             QuerySolver.setVisitorable(dt2.booleanValue());
-            //System.out.println("QuerySolver visitorable: " + QuerySolver.isVisitorable());
+            break;
+            
+        case RDF_STAR:
+            if (dt2.getLabel().equals(VARIABLE)) {
+                ASTQuery.REFERENCE_QUERY_BNODE = ! ASTQuery.REFERENCE_QUERY_BNODE;
+                System.out.println("rdf* query variable");
+            }
+            else if (dt2.getLabel().equals(URI)) {
+                ASTQuery.REFERENCE_DEFINITION_BNODE = ! ASTQuery.REFERENCE_DEFINITION_BNODE;
+                System.out.println("rdf* id uri");
+            }
+            break;
         }
+        
         return TRUE;
      }
     

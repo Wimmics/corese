@@ -107,6 +107,9 @@ public class EdgeManager implements Iterable<Edge> {
             pred = edge;
         }
         list = l;
+        if (count > 0) {
+            graph.setSize(graph.size() - count);
+        }
         return count;
     }
     
@@ -135,6 +138,7 @@ public class EdgeManager implements Iterable<Edge> {
     void metadata() {
         ArrayList<Edge> l = new ArrayList<>();
         Edge e1 = null;
+        int count = 0;
         for (Edge e2 : list) { 
             if (e1 == null) {
                 e1 = e2;
@@ -144,17 +148,22 @@ public class EdgeManager implements Iterable<Edge> {
                 if (e1.getNode(meta) == null) { 
                     e1 = e2;
                     l.set(l.size()-1, e2);
+                    count ++;
                 }  
                 else {
                     merge(e1, e2);
+                    count ++;
                 }
             }
             else {
                 e1 = e2;
                 l.add(e2);
             }
-        }  
+        } 
         list = l;
+        if (count > 0) {
+            graph.setSize(graph.size() - count);
+        }
     }
      
     // keep only one metadata node (e1)

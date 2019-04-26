@@ -1083,7 +1083,7 @@ public class QueryProcess extends QuerySolver {
      */
     void construct(Mappings map, Dataset ds) {
         Query query = map.getQuery();
-        Graph gg = Graph.create();
+        Graph gg = getGraph().construct();
         // can be required to skolemize
         gg.setSkolem(isSkolem());
         Construct cons = Construct.create(query, new GraphManager(gg));

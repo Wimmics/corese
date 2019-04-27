@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import java.util.ArrayList;
 
 /*
  * Factory creates Edges
@@ -207,6 +208,32 @@ public class EdgeFactory {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
         return ee;
+    }
+    
+    public Edge create(Node source, Node subject, Node predicate, Node object, Node node) {
+        ArrayList<Node> list = new ArrayList<>();
+        list.add(subject);list.add(object); list.add(node);
+        return create(source,  predicate, list);
+   }
+    
+    public Edge name(Edge edge) {
+        return name(edge, graph.addTripleName());
+    }
+    
+    public Edge name(Edge edge, Node name) {
+        if (edge.nbNode() == 3) {
+            edge.setNode(2, name);
+            return edge;
+        }
+        return name(edge, edge.getEdgeNode(), name);
+    }
+    
+     public Edge name(Edge edge, Node predicate, Node name) {
+        if (edge.nbNode() == 3) {
+            edge.setNode(2, name);
+            return edge;
+        }
+        return create(edge.getGraph(), edge.getNode(0), predicate, edge.getNode(1), name);
     }
     
     public Edge copy(Node node, Node pred, Edge ent) {

@@ -306,18 +306,18 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
                 // ok
             }
             else if (isNamedGraph) {
-                if (skipEdgeMetadata) {
-                    // two edges in same graph: skip metadata, in different graph it is ok
-                    if (edge.getEdgeNode() == null || !same(last.getEdgeNode(), edge.getEdgeNode())) {
-                        // different properties: ok
-                    }
-                    else if (metadataDifferent(last, edge)) {
-                        // ok
-                    }
-                    else if (same(edge.getGraph(), last.getGraph())) {
-                        continue;
-                    }
-                }
+//                if (skipEdgeMetadata) {
+//                    // two edges in same graph: skip metadata, in different graph it is ok
+//                    if (edge.getEdgeNode() == null || !same(last.getEdgeNode(), edge.getEdgeNode())) {
+//                        // different properties: ok
+//                    }
+//                    else if (metadataDifferent(last, edge)) {
+//                        // ok
+//                    }
+//                    else if (same(edge.getGraph(), last.getGraph())) {
+//                        continue;
+//                    }
+//                }
             } 
             else if (different(last, edge)){
                 // ok

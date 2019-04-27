@@ -100,6 +100,8 @@ public class Graph extends GraphObject implements
     static boolean byIndexDefault = true;
     public static boolean METADATA_DEFAULT = false;
     public static boolean EDGE_METADATA_DEFAULT = false;
+    // same triple have same name in named graphs
+    public static boolean TRIPLE_UNIQUE_NAME = true;
     
     private static final String[] PREDEFINED = {
         Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
@@ -3183,6 +3185,10 @@ public class Graph extends GraphObject implements
 
     public Node addBlank() {
         return addBlank(newBlankID());
+    }
+    
+    public Node addTripleName() {
+        return addBlank();
     }
 
     public Node addLiteral(String label, String datatype, String lang) {

@@ -1696,7 +1696,7 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
         Node queryNode = query.getGraphNode();
-        Node graph = getNode(graphNode);
+        Node graph     = getNode(graphNode);
         Mappings res;
 
         if (graph == null) {
@@ -1714,26 +1714,49 @@ public class Eval implements ExpType, Plugin {
             if (stop) {
                 return STOP;
             }
-            Node val1 = null, val2 = null;
-            if (queryNode != null) {
-                val1 = m.getNode(queryNode);
-                val2 = m.getNode(graphNode);
-                if (val1 != null && val2 != null && !val1.equals(val2)) {
+            
+//            Node val1 = null, val2 = null;           
+//            if (queryNode != null) {
+//                val1 = m.getNode(queryNode);
+//                val2 = m.getNode(graphNode);
+//                if (val1 != null && val2 != null && !val1.equals(val2)) {
+//                    continue;
+//                }
+//            }
+            
+            Node namedGraph = null;
+            if (graphNode.isVariable()) {
+                namedGraph = m.getNode(graphNode);
+                if (namedGraph != null && ! namedGraph.equals(m.getNamedGraph())) {
+                    // graph ?g { s p o optional { o q ?g }}
+                    // variable ?g bound by exp not equal to named graph variable ?g
                     continue;
                 }
             }
+            
             if (env.push(m, n)) {
                 boolean pop = false;
-                if (val1 != null) {
+                
+//                if (val1 != null) {
+//                    env.pop(queryNode);
+//                    if (val2 == null) {
+//                        if (env.push(graphNode, val1)) {
+//                            pop = true;
+//                        } else {
+//                            env.pop(m);
+//                            continue;
+//                        }
+//                    }
+//                }
+                
+                if (queryNode != null) {
                     env.pop(queryNode);
-                    if (val2 == null) {
-                        if (env.push(graphNode, val1)) {
-                            pop = true;
-                        } else {
-                            env.pop(m);
-                            continue;
-                        }
-                    }
+                }
+                if (env.push(graphNode, m.getNamedGraph())) {
+                    pop = true;
+                } else {
+                    env.pop(m);
+                    continue;
                 }
 
                 backtrack = eval(p, gNode, stack, n + 1);
@@ -1814,6 +1837,7 @@ public class Eval implements ExpType, Plugin {
             }
             res = subEval(np, graphNode, queryNode, ee, main);
         }
+        res.setNamedGraph(graph);
 
         getVisitor().graph(this, graph, exp, res);
         return res;
@@ -2550,10 +2574,10 @@ public class Eval implements ExpType, Plugin {
                     success = filter(proxyGraphNode, merge, exp);
                     if (success) {
                         nbsuc++;
-                        if (env.push(merge, n)) {
+                        if (env.push(merge, n)) {                           
                             if (hasGraph) {
                                 env.pop(proxyGraphNode);
-                            }
+                            }                           
                             backtrack = eval(p, gNode, stack, n + 1);
                             env.pop(merge);
                             if (backtrack < n) {

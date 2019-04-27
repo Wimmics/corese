@@ -1707,6 +1707,12 @@ public class Mappings extends PointerObject
     public void setProvenance(Object provenance) {
         this.provenance = provenance;
     }
+    
+    void setNamedGraph(Node node) {
+        for (Mapping m : this) {
+            m.setNamedGraph(node);
+        }
+    }
 
   
 

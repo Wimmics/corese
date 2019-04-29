@@ -115,7 +115,7 @@ public class TestQuery1 {
 
         QueryProcess.testAlgebra(!true);
         //Graph.METADATA_DEFAULT = true;
-        Graph.setEdgeMetadataDefault(true);
+        //Graph.setEdgeMetadataDefault(true);
         
       //before3();  
       
@@ -259,9 +259,158 @@ public class TestQuery1 {
         return graph;
     }
     
+    @Test
+    public void testNGG1() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "optional { ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(3, map.size());
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?g");
+            assertEquals(true, dt != null);
+        }
+    }
+    
+     @Test
+    public void testNGG2() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim, us:Jesse }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "minus { ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(3, map.size());
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?g");
+            assertEquals(true, dt != null);
+        }
+    }
     
     
+      @Test
+    public void testNGG3() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim, us:Jesse }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * where {"
+                + "graph ?g {"
+                + "{?s foaf:knows  ?o }"
+                + "union { ?s foaf:knows  ?o ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(5, map.size());
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?g");
+            assertEquals(true, dt != null);
+        }
+    }
     
+       @Test
+    public void testNGG4() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:Jack foaf:knows us:Jim, us:Jesse }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jules foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o filter exists {?o foaf:knows ?y} "
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(0, map.size());
+    }
+    
+    
+     @Test
+    public void testNGG5() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "from named us:g2 "
+                + "where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "optional { ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?g");
+            assertEquals(true, dt != null);
+        }
+    }
+    
+        @Test
+    public void testNGG6() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim }"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "where {"
+                + "graph us:g2 {"
+                + "?s foaf:knows  ?o "
+                + "optional { ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+        
+    }
     
     
          @Test
@@ -1681,7 +1830,6 @@ public class TestQuery1 {
         Graph g = Graph.create();
         String q = "select (xt:entailment() as ?g) where {"
                 + "}";
-
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?g");
@@ -2954,7 +3102,7 @@ public class TestQuery1 {
                 "select * (kg:index(?v1) as ?i) where {"
                         + "graph ?g1 {?x ?p ?v1} "
                         + "graph ?g2 {?y ?p ?v2} "
-                        + "filter sameTerm(?v1, ?v2)"
+                        + "filter sameTerm(?v1, ?v2)"              
                         + "filter (?g1 < ?g2)"
                         + "}";
         Graph g = createGraph();

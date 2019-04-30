@@ -1693,7 +1693,7 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
         Node queryNode = query.getGraphNode();
-        Node graph     = getNode(graphNode);
+        Node graph     = getNode(p, graphNode);
         Mappings res;
 
         if (graph == null) {
@@ -1971,15 +1971,15 @@ public class Eval implements ExpType, Plugin {
 //        return null;
 //    }
     
-    Node getNode(Node gNode) {
+    Node getNode(Producer p, Node gNode) {
         if (gNode.isConstant()) {
-            return gNode;
+            return p.getNode(gNode);
         } 
         return memory.getNode(gNode);        
     }
     
     Node getGraphNode(Node node) {
-        return (node == null) ? null : getNode(node);
+        return (node == null) ? null : node.isConstant() ? node : memory.getNode(node);
     }
 
     /**

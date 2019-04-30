@@ -419,12 +419,12 @@ public class Eval implements ExpType, Plugin {
      * gNode = subQuery.getGraphNode(graphName); node = env.getNode(graphName)
      *
      */
-    public Mappings query(Node gNode, Node node, Query query) {
-        if (gNode != null && node != null) {
-            getMemory().push(gNode, node);
-        }
-        return eval(gNode, query, null);
-    }
+//    public Mappings query(Node gNode, Node node, Query query) {
+//        if (gNode != null && node != null) {
+//            getMemory().push(gNode, node);
+//        }
+//        return eval(gNode, query, null);
+//    }
 
     // draft for processing EXTERN expression
     public void add(Plugin p) {
@@ -1045,9 +1045,6 @@ public class Eval implements ExpType, Plugin {
         return memory.getResetJoinMappings();
     }
 
-    Node getGraphNode(Node node) {
-        return (node == null) ? null : memory.getNode(node);
-    }
 
     /**
      * ____________________________________________________ *
@@ -1713,16 +1710,7 @@ public class Eval implements ExpType, Plugin {
         for (Mapping m : res) {
             if (stop) {
                 return STOP;
-            }
-            
-//            Node val1 = null, val2 = null;           
-//            if (queryNode != null) {
-//                val1 = m.getNode(queryNode);
-//                val2 = m.getNode(graphNode);
-//                if (val1 != null && val2 != null && !val1.equals(val2)) {
-//                    continue;
-//                }
-//            }
+            }            
             
             Node namedGraph = null;
             if (graphNode.isVariable()) {
@@ -1735,20 +1723,7 @@ public class Eval implements ExpType, Plugin {
             }
             
             if (env.push(m, n)) {
-                boolean pop = false;
-                
-//                if (val1 != null) {
-//                    env.pop(queryNode);
-//                    if (val2 == null) {
-//                        if (env.push(graphNode, val1)) {
-//                            pop = true;
-//                        } else {
-//                            env.pop(m);
-//                            continue;
-//                        }
-//                    }
-//                }
-                
+                boolean pop = false;                               
                 if (queryNode != null) {
                     env.pop(queryNode);
                 }
@@ -1985,15 +1960,26 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
+//    Node getNode(Node gNode) {
+//        Node gg = memory.getNode(gNode);
+//        if (gg != null) {
+//            return gg;
+//        }
+//        if (gNode.isConstant()) {
+//            return gNode;
+//        }
+//        return null;
+//    }
+    
     Node getNode(Node gNode) {
-        Node gg = memory.getNode(gNode);
-        if (gg != null) {
-            return gg;
-        }
         if (gNode.isConstant()) {
             return gNode;
-        }
-        return null;
+        } 
+        return memory.getNode(gNode);        
+    }
+    
+    Node getGraphNode(Node node) {
+        return (node == null) ? null : getNode(node);
     }
 
     /**

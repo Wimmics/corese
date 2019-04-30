@@ -45,6 +45,13 @@ public class ProducerImplNode {
                 return graph.getAllNodeIterator();
             }
         } // named graph nodes
+        else if (gNode.isConstant()) {
+            // return nodes of this named graph
+            node = graph.getGraphNode(gNode.getLabel());
+            if (node != null) {
+                return graph.getNodeGraphIterator(node);
+            }
+        } 
         else if (env.isBound(gNode)) {
             // return nodes of this named graph
             node = env.getNode(gNode);
@@ -53,13 +60,7 @@ public class ProducerImplNode {
             if (node != null) {
                 return graph.getNodeGraphIterator(node);
             }
-        } else if (gNode.isConstant()) {
-            // return nodes of this named graph
-            node = graph.getGraphNode(gNode.getLabel());
-            if (node != null) {
-                return graph.getNodeGraphIterator(node);
-            }
-        } else if (from.size() > 0) {
+        }else if (from.size() > 0) {
             // return nodes of from named graph
             return getNodes(gNode, from, env);
         } else {

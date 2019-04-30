@@ -157,28 +157,49 @@ public class ProducerImpl implements Producer, IProducerQP {
                 return edge.getNode(i);
         }
     }
+    
+    Node getNode(Node gNode, Environment env) {
+        if (gNode == null) {
+            return null;
+        }
+        return getValue(gNode, env);
+    }
 
     /**
      * Possibly get a Node with a different number datatype than required for D
      * entailment
      */
+    Node getValue(Node qNode, Environment env) {
+        return getValue(qNode, qNode.isVariable()?env.getNode(qNode):null, env);
+    }
+    
     Node getValue(Node qNode, Node node, Environment env) {
-        if (node == null) {
-            if (qNode.isConstant()) {
-                node = getExtNode(qNode);
-            }
-        } else if (isExtern(node, env)) {
+        if (qNode.isConstant()) {
+            node = getExtNode(qNode);
+        }
+        else if (node != null && isExtern(node)) {
             node = getExtNode(node);
         }
         return node;
     }
+    
+//    Node getValue2(Node qNode, Node node, Environment env) {
+//        if (node == null) {
+//            if (qNode.isConstant()) {
+//                node = getExtNode(qNode);
+//            }
+//        } else if (isExtern(node)) {
+//            node = getExtNode(node);
+//        }
+//        return node;
+//    }
 
     Node getExtNode(Node node) {
         return graph.getExtNode(node);
     }
 
     // eg BIND(node as ?x)
-    boolean isExtern(Node node, Environment env) {
+    boolean isExtern(Node node) {
         return node.getIndex() == -1
                 || node.getTripleStore() != graph;
     }
@@ -257,7 +278,7 @@ public class ProducerImpl implements Producer, IProducerQP {
                         // no focus on object node because:
                         // no dichotomy on c:Engineer because we want subsumption                           
                     } else {
-                        Node val = env.getNode(qNode);
+                        Node val = qNode.isVariable() ? env.getNode(qNode) : null;
                         // candidate query node value:
                         focusNode = getValue(qNode, val, env);
 
@@ -373,15 +394,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             // hence skip MatchIterator
             return it;
         }
-    }
-
-    Node getNode(Node gNode, Environment env) {
-        if (gNode == null) {
-            return null;
-        }
-        return getValue(gNode, env.getNode(gNode), env);
-        //return env.getNode(gNode);
-    }
+    }  
 
     /**
      * Return Node that represents the predicate of the Edge
@@ -449,7 +462,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             }
         }
 
-        if (start != null && isExtern(start, env)) {
+        if (start != null && isExtern(start)) {
             if (!isdb) {
                 start = graph.getNode(start);
             }
@@ -461,7 +474,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             index = (index == 0) ? 1 : 0;
         }
         
-        if (src != null && isExtern(src, env)) {
+        if (src != null && isExtern(src)) {
               src = getExtNode(src);
         }
 
@@ -653,8 +666,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     @Override
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
-        //Node node = env.getNode(gNode);
-        Node node = getValue(gNode, env.getNode(gNode), env );
+        Node node = getValue(gNode, env );
         if (node != null && graph.containsCoreseNode(node)) {
             if (from.isEmpty()) {
                 return true;

@@ -710,14 +710,16 @@ public class Memory extends PointerObject implements Environment {
     }
 
     public void pop(Node node) {
-        int index = node.getIndex();
-        if (nbNodes[index] > 0) {
-            nbNodes[index]--;
-            if (nbNodes[index] == 0) {
-                nbNode--;
-                nodes[index] = null;
-                qNodes[index] = null;
-                stackIndex[index] = -1;
+        if (node.isVariable()) {
+            int index = node.getIndex();
+            if (nbNodes[index] > 0) {
+                nbNodes[index]--;
+                if (nbNodes[index] == 0) {
+                    nbNode--;
+                    nodes[index] = null;
+                    qNodes[index] = null;
+                    stackIndex[index] = -1;
+                }
             }
         }
     }
@@ -746,7 +748,7 @@ public class Memory extends PointerObject implements Environment {
                 max = stack[n];
             }
         }
-        if (gNode != null) {
+        if (gNode != null && gNode.isVariable()) {
             int n = gNode.getIndex();
             if (stack[n] > max) {
                 max = stack[n];
@@ -1011,6 +1013,9 @@ public class Memory extends PointerObject implements Environment {
      */
     @Override
     public Node getNode(Node node) {
+        if (node.isConstant()) {
+            return node;
+        }
         int n = node.getIndex();
         if (n == -1) {
             return null;

@@ -495,7 +495,8 @@ public class PathFinder {
         // In which case all path relations come from same source 
         Node csource = null;
         if (gNode != null) {
-            csource = memory.getNode(gNode);
+            csource = gNode.isConstant() ? gNode : memory.getNode(gNode);
+            //csource = memory.getNode(gNode);
         }
 
         // the start concept for path

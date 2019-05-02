@@ -146,10 +146,11 @@ public class UpdateProcess {
             // generate appropriate Mapping for query q from this stack.
             mm = Mapping.create(q, m.getBind());
         }
-        Mappings map = exec.query(q, mm);
-        //Mappings map = exec.basicQuery(ast, null, ds);
-        //Query q = map.getQuery();
-
+        //Mappings map = exec.query(q, mm);
+        // insert using g where
+        // if g is external graph, focus on g
+        Mappings map = exec.basicQuery(q, mm);
+               
         // PRAGMA: update can be both delete & insert
         if (q.isDelete()) {
             manager.delete(q, map, ds);

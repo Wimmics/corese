@@ -39,6 +39,13 @@ public class GraphStore extends Graph {
         g.copy(this);
         return g;
     }
+     
+    @Override
+    public void shareNamedGraph(Graph g) {
+         for (String name : g.getNames()) {
+             setNamedGraph(name, g.getNamedGraph(name));
+         }
+     }
     
     @Override
     public GraphStore empty(){
@@ -84,7 +91,8 @@ public class GraphStore extends Graph {
         return getStore().values();
     }
     
-    public Set<String> getNames(){
+    @Override
+    public Collection<String> getNames(){
         return getStore().keySet();
     }
 

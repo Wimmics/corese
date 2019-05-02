@@ -51,6 +51,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.Collection;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -3359,7 +3360,14 @@ public class Graph extends GraphObject implements
     public boolean check(Query q) {
         return new QueryCheck(this).check(q);
     }
-
+    
+    // overloaded by GraphStore
+    public void shareNamedGraph(Graph g) {         
+    }
+    
+    public Collection<String> getNames(){
+        return new ArrayList<>(0);
+    }
     
     public Graph getNamedGraph(String name) {
         return null;

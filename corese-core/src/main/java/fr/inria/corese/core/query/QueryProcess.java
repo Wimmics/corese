@@ -10,7 +10,6 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
@@ -344,6 +343,9 @@ public class QueryProcess extends QuerySolver {
             Graph g = getGraph().getNamedGraph(name);
             if (g != null) {
                 q.getFrom().clear();
+                if (isOverwrite()) {
+                    g.shareNamedGraph(getGraph());
+                }
                 return create(g);
             }
         }
@@ -799,11 +801,15 @@ public class QueryProcess extends QuerySolver {
             logStart(query);
             // select from g where
             // if g is an external named graph, create specific Producer(g)
-            return focusFrom(query).query(query, m);
+            return basicQuery(query, m);
         } finally {
             logFinish(query, map);
             readUnlock(query);
         }
+    }
+    
+    Mappings basicQuery(Query q, Mapping m) {
+        return focusFrom(q).query(q, m);
     }
 
     void log(int type, Query q) {
@@ -857,10 +863,13 @@ public class QueryProcess extends QuerySolver {
             }
         }
         
+        gg.shareNamedGraph(g);
+
         QueryProcess exec = QueryProcess.create(gg);
         Mappings map = exec.update(query, m, ds); 
         if (gg.isVerbose()) {
             System.out.println("name: " + name);
+            System.out.println(gg.getNames());
             System.out.println(gg);
         }
         //gg.init();

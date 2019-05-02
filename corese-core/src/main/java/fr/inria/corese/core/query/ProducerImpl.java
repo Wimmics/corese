@@ -228,6 +228,13 @@ public class ProducerImpl implements Producer, IProducerQP {
     public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge,
             Environment env) {
 
+        if (gNode != null) {
+            if (gNode.isVariable()) {
+                System.out.println(gNode);
+                System.out.println(env.getQuery().getAST());
+            }
+        }
+        
         Node predicate = getPredicate(edge, env);
         if (predicate == null) {
             return empty;
@@ -260,6 +267,8 @@ public class ProducerImpl implements Producer, IProducerQP {
 
         Node focusNode = null, objectNode = null;
         boolean isType = false;
+      
+        //gNode = (gNode != null && gNode.isVariable()) ? env.getNode(gNode) : gNode;
 
         for (Index ei : graph.getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX

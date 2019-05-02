@@ -1,7 +1,7 @@
 #
 # Method definition and method call
 #
-@test @debug
+@method 
 select * 
 #(xt:method(us:area, us:Circle, ?x) as ?aa) 
 (method(us:area, ?x) as ?a) 

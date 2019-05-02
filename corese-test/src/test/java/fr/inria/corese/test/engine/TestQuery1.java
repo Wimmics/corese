@@ -1,13 +1,11 @@
 package fr.inria.corese.test.engine;
 
 import fr.inria.corese.compiler.eval.QuerySolver;
-import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.Load;
@@ -44,14 +42,11 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.core.EventLogger;
-import fr.inria.corese.core.EventManager;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -414,37 +409,166 @@ public class TestQuery1 {
     
     
          @Test
+    public void testNGG7() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim . us:Jack foaf:knows us:James}"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "from named us:g1 "
+                + "from named us:g2 "
+                + "where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "filter exists { ?o foaf:knows ?y }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(1, map.size());
+        
+    }
+    
+           @Test
+    public void testNGG8() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim . us:Jack foaf:knows us:Jim}"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "from named us:g1 "
+                + "from named us:g2 "
+                + "where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "{select * where  { ?o foaf:knows ?y }}"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(1, map.size());
+        
+    }
+    
+             @Test
+    public void testNGG9() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim . us:Jack foaf:knows us:Jim}"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "graph us:g3 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "from named us:g1 "
+                + "from named us:g2 "
+                + "where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "bind ( exists { ?o foaf:knows ?y } as ?b )"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int count = 0;
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?b");
+            if (dt.booleanValue()) count++;
+        }
+        assertEquals(1, count);
+    }
+    
+             @Test
+    public void testNGG10() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String i = "insert data {"
+                + "graph us:g1 { us:John foaf:knows us:Jim . us:Jack foaf:knows us:Jim}"
+                + "graph us:g2 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "graph us:g3 { us:Jim foaf:knows us:Jack . us:Jack foaf:knows us:James }"
+                + "}";
+        
+        String q = "select * "
+                + "from named us:g1 "
+                + "from named us:g2 "
+                + "where {"
+                + "graph ?g {"
+                + "?s foaf:knows  ?o "
+                + "values ?b { unnest( exists { ?o foaf:knows ?y } )  }"
+                + "}"
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        int count = 0;
+        for (Mapping m : map) {
+            DatatypeValue dt = m.getValue("?b");
+            if (dt.booleanValue()) count++;
+        }
+        assertEquals(1, count);
+    }
+    
+         @Test
     public void testRee() throws EngineException {
 
         GraphStore graph = GraphStore.create();
         QueryProcess exec = QueryProcess.create(graph);
         exec.setOverwrite(true);
-        
+
         String i1 = "insert data { graph <http://example.org/g>  { us:John rdfs:label 'John'  } }";
-        String i2 = 
-                 "with <http://example.org/g> " +
-                 "insert  { ?x foaf:name ?n } where { ?x rdfs:label ?n }";
-        
+        String i11
+                = "with <http://example.org/g1> "
+                + "insert { ?x rdfs:label ?y }"
+                + "where { graph <http://example.org/g>  { ?x rdfs:label ?y  } }";
+
+        String i2
+                = "with <http://example.org/g> "
+                + "insert  { ?x foaf:name ?n } where { ?x rdfs:label ?n }";
+
         String q = "select * "
-               + "from  <http://example.org/g> "
-                + "where { ?x ?p ?y  }"
-                ;
-        
-         String q2 = "select * "
-               + "from  <http://example.org/g> "
-                + "where { ?x foaf:name ?y  }"
-                ;
-        
+                + "from  <http://example.org/g> "
+                + "where { ?x ?p ?y  }";
+
+        String q2 = "select * "
+                + "from  <http://example.org/g> "
+                + "where { ?x foaf:name ?y  }";
+
+        String q4 = "select * "
+                + "from  <http://example.org/g> "
+                + "where { "
+                + "graph <http://example.org/g1> { ?x rdfs:label ?y  } "
+                + "}";
+
         exec.query(i1);
+        Graph g = graph.getNamedGraph("http://example.org/g");
+
+        Mappings map = exec.query(i11);
+        Graph g1 = graph.getNamedGraph("http://example.org/g1");
+        Mappings m4 = exec.query(q4);
+        
         Mappings m1 = exec.query(q);
         exec.query(i2);
         Mappings m2 = exec.query(q);
         assertEquals(2, m2.size());
-        Graph g = graph.getNamedGraph("http://example.org/g");
         assertEquals(true, g != null);
         assertEquals(2, g.size());
         Mappings m3 = exec.query(q2);
         assertEquals(1, m3.size());
+        
         exec.setOverwrite(false);
 
     }

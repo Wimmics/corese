@@ -64,10 +64,14 @@ public class Introspection extends LDScript {
     
     // name of  current named graph 
     IDatatype name(Environment env) {
-        if (env.getGraphNode() == null) {
+        Node gNode = env.getGraphNode();
+        if (gNode == null) {
             return null;
-        }      
-        Node n = env.getNode(env.getGraphNode());
+        }  
+        if (gNode.isConstant()) {
+            return (IDatatype) gNode.getDatatypeValue();
+        }
+        Node n = env.getNode(gNode);
         if (n == null) {
             return null;
         }

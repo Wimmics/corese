@@ -42,8 +42,10 @@ public class ASTPrinter {
             getSparqlHeader(sb);
                        
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
-                sb.append(KeywordPP.WHERE).append(" ");
-                ast.getBody().pretty(sb);
+                if (ast.getBody() != null) {
+                    sb.append(KeywordPP.WHERE).append(" ");
+                    ast.getBody().pretty(sb);
+                }
             }
 
             if (!ast.isAsk()) {

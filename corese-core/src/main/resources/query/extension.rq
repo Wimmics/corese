@@ -90,6 +90,12 @@ function xt:shapeNode(?shape, ?uri) {
     return (st:visitedGraph())
 }
 
+function xt:testShapeNode(?shape, ?uri) {
+    let (?g = xt:shapeNode(?shape, ?uri)) {
+        xt:conform(?g)
+    }
+}
+
 function xt:shapeNode(?shape, ?sh, ?uri) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
     return (st:visitedGraph())

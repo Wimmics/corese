@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-04-24";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-05-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -490,7 +490,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
-        itypecheck = defItem("TypeCheck", DEFAULT_TYPECHECK_QUERY);
+        itypecheck = defItem("Shape", DEFAULT_TYPECHECK_QUERY);
 
         loadAndRunRule = new JMenuItem("Load&Run Rule");
         loadAndRunRule.addActionListener(this);

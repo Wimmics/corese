@@ -1,5 +1,8 @@
+# shape for shape
 template {
-  st:apply-templates-with(st:typecheck) 
-} 
+   xt:turtle(?g)
+}
 where {
+   bind (xt:transformer(st:ds, true) as ?d)
+   bind (xt:shapeGraph(<http://www.w3.org/ns/shacl-shacl>) as ?g)
 }

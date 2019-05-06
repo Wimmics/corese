@@ -1,11 +1,12 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
-    st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
+    #st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
+    funcall(?q, ?shape, ?sh, ?vis, ?s, ?m)
 }
 where {
   graph ?shape {  
-    values ?q {  sh:pattern sh:sparql }
+    values ?q { sh:class sh:disjoint sh:equals }
     ?sh ?q ?m            
   }
   

@@ -375,7 +375,7 @@ for (
 function sh:shapeNode(?shape, ?s) {
 let (?suc = true) {
 for (
-   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
    where { 
    
     values ?s {UNDEF}
@@ -384,7 +384,8 @@ for (
         ?sh sh:targetSubjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?s ?p ?o}
+     {?s ?p ?o} union {?a ?p ?s}
+     }
     
     union
     
@@ -392,7 +393,8 @@ for (
         ?sh sh:targetObjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?x ?p ?s}
+     {?x ?p ?s} union {?s ?p ?a}
+     }
     
     union 
     

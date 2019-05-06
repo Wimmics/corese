@@ -8,9 +8,7 @@ where {
     values ?q { 
         sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
     }
-    ?sh ?q ?m 
-    #filter not exists { ?sh sh:path ?p }
- 
+    ?sh ?q ?m  
   }
   
   values ?s { unnest(?ls) }

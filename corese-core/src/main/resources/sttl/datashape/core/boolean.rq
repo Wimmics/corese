@@ -2,10 +2,11 @@
 #  ?ls is the list of target nodes of shape ?sh
 #  evaluate  sh:and sh:or sh:not
 #
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
 
 template  (?shape, ?sh, ?vis, ?ls) {
-   st:call-template(?bool, ?shape, ?sh, ?cst, ?vis, ?ls)
+    funcall(msh:fun(?bool), ?shape, ?sh, ?cst, ?vis, ?ls)
 }
 where {
     graph ?shape {  
@@ -13,4 +14,6 @@ where {
         ?sh ?bool ?cst
     }
 }
+
+
 

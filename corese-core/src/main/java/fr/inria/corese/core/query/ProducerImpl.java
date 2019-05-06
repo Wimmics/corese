@@ -582,6 +582,11 @@ public class ProducerImpl implements Producer, IProducerQP {
         List<Node> list = new ArrayList<Node>();
         for (Node nn : from) {
             Node target = graph.getGraphNode(nn.getLabel());
+            if (target == null) {
+                if (graph.getNamedGraph(nn.getLabel()) != null){
+                    target = nn;
+                }
+            }
             if (target != null) {
                 list.add(target);
             }

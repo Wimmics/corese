@@ -1,0 +1,8 @@
+select * where {
+    <<?s ?p ?o>> ?q ?v .
+    triple(?s ?p ?o ?t)
+    triple(?s ?p ?o |?l )
+    triple(?s ?p ?o |?c| )
+    #bind (xt:tune(xt:rdfstar, xt:variable) as ?a)
+    #bind (xt:tune(xt:rdfstar, xt:uri) as ?b)
+}

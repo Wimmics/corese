@@ -34,7 +34,7 @@ public interface GraphProcessor {
     
     IDatatype index(Environment env, Producer p);
 
-    IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
+    IDatatype tune(Expr exp, Environment env, Producer p, IDatatype... dt);
     
     IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
    

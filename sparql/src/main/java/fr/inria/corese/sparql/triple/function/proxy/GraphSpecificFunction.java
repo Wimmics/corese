@@ -77,7 +77,7 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.depth(env, p, param[0]);
                 
             case XT_TUNE:
-                return proc.tune(this, env, p, param[0], param[1]);
+                return proc.tune(this, env, p, param);
                 
             case XT_EDGES:
                 return edge(proc, env, p, param);

@@ -737,7 +737,7 @@ public class Processor {
 		defoper(IRI, 		ExprType.URI);
 		defoper(SELF, 		ExprType.SELF);
 		defoper(DEBUG, 		ExprType.DEBUG);
-		defoper(TRACE, 		ExprType.XT_TRACE);
+		//defoper(TRACE, 		ExprType.XT_TRACE);
 
 		defoper(MATCH, 	ExprType.SKIP);
 		defoper(PLENGTH, ExprType.LENGTH);

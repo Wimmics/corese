@@ -2,10 +2,41 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Sat May 04 11:22:39 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Data Shape Validator
+# http://w3c.github.io/data-shapes/shacl/
+#
+# main: shapes with targets
+# core: shape constraints (property, path, constraint, and, or, not, closed)
+# property:   property predicate constraint
+# path:       property path constraint
+# constraint: node constraint
+#
+# Olivier Corby - Inria I3S - 2016
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template st:start(?shapeGraph) {
+    ?suc
+}
+where {
+  bind (sh:starter() as ?st)
+  bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
+  bind (xt:focus(?shape, sh:sibling()) as ?sib)
+  bind (sh:target(?shape) as ?suc) 
+  bind (sh:success(?suc) as ?b)
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -59,37 +90,6 @@ where {
   #bind (coalesce(st:get(st:shape), st:shape) as ?shape)
   bind (xt:focus(?shape, sh:sibling()) as ?sib)
   bind (if (bound(?sh), funcall(?name, ?shape, ?s, ?sh), funcall(?name, ?shape, ?s)) as ?suc) 
-  bind (sh:success(?suc) as ?b)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Data Shape Validator
-# http://w3c.github.io/data-shapes/shacl/
-#
-# main: shapes with targets
-# core: shape constraints (property, path, constraint, and, or, not, closed)
-# property:   property predicate constraint
-# path:       property path constraint
-# constraint: node constraint
-#
-# Olivier Corby - Inria I3S - 2016
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template st:start(?shapeGraph) {
-    ?suc
-}
-where {
-  bind (sh:starter() as ?st)
-  bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
-  bind (xt:focus(?shape, sh:sibling()) as ?sib)
-  bind (sh:target(?shape) as ?suc) 
   bind (sh:success(?suc) as ?b)
 }
 ]]>
@@ -476,7 +476,7 @@ for (
 function sh:shapeNode(?shape, ?s) {
 let (?suc = true) {
 for (
-   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
    where { 
    
     values ?s {UNDEF}
@@ -485,7 +485,8 @@ for (
         ?sh sh:targetSubjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?s ?p ?o}
+     {?s ?p ?o} union {?a ?p ?s}
+     }
     
     union
     
@@ -493,7 +494,8 @@ for (
         ?sh sh:targetObjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?x ?p ?s}
+     {?x ?p ?s} union {?s ?p ?a}
+     }
     
     union 
     

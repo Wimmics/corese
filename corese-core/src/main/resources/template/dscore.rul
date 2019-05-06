@@ -2,105 +2,15 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Mon May 06 09:01:36 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
 
-template sh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-    values ?s { unnest(?ls) }
-    bind (! sh:testShapeCore(?shape, ?cst, ?s) as ?suc)
-    
-    bind (st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis) as ?b)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:xone (?shape, ?sh, ?or, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    values ?s { unnest(?ls) }
-
-    bind (sh:xone(?or, ?s, ?shape) as ?count)  
-	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count)  as ?suc)
-	
-    bind (st:report(sh:xone, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-  
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:or (?shape, ?sh, ?or, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    values ?s { unnest(?ls) }
-
-    bind (sh:or(?or, ?s, ?shape) as ?count)  
-	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count)  as ?suc)
-	
-    bind (st:report(sh:or, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-  
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:and (?shape, ?sh, ?and, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    values ?s { unnest(?ls) }
- 
-    bind (sh:and(?and, ?s, ?shape) as ?count)  
-	bind (! bound(?count) AS ?failure) .
-	bind (IF (?failure, false, ?count)  as ?suc)
-	
-    bind (st:report(sh:and, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-  
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:profile {}
 where {}
 
@@ -124,6 +34,150 @@ function st:defaultNamed(?term){
 function st:optimize(?shape, ?sh){
     true
 }
+
+
+function msh:fun(?name) {
+    if (?name = sh:and,  msh:and,
+    if (?name = sh:or,   msh:or, 
+    if (?name = sh:xone, msh:xone,
+    msh:not)))
+}
+
+function msh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
+    if (isExtension(?ls)) {
+        let (?res = true) {
+            for (?s in ?ls) {
+                let (?suc = ! sh:testShapeCore(?shape, ?cst, ?s)) {
+                    set(?res = ?res && ?suc);
+                    st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis)
+                }
+            };
+            return (?res)
+        }
+    }
+    else {
+        let (?suc = ! sh:testShapeCore(?shape, ?cst, ?ls)) {
+            st:report(sh:not, ?sh, ?shape, ?s, st:null, ?ls,  ?suc, ?vis) ;
+            return (?suc)
+        }    
+    }
+}
+
+
+
+function msh:and (?shape, ?sh, ?bool, ?vis, ?ls) {
+    msh:boolean(sh:and, ?shape, ?sh, ?bool, ?vis, ?ls)
+}
+
+function msh:or (?shape, ?sh, ?bool, ?vis, ?ls) {
+    msh:boolean(sh:or, ?shape, ?sh, ?bool, ?vis, ?ls)
+}
+
+function msh:xone (?shape, ?sh, ?bool, ?vis, ?ls) {
+    msh:boolean(sh:xone, ?shape, ?sh, ?bool, ?vis, ?ls)
+}
+
+
+# ?oper = sh:and | sh:or 
+function msh:boolean (?oper, ?shape, ?sh, ?bool, ?vis, ?ls) {
+    if (isExtension(?ls)) {
+        let (?res = true) {
+            for (?s in ?ls) {
+                let (?suc = msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?s)) {
+                    set (?res = ?res && ?suc)
+                }
+            } ;
+            return(?res)
+        }
+    }
+    else {
+        msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?ls)
+    }
+}
+
+function msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?s) {
+    let (?suc = coalesce(funcall(?oper, ?bool, ?s, ?shape), false)){
+        st:report(?oper, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis);
+        return (?suc)
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+#  ?ls is the list of target nodes of shape ?sh
+#  evaluate sh:constraint
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?ls) {
+  sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape { values ?sh { UNDEF } filter not exists { ?sh sh:path ?ppp } }
+        
+    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
+  
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+#  ?ls is the list of target nodes of shape ?sh
+#  evaluate  sh:and sh:or sh:not
+#
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+
+template  (?shape, ?sh, ?vis, ?ls) {
+    funcall(msh:fun(?bool), ?shape, ?sh, ?cst, ?vis, ?ls)
+}
+where {
+    graph ?shape {  
+        values ?bool { sh:and sh:or sh:xone sh:not } 
+        ?sh ?bool ?cst
+    }
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# evaluate sh:property sh:path of shape ?sh
+# ?list is the list of target nodes of shape ?sh
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?list) {
+   sh:safe(?shape, ?sh, ?suc)
+}
+where {
+    graph ?shape {  
+        ?sh sh:property ?cst  
+        ?cst sh:path ?p 
+        filter not exists { ?cst sh:deactivated true }
+        # use case: sh:property [ sh:path p ; sh:property pp ]
+    }
+    
+    bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
+}
+
 
 ]]>
 </body>
@@ -187,82 +241,6 @@ where {
    bind (st:report(sh:closed, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) as ?b)
     
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-#  ?ls is the list of target nodes of shape ?sh
-#  evaluate  sh:and sh:or sh:not
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template  (?shape, ?sh, ?vis, ?ls) {
-   st:call-template(?bool, ?shape, ?sh, ?cst, ?vis, ?ls)
-}
-where {
-    graph ?shape {  
-        values ?bool { sh:and sh:or sh:xone sh:not } 
-        ?sh ?bool ?cst
-    }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# evaluate sh:property sh:path of shape ?sh
-# ?list is the list of target nodes of shape ?sh
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?list) {
-   sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    graph ?shape {  
-        ?sh sh:property ?cst  
-        ?cst sh:path ?p 
-        filter not exists { ?cst sh:deactivated true }
-        # use case: sh:property [ sh:path p ; sh:property pp ]
-        # filter not exists { ?sh sh:path ?pp }
-    }
-    
-    bind (sh:path(?shape, ?cst, ?vis, ?list, ?p) as ?suc)
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-#  ?ls is the list of target nodes of shape ?sh
-#  evaluate sh:constraint
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    graph ?shape { values ?sh { UNDEF } filter not exists { ?sh sh:path ?ppp } }
-        
-    bind (sh:hasConstraint(?shape, ?sh, ?vis, ?ls) as ?suc)
-  
-}
-
-
 ]]>
 </body>
 </rule>

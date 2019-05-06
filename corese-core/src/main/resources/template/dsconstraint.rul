@@ -2,75 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Mon May 06 09:01:36 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:disjoint (?shape, ?sh, ?vis, ?s, ?p){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (sh:path(?shape, ?s, ?p) as ?l)
-  
-  bind (! xt:member(?s, ?l) as ?suc) 
-  
-  bind (st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:equals1 (?shape, ?sh, ?vis, ?s, ?p){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (sh:path(?shape, ?s, ?p) as ?l)
-
-  bind (xt:member(?s, ?l) as ?suc) 
-  
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) as ?b)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:equals2 (?shape, ?sh, ?vis, ?s, ?p){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (sh:path(?shape, ?s, ?p) as ?l)
-  
-  values ?m { unnest(?l) }
-  
-  bind (?s = ?m as ?suc)
-  
-  bind (st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis) as ?b)
-  
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -92,41 +27,6 @@ where {
   as ?suc )
 
   bind (st:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:equals (?shape, ?sh, ?vis, ?s, ?p){
-     st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p)
-}
-where {
-
-  values ?oper {sh:equals1 sh:equals2}
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template sh:class (?shape, ?sh, ?vis, ?s, ?c){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-
-  bind (exists { ?s rdf:type/rdfs:subClassOf* ?c } as ?suc)
-  bind (st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?s, ?suc, ?vis) as ?b)
 }
 
 ]]>
@@ -184,24 +84,6 @@ where {
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:datatype (?shape, ?sh, ?vis, ?s, ?d){
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  
-  bind (sh:datatype(?s, ?d)  as ?suc)
-  
-  bind (st:report(sh:datatype, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
 template st:profile {}
 where {}
 
@@ -222,9 +104,48 @@ function st:optimize(?shape, ?sh){
 }
 
 
+function sh:class (?shape, ?sh, ?vis, ?s, ?c) {
+    let (?suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
+        st:report(sh:class, ?sh, ?shape,  ?s, rdf:type, ?s, ?suc, ?vis) ;
+        return (?suc)
+    }
+}
 
 
+function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p) {
+    let (?l = sh:path(?shape, ?s, ?p), ?suc = ! xt:member(?s, ?l)) {
+        st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) ;
+        return (?suc)
+    }
+}
 
+function sh:equals (?shape, ?sh, ?vis, ?s, ?p) {
+    let (?l  = sh:path(?shape, ?s, ?p),
+         ?b1 = sh:equals1(?shape, ?sh, ?vis, ?s, ?p, ?l),
+         ?b2 = sh:equals2(?shape, ?sh, ?vis, ?s, ?p, ?l)) {
+            return (?b1 && ?b2)
+    }
+}
+
+
+function sh:equals1 (?shape, ?sh, ?vis, ?s, ?p, ?l) {
+    let (?suc = xt:member(?s, ?l)) {
+        st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?s, ?suc, ?vis) ;
+        return (?suc)
+    }
+}
+
+function sh:equals2 (?shape, ?sh, ?vis, ?s, ?p, ?l) {
+    let (?res = true) {
+        for (?m in ?l) {
+            let (?suc = ?s = ?m) {
+                st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?m, ?suc, ?vis);
+                set (?res = ?res && ?suc)
+            }
+        } ;
+        return (?res)
+    }
+}
 
 
 ]]>
@@ -237,11 +158,12 @@ function st:optimize(?shape, ?sh){
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
-    st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
+    #st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
+    funcall(?q, ?shape, ?sh, ?vis, ?s, ?m)
 }
 where {
   graph ?shape {  
-    values ?q { sh:class sh:pattern sh:disjoint sh:equals sh:sparql }
+    values ?q { sh:class sh:disjoint sh:equals }
     ?sh ?q ?m            
   }
   
@@ -266,9 +188,7 @@ where {
     values ?q { 
         sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
     }
-    ?sh ?q ?m 
-    #filter not exists { ?sh sh:path ?p }
- 
+    ?sh ?q ?m  
   }
   
   values ?s { unnest(?ls) }
@@ -277,6 +197,28 @@ where {
   
   bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+template (?shape, ?sh, ?vis, ?ls) {
+    st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
+}
+where {
+  graph ?shape {  
+    values ?q {  sh:pattern sh:sparql }
+    ?sh ?q ?m            
+  }
+  
+  values ?s { unnest(?ls) }
+}
+
 
 ]]>
 </body>

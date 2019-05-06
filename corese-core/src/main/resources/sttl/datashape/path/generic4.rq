@@ -8,11 +8,11 @@ template  (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
 where {
   graph ?shape {  
     values ?oper { 
-      sh:equals 
+      sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
+      sh:maxCount sh:minCount
     }
     ?sh ?oper ?b  
   }
-
+  #filter xt:print("*****************", ?oper)
   values ?s { unnest(?ls) }
-
 }

@@ -8,15 +8,15 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
 where {
   graph ?shape {  
     values ?oper { 
-      #sh:equals 
-      sh:maxCount sh:minCount sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan sh:disjoint 
-      sh:and sh:or sh:xone sh:not 
+      #sh:equals sh:disjoint sh:maxCount sh:minCount
+      #sh:and sh:or sh:xone sh:not 
+      
+      sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan  
       sh:qualifiedValueShape sh:sparql
     }
     ?sh ?oper ?b  
     filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
   }
-  
   values ?s { unnest(?ls) }
 
 }

@@ -21,6 +21,38 @@ function st:optimize(?shape, ?sh){
 }
 
 
+
+
+function sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o) {
+    sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m)
+}
+
+function sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o) {
+    sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m)
+}
+
+function sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m) {
+    let (?val = xt:size(sh:path(?shape, ?s, ?p)),
+         ?suc = ?val >= ?m) { 
+        st:report(sh:minCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis);
+        return(?suc)
+    }
+}
+
+function sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m) {
+    let (?val = xt:size(sh:path(?shape, ?s, ?p)),
+         ?suc = ?val <= ?m) { 
+        st:report(sh:maxCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis);
+        return(?suc)
+    }
+}
+
+
+
+
+
+
+
 function sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst) {
     let (?res = true) {
         for (?o in sh:path(?shape, ?s, ?p)) {
@@ -59,12 +91,71 @@ function msh:boolean (?oper, ?shape, ?sh, ?vis, ?s, ?p, ?and) {
 }
 
 
+function sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
+    let (?l = sh:path(?shape, ?s, ?p)) {
+        if (xt:member(?o, ?l)) {
+            let (?suc = ! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o)) {
+                st:report(sh:not, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
+                return(?suc)
+            }
+        } ;
+        return (true)
+    }
+}
+
+
+function sh:and (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
+    msh:boolean (sh:and, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+}
+
+function sh:or (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
+    msh:boolean (sh:or, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+}
+
+function sh:xone (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
+    msh:boolean (sh:xone, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+}
+
+function msh:boolean (?oper, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
+    let (?l = sh:path(?shape, ?s, ?p)) {
+        if (xt:member(?o, ?l)) {
+            let (?suc = coalesce(funcall(?oper, ?and, ?s, ?p, ?o, ?shape), false)) { 
+                st:report(?oper, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
+                return (?suc)
+            }
+        };
+        return (true)
+    }
+}
 
 
 
+function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q) {
+    let (?res = true, 
+         ?l1 = sh:path(?shape, ?s, ?p),
+         ?l2 = sh:path(?shape, ?s, ?q)) {
+        for (?o in ?l1) {
+            let (?suc = ! xt:member(?o, ?l2)) {
+                st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
+                set (?res = ?res && ?suc)
+            }
+        } ;
+        return (?res)
+    }
+}
 
-
-
+function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o) {
+    let (?l1 = sh:path(?shape, ?s, ?p),
+         ?l2 = sh:path(?shape, ?s, ?q)) {
+        if (xt:member(?o, ?l1)) {
+            let (?suc = ! xt:member(?o, ?l2)) {
+                st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
+                return (?suc)
+            }
+        } ;
+        return (true)
+    }
+}
 
 
 

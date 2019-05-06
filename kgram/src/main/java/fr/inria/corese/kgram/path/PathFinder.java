@@ -255,8 +255,7 @@ public class PathFinder {
         index = n;
         targetNode = env.getNode(edge.getNode(other));
         varNode = edge.getEdgeVariable();
-
-        if (f != null) {
+        if (f != null) {           
             if (match(edge, lVar, index)) {
                 filter = f;
                 init(env);
@@ -367,15 +366,18 @@ public class PathFinder {
      * Enumerate path in a parallel thread, return a synchronised buffer Useful
      * if backjump or have a limit in sparql query
      */
-    public Iterable<Mapping> candidate(Node gNode, List<Node> from, Environment mem) {
+    public Iterable<Mapping> candidate(Node gNode, List<Node> from, Environment env) {
         isStop = false;
+        if (mem != null) {
+            mem.setGraphNode(gNode);
+        }
         if (isList) {
-            return candidate2(gNode, from, mem);
+            return candidate2(gNode, from, env);
         }
         this.gNode = gNode;
         this.from = from;
-        this.memory = mem;
-        mstart(mem);
+        this.memory = env;
+        mstart(env);
         // return path enumeration (read the synchronized buffer)
         return mbuffer;
     }

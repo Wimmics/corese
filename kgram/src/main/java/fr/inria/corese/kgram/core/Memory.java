@@ -133,7 +133,7 @@ public class Memory extends PointerObject implements Environment {
         return match;
     }
 
-    void setGraphNode(Node g) {
+    public void setGraphNode(Node g) {
         gNode = g;
     }
 

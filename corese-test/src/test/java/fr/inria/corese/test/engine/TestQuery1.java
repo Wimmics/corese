@@ -522,6 +522,31 @@ public class TestQuery1 {
         assertEquals(1, count);
     }
     
+              @Test
+    public void testNGG11() throws EngineException {
+        GraphStore graph = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        
+        String q = "select * where {"
+                + "bind (query(construct { us:John foaf:knows us:Jack, us:Jim . us:Jack foaf:knows us:James } where {}) as ?g)"
+                + "graph ?g { "
+                + "{ ?s foaf:knows ?o filter exists {?s foaf:knows ?t} graph ?g {filter us:test(?g)} "
+                + "  optional { ?o foaf:knows ?y filter exists {?y foaf:knows ?t}}}"
+                + "union"
+                + "{ ?a foaf:knows ?b minus { ?b foaf:knows ?c }}"
+                + "}"
+                + "}"
+                
+                + "function us:test(?g) {"
+                + "xt:print(?g)"
+                + "}"
+                ;
+        
+        Mappings map = exec.query(q);
+        assertEquals(5, map.size());
+    }
+    
+    
          @Test
     public void testRee() throws EngineException {
 
@@ -548,9 +573,9 @@ public class TestQuery1 {
                 + "where { ?x foaf:name ?y  }";
 
         String q4 = "select * "
-                + "from  <http://example.org/g> "
+                + "from named <http://example.org/g> "
                 + "where { "
-                + "graph <http://example.org/g1> { ?x rdfs:label ?y  } "
+                + "graph ?g { ?x foaf:name ?y  } "
                 + "}";
 
         exec.query(i1);
@@ -559,6 +584,7 @@ public class TestQuery1 {
         Mappings map = exec.query(i11);
         Graph g1 = graph.getNamedGraph("http://example.org/g1");
         Mappings m4 = exec.query(q4);
+        System.out.println(m4);
         
         Mappings m1 = exec.query(q);
         exec.query(i2);

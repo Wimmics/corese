@@ -107,6 +107,7 @@ public class PluginImpl
     public static final String RDF_STAR = EXT+"rdfstar";
     public static final String VARIABLE = EXT+"variable";
     public static final String URI      = EXT+"uri";
+    public static final String TRANSFORMER = EXT+"transformer";
     
     private static final String QM      = "?";
     
@@ -994,7 +995,13 @@ public class PluginImpl
     }
 
     @Override
-    public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+    public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype... dt) {
+        if (dt.length < 2) {
+            return null;
+        }
+        IDatatype dt1 = dt[0];
+        IDatatype dt2 = dt[1];
+        IDatatype dt3 = (dt.length>2)?dt[2]:null;
         Graph g = getGraph(p);
         String label = dt1.getLabel();
         switch (label) {
@@ -1009,7 +1016,14 @@ public class PluginImpl
             }
             break;
         case DEBUG:
-            getEvaluator().setDebug(dt2.booleanValue());
+            switch (dt2.getLabel()) {
+                case TRANSFORMER: 
+                    // xt:tune(st:debug, st:transformer, st:ds)
+                    Transformer.debug(dt3.getLabel(), dt.length>3?dt[3].booleanValue():true);
+                    break;
+                default:    
+                    getEvaluator().setDebug(dt2.booleanValue());
+            }
             break;
         case EVENT:
             getEventManager(p).setVerbose(dt2.booleanValue());
@@ -1055,6 +1069,9 @@ public class PluginImpl
                 System.out.println("rdf* id uri");
             }
             break;
+            
+           
+                
         }
         
         return TRUE;

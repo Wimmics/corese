@@ -102,7 +102,7 @@ public class Transformer implements TransformProcessor {
     private static boolean isExplainDefault = false;
 
     public static int count = 0;
-
+    static HashMap<String, Boolean> dmap;
     private TemplateVisitor visitor;
     TransformerMapping tmap;
     Graph graph;
@@ -157,6 +157,7 @@ public class Transformer implements TransformProcessor {
 
     static {
         table = new Table();
+        dmap = new HashMap<>();
     }
     // is there a st:default template
     private boolean hasDefault = false;
@@ -170,6 +171,10 @@ public class Transformer implements TransformProcessor {
     }
 
     Transformer(QueryProcess qp, String p) {
+         init(qp, p);
+    }
+    
+    void init(QueryProcess qp, String p) {
         setContext(new Context());
         setTransformation(p);
         set(qp);
@@ -181,7 +186,8 @@ public class Transformer implements TransformProcessor {
         tcount = new HashMap<Query, Integer>();
         loaded = new HashMap<>();
         imported = new HashMap<>();
-        tmap = new TransformerMapping(qp.getGraph());
+        tmap = new TransformerMapping(qp.getGraph());  
+        setDebug(p);
     }
 
     public static Transformer create(Graph g) {
@@ -473,6 +479,27 @@ public class Transformer implements TransformProcessor {
     public void setDebug(boolean b) {
         isDebug = b;
     }
+    
+    void setDebug(String name) {
+        for (String key : dmap.keySet()) {
+            if (name.startsWith(key)){
+                Boolean b = dmap.get(key);
+                if (b != null) {
+                    setDebug(b);
+                }
+                return;
+            }
+        }
+    }
+    
+    public static void debug(String name, boolean b) {
+        if (b) {
+            dmap.put(name, b);
+        }
+        else {
+            dmap.remove(name);
+        }
+    }
 
     void setLevelMax(int n) {
         levelMax = n;
@@ -593,7 +620,7 @@ public class Transformer implements TransformProcessor {
             }
 
             if (isDebug) {
-                qq.setDebug(true);
+                //qq.setDebug(true);
             }
             // remember start with qq for function pprint below
             query = qq;
@@ -738,7 +765,7 @@ public class Transformer implements TransformProcessor {
         }
 
         if (isDebug || isTrace) {
-            trace(dt, args, exp);
+            trace(temp, dt, args, exp);
         }
 
         QueryProcess exec = this.exec;
@@ -857,25 +884,28 @@ public class Transformer implements TransformProcessor {
         return dt2;
     }
 
-    void trace(IDatatype dt1, IDatatype[] args, Expr exp) {
-        boolean hasArg = args != null && args.length > 1;
-        System.out.println("process: " + level() + " " + exp + " " + ((hasArg) ? "" : dt1));
-        if (hasArg) {
-            for (int i = 0; i < args.length; i++) {
-                System.out.print(args[i] + " ");
-                if (args[i].isBlank()) {
-                    Transformer t = Transformer.create(graph, TURTLE);
-                    t.setDebug(false);
-                    System.out.println(t.process(args[i]).getLabel());
+    void trace(String name, IDatatype dt1, IDatatype[] args, Expr exp) {
+        if (dt1 != null && (args == null || args.length == 0)) {
+            args = new IDatatype[1];
+            args[0] = dt1;
+        }
+        String trans = nsm.toPrefix(getTransformation());
+        name = name == null ? "" : nsm.toPrefix(name);
+        System.out.println(level() + " " + trans + " " + name + " " + exp);
+        
+        for (IDatatype dt : args) {
+            System.out.print(dt + " ");
+            if (dt.isBlank()) {
+                Transformer t = Transformer.create(graph, TURTLE);
+                t.setDebug(false);
+                String str = t.process(dt).getLabel();
+                if (!dt.getLabel().equals(str)) {
+                    System.out.print("= " + str + " ");
                 }
             }
-            System.out.println();
-        } else if (dt1 != null && dt1.isBlank()) {
-            Transformer t = Transformer.create(graph, TURTLE);
-            t.setDebug(false);
-            System.out.println(t.process(dt1).getLabel());
         }
-        System.out.println("__");
+        System.out.println();
+        System.out.println("------");
     }
 
     public IDatatype getResult(Mappings map) {

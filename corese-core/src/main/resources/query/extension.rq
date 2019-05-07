@@ -73,6 +73,10 @@ function us:ldGraph(?shape) {
     if (isURI(?shape), xt:load(?shape), ?shape)
 }
 
+function xt:shapeGraph() {
+    st:call-template-with(st:dsmain, st:start, xt:graph()) ;
+    return (st:visitedGraph())
+}
 
 function xt:shapeGraph(?shape) {
     st:call-template-with(st:dsmain, st:start, us:ldGraph(?shape)) ;
@@ -84,6 +88,10 @@ function xt:shapeGraph(?shape, ?sh) {
     return (st:visitedGraph())
 }
 
+function xt:shapeNode(?uri) {
+    st:call-template-with(st:dsmain, st:main, xt:graph(), sh:shapeNode, ?uri) ;
+    return (st:visitedGraph())
+}
 
 function xt:shapeNode(?shape, ?uri) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri) ;
@@ -95,6 +103,13 @@ function xt:testShapeNode(?shape, ?uri) {
         xt:conform(?g)
     }
 }
+
+function xt:testShapeNode(?uri) {
+    let (?g = xt:shapeNode(xt:graph(), ?uri)) {
+        xt:conform(?g)
+    }
+}
+
 
 function xt:shapeNode(?shape, ?sh, ?uri) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;

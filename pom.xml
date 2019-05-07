@@ -452,11 +452,11 @@
             * for more details: https://maven.apache.org/pom.html#Plugin_Management
             -->
             <plugins>
-		<plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
-		</plugin>
+                    <version>3.8.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
@@ -749,13 +749,14 @@
             </build>
         </profile>
         <profile>
-            <id>java9</id>
+            <id>java11</id>
             <activation>
                 <property>
-                    <name>!skip.java9</name>
+                    <name>!skip.java11</name>
                 </property>
             </activation>
             <properties>
+                <semargl.version>0.7.1</semargl.version>
             </properties>
             <build>
                 <plugins>
@@ -764,7 +765,7 @@
                         <configuration>
                             <toolchains>
                                 <jdk>
-                                    <version>9</version>
+                                    <version>11</version>
                                     <vendor>oracle</vendor>
                                 </jdk>
                             </toolchains>
@@ -778,7 +779,7 @@
                                 <id>default-compile</id>
                                 <configuration>
                                     <!-- compile everything to ensure module-info contains right entries -->
-                                    <release>9</release>
+                                    <release>11</release>
                                 </configuration>
                             </execution>
                             <execution>
@@ -791,10 +792,10 @@
                         <!-- defaults for compile and testCompile -->
                         <configuration>
                             <jdkToolchain>
-                                <version>9</version>
+                                <version>11</version>
                             </jdkToolchain>
-                            <source>9</source>
-                            <target>9</target>
+                            <source>11</source>
+                            <target>11</target>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -803,7 +804,7 @@
         <profile>
             <id>java8</id>
             <properties>
-                <semargl.version>0.7</semargl.version>
+                <semargl.version>0.7.2</semargl.version>
             </properties>
             <build>
                 <plugins>

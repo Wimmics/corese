@@ -12,13 +12,17 @@ import java.util.List;
 public class EvalGraphNew {
     
     Eval eval;
+    boolean stop = false;
     
     EvalGraphNew(Eval e) {
         eval = e;
     }
     
+    void setStop(boolean b) {
+        stop = b;
+    }
     
-    int namedGraph(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
+    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
         Node queryNode = eval.getQuery().getGraphNode();
@@ -37,9 +41,9 @@ public class EvalGraphNew {
         Memory env = eval.getMemory();
 
         for (Mapping m : res) {
-//            if (stop) {
-//                return STOP;
-//            }            
+            if (stop) {
+                return eval.STOP;
+            }            
             
             Node namedGraph = null;
             if (graphNode.isVariable()) {

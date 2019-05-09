@@ -93,28 +93,28 @@ function xt:shapeNode(?uri) {
     return (st:visitedGraph())
 }
 
-function xt:shapeNode(?shape, ?uri) {
+function xt:shapeNode(?uri, ?shape) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri) ;
     return (st:visitedGraph())
 }
 
-function xt:testShapeNode(?shape, ?uri) {
-    let (?g = xt:shapeNode(?shape, ?uri)) {
+function xt:shapeNode(?uri, ?shape, ?sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
+    return (st:visitedGraph())
+}
+
+function xt:testShapeNode(?uri, ?shape) {
+    let (?g = xt:shapeNode(?uri, ?shape)) {
         xt:conform(?g)
     }
 }
 
 function xt:testShapeNode(?uri) {
-    let (?g = xt:shapeNode(xt:graph(), ?uri)) {
+    let (?g = xt:shapeNode(?uri, xt:graph())) {
         xt:conform(?g)
     }
 }
 
-
-function xt:shapeNode(?shape, ?sh, ?uri) {
-    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
-    return (st:visitedGraph())
-}
 
 function xt:profileowlrl() {
     st:call-template-with(st:owlrl, st:main) 

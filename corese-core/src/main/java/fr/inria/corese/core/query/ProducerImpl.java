@@ -573,7 +573,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             return getGraphNodes2(node, from, env);
         }
 
-        return graph.getGraphNodes();
+        return graph.isAllGraphNode() ? graph.getGraphNodesAll() : graph.getGraphNodes();
     }
 
     Iterable<Node> getGraphNodes2(Node node, final List<Node> from,

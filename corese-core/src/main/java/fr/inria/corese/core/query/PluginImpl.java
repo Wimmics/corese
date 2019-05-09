@@ -1001,81 +1001,77 @@ public class PluginImpl
         }
         IDatatype dt1 = dt[0];
         IDatatype dt2 = dt[1];
-        IDatatype dt3 = (dt.length>2)?dt[2]:null;
+        IDatatype dt3 = (dt.length > 2) ? dt[2] : null;
         Graph g = getGraph(p);
         String label = dt1.getLabel();
         switch (label) {
-            case LISTEN: 
-            if (dt2.booleanValue()){
-                if (env.getEval() != null){
-                    g.addListener(new GraphListen(env.getEval()));
+            case LISTEN:
+                if (dt2.booleanValue()) {
+                    if (env.getEval() != null) {
+                        g.addListener(new GraphListen(env.getEval()));
+                    }
+                } else {
+                    g.removeListener();
                 }
-            }
-            else {
-                g.removeListener();
-            }
-            break;
-        case DEBUG:
-            switch (dt2.getLabel()) {
-                case TRANSFORMER: 
-                    // xt:tune(st:debug, st:transformer, st:ds)
-                    Transformer.debug(dt3.getLabel(), dt.length>3?dt[3].booleanValue():true);
-                    break;
-                default:    
-                    getEvaluator().setDebug(dt2.booleanValue());
-            }
-            break;
-        case EVENT:
-            getEventManager(p).setVerbose(dt2.booleanValue());
-            getGraph(p).setDebugMode(dt2.booleanValue());
-            break;
-        case EVENT_LOW: 
-            getEventManager(p).setVerbose(dt2.booleanValue());
-            getEventManager(p).hide(Event.Insert);
-            getEventManager(p).hide(Event.Construct);
-            getGraph(p).setDebugMode(dt2.booleanValue());
-            break;
-        case METHOD: 
-            getEventManager(p).setMethod(dt2.booleanValue());
-            break;
-        case SHOW:  
-            getEventManager(p).setVerbose(true);
-            Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
-            if (e != null) {
-                getEventManager(p).show(e);
-            }            
-            break;
-        case HIDE:            
-            getEventManager(p).setVerbose(true);
-            e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
-            if (e != null) {
-                getEventManager(p).hide(e);
-            }   
-            break;
-        case NODE_MGR:      
-            getGraph(p).tuneNodeManager(dt2.booleanValue());
-            break;
-        case VISITOR: 
-            QuerySolver.setVisitorable(dt2.booleanValue());
-            break;
-            
-        case RDF_STAR:
-            if (dt2.getLabel().equals(VARIABLE)) {
-                ASTQuery.REFERENCE_QUERY_BNODE = ! ASTQuery.REFERENCE_QUERY_BNODE;
-                System.out.println("rdf* query variable");
-            }
-            else if (dt2.getLabel().equals(URI)) {
-                ASTQuery.REFERENCE_DEFINITION_BNODE = ! ASTQuery.REFERENCE_DEFINITION_BNODE;
-                System.out.println("rdf* id uri");
-            }
-            break;
-            
-           
-                
+                break;
+            case DEBUG:
+                switch (dt2.getLabel()) {
+                    case TRANSFORMER:
+                        // xt:tune(st:debug, st:transformer, st:ds)
+                        Transformer.debug(dt3.getLabel(), dt.length > 3 ? dt[3].booleanValue() : true);
+                        break;
+                    default:
+                        getEvaluator().setDebug(dt2.booleanValue());
+                }
+                break;
+            case EVENT:
+                getEventManager(p).setVerbose(dt2.booleanValue());
+                getGraph(p).setDebugMode(dt2.booleanValue());
+                break;
+            case EVENT_LOW:
+                getEventManager(p).setVerbose(dt2.booleanValue());
+                getEventManager(p).hide(Event.Insert);
+                getEventManager(p).hide(Event.Construct);
+                getGraph(p).setDebugMode(dt2.booleanValue());
+                break;
+            case METHOD:
+                getEventManager(p).setMethod(dt2.booleanValue());
+                break;
+            case SHOW:
+                getEventManager(p).setVerbose(true);
+                Event e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
+                if (e != null) {
+                    getEventManager(p).show(e);
+                }
+                break;
+            case HIDE:
+                getEventManager(p).setVerbose(true);
+                e = Event.valueOf(dt2.stringValue().substring(NSManager.EXT.length()));
+                if (e != null) {
+                    getEventManager(p).hide(e);
+                }
+                break;
+            case NODE_MGR:
+                getGraph(p).tuneNodeManager(dt2.booleanValue());
+                break;
+            case VISITOR:
+                QuerySolver.setVisitorable(dt2.booleanValue());
+                break;
+
+            case RDF_STAR:
+                if (dt2.getLabel().equals(VARIABLE)) {
+                    ASTQuery.REFERENCE_QUERY_BNODE = !ASTQuery.REFERENCE_QUERY_BNODE;
+                    System.out.println("rdf* query variable: " + ASTQuery.REFERENCE_QUERY_BNODE);
+                } else if (dt2.getLabel().equals(URI)) {
+                    ASTQuery.REFERENCE_DEFINITION_BNODE = !ASTQuery.REFERENCE_DEFINITION_BNODE;
+                    System.out.println("rdf* id uri: " + ASTQuery.REFERENCE_DEFINITION_BNODE);
+                }
+                break;
+
         }
-        
+
         return TRUE;
-     }
+    }
     
     EventManager getEventManager(Producer p) {
         return getGraph(p).getEventManager();

@@ -69,6 +69,20 @@ public class Graph extends GraphObject implements
         Iterable<Edge>,
         fr.inria.corese.sparql.api.Graph, 
         Graphable, TripleStore {
+
+    /**
+     * @return the allGraphNode
+     */
+    public boolean isAllGraphNode() {
+        return allGraphNode;
+    }
+
+    /**
+     * @param allGraphNode the allGraphNode to set
+     */
+    public void setAllGraphNode(boolean allGraphNode) {
+        this.allGraphNode = allGraphNode;
+    }
   
     static {
 	    Corese.init();
@@ -206,6 +220,7 @@ public class Graph extends GraphObject implements
     private boolean isTuple = false;
     private boolean metadata = METADATA_DEFAULT;
     private boolean edgeMetadata = EDGE_METADATA_DEFAULT;
+    private boolean allGraphNode = false;
     public static final String SYSTEM = ExpType.KGRAM + "system";
     public int count = 0;
 
@@ -2412,6 +2427,21 @@ public class Graph extends GraphObject implements
         return graph.values();
     }
     
+    public List<Node> getGraphNodesExtern() {
+        return new ArrayList<>(0);
+    }
+    
+    public Iterable<Node> getGraphNodesAll() {
+        ArrayList<Node> list = new ArrayList<>();
+        for (Node node : getGraphNodes()) {
+            list.add(node);
+        }
+        for (Node node : getGraphNodesExtern()) {
+            list.add(node);
+        }
+        return list;
+    }
+
     public int nbGraphNodes(){
         return graph.size();
     }

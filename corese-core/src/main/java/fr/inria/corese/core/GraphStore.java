@@ -1,7 +1,11 @@
 package fr.inria.corese.core;
 
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,6 +98,15 @@ public class GraphStore extends Graph {
     @Override
     public Collection<String> getNames(){
         return getStore().keySet();
+    }
+    
+    @Override
+    public List<Node> getGraphNodesExtern() {
+        ArrayList<Node> list = new ArrayList<>();
+        for (String name : getNames()) {
+            list.add(NodeImpl.create(DatatypeMap.createResource(name)));
+        }
+        return list;
     }
 
     public Graph getDefaultGraph() {

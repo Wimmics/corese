@@ -25,7 +25,6 @@ public class EvalGraphNew {
     int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
-        Node queryNode = eval.getQuery().getGraphNode();
         Node graph     = eval.getNode(p, graphNode);
         Mappings res;
 
@@ -57,9 +56,6 @@ public class EvalGraphNew {
             
             if (env.push(m, n)) {
                 boolean pop = false;                               
-//                if (queryNode != null) {
-//                    env.pop(queryNode);
-//                }
                 if (env.push(graphNode, m.getNamedGraph())) {
                     pop = true;
                 } else {
@@ -101,9 +97,7 @@ public class EvalGraphNew {
         }
 
         for (Node graph : graphNodes) {
-            if (mm.match(name, graph, env)
-                    //&& env.push(name, graph, n)
-                    ) {
+            if (mm.match(name, graph, env)) {
                 Mappings m = graph(p, graph, exp, map, n);
                 if (res == null) {
                     res = m;

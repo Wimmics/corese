@@ -89,6 +89,7 @@ public class Eval implements ExpType, Plugin {
     EvalGraphNew evalGraphNew;
     EvalGraph evalGraph;
     EvalJoin join;
+    EvalOptional optional;
 
     int // count number of eval() calls
             nbEdge = 0, nbCall = 0,
@@ -108,8 +109,8 @@ public class Eval implements ExpType, Plugin {
     private boolean isPathType = false;
     boolean storeResult = true;
     private int nbResult;
-    private boolean hasFilter = false,
-            hasCandidate = false,
+    boolean hasFilter = false;
+    private boolean hasCandidate = false,
             hasStatement = false,
             hasProduce = false;
     private boolean stop = false;
@@ -139,6 +140,8 @@ public class Eval implements ExpType, Plugin {
         evalGraph    = new EvalGraph(this);
         evalGraphNew = new EvalGraphNew(this);
         join = new EvalJoin(this);
+        optional = new EvalOptional(this);
+
     }
 
     void initCallback() {
@@ -980,7 +983,7 @@ public class Eval implements ExpType, Plugin {
                         break;
                     
                     case OPTIONAL:
-                        backtrack = optional(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = optional.eval(p, gNode, exp, getMappings(), stack, n);
                         break;
                     case MINUS:
                         backtrack = minus(p, gNode, exp, getMappings(), stack, n);
@@ -989,7 +992,7 @@ public class Eval implements ExpType, Plugin {
                         backtrack = join.eval(p, gNode, exp, getMappings(), stack, n);
                         break;
                     case QUERY:
-                        backtrack = query(p, gNode, exp, getMappings(), stack, n); // use getMappings()
+                        backtrack = query(p, gNode, exp, getMappings(), stack, n); 
                         break;    
                     case FILTER:
                         backtrack = filter(p, gNode, exp, stack, n);
@@ -2198,126 +2201,7 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    /**
-     * Draft test
-     *
-     * A optional B Filter F map1 = eval(A) ; map2 = eval(values Vb {
-     * distinct(map1/Vb) } B) Vb = variables in-subscope in B, ie in-scope
-     * except in right arg of an optional in B for m1 in map1: for m2 in map2:
-     * if m1.compatible(m2): merge = m1.merge(m2) if eval(F(merge)) result +=
-     * merge ...
-     */
-    private int optional(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
-        int backtrack = n - 1;
-        boolean hasGraph = gNode != null;
-        Memory env = memory;
-        Node queryNode = null;
-        if (hasGraph) {
-            queryNode = query.getGraphNode();
-        }
-
-        Mappings map1 = subEval(p, gNode, queryNode, exp.first(), exp, data);
-        if (stop) {
-            return STOP;
-        }
-        if (map1.isEmpty()) {
-            return backtrack;
-        }
-
-        MappingSet set1 = new MappingSet(map1);
-        Exp rest = prepareRest(exp, set1);
-        /**
-         * Push bindings from map1 into rest when there is at least one variable
-         * in-subscope of rest that is always bound in map1 ?x p ?y optional {
-         * ?y q ?z } -> values ?y { y1 yn } {?x p ?y optional { ?y q ?z }}
-         * optional { ?z r ?t } -> if ?z is not bound in every map1, generate no
-         * values.
-         */
-        Mappings map2 = subEval(p, gNode, queryNode, rest, exp, set1.getJoinMappings());
-
-        getVisitor().optional(this, getGraphNode(gNode), exp, map1, map2);
-
-        MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
-        set.setDebug(query.isDebug());
-        set.start();
-
-        for (Mapping m1 : map1) {
-            if (stop) {
-                return STOP;
-            }
-            boolean success = false;
-            int nbsuc = 0;
-            for (Mapping m2 : set.getCandidateMappings(m1)) {
-                if (stop) {
-                    return STOP;
-                }
-                Mapping merge = m1.merge(m2);
-                if (merge != null) {
-                    success = filter(queryNode, gNode, merge, exp);
-                    if (success) {
-                        nbsuc++;
-                        if (env.push(merge, n)) { 
-                            if (newGraph) {}
-                            else if (hasGraph) {
-                                env.pop(queryNode);
-                            }                           
-                            backtrack = eval(p, gNode, stack, n + 1);
-                            env.pop(merge);
-                            if (backtrack < n) {
-                                return backtrack;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (nbsuc == 0) {
-                if (env.push(m1, n)) {
-                    if (newGraph) {}
-                    else if (hasGraph) {
-                        env.pop(queryNode);
-                    }
-                    backtrack = eval(p, gNode, stack, n + 1);
-                    env.pop(m1);
-                    if (backtrack < n) {
-                        return backtrack;
-                    }
-                }
-            }
-        }
-
-        return backtrack;
-    }
-
-    /**
-     * proxyGraphNode is the fake graphNode ?_kgram_ that is a proxy for the
-     * named graph ?g
-     */
-    boolean filter(Node queryNode, Node gNode, Mapping map, Exp exp) {
-        if (exp.isPostpone()) {
-            // A optional B
-            // filters of B must be evaluated now
-            for (Exp f : exp.getPostpone()) {
-                map.setQuery(query);
-                map.setMap(memory.getMap());
-                map.setBind(memory.getBind());
-                //map.setGraphNode(queryNode);
-                map.setGraphNode(newGraph ? gNode : queryNode);
-                map.setEval(this);
-                boolean b = evaluator.test(f.getFilter(), map);
-                map.setGraphNode(null);
-                if (hasFilter) {
-                    Node gg = (newGraph) ? gNode : getGraphNode(queryNode);
-                    b = getVisitor().filter(this, gg, f.getFilter().getExp(), b);
-                }
-                if (!b) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
+    
     /**
      * res is a result of sub query bind the select nodes of sub query into
      * current memory retrieve outer node that correspond to sub node
@@ -2650,6 +2534,7 @@ public class Eval implements ExpType, Plugin {
         setStop(true);
         join.setStop(true);
         evalGraphNew.setStop(true);
+        optional.setStop(true);
     }
 
 }

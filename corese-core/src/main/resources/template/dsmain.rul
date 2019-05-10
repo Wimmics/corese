@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat May 04 11:22:39 CEST 2019
+Tue May 07 18:35:03 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -534,7 +534,7 @@ for (
 function sh:shapeNode(?shape, ?s, ?sh) {
 let (?suc = true) {
 for (
-   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
    where { 
    
     values (?shape ?s ?sh) { (UNDEF UNDEF UNDEF) }
@@ -544,15 +544,16 @@ for (
         ?sh sh:targetSubjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?s ?p ?o}
-    
+     {?s ?p ?o} union {?a ?p ?s}
+    }    
     union
     
     {graph ?shape {
         ?sh sh:targetObjectsOf ?p 				
         filter not exists { ?sh sh:deactivated true} }
         
-     ?x ?p ?s}
+     {?x ?p ?s} union {?s ?p ?a}
+     }
     
     union 
     

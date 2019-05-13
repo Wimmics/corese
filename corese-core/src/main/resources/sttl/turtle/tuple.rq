@@ -1,0 +1,12 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2019
+#
+template st:tuple(?in)  {
+  "\ntriple(" ?in " " ?p " " ?y " " ?term ")" 
+  
+  ; separator = " ."
+}
+where { 
+  triple(?in ?p ?y ?term)   
+}

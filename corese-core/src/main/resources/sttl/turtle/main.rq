@@ -3,7 +3,7 @@
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template st:main { 
-    st:apply-templates(?x)
+    st:apply-templates(?x)  " ."
     ; separator = "\n\n"
 }
 where {

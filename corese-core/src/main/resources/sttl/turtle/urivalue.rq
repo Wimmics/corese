@@ -1,0 +1,12 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:urivalue(?in) {  
+  ibox {   
+	st:call-template(st:value, ?in)      
+  } 
+}
+where { 
+
+}

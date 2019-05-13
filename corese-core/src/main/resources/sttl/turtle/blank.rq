@@ -9,8 +9,8 @@ template {
 	st:call-template(st:value, ?in)
   } 
       
-  if (?refer, " .", 
-  if (?nested, "]", "] ."))
+  if (?refer, "", 
+  if (?nested, "]", "]"))
 }
 where {
   ?in ?p ?y   

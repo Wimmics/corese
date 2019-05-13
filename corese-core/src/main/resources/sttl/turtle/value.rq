@@ -13,7 +13,8 @@ template st:value {
    ; separator = concat(" ;", st:nl()) 
 }
 where {
-  ?in ?p ?y 
+  triple(?in ?p ?y |?l|)
+  filter (! isURI(?in) || ?l = 0)
   
   bind (
     isBlank(?y) 

@@ -64,9 +64,11 @@ public class RuleEngine implements Engine, Graphable {
     public static final int STD = 0;
     public static final int OWL_RL = 1;
     public static final int OWL_RL_LITE = 2;
+    public static final int OWL_RL_EXT = 3;
     
     public static final String OWL_RL_PATH      = "/rule/owlrl.rul";
     public static final String OWL_RL_LITE_PATH = "/rule/owlrllite.rul";
+    public static final String OWL_RL_EXT_PATH  = "/rule/owlrlext.rul";
     
     private static final String UNKNOWN = "unknown";
     private static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
@@ -103,6 +105,26 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isSkipPath = false;
     private Context context;
     private String base;
+    
+    enum Profile {
+        
+        OWL_RL      ("/rule/owlrl.rul"),
+        OWL_RL_LITE ("/rule/owlrllite.rul"),
+        OWL_RL_EXT  ("/rule/owlrlext.rul")       ;
+        
+        String path;
+        
+        Profile() {}
+        
+        Profile(String path) {
+            this.path = path;
+        }
+        
+        String getPath() {
+            return path;
+        }
+    
+    };
 
     public RuleEngine() {
         rules = new ArrayList<Rule>();
@@ -112,8 +134,9 @@ public class RuleEngine implements Engine, Graphable {
     // predefined rule bases
     void initPath(){
         path = new HashMap();
-        path.put(OWL_RL,      "/rule/owlrl.rul");
-        path.put(OWL_RL_LITE, "/rule/owlrllite.rul");
+        path.put(OWL_RL,      OWL_RL_PATH);
+        path.put(OWL_RL_LITE, OWL_RL_LITE_PATH);
+        path.put(OWL_RL_EXT,  OWL_RL_EXT_PATH);
     }
     
     void set(Graph g) {
@@ -135,7 +158,8 @@ public class RuleEngine implements Engine, Graphable {
         switch (n) {
 
             case OWL_RL:                   
-            case OWL_RL_LITE:    
+            case OWL_RL_LITE: 
+            case OWL_RL_EXT:
                 //optimizeOWLRL();
                 try {
                     load(path.get(n));
@@ -151,6 +175,7 @@ public class RuleEngine implements Engine, Graphable {
 
             case OWL_RL:                   
             case OWL_RL_LITE:    
+            case OWL_RL_EXT:
                 optimizeOWLRL();               
                 break;        
         }

@@ -21,7 +21,6 @@ import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
-import fr.inria.corese.kgram.path.Visit.TTable;
 import fr.inria.corese.kgram.tool.EdgeInv;
 import java.util.HashMap;
 
@@ -1198,7 +1197,7 @@ public class PathFinder {
         // because it expands to p*/q . p*/q ...
         // and each occurrence of p* must have its own visited 
 
-        TTable save = stack.getVisit().nunset(exp);
+        Visit.VisitedNode save = stack.getVisit().nunset(exp);
         eval(stack, path, start, src);
         stack.getVisit().nset(exp, save);
 
@@ -1224,64 +1223,67 @@ public class PathFinder {
      * exp+
      */
     void plus(Regex exp, Record stack, Path path, Node start, Node src) {
-
+        Visit visit = stack.getVisit();
         // start is the first node of exp+
-        boolean isFirst = stack.getVisit().nfirst(exp);
+        boolean isFirst = visit.nfirst(exp);
+        if (visit.count(exp) == 0) {
+            // first execution of exp+
+            
+//            if (!isCountPath) { 
+//                // std sparql
+//                if (visit.nloop(exp, start)) {
+//                    stack.push(exp);
+//                    return;
+//                }
+//            } //@todo
 
-        if (stack.getVisit().count(exp) == 0) {
+            if (start == null) {
+                visit.declare(exp);
+            } // @todo
 
-            if (!isCountPath) { // checkLoop ||
-                // std sparql
-                if (stack.getVisit().nloop(exp, start)) {
-                    stack.push(exp);
-                    return;
-                }
-            }
-
-            // first step
+            // push exp+ in stack to loop
             stack.push(exp);
 
-            stack.getVisit().count(exp, +1);
+            visit.count(exp, +1);
+            // push exp to execute it
             stack.push(exp.getArg(0));
             eval(stack, path, start, src);
             stack.pop();
-            stack.getVisit().count(exp, -1);
+            visit.count(exp, -1);
 
-            if (!isCountPath) { // checkLoop ||
-                stack.getVisit().nremove(exp, start);
+            if (!isCountPath) { 
+                // std sparql
+                visit.nremove(exp, start);
             }
 
         } else {
-            if (stack.getVisit().nloop(exp, start)) {
-                //trace("** Loop: " + start);
+            // next execution of exp+ after first one
+            if (visit.nloop(exp, start)) {
                 stack.push(exp);
                 return;
             }
 
+            // (1) continue the stack if any and store result
+            // use case: eval exp2 in: exp+ / exp2
+            Visit.VisitedNode save = visit.nunset(exp);
+            visit.set(exp, 0);
 
-            // (1) leave
-            TTable save = stack.getVisit().nunset(exp);
-            stack.getVisit().set(exp, 0);
             eval(stack, path, start, src);
-            stack.getVisit().set(exp, 1);
-            stack.getVisit().nset(exp, save);
-
-            // (1) leave
-            //eval(stack, path, start, src);
-
-            // (2) continue
+            visit.set(exp, 1);
+            visit.nset(exp, save);
+            
+            // (2) loop again
             stack.push(exp);
-
             stack.push(exp.getArg(0));
             eval(stack, path, start, src);
             stack.pop();
 
             //count
-            stack.getVisit().nremove(exp, start);
+            visit.nremove(exp, start);
         }
 
         if (isFirst) {
-            stack.getVisit().nunset(exp);
+            //visit.nunset(exp); // @todo
         }
 
     }

@@ -13,7 +13,7 @@ import fr.inria.corese.kgram.api.core.Regex;
 public class Record extends ArrayList<Regex> {
 	
 	Visit visit;
-	Node target;
+        Node target;
 	Regex exp;
 	
 	ArrayList<Node> stack;
@@ -30,8 +30,8 @@ public class Record extends ArrayList<Regex> {
 	Visit getVisit(){
 		return visit;
 	}
-	
-	
+        
+        	
 	Record push(Regex exp){
 		if (exp != null){
 			add(exp);

@@ -202,10 +202,10 @@ public class GraphEngine  {
 	}
         
         // TODO: clean timestamp, clean graph index
-        public void setOWLRL(boolean run, boolean lite, boolean trace) {
+        public void setOWLRL(boolean run, int owl, boolean trace) {
             if (run){
                 owlEngine = RuleEngine.create(graph);
-                owlEngine.setProfile((lite)? RuleEngine.OWL_RL_LITE: RuleEngine.OWL_RL);
+                owlEngine.setProfile(owl);
                 owlEngine.setTrace(trace);
                 Date d1 = new Date();
                 // disconnect RDFS entailment during OWL processing

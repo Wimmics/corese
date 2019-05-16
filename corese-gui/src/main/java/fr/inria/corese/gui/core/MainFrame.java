@@ -51,6 +51,7 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.io.BufferedReader;
@@ -133,7 +134,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
-    private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbtrace, cbnamed;
+    private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed;
     private JMenuItem validate;
     //style correspondant au graphe
     private String defaultStylesheet, saveStylesheet;
@@ -541,6 +542,7 @@ public class MainFrame extends JFrame implements ActionListener {
         quit = new JMenuItem("Quit");
         cbtrace = new JCheckBox("Trace");
         cbrdfs = new JCheckBox("RDFS");
+        cbowlrlext = new JCheckBox("OWL RL Extended");
         cbowlrllite = new JCheckBox("OWL RL Lite");
         cbowlrl = new JCheckBox("OWL RL");
         cbnamed = new JCheckBox("Load Named");
@@ -642,6 +644,7 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(cbrdfs);
         engineMenu.add(cbowlrl);
         engineMenu.add(cbowlrllite);
+        engineMenu.add(cbowlrlext);
         engineMenu.add(cbtrace);
         engineMenu.add(cbnamed);
         myRadio.add(kgramBox);
@@ -746,7 +749,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbowlrl.isSelected(), false);
+                setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
             }
         });
 
@@ -756,7 +759,18 @@ public class MainFrame extends JFrame implements ActionListener {
                 new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbowlrllite.isSelected(), true);
+                setOWLRL(cbowlrllite.isSelected(), RuleEngine.OWL_RL_LITE);
+            }
+        });
+        
+        
+        cbowlrlext.setEnabled(true);
+        cbowlrlext.setSelected(false);
+        cbowlrlext.addItemListener(
+                new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
             }
         });
 
@@ -863,9 +877,9 @@ public class MainFrame extends JFrame implements ActionListener {
         return it;
     }
 
-    private void setOWLRL(boolean selected, boolean lite) {
+    private void setOWLRL(boolean selected, int owl) {
         Entailment e = new Entailment(myCorese);
-        e.setOWLRL(selected, lite);
+        e.setOWLRL(selected, owl);
         e.setTrace(trace);
         e.process();
     }

@@ -5,6 +5,7 @@
 
 package fr.inria.corese.gui.core;
 
+import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.gui.query.GraphEngine;
 
 
@@ -14,7 +15,8 @@ import fr.inria.corese.gui.query.GraphEngine;
  *
  */
 public class Entailment extends Thread {
-    boolean doit = false, lite=false;
+    boolean doit = false;
+    int owl = RuleEngine.OWL_RL;
     GraphEngine engine;
     private boolean trace = false;
     
@@ -22,13 +24,14 @@ public class Entailment extends Thread {
         engine = e;
     }
     
+    @Override
     public void run(){
-        engine.setOWLRL(doit, lite, trace);
+        engine.setOWLRL(doit, owl, trace);
     }
 
-    void setOWLRL(boolean selected, boolean b) {
+    void setOWLRL(boolean selected, int owl) {
         doit = selected;
-        lite = b;
+        this.owl = owl;
     }
     
     void process(){

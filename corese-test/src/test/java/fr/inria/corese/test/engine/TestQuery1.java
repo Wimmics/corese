@@ -254,6 +254,27 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+         @Test
+    public void testOPP() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String i = "insert data {  "
+                + "us:John foaf:knows  us:Jim , us:John . "
+                + "us:Jim foaf:knows us:John, us:Jim."
+                + "}";
+        
+        String q = "select * where { ?x foaf:knows+ ?y }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(4, map.size());                
+    }
+    
+    
+    
+    
     @Test
     public void testNGG1() throws EngineException {
         GraphStore graph = GraphStore.create();
@@ -8239,7 +8260,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void test39() {
         Graph graph = createGraph();
         QueryProcess exec = QueryProcess.create(graph);
@@ -9167,7 +9188,7 @@ public class TestQuery1 {
 
             exec.query(init);
             Mappings map = exec.query(query);
-
+            System.out.println(map);
 
             assertEquals("Results", 9, map.size());
 

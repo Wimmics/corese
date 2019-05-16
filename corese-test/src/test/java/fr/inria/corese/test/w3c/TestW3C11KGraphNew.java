@@ -176,7 +176,7 @@ public class TestW3C11KGraphNew {
     @BeforeClass
     public static void setUpClass() throws Exception {
        //before2(); 
-        
+        Graph.setEdgeMetadataDefault(true);
     }
 
     @AfterClass

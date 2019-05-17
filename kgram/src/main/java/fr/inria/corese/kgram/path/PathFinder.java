@@ -854,7 +854,7 @@ public class PathFinder {
 
                         if (isNew) {
                             // clean the table of visited nodes as we have a new start node
-                            visit.start();
+                            visit.start(node);
                         }
 
                         // visit start node
@@ -1220,33 +1220,32 @@ public class PathFinder {
     }
 
     /**
-     * exp+
+     * exp = exp+ ; stack = rest
+     * Distinguish 1. first execution where index(exp+) = 0  and 2. next executions where index(exp+) = 1
+     * 1.    stack = (exp, exp+, rest) ; eval(stack)
+     * 2. a) stack = (rest) ; eval(stack) b) stack = (exp, exp+, rest) ; eval(stack)
      */
     void plus(Regex exp, Record stack, Path path, Node start, Node src) {
         Visit visit = stack.getVisit();
         // start is the first node of exp+
         boolean isFirst = visit.nfirst(exp);
+        
         if (visit.count(exp) == 0) {
-            // first execution of exp+
-            
-//            if (!isCountPath) { 
-//                // std sparql
-//                if (visit.nloop(exp, start)) {
-//                    stack.push(exp);
-//                    return;
-//                }
-//            } //@todo
+            // case 1: first execution of exp+
 
-            if (start == null) {
+            //if (start == null) {
+                // declare exp in such a way that when start node changes (in case LABEL)
+                // the visitedNode table of exp be cleared by visit.start()
                 visit.declare(exp);
-            } // @todo
+            //} // @todo
 
-            // push exp+ in stack to loop
+            // push exp+ again in stack to loop later
             stack.push(exp);
-
+            // assign index=1 to exp+, hence exp+ will be executed by case 2 below
             visit.count(exp, +1);
-            // push exp to execute it
+            // push exp to execute it now
             stack.push(exp.getArg(0));
+            // execute exp ; stack = (exp, exp+, rest) ; exp+ will be executed by case 2 below
             eval(stack, path, start, src);
             stack.pop();
             visit.count(exp, -1);
@@ -1257,28 +1256,34 @@ public class PathFinder {
             }
 
         } else {
+            // case 2:
             // next execution of exp+ after first one
             if (visit.nloop(exp, start)) {
                 stack.push(exp);
                 return;
             }
-
-            // (1) continue the stack if any and store result
-            // use case: eval exp2 in: exp+ / exp2
+            // we have executed exp at least once
+            // exp = exp+ ; stack = (rest)
+            // (1) evaluate the stack if any and store result
+            // use case: eval rest in: exp+ / rest
             Visit.VisitedNode save = visit.nunset(exp);
             visit.set(exp, 0);
 
+            // eval rest
             eval(stack, path, start, src);
             visit.set(exp, 1);
             visit.nset(exp, save);
             
             // (2) loop again
+            // push exp+
             stack.push(exp);
+            // push exp
             stack.push(exp.getArg(0));
+            // stack = (exp, exp+, rest) ; eval(stack)
             eval(stack, path, start, src);
             stack.pop();
 
-            //count
+            //
             visit.nremove(exp, start);
         }
 

@@ -18,7 +18,7 @@ import fr.inria.corese.kgram.api.core.Regex;
  *
  */
 public class Visit {
-
+    int count = 0;
     public static boolean speedUp = false;
 
     //HashMap<State, List<Node>> table;
@@ -68,7 +68,6 @@ public class Visit {
     }
 
     class ExpVisitedNode extends HashMap<Regex, VisitedNode> {
-
         boolean isReverse = false;
 
         ExpVisitedNode(boolean b) {
@@ -78,7 +77,7 @@ public class Visit {
         void add(Regex exp, Node n) {
             VisitedNode t = get(exp);
             if (t == null) {
-                t = new VisitedNode(isReverse);
+                t = new VisitedNode(isReverse, count++);
                 put(exp, t);
             }
             t.add(n);
@@ -113,14 +112,24 @@ public class Visit {
         NodeTable table;
         List<Node> list;
         boolean isReverse = false;
+        int n;
+        
+        int getIndex() {
+            return n;
+        }
 
-        VisitedNode(boolean b) {
+        VisitedNode(boolean b, int n) {
+            this.n = n;
             isReverse = b;
             if (isReverse) {
                 list = new ArrayList<Node>();
             } else {
                 table = new NodeTable();
             }
+        }
+        
+        int size() {
+            return table.size();
         }
         
         void clear() {
@@ -161,6 +170,7 @@ public class Visit {
 
         boolean loop(Regex exp, Node n) {
             if (isReverse) {
+                // @deprecated, see nloop()
                 if (list == null || list.size() < 2) {
                     return false;
                 }
@@ -443,17 +453,27 @@ public class Visit {
     /**
      * New start node: clean the table of visited nodes
      */
-    void start() {
+    void start(Node node) {
         if (!isCounting) {
             //visitedNode.clear(); // @todo
-            starter();
+            clearall();
+        }
+    }
+    
+    void clearLast() {
+        if (! regexList.isEmpty()) {
+            VisitedNode t = getVisitedNode(regexList.get(regexList.size()-1));
+            if (t != null) {
+                t.clear();
+            }
         }
     }
     
     /**
      * New start node: clean the table of visited nodes
      */
-    void starter() {
+    void clearall() {
+        int i = 0;
         for (Regex exp : regexList) {
             VisitedNode t = getVisitedNode(exp);
             if (t != null) {

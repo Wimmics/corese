@@ -1235,6 +1235,7 @@ WHERE {
     union {?x owl:disjointWith    ?y}
     union {?x owl:complementOf    ?y}
     union {[] (owl:unionOf|owl:intersectionOf)/rdf:rest*/rdf:first ?x}
+    union { ?x a owl:Restriction }
 }
 </body>
 </rule>

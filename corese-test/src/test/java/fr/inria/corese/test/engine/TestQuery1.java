@@ -255,6 +255,26 @@ public class TestQuery1 {
     }
     
     
+    
+        @Test
+    public void testOPP2() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {  "
+                + "us:John foaf:knows us:Jim , us:John . "
+                + "us:Jim  foaf:knows us:John, us:Jim "
+                + "}";
+        String i2 = "insert data { us:John foaf:knows  us:Jim . us:Jim foaf:knows us:John }";
+        String q = "select * where {  ?x foaf:knows+ ?y }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(4, map.size());            
+        
+        
+    }
+    
          @Test
     public void testOPP() throws EngineException, LoadException {
         Graph g = Graph.create();

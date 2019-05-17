@@ -33,6 +33,10 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_EXT;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_LITE;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.STDRL;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -65,11 +69,7 @@ public class RuleEngine implements Engine, Graphable {
     public static final int OWL_RL = 1;
     public static final int OWL_RL_LITE = 2;
     public static final int OWL_RL_EXT = 3;
-    
-    public static final String OWL_RL_PATH      = "/rule/owlrl.rul";
-    public static final String OWL_RL_LITE_PATH = "/rule/owlrllite.rul";
-    public static final String OWL_RL_EXT_PATH  = "/rule/owlrlext.rul";
-    
+   
     private static final String UNKNOWN = "unknown";
     private static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
     Graph graph;
@@ -77,7 +77,6 @@ public class RuleEngine implements Engine, Graphable {
     private QueryEngine qengine;
     List<Rule> rules;
     List<Record> records;
-    HashMap<Integer, String> path;
     private Object spinGraph;
     private Dataset ds;
     STable stable;
@@ -96,7 +95,7 @@ public class RuleEngine implements Engine, Graphable {
             trace = false;
     private boolean test = false;
     int loop = 0;
-    int profile = STD;
+    Profile profile = STDRL;
     private boolean isActivate = true;
     private boolean isOptTransitive = false;
     private boolean isFunTransitive = false;
@@ -106,11 +105,12 @@ public class RuleEngine implements Engine, Graphable {
     private Context context;
     private String base;
     
-    enum Profile {
+    public enum Profile {
         
-        OWL_RL      ("/rule/owlrl.rul"),
-        OWL_RL_LITE ("/rule/owlrllite.rul"),
-        OWL_RL_EXT  ("/rule/owlrlext.rul")       ;
+        STDRL,
+        OWLRL      ("/rule/owlrl.rul"),
+        OWLRL_LITE ("/rule/owlrllite.rul"),
+        OWLRL_EXT  ("/rule/owlrlext.rul")       ;
         
         String path;
         
@@ -128,15 +128,6 @@ public class RuleEngine implements Engine, Graphable {
 
     public RuleEngine() {
         rules = new ArrayList<Rule>();
-        initPath();
-    }
-    
-    // predefined rule bases
-    void initPath(){
-        path = new HashMap();
-        path.put(OWL_RL,      OWL_RL_PATH);
-        path.put(OWL_RL_LITE, OWL_RL_LITE_PATH);
-        path.put(OWL_RL_EXT,  OWL_RL_EXT_PATH);
     }
     
     void set(Graph g) {
@@ -148,34 +139,42 @@ public class RuleEngine implements Engine, Graphable {
         p.setListPath(true);
     }
     
+    public void setProfile(Profile p) {
+        profile = p;
+        loadProfile(p);
+    }
+    
+    void loadProfile(Profile p) {
+        switch (p) {
+            case OWLRL:
+            case OWLRL_LITE:
+            case OWLRL_EXT:
+               try {
+                    load(p.getPath());
+                } catch (LoadException ex) {
+                    logger.error(ex.getMessage());
+                }
+                break;   
+        }
+    }
+    
     /**
      * setProfile(OWL_RL) load OWL RL rule base and clean the OWL/RDF graph
      * 
      */
     public void setProfile(int n) {
-        profile = n;
-
         switch (n) {
-
-            case OWL_RL:                   
-            case OWL_RL_LITE: 
-            case OWL_RL_EXT:
-                //optimizeOWLRL();
-                try {
-                    load(path.get(n));
-                } catch (LoadException ex) {
-                    logger.error(ex.getMessage());
-                }
-                break;        
+            case OWL_RL:        setProfile(OWLRL)  ; break;              
+            case OWL_RL_LITE:   setProfile(OWLRL_LITE)  ; break;
+            case OWL_RL_EXT:    setProfile(OWLRL_EXT)  ; break;                
         }
     }
     
     void processProfile(){
         switch (profile) {
-
-            case OWL_RL:                   
-            case OWL_RL_LITE:    
-            case OWL_RL_EXT:
+            case OWLRL:                   
+            case OWLRL_LITE:    
+            case OWLRL_EXT:
                 optimizeOWLRL();               
                 break;        
         }
@@ -220,7 +219,7 @@ public class RuleEngine implements Engine, Graphable {
         return graph.getEventManager();
     }
        
-    public int getProfile(){
+    public Profile getProfile(){
         return profile;
     }
 

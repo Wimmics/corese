@@ -30,6 +30,7 @@ sw:body (
     st:simple02
     st:simple03
     st:simple04
+    st:simple05
     
     st:simple1
     st:simple2
@@ -92,6 +93,19 @@ st:selectCreator
 .
 
 
+st:selectKey 
+    st:title "Key" ;
+    st:name "arg" ;
+    st:uri st:arg ;
+    st:graph st:dataset ;
+    st:function fun:access
+.
+
+st:access
+    st:type  st:silent ;
+    st:name  "arg" ;
+    st:value "restricted"
+.
 
 
 st:simple01 a sw:Query ;
@@ -104,7 +118,7 @@ st:query
 """prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-select ?a ?name ?type  (group_concat(?w ; separator = "; ") as ?ww) ?location
+select ?a ?name ?type  (group_concat(distinct ?w ; separator = "; ") as ?ww) ?location
 where {
   ?a a ?type  ;
   foaf:name ?name ;
@@ -129,7 +143,8 @@ group by ?a
 
 st:select st:selectType ;
 st:select st:selectKeyword ;
-st:select st:selectName
+st:select st:selectName 
+
 .
 
 
@@ -249,6 +264,58 @@ order by desc(?count)
 
 st:select st:selectCreator ;
 st:select st:select
+
+.
+
+
+
+
+
+st:simple05 a sw:Query ;
+st:name st:simple05 ;
+rdfs:label "Insert Data" ;
+rdfs:comment """Insert Resource ."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""@prefix :   <http://www.ai4eu.eu/ontologies/core#>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+@prefix de: <http://purl.org/dc/elements/1.1/> 
+@prefix dc: <http://purl.org/dc/terms/>
+
+
+insert data {
+
+###  http://www.ai4eu.eu/ontologies/core#test
+:test rdf:type $mode ;
+         :distributed_as :test-distrib ;
+         :uses :CPU ;
+         :country <http://fr.dbpedia.org/resource/Grèce> ;
+         <http://purl.org/dc/terms/bibliographicCitation> "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
+         :keyword "Language Engineering Platform"@en ,
+                  "Linguistic Pipelines"@en ,
+                  "NLP"@en ;
+         <http://xmlns.com/foaf/0.1/name> "Test"^^xsd:string ;
+         <http://purl.org/dc/elements/1.1/creator> :creator ;
+         <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/natural%20language%20processing%20systems> .
+
+
+###  http://www.ai4eu.eu/ontologies/core#test-distro
+:test-distrib rdf:type :StandAlone ;
+                :atTRL :TRL9 ;
+                :under_license :LGPL ;
+                <http://purl.org/dc/elements/1.1/creator> :creator .
+
+
+###  http://www.ai4eu.eu/ontologies/core#ncsr
+:creator rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
+      <http://xmlns.com/foaf/0.1/name> "Creator"^^xsd:string .
+      
+}
+""" ;
+st:select st:selectType ;
+st:select st:access
+.
 
 
 

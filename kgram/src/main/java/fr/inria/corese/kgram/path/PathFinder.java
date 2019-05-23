@@ -1222,8 +1222,14 @@ public class PathFinder {
     /**
      * exp = exp+ ; stack = rest
      * Distinguish 1. first execution where index(exp+) = 0  and 2. next executions where index(exp+) = 1
-     * 1.    stack = (exp, exp+, rest) ; eval(stack)
-     * 2. a) stack = (rest) ; eval(stack) b) stack = (exp, exp+, rest) ; eval(stack)
+     * 1.    stack := (exp, exp+, rest) ; eval(stack)
+     * 2. a) stack = (rest) ; eval(stack) b) stack := (exp, exp+, rest) ; eval(stack)
+     * 
+     * In addition there are two cases whether start node is bound or not
+     * If start is bound, OK
+     * If start is not bound, it will be bound by case LABEL: above
+     * ?x p+ ?y 
+     * When index(p+) = 0, start is not bound, execute(p/p+). When we come back to p+ in the stack, 
      */
     void plus(Regex exp, Record stack, Path path, Node start, Node src) {
         Visit visit = stack.getVisit();
@@ -1233,11 +1239,9 @@ public class PathFinder {
         if (visit.count(exp) == 0) {
             // case 1: first execution of exp+
 
-            //if (start == null) {
-                // declare exp in such a way that when start node changes (in case LABEL)
-                // the visitedNode table of exp be cleared by visit.start()
-                visit.declare(exp);
-            //} // @todo
+            // declare exp such that when start node changes (in case LABEL:)
+            // the visitedNode table of exp be cleared by visit.start()
+            visit.declare(exp);
 
             // push exp+ again in stack to loop later
             stack.push(exp);
@@ -1252,6 +1256,7 @@ public class PathFinder {
 
             if (!isCountPath) { 
                 // std sparql
+                // leave exp+
                 visit.nremove(exp, start);
             }
 
@@ -1266,11 +1271,15 @@ public class PathFinder {
             // exp = exp+ ; stack = (rest)
             // (1) evaluate the stack if any and store result
             // use case: eval rest in: exp+ / rest
+            // switch off exp+ visitedNode table in case: (exp1+/exp2+)+
+            // exp1 would be ready to start "again" with "new" visitedNode table
             Visit.VisitedNode save = visit.nunset(exp);
             visit.set(exp, 0);
 
             // eval rest
             eval(stack, path, start, src);
+            
+            // switch on exp+ index and visitedNode table
             visit.set(exp, 1);
             visit.nset(exp, save);
             

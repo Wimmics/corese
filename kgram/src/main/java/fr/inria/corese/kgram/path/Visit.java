@@ -170,7 +170,7 @@ public class Visit {
 
         boolean loop(Regex exp, Node n) {
             if (isReverse) {
-                // @deprecated, see nloop()
+                // @deprecated, used for count only
                 if (list == null || list.size() < 2) {
                     return false;
                 }

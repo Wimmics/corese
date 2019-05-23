@@ -8,7 +8,6 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +72,8 @@ public class Context extends ASTObject {
     public static final String STL_METADATA       = STL + "metadata";
     public static final String STL_PREFIX         = STL + "prefix";
     public static final String STL_MAPPINGS       = STL + "mappings";
-    
+    public static final String STL_RESTRICTED     = STL + "restricted";
+   
     
     
     HashMap<String, IDatatype> table;
@@ -81,6 +81,7 @@ public class Context extends ASTObject {
     HashMap<String, Boolean> export;
     private HashMap<String, Context> context;
     NSManager nsm;
+    Access.Level level = Access.Level.DEFAULT;
     
     private boolean userQuery = false;
    
@@ -438,6 +439,11 @@ public class Context extends ASTObject {
         return dt != null && dt.getLabel().equals(value);
     }
     
+    public boolean hasValue(String name, IDatatype value) {
+        IDatatype dt = table.get(name);
+        return dt != null && dt.equals(value);
+    }
+    
     public boolean hasValue(String name) {
         return get(name) != null;
     }
@@ -462,10 +468,14 @@ public class Context extends ASTObject {
     }
     
     public Access.Level getLevel() {
-        if (isUserQuery()) {
-            return Access.Level.PUBLIC;
-        }
-        return Access.Level.DEFAULT;
+//        if (isUserQuery()) {
+//            return Access.Level.PUBLIC;
+//        }
+        return level;
+    }
+    
+    public void setLevel(Access.Level l) {
+        level = l;
     }
 
     /**

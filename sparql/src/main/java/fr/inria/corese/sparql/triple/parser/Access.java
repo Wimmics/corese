@@ -17,13 +17,16 @@ public class Access {
         LIBRARY, GUI, SERVER
     }
     
-    // Protection Level Access Right: access provided to <= level
+    // Protection Level Access Right: 
+    // function has access level, user action is granted access level
+    // access provided to function for action when function.level <= action.level
     // private is default level: function definition is private
-    // public  is access level for protected server: LDScript use is public, the rest is private
-    // locked is default value for LinkedFunction
+    // restricted is access level for specific protected user query
+    // public  is access level for protected server: LDScript use is public, the rest is private or restricted
+    // super user is access level for LinkedFunction
     public enum Level     { 
         
-        PUBLIC(1), PRIVATE(2), SUPER_USER(3) ; 
+        PUBLIC(1), RESTRICTED(2), PRIVATE(3), SUPER_USER(4) ; 
         
         private int value;
         
@@ -163,6 +166,20 @@ public class Access {
         return actionLevel;
     }
     
+    public static Level getQueryAccessLevel(boolean user, boolean special) {
+        if (isProtect()) {
+            if (user) {
+                if (special) {
+                    return Level.RESTRICTED;
+                }
+                else {
+                    return Level.PUBLIC;
+                }
+            }
+        }
+        return Level.DEFAULT;
+    }
+    
     // protect DEFAULT level
     public static void protect() {
         setProtect(true);
@@ -221,6 +238,7 @@ public class Access {
     void init() {
         // everything is private except:
         set(LINKED_FUNCTION, SUPER_USER);
+        set(SPARQL_UPDATE, RESTRICTED);
         set(LD_SCRIPT, PUBLIC);
     }
     

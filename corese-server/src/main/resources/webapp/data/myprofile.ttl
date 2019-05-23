@@ -30,6 +30,8 @@ st:param [
     st:hyperlink true ; 
     st:title "AI4EU";
     st:prefix (("ai" ai:)) ;
+    # authorize update if query has arg="restricted"
+    st:restricted true ;
     #st:exportlist (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize st:mappings) ;
     st:export true ;
     # do not focus sttl result on st:uri because it is the URI of the query not of a target resource
@@ -42,6 +44,7 @@ st:param [
 st:ai4euwf a sw:Workflow ; 
 sw:body (
     [ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
+    [ a sw:RuleBase ;  sw:uri sw:owlrl ; sw:onupdate true ]
     [ a sw:Transformation ; sw:uri st:web ]
 )
 .
@@ -75,7 +78,7 @@ sw:body (
 
       [ a sw:Workflow ; sw:body ( 
         [ a sw:Load ; sw:path <demo/ai4eu/ai4eu.ttl> ] 
-        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>, <demo/ai4eu/data/agroportal.ttl>] 
+        [ a sw:Load ; sw:path <demo/ai4eu/data/ellogon.ttl>, <demo/ai4eu/data/corese.ttl> , <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>, <demo/ai4eu/data/agroportal.ttl>] 
         [ a sw:RuleBase ;  sw:uri sw:owlrl ]
         ) ]
       

@@ -6,6 +6,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.Date;
 
 /**
@@ -58,7 +59,7 @@ public class SemanticWorkflow extends  CompositeProcess {
        return add(new SPARQLProcess(q));
     }
     
-    public SemanticWorkflow addQuery(String q, int n, boolean protect){
+    public SemanticWorkflow addQuery(String q, int n, boolean protect, Access.Level l){
         SPARQLProcess wp = getEmptyQuery();
         if (wp == null) {
             wp = new SPARQLProcess(q);
@@ -66,6 +67,7 @@ public class SemanticWorkflow extends  CompositeProcess {
             return add(wp, n);
         }
         wp.setUserQuery(protect);
+        wp.setLevel(l);
         wp.setQuery(q);
         return this;
     }
@@ -96,16 +98,18 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
     
     // select return Graph Mappings
-    public SemanticWorkflow addQueryGraph(String q, boolean protect){
+    public SemanticWorkflow addQueryGraph(String q, boolean protect, Access.Level l){
        SPARQLProcess sp = new SPARQLProcess(q);
        sp.setUserQuery(protect);
+       sp.setLevel(l);
        sp.setResult(GRAPH);
        return add(sp);
     }
     
-    public SemanticWorkflow addQueryMapping(String q, boolean protect){
+    public SemanticWorkflow addQueryMapping(String q, boolean protect, Access.Level l){
        SPARQLProcess sp = new SPARQLProcess(q);
        sp.setUserQuery(protect);
+       sp.setLevel(l);
        return add(sp);
     }
     
@@ -171,6 +175,7 @@ public class SemanticWorkflow extends  CompositeProcess {
     }
     
     void prepare(Data data){
+        setGraph(data.getGraph());
         if (getWorkflowGraph() != null){
             data.getGraph().setNamedGraph(Context.STL_SERVER_PROFILE, getWorkflowGraph());
         }

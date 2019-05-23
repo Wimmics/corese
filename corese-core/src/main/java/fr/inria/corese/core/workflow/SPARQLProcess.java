@@ -18,6 +18,7 @@ import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,20 @@ import org.slf4j.LoggerFactory;
  */
 public class SPARQLProcess extends  WorkflowProcess {
 
+    /**
+     * @return the level
+     */
+    public Access.Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Access.Level level) {
+        this.level = level;
+    }
+
     private static Logger logger = LoggerFactory.getLogger(SPARQLProcess.class);
     static final String NL = System.getProperty("line.separator");
     static final NSManager nsm = NSManager.create();
@@ -37,6 +52,8 @@ public class SPARQLProcess extends  WorkflowProcess {
     private static final String MODE     = "$mode";
     private static final String PATTERN  = "$pattern";
     private boolean userQuery = false;
+    private Access.Level level = Access.Level.DEFAULT;
+    Access.Level save;
     private IDatatype param;    
     private IDatatype value;
     private IDatatype option;
@@ -67,6 +84,8 @@ public class SPARQLProcess extends  WorkflowProcess {
         data.getEventManager().start(Event.WorkflowQuery);
         if (getContext() != null) {
             getContext().setUserQuery(isUserQuery());
+            save = getContext().getLevel();
+            getContext().setLevel(getLevel());
         }       
     }
     
@@ -83,6 +102,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         data.getEventManager().finish(Event.WorkflowQuery);
         if (getContext() != null) {
             getContext().setUserQuery(false);
+            getContext().setLevel(save);
         }
     }
     
@@ -100,10 +120,10 @@ public class SPARQLProcess extends  WorkflowProcess {
             g = GraphStore.create();
         }
         QueryProcess exec = QueryProcess.create(g);
-        if (getWorkflow().getGraph() != null){
-            // draft: additional graph considered as contextual dataset
-            exec.add(getWorkflow().getGraph());
-        }
+//        if (getWorkflow().getGraph() != null){
+//            // draft: additional graph considered as contextual dataset
+//            exec.add(getWorkflow().getGraph());
+//        }
         if (getPath() != null){
             exec.setDefaultBase(getPath());
         }

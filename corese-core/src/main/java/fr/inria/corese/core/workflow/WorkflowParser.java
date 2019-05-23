@@ -91,6 +91,7 @@ public class WorkflowParser {
     public static final String SILENT = PREF +"silent";
     public static final String VALIDATE = PREF +"validate";
     public static final String TEXT = PREF +"text";
+    public static final String ONUPDATE = PREF +"onupdate";
     
     public static final String FORMAT_PARAM = Context.STL_FORMAT; //PREF +"format";
     public static final String LOAD_PARAM   = Context.STL_PARAM;
@@ -439,7 +440,12 @@ public class WorkflowParser {
                               if (type.equals(FUNCTION)) {
                                  ap = functionPath(uri);
                              } else if (type.equals(RULE) || type.equals(RULEBASE)) {
-                                 ap = new RuleProcess(uri);
+                                 RuleProcess rb = new RuleProcess(uri);
+                                 ap = rb;
+                                 IDatatype update = getValue(ONUPDATE, dt);
+                                 if (update!=null) {
+                                     rb.setOnUpdate(update.booleanValue());
+                                 }
                              } else if (type.equals(LOAD)) {
                                  ap = load(dt);
                              }

@@ -18,6 +18,7 @@ public class RuleProcess extends  WorkflowProcess {
 
     private RuleEngine engine;
     int profile = -1;
+    private boolean onUpdate = false;
     
     public RuleProcess(String p){
         path = p;
@@ -50,8 +51,22 @@ public class RuleProcess extends  WorkflowProcess {
     
     @Override
     public Data run(Data data) throws EngineException {
+        if (isOnUpdate()) {
+            // previous query is update
+            // run rule engine on workflow input graph
+            Graph g = getWorkflow().getGraph();
+            if (g != null && g.getEventManager().isUpdate()) {
+                infer(data, g);
+            }
+            return data;
+        }
+        // run rule engine on current graph
+        return infer(data, data.getGraph());
+    }
+    
+    Data infer(Data data, Graph g) throws EngineException {
         try {
-            RuleEngine re = create(data.getGraph()); 
+            RuleEngine re = create(g); 
             re.setContext(getContext());
             setEngine(re);
             re.process();
@@ -107,6 +122,20 @@ public class RuleProcess extends  WorkflowProcess {
      */
     public void setEngine(RuleEngine engine) {
         this.engine = engine;
+    }
+
+    /**
+     * @return the onUpdate
+     */
+    public boolean isOnUpdate() {
+        return onUpdate;
+    }
+
+    /**
+     * @param onUpdate the onUpdate to set
+     */
+    public void setOnUpdate(boolean onUpdate) {
+        this.onUpdate = onUpdate;
     }
 
   

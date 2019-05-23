@@ -23,6 +23,12 @@ function fun:projectType() {
     }
 }
 
-
+function fun:access() {
+    let (?key = str(rand())) {
+        # set cookie
+        ds:setPublicDatatypeValue(true, ?key);
+        return (xt:list(?key))
+    }
+}
 
 }

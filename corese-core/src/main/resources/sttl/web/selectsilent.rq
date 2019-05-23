@@ -1,0 +1,22 @@
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
+template st:selectsilent(?n, ?q, ?t, ?s, ?qt) {
+   
+   format { 
+        ft:silent.html ?name ?value
+   }
+   
+      
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n .
+        ?qt st:select ?input .
+        ?input st:type st:silent ; st:name ?name ; st:value ?value
+    }
+}

@@ -16,6 +16,7 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
     st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
+    st:call-template(st:selectsilent,?n, ?q, ?t, ?s, ?qt)
     str(?q)
     }
    

@@ -35,6 +35,7 @@ import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.core.print.TripleFormat;
+import fr.inria.corese.sparql.triple.parser.Access;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.
@@ -611,6 +612,7 @@ public class SPARQLRestAPI {
                 c = new Context();
             }
             c.setUserQuery(true);
+            c.setLevel(Access.getQueryAccessLevel(true, false));
         }
         if (c != null || ((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
             Dataset ds = Dataset.instance(defaultGraphUris, namedGraphUris);

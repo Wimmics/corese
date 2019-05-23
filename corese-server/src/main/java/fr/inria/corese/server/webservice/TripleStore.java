@@ -9,6 +9,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Context;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -136,6 +137,7 @@ public class TripleStore {
         ld.parse(path, src, Load.TURTLE_FORMAT);
     }
     
+    // SPARQL Endpoint
     Mappings query(String query, Dataset ds) throws EngineException {
         if (ds == null) {
             ds = new Dataset();
@@ -144,6 +146,7 @@ public class TripleStore {
             ds.setContext(new Context());
         }
         ds.getContext().setUserQuery(true);
+        ds.getContext().setLevel(Access.getQueryAccessLevel(true, false));
         return exec.query(query, ds);
     }
 

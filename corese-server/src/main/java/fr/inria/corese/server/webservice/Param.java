@@ -308,6 +308,12 @@ public class Param {
     public boolean isUserQuery() {
         return isUserQuery;
     }
+    
+    // restricted access right query
+    public boolean isRestricted() {
+        return getArg() != null 
+            && getArg().equals("restricted");
+    }
 
     /**
      * @param isUserQuery the isUserQuery to set

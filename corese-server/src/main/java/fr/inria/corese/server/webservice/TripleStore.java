@@ -62,6 +62,7 @@ public class TripleStore {
         init(b);
     }
     
+    @Override
     public String toString(){
         return graph.toString();
     }

@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 public class Manager {
     private final static Logger logger = LogManager.getLogger(Manager.class);
     static final String STCONTEXT = Context.STL_CONTEXT;
+    static String SYSTEM  = NSManager.STL + "system";
     static String DEFAULT = NSManager.STL + "default";
     static String USER    = NSManager.STL + "user";
     private static String CONTENT = NSManager.STL + "content";
@@ -79,8 +80,24 @@ public class Manager {
                 }
             }
         }
+        system();
         // draft
         // complete();
+    }
+    
+    void system() {
+        TripleStore sys = getTripleStore(SYSTEM);
+        if (sys != null) {
+            Graph g = sys.getGraph();
+            g.setAllGraphNode(true);
+            for (Service s : getProfile().getServers()) {
+                System.out.println("server: " + s.getName() + " " + s.getService());
+                TripleStore ts =  getTripleStore(s.getName());
+                if (ts != null) {
+                    g.setNamedGraph(s.getName(), ts.getGraph());
+                }
+            }
+        }
     }
 
     TripleStore getTripleStore(String name) {

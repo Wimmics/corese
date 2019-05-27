@@ -377,7 +377,16 @@ public class NSManager extends ASTObject {
     }
     
     public String toPrefixURI(String nsname, boolean skip) {
-        if (containsChar(nsname)) {
+        return toPrefixURI(nsname, skip, false);
+    }
+    
+    /**
+     * 
+     * @param skip: do not generate prefxi when prefix undefined
+     * @param display: display mode, generate prefixed named even with ' or ()
+     */
+    public String toPrefixURI(String nsname, boolean skip, boolean display) {
+        if (! display && containsChar(nsname)) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, skip);
@@ -550,12 +559,20 @@ public class NSManager extends ASTObject {
     public IDatatype turtle(IDatatype dt) {
         return turtle(dt, false);
     }
-        
     public IDatatype turtle(IDatatype dt, boolean force) {
+        return turtle(dt, force, false);
+    }
+    
+    /**
+     * 
+     * @param force:   generate a prefix if no prefix exist
+     * @param display: display mode, generate prefixed name even with ' or ()
+     */
+    public IDatatype turtle(IDatatype dt, boolean force, boolean display) {
         String label = dt.getLabel();
         if (dt.isURI()) {
             setRecord(true);
-            String uri = toPrefixURI(label, ! force);
+            String uri = toPrefixURI(label, ! force, display);
             dt = DatatypeMap.newStringBuilder(uri);          
         } else if (dt.isLiteral()) {
             if ((dt.getCode() == IDatatype.INTEGER 

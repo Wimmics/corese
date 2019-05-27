@@ -31,7 +31,9 @@ public class Turtle extends TemplateFunction {
                     case 1:
                         return eval.getNSM(env, p).turtle(param[0]);
                     case 2:
-                        return eval.getNSM(env, p).turtle(param[0], param[1].equals(TRUE));
+                        return eval.getNSM(env, p).turtle(param[0], param[1].equals(TRUE));                       
+                    case 3:
+                        return eval.getNSM(env, p).turtle(param[0], param[1].equals(TRUE), param[2].equals(TRUE));    
                     default:
                         return null;
                 }

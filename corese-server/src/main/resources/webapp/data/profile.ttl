@@ -425,6 +425,11 @@ st:humancontent a sw:Workflow ; sw:body (
 .
 
 
+st:system a st:Server ;
+st:service "system"
+.
+
+
 st:show a st:Server ;
 st:service "show" ;
 st:content st:humancontent ;
@@ -805,7 +810,8 @@ sw:body (
 )
 .
 
-@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+@prefix ai:  <http://www.ai4eu.eu/ontologies/core#>
+@prefix phi: <http://ns.inria.fr/physics/>
 
 
 st:ontology a st:Server ;
@@ -814,7 +820,7 @@ st:workflow st:ontology ;
 st:param [
     st:title "Ontology" ;
     st:hierarchy (rdfs:subClassOf rdfs:subPropertyOf) ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
    # st:hierarchy (rdfs:subClassOf ) ;
 ] ;
 sw:body ( 
@@ -835,7 +841,7 @@ st:param [
     st:title "Class" ;
     st:hierarchy (rdfs:subClassOf ) ;
     st:trace false ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -859,7 +865,7 @@ st:param [
     st:nodePropertyList (("property" us:value)) ;
     st:export true ;
     st:trace false ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -881,7 +887,7 @@ st:param [
     st:hierarchy (rdfs:subPropertyOf) ;
     st:nodePropertyDisplay ("url" "domain" "range") ;
     st:trace false ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
 
 ] ;
 sw:body ( 
@@ -902,7 +908,7 @@ st:param [
     st:hierarchy (rdfs:domain rdfs:isRangeOf) ;
     st:nodePropertyDisplay ("url" "class" ) ;
     st:trace false ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
 
 ] ;
 sw:body ( 
@@ -923,7 +929,7 @@ st:param [
     st:title "Class" ;
     st:hierarchy (rdfs:subClassOf ) ;
     st:trace false ;
-    st:prefix (("ai" ai:))
+    st:prefix (("ai" ai:)("phi" phi:))
 ] ;
 sw:body ( 
     [ a sw:Dataset ; sw:mode sw:new ] 
@@ -942,6 +948,7 @@ sw:body (
 # AI4EU
 #
 [] owl:imports <myprofile.ttl>
+#[] owl:imports <phyprofile.ttl>
 
 
 

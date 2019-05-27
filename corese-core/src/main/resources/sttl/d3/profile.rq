@@ -62,7 +62,7 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true, true))
 }
 
 function us:shorten(?l) {

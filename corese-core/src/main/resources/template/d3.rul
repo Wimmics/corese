@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Mar 26 11:18:20 CET 2019
+Mon May 27 12:55:34 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,6 +46,22 @@ where {
 <body>
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:start {
+  format {
+      ft:graph.html
+      st:call-template(st:graph)
+  }
+} 
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
 template st:title {
 
   if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
@@ -61,22 +77,6 @@ where {
     bind (st:get(st:param) as ?param)
     bind (st:get(st:mode)  as ?mode)
     bind (st:get(st:arg)   as ?arg)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:start {
-  format {
-      ft:graph.html
-      st:call-template(st:graph)
-  }
-} 
-where {
 }
 ]]>
 </body>
@@ -178,6 +178,36 @@ function us:property(?s, ?list) {
 <rule>
 <body>
 <![CDATA[
+template st:edges {
+  "\"edges\":[\n"
+  
+  group { 
+  
+    format {
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
+    }
+    
+    ; separator = ",\n"
+  }
+  
+  "\n]\n"
+} 
+where {
+    select * where {
+        graph ?g { ?s ?p ?o }
+        bind (us:triple(?s, ?p, ?o) as ?ss)
+    } 
+    order by ?p ?s ?o
+    limit 5000
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:profile {}
 where {}
 
@@ -242,7 +272,7 @@ function us:pretty(?s) {
 }
 
 function us:uri(?u) {
-    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true))
+    if (contains(?u, ".jpg"), us:shorten(st:turtle(?u, true)), st:turtle(?u, true, true))
 }
 
 function us:shorten(?l) {
@@ -288,36 +318,6 @@ function us:pname(?x) {
     if (isURI(?x), st:turtle(?x), ?x)
 }
   
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:edges {
-  "\"edges\":[\n"
-  
-  group { 
-  
-    format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
-    }
-    
-    ; separator = ",\n"
-  }
-  
-  "\n]\n"
-} 
-where {
-    select * where {
-        graph ?g { ?s ?p ?o }
-        bind (us:triple(?s, ?p, ?o) as ?ss)
-    } 
-    order by ?p ?s ?o
-    limit 5000
-}
 ]]>
 </body>
 </rule>

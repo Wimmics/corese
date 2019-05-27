@@ -131,7 +131,7 @@ public class AST {
         a.select(a.variable(COUNT_VAR), a.count(t.object()));
         
         a.select(t.predicate().getVariable());
-        a.select(t.subject().getVariable()); // documentation
+        //a.select(t.subject().getVariable()); // documentation
         a.select(a.variable(LOCAL_VAR), a.uri(uri1));
         a.select(a.variable(SERVICE_VAR), a.uri(uri2));
         a.select(a.variable(COUNT_SOURCE_VAR), a.count(variable(1)).distinct(true));
@@ -157,7 +157,7 @@ public class AST {
         a.select(a.variable(COUNT_VAR), a.count(t.object()));
         
         a.select(t.predicate().getVariable());
-        a.select(t.subject().getVariable()); // documentation
+        //a.select(t.subject().getVariable()); // documentation
         a.select(a.variable(GRAPH1_VAR), a.uri(uri1));
         a.select(a.variable(GRAPH2_VAR), a.uri(uri2));
         a.select(a.variable(COUNT_SOURCE_VAR), a.count(variable(1)).distinct(true));
@@ -258,7 +258,7 @@ public class AST {
             a.select(a.variable(COUNT_VAR), a.count(subject));
         }
         a.select(t.predicate().getVariable());
-        a.select(t.subject().getVariable()); // documentation
+        //a.select(t.subject().getVariable()); // documentation
         a.select(a.variable(LOCAL_VAR), a.uri(uri1));
         a.select(a.variable(SERVICE_VAR), a.uri(uri2));
         return a;

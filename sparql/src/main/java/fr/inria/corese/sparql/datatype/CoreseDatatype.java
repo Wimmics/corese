@@ -632,6 +632,10 @@ public class CoreseDatatype
     @Override
     public void setValue(String str) {
     }
+    
+    @Override
+    public void setValue(int n) {
+    }
 
     @Override
     public void setValue(String str, int nid, IStorage pmgr) {

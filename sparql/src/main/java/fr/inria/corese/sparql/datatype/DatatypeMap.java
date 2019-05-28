@@ -378,6 +378,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype newInstance(int result) {
         return getValue(result);
     }
+    
+    public static IDatatype create(int result) {
+        return new CoreseInteger(result);
+    }
 
     public static IDatatype newInstance(long result) {
         return getValue(result);
@@ -642,7 +646,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return dt;
     }
     
-    public static IDatatype map() {
+    public static CoreseMap map() {
         return new CoreseMap();
     }
 
@@ -1239,7 +1243,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return TRUE.getPublicDatatypeValue();
     }
     
-    
+
     // DatatypeValueFactory
     
     public static DatatypeMap getDatatypeMap() {

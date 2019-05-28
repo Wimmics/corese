@@ -95,7 +95,8 @@ public class CoreseInteger extends CoreseNumber {
         return (int) lvalue;
     }
     
-    void setValue(int n){
+    @Override
+    public void setValue(int n){
         lvalue = n;
     }
     

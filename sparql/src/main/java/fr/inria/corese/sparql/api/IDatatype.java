@@ -168,6 +168,8 @@ public interface IDatatype
     IDatatype display();
     
     void setVariable(boolean b);
+    
+    void setValue(int n);
 
     /**
      * ************************************************************************

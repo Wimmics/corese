@@ -11,11 +11,6 @@ import org.apache.logging.log4j.Logger;
 /**
  * Server Event Manager
  * Record in a map of maps, information about server service call 
- * This map is accessible via a SPARQL Query with LDScript function ds:getPublicDatatypeValue(true)
- * 
- * bind (ds:getPublicDatatypeValue(true) as ?map)
- * bind (xt:get(?map, st:count) as ?count)
- * values (?key ?val) { unnest(?count)  }
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2019
  */
@@ -38,7 +33,6 @@ public class EventManager {
         setDateMap(DatatypeMap.map());
         setHostMap(DatatypeMap.map());
         
-        // can be retrieved in LDScript by ds:getPublicDatatypeValue(true)
         CoreseMap globalMap = DatatypeMap.map();
         DatatypeMap.setPublicDatatypeValue(globalMap);
         
@@ -57,7 +51,7 @@ public class EventManager {
     
     void log(Context context) {
         logger.info("Workflow Context:\n" + context);
-        logger.info(getCountMap());
+        logger.info(getCountMap().getMap());
     }
     
     /**

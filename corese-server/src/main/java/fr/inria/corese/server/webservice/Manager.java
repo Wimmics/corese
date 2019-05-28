@@ -91,7 +91,6 @@ public class Manager {
             Graph g = sys.getGraph();
             g.setAllGraphNode(true);
             for (Service s : getProfile().getServers()) {
-                System.out.println("server: " + s.getName() + " " + s.getService());
                 TripleStore ts =  getTripleStore(s.getName());
                 if (ts != null) {
                     g.setNamedGraph(s.getName(), ts.getGraph());
@@ -157,6 +156,7 @@ public class Manager {
      * Workflow is retrieved from the profile graph.
      */
     void init(TripleStore ts, Service service) throws LoadException, EngineException {
+        ts.setName(service.getName());
         tune(ts, service);
         Graph g = getProfile().getProfileGraph();
         Node serv = g.getNode(service.getName());

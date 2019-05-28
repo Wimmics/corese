@@ -2,6 +2,7 @@ package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
@@ -11,6 +12,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Context;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -22,10 +24,25 @@ import org.apache.logging.log4j.LogManager;
  */
 public class TripleStore {
 
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private static Logger logger = LogManager.getLogger(TripleStore.class);
     GraphStore graph = GraphStore.create(false);
     QueryProcess exec = QueryProcess.create(graph);
     boolean rdfs = false, owl = false;
+    private String name = Manager.DEFAULT;
 
     TripleStore(boolean rdfs, boolean owl) {
        this(rdfs, owl, true);
@@ -139,15 +156,26 @@ public class TripleStore {
     }
     
     // SPARQL Endpoint
+    
     Mappings query(String query, Dataset ds) throws EngineException {
+            return query(null, query, ds);
+    }
+        
+    Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
         if (ds == null) {
             ds = new Dataset();
         }
         if (ds.getContext() == null) {
             ds.setContext(new Context());
         }
-        ds.getContext().setUserQuery(true);
-        ds.getContext().setLevel(Access.getQueryAccessLevel(true, false));
+        Context c = ds.getContext();
+        c.setService(getName());
+        c.setUserQuery(true);
+        c.setLevel(Access.getQueryAccessLevel(true, false));
+        if (request!=null) {
+            c.setRemoteHost(request.getRemoteHost());
+        }
+        Profile.getEventManager().call(ds.getContext());
         return exec.query(query, ds);
     }
 

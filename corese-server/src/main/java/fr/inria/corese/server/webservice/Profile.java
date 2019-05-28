@@ -41,11 +41,25 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Profile {
 
+    /**
+     * @return the eventManager
+     */
+    public static EventManager getEventManager() {
+        return eventManager;
+    }
+
+    /**
+     * @param aEventManager the eventManager to set
+     */
+    public static void setEventManager(EventManager aEventManager) {
+        eventManager = aEventManager;
+    }
+
     static final String NL = System.getProperty("line.separator");
     
     private static  Profile profileManager;
     //static  String SERVER, DATA, QUERY;
-
+    private static EventManager eventManager;
   
     String server, data, query;
       
@@ -56,9 +70,9 @@ public class Profile {
 
     boolean isProtected = false;
 
-//    static {
-//        initServer();   
-//    }
+    static {
+        setEventManager(new EventManager());
+    }
     
     private static String stdLocalhost() {
         return "http://localhost:" + EmbeddedJettyServer.port;

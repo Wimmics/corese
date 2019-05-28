@@ -12,7 +12,6 @@ import fr.inria.corese.core.workflow.WorkflowParser;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +25,20 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class TransformerEngine {
+
+    /**
+     * @return the eventManager
+     */
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    /**
+     * @param eventManager the eventManager to set
+     */
+    public void setEventManager(EventManager eventManager) {
+        this.eventManager = eventManager;
+    }
     
     private static Logger logger = LogManager.getLogger(Transformer.class);
     private static final String PARAM = "$param";
@@ -37,6 +50,7 @@ public class TransformerEngine {
     GraphStore profile;
     // Context shared by Workflow and transformations
     private Context context;
+    private EventManager eventManager;
     // Web service parameters
     Param param;
     
@@ -75,6 +89,9 @@ public class TransformerEngine {
             logger.info("Run workflow");
             //graph.setVerbose(true);
         }
+        if (getEventManager() != null) {
+            getEventManager().call(sw.getContext());
+        }
         Data data = sw.process(new Data(graph));
         return data;
     }
@@ -90,7 +107,7 @@ public class TransformerEngine {
         SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
-        logger.info("Workflow Context:\n" + context);
+        //logger.info("Workflow Context:\n" + context);
         wp.setLog(true);
         IDatatype swdt    = context.get(Context.STL_WORKFLOW);
         IDatatype querydt = context.get(Context.STL_QUERY);

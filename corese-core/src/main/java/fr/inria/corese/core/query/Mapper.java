@@ -61,7 +61,7 @@ public class Mapper {
         if (dt.isList()) { 
             return map(nodes, dt.getValues());
         } 
-        else if (dt.isMap()) { 
+        else if (dt.isMap() || dt.isJSON()) { 
             return map(nodes, dt.getValueList());
         } 
         else if (dt.isPointer()){

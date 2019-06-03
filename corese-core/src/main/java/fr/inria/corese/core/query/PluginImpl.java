@@ -1307,9 +1307,14 @@ public class PluginImpl
   
     
     IDatatype read(IDatatype dt, Environment env, Producer p){
-        if (! readWriteAuthorized()){
-            return null;
-        }
+        return read(dt);
+    }
+    
+    @Override
+    public IDatatype read(IDatatype dt){
+//        if (! readWriteAuthorized()){
+//            return null;
+//        }
         QueryLoad ql = QueryLoad.create();
         String str = null;
         try {

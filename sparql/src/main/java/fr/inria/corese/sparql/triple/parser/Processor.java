@@ -38,6 +38,7 @@ public class Processor {
 	public static final String COUNT    = "count";
 	public static final String INLIST   = Term.LIST;
 	public static final String XT_MAP      = EXT+"map";
+	public static final String XT_JSON_OBJECT      = EXT+"jsonobject";
 	public static final String XT_LIST     = EXT+"list";
 	public static final String XT_TOLIST   = EXT+"toList";
 	public static final String XT_IOTA     = EXT+"iota";
@@ -646,6 +647,7 @@ public class Processor {
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
+		defoper(XT_JSON_OBJECT, ExprType.XT_JSON_OBJECT);
 		defoper(XT_MAP,         ExprType.XT_MAP);
 		defoper(XT_LIST,        ExprType.LIST);
 		defoper(XT_TOLIST,      ExprType.XT_TOLIST);
@@ -756,6 +758,7 @@ public class Processor {
 		defoper(SYSTEM, ExprType.SYSTEM);
 		defoper(GROUPBY, ExprType.GROUPBY);
 		
+		defoper(EXT+"read",     ExprType.READ);
 		defoper(READ,           ExprType.READ);
 		defoper(EXT+"write",    ExprType.WRITE);
 		defoper(WRITE,          ExprType.WRITE);

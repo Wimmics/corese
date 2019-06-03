@@ -5,6 +5,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.APP_SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.DEPTH;
 import static fr.inria.corese.kgram.api.core.ExprType.KGRAM;
 import static fr.inria.corese.kgram.api.core.ExprType.LOAD;
+import static fr.inria.corese.kgram.api.core.ExprType.READ;
 import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
@@ -54,6 +55,9 @@ public class GraphSpecificFunction extends LDScript {
                 
             case WRITE:
                 return proc.write(param[0], param[1]);
+                
+            case READ:
+                return proc.read(param[0]);
                 
             case SIM:
                 switch (param.length) {

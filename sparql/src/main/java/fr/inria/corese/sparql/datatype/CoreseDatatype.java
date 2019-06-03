@@ -366,6 +366,11 @@ public class CoreseDatatype
     public boolean isMap() {
         return false;
     }
+    
+     @Override
+    public boolean isJSON() {
+        return false;
+    }
 
     @Override
     public boolean isLoop() {

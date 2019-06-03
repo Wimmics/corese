@@ -396,6 +396,9 @@ public class Term extends Expression {
                 return new ListTerm(name);
             case ExprType.XT_MAP:
                 return new MapTerm(name);
+             case ExprType.XT_JSON_OBJECT:
+                return new JSONTerm(name);    
+                
             case ExprType.XT_COUNT:
                 return new Size(name);
                 
@@ -510,6 +513,7 @@ public class Term extends Expression {
                 
             case ExprType.LOAD:
             case ExprType.WRITE:
+            case ExprType.READ:
             case ExprType.XT_TUNE:
             case ExprType.SIM:                
             case ExprType.APP_SIM:                

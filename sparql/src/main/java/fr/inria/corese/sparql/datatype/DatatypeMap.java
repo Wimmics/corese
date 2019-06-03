@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  * <p>
@@ -648,6 +649,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     
     public static CoreseMap map() {
         return new CoreseMap();
+    }
+    
+    public static CoreseJSON json(String json) {
+        return new CoreseJSON(json);
+    }
+    
+    public static CoreseJSON json() {
+        return new CoreseJSON(new JSONObject());
     }
 
     public static IDatatype createList(IDatatype... ldt) {

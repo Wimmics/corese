@@ -13,7 +13,7 @@ import java.util.TreeMap;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class CoreseMap extends CoreseUndefLiteral {
+public class CoreseMap extends CoreseExtension {
 
     private static final IDatatype dt = getGenericDatatype(IDatatype.MAP_DATATYPE);
     private static int count = 0;
@@ -30,12 +30,7 @@ public class CoreseMap extends CoreseUndefLiteral {
     public IDatatype getDatatype() {
         return dt;
     }
-    
-     @Override
-    public IDatatype display() {
-        return DatatypeMap.createUndef(getContent(), getDatatypeURI());
-    }
-    
+      
     @Override
     public String getContent() {
         return String.format("[Map: size=%s]", map.size());
@@ -45,12 +40,7 @@ public class CoreseMap extends CoreseUndefLiteral {
     public boolean isExtension() {
         return true;
     }
-    
-    @Override
-    public String toString() {
-        return display().toString();
-    }
-    
+       
     @Override
     public int size() {
         return map.size();

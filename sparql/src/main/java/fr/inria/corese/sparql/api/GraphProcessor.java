@@ -15,6 +15,8 @@ public interface GraphProcessor {
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
     
+    IDatatype read(IDatatype dt); 
+    
     IDatatype format(IDatatype[] ldt);
     
     IDatatype format(Mappings map, int format);

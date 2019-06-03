@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
+public class CoreseList extends CoreseExtension implements IDatatypeList {
 
     private List<IDatatype> list;
     private static int count = 0;
@@ -77,11 +77,6 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
         return sb.toString();
     }
 
-    @Override
-    public IDatatype display() {
-        return DatatypeMap.createUndef(getContent(), getDatatypeURI());
-    }
-
     void getContent(StringBuffer sb) {
         sb.append("(");
         for (IDatatype dt : list) {
@@ -110,12 +105,7 @@ public class CoreseList extends CoreseUndefLiteral implements IDatatypeList {
         }
         return super.equalsWE(dt);
     }
-    
-    @Override
-    public boolean isExtension() {
-        return true;
-    }
-     
+        
     @Override
     public int compareTo(IDatatype dt) {
         if (dt.isList()) {

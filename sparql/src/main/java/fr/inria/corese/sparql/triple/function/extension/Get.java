@@ -44,7 +44,7 @@ public class Get extends BinaryFunction {
         if (dt.isList()) {
             return dt.get(ind.intValue());
         }
-        if (dt.isMap()) {
+        if (dt.isMap() || dt.isJSON()) {
             return dt.get(ind);
         }
         if (dt.isPointer()){

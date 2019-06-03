@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.corese.sparql.triple.function.script;
 
-import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
@@ -17,17 +9,31 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
  *
  */
 public class JavaFunction extends LDScript {
+    static final String GLOBAL_VALUE = "ds:getPublicDatatypeValue";
+    private boolean reject = false;
 
     JavaFunction() {}
 
     JavaFunction(String name) {
         super(name);
+        switch (name) {
+            case GLOBAL_VALUE: break;
+            default: setReject(Access.reject(Feature.READ_WRITE_JAVA));
+        }
     }
     
-    boolean reject(Binding b, Environment env) {
-        //Context c  = (Context) env.getQuery().getContext();
-        //Access.reject(Feature.READ_WRITE_JAVA, c.getLevel());
-        return Access.reject(Feature.READ_WRITE_JAVA);
+    /**
+     * @return the reject
+     */
+    public boolean isReject() {
+        return reject;
+    }
+
+    /**
+     * @param reject the reject to set
+     */
+    public void setReject(boolean reject) {
+        this.reject = reject;
     }
     
 }

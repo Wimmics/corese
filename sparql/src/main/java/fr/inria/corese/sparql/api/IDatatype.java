@@ -67,6 +67,7 @@ public interface IDatatype
     public static final String ITERATE_DATATYPE  = ExpType.DT + "iterate";   
     public static final String MAP_DATATYPE      = ExpType.DT + "map";   
     public static final String LIST_DATATYPE     = ExpType.DT + "list";   
+    public static final String JSON_DATATYPE     = ExpType.DT + "json";   
     public static final String SYSTEM            = ExpType.DT + "system";
      
     boolean isSkolem();
@@ -79,6 +80,8 @@ public interface IDatatype
     
     boolean isList();
     boolean isMap();
+    boolean isJSON();
+    
     
     boolean isLoop();
 

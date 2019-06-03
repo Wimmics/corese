@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 
@@ -19,24 +20,45 @@ public class ResultFormater extends TermEval {
     
     public ResultFormater(String name) {
         super(name);
-        setArity(1);
     }
         
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        
+        switch (oper()) {
+            case XT_JSON: 
+                if (arity() == 0) {
+                    return DatatypeMap.json();
+                }
+        }
+        
         IDatatype dt = getArg(0).eval(eval, b, env, p);
-        if (dt == null || dt.pointerType() != MAPPINGS || dt.getPointerObject() == null) {
+        
+        if (dt == null) { 
             return null;
         }
-        Mappings map = dt.getPointerObject().getMappings();
-        switch (oper()){
-            case XT_XML: return eval.getGraphProcessor().format(map, ResultFormatDef.XML_FORMAT);
-            case XT_JSON:return eval.getGraphProcessor().format(map, ResultFormatDef.JSON_FORMAT);
-            case XT_RDF: return eval.getGraphProcessor().format(map, ResultFormatDef.RDF_FORMAT);
-            
-            default:   
-                return dt;
+        
+        if (oper() == XT_JSON && dt.getCode() == IDatatype.STRING) {
+            return DatatypeMap.json(dt.stringValue());
+        } 
+        else if (dt.pointerType() != MAPPINGS || dt.getPointerObject() == null) {
+            return null;
         }
+        else {
+            Mappings map = dt.getPointerObject().getMappings();
+            switch (oper()) {
+                case XT_XML:
+                    return eval.getGraphProcessor().format(map, ResultFormatDef.XML_FORMAT);
+                case XT_JSON:
+                    return eval.getGraphProcessor().format(map, ResultFormatDef.JSON_FORMAT);
+                case XT_RDF:
+                    return eval.getGraphProcessor().format(map, ResultFormatDef.RDF_FORMAT);
+
+                default:
+                    return dt;
+            }
+        }
+        
     }
-    
+
 }

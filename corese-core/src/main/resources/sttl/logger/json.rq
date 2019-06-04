@@ -1,0 +1,38 @@
+#
+# table: key->value
+# generate a JSON SPARQL Result format for graphic chart 
+#
+template st:json(?table) {
+format {
+
+"""{
+"head": { "vars": [ "x", "c"] },
+"results": { "bindings": [
+%s
+]
+}
+}
+"""
+
+group {
+    format {
+        """{
+        "x": { "type": "literal", "value": "%s"},
+        "c": { "type": "typed-literal", "datatype": "http://www.w3.org/2001/XMLSchema#integer", "value": "%s"}
+        }"""
+        ?key ?value
+    }
+    ; separator=',\n'
+}
+
+}
+
+
+}
+where {    
+    select * where {
+        values ?table { UNDEF }
+        values (?key ?value)    { unnest(?table) }
+    }
+    order by desc(?value) ?key
+}

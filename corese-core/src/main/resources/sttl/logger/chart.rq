@@ -1,0 +1,13 @@
+prefix d3: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:chart(?jsonlist, ?key) {
+    format {
+        d3:frameselect.html
+        ?id
+        coalesce(?json, "{ error: 'error when reading st:mappings'}")
+    }
+}
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (us:nbmap(?jsonlist, ?key) as ?table) 
+    bind (st:call-template(st:json, ?table) as ?json)
+}

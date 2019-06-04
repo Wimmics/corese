@@ -1,0 +1,162 @@
+template st:profile {
+}
+where {
+}
+
+# generate a list of json description of IP address
+function us:jsonlist() {
+    let (?map = ds:getPublicDatatypeValue(true),
+         #?host = xt:get(?map, st:host),
+         ?host = us:map(),
+         ?iplist   = us:iplist(?host),
+         ?jsonlist = maplist(us:describe, ?iplist)) {
+        return(?jsonlist)
+    }
+}
+
+function us:jsonlist2() {
+    let (?iplist   = us:hostlist(),
+         ?jsonlist = maplist(us:describe, ?iplist)) {
+        return(?jsonlist)
+    }
+}
+
+function us:hostlist() {
+    let (select (aggregate(?key) as ?list) 
+         where { 
+          service <http://corese.inria.fr/sparql> {
+            bind (ds:getPublicDatatypeValue(true) as ?map)
+            bind (xt:get(?map, st:host) as ?host)
+            values (?key ?value) { unnest(?host) }
+         }}) {
+    ?list
+    }
+}
+
+
+# list of location of IP address
+function us:location(?jsonlist) {
+    maplist(us:locate, ?jsonlist)
+}
+
+# map(ip->nb)
+# generate a list of IP address
+function us:iplist(?map) {
+    maplist(lambda((?key, ?value)) { ?key }, ?map)
+}
+
+# extract location from json description of IP address
+function us:locate(?json) {
+    let (?ip   = xt:get(?json, "ip"),
+         ?pair = xt:get(?json, "loc"),
+         ?lat  = strbefore(?pair, ","),
+         ?lon  = strafter(?pair,  ",")) {
+         xt:list(?ip, xsd:decimal(?lat), xsd:decimal(?lon))
+    }
+}
+
+# call a service to get a json description of IP address
+function us:describe(?ip) {
+ let (?res  = xt:read(concat("https://ipinfo.io/", ?ip)),
+      ?json = xt:json(?res)) {
+      xt:print(?json, "\n") ;
+      return(?json)
+    }
+}
+
+# ?jsonlist: list of json description of IP address
+# generate a map(slotvalue->nb)
+function us:nbmap(?jsonlist, ?key) {
+    let (?map = xt:map()) {
+        for (?json in ?jsonlist) {
+            let (?c = xt:get(?json, ?key)) {
+                xt:set(?map, ?c, coalesce(1 + xt:get(?map, ?c), 1))
+            }
+        } ;
+        #xt:set(?map, "total", xt:size(?jsonlist)) ;
+        return (?map)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function us:map() {
+    let (?map = xt:map()) {
+    map(lambda(?ip, ?map) { xt:set(?map, ?ip, 1) }, 
+    xt:list(
+    "105.156.188.89",
+   "109.17.241.120",
+   "121.241.69.194",
+"130.136.37.229",
+"134.59.132.141", 
+"136.243.17.161",
+"137.224.252.28", 
+"137.204.150.17",
+"144.76.102.243" ,
+"144.76.162.206",
+"144.76.168.111",
+"148.251.237.246",
+"151.42.143.43",
+"157.55.39.110",
+"165.225.104.69",
+"178.154.171.65",
+"185.110.74.166", 
+"178.235.182.213",
+"213.137.178.134",
+"24.4.138.28",
+"46.229.168.134", 
+"46.4.83.150", 
+"5.9.145.132",
+"5.9.17.118", 
+"5.9.94.207", 
+"54.86.66.252",
+"66.249.73.69", 
+"66.249.73.77", 
+"66.249.79.10", 
+"66.249.79.129", 
+"66.249.79.131", 
+"66.249.79.152", 
+"66.249.79.154", 
+"66.249.79.156", 
+"66.249.79.159", 
+"66.249.79.20", 
+"66.249.79.22",
+"66.249.79.26",
+"66.249.79.6", 
+"66.249.79.8", 
+"66.249.93.19", 
+"78.240.108.121", 
+"78.46.156.169", 
+"81.171.107.78", 
+"81.171.98.162",
+"86.246.181.63", 
+"88.198.36.62",
+"88.99.27.172", 
+"90.19.197.46", 
+"90.92.108.226", 
+"90.96.92.252",
+"95.163.255.39" 
+    ), xt:list(?map) );
+        return (?map)
+    }
+}
+
+function us:json(?json, ?key) {
+    let (?str  = strafter(?json, concat("\"", ?key, "\": \"")),
+         ?pair = strbefore(?str, "\"")) {
+         return(?pair)
+    }
+}
+

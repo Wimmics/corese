@@ -1,0 +1,7 @@
+template st:map(?jsonlist) {
+   st:call-template-with(st:navlab, st:maplist, ?list)
+}
+where {
+   bind (us:location(?jsonlist) as ?list)
+}
+

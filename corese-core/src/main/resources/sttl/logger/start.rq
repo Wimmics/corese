@@ -1,0 +1,12 @@
+template st:start {
+   "<h2>Server Log</h2>"
+   
+   st:call-template(st:map,   ?jsonlist)
+   st:call-template(st:chart, ?jsonlist, "country")
+   #st:call-template(st:chart, ?jsonlist, "org")
+}
+where {
+    # list of json descriptions of IP address
+    bind (us:jsonlist2() as ?jsonlist)
+}
+

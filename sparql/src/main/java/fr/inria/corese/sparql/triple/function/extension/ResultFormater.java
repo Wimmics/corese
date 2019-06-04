@@ -38,7 +38,7 @@ public class ResultFormater extends TermEval {
             return null;
         }
         
-        if (oper() == XT_JSON && dt.getCode() == IDatatype.STRING) {
+        if (oper() == XT_JSON && (dt.getCode() == IDatatype.STRING || dt.getCode() == IDatatype.LITERAL)) {
             return DatatypeMap.json(dt.stringValue());
         } 
         else if (dt.pointerType() != MAPPINGS || dt.getPointerObject() == null) {

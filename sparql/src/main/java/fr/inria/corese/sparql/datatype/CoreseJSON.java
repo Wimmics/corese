@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -61,11 +62,16 @@ public class CoreseJSON extends CoreseExtension {
     
     @Override
     public IDatatype get(IDatatype key) {
-        Object val = json.get(key.getLabel());
-        if (val == null) {
+        try {
+            Object val = json.get(key.getLabel());
+            if (val == null) {
+                return null;
+            }
+            return cast(val);
+        }
+        catch (JSONException e) {
             return null;
         }
-        return cast(val);
     }
         
     @Override

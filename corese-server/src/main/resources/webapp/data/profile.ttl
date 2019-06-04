@@ -18,6 +18,21 @@
 # display
 
 
+st:log a st:Server ;
+st:service "log" ;
+st:param [
+    st:mapzoom 2 ;
+    st:mapsize "mapmedium" ;
+    st:export true 
+] ;
+st:workflow [
+    a sw:Workflow ;
+    sw:body (
+        [ a sw:Dataset        ; sw:mode sw:new ] 
+        [ a sw:Transformation ; sw:uri st:logger  ]    
+    )
+]
+
 
 st:dbpedia a st:Profile ;   
   st:param [ 

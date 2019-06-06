@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon May 13 11:33:34 CEST 2019
+Thu Jun 06 09:49:11 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -36,11 +36,57 @@ template st:start {
   st:prolog("@prefix")
   st:nl()
   str(?main)
+  st:nl()
+  st:nl()
+  str(?bnode)
 }
 where {
   bind (st:set(st:allgraph, true)  as ?s1)
+  
+  # pprint URI and subject only bnode
   bind (st:call-template(st:main)  as ?main)
+  
+  # pprint bnode as _:b instead of []
+  bind (st:set(st:reference, true) as ?ref)
+  
+  # pprint other bnodes that are subject and object
+  bind (st:call-template(st:bnode) as ?bnode)
+  
   bind (st:set(st:allgraph, false) as ?s2)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# PPrint bnode that have not already been pprinted
+# PRAGMA: st:get(st:reference) = true
+# bnode pprinted as _:b (and not as []) to handle possible references
+#
+template st:bnode { 
+
+    # repeat test "not already pprint" because apply-templates(?x) may pprint bnode meanwhile
+    if (st:cget(st:bnode, ?x, true), "", concat(st:apply-templates(?x),  " ."))
+    
+    ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    bind (st:focus() as ?x)
+
+    ?x ?p ?y  
+
+    filter isBlank(?x) 
+
+    # bnode not already pprint
+    filter (! st:cget(st:bnode, ?x, true))
+                
+  } 
+  order by if (?p in (rdf:first, rdf:rest), 1, 0) ?x
 }
 
 ]]>
@@ -61,19 +107,10 @@ template st:main {
 where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
-    
     ?x ?p ?y  
-    
-    filter ( 
-      isURI(?x) 
-      || not exists { ?z ?q ?x }
-      || (isBlank(?x) 
-        && not exists { ?x rdf:first ?e }
-        && ( if (exists { ?a ?q ?x . ?b ?r ?x . filter(?a != ?b) }, st:cset(st:refer, ?x, true), false)
-              || exists { ?x ?q ?x } )
-	     )
-    )
-  } order by ?x
+    filter (isURI(?x) || not exists { ?z ?q ?x })          
+  } 
+  order by if (isURI(?x), 0, 1) ?x
 }
 
 ]]>
@@ -124,13 +161,13 @@ where {
   filter (! isURI(?in) || ?l = 0)
   
   bind (
-    isBlank(?y) 
-    && not exists { ?y rdf:first ?e }
-    && ( 
-        (st:get(st:allgraph, true) && exists { ?x ?q ?y . filter(?in != ?x) } )
-        || exists { ?y ?q ?y } 
-        || ?in = ?y
-       )
+    isBlank(?y) && not exists { ?y rdf:first ?e }
+    && (
+    st:get(st:reference, true)
+    || (st:get(st:allgraph, true) && exists { ?x ?q ?y . filter(?in != ?x) } )
+    || exists { ?y ?q ?y } 
+    || ?in = ?y
+    ) 
   as ?refer)      
 }
 order by if (?p = rdf:type, 0, 1) ?p ?y
@@ -269,10 +306,17 @@ where {
   ?r  rdf:first ?e
   filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
   
-  bind (isBlank(?e) && 
-    ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
-    || exists { ?e ?q ?e })
+  bind (
+  (st:get(st:reference, true)  
+    ||
+    (isBlank(?e) && 
+        ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
+        || exists { ?e ?q ?e }))
+    )
     as ?refer)
+    
+  bind (st:cset(st:bnode, ?r, true) as ?bn)
+
 }
 # after URI and blank
 pragma { st:template st:priority 1000 }
@@ -323,24 +367,22 @@ template {
 	st:call-template(st:value, ?in)
   } 
       
-  if (?refer, "", 
-  if (?nested, "]", "]"))
+  if (?refer, "", "]")
 }
 where {
   ?in ?p ?y   
   filter isBlank(?in)
   filter not exists { ?in rdf:first ?e } 
-    
-  bind (exists { ?a ?q ?in } as ?nested)
-  
+      
   bind (
-    ?nested 
-    && (
-    (st:get(st:allgraph, true) && coalesce(st:cget(st:refer, ?in), false) )
-    #exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
-	|| exists { ?in ?q ?in }
-       )
+    st:get(st:reference, true)
+    ||
+    (st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
+	|| exists { ?in ?q ?in } 
+    
   as ?refer)
+  
+  bind (st:cset(st:bnode, ?in, true) as ?bn)
   
 }
 limit 1

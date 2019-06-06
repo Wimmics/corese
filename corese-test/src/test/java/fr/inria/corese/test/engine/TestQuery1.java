@@ -254,7 +254,127 @@ public class TestQuery1 {
         return graph;
     }
     
+     
     
+        @Test
+    public void testTTL1() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {  "
+                + "_:b rdf:value (_:b)  "
+                + "}";
+        String q = "select (st:apply-templates-with(st:turtle) as ?t) where { }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map.getValue("?t").stringValue());
+        String str = map.getValue("?t").stringValue();
+        Graph gg = Graph.create();
+        Load ld = Load.create(gg);
+        ld.loadString(str, Load.TURTLE_FORMAT);
+        
+        QueryProcess ex = QueryProcess.create(gg);
+        String qq = "select * where {"
+                + "?s ?p (?s) "
+                + "}";
+        
+        Mappings m1 = exec.query(qq);
+        Mappings m2 = ex.query(qq);
+        assertEquals(m1.size(), m2.size());
+    }
+    
+    
+        @Test
+    public void testTTL2() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {  "
+                + "_:b rdf:value _:b  "
+                + "}";
+        String q = "select (st:apply-templates-with(st:turtle) as ?t) where { }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map.getValue("?t").stringValue());
+        String str = map.getValue("?t").stringValue();
+        Graph gg = Graph.create();
+        Load ld = Load.create(gg);
+        ld.loadString(str, Load.TURTLE_FORMAT);
+        
+        QueryProcess ex = QueryProcess.create(gg);
+        String qq = "select * where {"
+                + "?s ?p ?s  "
+                + "}";
+        
+       Mappings m1 = exec.query(qq);
+        Mappings m2 = ex.query(qq);
+        assertEquals(m1.size(), m2.size());
+    }
+    
+    
+         @Test
+    public void testTTL3() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {  "
+                + "_:b rdf:value [rdf:value _:b]  "
+                + "}";
+        String q = "select (st:apply-templates-with(st:turtle) as ?t) where { }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map.getValue("?t").stringValue());
+        String str = map.getValue("?t").stringValue();
+        Graph gg = Graph.create();
+        Load ld = Load.create(gg);
+        ld.loadString(str, Load.TURTLE_FORMAT);
+        
+        QueryProcess ex = QueryProcess.create(gg);
+        String qq = "select * where {"
+                + "?s ?p [ rdf:value ?s]  "
+                + "}";
+        
+        Mappings m1 = exec.query(qq);
+        Mappings m2 = ex.query(qq);
+        assertEquals(m1.size(), m2.size());
+    }
+    
+    
+          @Test
+    public void testTTL4() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+              String i = "insert data {  "
+                      + "_:a rdf:value _:e "
+                      + "_:b rdf:value _:e "
+                      + "_:e rdf:value _:b "
+                      + "}";
+              
+        String q = "select (st:apply-templates-with(st:turtle) as ?t) where { }";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map.getValue("?t").stringValue());
+        String str = map.getValue("?t").stringValue();
+        Graph gg = Graph.create();
+        Load ld = Load.create(gg);
+        ld.loadString(str, Load.TURTLE_FORMAT);
+        
+        QueryProcess ex = QueryProcess.create(gg);
+        String qq = "select * where {"
+                + "?a rdf:value ?e "
+                + "?b rdf:value ?e "
+                + "?e rdf:value ?b   "
+                + "}";
+        
+        Mappings m1 = exec.query(qq);
+        Mappings m2 = ex.query(qq);
+        assertEquals(m1.size(), m2.size());
+    }
     
         @Test
     public void testOPP2() throws EngineException, LoadException {
@@ -5989,7 +6109,7 @@ public class TestQuery1 {
                 + "}";
         Mappings map = exec.query(q);
         ////System.out.println(map.getTemplateStringResult());
-        assertEquals(256, map.getTemplateStringResult().length());
+        assertEquals(258, map.getTemplateStringResult().length());
 
 
     }
@@ -6270,17 +6390,17 @@ public class TestQuery1 {
         Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
         String str = t.transform();
        //System.out.println("result:\n" + str);
-        assertEquals(4768, str.length());
+        assertEquals(4770, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
         str = t.transform();
         ////System.out.println(str);
-        assertEquals(3870, str.length());
+        assertEquals(3872, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE);
         str = t.transform();
         ////System.out.println(str);
-        assertEquals(8425, str.length());
+        assertEquals(8427, str.length());
     }
 
     @Test
@@ -6298,17 +6418,17 @@ public class TestQuery1 {
         Mappings map = exec.query(t1);
         String str = map.getTemplateStringResult();
         ////System.out.println(str);
-        assertEquals(4768, str.length());
+        assertEquals(4770, str.length());
 
         map = exec.query(t2);
         str = map.getTemplateStringResult();
         //System.out.println(str);
-        assertEquals(3870, str.length());
+        assertEquals(3872, str.length());
 
         map = exec.query(t3);
         str = map.getTemplateStringResult();
         ////System.out.println(str);
-        assertEquals(8425, str.length());
+        assertEquals(8427, str.length());
     }
 
     @Test
@@ -6382,7 +6502,7 @@ public class TestQuery1 {
 
         map = exec.query(t2);
 
-        assertEquals(9436, map.getTemplateResult().getLabel().length());
+        assertEquals(9438, map.getTemplateResult().getLabel().length());
 
     }
 

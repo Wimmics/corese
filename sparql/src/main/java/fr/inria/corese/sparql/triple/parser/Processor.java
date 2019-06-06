@@ -108,6 +108,7 @@ public class Processor {
         public static final String XT_FIRST    = EXT + "first";
         public static final String XT_REST     = EXT + "rest";
         public static final String XT_GET      = EXT + "get";
+        public static final String XT_HAS      = EXT + "has";
         public static final String XT_REMOVE   = EXT + "remove";
         public static final String XT_REMOVE_INDEX = EXT + "removeindex";
         public static final String XT_GEN_REST  = EXT + "grest";
@@ -686,6 +687,7 @@ public class Processor {
 		defoper(XT_FIRST,       ExprType.XT_FIRST);
 		defoper(XT_REST,        ExprType.XT_REST);
 		defoper(XT_SELF,        ExprType.SELF);
+		defoper(XT_HAS,         ExprType.XT_HAS);
 		defoper(XT_GET,         ExprType.XT_GET);
 		defoper(XT_REMOVE,      ExprType.XT_REMOVE);
 		defoper(XT_REMOVE_INDEX,ExprType.XT_REMOVE_INDEX);
@@ -765,6 +767,7 @@ public class Processor {
 		defoper(QNAME,          ExprType.QNAME);
                 defoper(EXT+"contract", ExprType.QNAME);
 		defoper(EXT+"expand",   ExprType.XT_EXPAND);
+		defoper(EXT+"define",   ExprType.XT_DEFINE);
                 
 		defoper(PROVENANCE, 	ExprType.PROVENANCE);
  		defoper(INDEX,          ExprType.INDEX);

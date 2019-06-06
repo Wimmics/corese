@@ -33,6 +33,9 @@ public class Namespace extends TermEval {
         }
 
         switch (oper()) {
+            case ExprType.XT_DEFINE:
+                return define(dt, eval, b, env, p);
+                
             case ExprType.XT_EXPAND: return uri(env, dt);
             case ExprType.QNAME:
                 if (arity() == 2) {
@@ -44,6 +47,15 @@ public class Namespace extends TermEval {
 
         return null;
 
+    }
+    
+    IDatatype define(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) {
+        IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);
+        if (dt2 == null) {
+            return null;
+        }
+        nsm(env).definePrefix(dt.getLabel(), dt2.getLabel());
+        return dt2;
     }
     
     

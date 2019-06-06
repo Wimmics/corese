@@ -446,6 +446,11 @@ public class CoreseDatatype
     public Iterable getLoop() {
         return null;
     }
+    
+    @Override
+    public IDatatype has(IDatatype key) {
+        return null;
+    }
 
     @Override
     public IDatatype get(int n) {

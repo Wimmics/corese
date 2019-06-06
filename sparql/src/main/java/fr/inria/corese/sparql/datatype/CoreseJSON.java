@@ -61,6 +61,11 @@ public class CoreseJSON extends CoreseExtension {
     }
     
     @Override
+    public IDatatype has(IDatatype key) {
+        return json.has(key.getLabel()) ? TRUE : FALSE;
+    }
+    
+    @Override
     public IDatatype get(IDatatype key) {
         try {
             Object val = json.get(key.getLabel());

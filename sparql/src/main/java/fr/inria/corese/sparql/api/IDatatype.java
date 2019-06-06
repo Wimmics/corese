@@ -96,11 +96,11 @@ public interface IDatatype
 
     
     Iterable getLoop();
-
+    IDatatype has(IDatatype dt);
     IDatatype get(int n);
     IDatatype get(IDatatype name);
     IDatatype set(IDatatype name, IDatatype value);
-   
+    
 
     int size();
          

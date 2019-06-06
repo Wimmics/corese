@@ -384,6 +384,7 @@ public class Term extends Expression {
             case ExprType.XT_GEN_REST:
                 return new Rest(name);
                 
+            case ExprType.XT_HAS:
             case ExprType.XT_GET:
                 return new Get(name);
             case ExprType.XT_REVERSE:
@@ -452,6 +453,7 @@ public class Term extends Expression {
                 
             case ExprType.QNAME:
             case ExprType.XT_EXPAND:
+            case ExprType.XT_DEFINE:
                 return new Namespace(name);
                 
             //case ExprType.STL_INDEX:

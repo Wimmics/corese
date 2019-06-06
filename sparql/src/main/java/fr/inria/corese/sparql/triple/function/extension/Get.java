@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
+import static fr.inria.corese.kgram.api.core.ExprType.XT_HAS;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -30,8 +31,11 @@ public class Get extends BinaryFunction {
         if (dt == null || dtind == null) {
             return null;
         }
-               
-        return get(dt, dtind);
+           
+        switch (oper()) {
+            case XT_HAS: return dt.has(dtind);
+            default: return get(dt, dtind);
+        }
     }
        
     /**

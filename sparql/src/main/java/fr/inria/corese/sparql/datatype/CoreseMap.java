@@ -88,6 +88,11 @@ public class CoreseMap extends CoreseExtension {
     }
     
     @Override
+    public IDatatype has(IDatatype key) {
+        return map.get(key) == null ? FALSE : TRUE;
+    }
+    
+    @Override
     public IDatatype get(IDatatype key) {
         return map.get(key);
     }

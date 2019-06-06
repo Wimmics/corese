@@ -1,0 +1,27 @@
+#
+# PPrint bnode that have not already been pprinted
+# PRAGMA: st:get(st:reference) = true
+# bnode pprinted as _:b (and not as []) to handle possible references
+#
+template st:bnode { 
+
+    # repeat test "not already pprint" because apply-templates(?x) may pprint bnode meanwhile
+    if (st:cget(st:bnode, ?x, true), "", concat(st:apply-templates(?x),  " ."))
+    
+    ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    bind (st:focus() as ?x)
+
+    ?x ?p ?y  
+
+    filter isBlank(?x) 
+
+    # bnode not already pprint
+    filter (! st:cget(st:bnode, ?x, true))
+                
+  } 
+  order by if (?p in (rdf:first, rdf:rest), 1, 0) ?x
+}
+

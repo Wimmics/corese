@@ -15,10 +15,17 @@ where {
   ?r  rdf:first ?e
   filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
   
-  bind (isBlank(?e) && 
-    ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
-    || exists { ?e ?q ?e })
+  bind (
+  (st:get(st:reference, true)  
+    ||
+    (isBlank(?e) && 
+        ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
+        || exists { ?e ?q ?e }))
+    )
     as ?refer)
+    
+  bind (st:cset(st:bnode, ?r, true) as ?bn)
+
 }
 # after URI and blank
 pragma { st:template st:priority 1000 }

@@ -6,10 +6,22 @@ template st:start {
   st:prolog("@prefix")
   st:nl()
   str(?main)
+  st:nl()
+  st:nl()
+  str(?bnode)
 }
 where {
   bind (st:set(st:allgraph, true)  as ?s1)
+  
+  # pprint URI and subject only bnode
   bind (st:call-template(st:main)  as ?main)
+  
+  # pprint bnode as _:b instead of []
+  bind (st:set(st:reference, true) as ?ref)
+  
+  # pprint other bnodes that are subject and object
+  bind (st:call-template(st:bnode) as ?bnode)
+  
   bind (st:set(st:allgraph, false) as ?s2)
 }
 

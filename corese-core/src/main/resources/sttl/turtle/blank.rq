@@ -9,24 +9,22 @@ template {
 	st:call-template(st:value, ?in)
   } 
       
-  if (?refer, "", 
-  if (?nested, "]", "]"))
+  if (?refer, "", "]")
 }
 where {
   ?in ?p ?y   
   filter isBlank(?in)
   filter not exists { ?in rdf:first ?e } 
-    
-  bind (exists { ?a ?q ?in } as ?nested)
-  
+      
   bind (
-    ?nested 
-    && (
-    (st:get(st:allgraph, true) && coalesce(st:cget(st:refer, ?in), false) )
-    #exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
-	|| exists { ?in ?q ?in }
-       )
+    st:get(st:reference, true)
+    ||
+    (st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
+	|| exists { ?in ?q ?in } 
+    
   as ?refer)
+  
+  bind (st:cset(st:bnode, ?in, true) as ?bn)
   
 }
 limit 1

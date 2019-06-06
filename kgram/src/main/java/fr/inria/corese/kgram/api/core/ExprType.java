@@ -366,6 +366,8 @@ public interface ExprType {
         public static int XT_NODE        = 471;
         public static int XT_VERTEX      = 472;
         public static int XT_JSON_OBJECT = 473;
+        public static int XT_HAS         = 474;
+        public static int XT_DEFINE      = 475;
         
      
         public static int SLICE       = 500;

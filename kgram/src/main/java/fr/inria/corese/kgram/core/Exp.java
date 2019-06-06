@@ -1354,7 +1354,10 @@ public class Exp extends PointerObject
                 break;
 
             case BIND:
-                share(getNode(), filterVar, expVar);
+                // bind may not bind the variable (in case of error) 
+                // hence variable cannot be considered as bound for filter
+                //share(getNode(), filterVar, expVar);
+                break;
 
             case EDGE:
             case PATH:

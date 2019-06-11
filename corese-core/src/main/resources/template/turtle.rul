@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jun 06 09:49:11 CEST 2019
+Sat Jun 08 17:43:58 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -107,8 +107,11 @@ template st:main {
 where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
+    bind (bnode() as ?z)
+    bind (bnode() as ?q)
     ?x ?p ?y  
-    filter (isURI(?x) || not exists { ?z ?q ?x })          
+    #filter (isURI(?x) || not exists { ?z ?q ?x })   
+    filter (isURI(?x) || ! xt:exists(?z, ?q, ?x))          
   } 
   order by if (isURI(?x), 0, 1) ?x
 }
@@ -304,14 +307,18 @@ template {
 where {
   ?in rdf:rest* ?r
   ?r  rdf:first ?e
-  filter (?r != rdf:nil && not exists { rdf:nil rdf:rest* ?r })
-  
+  filter (?r != rdf:nil)
+
   bind (
   (st:get(st:reference, true)  
     ||
     (isBlank(?e) && 
-        ((st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
-        || exists { ?e ?q ?e }))
+        (
+        #(st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
+        (st:get(st:allgraph, true) &&  xt:mindegree(?e, 1, 2))
+        || let (?qq = bnode()) { xt:exists(?e, ?qq, ?e) }
+        #exists { ?e ?q ?e }
+        ))
     )
     as ?refer)
     
@@ -372,13 +379,15 @@ template {
 where {
   ?in ?p ?y   
   filter isBlank(?in)
-  filter not exists { ?in rdf:first ?e } 
-      
+  bind (bnode() as ?e)
+  filter (! xt:exists(?in, rdf:first, ?e) )
+     
   bind (
     st:get(st:reference, true)
     ||
-    (st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
-	|| exists { ?in ?q ?in } 
+    #(st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
+    (st:get(st:allgraph, true) && xt:mindegree(?in, 1, 2))
+	|| xt:exists(?in, ?e, ?in) 
     
   as ?refer)
   

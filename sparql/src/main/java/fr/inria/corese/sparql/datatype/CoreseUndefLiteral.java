@@ -66,6 +66,11 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     public boolean isUndefined() {
         return true;
     }
+    
+    @Override
+    public boolean isGeneralized() {
+        return true;
+    }
 
     @Override
     public boolean isTrue() throws CoreseDatatypeException {
@@ -140,7 +145,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     }
 
     boolean isCompatible(IDatatype dt) {
-        return dt.isUndefined() && getDatatypeURI().equals(dt.getDatatypeURI());
+        return dt.isGeneralized()&& getDatatypeURI().equals(dt.getDatatypeURI());
     }
 
 //    /**

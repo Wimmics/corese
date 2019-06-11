@@ -476,6 +476,12 @@ public class CoreseDatatype
     public boolean isUndefined() {
         return false;
     }
+    
+    // isUndefined or isExtension
+    @Override
+    public boolean isGeneralized() {
+        return false;
+    }
 
     @Override
     public boolean isBlank() {

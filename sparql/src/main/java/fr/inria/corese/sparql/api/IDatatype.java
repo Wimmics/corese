@@ -75,6 +75,7 @@ public interface IDatatype
     boolean isXMLLiteral();
     
     boolean isUndefined();
+    boolean isGeneralized(); // isExtension or isUndefined
     
     boolean isArray();
     

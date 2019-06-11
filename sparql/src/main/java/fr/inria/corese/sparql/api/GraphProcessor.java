@@ -42,6 +42,9 @@ public interface GraphProcessor {
    
     IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
     
+    IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index);
+    IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype min);
+
     IDatatype entailment(Environment env, Producer p, IDatatype graph);
     
     IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param);

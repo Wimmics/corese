@@ -23,6 +23,11 @@ public class CoreseExtension extends CoreseUndefLiteral {
     } 
     
     @Override
+    public boolean isUndefined() {
+        return false;
+    }
+    
+    @Override
     public IDatatype display() {
         return DatatypeMap.createUndef(getContent(), getDatatypeURI());
     }

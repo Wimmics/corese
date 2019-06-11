@@ -80,6 +80,11 @@ public class CoresePointer extends CoreseUndefLiteral {
         return pointerType() != PointerType.UNDEF;
     }
     
+     @Override
+    public boolean isUndefined() {
+        return ! isExtension();
+    }
+    
     @Override
     public Object getObject(){
         // use case: pobject = PointerObject(object)

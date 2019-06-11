@@ -10,6 +10,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.STL_INDEX;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_DEGREE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
@@ -28,6 +29,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
 
 /**
  *
@@ -88,6 +90,12 @@ public class GraphSpecificFunction extends LDScript {
                 
             case XT_EXISTS:
                 return exists(proc, env, p, param);  
+                
+            case XT_DEGREE:
+                return degree(proc, env, p, param); 
+                
+            case XT_MINDEGREE:
+                return mindegree(proc, env, p, param);  
                 
             case XT_MINUS:
             case XT_JOIN:
@@ -171,7 +179,35 @@ public class GraphSpecificFunction extends LDScript {
 
         }
     }
+    
+    IDatatype degree(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        IDatatype node, pred=null, index=null;
+        switch (param.length) {
+            case 1: node = param[0]; break;
+            case 2: node = param[0]; 
+            if (param[1].isNumber()){index = param[1];} else {pred = param[1];};
+            break;
+            case 3: node = param[0]; pred = param[1]; index = param[2];  break;
+            default: return null;
+        }
+        return proc.degree(env, p, node, pred, index);
+    }
   
-         
+    IDatatype mindegree(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        IDatatype node, pred=null, index=null, min=null;
+        switch (param.length) {
+            case 2: node = param[0]; 
+            min = param[1]; break;
+            case 3: node = param[0]; 
+            if (param[1].isNumber()){index = param[1];} else {pred = param[1];};
+            min = param[2];
+            break;
+            case 4: node = param[0]; pred = param[1]; index = param[2];  
+            min = param[3];
+            break;           
+            default: return null;
+        }
+        return proc.mindegree(env, p, node, pred, index, min);
+    }     
 }
 

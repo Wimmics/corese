@@ -836,6 +836,60 @@ public class PluginImpl
         return FALSE;
     }
     
+    @Override
+    public IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype m) {
+        int min = m.intValue();
+        if (index == null) {
+            // input + output edges
+            int d = degree(env, p, node, pred, 0, min) + degree(env, p, node, pred, 1, min);
+            return DatatypeMap.newInstance(d>=min);
+        }
+        int d = degree(env, p, node, pred, index.intValue(), min);
+        return DatatypeMap.newInstance(d>=min);
+    }
+    
+    @Override
+    public IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index) { 
+        int min = Integer.MAX_VALUE;
+        if (index == null) {
+            // input + output edges
+            int d = degree(env, p, node, pred, 0, min) + degree(env, p, node, pred, 1, min);
+            return DatatypeMap.newInstance(d);
+        }
+        int d = degree(env, p, node, pred, index.intValue(), min);
+        return DatatypeMap.newInstance(d);
+    }
+        
+    int degree(Environment env, Producer p, IDatatype node, IDatatype pred, int n, int min) {
+        IDatatype sub = (n==0)?node:null;
+        IDatatype obj = (n==1)?node:null;
+        DataProducer dp = new DataProducer(getGraph(p));
+        Node graph = env.getGraphNode();
+        if (graph != null) {
+            dp = dp.from(graph);
+        }
+        int count = 0;
+        
+        for (Edge edge : dp.iterate(sub, pred, obj)) {
+            if (edge == null) {
+                break;
+            }
+            if (node.equals(edge.getNode(n).getDatatypeValue())) {
+                count++;
+                if (count >= min) {
+                    break;
+                }
+            }
+            else {
+                break;
+            }
+        }
+        return count;
+    }
+    
+    
+    
+    
     // name of  current named graph 
     IDatatype name(Environment env) {
         if (env.getGraphNode() == null) {

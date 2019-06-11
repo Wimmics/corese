@@ -128,12 +128,18 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         }
         
         if (ns == null) {
+            // subject is bnode variable
             if (no == null) {
+                // object is bnode variable
+                if (s != null && o != null && s.equals(o)) {
+                    return iterate(np).filter(new DataFilterFactory().filter(ExprType.EQ));
+                }
                 return iterate(np);
             } else {
                 return iterate(np, no, 1);
             }
         } else if (no == null) {
+            // object is bnode variable
             return iterate(np, ns, 0);
         } else {
             return iterate(np, ns, 0).filter(new DataFilterFactory().filter(ExprType.EQ, o));

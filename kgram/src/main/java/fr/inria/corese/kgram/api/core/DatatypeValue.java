@@ -41,5 +41,7 @@ public interface DatatypeValue {
     
     boolean isUndefined();
     
+    boolean isExtension();
+    
     Object getObject();
 }

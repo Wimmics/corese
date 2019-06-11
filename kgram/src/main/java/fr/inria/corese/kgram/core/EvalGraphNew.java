@@ -129,7 +129,7 @@ public class EvalGraphNew {
         Node var = null, target = graph;
         
         if (external) {
-            if (graphNode.isVariable() && graph.getDatatypeValue().isUndefined()) {
+            if (graphNode.isVariable() && graph.getDatatypeValue().isExtension()) {
                 var    = graphNode;
             }
             else {

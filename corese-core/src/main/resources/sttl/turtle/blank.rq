@@ -14,13 +14,15 @@ template {
 where {
   ?in ?p ?y   
   filter isBlank(?in)
-  filter not exists { ?in rdf:first ?e } 
-      
+  bind (bnode() as ?e)
+  filter (! xt:exists(?in, rdf:first, ?e) )
+     
   bind (
     st:get(st:reference, true)
     ||
-    (st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
-	|| exists { ?in ?q ?in } 
+    #(st:get(st:allgraph, true) && exists { ?a ?q ?in . ?b ?r ?in  filter(?a != ?b) })
+    (st:get(st:allgraph, true) && xt:mindegree(?in, 1, 2))
+	|| xt:exists(?in, ?e, ?in) 
     
   as ?refer)
   

@@ -82,7 +82,7 @@ public class QuerySolverOverload {
     }
     
     boolean datatypeOverload(IDatatype dt1, IDatatype dt2) {
-        return dt1.isUndefined() && dt2.isUndefined() 
+        return dt1.isGeneralized()&& dt2.isGeneralized()
             && (dt1.getDatatypeURI().equals(dt2.getDatatypeURI()) || compatible(dt1, dt2));
     }
     

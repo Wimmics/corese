@@ -370,6 +370,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         eval.init(q);
         eval.setVisitor(currentEval.getVisitor());
         eval.getMemory().setBind(env.getBind());
+        eval.getMemory().setGraphNode(env.getGraphNode());
         return eval;
     }
 

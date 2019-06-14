@@ -254,7 +254,70 @@ public class TestQuery1 {
         return graph;
     }
     
+  @Test
+    public void testexist() throws EngineException, LoadException {
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        String i = "insert data {  "
+                + "graph us:g1 { "
+                + "rdf:type rdf:type   rdf:Property "
+                + "rdf:type owl:sameAs rdf:type "
+                + "rdf:type us:test  us:test "
+                + "us:test us:test us:test "
+                + "}"
+                + "}";
+        
+        String q = "select * where {"
+                + "bind (bnode() as ?bn)"
+
+                + "bind (xt:exists(rdf:type,  rdf:type, rdf:Property)  as ?c1)"
+                + "bind (xt:exists(?bn,  rdf:type, rdf:Property)    as ?c2)"
+                + "bind (xt:exists(?bn,  rdf:type, ?bn)             as ?c3)"
+                + "bind (xt:exists(?bn,  bnode(), ?bn)              as ?c4)"
+                + "bind (xt:exists(?bn, ?bn)                        as ?c5)"
+                
+                + "bind (xt:exists(?bn,  ?bn, rdf:Property) as ?b1)"
+                + "bind (xt:exists(bnode(),  ?bn,  ?bn)     as ?b2)"
+                + "bind (xt:exists(?bn,  ?bn,  ?bn)         as ?b3)"
+                
+                + "graph kg:default {"
+                + "bind (bnode() as ?bb)"
+                + "bind (xt:exists(?bb,  ?bb, rdf:Property) as ?a1)"
+                + "bind (xt:exists(?bb,  bnode(), ?bb)      as ?a2)"
+                + "bind (xt:exists(bnode(),  ?bb,  ?bb)     as ?a3)"
+                + "bind (xt:exists(bnode(),  bnode(),  bnode())  as ?a4)"
+                + "bind (xt:exists(?bb,  ?bb,  ?bb)         as ?a5)"
+                + "}"
+                
+                + "}"
+                
+               ;
      
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        // ?c1 = true; ?c2 = true; ?c3 = false; ?c4 = true; ?c5 = true; 
+        // ?b1 = true; ?b3 = true; ?b4 = true;  
+        // ?a1 = false; ?a2 = false; ?a3 = false; ?a4 = false; ?a5 = false;
+        assertEquals(true, map.getValue("?c1").booleanValue());
+        assertEquals(true, map.getValue("?c2").booleanValue());
+        assertEquals(false, map.getValue("?c3").booleanValue());
+        assertEquals(true, map.getValue("?c4").booleanValue());
+        assertEquals(true, map.getValue("?c5").booleanValue());
+        
+        assertEquals(true, map.getValue("?b1").booleanValue());
+        assertEquals(true, map.getValue("?b2").booleanValue());
+        assertEquals(true, map.getValue("?b3").booleanValue());
+        
+        assertEquals(false, map.getValue("?a1").booleanValue());
+        assertEquals(false, map.getValue("?a2").booleanValue());
+        assertEquals(false, map.getValue("?a3").booleanValue());
+        assertEquals(false, map.getValue("?a4").booleanValue());
+        assertEquals(false, map.getValue("?a5").booleanValue());        
+        
+    }    
     
         @Test
     public void testTTL1() throws EngineException, LoadException {

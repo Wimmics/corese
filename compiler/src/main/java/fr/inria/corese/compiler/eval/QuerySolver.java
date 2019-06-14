@@ -22,6 +22,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -260,16 +261,21 @@ public class QuerySolver  implements SPARQLEngine {
 	}
 	
 	public Mappings eval(Query query){
-            return query(query, null);
+            return query((Node)null, query, null);
         }
         
         @Override
         public Mappings eval(Query query, Mapping m, Producer p) {
-            return query(query, m);
+            return query((Node)null, query, m);
+        }
+        
+        @Override
+        public Mappings eval(Node gNode, Query query, Mapping m, Producer p) {
+            return query(gNode, query, m);
         }
 
         public Mappings eval(Query query, Mapping m) {
-            return query(query, m);
+            return query((Node)null, query, m);
         }
         
         
@@ -277,6 +283,10 @@ public class QuerySolver  implements SPARQLEngine {
 	 * Core QueryExec processor
 	 */
 	public Mappings query(Query query, Mapping m){
+            return query((Node)null, query, m);
+        }
+        
+        public Mappings query(Node gNode, Query query, Mapping m){
 		init(query);
 		debug(query);
 		
@@ -292,7 +302,7 @@ public class QuerySolver  implements SPARQLEngine {
                 tune(kgram, query);
                 
                 before(query);
-                Mappings map  = kgram.query(query, m);
+                Mappings map  = kgram.query(gNode, query, m);
                 //TODO: check memory usage when storing Eval
                 map.setEval(kgram);
                 after(map);

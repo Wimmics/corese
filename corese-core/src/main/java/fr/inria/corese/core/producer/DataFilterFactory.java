@@ -142,7 +142,8 @@ public class DataFilterFactory {
     public DataFilterFactory node(int test, int index, double value){
         return filter(test, value, index);
     } 
-     public DataFilterFactory node(int test, int index, String value){
+    
+    public DataFilterFactory node(int test, int index, String value){
         return filter(test, value, index);
     } 
     

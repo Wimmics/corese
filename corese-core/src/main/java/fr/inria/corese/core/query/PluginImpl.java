@@ -830,7 +830,11 @@ public class PluginImpl
     
     @Override
     public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        for (Edge ent : new DataProducer(getGraph(p)).iterate(subj, pred, obj)) {
+        DataProducer dp = new DataProducer(getGraph(p));
+        if (env.getGraphNode() != null) {
+            dp.from(env.getGraphNode());
+        }
+        for (Edge ent : dp.iterate(subj, pred, obj)) {
             return (ent == null) ? FALSE :TRUE;
         }
         return FALSE;
@@ -908,22 +912,25 @@ public class PluginImpl
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) { 
         if (subj==null || obj==null || subj.isBlank() || obj.isBlank()) {
-            return DatatypeMap.createObject(getDataProducer(p, subj, pred, obj));
+            return DatatypeMap.createObject(getDataProducer(env, p, subj, pred, obj));
         }
-        return edgeList(p, subj, pred, obj);
+        return edgeList(env, p, subj, pred, obj);
     }
     
     public IDatatype edge(IDatatype subj, IDatatype pred) {   
-       return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, null));        
+       return DatatypeMap.createObject(getDataProducer(null, getProducer(), subj, pred, null));        
     }
     
     public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) { 
-        return DatatypeMap.createObject(getDataProducer(getProducer(), subj, pred, obj));  
+        return DatatypeMap.createObject(getDataProducer(null, getProducer(), subj, pred, obj));  
     }
     
     // iterator may return null value at the end
-    IDatatype edgeList(Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        DataProducer dp = getDataProducer(p, subj, pred, obj);
+    IDatatype edgeList(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+        DataProducer dp = getDataProducer(env, p, subj, pred, obj);
+        if (env != null && env.getGraphNode() != null) {
+            dp.from(env.getGraphNode());
+        }
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge edge : dp) {
             if (edge != null) {
@@ -933,7 +940,7 @@ public class PluginImpl
         return DatatypeMap.newList(list);
     }
           
-    DataProducer getDataProducer(Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
+    DataProducer getDataProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
        return new DataProducer(getGraph(p)).iterate(subj, pred, obj);       
     } 
     

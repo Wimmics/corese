@@ -127,24 +127,56 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
             }
         }
         
-        if (ns == null) {
-            // subject is bnode variable
-            if (no == null) {
-                // object is bnode variable
-                if (s != null && o != null && s.equals(o)) {
-                    return iterate(np).filter(new DataFilterFactory().filter(ExprType.EQ));
-                }
-                return iterate(np);
+        DataProducer dp;
+        DataFilterFactory df = new DataFilterFactory() ;
+
+        if (isVariable(ns)) {
+            if (isVariable(no)) {
+                dp = iterate(np);
             } else {
-                return iterate(np, no, 1);
+                dp = iterate(np, no, 1);
             }
-        } else if (no == null) {
-            // object is bnode variable
-            return iterate(np, ns, 0);
+        } else if (isVariable(no)) {
+            dp = iterate(np, ns, 0);
         } else {
-            return iterate(np, ns, 0).filter(new DataFilterFactory().filter(ExprType.EQ, o));
+            dp = iterate(np, ns, 0); 
         }
-    } 
+
+        if (isVariable(ns, s)) { 
+            if (isPropertyVariable(p) && s.equals(p)) {
+                df.edge(ExprType.EQ, DataFilter.SUBJECT, DataFilter.PROPERTY);
+            }
+            if (isVariable(no, o) && s.equals(o)) {
+                df.edge(ExprType.EQ, DataFilter.SUBJECT, DataFilter.OBJECT);
+            }
+        } 
+        if (isVariable(no, o)) {
+            if (isPropertyVariable(p) && o.equals(p)) {
+                df.edge(ExprType.EQ, DataFilter.OBJECT, DataFilter.PROPERTY);
+            }
+        }
+        if (!isVariable(ns) && !isVariable(no)) {
+            df.filter(ExprType.EQ, o);
+        }
+
+        if (df != null && df.getFilter()!=null) {
+            dp.filter(df);
+        }
+        return dp;
+    }
+    
+    boolean isPropertyVariable(IDatatype dt) {
+        return dt != null && dt.isBlank();
+    }
+    
+    boolean isVariable(Node n) {
+        return n == null;
+    }
+    
+    // subject/object
+    boolean isVariable(Node n, IDatatype dt) {
+        return isVariable(n) && dt!=null && dt.isBlank();
+    }
     
     /**
      * Iterate predicate from named
@@ -457,7 +489,7 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
      * @param filter the filter to set
      */
     public void setFilter(DataFilter f) {
-        if (filter == null){
+        if (filter == null || f == null){
             filter = f;
         }
         else if (filter.isBoolean()){

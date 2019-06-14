@@ -78,7 +78,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-05-01";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-06-06";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -127,7 +127,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
             iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, irdfxml, ijson, itrig, ispin, iowl, itypecheck,
+            iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, itypecheck,
             ientailment, irule, isystem, iprovenance, iindex, ifunction, ical;
     HashMap<Object, String> itable;
     private JCheckBox checkBoxQuery;
@@ -486,6 +486,7 @@ public class MainFrame extends JFrame implements ActionListener {
         iprovenance = defItem("Provenance", DEFAULT_PROVENANCE_QUERY);
 
         iturtle = defItem("Turtle", DEFAULT_TEMPLATE_QUERY);
+        in3 = defItem("NTriple", "n3.rq");
         irdfxml = defItem("RDF/XML", DEFAULT_RDF_XML_QUERY);
         ijson = defItem("JSON", "json.rq");
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
@@ -616,6 +617,7 @@ public class MainFrame extends JFrame implements ActionListener {
         explainMenu.add(iindex);
 
         templateMenu.add(iturtle);
+        templateMenu.add(in3);
         templateMenu.add(irdfxml);
         templateMenu.add(ijson);
         templateMenu.add(itrig);

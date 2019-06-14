@@ -149,7 +149,7 @@ public class UpdateProcess {
         //Mappings map = exec.query(q, mm);
         // insert using g where
         // if g is external graph, focus on g
-        Mappings map = exec.basicQuery(q, mm);
+        Mappings map = exec.basicQuery(null, q, mm);
                
         // PRAGMA: update can be both delete & insert
         if (q.isDelete()) {

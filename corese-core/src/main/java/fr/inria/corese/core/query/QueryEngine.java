@@ -267,7 +267,7 @@ public class QueryEngine implements Engine {
 
     public Mappings process(Query q, Mapping m) {
         try {
-            Mappings map = getQueryProcess().query(q, m, null);
+            Mappings map = getQueryProcess().query(null, q, m, null);
             return map;
         } catch (EngineException e) {
             // TODO Auto-generated catch block

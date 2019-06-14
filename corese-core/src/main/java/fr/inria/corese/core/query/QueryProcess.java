@@ -383,7 +383,7 @@ public class QueryProcess extends QuerySolver {
     
     Mappings doQuery(String squery, Mapping map, Dataset ds) throws EngineException {
         Query q = compile(squery, ds);
-        return query(q, map, ds);
+        return query(null, q, map, ds);
     }
 
     @Override
@@ -430,17 +430,17 @@ public class QueryProcess extends QuerySolver {
      */
     @Override
     public Mappings query(Query q) {
-        return qquery(q, null, null);
+        return qquery(null, q, null, null);
     }
 
     @Override
     public Mappings eval(Query query) {
-        return qquery(query, null, null);
+        return qquery(null, query, null, null);
     }
 
     @Override
     public Mappings eval(Query query, Mapping m) {
-        return qquery(query, m, null);
+        return qquery(null, query, m, null);
     }
     
     /**
@@ -448,21 +448,26 @@ public class QueryProcess extends QuerySolver {
      */
     @Override
     public Mappings eval(Query query, Mapping m, Producer p) {
-        Dataset ds = getUpdateDataset(query);
-        if (p == getProducer()) {
-            return protectQuery(query, m, ds);
-        }
-        return create(p).protectQuery(query, m, ds);
+        return eval(null, query, m, p);
     }
     
-    Mappings protectQuery(Query query, Mapping m, Dataset ds) {
+    @Override
+    public Mappings eval(Node gNode, Query query, Mapping m, Producer p) {
+        Dataset ds = getUpdateDataset(query);
+        if (p == getProducer()) {
+            return protectQuery(gNode, query, m, ds);
+        }
+        return create(p).protectQuery(gNode, query, m, ds);
+    }
+    
+    Mappings protectQuery(Node gNode, Query query, Mapping m, Dataset ds) {
         if (query.isUpdate()) {
             if (lock.getReadLockCount() > 0 && ! isOverwrite()) {
                 logger.info("Update rejected to avoid deadlock");
                 return Mappings.create(query);
             }
         }
-        return qquery(query, m, ds);
+        return qquery(gNode, query, m, ds);
     }
     
     Dataset getUpdateDataset(Query q) {
@@ -593,9 +598,9 @@ public class QueryProcess extends QuerySolver {
         return transformer;
     }
 
-    public Mappings qquery(Query q, Mapping map, Dataset ds) {
+    public Mappings qquery(Node gNode, Query q, Mapping map, Dataset ds) {
         try {
-            return query(q, map, ds);
+            return query(gNode, q, map, ds);
         } catch (EngineException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -658,7 +663,7 @@ public class QueryProcess extends QuerySolver {
         Transformer transformer = transformer();
         Query query = transformer.transform(ast);
         try {
-            return query(query, null, ds);
+            return query(null, query, null, ds);
         } catch (EngineException e) {
             return Mappings.create(query);
         }
@@ -718,7 +723,7 @@ public class QueryProcess extends QuerySolver {
      *
      ***************************************************************************
      */
-    Mappings query(Query q, Mapping m, Dataset ds) throws EngineException {
+    Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
             if (Access.reject(Feature.LD_SCRIPT)) {
@@ -749,7 +754,7 @@ public class QueryProcess extends QuerySolver {
             // return the Mappings of the last Update and the global query q
             map.setQuery(q);
         } else {
-            map = synQuery(q, m);
+            map = synQuery(gNode, q, m);
 
             if (q.isConstruct()) {
                 // construct where
@@ -794,22 +799,22 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-    Mappings synQuery(Query query, Mapping m) {
+    Mappings synQuery(Node gNode, Query query, Mapping m) {
         Mappings map = null;
         try {
             readLock(query);
             logStart(query);
             // select from g where
             // if g is an external named graph, create specific Producer(g)
-            return basicQuery(query, m);
+            return basicQuery(gNode, query, m);
         } finally {
             logFinish(query, map);
             readUnlock(query);
         }
     }
     
-    Mappings basicQuery(Query q, Mapping m) {
-        return focusFrom(q).query(q, m);
+    Mappings basicQuery(Node gNode, Query q, Mapping m) {
+        return focusFrom(q).query(gNode, q, m);
     }
 
     void log(int type, Query q) {

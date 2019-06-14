@@ -137,7 +137,7 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 
 	//optimization
 	public boolean contains(String label) {
-		return getLowerCaseLabel().indexOf(label.toLowerCase()) != -1;
+		return getLowerCaseLabel().contains(label.toLowerCase());
 	}
 
 	public boolean startsWith(String label) {
@@ -161,38 +161,4 @@ public abstract class CoreseStringableImpl extends CoreseDatatype {
 		return getLabel().compareTo(icod.getLabel());
 	}
 
-//        @Override
-//	public IDatatype plus(IDatatype iod) {
-//		String str = getLabel() + iod.getLabel();
-//		
-//		if (this instanceof CoreseURI || iod instanceof CoreseURI) {
-//			return new CoreseURI(str);
-//		}
-//		else {
-//			return new CoreseString(str);
-//		}
-//	}
-//        @Override
-//	public IDatatype minus(IDatatype iod) {
-//		int index = getLabel().indexOf(iod.getLabel());
-//		String str=null;
-//		
-//		if (index == 0){
-//			str = getLabel().substring(iod.getLabel().length());
-//		}
-//		else if (index > 0){
-//			str = getLabel().substring(0, index - 1);
-//		}
-//		
-//		if (str != null){
-//			if (this instanceof CoreseURI || iod instanceof CoreseURI){
-//				return new CoreseURI(str);
-//			}
-//			else {
-//				return new CoreseString(str);
-//			}
-//		}
-//		else
-//			return iod;
-//	}
 }

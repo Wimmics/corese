@@ -28,6 +28,7 @@ public interface Cst {
 	static final String jTypeGeneric        = pack + "CoreseGeneric";
 
 	static final String jTypeURI		= pack + "CoreseURI";
+	static final String jTypeURILiteral     = pack + "CoreseURILiteral";
 	static final String jTypeBlank		= pack + "CoreseBlankNode";
 	static final String jTypeArray		= pack + "CoreseArray";
 

@@ -805,6 +805,7 @@ public class CoreseDatatype
             case URI:
             case BLANK:
             case XMLLITERAL:
+            case URI_LITERAL:
 
                 if (code == other) {
                     return this.getLabel().compareTo(d2.getLabel());

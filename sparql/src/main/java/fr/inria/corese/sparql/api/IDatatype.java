@@ -41,6 +41,8 @@ public interface IDatatype
     static final int DECIMAL = 13;
     static final int LONG = 14;
     static final int INTEGER = 15;
+    static final int URI_LITERAL = 16;
+    
     // Pseudo codes (target is Integer or String ...)
     static final int DAY = 21;
     static final int MONTH = 22;

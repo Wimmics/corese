@@ -175,9 +175,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         put(rdflangString, jTypeLiteral, htlang);
 
         put(XMLLITERAL, jTypeXMLString, XMLLITERAL);
-        put(xsdstring, jTypeString, xsdstring);
+        put(xsdstring,  jTypeString, xsdstring);
         put(xsdboolean, jTypeBoolean, xsdboolean);
-        put(xsdanyURI, jTypeURI, xsdstring);
+        put(xsdanyURI,  jTypeURILiteral, xsdanyURI);
+        //put(xsdanyURI, jTypeURI, xsdstring);
 
         put(xsdnormalizedString, jTypeString, xsdstring);
         put(xsdtoken, jTypeString, xsdstring);
@@ -252,7 +253,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         define(rdflangString, IDatatype.LITERAL);
         define(XMLLITERAL, IDatatype.XMLLITERAL);
         define(xsdboolean, IDatatype.BOOLEAN);
-        define(xsdanyURI, IDatatype.URI);
+        define(xsdanyURI, IDatatype.URI_LITERAL);
         define(xsdstring, IDatatype.STRING);
         define(RDFSRESOURCE, IDatatype.URI);
 

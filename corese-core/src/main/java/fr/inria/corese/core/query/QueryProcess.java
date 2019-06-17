@@ -454,7 +454,7 @@ public class QueryProcess extends QuerySolver {
     @Override
     public Mappings eval(Node gNode, Query query, Mapping m, Producer p) {
         Dataset ds = getUpdateDataset(query);
-        if (p == getProducer()) {
+        if (p==null ||p == getProducer()) {
             return protectQuery(gNode, query, m, ds);
         }
         return create(p).protectQuery(gNode, query, m, ds);

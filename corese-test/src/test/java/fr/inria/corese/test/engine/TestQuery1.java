@@ -254,6 +254,49 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+    @Test
+    public void testShape2() throws EngineException, IOException, LoadException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        ld.parse(data + "junit/data/shacl/shape2.ttl");
+
+        String q = "prefix sh: <http://www.w3.org/ns/shacl#> ."
+                + "select * "
+                + "where {"
+                + "?x a foaf:Person "
+                + "filter xt:testShapeNode(?x) "              
+                + "}";
+        
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+    }
+    
+    @Test
+    public void testShape1() throws EngineException, IOException, LoadException {
+        Graph g = GraphStore.create();
+        QueryProcess exec = QueryProcess.create(g);
+
+        Load ld = Load.create(g);
+        ld.parse(data + "junit/data/shacl/shape1.ttl");
+
+        String q = "prefix sh: <http://www.w3.org/ns/shacl#> ."
+                + "select ?b ?r ?n "
+                + "where {"
+                + "bind (xt:shapeGraph() as ?g)"
+                + "bind (xt:conform(?g) as ?b) "
+                + "graph ?g {"
+                + "?r a sh:ValidationResult ; sh:focusNode ?n "
+                + "}"
+                + "}";
+        
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+    }
+    
+    
   @Test
     public void testexist() throws EngineException, LoadException {
         
@@ -4677,7 +4720,7 @@ public class TestQuery1 {
         exec.query(i);
 
         String q = "@relax "
-                + "select * (sim() as ?s) where {"
+                + "select * (xt:sim() as ?s) where {"
                 + "us:John foaf:name 'Jon' ; foaf:age 11 "
                 + "}";
 
@@ -4796,7 +4839,7 @@ public class TestQuery1 {
                 + "}";
 
         String q = "@relax * "
-                + "select * (sim() as ?s) where {"
+                + "select * (xt:sim() as ?s) where {"
                 + "?x xt:name 'Jon'"
                 + "}"
                 + "order by desc(?s)";
@@ -5366,7 +5409,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testVD13() throws EngineException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -7986,7 +8029,7 @@ public class TestQuery1 {
     public void test19() {
         String query = "prefix c: <http://www.inria.fr/acacia/comma#>" +
                 "select * "
-                + "(pathLength($path) as ?l) (count(?a) as ?c) where {"
+                + "(xt:size($path) as ?l) (count(?a) as ?c) where {"
                 + "?x c:isMemberOf+ :: $path ?org "
                 + "graph $path {?a ?p ?b}"
                 + "}"
@@ -8235,7 +8278,7 @@ public class TestQuery1 {
 
         String query =
                 "select  "
-                        + "(pathLength($path) as ?l) "
+                        + "(xt:size($path) as ?l) "
                         + "(max(?l, groupBy(?x, ?y)) as ?m) "
                         + "(max(?m) as ?max) "
                         + "where {"
@@ -9037,8 +9080,8 @@ public class TestQuery1 {
                 + "<Jim> foaf:knows <Jack> "
                 + "}";
 
-        String query = "select * (pathLength($path) as ?l) where {"
-                + "?x short(foaf:knows|rdfs:seeAlso)+ :: $path ?y"
+        String query = "select * (xt:size($path) as ?l) where {"
+                + "?x (foaf:knows|rdfs:seeAlso)+ :: $path ?y"
                 + "}";
 
         try {

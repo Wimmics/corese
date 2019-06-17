@@ -177,10 +177,14 @@ public class Eval implements ExpType, Plugin {
      * shares the memory with outer eval
      */
     public Mappings query(Query q) {
-        return query(q, null);
+        return query(null, q, null);
     }
-
+    
     public Mappings query(Query q, Mapping m) {
+        return query(null, q, m);
+    }
+    
+    public Mappings query(Node gNode, Query q, Mapping m) {
         if (hasEvent) {
             send(Event.BEGIN, q);
         }
@@ -190,7 +194,7 @@ public class Eval implements ExpType, Plugin {
         getVisitor().init(q);
         share(getVisitor());
         getVisitor().before(q);
-        Mappings map = eval(null, q, m);
+        Mappings map = eval(gNode, q, m);
         getVisitor().orderby(map);
         getVisitor().after(map);
 

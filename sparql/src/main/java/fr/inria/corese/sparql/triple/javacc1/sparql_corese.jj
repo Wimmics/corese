@@ -687,7 +687,6 @@ Exp SelectQuery(Metadata la) : { Exp stack; }
     (<NOSORT> {astq.setSorted(false); } )?
     OneMoreListMerge()
     GroupCountSortDisplayVar()
-    Max()
     ( DatasetClause() )*
   stack = WhereClause()
   SolutionModifier()  
@@ -805,18 +804,14 @@ Exp DeleteQuery() : { Exp stack; }
 // ----
 
 // one more list merge in any order and without list and merge being together
+
 void OneMoreListMerge(): {}
 {
-  One() ( More() ( List() | Merge() )? | List() ( More() )? | Merge() ( More() )? )?
-  | More() ( One() ( List() | Merge() )? | List() ( One() )? | Merge() ( One() )? )?
-  | ( ( List() | Merge() ) ( One() ( More() )? | More() ( One() )? )? )?
+  (More()) ? 
 }
 
-void One(): {}
-{
-  <ONE>
-  { astq.setOne(true); }
-}
+
+
 
 void More(): {}
 {
@@ -824,30 +819,15 @@ void More(): {}
   { astq.setMore(true); }
 }
 
-void List(): {}
-{
-  <LIST>
-  { astq.setList(true); }
-}
-
-void Merge(): {}
-{
-  <MERGE>
-  { 
-  //astq.setMerge(true); 
-  }
-}
 
 void GroupCountSortDisplayVar(): {}
 {
-  GroupCountSortDisplay() 
   ( 
   	(<DISTINCT> { astq.setDistinct(true);  } | <REDUCED> { astq.setReduced(true);  } ) 
   	( <SORTED> { astq.setStrictDistinct(false); } )?
   )? 
   ( 
   	SelectVar() 
-  	GroupCountSortDisplay() 
   )?
 }
 
@@ -910,97 +890,6 @@ void FunVar(Exp stack): { Expression e2; Variable e1; Variable var;} {
 // ********************* END SPARQL 1.1
 
 
-void GroupCountSortDisplay(): {}
-{
-  ( LOOKAHEAD(2) (
-    Group()
-    //| Count()
-    | Sort() 
-    | Display() 
-  ) )*  
-}
-
-void Group(): { Atom var; }
-{
-  <GROUP> (<BY>)?
-  var = Var()
-  { 
-  //astq.setGroup(var.getName()); 
-  }
-}
-
-void Count(): { Atom var; }
-{
-  <COUNT> var = Var()
-  { astq.setCount(var.getName()); }
-}
-
-void Sort(): { boolean reverse; Token t; Variable v; String sortby; Expression a; Term tm; Exp stack; }
-{
-  { reverse = false; stack = new And(); deprecated("sort", "order by"); }
-  <SORT> 
-  (
-  	(<REVERSE> { reverse = true; } )? 
-  	( 
-  	  v = Var() { astq.setSort(v, reverse); }
-  	  | a = BuiltInCall(stack) { astq.setSort(a, reverse); }
-  	  | a = BrackettedExpression(stack) { astq.setSort(a, reverse); }
-  	  | tm = FunctionCall(stack) { astq.setSort(tm, reverse); }
-  	  | LOOKAHEAD(2) tm = FunctionCorese(stack) { astq.setSort(tm, reverse); }
-	  | t = <COUNT> { sortby = t.image.toLowerCase(); astq.setSort(sortby, reverse); }
-  	  | t = <DISTANCE> { sortby = t.image.toLowerCase(); astq.setSort(sortby, reverse); }       
-	)
-  )  
-}
-
-void Display(): { Token t; }
-{
-  <DISPLAY> ( 
-  			  <D_RDF>  { astq.setRDF(true); }
-  			| <D_JSON> { astq.setJSON(true); }  
-  			//| <D_FLAT> { astq.setFlat(true); }
-  			//| <D_ASQUERY> { astq.setPQuery(true); }
-  			| ( t = <INTEGER> { astq.setMaxDisplay(Integer.parseInt(t.image)); } 
-  			  )	
-  			| <D_XML> { astq.setXMLBind(true); }
-  			| <D_BLANK> { astq.setDisplayBNID(true); } 
-  			)
-}
-
-void Max(): {}
-{
-  Projection() ( ( Result() ( Threshold() )? ) | ( Threshold() ( Result() )? ) )?
-  | Result() ( ( Projection() ( Threshold() )? ) | ( Threshold() ( Projection() )? ) )? 
-  | ( Threshold() ( ( Projection() ( Result() )? ) | ( Result() ( Projection() )? ) )? )?
-}
-
-void Projection(): { Token t; }
-{
-  <PROJECTION> 
-  ( t = <INTEGER>
-  { astq.setMaxProjection(Integer.parseInt(t.image)); }
-  )
-}
-
-void Result(): { Token t; }
-{
-  <RESULT> 
-  ( t = <INTEGER>
-  { astq.setMaxResult(Integer.parseInt(t.image)); }
-  )
-}
-
-void Threshold(): { Token t; }
-{
-  <THRESHOLD> 
-  ( t = <INTEGER>
-  { astq.setThreshold(Float.parseFloat(t.image)); }
-   )
-}
-
-
-
-// ----
 
 void DatasetClause() : { Constant s; }
 {
@@ -1023,7 +912,6 @@ void SolutionModifier() : {Values values;}
    (Relax()) ?  
    (OrderGroup()) ? ( LimitOffset()) ? 
    (values = Values() {astq.setValues(values); } ) ?
-   (Display()) * 
    (Pragma()) *
 }
 
@@ -1049,7 +937,7 @@ Values Values() : {
 			
 		<LBRACE> 
                 (
-                    exp = FunctionCorese(stack) { values.addExp(exp); }
+                    exp = BuiltInCall(stack) { values.addExp(exp); }
                     |
                     (
 			<LPAREN> 
@@ -1072,7 +960,7 @@ Values Values() : {
 		
 		<LBRACE> 
                 (
-                     exp = FunctionCorese(stack) { values.addExp(exp); }
+                     exp = BuiltInCall(stack) { values.addExp(exp); }
                     |
                     (
 			{ value   = new ArrayList<Constant>(); }
@@ -1205,8 +1093,6 @@ void OrderCondition() : { boolean reverse; Token t; String sortby; Variable v; E
     		( <ASC> | <DESC> { reverse = true; } )? 
     		( 
     			a = BrackettedExpression(stack) { astq.setSort(a, reverse); }
-    			| t = <DISTANCE> { sortby = t.image; astq.setSort(sortby, reverse); }
-    			| t = <COUNT> { sortby = t.image; astq.setSort(sortby, reverse); }
     		)
     	)    		
   	)  	
@@ -1214,7 +1100,6 @@ void OrderCondition() : { boolean reverse; Token t; String sortby; Variable v; E
 
 void ProjLimitClause() : { Token t; }
 {
-	Projection() ( LimitClause() ) ? | 
 	LimitClause()
 }
 
@@ -1395,7 +1280,7 @@ void Bind(Exp stack) : { Expression exp; Exp q; Variable var, vv;}
 
 void OptionalGraphPattern(Exp stack) : { Exp e; }
 { 
-	( <OPTIONAL> | <OPTION> { deprecated("option","optional"); } ) 
+	<OPTIONAL> 
   	e = GroupGraphPattern()
   	{ 
   		e= Optional.create(e);
@@ -1492,7 +1377,7 @@ void GroupOrUnionGraphPattern(Exp stack) : { Exp temp, res; }
 {
 	res = GroupGraphPattern()
   	( 
-  	  	( <UNION> | <OR> { deprecated("or","union"); } )
+  	  	<UNION> 
   	  	{ 
   	  		temp = res;
       		res =  Union.create();
@@ -1772,13 +1657,7 @@ Expression RegExp():{Token t; String s; Expression exp;}
 	   
 	  { exp = astq.createFunction(t.image, astq.createConstant(s, null, null)); }  |
 
-	  exp = AddRegExp()   | 
-	
-	(
-		t = <INV> | t = <SHORT> | t = <SHORTALL> | t = <DEPTH> | t = <BREADTH> | t = <DISTINCT> 
-	)
-	
-	  	exp = RegExp()  { exp = astq.createOperator(t.image, exp); }
+	  exp = AddRegExp()   
 )
 	
 	{return exp;}
@@ -2082,11 +1961,13 @@ Atom VarOrIRIref(Exp stack) : { Atom a; String s; }
 }
 
 
-Variable Var() : { Token t1; Variable res; String s;} // boolean isPath = false;}
+Variable Var() : { Token t1; Variable res; String s;} 
 {
-  ( t1 = <VAR1> { s = t1.image; } | 
-    t1 = <VAR2> { s = "?"+(t1.image).substring(1,(t1.image).length()); } ) //isPath = true;} ) 
-  { res = ASTQuery.createVariable(s, astq); } //res.setPath(isPath);}
+  (   t1 = <VAR1> { s = t1.image; }  
+    | t1 = <VAR2> { s = "?"+(t1.image).substring(1,(t1.image).length()); }  
+    | t1 = <VAR3> { s = "?"+(t1.image); } 
+  ) 
+  { res = ASTQuery.createVariable(s, astq); } 
   
   { return res; }
 }
@@ -2222,22 +2103,99 @@ Expression UnaryExpression(Exp stack) : { Token t1; Expression expression1; }
   { return expression1; }
 }
 
-Expression BuiltInCall(Exp stack) : { Expression expression1, expression2; Variable var1; Token t1; Term term; }
+Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null, exp2; Variable var1; Token t1; Term term; }
 {
   (
-    ( ( 
-        t1 = <STR> | 
-        t1 = <DTYPE> | t1 = <LANG> | t1 = <IS_IRI> | t1 = <IS_URI> | 
-        t1 = <IS_BLANK> | t1 = <IS_LITERAL> ) 
-    	<LPAREN> expression1 = Expression(stack) <RPAREN> 
-      { term = astq.createFunction(t1.image, expression1); } 
+
+    (t1 = <BOUND> <LPAREN> var1 = Var() <RPAREN> 
+     { term = astq.createFunction(t1.image, var1); } )
+
+    | 
+ 
+    (
+    (
+    t1  = <BNODE> | t1 = <ERROR>
     )
-    | t1 = <BOUND> <LPAREN> var1 = Var() <RPAREN> 
-      { term = astq.createFunction(t1.image, var1); } 
-    | t1 = <LANGMATCHES> <LPAREN> expression1 = Expression(stack) <COMMA> expression2 = Expression(stack) <RPAREN>
-      { term =  astq.createFunction(t1.image, expression1); 
-        term.add(expression2); } 
+
+    <LPAREN> 
+        ( exp1 = Expression(stack) ) ? 
+        { term = astq.createFunction(t1.image); 
+          if (exp1 != null) { term.add(exp1); }
+        } 
+    <RPAREN>
+    )
+
+    |
+
+    ((
+    t1  = <UUID> | t1 = <STRUUID> | t1 = <NOW> | t1 = <RAND>
+    )
+
+    <LPAREN><RPAREN>
+    { term = astq.createFunction(t1.image); } 
+    )
+
+    |
+
+    ( ( 
+          t1 = <STR> | t1 = <URI> | t1 = <IRI>
+        | t1 = <DTYPE> | t1 = <LANG> 
+        | t1 = <IS_IRI> | t1 = <IS_URI>  
+        | t1 = <IS_BLANK> | t1 = <IS_LITERAL> 
+        | t1 = <IS_NUMERIC> 
+        | t1 = <IS_EXTENSION> 
+        | t1 = <IS_UNDEFINED>
+        | t1 = <IS_WELLFORMED>
+        | t1 = <STRLEN> | t1 = <UCASE> | t1 = <LCASE> | t1 = <ENCODE_FOR_URI>
+        | t1 = <MD5> | t1 = <SHA1> | t1 = <SHA256> | t1 = <SHA384> | t1 = <SHA512>
+        | t1 =  <ROUND> | t1 = <FLOOR> | t1 = <CEIL>  | t1 = <ABS> 
+        | t1 =  <YEAR> | t1 = <MONTH> | t1 = <DAY> | t1 = <HOURS> | t1 = <MINUTES> | t1 = <SECONDS> | t1 = <TIMEZONE> | t1 = <TZ>
+        | t1 = <UNNEST>  | t1 = <RETURN> | t1 = <SELF> 
+   )
+ 
+
+      <LPAREN> exp1 = Expression(stack) <RPAREN> 
+      { term = astq.createFunction(t1.image, exp1); } 
+    )
+
+    |
+ 
+    (
+    (t1 = <AGGREGATE> | t1 = <GROUP_CONCAT> | t1 = <COUNT> | t1 = <SUM> | t1 = <SAMPLE> | t1 = <AVG> | t1 = <MIN> | t1 = <MAX>)
+     el = ArgList(stack)  
+    { term = astq.createFunction( t1.image, el); }
+    )
+
+    |
+
+    (
+    (t1 = <LANGMATCHES> | t1 = <POWER> | t1 = <XPATH>
+    | t1 = <SAMETERM> | t1 = <STRDT> | t1 = <STRLANG> | t1 = <CONTAINS> 
+    | t1 = <STRSTARTS> | t1 = <STRENDS> | t1 = <STRBEFORE>  | t1 = <STRAFTER>
+    | t1 = <REDUCE> | t1 = <APPLY>
+    )
+     <LPAREN> exp1 = Expression(stack) <COMMA> exp2 = Expression(stack) <RPAREN>
+
+      { term =  astq.createFunction(t1.image, exp1); term.add(exp2); }
+    )
+
+
+    |
+
+    (
+    ( t1 = <COALESCE> | t1 = <CONCAT> | t1 = <SUBSTR> | t1 = <REPLACE>
+    | t1 = <METHOD> | t1 = <FUNCALL> | t1 = <MAP> | t1 = <MAPLIST> | t1 = <MAPMERGE>  
+    | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> )
+    <LPAREN> 
+    { term =  astq.createFunction(t1.image); }
+      exp1 = Expression(stack) { term.add(exp1); }
+      (<COMMA> exp2 = Expression(stack) { term.add(exp2); } )* 
+    <RPAREN>
+    )
+
+
     | term = RegexExpression(stack)
+
     | term = exists()
   )
   { return term; }
@@ -2272,15 +2230,8 @@ Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, e
 
 Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; Exp sub; }
 {	
-	// distance namespace isMulti sqrt depth cardinality isuri occurence
-  ((
-	( t = <SIMPLE_STRING> | t = <DISTANCE> | t = <SCORE> | t = <COUNT> | t = <XPATH>  )
-	v = ArgList(stack)
-	{ 
-		term = astq.createFunction(t.image, v); 
-	}
-  )
-  | term = IfThenElse(stack)
+  (
+    term = IfThenElse(stack)
   | term = Let(stack)
   | term = Set(stack)
   | term = For(stack)
@@ -2911,15 +2862,7 @@ TOKEN:
 // anything
 
 TOKEN : { 
-
 	<KW_A: "a" > 
-|	<INV: "i" >
-|	<SHORT:    "s"   >
-|	<SHORTALL: ("sa" | "short")>
-|	<DEPTH: "d" >
-| <BREADTH: "b">
-| <LIST: "list" >
-
 } // Before HEX rule!
 
 TOKEN [IGNORE_CASE] :
@@ -2943,7 +2886,6 @@ TOKEN [IGNORE_CASE] :
 | < OFFSET: "offset" >
 | < ORDER: "order" >
 | < BY: "by" >
-//| < ANY: "any" >
 | < RELAX: "relax" >
 
 | < ASC: "asc" >
@@ -2958,9 +2900,6 @@ TOKEN [IGNORE_CASE] :
 | < AND: "and" >
 | < GRAPH: "graph" >
 | < SERVICE: "service" >
-| < REC : "rec" >
-| < STATE : "state" >
-| < LEAF : "leaf" >
 | < OPTIONAL: "optional" >
 | < UNION: "union" >
 | < MINUSP: "minus" >
@@ -2997,20 +2936,92 @@ TOKEN [IGNORE_CASE] :
 | < SILENT: "silent">
 | < DATA: "data">
 
+// LDScript
+| <ERROR: "error">
+| <RETURN: "return">
+| <AGGREGATE: "aggregate">
+| <UNNEST: "unnest">
+| <MAP: "map">
+| <MAPLIST: "maplist">
+| <MAPFIND: "mapfind">
+| <MAPFINDLIST: "mapfindlist">
+| <MAPMERGE: "mapmerge">
+| <MAPEVERY: "mapevery">
+| <MAPANY: "mapany">
+| <FUNCALL: "funcall">
+| <METHOD: "method">
+| <APPLY: "apply">
+| <REDUCE: "reduce">
+| <SELF: "self">
 
 // Expression operators
-| < BOUND: "bound" >
-| < STR: "str" >
-// |  < URI:         "uri" >
-| < DTYPE: "datatype" >
-| < LANG: "lang" >
-| < LANGMATCHES: "langmatches" >
-//|  < IS_IRI:      ("isIRI"|"isURI") >
-| < IS_URI: "isURI" >
-| < IS_IRI: "isIRI" >
-| < IS_BLANK: "isBlank" >
-| < IS_LITERAL: "isLiteral" >
-| < REGEX: "regex" >
+| <BOUND: "bound" >
+| <COALESCE: "coalesce">
+| <SAMETERM: "sameTerm">
+| <STR:     "str" >
+| <STRDT:   "strdt" >
+| <STRLANG:  "strlang" >
+| <BNODE:  "bnode" >
+| <URI:     "uri" >
+| <IRI:     "iri" >
+| <UUID: "uuid">
+| <STRUUID: "struuid">
+| <DTYPE:   "datatype" >
+| <LANG:    "lang" >
+| <LANGMATCHES: "langmatches" >
+| <CONTAINS: "contains">
+| <STRSTARTS: "strstarts">
+| <STRENDS:     "strends">
+| <STRLEN: "strlen">
+| <SUBSTR: "substr">
+| <UCASE: "ucase">
+| <LCASE: "lcase">
+| <STRBEFORE: "strbefore">
+| <STRAFTER: "strafter">
+| <ENCODE_FOR_URI: "encode_for_uri">
+| <CONCAT:  "concat">
+| <REPLACE: "replace">
+| <IS_URI:  "isURI" >
+| <IS_IRI:  "isIRI" >
+| <IS_BLANK: "isBlank" >
+| <IS_LITERAL: "isLiteral" >
+| <IS_NUMERIC: "isNumeric">
+| <IS_EXTENSION: "isExtension">
+| <IS_UNDEFINED: "isUndefined">
+| <IS_WELLFORMED: "isWellFormed">
+
+| <REGEX: "regex" >
+
+| <RAND: "rand">
+| <ROUND: "round">
+| <FLOOR: "floor">
+| <CEIL: "ceil">
+| <POWER: "power">
+| <ABS: "abs">
+
+| <NOW: "now">
+| <YEAR: "year">
+| <MONTH: "month">
+| <DAY: "day">
+| <HOURS: "hours">
+| <MINUTES: "minutes">
+| <SECONDS: "seconds">
+| <TIMEZONE: "timezone">
+| <TZ: "tz">
+
+| <MD5: "md5">
+| <SHA1: "sha1">
+| <SHA256: "sha256">
+| <SHA384: "sha384">
+| <SHA512: "sha512">
+
+| <GROUP_CONCAT: "group_concat">
+| <SUM: "sum">
+| <SAMPLE: "sample">
+| <AVG: "avg">
+| <MIN: "min">
+| <MAX: "max">
+
 
 | <TRUE: "true" >
 | <FALSE: "false" >
@@ -3022,21 +3033,8 @@ TOKEN [IGNORE_CASE] :
 
 TOKEN [IGNORE_CASE] :
 {
-  <ONE: "one" >
-| <S_MORE: "more" >
-| <MERGE: "merge" >
-| <DISPLAY: "display" >
+  <S_MORE: "more" >
 | <PRAGMA: "pragma" >
-| <D_RDF: "rdf" >
-| <D_JSON: "json" >
-| <D_FLAT: "flat" >
-| <D_ASQUERY: "asquery" >
-| <D_XML: "xml" >
-| <D_BLANK: "blank" >
-//| <D_TABLE: "table" >
-| <THRESHOLD: "threshold" >
-| <RESULT: "result" >
-| <PROJECTION: "projection" >
 | <GROUP: "group" >
 | <FORMAT: "format" >
 | <BOX: "box" >
@@ -3047,20 +3045,13 @@ TOKEN [IGNORE_CASE] :
 | <BIND: "bind">
 | <UNDEF: "undef">
 | <COUNT: "count" >
-| <SOURCE: "source" >
 | <SCORE: "score" >
 | <AS: "as" >
-| <SORT: "sort" >
-| <REVERSE: "reverse" >
-| <OR: "or" >
-| <OPTION: "option" >
 | <SORTED: "sorted" >
 | <ALL2: "all::" >
 | <CURRENT: "current::" >
-| <ONE2: "one::">
 | <DIRECT2: "direct::" >
 | <COLON2: "::" >
-| <DISTANCE: "distance">
 | <DEBUG: "debug">
 | <CHECK: "check">
 | <NOSORT: "nosort">
@@ -3091,10 +3082,7 @@ TOKEN :
 | <EQ_LANG: "~=">
 }
 
-TOKEN [IGNORE_CASE] :
-{
-  <SIMPLE_STRING: <NCNAME> >  
-}
+
 
 // -------------------------------------------------
 
@@ -3197,6 +3185,8 @@ TOKEN :
 
 | < DATATYPE: "^^">
 | < AT: "@">
+| <VAR3: <VARNAME> >
+
 }
 
 // See XML chars.txt for notes

@@ -1163,7 +1163,7 @@ public class ASTQuery
     /**
      * function name(el) { exp } -> function (name(el), exp)
      */
-    public Function defineFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
+    public Function defineFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot) {
         Function fun = defFunction(name, el, exp, annot);
         record(fun);    
         return fun;
@@ -1214,9 +1214,6 @@ public class ASTQuery
         }
         Term t = createFunction(uri, el);
         Function fun = defineLambdaUtil(el, t, null);
-//        Function fun = defFunction(functionName(), el, t, null);
-//        fun.setLambda(true);
-//        record(fun);
         return fun;
     }
            
@@ -1230,8 +1227,12 @@ public class ASTQuery
     }
         
     Function defFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
+         return defFunction(name, null, el, exp, annot);
+    }
+    
+    Function defFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot) {
         Term fun = createFunction(name, el);      
-        Function def = new Function(fun, exp);
+        Function def = new Function(fun, type, exp);
         annotate(def, annot);
         if (el.getTable() != null){
             def.setTable(el.getTable());
@@ -1251,7 +1252,7 @@ public class ASTQuery
             el.add(createVariable(FUN_VAR + i));
         }
         Term t = createFunction(createQNameURI(name), el);
-        Function fun = defineFunction(c, el, t, null);
+        Function fun = defineFunction(c, null, el, t, null);
         fun.compile(this);
         return fun;
     }

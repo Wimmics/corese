@@ -2451,15 +2451,17 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
 
 
 Function Function(Metadata la) : 
-{Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
+{Exp stack; Token t = null; Function term;   ExpressionList v; Constant type, name=null; Expression body;}
 {
-  <FUNCTION> cst = IRIrefConst() 
+  <FUNCTION>  type = IRIrefConst() (name = IRIrefConst())?
   { stack = BasicGraphPattern.create(); }
   v = FunArgList()
   body = Body(stack)
 
-  { 
-  	term = astq.defineFunction(cst, v, body, la );        
+  {     
+        // type  is optional, name is mandatory
+        name = (name==null) ? type : name;
+  	term = astq.defineFunction(name, type, v, body, la );        
   }
   { return term; }
 }

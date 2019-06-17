@@ -1,6 +1,5 @@
 package fr.inria.corese.sparql.triple.function.script;
 
-import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -39,6 +38,7 @@ public class Function extends Statement {
     
     private IDatatype dt;
     Term signature;
+    Constant type;
     Expression body;
     Metadata annot;
     private HashMap<String, Constant> table;
@@ -47,7 +47,12 @@ public class Function extends Statement {
     public Function() {}
     
     public Function(Term fun, Expression body) {
+        this(fun, null, body);
+    }
+    
+    public Function(Term fun, Constant type, Expression body) {
         super(Processor.FUNCTION, fun, body);
+        this.type = type;
         this.signature = fun;
         this.body = body;
         fun.setExpression(this);
@@ -58,6 +63,14 @@ public class Function extends Statement {
     @Override
     public Term getFunction() {
         return getSignature();
+    }
+    
+    public Constant getReturnType() {
+        return type;
+    }
+    
+    public IDatatype getReturnDatatype() {
+        return (type == null) ? null : type.getDatatypeValue();
     }
     
     public Term getSignature(){

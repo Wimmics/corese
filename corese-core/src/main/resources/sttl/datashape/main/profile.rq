@@ -9,17 +9,17 @@ template st:profile {} where {}
 
 
 @skip
-function st:aggregate(?out) {
-  st:agg_and(?out)
+function st:aggregate(out) {
+  st:agg_and(out)
 }
 
 @skip
-function st:default(?term){
+function st:default(term){
     true
 }
 
 @skip
-function st:defaultNamed(?term){
+function st:defaultNamed(term){
     true
 }
 
@@ -28,7 +28,7 @@ function st:defaultNamed(?term){
 # Results of graph ?shape { ?sh sh:property ?cst } are cached in table: ?sh -> Mappings
 # Next evaluations are retrieved from cache: 40% faster
 #
-function st:optimize(?shape, ?sh){
+function st:optimize(shape, sh){
     true
 }
 
@@ -38,9 +38,9 @@ function sh:test(){
     st:get(st:test, true) 
 }
 
-function sh:pack(?test, ?name){
+function sh:pack(test, name){
     if (sh:test(), 
-        return(concat("/user/corby/home/AAData/sttl/datashape/", ?test)), ?name)
+        return(concat("/user/corby/home/AAData/sttl/datashape/", test)), name)
 }
 
 function sh:main(){
@@ -62,68 +62,68 @@ function sh:path(){
 
 # test and may report error
 # main target & noscope
-function sh:hasShape(?shape, ?sh, ?vis, ?ls) {
-    st:apply-templates-with-all(sh:core(), ?shape, ?sh, ?vis, ?ls)
+function sh:hasShape(shape, sh, vis, ls) {
+    st:apply-templates-with-all(sh:core(), shape, sh, vis, ls)
 }
 
 # test without target and do not report error
 # sh:node  sh:or sh:and sh:not
-function sh:testShapeCore(?shape, ?sh, ?s) {
-    st:apply-templates-with-all(sh:core(), ?shape, ?sh, false, ?s)
+function sh:testShapeCore(shape, sh, s) {
+    st:apply-templates-with-all(sh:core(), shape, sh, false, s)
 }
 
-function sh:hasConstraint(?shape, ?sh, ?vis, ?s) {
-    st:apply-templates-with-all(sh:constraint(), ?shape, ?sh, ?vis, ?s)
+function sh:hasConstraint(shape, sh, vis, s) {
+    st:apply-templates-with-all(sh:constraint(), shape, sh, vis, s)
 }
 
-function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p) {
-    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
+function sh:hasPath(shape, sh, vis, s, p) {
+    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
 }
 
-function sh:hasPath(?shape, ?sh, ?vis, ?s, ?p, ?o) {
-    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p, ?o)
+function sh:hasPath(shape, sh, vis, s, p, o) {
+    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p, o)
 }
 
-function sh:path(?shape, ?sh, ?vis, ?s, ?p) {
-    st:apply-templates-with-all(sh:path(), ?shape, ?sh, ?vis, ?s, ?p)
+function sh:path(shape, sh, vis, s, p) {
+    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
 }
 
-function sh:safe(?shape, ?sh, ?suc) {
-    ?suc
+function sh:safe(shape, sh, suc) {
+    suc
 }
 
-function st:report(?name, ?s, ?suc, ?vis) {
-    if (?vis) {
-        st:visit(?name, ?s, ?suc)
+function st:report(name, s, suc, vis) {
+    if (vis) {
+        st:visit(name, s, suc)
     } ;
     return (true)
 }
 
 #
-# ?suc is success/failure of the shape
-# ?vis true means generate a ValidationResult
+# suc is success/failure of the shape
+# vis true means generate a ValidationResult
 #
-function st:report(?name, ?sh, ?shape, ?foc, ?p, ?o, ?suc, ?vis){
-    if (?vis && ! ?suc) { 
-        sh:result(?name, ?sh, ?shape, ?foc,  ?p, ?o) ;
-        st:visit(?name, ?foc, ?suc)
+function st:report(name, sh, shape, foc, p, o, suc, vis){
+    if (vis && ! suc) { 
+        sh:result(name, sh, shape, foc,  p, o) ;
+        st:visit(name, foc, suc)
     } ;
     return(true)
 }
 
-function st:report(?name, ?sh, ?shape, ?foc, ?suc, ?vis){
-    if (?vis && ! ?suc) { 
-        sh:result(?name, ?sh, ?shape, ?foc,  st:null, st:null) ;
-        st:visit(?name, ?foc, ?suc)
+function st:report(name, sh, shape, foc, suc, vis){
+    if (vis && ! suc) { 
+        sh:result(name, sh, shape, foc,  st:null, st:null) ;
+        st:visit(name, foc, suc)
     } ;
     return(true)
 }
 
-function sh:value(?v){
-    if (?v = st:null, return(error()), ?v)
+function sh:value(v){
+    if (v = st:null, return(error()), v)
 }
 
-function sh:result2(?name, ?sh, ?shape, ?foc, ?s, ?p, ?o){
+function sh:result2(name, sh, shape, foc, s, p, o){
     true
 }
 
@@ -188,17 +188,17 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
     }
 }
 
-# within graph ?shape {}
-function sh:severity(?sh) {
-    for ((?s, ?p, ?o) in xt:edges(?sh, sh:severity)){
-        return (?o)
+# within graph shape {}
+function sh:severity(sh) {
+    for ((s, p, o) in xt:edges(sh, sh:severity)){
+        return (o)
     } ;
     return (sh:Violation)
 }
 
-function sh:message(?sh){
-    for ((?s, ?p, ?o) in xt:edges(?sh, sh:message)){
-        return (?o)
+function sh:message(sh){
+    for ((s, p, o) in xt:edges(sh, sh:message)){
+        return (o)
     } ;
     return (error())
 }
@@ -216,8 +216,8 @@ function sh:success(?b){
 }
 
 function sh:bnodeid(){
-    let (?bnode = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
-        if (?bnode = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (?bnode)) 
+    let (bn = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
+        if (bn = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (bn)) 
     }
 }
 
@@ -225,15 +225,15 @@ function sh:bnodeid2(){
     coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
 }
 
-function sh:graph(?var){
-if (isBlank(?var), 
-    return(strdt(st:apply-templates-with(st:turtle, ?var), xt:graph)), 
-    ?var)
+function sh:graph(var){
+if (isBlank(var), 
+    return(strdt(st:apply-templates-with(st:turtle, var), xt:graph)), 
+    var)
 }
 
-function sh:graphbnode(?var){
-    if (isBlank(?var),  
-        return(sh:graph(?var)),
+function sh:graphbnode(var){
+    if (isBlank(var),  
+        return(sh:graph(var)),
         return(error()))
 }
 
@@ -246,15 +246,15 @@ function sh:init(){
     map (sh:define, sh:def())
 }
 
-function sh:define(?def){
-    let ((?name, ?value) = ?def){
-        st:cset(sh:def, ?name, ?value)
+function sh:define(def){
+    let ((name, value) = def){
+        st:cset(sh:def, name, value)
     } ;
     return(true)
 }
 
 function sh:def(){
-    let (?list = @(
+    let (list = @(
         (sh:class       sh:ClassConstraintComponent)
         (sh:datatype    sh:DatatypeConstraintComponent)
         (sh:nodeKind    sh:NodeKindConstraintComponent)
@@ -546,19 +546,19 @@ for (
 }  
 
 
-function sh:isdefby(?name){
-    st:cget(sh:def, ?name)
+function sh:isdefby(name){
+    st:cget(sh:def, name)
 }
 
-function sh:functioncall(?q, ?shape, ?s, ?m){
-    funcall(sh:clean(?q), ?shape, ?s, ?m)
+function sh:functioncall(q, shape, s, m){
+    funcall(sh:clean(q), shape, s, m)
 }
 
-function sh:clean(?q){
-    if (?q = sh:class, sh:classsh, ?q)
+function sh:clean(q){
+    if (q = sh:class, sh:classsh, q)
 }
 
-function sh:count(?s, ?p){
+function sh:count(s, p){
   let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
@@ -569,62 +569,62 @@ function sh:invCount(?o, ?p){
 }
 
 
-function sh:minCount(?s, ?p, ?m){
-    sh:count(?s, ?p) >= ?m
+function sh:minCount(s, p, m){
+    sh:count(s, p) >= m
 }
 
-function sh:maxCount(?s, ?p, ?m){
-    sh:count(?s, ?p) <= ?m
+function sh:maxCount(s, p, m){
+    sh:count(s, p) <= m
 }
 
-function sh:nodeKind(?shape, ?value, ?kind){
-    (isURI(?value)     && ?kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
-    (isLiteral(?value) && ?kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
-    (isBlank(?value)   && ?kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+function sh:nodeKind(shape, value, kind){
+    (isURI(value)     && kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isLiteral(value) && kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
+    (isBlank(value)   && kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
 }
 
-function sh:minLength(?shape, ?s, ?m){
-    ! isBlank(?s) && coalesce(strlen(?s) >= ?m, false) 
+function sh:minLength(shape, s, m){
+    ! isBlank(s) && coalesce(strlen(s) >= m, false) 
 }
 
-function sh:maxLength(?shape, ?s, ?m){
-    ! isBlank(?s) && coalesce(strlen(?s) <= ?m, false) 
+function sh:maxLength(shape, s, m){
+    ! isBlank(s) && coalesce(strlen(s) <= m, false) 
 }
 
-function sh:minInclusive(?shape, ?o, ?m){
-    ?o >= ?m
+function sh:minInclusive(shape, o, m){
+    o >= m
 }
 
-function sh:minExclusive(?shape, ?o, ?m){
-    ?o > ?m
+function sh:minExclusive(shape, o, m){
+    o > m
 }
 
-function sh:maxInclusive(?shape, ?o, ?m){
-    ?o <= ?m
+function sh:maxInclusive(shape, o, m){
+    o <= m
 }
 
-function sh:maxExclusive(?shape, ?o, ?m){
-    ?o < ?m
+function sh:maxExclusive(shape, o, m){
+    o < m
 }
 
-function sh:datatype(?shape, ?o, ?d){
-    sh:datatype(?o, ?d)
+function sh:datatype(shape, o, dt){
+    sh:datatype(o, dt)
 }
 
-function sh:datatype(?o, ?d){
-    if (isLiteral(?o), return(datatype(?o) = ?d && isWellFormed(?o)), false)
+function sh:datatype(o, dt){
+    if (isLiteral(o), return(datatype(o) = dt && isWellFormed(o)), false)
 }
 
-function sh:minCount(?s, ?m){
-    ?s >= ?m
+function sh:minCount(s, m){
+    s >= m
 }
 
-function sh:maxCount(?s, ?m){
-    ?s <= ?m
+function sh:maxCount(s, m){
+    s <= m
 }
 
-function sh:hasValue(?shape, ?s, ?v) {
-    ?s = ?v
+function sh:hasValue(shape, s, v) {
+    s = v
 }
 
 @skip
@@ -661,35 +661,35 @@ function sh:languageIn(?shape, ?o, ?lv){
   } 
 }
 
-function sh:node(?shape, ?o, ?cst){
-    sh:testShapeCore(?shape, ?cst, ?o)
+function sh:node(shape, o, cst){
+    sh:testShapeCore(shape, cst, o)
 }
 
-function sh:property(?shape, ?o, ?cst){
-#    sh:testShapeCore(?shape, ?cst, ?o)
-    sh:hasShape(?shape, ?cst, true, ?o)
+function sh:property(shape, o, cst){
+#    sh:testShapeCore(shape, cst, o)
+    sh:hasShape(shape, cst, true, o)
 }
 
-function sh:qualifiedShape(?subject, ?shape, ?qsh){
-    sh:testShapeCore(?shape, ?qsh, ?subject)
+function sh:qualifiedShape(subject, shape, qsh){
+    sh:testShapeCore(shape, qsh, subject)
 }
 
 # used by predicate/path 
 # count failure
-function sh:and(?and, ?s, ?p, ?o, ?shape){
-    (sh:bool(?and, ?s, ?p, ?o, ?shape, 0, 1) = 0)
+function sh:and(and, s, p, o, shape){
+    (sh:bool(and, s, p, o, shape, 0, 1) = 0)
 }
 
 # used by predicate/path 
 # count success
-function sh:or(?or, ?s, ?p, ?o, ?shape){
-    (sh:bool(?or, ?s, ?p, ?o, ?shape, 1, 0)  > 0)
+function sh:or(or, s, p, o, shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  > 0)
 }
 
 # used by predicate/path 
 # count success
-function sh:xone(?or, ?s, ?p, ?o, ?shape){
-    (sh:bool(?or, ?s, ?p, ?o, ?shape, 1, 0)  = 1)
+function sh:xone(or, s, p, o, shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  = 1)
 }
 
 # property (predicate or path)
@@ -716,20 +716,20 @@ function sh:bool(?sh, ?s, ?p, ?o, ?shape, ?suc, ?fail){
 
 # used by core
 # count fail
-function sh:and(?and, ?s, ?shape){
-    (sh:bool(?and, ?s, ?shape, 0, 1) = 0)
+function sh:and(and, s, shape){
+    (sh:bool(and, s, shape, 0, 1) = 0)
 }
 
 # used by core
 # count success
-function sh:or(?or, ?s, ?shape){
-    (sh:bool(?or, ?s, ?shape, 1, 0) > 0)
+function sh:or(or, s, shape){
+    (sh:bool(or, s, shape, 1, 0) > 0)
 }
 
 # used by core
 # count success
-function sh:xone(?or, ?s, ?shape){
-    (sh:bool(?or, ?s, ?shape, 1, 0) = 1)
+function sh:xone(or, s, shape){
+    (sh:bool(or, s, shape, 1, 0) = 1)
 }
 
 # core
@@ -751,19 +751,19 @@ function sh:bool(?sh, ?s, ?shape, ?suc, ?fail){
 
 
 
-function sh:disjoint(?l1, ?l2){
-    for (?x in ?l1){
-            if (xt:member(?x, ?l2)){
+function sh:disjoint(l1, l2){
+    for (x in l1){
+            if (xt:member(x, l2)){
                 return(false) 
             }     
     } ;
     return(true)
 }
 
-function sh:equal(?l1, ?l2){
-    if (xt:size(?l1) != xt:size(?l2), return(false),
-    for (?x in ?l1){
-            if (! xt:member(?x, ?l2)){
+function sh:equal(l1, l2){
+    if (xt:size(l1) != xt:size(l2), return(false),
+    for (x in l1){
+            if (! xt:member(x, l2)){
                 return(false) 
             }     
         }) ;
@@ -835,63 +835,63 @@ function sh:listsh(?shape, ?pp){
 # ?s is subject, ?p is PP expression
 # ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
 #
-function sh:path(?shape, ?s, ?p){    
-    sh:path(?shape, ?s, sh:getPath(?shape, ?p), false)
+function sh:path(shape, s, p){    
+    sh:path(shape, s, sh:getPath(shape, p), false)
 }
 
 
 #
 # rewrite PP once as a list and record it
 #
-function sh:getPath(?shape, ?p){
-    let (?res = coalesce(st:cget(sh:path, ?p), st:null)) {
-        if (?res = st:null) {
-            return (st:cset(sh:path, ?p, sh:path(?shape, ?p)))
+function sh:getPath(shape, p){
+    let (res = coalesce(st:cget(sh:path, p), st:null)) {
+        if (res = st:null) {
+            return (st:cset(sh:path, p, sh:path(shape, p)))
         }
         else {
-            return(?res)
+            return(res)
         }
     }
 }
 
-function sh:getPath2(?shape, ?p){
+function sh:getPath2(shape, p){
     coalesce(
-        st:cget(sh:path, ?p), 
-        st:cset(sh:path, ?p, sh:path(?shape, ?p)))
+        st:cget(sh:path, p), 
+        st:cset(sh:path, p, sh:path(shape, p)))
 }
 
 #
-# Evaluate PP ?p as a list
+# Evaluate PP p as a list
 # Return list of target nodes that match the path
-# ?inv = true means within inverse path
+# inv = true means within inverse path
 #
-function sh:path(?shape, ?s, ?p, ?inv){
-  if (isURI(?p)){
-     return(sh:pathProperty(?s, ?p, ?inv))
+function sh:path(shape, s, p, inv){
+  if (isURI(p)){
+     return(sh:pathProperty(s, p, inv))
   }
   else {
-    let ((?oper, ?path) = ?p) {      
-      return(funcall(?oper, ?shape, ?s, ?path, ?inv))
+    let ((oper, path) = p) {      
+      return(funcall(oper, shape, s, path, inv))
    }
   } 
 }
 
 
 
-function sh:zeroOrOnePath(?shape, ?s, ?p, ?inv){
-    let (?l = sh:path(?shape, ?s, ?p, ?inv)){
-        if (xt:member(?s, ?l), 
-            return(?l), 
-            return(xt:cons(?s, ?l)))
+function sh:zeroOrOnePath(shape, s, p, inv){
+    let (l = sh:path(shape, s, p, inv)){
+        if (xt:member(s, l), 
+            return(l), 
+            return(xt:cons(s, l)))
     }
 }
 
-function sh:zeroOrMorePath(?shape, ?s, ?p, ?inv){
-    sh:rec(?shape, ?s, ?p, xt:list(?s), ?inv)
+function sh:zeroOrMorePath(shape, s, p, inv){
+    sh:rec(shape, s, p, xt:list(s), inv)
 }
 
-function sh:oneOrMorePath(?shape, ?s, ?p, ?inv){
-    sh:rec(?shape, ?s, ?p, xt:list(), ?inv)
+function sh:oneOrMorePath(shape, s, p, inv){
+    sh:rec(shape, s, p, xt:list(), inv)
 }
 
 #
@@ -900,17 +900,17 @@ function sh:oneOrMorePath(?shape, ?s, ?p, ?inv){
 # ?res is the list of nodes already reached by exp*
 # ?res prevents loops
 #
-function sh:rec(?shape, ?s, ?p, ?res, ?inv){
-    let (?l = sh:path(?shape, ?s, ?p, ?inv)){
-        if (xt:size(?l) = 0){ return(?res) }
+function sh:rec(shape, s, p, res, inv){
+    let (l = sh:path(shape, s, p, inv)){
+        if (xt:size(l) = 0){ return(res) }
         else {
-            for (?e in ?l){
-                if (! xt:member(?e, ?res)){
-                    xt:add(?res, ?e) ; 
-                    sh:rec(?shape, ?e, ?p, ?res, ?inv)
+            for (ee in l){
+                if (! xt:member(ee, res)){
+                    xt:add(res, ee) ; 
+                    sh:rec(shape, ee, p, res, inv)
                 }             
             } ;
-            return(?res)             
+            return(res)             
         }
     }
 }
@@ -920,63 +920,63 @@ function sh:rec(?shape, ?s, ?p, ?res, ?inv){
 # s ^exp
 # inverse PP expression
 #
-function sh:inversePath(?shape, ?s, ?p, ?inv){
-    sh:path(?shape, ?s, ?p, ! ?inv)
+function sh:inversePath(shape, s, p, inv){
+    sh:path(shape, s, p, ! inv)
 }
 
 
 #
-# ?p is  a sequence list
+# p is  a sequence list
 #
-function sh:sequence(?shape, ?s, ?p, ?inv){
-    if (?inv) {
-        return(sh:seqlist(?shape, ?s, xt:reverse(?p), ?inv))
+function sh:sequence(shape, s, p, inv){
+    if (inv) {
+        return(sh:seqlist(shape, s, xt:reverse(p), inv))
     }
     else{
-        return(sh:seqlist(?shape, ?s, ?p, ?inv))
+        return(sh:seqlist(shape, s, p, inv))
     }
 }
 
 
 #
-# Recursive traversal of sequence list ?lp
-# recurse on xt:rest(?lp)
+# Recursive traversal of sequence list lp
+# recurse on xt:rest(lp)
 #
-function sh:seqlist(?shape, ?s, ?lp, ?inv){
-    if (xt:size(?lp) = 0){
-        # reach end of sequence: add target node ?s
-        return(xt:list(?s))
+function sh:seqlist(shape, s, lp, inv){
+    if (xt:size(lp) = 0){
+        # reach end of sequence: add target node s
+        return(xt:list(s))
     }
     else {
-        let (?l = sh:path(?shape, ?s, xt:first(?lp), ?inv), 
-            ?res = xt:list()){
-            for (?e in ?l){ 
+        let (l = sh:path(shape, s, xt:first(lp), inv), 
+            res = xt:list()){
+            for (ee in l){ 
                 # merge removes duplicate nodes
-                set(?res = xt:merge(?res, sh:seqlist(?shape, ?e, xt:rest(?lp), ?inv)))
+                set(res = xt:merge(res, sh:seqlist(shape, ee, xt:rest(lp), inv)))
             } ;
-            return(?res)
+            return(res)
         }
     }
 }
 
-# ?p = (sh:sequence (exp .. exp))
-function sh:alternativePath(?shape, ?s, ?p, ?inv){
-    let (?l = xt:get(?p, 1)) {
-        #mapmerge(sh:path, ?shape, ?s, ?l, ?inv)
-        return(mapmerge(sh:pathmap, ?l, ?shape, ?s, ?inv))
+# p = (sh:sequence (exp .. exp))
+function sh:alternativePath(shape, s, p, inv){
+    let (l = xt:get(p, 1)) {
+        #mapmerge(sh:path, shape, s, l, inv)
+        return(mapmerge(sh:pathmap, l, shape, s, inv))
     }
 }
 
-function sh:pathmap(?l, ?shape, ?s, ?inv){
-    sh:path(?shape, ?s, ?l, ?inv)
+function sh:pathmap(l, shape, s, inv){
+    sh:path(shape, s, l, inv)
 }
 
-function sh:pathProperty(?s, ?p, ?inv){
-    if (?inv) {
-        return(sh:inverse(?s, ?p))
+function sh:pathProperty(s, p, inv){
+    if (inv) {
+        return(sh:inverse(s, p))
     }
     else {
-        return(sh:predicate(?s, ?p))    
+        return(sh:predicate(s, p))    
     }
 }
 

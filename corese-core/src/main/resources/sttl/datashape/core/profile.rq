@@ -3,90 +3,90 @@ prefix msh: <http://ns.inria.fr/shacl/>
 template st:profile {}
 where {}
 
-function st:aggregate(?out) {
-  st:agg_and(?out)
-  #aggregate(?out, us:merge)
+function st:aggregate(out) {
+  st:agg_and(out)
+  #aggregate(out, us:merge)
 }
 
-function us:merge(?list) {
-    reduce(rq:and, ?list)
+function us:merge(list) {
+    reduce(rq:and, list)
 }
 
-function st:default(?term){
+function st:default(term){
     true
 }
 
-function st:defaultNamed(?term){
+function st:defaultNamed(term){
     true
 }
 
-function st:optimize(?shape, ?sh){
+function st:optimize(shape, sh){
     true
 }
 
 
-function msh:fun(?name) {
-    if (?name = sh:and,  msh:and,
-    if (?name = sh:or,   msh:or, 
-    if (?name = sh:xone, msh:xone,
+function msh:fun(name) {
+    if (name = sh:and,  msh:and,
+    if (name = sh:or,   msh:or, 
+    if (name = sh:xone, msh:xone,
     msh:not)))
 }
 
-function msh:not (?shape, ?sh, ?cst, ?vis, ?ls) {
-    if (isExtension(?ls)) {
-        let (?res = true) {
-            for (?s in ?ls) {
-                let (?suc = ! sh:testShapeCore(?shape, ?cst, ?s)) {
-                    set(?res = ?res && ?suc);
-                    st:report(sh:not, ?sh, ?shape, ?s, st:null, ?s,  ?suc, ?vis)
+function msh:not (shape, sh, cst, vis, ls) {
+    if (isExtension(ls)) {
+        let (res = true) {
+            for (s in ls) {
+                let (suc = ! sh:testShapeCore(shape, cst, s)) {
+                    set(res = res && suc);
+                    st:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
                 }
             };
-            return (?res)
+            return (res)
         }
     }
     else {
-        let (?suc = ! sh:testShapeCore(?shape, ?cst, ?ls)) {
-            st:report(sh:not, ?sh, ?shape, ?s, st:null, ?ls,  ?suc, ?vis) ;
-            return (?suc)
+        let (suc = ! sh:testShapeCore(shape, cst, ls)) {
+            st:report(sh:not, sh, shape, s, st:null, ls,  suc, vis) ;
+            return (suc)
         }    
     }
 }
 
 
 
-function msh:and (?shape, ?sh, ?bool, ?vis, ?ls) {
-    msh:boolean(sh:and, ?shape, ?sh, ?bool, ?vis, ?ls)
+function msh:and (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:and, shape, sh, bool, vis, ls)
 }
 
-function msh:or (?shape, ?sh, ?bool, ?vis, ?ls) {
-    msh:boolean(sh:or, ?shape, ?sh, ?bool, ?vis, ?ls)
+function msh:or (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:or, shape, sh, bool, vis, ls)
 }
 
-function msh:xone (?shape, ?sh, ?bool, ?vis, ?ls) {
-    msh:boolean(sh:xone, ?shape, ?sh, ?bool, ?vis, ?ls)
+function msh:xone (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:xone, shape, sh, bool, vis, ls)
 }
 
 
-# ?oper = sh:and | sh:or 
-function msh:boolean (?oper, ?shape, ?sh, ?bool, ?vis, ?ls) {
-    if (isExtension(?ls)) {
-        let (?res = true) {
-            for (?s in ?ls) {
-                let (?suc = msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?s)) {
-                    set (?res = ?res && ?suc)
+# oper = sh:and | sh:or 
+function msh:boolean (oper, shape, sh, bool, vis, ls) {
+    if (isExtension(ls)) {
+        let (res = true) {
+            for (s in ls) {
+                let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
+                    set (res = res && suc)
                 }
             } ;
-            return(?res)
+            return(res)
         }
     }
     else {
-        msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?ls)
+        msh:basic (oper, shape, sh, bool, vis, ls)
     }
 }
 
-function msh:basic (?oper, ?shape, ?sh, ?bool, ?vis, ?s) {
-    let (?suc = coalesce(funcall(?oper, ?bool, ?s, ?shape), false)){
-        st:report(?oper, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis);
-        return (?suc)
+function msh:basic (oper, shape, sh, bool, vis, s) {
+    let (suc = coalesce(funcall(oper, bool, s, shape), false)){
+        st:report(oper, sh, shape, s, st:null, s, suc, vis);
+        return (suc)
     }
 }

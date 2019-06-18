@@ -2899,7 +2899,6 @@ TOKEN [IGNORE_CASE] :
 
 // Graph pattern operators 
 | < WHERE: "where" >
-| < AND: "and" >
 | < GRAPH: "graph" >
 | < SERVICE: "service" >
 | < OPTIONAL: "optional" >

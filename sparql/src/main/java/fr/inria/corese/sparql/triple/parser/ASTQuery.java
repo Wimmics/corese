@@ -1164,7 +1164,7 @@ public class ASTQuery
      * function name(el) { exp } -> function (name(el), exp)
      */
     public Function defineFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot) {
-        Function fun = defFunction(name, el, exp, annot);
+        Function fun = defFunction(name, type, el, exp, annot);
         record(fun);    
         return fun;
     }

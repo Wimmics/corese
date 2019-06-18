@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Jun 17 18:39:39 CEST 2019
+Tue Jun 18 11:27:46 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -163,37 +163,37 @@ function sh:path(){
 
 # test and may report error
 # main target & noscope
-function sh:hasShape(shape, sh, vis, ls) {
+function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
     st:apply-templates-with-all(sh:core(), shape, sh, vis, ls)
 }
 
 # test without target and do not report error
 # sh:node  sh:or sh:and sh:not
-function sh:testShapeCore(shape, sh, s) {
+function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, s) {
     st:apply-templates-with-all(sh:core(), shape, sh, false, s)
 }
 
-function sh:hasConstraint(shape, sh, vis, s) {
+function xsd:boolean sh:hasConstraint(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
     st:apply-templates-with-all(sh:constraint(), shape, sh, vis, s)
 }
 
-function sh:hasPath(shape, sh, vis, s, p) {
+function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
     st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
 }
 
-function sh:hasPath(shape, sh, vis, s, p, o) {
+function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p, o) {
     st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p, o)
 }
 
-function sh:path(shape, sh, vis, s, p) {
+function xsd:boolean sh:path(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
     st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
 }
 
-function sh:safe(shape, sh, suc) {
+function xsd:boolean sh:safe(dt:graph shape, sh:NodeShape sh, xsd:boolean suc) {
     suc
 }
 
-function st:report(name, s, suc, vis) {
+function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
         st:visit(name, s, suc)
     } ;
@@ -204,7 +204,7 @@ function st:report(name, s, suc, vis) {
 # suc is success/failure of the shape
 # vis true means generate a ValidationResult
 #
-function st:report(name, sh, shape, foc, p, o, suc, vis){
+function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
     if (vis && ! suc) { 
         sh:result(name, sh, shape, foc,  p, o) ;
         st:visit(name, foc, suc)
@@ -212,7 +212,7 @@ function st:report(name, sh, shape, foc, p, o, suc, vis){
     return(true)
 }
 
-function st:report(name, sh, shape, foc, suc, vis){
+function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
     if (vis && ! suc) { 
         sh:result(name, sh, shape, foc,  st:null, st:null) ;
         st:visit(name, foc, suc)
@@ -234,7 +234,7 @@ function sh:result2(name, sh, shape, foc, s, p, o){
 # stored in the visitor graph
 # get it with st:visitedGraph()
 #
-function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
+function xsd:boolean sh:result(?name, sh:NodeShape ?sh, dt:graph ?shape, ?foc, ?p, ?o){
     let (?g = 
        construct {
         ?bnode a sh:ValidationReport ; 
@@ -290,21 +290,21 @@ function sh:result(?name, ?sh, ?shape, ?foc, ?p, ?o){
 }
 
 # within graph shape {}
-function sh:severity(sh) {
+function xsd:anyURI sh:severity(sh:NodeShape sh) {
     for ((s, p, o) in xt:edges(sh, sh:severity)){
         return (o)
     } ;
     return (sh:Violation)
 }
 
-function sh:message(sh){
+function sh:message(sh:NodeShape sh){
     for ((s, p, o) in xt:edges(sh, sh:message)){
         return (o)
     } ;
     return (error())
 }
 
-function sh:success(?b){
+function xsd:boolean sh:success(xsd:boolean ?b){
     if (?b){
         let (?g = 
             construct { [] a sh:ValidationReport ; sh:conforms true }
@@ -316,7 +316,7 @@ function sh:success(?b){
     return (true)
 }
 
-function sh:bnodeid(){
+function dt:bnode sh:bnodeid(){
     let (bn = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
         if (bn = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (bn)) 
     }
@@ -326,6 +326,7 @@ function sh:bnodeid2(){
     coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
 }
 
+# trick datatype for st:turtle transformation to pprint a graph in Turtle format
 function sh:graph(var){
 if (isBlank(var), 
     return(strdt(st:apply-templates-with(st:turtle, var), xt:graph)), 
@@ -354,7 +355,7 @@ function sh:define(def){
     return(true)
 }
 
-function sh:def(){
+function dt:list sh:def(){
     let (list = @(
         (sh:class       sh:ClassConstraintComponent)
         (sh:datatype    sh:DatatypeConstraintComponent)
@@ -395,6 +396,7 @@ function sh:def(){
 } 
 
 # within xt:focus(?shape, sh:sibling())
+# record sibling qualifiedValueShape in a table
 function sh:sibling() {
     for (select  ?qsh ?list where {
             select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
@@ -419,7 +421,7 @@ function sh:sibling() {
 # call sh:hasShape for each shape ?sh with list of target nodes ?list
 #
 
-function sh:target(?shape) {
+function xsd:boolean sh:target(dt:graph ?shape) {
 let (?suc = true) {
 for (
    select ?shape ?sh  (aggregate(distinct ?s) as ?list) 
@@ -473,7 +475,7 @@ for (
 }
   
   
-function sh:shapeNode(?shape, ?s) {
+function xsd:boolean sh:shapeNode(dt:graph ?shape, ?s) {
 let (?suc = true) {
 for (
    select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 

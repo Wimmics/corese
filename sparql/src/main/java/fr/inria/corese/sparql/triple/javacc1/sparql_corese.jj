@@ -639,7 +639,6 @@ Expression XML(Exp stack) :
 {
 
    <AT> uri = IRIrefConst()      
- //  <AT> (t = <SIMPLE_STRING> | t = <QNAME>)  {uri = astq.createConstant(t.image);}
 
 { list = new ExpressionList(); }
 
@@ -1042,9 +1041,7 @@ void GroupClause(): { Variable var; Expression exp; Exp stack;}
   (
   
   ( LOOKAHEAD(2)
-  	( 
-  	//exp = BrackettedExpression(stack) |
-  	
+  	(   	
   	  <LPAREN> exp = Expression(stack) (<AS> var = Var() ) ? <RPAREN> |
   	  exp = Var() |
   	  exp = BuiltInCall(stack) |
@@ -1054,7 +1051,6 @@ void GroupClause(): { Variable var; Expression exp; Exp stack;}
   	{ astq.setGroup(exp, var); }
   ) + 
   	
- // 	| <ANY> { astq.setConnex(true); }
   )
 }
 
@@ -1718,8 +1714,6 @@ Expression UnaryRegExp():{Token t, t1, t2; Expression exp; Token ope; String s1,
 
 	exp = PrimaryRegExp()   { exp = astq.createOperator(t.image, exp);  }
 	
-//	( ope = OpeRegExp()     { exp = astq.createOperator(ope.image, exp); }  )  ? 
-
 	
 |	exp = PrimaryRegExp()  
 
@@ -1823,7 +1817,6 @@ Token Soper(): { Token t; }
   | t = <LE> | t = <GE>
   | t = <EQ2> | t = <NE2> 
   | t = <TILDE> 
- // | t = <IN> 
   | t = <BEGIN_WITH>
   )
   { return t; }
@@ -1986,12 +1979,9 @@ Atom GraphTerm(Exp stack) : { Constant cst; String s; Token t1; Variable var; At
  	    )?
   	| t1 = <QNAME_NS> { cst = astq.createQName(t1.image); }
   	| cst = RDFLiteral() 
-  	| // ( <MINUS> | <PLUS> )? 
-  	  cst = NumericLiteral()
+  	| cst = NumericLiteral()
   	| cst = BooleanLiteral()   
-  	| 
- // 		t1 = <NIL> 
-  		t1 = <LPAREN>  <RPAREN> 
+  	| <LPAREN>  <RPAREN> 
   	{ cst = astq.createQName(RDFS.qrdfNil); }  
   	) { a = cst; }
   	| a = BlankNode(stack) 
@@ -2041,7 +2031,6 @@ Expression RelationalExpression(Exp stack) : { Token t1; Expression expression1,
   ( 
     (   
         t1 = Soper() expression2 = NumericExpression(stack)
-//      | t1 = Toper() expression2 = NumericExpression(stack)  
       |  (<NOT> {not = true;} )? 
         t1 = <IN>    el = ArgList(stack) {expression2 = astq.createList(el);}
     ) 
@@ -2087,7 +2076,6 @@ Expression MultiplicativeExpression(Exp stack) : { Token t1; Expression expressi
     { expression1 = astq.createMultiplicativeExpression(t1.image, expression1, expression2); }
   )*
   { return expression1; }
-//   | <REM> UnaryExpression()
 }
 
 Expression UnaryExpression(Exp stack) : { Token t1; Expression expression1; }
@@ -2183,7 +2171,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
     |
 
     (
-    ( t1 = <COALESCE> | t1 = <CONCAT> | t1 = <SUBSTR> | t1 = <REPLACE>
+    ( t1 = <REGEX> | t1 = <COALESCE> | t1 = <CONCAT> | t1 = <SUBSTR> | t1 = <REPLACE>
     | t1 = <METHOD> | t1 = <FUNCALL> | t1 = <MAP> | t1 = <MAPLIST> | t1 = <MAPMERGE>  
     | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> )
     <LPAREN> 
@@ -2192,9 +2180,6 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
       (<COMMA> exp2 = Expression(stack) { term.add(exp2); } )* 
     <RPAREN>
     )
-
-
-    | term = RegexExpression(stack)
 
     | term = exists()
   )
@@ -2215,18 +2200,6 @@ Term exists() : {Exp exp; Term term; boolean neg;}
 	}
 }
 
-
-Term RegexExpression(Exp stack): { Term term; Token t; Expression expression1, expression2; }
-{
-  t = <REGEX> 
-  <LPAREN>
-      expression1 = Expression(stack) <COMMA> expression2 = Expression(stack)
-      { term = astq.createFunction(t.image, expression1);
-      term.add(expression2); }
-      ( <COMMA> expression2 = Expression(stack) { term.add(expression2); } ) ?
-  <RPAREN>
-  { return term; }
-}
 
 Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; Constant cst; Exp sub; }
 {	
@@ -2268,11 +2241,9 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
      <COMMA> e1 = Expression(stack) <COMMA> e2 = Expression(stack) <RPAREN>  
     |
      <RPAREN>
-//     <LBRACE> e1 = Expression(stack) <RBRACE>  
        e1 = Body(stack)
      (<ELSE> 
         (
-//          <LBRACE> e2 = Expression(stack) <RBRACE>
             e2 = Body(stack)
           |
           e2 = IfThenElse (stack)
@@ -2471,7 +2442,6 @@ Function Lambda () :
 {
   <LAMBDA> 
   { stack = BasicGraphPattern.create(); }
-//  v = FunArgList()
   v = LambdaArgList()
   body = Body(stack)
 
@@ -2536,20 +2506,6 @@ ExpressionList LetArgList() : { ExpressionList glist, list;  Variable var; Const
   { return list; }
 }
 
-
-
-ExpressionList VarList2() : { ExpressionList list;  Variable var; }
-{
-    { list = new ExpressionList(); } 
- 
-     var = Var() { list.add(var);  } ( (<COMMA>)?  var = Var() { list.add(var); } )* 
-
-    ( <BAR>       var = Var() { list.add(var); list.setRest(true); } ) ?
-
-    ( <DOT>       var = Var() { list.add(var); list.setLast(true); }  ( var = Var() { list.add(var);} )* ) ?
-
-    { return list; }
-}
 
 
 ExpressionList VarList() : { ExpressionList list; }
@@ -2839,9 +2795,6 @@ TOKEN:
 | <QNAME_NS: (<NCNAME_PREFIX>)? ":" >
 
 | <QNAME: (<NCNAME_PREFIX>)? ":" (["0"-"9"])* (<NCNAME>)? >
-
-//| <BLANK_NODE_LABEL:   "_:"   ( ["0"-"9"]  | <NCNAME> )   ( (<NCNAME> | ".")* <NCNAME> ) ?   >
-
 
 | <BLANK_NODE_LABEL:   "_:"   ( ["0"-"9"]  | <BLANKNAME> )   ( (<BLANKNAME> | ".")* <BLANKNAME> ) ?   >
 
@@ -3139,15 +3092,12 @@ TOKEN :
   < LPAREN: "(" >
 | < RPAREN: ")" >
 
-// I don't know why white space is needed to be included here but not ANON
-//| <NIL: <LPAREN> (<WS>)* <RPAREN> >
 
 | < LBRACE: "{" >
 | < RBRACE: "}" >
 
 | < LBRACKET: "[" >
 | < RBRACKET: "]" >
-// (<WS>)* is not needed but is in NIL
 | < ANON: <LBRACKET> (<WS>)* <RBRACKET> >
 
 | < SEMICOLON: ";" >
@@ -3163,8 +3113,8 @@ TOKEN :
 | < NE: "!=" >
 | < GT: ">" >
 | < LT: "<" >
-| < LE: "<=" > // Maybe: | "=>" >
-| < GE: ">=" > // Maybe: | "=<" >
+| < LE: "<=" > 
+| < GE: ">=" > 
 
 | < BANG: "!" >
 | <TILDE: "~">
@@ -3179,10 +3129,6 @@ TOKEN :
 | < SLASH: "/" >
 | < QM: "?" >
 | < BAR: "|" >
-
-
-//| < AMP: "&" >
-//| < REM: "%" >
 
 | < DATATYPE: "^^">
 | < AT: "@">

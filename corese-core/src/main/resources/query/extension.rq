@@ -3,25 +3,25 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 @public { 
 
 # Specify focus node of transformation 
-# default is st:get(st:uri) as usual
+# default is st:get(st:url) as usual
 # no focus :
 # st:param [ st:focus false ]
 # focus on st:get(st:elem)
 # st:param [ st:focus st:elem ]
 function st:focus(){
-    st:get(coalesce(st:get(st:focus), st:uri))
+    st:get(coalesce(st:get(st:focus), st:url))
 }
 
 function xt:turtle() {  
     st:apply-templates-with(st:turtle)
 }
 
-function xt:turtle(?x) {  
-    if (isLiteral(?x) && datatype(?x) = dt:graph){
-        xt:focus(?x, st:apply-templates-with(st:turtle))
+function xt:turtle(x) {  
+    if (isLiteral(x) && datatype(x) = dt:graph){
+        xt:focus(x, st:apply-templates-with(st:turtle))
     }
     else {
-        st:apply-templates-with(st:turtle, ?x)
+        st:apply-templates-with(st:turtle, x)
     }
 }
 
@@ -33,15 +33,15 @@ function xt:owl() {
     st:apply-templates-with(st:owl)
 }
 
-function xt:owl(?x) {  
-    st:apply-templates-with(st:owl, ?x)
+function xt:owl(x) {  
+    st:apply-templates-with(st:owl, x)
 }
 
-function st:list(?t) { 
-    let (?l = st:call-template-with(st:list, st:list, ?t)){
-        if (! isLiteral(?l) || datatype(?l) != dt:list){
-            xt:list(?l) }
-        else { ?l }
+function st:list(t) { 
+    let (l = st:call-template-with(st:list, st:list, t)){
+        if (! isLiteral(l) || datatype(l) != dt:list){
+            xt:list(l) }
+        else { l }
     }
 }
 
@@ -69,8 +69,8 @@ function xt:conform(?g) {
     )
 }
 
-function us:ldGraph(?shape) {
-    if (isURI(?shape), xt:load(?shape), ?shape)
+function us:ldGraph(shape) {
+    if (isURI(shape), xt:load(shape), shape)
 }
 
 function xt:shapeGraph() {
@@ -78,40 +78,40 @@ function xt:shapeGraph() {
     return (st:visitedGraph())
 }
 
-function xt:shapeGraph(?shape) {
-    st:call-template-with(st:dsmain, st:start, us:ldGraph(?shape)) ;
+function xt:shapeGraph(shape) {
+    st:call-template-with(st:dsmain, st:start, us:ldGraph(shape)) ;
     return (st:visitedGraph())
 }
 
-function xt:shapeGraph(?shape, ?sh) {
-    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeGraph, ?sh) ;
+function xt:shapeGraph(shape, sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeGraph, sh) ;
     return (st:visitedGraph())
 }
 
-function xt:shapeNode(?uri) {
-    st:call-template-with(st:dsmain, st:main, xt:graph(), sh:shapeNode, ?uri) ;
+function xt:shapeNode(url) {
+    st:call-template-with(st:dsmain, st:main, xt:graph(), sh:shapeNode, url) ;
     return (st:visitedGraph())
 }
 
-function xt:shapeNode(?uri, ?shape) {
-    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri) ;
+function xt:shapeNode(url, shape) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url) ;
     return (st:visitedGraph())
 }
 
-function xt:shapeNode(?uri, ?shape, ?sh) {
-    st:call-template-with(st:dsmain, st:main, us:ldGraph(?shape), sh:shapeNode, ?uri, ?sh) ;
+function xt:shapeNode(url, shape, sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url, sh) ;
     return (st:visitedGraph())
 }
 
-function xt:testShapeNode(?uri, ?shape) {
-    let (?g = xt:shapeNode(?uri, ?shape)) {
-        xt:conform(?g)
+function xt:testShapeNode(url, shape) {
+    let (g = xt:shapeNode(url, shape)) {
+        xt:conform(g)
     }
 }
 
-function xt:testShapeNode(?uri) {
-    let (?g = xt:shapeNode(?uri, xt:graph())) {
-        xt:conform(?g)
+function xt:testShapeNode(url) {
+    let (g = xt:shapeNode(url, xt:graph())) {
+        xt:conform(g)
     }
 }
 

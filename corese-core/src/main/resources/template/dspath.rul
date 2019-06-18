@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon May 06 13:38:51 CEST 2019
+Mon Jun 17 18:47:35 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -255,46 +255,46 @@ prefix msh: <http://ns.inria.fr/shacl/>
 template st:profile {}
 where {}
 
-function st:aggregate(?out) {
-  st:agg_and(?out)
+function st:aggregate(out) {
+  st:agg_and(out)
 }
 
-function st:default(?term){
+function st:default(term){
     true
 }
 
-function st:defaultNamed(?term){
+function st:defaultNamed(term){
     true
 }
 
-function st:optimize(?shape, ?sh){
+function st:optimize(shape, sh){
     true
 }
 
 
 
 
-function sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o) {
-    sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m)
+function sh:minCount (shape, sh, vis, s, p, m, o) {
+    sh:minCount (shape, sh, vis, s, p, m)
 }
 
-function sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m, ?o) {
-    sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m)
+function sh:maxCount (shape, sh, vis, s, p, m, o) {
+    sh:maxCount (shape, sh, vis, s, p, m)
 }
 
-function sh:minCount (?shape, ?sh, ?vis, ?s, ?p, ?m) {
-    let (?val = xt:size(sh:path(?shape, ?s, ?p)),
-         ?suc = ?val >= ?m) { 
-        st:report(sh:minCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis);
-        return(?suc)
+function sh:minCount (shape, sh, vis, s, p, m) {
+    let (val = xt:size(sh:path(shape, s, p)),
+         suc = val >= m) { 
+        st:report(sh:minCount, sh, shape, s, p, val, suc, vis);
+        return(suc)
     }
 }
 
-function sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m) {
-    let (?val = xt:size(sh:path(?shape, ?s, ?p)),
-         ?suc = ?val <= ?m) { 
-        st:report(sh:maxCount, ?sh, ?shape, ?s, ?p, ?val, ?suc, ?vis);
-        return(?suc)
+function sh:maxCount (shape, sh, vis, s, p, m) {
+    let (val = xt:size(sh:path(shape, s, p)),
+         suc = val <= m) { 
+        st:report(sh:maxCount, sh, shape, s, p, val, suc, vis);
+        return(suc)
     }
 }
 
@@ -304,50 +304,50 @@ function sh:maxCount (?shape, ?sh, ?vis, ?s, ?p, ?m) {
 
 
 
-function sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst) {
-    let (?res = true) {
-        for (?o in sh:path(?shape, ?s, ?p)) {
-            let (?suc = ! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o)) {
-                st:report(sh:not, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
-                set (?res = ?res && ?suc)
+function sh:not (shape, sh, vis, s, p, cst) {
+    let (res = true) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = ! sh:hasPath(shape, cst, false, s, p, o)) {
+                st:report(sh:not, sh, shape, s, p, o, suc, vis);
+                set (res = res && suc)
             }
         } ;
-        return (?res)
+        return (res)
     }
 }
 
 
-function sh:and (?shape, ?sh, ?vis, ?s, ?p, ?and) {
-    msh:boolean (sh:and, ?shape, ?sh, ?vis, ?s, ?p, ?and)
+function sh:and (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:and, shape, sh, vis, s, p, and)
 }
 
-function sh:or (?shape, ?sh, ?vis, ?s, ?p, ?and) {
-    msh:boolean (sh:or, ?shape, ?sh, ?vis, ?s, ?p, ?and)
+function sh:or (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:or, shape, sh, vis, s, p, and)
 }
 
-function sh:xone (?shape, ?sh, ?vis, ?s, ?p, ?and) {
-    msh:boolean (sh:xone, ?shape, ?sh, ?vis, ?s, ?p, ?and)
+function sh:xone (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:xone, shape, sh, vis, s, p, and)
 }
 
-function msh:boolean (?oper, ?shape, ?sh, ?vis, ?s, ?p, ?and) {
-    let (?res = true) {
-        for (?o in sh:path(?shape, ?s, ?p)) {
-            let (?suc = coalesce(funcall(?oper, ?and, ?s, ?p, ?o, ?shape), false)) { 
-                st:report(?oper, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
-                set (?res = ?res && ?suc)
+function msh:boolean (oper, shape, sh, vis, s, p, and) {
+    let (res = true) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
+                st:report(oper, sh, shape, s, p, o, suc, vis);
+                set (res = res && suc)
             }
         };
-        return (?res)
+        return (res)
     }
 }
 
 
-function sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
-    let (?l = sh:path(?shape, ?s, ?p)) {
-        if (xt:member(?o, ?l)) {
-            let (?suc = ! sh:hasPath(?shape, ?cst, false, ?s, ?p, ?o)) {
-                st:report(sh:not, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
-                return(?suc)
+function sh:not (shape, sh, vis, s, p, cst, o) {
+    let (l = sh:path(shape, s, p)) {
+        if (xt:member(o, l)) {
+            let (suc = ! sh:hasPath(shape, cst, false, s, p, o)) {
+                st:report(sh:not, sh, shape, s, p, o, suc, vis);
+                return(suc)
             }
         } ;
         return (true)
@@ -355,24 +355,24 @@ function sh:not (?shape, ?sh, ?vis, ?s, ?p, ?cst, ?o) {
 }
 
 
-function sh:and (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
-    msh:boolean (sh:and, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+function sh:and (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:and, shape, sh, vis, s, p, and, o)
 }
 
-function sh:or (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
-    msh:boolean (sh:or, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+function sh:or (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:or, shape, sh, vis, s, p, and, o)
 }
 
-function sh:xone (?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
-    msh:boolean (sh:xone, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o)
+function sh:xone (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:xone, shape, sh, vis, s, p, and, o)
 }
 
-function msh:boolean (?oper, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
-    let (?l = sh:path(?shape, ?s, ?p)) {
-        if (xt:member(?o, ?l)) {
-            let (?suc = coalesce(funcall(?oper, ?and, ?s, ?p, ?o, ?shape), false)) { 
-                st:report(?oper, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis);
-                return (?suc)
+function msh:boolean (oper, shape, sh, vis, s, p, and, o) {
+    let (l = sh:path(shape, s, p)) {
+        if (xt:member(o, l)) {
+            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
+                st:report(oper, sh, shape, s, p, o, suc, vis);
+                return (suc)
             }
         };
         return (true)
@@ -381,27 +381,27 @@ function msh:boolean (?oper, ?shape, ?sh, ?vis, ?s, ?p, ?and, ?o) {
 
 
 
-function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q) {
-    let (?res = true, 
-         ?l1 = sh:path(?shape, ?s, ?p),
-         ?l2 = sh:path(?shape, ?s, ?q)) {
-        for (?o in ?l1) {
-            let (?suc = ! xt:member(?o, ?l2)) {
-                st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
-                set (?res = ?res && ?suc)
+function sh:disjoint (shape, sh, vis, s, p, q) {
+    let (res = true, 
+         l1 = sh:path(shape, s, p),
+         l2 = sh:path(shape, s, q)) {
+        for (o in l1) {
+            let (suc = ! xt:member(o, l2)) {
+                st:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
+                set (res = res && suc)
             }
         } ;
-        return (?res)
+        return (res)
     }
 }
 
-function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o) {
-    let (?l1 = sh:path(?shape, ?s, ?p),
-         ?l2 = sh:path(?shape, ?s, ?q)) {
-        if (xt:member(?o, ?l1)) {
-            let (?suc = ! xt:member(?o, ?l2)) {
-                st:report(sh:disjoint, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
-                return (?suc)
+function sh:disjoint (shape, sh, vis, s, p, q, o) {
+    let (l1 = sh:path(shape, s, p),
+         l2 = sh:path(shape, s, q)) {
+        if (xt:member(o, l1)) {
+            let (suc = ! xt:member(o, l2)) {
+                st:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
+                return (suc)
             }
         } ;
         return (true)
@@ -413,42 +413,42 @@ function sh:disjoint (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o) {
 
 
 
-function sh:equals (?shape, ?sh, ?vis, ?s, ?p, ?q) {
-    let (?l1 = sh:path(?shape, ?s, ?p), 
-         ?l2 = sh:path(?shape, ?s, ?q)) {         
-         let (?b1 = sh:myequals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?l1, ?l2),
-              ?b2 = sh:myequals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?l2, ?l1)) {
-        return (?b1 && ?b2)
+function sh:equals (shape, sh, vis, s, p, q) {
+    let (l1 = sh:path(shape, s, p), 
+         l2 = sh:path(shape, s, q)) {         
+         let (b1 = sh:myequals (shape, sh, vis, s, p, q, l1, l2),
+              b2 = sh:myequals (shape, sh, vis, s, p, q, l2, l1)) {
+        return (b1 && b2)
         }
     }
 }
 
-function sh:myequals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?l1, ?l2) {
-    let (?res = true) {
-        for (?o in ?l1) {
-            let (?suc = xt:member(?o, ?l2)) {
-                 st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
-                 set(?res = ?res && ?suc) 
+function sh:myequals (shape, sh, vis, s, p, q, l1, l2) {
+    let (res = true) {
+        for (o in l1) {
+            let (suc = xt:member(o, l2)) {
+                 st:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
+                 set(res = res && suc) 
             }
         } ;
-        return (?res)
+        return (res)
     }
 }
 
 
-function sh:equals (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o) {
-    let (?l1 = sh:path(?shape, ?s, ?p), 
-         ?l2 = sh:path(?shape, ?s, ?q),
-         ?b1 = if (xt:member(?o, ?l2), sh:equal (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o, ?l1), true),
-         ?b2 = if (xt:member(?o, ?l1), sh:equal (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o, ?l2), true)) {
-        return (?b1 && ?b2)
+function sh:equals (shape, sh, vis, s, p, q, o) {
+    let (l1 = sh:path(shape, s, p), 
+         l2 = sh:path(shape, s, q),
+         b1 = if (xt:member(o, l2), sh:equal (shape, sh, vis, s, p, q, o, l1), true),
+         b2 = if (xt:member(o, l1), sh:equal (shape, sh, vis, s, p, q, o, l2), true)) {
+        return (b1 && b2)
     }
 }
 
-function sh:equal (?shape, ?sh, ?vis, ?s, ?p, ?q, ?o, ?l) {
-    let (?suc = xt:member(?o, ?l)) {
-        st:report(sh:equals, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis) ;
-        return (?suc)
+function sh:equal (shape, sh, vis, s, p, q, o, l) {
+    let (suc = xt:member(o, l)) {
+        st:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
+        return (suc)
     }
 }
 

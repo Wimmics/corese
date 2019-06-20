@@ -1,37 +1,61 @@
-@prefix :   <http://www.ai4eu.eu/ontologies/core#>
+@prefix : <http://www.ai4eu.eu/ontologies/data#> .
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
-@prefix de: <http://purl.org/dc/elements/1.1/> 
-@prefix dc: <http://purl.org/dc/terms/>
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
 
+@base <http://www.ai4eu.eu/ontologies/data> .
 
+:ellogon a owl:NamedIndividual, ai:SoftwareComponent ;
+  foaf:name "Ellogon"^^xsd:string ;
+  ai:distributed_as :ellogon-distro ;
+  ai:requires :CPU ;
+  dcterms:subject cso:natural_language_processing_systems ;
+  ai:keyword "Linguistic Pipelines"@en ,
+           "Language Engineering Platform"@en ,
+           "NLP"@en ;
+  dcterms:bibliographicCitation "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
+  dcterms:creator :ncsr .
 
+:ellogon-distro: a owl:NamedIndividual, ai:StandAlone ;
+                   ai:atTRL :trl9 ;
+                   ai:accompanied_by :ellogon-devguide ,
+                                     :ellogon-specs ,
+                                     :ellogon-userguide ;
+                   ai:under_license :lgpl ;
+                   ai:download "http://www.ellogon.org/index.php/download"^^xsd:anyURI .
 
-###  http://www.ai4eu.eu/ontologies/core#ellogon
-:ellogon rdf:type :SoftwareComponent ;
-         :distributed_as :ellogon-distro ;
-         :uses :CPU ;
-         :country <http://fr.dbpedia.org/resource/Grèce> ;
-         <http://purl.org/dc/terms/bibliographicCitation> "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
-         :keyword "Language Engineering Platform"@en ,
-                  "Linguistic Pipelines"@en ,
-                  "NLP"@en ;
-         <http://xmlns.com/foaf/0.1/name> "Ellogon"^^xsd:string ;
-         <http://purl.org/dc/elements/1.1/creator> :ncsr ;
-         <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/natural%20language%20processing%20systems> .
+:CPU a owl:NamedIndividual, ai:ComputationalResource .
 
+:ncsr a owl:NamedIndividual, foaf:Organization ;
+        foaf:name "National Centre for Scientific Research - Demokritos"@en ;
+        foaf:homepage "http://www.demokritos.gr"^^xsd:anyURI ;
+        ai:location "http://dbpedia.org/resource/Greece"^^xsd:anyURI .
 
-###  http://www.ai4eu.eu/ontologies/core#ellogon-distro
-:ellogon-distro rdf:type :StandAlone ;
-                :atTRL :TRL9 ;
-                :under_license :LGPL ;
-                <http://purl.org/dc/elements/1.1/creator> :ncsr .
+:eu a owl:NamedIndividual, foaf:Organization ;
+      foaf:name "European Commission"@en .
 
+:ellogon-devguide a owl:NamedIndividual, ai:Manual ;
+                    dcterms:title "Ellogon Developers Guide"@en ;
+                    ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=21:ellogondevelopersguide"^^xsd:anyURI .
 
-###  http://www.ai4eu.eu/ontologies/core#ellogon-reference
-:ellogon-reference rdf:type <http://purl.org/dc/terms/BibliographicResource> ;
-                   <http://purl.org/dc/terms/title> "Ellogon: A New Text Engineering Platform"^^xsd:string .
+:ellogon-specs a owl:NamedIndividual, ai:Manual ;
+                 dcterms:title "Ellogon Components' Specification"@en ;
+                 ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=19:ellogoncomponentsspecifications"^^xsd:anyURI .
 
+:ellogon-userguide a owl:NamedIndividual, ai:Manual ;
+                     dcterms:title "Ellogon Users Guide"@en ;
+                     ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=23:ellogonuserguide"^^xsd:anyURI .
 
-###  http://www.ai4eu.eu/ontologies/core#ncsr
-:ncsr rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
-      <http://xmlns.com/foaf/0.1/name> "National Centre for Scientific Research \"Demokritos\""^^xsd:string .
+:lgpl a owl:NamedIndividual, dcterms:LicenseDocument ;
+        dcterms:source "https://www.gnu.org/copyleft/lesser.html"^^xsd:anyURI .
+
+:trl9 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
+        ai:authority :eu ;
+        ai:trl 9 ;
+        dcterms:description "actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space)"@en .

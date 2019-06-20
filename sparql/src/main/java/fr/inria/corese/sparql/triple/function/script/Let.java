@@ -18,6 +18,7 @@ import fr.inria.corese.sparql.triple.parser.ASTBuffer;
  *
  */
 public class Let extends Statement {
+    private boolean dynamic = false;
 
     public Let() {}
     
@@ -76,13 +77,20 @@ public class Let extends Statement {
         IDatatype val = getDefinition().eval(eval, b, env, p);
         if (val == null) {
             return null;
-        }
-        else if (val == DatatypeMap.UNBOUND) {
+        } else if (val == DatatypeMap.UNBOUND) {
             val = null;
         }
         Variable var = getVariable();
         b.set(this, var, val);
+        boolean save = true; 
+        if (isDynamic()) {
+            save = b.isDynamicCapture();
+            b.setDynamicCapture(isDynamic());
+        }
         IDatatype res = getBody().eval(eval, b, env, p);
+        if (isDynamic()) {
+            b.setDynamicCapture(save);
+        }
         b.unset(this, var, val);
         return res;
     }
@@ -90,5 +98,19 @@ public class Let extends Statement {
     @Override
     public void tailRecursion(Function fun) {
         getBody().tailRecursion(fun);
+    }
+
+    /**
+     * @return the dynamic
+     */
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    /**
+     * @param dynamic the dynamic to set
+     */
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
     }
 }

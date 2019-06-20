@@ -33,6 +33,7 @@ public class Binding implements Binder {
     static final String NL = System.getProperty("line.separator");
     static final int UNBOUND = ExprType.UNBOUND;
     public static boolean DEBUG_DEFAULT = false;
+    public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
 
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
@@ -50,6 +51,7 @@ public class Binding implements Binder {
     private boolean debug = DEBUG_DEFAULT;
 
     private static Logger logger = LoggerFactory.getLogger(Binding.class);
+    private boolean dynamicCapture = DYNAMIC_CAPTURE_DEFAULT;
     private boolean result;
 
     Binding() {
@@ -282,9 +284,21 @@ public class Binding implements Binder {
     public IDatatype get(Expr var) {
         switch (var.getIndex()) {
             case UNBOUND: {
+                if (isDynamicCapture()) {
+                    for (int i = varList.size() - 1; i >= 0; i--) {
+                        if (varList.get(i) != null && varList.get(i).equals(var)) {
+                            return valList.get(i);
+                        }
+                    }
+                }
+                
                 IDatatype dt = globalValue.get(var.getLabel());
-                if (dt == null && isDebug()) {
-                    logger.warn("Variable unbound: " + var);
+                if (dt == null) {
+
+                    if (isDebug()) {
+                        logger.warn("Variable unbound: " + var);
+                        System.out.println(this);
+                    }
                 }
                 return dt;
             }
@@ -516,6 +530,20 @@ public class Binding implements Binder {
     @Override
     public void setVisitor(ProcessVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    /**
+     * @return the dynamicCapture
+     */
+    public boolean isDynamicCapture() {
+        return dynamicCapture;
+    }
+
+    /**
+     * @param dynamicCapture the dynamicCapture to set
+     */
+    public void setDynamicCapture(boolean dynamicCapture) {
+        this.dynamicCapture = dynamicCapture;
     }
     
 }

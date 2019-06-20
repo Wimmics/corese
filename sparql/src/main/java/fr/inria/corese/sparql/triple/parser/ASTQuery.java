@@ -1370,11 +1370,17 @@ public class ASTQuery
      * @param body
      * @return
      */
-    public Term let(ExpressionList el, Expression body) {
+    public Let let(ExpressionList el, Expression body) {
         return defineLet(el, body, 0);
     }
+    
+    public Let let(ExpressionList el, Expression body, boolean dynamic) {
+        Let let = defineLet(el, body, 0);
+        let.setDynamic(dynamic);
+        return let;
+    }
 
-    public Term defineLet(ExpressionList el, Expression body, int n) {
+    public Let defineLet(ExpressionList el, Expression body, int n) {
         if (n == el.size() - 1) {
             return let(el.get(n), body);
         }
@@ -1387,7 +1393,7 @@ public class ASTQuery
      * this match() AST is compiled by Processor
      * nested: let (((?x, ?y)) = select where)
      */
-    Term let(Expression exp, Expression body) {
+    Let let(Expression exp, Expression body) {
         if (exp.getArg(0).isTerm() && exp.getArg(0).getTerm().isNested()) {
             return let(exp.getArg(0).getTerm().getNestedList(), exp.getArg(1), body);
         }
@@ -1404,7 +1410,7 @@ public class ASTQuery
      * get first Binding, match it
      */
     
-     Term let(ExpressionList expList, Expression exp, Expression body) { 
+     Let let(ExpressionList expList, Expression exp, Expression body) { 
          if (! exp.isTerm() || expList.getList().size() == 1){
             return let(expList, exp, body, 0);
          }
@@ -1414,7 +1420,7 @@ public class ASTQuery
      }
     
     // recurse on  expList 
-    Term let(ExpressionList expList, Expression exp, Expression body, int n) { 
+    Let let(ExpressionList expList, Expression exp, Expression body, int n) { 
         Variable var = new Variable(LET_VAR + nbd++);
         ExpressionList list = expList.getList().get(n) ;
         Term fst = defGet(var, exp, n);

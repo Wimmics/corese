@@ -1,4 +1,5 @@
 @prefix ai:     <http://www.ai4eu.eu/ontologies/core#>
+@prefix aid:    <http://www.ai4eu.eu/ontologies/data#>
 @prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
 @prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
 
@@ -17,6 +18,7 @@ st:param [
     st:transformations (spq:result navlab:map <sttl/chart.rul> ) ;
     st:lodprofile (
         (ai: st:sparql)         
+        (aid: st:sparql)         
         (dc: st:sparql)  
         (<http://purl.org/dc/elements/1.1/> st:sparql)
         (foaf: st:sparql)  

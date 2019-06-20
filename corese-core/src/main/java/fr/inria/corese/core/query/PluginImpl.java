@@ -27,7 +27,6 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
-import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
@@ -105,6 +104,8 @@ public class PluginImpl
     public static final String HIDE     = EXT+"hide";
     public static final String NODE_MGR = EXT+"nodeManager";
     public static final String RDF_STAR = EXT+"rdfstar";
+    public static final String TYPECHECK= EXT+"typecheck";
+    public static final String RDF_TYPECHECK= EXT+"rdftypecheck";
     public static final String VARIABLE = EXT+"variable";
     public static final String URI      = EXT+"uri";
     public static final String TRANSFORMER = EXT+"transformer";
@@ -1127,6 +1128,15 @@ public class PluginImpl
                     ASTQuery.REFERENCE_DEFINITION_BNODE = !ASTQuery.REFERENCE_DEFINITION_BNODE;
                     System.out.println("rdf* id uri: " + ASTQuery.REFERENCE_DEFINITION_BNODE);
                 }
+                break;
+                
+            case TYPECHECK:
+                Function.typecheck = dt2.booleanValue();
+                System.out.println("typecheck: " + Function.typecheck);
+                break;
+            case RDF_TYPECHECK:
+                Function.rdftypecheck = dt2.booleanValue();
+                System.out.println("rdftypecheck: " + Function.rdftypecheck);
                 break;
 
         }

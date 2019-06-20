@@ -69,6 +69,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
 
@@ -109,6 +110,8 @@ public class PluginImpl
     public static final String VARIABLE = EXT+"variable";
     public static final String URI      = EXT+"uri";
     public static final String TRANSFORMER = EXT+"transformer";
+    public static final String BINDING  = EXT+"binding";
+    public static final String DYNAMIC_CAPTURE  = EXT+"dynamic";
     
     private static final String QM      = "?";
     
@@ -1055,6 +1058,10 @@ public class PluginImpl
         
         return null;
     }
+    
+    Binding getBinding(Environment env) {
+        return (Binding) env.getBind();
+    }
 
     @Override
     public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype... dt) {
@@ -1082,10 +1089,16 @@ public class PluginImpl
                         // xt:tune(st:debug, st:transformer, st:ds)
                         Transformer.debug(dt3.getLabel(), dt.length > 3 ? dt[3].booleanValue() : true);
                         break;
+                        
+                    case BINDING:
+                        getBinding(env).setDebug(dt3.booleanValue());
+                        break;
+                        
                     default:
                         getEvaluator().setDebug(dt2.booleanValue());
                 }
                 break;
+                
             case EVENT:
                 getEventManager(p).setVerbose(dt2.booleanValue());
                 getGraph(p).setDebugMode(dt2.booleanValue());

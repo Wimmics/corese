@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -1268,6 +1269,15 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     @Override
     public IDatatype nodeValue(int n) {
         return newInstance(n);
+    }
+    
+    public static boolean isLiteralDatatype(IDatatype type) {
+        String label = type.getLabel();
+        return label.startsWith(NSManager.DT)
+                || label.startsWith(NSManager.XSD)
+                || label.equals(fr.inria.corese.sparql.datatype.RDF.XMLLITERAL)
+                || label.equals(fr.inria.corese.sparql.datatype.RDF.LANGSTRING)
+                || label.equals(fr.inria.corese.sparql.datatype.RDF.HTML);
     }
  
 

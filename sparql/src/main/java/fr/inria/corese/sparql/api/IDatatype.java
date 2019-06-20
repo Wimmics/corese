@@ -110,8 +110,9 @@ public interface IDatatype
     @Override boolean isBlank();
     @Override boolean isLiteral();
     @Override boolean isURI();
-    IDatatype isWellFormed();
+    boolean conform(IDatatype dt);
     
+    IDatatype isWellFormed();
     IDatatype isBlankNode();
     IDatatype isLiteralNode();
     IDatatype isURINode();

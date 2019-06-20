@@ -1278,6 +1278,14 @@ public class CoreseDatatype
     }
     
     @Override
+    public boolean conform(IDatatype type) {
+        if (getDatatype().equals(type)) {
+            return true;
+        }       
+        return false;
+    }
+    
+    @Override
     public int compare(Node n) {
         return compareTo((IDatatype) n.getValue());
     }

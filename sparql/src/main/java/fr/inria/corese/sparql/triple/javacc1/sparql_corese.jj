@@ -2431,7 +2431,10 @@ Function Function(Metadata la) :
 
   {     
         // type  is optional, name is mandatory
-        name = (name==null) ? type : name;
+        if (name == null) {
+            name = type;
+            type = null;
+        }
   	term = astq.defineFunction(name, type, v, body, la );        
   }
   { return term; }

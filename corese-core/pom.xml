@@ -86,12 +86,12 @@
         </dependency>
         <!--RDFa parser-->
         <dependency>
-	    <groupId>${semargl.groupId}</groupId>
-            <artifactId>semargl-rdfa</artifactId>
+         <groupId>${semargl.groupId}</groupId>
+         <artifactId>semargl-rdfa</artifactId>
         </dependency>
         <dependency>
-	    <groupId>${semargl.groupId}</groupId>
-            <artifactId>semargl-core</artifactId>
+         <groupId>${semargl.groupId}</groupId>
+         <artifactId>semargl-core</artifactId>
         </dependency>
         <!-- JSON-LD parser-->
         <dependency>

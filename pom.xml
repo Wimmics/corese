@@ -123,7 +123,6 @@
         <sesame.version>4.1.1</sesame.version>
         <jersey.version>2.27</jersey.version>
         <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>
-        <semargl.version>0.7.1</semargl.version>
         <!--<maven.test.skip>true</maven.test.skip>-->
         <project.build.sourceEncoding>UTF-8
         </project.build.sourceEncoding> <!-- to prevent "[WARNING] Using platform encoding..."  -->
@@ -756,7 +755,7 @@
                 </property>
             </activation>
             <properties>
-                <semargl.version>0.7.1</semargl.version>
+                <semargl.version>0.7.4-jdk11</semargl.version>
             </properties>
             <build>
                 <plugins>
@@ -804,7 +803,8 @@
         <profile>
             <id>java8</id>
             <properties>
-                <semargl.version>0.7.2</semargl.version>
+                <revision>4.1.1-jdk8</revision>
+                <semargl.version>0.7.4-jdk8</semargl.version>
             </properties>
             <build>
                 <plugins>

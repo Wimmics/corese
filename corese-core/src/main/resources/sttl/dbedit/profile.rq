@@ -40,8 +40,8 @@ function us:root(){
 }
 
 function us:clean(?s){
-  if (strcontains(?s, "Swastika")
-   || strcontains(?s, "Panzer-Division")
+  if (contains(?s, "Swastika")
+   || contains(?s, "Panzer-Division")
    , 
     "", ?s)
 }
@@ -62,24 +62,27 @@ function us:split(?list, ?n) {
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
-function us:table(?list, ?size){
- let ( ?table  = us:split(?list, ?size),
-       ?ftable = coalesce(us:format("table.html"), "<table class='table'>\n%s</table>\n"),
-       ?frow   = coalesce(us:format("tr.html"),    "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n"),
-       ?fcell  = coalesce(us:format("td.html"),    "<td style='vertical-align: bottom'>%s</td>\n"))
+
+function us:table(list, size) {
+ let ( table  = us:split(list, size),
+       ftable = coalesce(us:format("table.html"), "<table class='table'>\n%s</table>\n"),
+       frow   = coalesce(us:format("tr.html"),    "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n"),
+       fcell  = coalesce(us:format("td.html"),    "<td style='vertical-align: bottom'>%s</td>\n"))
        {
-     st:format(?ftable, 
-      let (?n = 0){
-	    loop (?row in ?table){
-	      st:format(?frow, 
-	        set(?n = ?n + 1), 
-	        loop (?cell in ?row){
-		      st:format(?fcell, ?cell)
-	        })
-	    }
-	  }
+     st:format(ftable, 
+      letdyn (n = 0) {
+	    us:mapconcat (lambda(row) { 
+	      st:format(frow, 
+	        set(n = n + 1), 
+	        us:mapconcat (lambda(cell) { st:format(fcell, cell) }, row) )
+	        } , table)
+	  } 
      )
   }
+}
+
+function us:mapconcat(fun, exp) {
+    reduce(rq:concat, maplist(fun, exp))
 }
 
 # URL of HTML format in the server (/data/format/dbedit/name) 

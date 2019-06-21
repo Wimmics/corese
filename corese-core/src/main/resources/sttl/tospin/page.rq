@@ -3,7 +3,7 @@ template st:page {
 
   "<h3>SPARQL-SPIN Translator</h3>"
   
-   if (strcontains(st:get(st:service),  "tospin"),
+   if (contains(st:get(st:service),  "tospin"),
      st:call-template(st:tospin),
      st:call-template(st:tosparql))
   

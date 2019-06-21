@@ -2338,7 +2338,7 @@ IDatatype ListTerm() : { String s; Token t1;  Atom a; }
 Term Let (Exp stack) : 
 {boolean dynamic = false; Expression exp ; Expression arg; ExpressionList list; }
 {
-        ( <LET> | <DYNLET> { dynamic = true; })
+        ( <LET> | <LETDYN> { dynamic = true; })
         <LPAREN> 
                { list = new ExpressionList(); }
                (
@@ -2863,7 +2863,7 @@ TOKEN [IGNORE_CASE] :
 | < NOT: "not">
 | < SCOPE: "scope">
 | < LET: "let">
-| < DYNLET: "dynlet">
+| < LETDYN: "letdyn">
 | < SET: "set">
 | < FOR: "for">
 | < LOOP: "loop">

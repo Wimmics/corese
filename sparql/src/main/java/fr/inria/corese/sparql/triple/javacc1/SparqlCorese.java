@@ -1062,7 +1062,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -1205,7 +1205,7 @@
     case VAR2:
     case NOT:
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -1370,7 +1370,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -1518,7 +1518,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -1668,7 +1668,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -1850,7 +1850,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -3049,7 +3049,7 @@
         exp = FunctionCall(stack);
         break;
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -3873,7 +3873,7 @@
       exp = BuiltInCall(stack);
       break;
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -5312,7 +5312,7 @@
     case VAR2:
     case NOT:
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -5456,7 +5456,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -5980,7 +5980,7 @@
       term = IfThenElse(stack);
       break;
     case LET:
-    case DYNLET:
+    case LETDYN:
       term = Let(stack);
       break;
     case SET:
@@ -6170,7 +6170,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -6462,8 +6462,8 @@
     case LET:
       jj_consume_token(LET);
       break;
-    case DYNLET:
-      jj_consume_token(DYNLET);
+    case LETDYN:
+      jj_consume_token(LETDYN);
                              dynamic = true;
       break;
     default:
@@ -6554,7 +6554,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -7131,7 +7131,7 @@
     case VAR2:
     case NOT:
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -7247,7 +7247,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -7384,7 +7384,7 @@
         case VAR2:
         case NOT:
         case LET:
-        case DYNLET:
+        case LETDYN:
         case SET:
         case FOR:
         case LOOP:
@@ -7566,7 +7566,7 @@
     case VAR2:
     case NOT:
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -7681,7 +7681,7 @@
       case VAR2:
       case NOT:
       case LET:
-      case DYNLET:
+      case LETDYN:
       case SET:
       case FOR:
       case LOOP:
@@ -7933,7 +7933,7 @@
       expression1 = BuiltInCall(stack);
       break;
     case LET:
-    case DYNLET:
+    case LETDYN:
     case SET:
     case FOR:
     case LOOP:
@@ -9740,7 +9740,7 @@
   }
 
   final private boolean jj_3R_145() {
-    if (jj_scan_token(DYNLET)) return true;
+    if (jj_scan_token(LETDYN)) return true;
     return false;
   }
 

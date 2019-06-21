@@ -49,7 +49,7 @@ public interface SparqlCoreseConstants {
   int NOT = 48;
   int SCOPE = 49;
   int LET = 50;
-  int DYNLET = 51;
+  int LETDYN = 51;
   int SET = 52;
   int FOR = 53;
   int LOOP = 54;
@@ -300,7 +300,7 @@ public interface SparqlCoreseConstants {
     "\"not\"",
     "\"scope\"",
     "\"let\"",
-    "\"dynlet\"",
+    "\"letdyn\"",
     "\"set\"",
     "\"for\"",
     "\"loop\"",

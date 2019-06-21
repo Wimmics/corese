@@ -187,13 +187,6 @@ public class Binding implements Binder {
         desallocate(exp);
     }
     
-    
-//    public void set(Function exp, Expr var, IDatatype val) {
-//        allocate(exp);
-//        set(var, val);
-//    }
-//
-    
     /**
      * Level of current function call in the stack Also level of filter for/let
      */
@@ -379,6 +372,16 @@ public class Binding implements Binder {
             default:
                 switch (var.getIndex()) {
                     case UNBOUND:
+                        
+                        if (isDynamicCapture()) {
+                            for (int i = varList.size() - 1; i >= 0; i--) {
+                                if (varList.get(i) != null && varList.get(i).equals(var)) {
+                                     valList.set(i, val);
+                                     return;
+                                }
+                            }
+                        }
+                        
                         define((Variable) var, val);
                         break;
                     default:

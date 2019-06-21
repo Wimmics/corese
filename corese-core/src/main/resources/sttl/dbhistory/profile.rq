@@ -41,8 +41,8 @@ function us:root(){
 }
 
 function us:clean(?s){
-  if (strcontains(?s, "Swastika")
-   || strcontains(?s, "Panzer-Division")
+  if (contains(?s, "Swastika")
+   || contains(?s, "Panzer-Division")
    , 
     "", ?s)
 }
@@ -63,21 +63,26 @@ function us:split(?list, ?n) {
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
-function us:table(?list, ?size){
- let (?table  = us:split(?list, ?size)) {
+function us:table(list, size){
+ let (table  = us:split(list, size)) {
      st:format(ft:table.html, 
-      let (?n = 0){
-	    loop (?row in ?table){
+      letdyn (n = 0) {
+	     us:mapconcat (
+        lambda(row) { 
 	      st:format(ft:tr.html, 
-	        set(?n = ?n + 1), 
-	        loop (?cell in ?row){
-		      st:format(ft:td.html, ?cell)
-	        } )
-	    }
+	        set(n = n + 1), 
+	        us:mapconcat (lambda(cell) { st:format(ft:td.html, cell) }, row ) ) 
+	    }, table)  
 	  }
-     )
+     ) 
   }
 }
+
+function us:mapconcat(fun, exp) {
+    reduce(rq:concat, maplist(fun, exp))
+}
+
+
 
 
 #

@@ -1178,7 +1178,7 @@ public class ASTQuery
              Variable var = new Variable(LET_VAR + nbd++);
              ExpressionList list = new ExpressionList(var);
              Term deflet = defLet(el.getList().get(0), var);
-             Term let = let(deflet, exp);
+             Term let = let(deflet, exp, false);
              return defineLambda(list, let, annot);
          }
          return getGlobalAST().defineLambdaUtil(el, exp, annot);
@@ -1370,21 +1370,20 @@ public class ASTQuery
      * @param body
      * @return
      */
-    public Let let(ExpressionList el, Expression body) {
-        return defineLet(el, body, 0);
+    Let let(ExpressionList el, Expression body) {
+        return defineLet(el, body, 0, false);
     }
     
     public Let let(ExpressionList el, Expression body, boolean dynamic) {
-        Let let = defineLet(el, body, 0);
-        let.setDynamic(dynamic);
+        Let let = defineLet(el, body, 0, dynamic);
         return let;
     }
 
-    public Let defineLet(ExpressionList el, Expression body, int n) {
+    Let defineLet(ExpressionList el, Expression body, int n, boolean dynamic) {
         if (n == el.size() - 1) {
-            return let(el.get(n), body);
+            return let(el.get(n), body, dynamic);
         }
-        return let(el.get(n), defineLet(el, body, n + 1));
+        return let(el.get(n), defineLet(el, body, n + 1, dynamic), dynamic);
     }
     
     /**
@@ -1393,11 +1392,11 @@ public class ASTQuery
      * this match() AST is compiled by Processor
      * nested: let (((?x, ?y)) = select where)
      */
-    Let let(Expression exp, Expression body) {
+    Let let(Expression exp, Expression body, boolean dynamic) {
         if (exp.getArg(0).isTerm() && exp.getArg(0).getTerm().isNested()) {
-            return let(exp.getArg(0).getTerm().getNestedList(), exp.getArg(1), body);
+            return let(exp.getArg(0).getTerm().getNestedList(), exp.getArg(1), body, dynamic);
         }
-        return new Let(exp, body);
+        return new Let(exp, body, dynamic);
     }
           
     /**
@@ -1410,26 +1409,26 @@ public class ASTQuery
      * get first Binding, match it
      */
     
-     Let let(ExpressionList expList, Expression exp, Expression body) { 
+    Let let(ExpressionList expList, Expression exp, Expression body, boolean dynamic) { 
          if (! exp.isTerm() || expList.getList().size() == 1){
-            return let(expList, exp, body, 0);
+            return let(expList, exp, body, 0, dynamic);
          }
          // let (var = exp)
          Variable var = new Variable(LET_VAR + nbd++);
-         return let(defLet(var, exp), let(expList, var, body, 0));
+         return let(defLet(var, exp), let(expList, var, body, 0, dynamic), dynamic);
      }
     
     // recurse on  expList 
-    Let let(ExpressionList expList, Expression exp, Expression body, int n) { 
+    Let let(ExpressionList expList, Expression exp, Expression body, int n, boolean dynamic) { 
         Variable var = new Variable(LET_VAR + nbd++);
         ExpressionList list = expList.getList().get(n) ;
         Term fst = defGet(var, exp, n);
         Term snd = defLet(list, var);  
         Expression rest =  body;
         if (n+1 < expList.getList().size()){
-            rest = let(expList, exp, body, n+1);
+            rest = let(expList, exp, body, n+1, dynamic);
         }
-        return new Let(fst, new Let(snd, rest));
+        return new Let(fst, new Let(snd, rest), dynamic);
     }
 
     public Term defLet(Variable var, Constant type, Expression exp) {
@@ -1505,7 +1504,7 @@ public class ASTQuery
                 Term t = defLet(Variable.create("?_tmp_"), Constant.create(true));
                 l.add(t);
             }
-            Term let = defineLet(l, term.getBody(), 0);
+            Term let = defineLet(l, term.getBody(), 0, term.isDynamic());
             term.setArgs(let.getArgs());
         }
     }
@@ -1670,7 +1669,7 @@ public class ASTQuery
     public Term defFor(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
         complete(lvar, exp);
-        return defFor(var, exp, let(defLet(lvar, var), body));
+        return defFor(var, exp, let(defLet(lvar, var), body, false));
     }
     
     /*
@@ -1693,7 +1692,7 @@ public class ASTQuery
                 createQName("rq:concat"), list);
         Expression stmt = createFunction(Constant.createResource("sequence"), 
                 loop, app);
-        return let(let, stmt);
+        return let(let, stmt, false);
     }
 
     /**
@@ -1702,7 +1701,7 @@ public class ASTQuery
      */
     public Term defLoop(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
-        return defLoop(var, exp, let(defLet(lvar, var), body));
+        return defLoop(var, exp, let(defLet(lvar, var), body, false));
     }
 
     public void exportFunction(Expression def) {

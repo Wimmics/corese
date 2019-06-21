@@ -25,6 +25,11 @@ public class Let extends Statement {
     public Let(Expression def, Expression body) {
         super(Processor.LET, def, body);
     }
+    
+    public Let(Expression def, Expression body, boolean dyn) {
+        super(Processor.LET, def, body);
+        setDynamic(dyn);
+    }
 
     @Override
     public Let getLet() {

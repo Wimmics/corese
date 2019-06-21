@@ -143,19 +143,6 @@ function st:include(){
 }
   
 
-function st:include2(){
-  coalesce(
-    loop ((?name, ?val) in coalesce(st:get(st:include), xt:list())) {
-        coalesce(
-            let (?value = st:get(?val)) {
-                concat("&", ?name, "=", 
-                    if (isURI(?value), st:qname(?value), ?value))
-            },"")
-    },
-    "")
-}
-
-
 #
 # take st:lodprofile into account
 # st:lodprofile ((<http://fr.dbpedia.org/>   st:jdev) ("*" st:lod)) 

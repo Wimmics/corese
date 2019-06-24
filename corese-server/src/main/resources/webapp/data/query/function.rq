@@ -4,40 +4,40 @@
 #
 @public {
 
-function st:setclass(?s, ?c) {
-    st:cset(st:class, ?s, ?c)
+function st:setclass(s, cl) {
+    st:cset(st:class, s, cl)
 }
 
-function st:setclass(?s, ?c, ?g) {
-    st:setclass(?s, ?c) ;
-    st:setgroup(?s, ?g) 
+function st:setclass(s, cl, g) {
+    st:setclass(s, cl) ;
+    st:setgroup(s, g) 
 }
 
-function st:getclass(?s) {
-    st:cget(st:class, ?s)
+function st:getclass(s) {
+    st:cget(st:class, s)
 }
 
-function st:setgroup(?s, ?c) {
-    st:cset(st:group, ?s, ?c)
+function st:setgroup(s, cl) {
+    st:cset(st:group, s, cl)
 }
 
-function st:getgroup(?s) {
-    st:cget(st:group, ?s)
+function st:getgroup(s) {
+    st:cget(st:group, s)
 }
 
-function st:setimg(?s, ?i) {
-    st:cset(st:img, ?s, ?i)
+function st:setimg(s, i) {
+    st:cset(st:img, s, i)
 }
 
 # for D3 nodes.rq
 # server URL interpreted by javascript:trans(URL)
 # LOD URL interpreted by window.open(URL)
-function st:setlink(?s, ?link) {
-    if (contains(?link, "?uri=") || contains(?link, "param="), 
+function st:setlink(s, link) {
+    if (contains(link, "?uri=") || contains(link, "param="), 
         # server URL
-        st:cset(st:link, ?s, ?link),
+        st:cset(st:link, s, link),
         # LOD URL
-        st:cset(st:url,  ?s, ?link))
+        st:cset(st:url,  s, link))
 }
 
 
@@ -46,20 +46,20 @@ function st:isAjax(){
   st:get(st:protocol, st:ajax)
 }
 
-function st:protocol(?uri) {
+function st:protocol(url) {
     if (st:isAjax()) {
-       concat("javascript:trans(\"", str(?uri), "\")") 
+       concat("javascript:trans(\"", str(url), "\")") 
     } 
-    else { str(?uri) }
+    else { str(url) }
 }
 
 # take st:include (("mode" st:mode)) into account
 # to generate hyperlink
 # &mode= st:get(st:mode)
-function st:link(?uri) {
+function st:link(url) {
     concat(
       st:get(st:service),
-      "?uri=", encode_for_uri(?uri), 
+      "?uri=", encode_for_uri(url), 
       if (coalesce(isURI(st:get(st:profile)), false),
         concat("&profile=",   st:qname(st:get(st:profile))),
         if (coalesce(isURI(st:get(st:transform)), false),
@@ -69,10 +69,10 @@ function st:link(?uri) {
     )
 } 
 
-function st:link123(?uri) {
+function st:link123(url) {
     concat(
       st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
+      "?uri=", encode_for_uri(url),          
       coalesce(
         concat("&profile=",   st:qname(st:get(st:profile))), 
         concat("&transform=", st:qname(st:get(st:transform))), 
@@ -84,20 +84,20 @@ function st:link123(?uri) {
 # take st:include (("mode" st:mode)) into account
 # to generate hyperlink
 # &mode= st:get(st:mode)
-function st:link(?uri, ?profile) {
+function st:link(url, profile) {
     concat(st:get(st:service),
-      "?uri=", encode_for_uri(?uri),          
-      "&profile=", st:qname(?profile)
+      "?uri=", encode_for_uri(url),          
+      "&profile=", st:qname(profile)
       ,st:include()
    )
 }
 
-function st:plink(?uri) {
-    st:protocol(st:link(?uri))
+function st:plink(url) {
+    st:protocol(st:link(url))
 }
 
-function st:plink(?uri, ?profile) {
-  st:protocol(st:link(?uri, ?profile))
+function st:plink(url, profile) {
+  st:protocol(st:link(url, profile))
 }
 
 #
@@ -105,23 +105,23 @@ function st:plink(?uri, ?profile) {
 # st:lodprofile (( <http://fr.dbpedia.org/resource/> st:dbpedia )) 
 # otherwise use st:profile
 #
-function st:pplink(?uri) {
-  st:plink(?uri, coalesce(st:getprofile(?uri), st:get(st:profile)))
+function st:pplink(url) {
+  st:plink(url, coalesce(st:getprofile(url), st:get(st:profile)))
 }
 
 # pplink without java:trans()
-function st:hlink(?uri) {
-    let (?profile = coalesce(st:getprofile(?uri), st:get(st:profile))) {
-        if (?profile = st:lod, ?uri, st:link(?uri, ?profile))
+function st:hlink(url) {
+    let (profile = coalesce(st:getprofile(url), st:get(st:profile))) {
+        if (profile = st:lod, url, st:link(url, profile))
     }
 }
 
-function st:hlink(?uri, ?profile) {
-  st:link(?uri, ?profile)
+function st:hlink(url, profile) {
+  st:link(url, profile)
 }
 
-function st:qname(?uri){
-  kg:qname(?uri)
+function st:qname(url){
+  kg:qname(url)
 }
 
 #
@@ -132,10 +132,10 @@ function st:qname(?uri){
 function st:include(){
   coalesce(
     reduce(rq:concat, maplist(
-    lambda((?name, ?val)) { 
-        coalesce(let (?value = st:get(?val)) {
-            concat("&", ?name, "=", 
-                if (isURI(?value), st:qname(?value), ?value)) 
+    lambda((name, val)) { 
+        coalesce(let (value = st:get(val)) {
+            concat("&", name, "=", 
+                if (isURI(value), st:qname(value), value)) 
         }, "")
     }, 
     st:get(st:include))),
@@ -146,30 +146,30 @@ function st:include(){
 #
 # take st:lodprofile into account
 # st:lodprofile ((<http://fr.dbpedia.org/>   st:jdev) ("*" st:lod)) 
-# if getprofile(?x) = st:lod, return uri as is, otherwise return pplink
+# if getprofile(x) = st:lod, return uri as is, otherwise return pplink
 #
-function st:url(?x) {
-    if (coalesce(st:getprofile(?x) = st:lod, false), ?x, st:pplink(?x)) 
+function st:url(x) {
+    if (coalesce(st:getprofile(x) = st:lod, false), x, st:pplink(x)) 
 }
 
-# ?arg = st:mode
-function st:include(?arg){
+# arg = st:mode
+function st:include(arg){
   coalesce(
-    let (?m = st:get(?arg)) { bound(?m) } &&
-    mapany (rq:equal, ?arg, st:get(st:include)), 
+    let (m = st:get(arg)) { bound(m) } &&
+    mapany (rq:equal, arg, st:get(st:include)), 
     false)
 }
 
 # search list  st:lodprofile ((namespace profile))
-function st:getprofile(?uri){
-     let ((?ns, ?prof) = mapfind(st:match, ?uri, st:get(st:lodprofile)))
-     { ?prof }
+function st:getprofile(url){
+     let ((ns, prof) = mapfind(st:match, url, st:get(st:lodprofile)))
+     { prof }
 }
 
-# ?decl = (namespace profile)
-function st:match(?x, ?decl){
-  let ((?ns) = ?decl){
-    strstarts(?x, ?ns) || coalesce(?ns = "*", false)
+# decl = (namespace profile)
+function st:match(x, decl){
+  let ((ns) = decl){
+    strstarts(x, ns) || coalesce(ns = "*", false)
   }
 }
   
@@ -182,27 +182,27 @@ function st:match(?x, ?decl){
 # used by st:navlab#map
 #
 
-function st:location(?location, ?lat, ?lon) {
-    if (st:cget(st:country, ?location, ?location)) {}
+function st:location(location, lat, lon) {
+    if (st:cget(st:country, location, location)) {}
     else {
-        st:cset(st:country, ?location, ?location) ;
+        st:cset(st:country, location, location) ;
         st:set(st:location, 
-            xt:cons(xt:list(?location, ?lat, ?lon), 
+            xt:cons(xt:list(location, lat, lon), 
              coalesce(st:get(st:location), xt:list() ) ) ) 
     }
         
 }
 
-function st:location(?map) {
-    let (?list = xt:list(), ?table = xt:map()) {
-        for ((?country ?lat ?lon) in ?map) {
-            if (! xt:member(?country, ?table) && bound(?lat)) {
-                xt:add(?list, xt:list(?country, ?lat, ?lon)) ;
-                xt:set(?table, ?country, ?country)
+function st:location(amap) {
+    let (list = xt:list(), table = xt:map()) {
+        for ((country lat lon) in amap) {
+            if (! xt:member(country, table) && bound(lat)) {
+                xt:add(list, xt:list(country, lat, lon)) ;
+                xt:set(table, country, country)
             }
         } ;
-        st:set(st:location, ?list) ;
-        xt:print('list', ?list)
+        st:set(st:location, list) ;
+        xt:print('list', list)
     } 
 }
 

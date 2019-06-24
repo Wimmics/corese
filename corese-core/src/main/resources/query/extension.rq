@@ -2,6 +2,10 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 
 @public { 
 
+function xt:mapreduce(freduce, flist, exp) {
+    reduce(freduce, maplist(flist, exp))
+}
+
 # Specify focus node of transformation 
 # default is st:get(st:uri) as usual
 # no focus :

@@ -209,6 +209,11 @@ public class Expression extends TopExp
     public boolean isPublic() {
         return false;
     }
+    
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
 
     @Override
     public void setPublic(boolean b) {

@@ -63,6 +63,7 @@ public class Variable extends Atom {
     private boolean matchCardinality = false;
     private boolean isPath = false; // use case ?x $path ?y
     private boolean isVisited = false;
+    private boolean dynamic = false;
     private int index = ExprType.UNBOUND;
     private int type = ExprType.GLOBAL;
 
@@ -369,6 +370,20 @@ public class Variable extends Atom {
             return null;
         }
         return (IDatatype) node.getDatatypeValue();
+    }
+
+    /**
+     * @return the dynamic
+     */
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    /**
+     * @param dynamic the dynamic to set
+     */
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
     }
 
 }

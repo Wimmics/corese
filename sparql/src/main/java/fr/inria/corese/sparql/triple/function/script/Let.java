@@ -29,6 +29,10 @@ public class Let extends Statement {
     public Let(Expression def, Expression body, boolean dyn) {
         super(Processor.LET, def, body);
         setDynamic(dyn);
+        if (getVariable() != null) {
+            // use case: intermediate let (match(x, y)) ...
+            getVariable().setDynamic(dyn);
+        }
     }
 
     @Override

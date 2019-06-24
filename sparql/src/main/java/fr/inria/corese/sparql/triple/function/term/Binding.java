@@ -279,7 +279,8 @@ public class Binding implements Binder {
             case UNBOUND: {
                 if (isDynamicCapture()) {
                     for (int i = varList.size() - 1; i >= 0; i--) {
-                        if (varList.get(i) != null && varList.get(i).equals(var)) {
+                        Expr vv = varList.get(i);
+                        if (vv != null && vv.isDynamic() && vv.equals(var)) {
                             return valList.get(i);
                         }
                     }
@@ -375,7 +376,8 @@ public class Binding implements Binder {
                         
                         if (isDynamicCapture()) {
                             for (int i = varList.size() - 1; i >= 0; i--) {
-                                if (varList.get(i) != null && varList.get(i).equals(var)) {
+                                Expr vv = varList.get(i);
+                                if (vv != null && vv.isDynamic() && vv.equals(var)) {
                                      valList.set(i, val);
                                      return;
                                 }

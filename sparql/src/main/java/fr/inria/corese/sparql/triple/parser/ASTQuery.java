@@ -1428,7 +1428,7 @@ public class ASTQuery
         if (n+1 < expList.getList().size()){
             rest = let(expList, exp, body, n+1, dynamic);
         }
-        return new Let(fst, new Let(snd, rest), dynamic);
+        return new Let(fst, new Let(snd, rest, dynamic), dynamic);
     }
 
     public Term defLet(Variable var, Constant type, Expression exp) {

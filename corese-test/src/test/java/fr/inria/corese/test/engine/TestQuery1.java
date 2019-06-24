@@ -52,6 +52,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.datatype.CoresePointer;
+import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 
@@ -252,6 +253,115 @@ public class TestQuery1 {
         }
 
         return graph;
+    }
+    
+    
+        @Test
+    public void testDynLet() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (us:test(10) as ?l) (xt:get(?l, 0) as ?n) where {}"
+                + ""
+                + "function us:test(x) { "
+                + "letdyn (y = x) { maplist(lambda(g) { y } , xt:list(y)) } "
+                + "}"                
+               ;
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?n");
+        assertEquals(true, dt != null);
+        assertEquals(10, dt.intValue());
+    }
+    
+         @Test
+    public void testDynLet2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (us:test(10) as ?l) (xt:get(?l, 0) as ?n) where {}"
+                + ""
+                + "function us:test(x) { "
+                + "letdyn (y = x) { maplist(lambda(g) { let (y = 2 * y) { y }} , xt:list(y)) } "
+                + "}"                
+               ;
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?n");
+        assertEquals(true, dt != null);
+        assertEquals(20, dt.intValue());
+    }
+    
+         @Test
+    public void testDynLet3() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (us:test() as ?n) where {}"
+                + ""
+                + "function us:test() { "
+                + "letdyn (x = 1) { us:fun() } "
+                + "}" 
+                
+                + "function us:fun() { x }"
+               ;
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?n");
+        assertEquals(true, dt != null);
+        assertEquals(1, dt.intValue());
+    }
+    
+       @Test
+    public void testDynLet4() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);        
+        String q = "select (reduce(rq:plus, us:bar(10)) as ?a) where {}" 
+                
+                + "function us:bar(n) {"
+                + "letdyn(select (1 as ?x) where {}) {"
+                + "maplist(lambda(y) { set(x = 2*x) }, xt:iota(n)) "
+                + "}"
+                + "}"
+                ;        
+        Mappings map = exec.query(q);
+        assertEquals(2046, map.getValue("?a").intValue());
+    }
+    
+    
+           @Test
+    public void testDynLet5() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (us:test() as ?n) where {}"
+                + ""
+                + "function us:test() { "
+                + "let (z = 1) {"
+                + "letdyn (x = 1) { us:fun() } "
+                + "}"
+                + "}" 
+                
+                + "function us:fun() { z }"
+
+                + ""
+               ;
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?n");
+        assertEquals(true, dt == null);
+    }
+    
+    
+            @Test
+    public void testDynLet6() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (us:test() as ?n) where {}"
+                + ""
+                + "function us:test() { "
+                + "letdyn (x = 1) { us:fun() } "
+                + "}" 
+                
+                + "function us:fun() { let (x = 2) { x } }"
+
+                + ""
+               ;
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?n");
+        assertEquals(2, dt.intValue());
     }
     
     

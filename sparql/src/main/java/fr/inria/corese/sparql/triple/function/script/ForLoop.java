@@ -77,7 +77,7 @@ public class ForLoop extends Statement {
         for (IDatatype dt : list) {
             b.bind(this, var, dt);
             res = body.eval(eval, b, env, p);
-            if (b.isResult()) {
+            if (b.isResult()  || res == null) {
                 b.unset(this, var, dt);
                 return res;
             }

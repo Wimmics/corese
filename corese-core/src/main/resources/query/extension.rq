@@ -77,34 +77,40 @@ function us:ldGraph(shape) {
     if (isURI(shape), xt:load(shape), shape)
 }
 
+function xt:validationGraph() {
+    # st:visitedGraph()
+    # global variable bound by shape transformation
+    return (validationReport)
+}
+
 function xt:shapeGraph() {
     st:call-template-with(st:dsmain, st:start, xt:graph()) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:shapeGraph(shape) {
     st:call-template-with(st:dsmain, st:start, us:ldGraph(shape)) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:shapeGraph(shape, sh) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeGraph, sh) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:shapeNode(url) {
     st:call-template-with(st:dsmain, st:main, xt:graph(), sh:shapeNode, url) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:shapeNode(url, shape) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:shapeNode(url, shape, sh) {
     st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url, sh) ;
-    return (st:visitedGraph())
+    return (xt:validationGraph())
 }
 
 function xt:testShapeNode(url, shape) {

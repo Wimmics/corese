@@ -98,3 +98,8 @@ function st:display2(?x){
       }     
     }
 }
+
+# considered as an error if someone called st:visit(name, node, false) cf datashape main profile
+function us:error(node) {
+    st:visited(node)
+}

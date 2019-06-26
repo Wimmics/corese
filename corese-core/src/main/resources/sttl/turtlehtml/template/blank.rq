@@ -6,7 +6,7 @@ template {
   if (?refer, concat(st:turtle(?in), " "), "[") 
   
   ibox {
-    if (st:visited(?in), 
+    if (us:error(?in), 
         st:call-template(st:pperror, st:call-template(st:value, ?in)),
         st:call-template(st:value, ?in)
     )
@@ -16,7 +16,7 @@ template {
   if (?nested, "]", "] ."))
   
   # pretty printer of errors
-  if (st:visited(?in),
+  if (us:error(?in),
 	st:call-template(st:pperrorsp, ?in),
   "")
 }

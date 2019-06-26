@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 19 09:55:55 CEST 2019
+Wed Jun 26 16:12:45 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -31,7 +31,7 @@ where {
   bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
   bind (xt:focus(?shape, sh:sibling()) as ?sib)
   bind (sh:target(?shape) as ?suc) 
-  bind (sh:success(?suc) as ?b)
+  bind (sh:success(?suc)  as ?b)
 }
 ]]>
 </body>
@@ -195,7 +195,7 @@ function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
 
 function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
-        st:visit(name, s, suc)
+        sh:visit(name, s, suc)
     } ;
     return (true)
 }
@@ -207,27 +207,68 @@ function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
 function xsd:boolean st:report(name,  sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
     if (vis && ! suc) { 
         sh:result(name, sh, shape, foc,  p, o) ;
-        st:visit(name, foc, suc)
+        sh:visit(name, foc, suc)
     } ;
     return(true)
 }
 
 function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
-    if (vis && ! suc) { 
-        sh:result(name, sh, shape, foc,  st:null, st:null) ;
-        st:visit(name, foc, suc)
-    } ;
-    return(true)
+    st:report(name, sh, shape, foc, st:null, st:null, suc, vis)
 }
 
 function sh:value(v){
     if (v = st:null, return(error()), v)
 }
 
-function sh:result2(name, sh, shape, foc, s, p, o){
-    true
+# start
+function sh:starter() {
+    sh:start() ;
+    # validation report graph
+    set(validationReport = query(construct where {})) ;
+    sh:init()
 }
 
+# finish
+function xsd:boolean sh:success(xsd:boolean bb) {
+    if (bb) {
+        let (g = 
+            construct { [] a sh:ValidationReport ; sh:conforms true }
+            where { }
+            ) {
+            us:insert(g, validationReport)
+        }
+    } ;
+    sh:finish() ;
+    return (true)
+}
+
+
+
+#
+# transformer visitor
+#
+function sh:start() {
+    st:visit(st:start, st:trace) 
+}
+
+# declare report graph to transformer visitor graph, use case: shape workflow
+function sh:finish() {
+    st:visit(st:trace, st:graph, validationReport) 
+}
+
+# when suc = false, declare error on node (for future pprint)
+function sh:visit(name, node, suc) {
+    st:visit(name, node, suc)
+}
+
+
+
+# insert report element g into report
+function us:insert(dt:graph g, dt:graph report) {
+    for ((s p o) in g) {
+        xt:focus(report, xt:insert(s, p, o))
+    } 
+}
 
 #
 # create a validation result  graph
@@ -235,7 +276,7 @@ function sh:result2(name, sh, shape, foc, s, p, o){
 # get it with st:visitedGraph()
 #
 function xsd:boolean sh:result(?name, ?sh, dt:graph ?shape, ?foc, ?p, ?o){
-    let (?g = 
+    let (g = 
        construct {
         ?bnode a sh:ValidationReport ; 
             sh:result ?r ; 
@@ -253,38 +294,24 @@ function xsd:boolean sh:result(?name, ?sh, dt:graph ?shape, ?foc, ?p, ?o){
             sh:resultMessage ?mes ;
             sh:sourceConstraintComponent ?def ;
             sh:sourceShape ?sh
-            #?sr ?pr ?or
         } 
         where { 
             bind (uuid() as ?r)
             bind (coalesce(java:isdefby(?name), ?name) as ?def)
             bind (xt:focus(?shape, java:severity(?sh)) as ?sev)
             bind (xt:focus(?shape, java:message(?sh)) as ?m)
-            bind (if (bound(?m), ?m, concat("Fail at: ", xt:focus(?shape, st:apply-templates-with(st:turtle, ?sh)))) as ?mes)
+            bind (if (bound(?m), ?m, concat("Fail at: ", xt:focus(?shape, xt:turtle(?sh)))) as ?mes)
             bind (java:value(?p) as ?pp)
             bind (java:value(?o) as ?oo)            
-            bind (if (bound(?pp), xt:focus(?shape, java:graph(?pp)), error())  as ?pathDetail)                        
-    
-            #graph ?shape { 
-                # ?sh can be a constraint or a shape                               
-                # bind (java:severity(?sh) as ?sev)
-                
-                #bind (java:message(?sh)  as ?m)                
-                #bind (if (bound(?m), ?m, concat("Fail at: ", st:apply-templates-with(st:turtle, ?sh))) as ?mes)
-                
-                #bind (coalesce(java:isdefby(?name), ?name) as ?def)
-                #bind (java:value(?p) as ?pp)
-                #bind (java:value(?o) as ?oo)
-                #bind (if (bound(?pp), java:graph(?pp), error())  as ?pathDetail)                
-            #}
+            bind (if (bound(?pp), xt:focus(?shape, java:graph(?pp)), error())  as ?pathDetail)                                       
             bind (java:graphbnode(?foc) as ?focDetail)
             bind (if (bound(?oo), java:graphbnode(?oo), error())  as ?valueDetail)
             bind (java:bnodeid() as ?bnode)
         } 
-        values (?name ?sh ?shape ?foc  ?p ?o){ (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
+        values (?name ?sh ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
     {
-        st:visit(st:trace, st:graph, ?g) ;
+        us:insert(g, validationReport);
         return(true)
     }
 }
@@ -302,18 +329,6 @@ function sh:message(sh){
         return (o)
     } ;
     return (error())
-}
-
-function xsd:boolean sh:success(xsd:boolean ?b){
-    if (?b){
-        let (?g = 
-            construct { [] a sh:ValidationReport ; sh:conforms true }
-            where { }
-            ) {
-            st:visit(st:trace, st:graph, ?g)
-        }
-    } ;
-    return (true)
 }
 
 function dt:bnode sh:bnodeid(){
@@ -339,10 +354,6 @@ function sh:graphbnode(var){
         return(error()))
 }
 
-function sh:starter(){
-    st:visit(st:start, st:trace) ;
-    sh:init()
-}
 
 function sh:init(){
     map (sh:define, sh:def())

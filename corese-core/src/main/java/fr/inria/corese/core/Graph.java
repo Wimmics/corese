@@ -1550,6 +1550,15 @@ public class Graph extends GraphObject implements
     public Edge createDelete(Node source, Node subject, Node predicate, Node value) {
         return fac.createDelete(source, subject, predicate, value);
     }
+    
+    public Edge createDelete(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+        Node graph = (source==null)?null:getCreateNode(source);
+        return fac.createDelete(graph, getCreateNode(subject), getCreateNode(predicate), getCreateNode(value));
+    }
+    
+    Node getCreateNode(IDatatype dt) {
+        return getNode(dt, true, false);
+    }
 
     public Edge create(Node source, Node predicate, List<Node> list) {
         return fac.create(source, predicate, list);
@@ -3111,6 +3120,12 @@ public class Graph extends GraphObject implements
         Edge e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
         Edge ee = addEdgeWithNode(e);
         return ee;
+    }
+    
+    public List<Edge> delete(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
+        Edge e = createDelete(source, subject, predicate, value);
+        List<Edge> list = delete(e);
+        return list;
     }
     /**
      * Add Edge, not add nodes

@@ -833,6 +833,31 @@ public class PluginImpl
     }
     
     @Override
+    public IDatatype insert(Environment env, Producer p, IDatatype[] param) {
+        Graph g = getGraph(p);
+        Edge e;
+        if (param.length==3) {
+            e = g.add(param[0], param[1], param[2]);
+        }
+        else {
+            e = g.add(param[0], param[1], param[2], param[3]);
+        }
+        return (e==null)?FALSE:TRUE;
+    }
+    
+    @Override
+    public IDatatype delete(Environment env, Producer p, IDatatype[] param) {
+        Graph g = getGraph(p);
+        List<Edge> le;
+        if (param.length == 3) {
+            le = g.delete(null, param[0], param[1], param[2]);
+        } else {
+            le = g.delete(param[0], param[1], param[2], param[3]);
+        }
+        return (le == null) ? FALSE : TRUE;
+    }
+    
+    @Override
     public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         DataProducer dp = new DataProducer(getGraph(p));
         if (env.getGraphNode() != null) {

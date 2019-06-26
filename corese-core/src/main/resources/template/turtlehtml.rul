@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Wed Jun 26 16:12:45 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -79,6 +79,28 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
+template st:all {
+  st:apply-templates(?x)
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    ?x ?p ?y 
+    filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  }
+}
+order by ?x
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
 template st:value {
 
 format {
@@ -104,28 +126,6 @@ where {
     
 }
 order by if (?p = rdf:type, 0, 1) ?p ?y
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:all {
-  st:apply-templates(?x)
-  ; separator = "\n\n"
-}
-where {
-  select distinct ?x where { 
-    ?x ?p ?y 
-    filter ( isURI(?x) || not exists { ?z ?q ?x } )
-  }
-}
-order by ?x
 ]]>
 </body>
 </rule>
@@ -193,22 +193,6 @@ order by ?x
 <rule>
 <body>
 <![CDATA[
-template st:provenance(?pr) {
-
-  "<img src='/img/smarker.png' onclick='alert(\"" str(?b) "\")'  />"
-   
-}
-where {
-  
-  bind ( replace(str(?pr), "\n", "\\\\n") as ?b ) 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 #
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
@@ -231,6 +215,22 @@ where {
   }
 }
 order by ?x
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:provenance(?pr) {
+
+  "<img src='/img/smarker.png' onclick='alert(\"" str(?b) "\")'  />"
+   
+}
+where {
+  
+  bind ( replace(str(?pr), "\n", "\\\\n") as ?b ) 
+}
 ]]>
 </body>
 </rule>
@@ -338,6 +338,11 @@ function st:display2(?x){
       }     
     }
 }
+
+# considered as an error if someone called st:visit(name, node, false) cf datashape main profile
+function us:error(node) {
+    st:visited(node)
+}
 ]]>
 </body>
 </rule>
@@ -366,39 +371,15 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template {
-  if (?refer, concat(st:turtle(?in), " "), "[") 
-  
-  ibox {
-    if (st:visited(?in), 
-        st:call-template(st:pperror, st:call-template(st:value, ?in)),
-        st:call-template(st:value, ?in)
-    )
-  }
-  
-  if (?refer, " .", 
-  if (?nested, "]", "] ."))
-  
-  # pretty printer of errors
-  if (st:visited(?in),
-	st:call-template(st:pperrorsp, ?in),
-  "")
+template  {
+    if (us:error(?in), 
+        st:call-template(st:pperror, st:call-template(st:list, ?in)),
+        st:call-template(st:list, ?in)
+  )
 }
 where {
-  ?in ?p ?y
-  filter isBlank(?in)
-  filter not exists { ?in rdf:first ?e }
-  
-  bind (exists { ?a ?q ?in } as ?nested)
-  
-  bind (
-    ?nested 
-    && ((st:isStart() && exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
-	|| exists { ?in ?q ?in }
-       )
-  as ?refer)
+    ?in rdf:first ?e
 }
-limit 1
 ]]>
 </body>
 </rule>
@@ -412,9 +393,9 @@ limit 1
 #
 template {
 
-  if (st:visited(?in), "<span class='fail'>", "")
+  if (us:error(?in), "<span class='fail'>", "")
   ?in 
-  if (st:visited(?in), "</span>", "")      
+  if (us:error(?in), "</span>", "")      
      
 ibox { 
 	st:nl()
@@ -439,15 +420,39 @@ limit 1
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template  {
-    if (st:visited(?in), 
-        st:call-template(st:pperror, st:call-template(st:list, ?in)),
-        st:call-template(st:list, ?in)
-  )
+template {
+  if (?refer, concat(st:turtle(?in), " "), "[") 
+  
+  ibox {
+    if (us:error(?in), 
+        st:call-template(st:pperror, st:call-template(st:value, ?in)),
+        st:call-template(st:value, ?in)
+    )
+  }
+  
+  if (?refer, " .", 
+  if (?nested, "]", "] ."))
+  
+  # pretty printer of errors
+  if (us:error(?in),
+	st:call-template(st:pperrorsp, ?in),
+  "")
 }
 where {
-    ?in rdf:first ?e
+  ?in ?p ?y
+  filter isBlank(?in)
+  filter not exists { ?in rdf:first ?e }
+  
+  bind (exists { ?a ?q ?in } as ?nested)
+  
+  bind (
+    ?nested 
+    && ((st:isStart() && exists { ?a ?q ?in . ?b ?r ?in filter(?a != ?b) })
+	|| exists { ?in ?q ?in }
+       )
+  as ?refer)
 }
+limit 1
 ]]>
 </body>
 </rule>

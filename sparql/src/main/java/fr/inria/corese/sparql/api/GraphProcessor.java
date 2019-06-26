@@ -38,9 +38,10 @@ public interface GraphProcessor {
 
     IDatatype tune(Expr exp, Environment env, Producer p, IDatatype... dt);
     
-    IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
-   
+    IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);   
     IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
+    IDatatype insert(Environment env, Producer p, IDatatype[] param);
+    IDatatype delete(Environment env, Producer p, IDatatype[] param);
     
     IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index);
     IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype min);

@@ -11,6 +11,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.STL_INDEX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_DEGREE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_DELETE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EXISTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JOIN;
@@ -29,6 +30,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
 
 /**
@@ -89,7 +91,13 @@ public class GraphSpecificFunction extends LDScript {
                 return edge(proc, env, p, param);
                 
             case XT_EXISTS:
-                return exists(proc, env, p, param);  
+                return exists(proc, env, p, param); 
+                
+            case XT_INSERT:
+                return proc.insert(env, p, param);
+                
+            case XT_DELETE:
+                return proc.delete(env, p, param);    
                 
             case XT_DEGREE:
                 return degree(proc, env, p, param); 

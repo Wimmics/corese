@@ -523,6 +523,8 @@ public class Term extends Expression {
             case ExprType.DEPTH:
             case ExprType.XT_EDGES:
             case ExprType.XT_EXISTS: 
+            case ExprType.XT_INSERT: 
+            case ExprType.XT_DELETE: 
             case ExprType.XT_DEGREE:
             case ExprType.XT_MINDEGREE:
             case ExprType.XT_MINUS:

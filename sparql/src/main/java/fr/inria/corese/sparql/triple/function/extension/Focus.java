@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.Expression;
 
 /**
  *
@@ -28,7 +29,14 @@ public class Focus extends TermEval {
             return null;
         }
         Producer pp = p.getProducer(dt, env);
-        return getBasicArg(1).eval(eval, b, env, pp);
+        IDatatype val = null;
+        for (int i = 1; i<arity(); i++) {
+            val = getArg(i).eval(eval, b, env, pp);
+            if (val == null) {
+                return val;
+            }
+        }
+        return val;
     }
 
    

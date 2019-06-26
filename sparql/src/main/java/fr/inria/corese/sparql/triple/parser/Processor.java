@@ -157,6 +157,8 @@ public class Processor {
         private static final String XT_METHOD   = "method";
         private static final String XT_METHOD_TYPE= EXT + "method";
         private static final String XT_EXISTS   = EXT + "exists";
+        private static final String XT_INSERT   = EXT + "insert";
+        private static final String XT_DELETE   = EXT + "delete";
         private static final String XT_DEGREE   = EXT + "degree";
         private static final String XT_MINDEGREE   = EXT + "mindegree";
        
@@ -648,6 +650,7 @@ public class Processor {
 		defoper(SKOLEM,         ExprType.SKOLEM);
 		defoper(RETURN,         ExprType.RETURN);
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
+		defoper(EXT+SEQUENCE,   ExprType.SEQUENCE);
 		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
 		defoper(XT_JSON_OBJECT, ExprType.XT_JSON_OBJECT);
@@ -729,6 +732,8 @@ public class Processor {
 		defoper(XT_METHOD,       ExprType.XT_METHOD);
 		defoper(XT_METHOD_TYPE,  ExprType.XT_METHOD_TYPE);
 		defoper(XT_EXISTS,       ExprType.XT_EXISTS);
+		defoper(XT_INSERT,       ExprType.XT_INSERT);
+		defoper(XT_DELETE,       ExprType.XT_DELETE);
 		defoper(XT_DEGREE,       ExprType.XT_DEGREE);
 		defoper(XT_MINDEGREE,    ExprType.XT_MINDEGREE);
                 

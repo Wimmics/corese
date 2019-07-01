@@ -20,6 +20,7 @@ public class ParserHandler {
 
     Creator create;
     SparqlCorese parser;
+    private Metadata metadata;
          
     public void setParser(SparqlCorese parser) {
         this.parser = parser;
@@ -195,8 +196,24 @@ public class ParserHandler {
         // construct     -- where
         return ast.tripleReferenceDefinition();       
     }
+
+    /**
+     * @return the metadata
+     */
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
     
-    
+    public void cleanMetadata() {
+        setMetadata(null);
+    }
 
     
 }

@@ -146,6 +146,16 @@ PARSER_BEGIN(SparqlCorese)
     	astq.defBase(s);
     	astu.defBase(s);
     }
+
+    Metadata metadata(Metadata global, Metadata local) {
+        if (local == null) {
+            return global;
+        }
+        else {
+            local.setMetadata(global);
+            return local;
+        }
+    }
   
     
 }  
@@ -172,7 +182,7 @@ Exp Rule(): { Exp stack; }
   	{ return stack; }
 }
 
-Exp Query() : { Exp stack; Metadata la = null;}
+Exp Query() : { Exp stack; Metadata global=null, la = null;}
 {
 
 	{stack = BasicGraphPattern.create();}
@@ -188,7 +198,7 @@ Exp Query() : { Exp stack; Metadata la = null;}
             | stack = TemplateQuery(la)
             )  (Defun()) 
         |  
-            ( Function(la) | Package(la) ) Defun()
+            ( Function(global, la) | Package(la) ) Defun()
         )
   	     	
   ) ?
@@ -196,9 +206,9 @@ Exp Query() : { Exp stack; Metadata la = null;}
   { return stack; }
 }
 
-void Defun() : { Metadata la = null;} {
+void Defun() : { Metadata global = null, la = null;} {
     ( 
-        la = Annotate() (Function(la) | Package(la)) 
+        la = Annotate() (Function(global, la) | Package(la)) 
     ) *
 }
 
@@ -2421,11 +2431,11 @@ Expression StdIRIrefOrFunction(Exp stack) : { String s1; ExpressionList v; Term 
 }
 
 
-Function Function(Metadata la) : 
+Function Function(Metadata global, Metadata local) : 
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant type, name=null; Expression body;}
 {
   <FUNCTION>  type = IRIrefConst() (name = IRIrefConst())?
-  { stack = BasicGraphPattern.create(); }
+  { stack = BasicGraphPattern.create(); handler.setMetadata(metadata(global, local)) ;}
   v = FunArgList()
   body = Body(stack)
 
@@ -2435,7 +2445,8 @@ Function Function(Metadata la) :
             name = type;
             type = null;
         }
-  	term = astq.defineFunction(name, type, v, body, la );        
+  	term = astq.defineFunction(name, type, v, body, metadata(global, local) ); 
+        handler.cleanMetadata();
   }
   { return term; }
 }
@@ -2449,7 +2460,7 @@ Function Lambda () :
   body = Body(stack)
 
   { 
-  	term = gast.defineLambda(v, body, null);        
+  	term = gast.defineLambda(v, body, handler.getMetadata());        
   }
   { return term; }
 }
@@ -2573,12 +2584,13 @@ Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expre
     { return astq.defineBody(body) ; }
 }
 
-void Package(Metadata list) : { Function term; Metadata la; }
+void Package(Metadata global) : { Function term; Metadata la; }
 {
     (<PACKAGE>) ?       
     <LBRACE> 
-        ( la = Annotate() term = Function(la) 
-        { astq.annotate(term, list); } ) +
+        ( la = Annotate() term = Function(global, la) 
+            //{ astq.annotate(term, list); } 
+        ) +
     <RBRACE>
 }
 

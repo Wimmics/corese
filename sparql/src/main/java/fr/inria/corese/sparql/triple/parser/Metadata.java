@@ -108,6 +108,8 @@ public class Metadata extends ASTObject
     HashMap<String, String> map;
     HashMap<String, List<String>> value;
     HashMap<String, IDatatype> literal; 
+    // inherited metadata such as @public { function ... }
+    private Metadata metadata;
     
      static {
         initAnnotate();
@@ -390,6 +392,20 @@ public class Metadata extends ASTObject
     @Override
     public String getDatatypeLabel() {
        return String.format("[Metadata: size=%s]", size());
+    }
+
+    /**
+     * @return the metadata
+     */
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata to set
+     */
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
     
   

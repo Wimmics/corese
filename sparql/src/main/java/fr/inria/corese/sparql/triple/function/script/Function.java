@@ -58,10 +58,10 @@ public class Function extends Statement {
     }
 
     public Function(Term fun, Expression body) {
-        this(fun, null, body);
+        this(fun, null, body, false);
     }
 
-    public Function(Term fun, Constant type, Expression body) {
+    public Function(Term fun, Constant type, Expression body, boolean lambda) {
         super(Processor.FUNCTION, fun, body);
         this.type = type;
         this.signature = fun;
@@ -69,6 +69,9 @@ public class Function extends Statement {
         fun.setExpression(this);
         body.setExpression(this);
         table = new HashMap<>();
+        if (lambda) {
+            defineLambda();
+        }
     }
 
     @Override
@@ -197,11 +200,36 @@ public class Function extends Statement {
     public void annotate(Metadata m) {
         if (m == null) {
             return;
+        }       
+        if (isLambda()) {
+            lambdaAnnotate(m);
         }
+        else {
+            basicAnnotate(m);
+        }              
+    }
+    
+    void basicAnnotate(Metadata m) {
         set(m);
-        for (String s : m) {
-            annotate(s);
+        if (m.getMetadata() != null) {
+            set(m.getMetadata());
+            annotation(m.getMetadata());
         }
+        annotation(m);
+    }
+    
+    void annotation(Metadata m) {
+        for (String s : m) {
+            annotate(m, s);
+        }
+    }
+    
+    // do not set(m) because we do not heritate @type @event etc.
+    void lambdaAnnotate(Metadata m) {
+        if (m.getMetadata() != null) {
+            annotation(m.getMetadata());
+        }
+        annotation(m);
     }
 
     void set(Metadata m) {
@@ -214,8 +242,8 @@ public class Function extends Statement {
         }
     }
 
-    void annotate(String a) {
-        switch (annot.type(a)) {
+    void annotate(Metadata m, String a) {
+        switch (m.type(a)) {
 
             case Metadata.DEBUG:
                 setDebug(true);
@@ -317,8 +345,8 @@ public class Function extends Statement {
         return lambda;
     }
 
-    public void defineLambda() {
-        setLambda(true);;
+    void defineLambda() {
+        setLambda(true);
         dt = DatatypeMap.createObject(getDatatypeValue().stringValue(), this);
     }
 

@@ -1164,7 +1164,7 @@ public class ASTQuery
      * function name(el) { exp } -> function (name(el), exp)
      */
     public Function defineFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot) {
-        Function fun = defFunction(name, type, el, exp, annot);
+        Function fun = defFunction(name, type, el, exp, annot,false);
         record(fun);    
         return fun;
     }
@@ -1189,8 +1189,8 @@ public class ASTQuery
     }
         
     Function defineLambdaUtil(Constant name, ExpressionList el, Expression exp, Metadata annot) {    
-        Function fun = defFunction(name, el, exp, annot);
-        fun.defineLambda();
+        Function fun = defFunction(name, null, el, exp, annot, true);
+        //fun.defineLambda();
         record(fun);    
         return fun;
     }
@@ -1225,15 +1225,11 @@ public class ASTQuery
              define.defineFunction(fun);
          }
     }
-        
-    Function defFunction(Constant name, ExpressionList el, Expression exp, Metadata annot) {
-         return defFunction(name, null, el, exp, annot);
-    }
-    
-    Function defFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot) {
+           
+    Function defFunction(Constant name, Constant type, ExpressionList el, Expression exp, Metadata annot, boolean lambda) {
         Term fun = createFunction(name, el);      
-        Function def = new Function(fun, type, exp);
-        annotate(def, annot);
+        Function def = new Function(fun, type, exp, lambda);
+        def.annotate(annot);
         if (el.getTable() != null){
             def.setTable(el.getTable());
         }
@@ -1257,9 +1253,6 @@ public class ASTQuery
         return fun;
     }
 
-    public void annotate(Function t, Metadata la) {
-        t.annotate(la);
-    }
 
     public void setMetadata(Metadata m) {
          metadata = m;

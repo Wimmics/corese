@@ -32,6 +32,8 @@ import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.QueryLexicalException;
+import fr.inria.corese.sparql.exceptions.QuerySyntaxException;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
@@ -88,6 +90,7 @@ public class Transformer implements ExpType {
     public static final String FEDERATE = NSManager.KGRAM + "federate";
     int count = 0;
     CompilerFactory fac;
+    FunctionCompiler funCompiler;
     Compiler compiler;
     private QuerySolver sparql;
     List<QueryVisitor> visit;
@@ -119,11 +122,12 @@ public class Transformer implements ExpType {
     }
 
     Transformer() {
-        table = new HashMap<Edge, Query>();
+        table = new HashMap<>();
         // new
         fac = new CompilerFacKgram();
         compiler = fac.newInstance();
-        subQueryList = new ArrayList<Query>();
+        subQueryList = new ArrayList<>();
+        funCompiler = new FunctionCompiler(this);
     }
 
     Transformer(CompilerFactory f) {
@@ -182,22 +186,26 @@ public class Transformer implements ExpType {
     }
 
     public Query transform(String squery, boolean isRule) throws EngineException {
-
-        ast = ASTQuery.create(squery);
+        ast = parse(squery, isRule);
+        Query q = transform(ast);
+        return q;
+    }
+    
+    public ASTQuery parse(String squery) throws EngineException {
+        return parse(squery, false);
+    }
+    
+    public ASTQuery parse(String squery, boolean isRule) throws EngineException {
+        ASTQuery ast = ASTQuery.create(squery);
         ast.setRule(isRule);
         ast.setDefaultNamespaces(namespaces);
         ast.setDefaultBase(getDefaultBase());
         ast.setSPARQLCompliant(isSPARQLCompliant);
-
         if (dataset != null) {
             ast.setDefaultDataset(dataset);
         }
-
         ParserSparql1.create(ast).parse();
-        Query q = transform(ast);
-
-        return q;
-
+        return ast;
     }
     
     String getDefaultBase() {        
@@ -261,8 +269,11 @@ public class Transformer implements ExpType {
         // compile select filters
         q = transform(q, ast);
         
-//        compileFunction(ast);
-        compileLambda(q, ast);
+        funCompiler.compile(q, ast);
+        //functionCompiler(q, ast);
+        //compileFunction(q, ast);
+        //define(q, ast);        
+        //compileLambda(q, ast);
         
         error(q, ast);
         
@@ -270,6 +281,69 @@ public class Transformer implements ExpType {
         
         metadata(ast, q);
         
+        return q;
+    }
+    
+    
+     /**
+     * Also used by QueryGraph to compile RDF Graph as a Query
+     */
+    public Query transform(Query q, ASTQuery ast) {
+
+        compiler.setAST(ast);
+
+        if (ast.isConstruct() || ast.isDescribe()) {
+            construct(q, ast);
+        }
+
+        if (ast.isDelete()) {
+            validate(ast.getDelete(), ast);
+            Exp del = delete(ast);
+            q.setDelete(del);
+            q.setDelete(true);
+        }
+
+        if (ast.isUpdate()) {
+            q.setUpdate(true);
+        }
+
+        // retrieve select nodes for query:
+        complete(q, ast);
+
+        having(q, ast);
+
+        if (ast.isRule()) {
+            new VisitQuery(compiler).visit(q);
+        }
+
+        if (compiler.isFail() || fail) {
+            q.setFail(true);
+        }
+
+        q.setSort(ast.isSorted());
+        q.setDebug(ast.isDebug());
+        q.setCheck(ast.isCheck());
+        q.setRelax(ast.isMore());
+        q.setPlanProfile(getPlanProfile());
+
+        for (Edge edge : table.keySet()) {
+            q.set(edge, table.get(edge));
+        }
+
+        filters(q);
+        relax(q);
+        new QueryProfile(q).profile();
+       
+//        compileFunction(q, ast);
+//        define(q, ast);
+        
+        q.setSubQueryList(subQueryList);
+        if (visit != null) {
+            for (QueryVisitor v : visit) {
+                v.visit(q);
+            }
+        }
+
         return q;
     }
     
@@ -490,112 +564,7 @@ public class Transformer implements ExpType {
             q.setPriority(ast.getPriority());
         }
     }
-
-    /**
-     * Also used by QueryGraph to compile RDF Graph as a Query
-     */
-    public Query transform(Query q, ASTQuery ast) {
-
-        compiler.setAST(ast);
-
-        if (ast.isConstruct() || ast.isDescribe()) {
-            construct(q, ast);
-        }
-
-        if (ast.isDelete()) {
-            validate(ast.getDelete(), ast);
-            Exp del = delete(ast);
-            q.setDelete(del);
-            q.setDelete(true);
-        }
-
-        if (ast.isUpdate()) {
-            q.setUpdate(true);
-        }
-
-        // retrieve select nodes for query:
-        complete(q, ast);
-
-        having(q, ast);
-
-        if (ast.isRule()) {
-            new VisitQuery(compiler).visit(q);
-        }
-
-        if (compiler.isFail() || fail) {
-            q.setFail(true);
-        }
-
-        q.setSort(ast.isSorted());
-        q.setDebug(ast.isDebug());
-        q.setCheck(ast.isCheck());
-        q.setRelax(ast.isMore());
-        q.setPlanProfile(getPlanProfile());
-
-        for (Edge edge : table.keySet()) {
-            q.set(edge, table.get(edge));
-        }
-
-        filters(q);
-        relax(q);
-        new QueryProfile(q).profile();
-       
-        define(q, ast);
-        
-        q.setSubQueryList(subQueryList);
-        if (visit != null) {
-            for (QueryVisitor v : visit) {
-                v.visit(q);
-            }
-        }
-
-        return q;
-    }
-
-    /**
-     * defined functions use case: transformation profile PRAGMA: expressions
-     * have declared local variables (see ASTQuery Processor)
-     */
-    void define(Query q, ASTQuery ast) {
-        if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
-            return;
-        }
-        if (Access.reject(Feature.FUNCTION_DEFINITION, ast.getLevel())){ //(ast.isUserQuery()) {
-            System.out.println("Compiler: extension function not available in server mode");
-            return;
-        }
-       
-        define(ast.getDefine(), q);
-    }
-
-    void compileFunction(Query q, ASTQuery ast) {
-        compileFunction(q, ast, ast.getDefine());
-    }
     
-    void compileLambda(Query q, ASTQuery ast) {
-        compileFunction(q, ast, ast.getDefineLambda());      
-        define(ast.getDefineLambda(), q);
-    }
-    
-    void compileFunction(Query q, ASTQuery ast, ASTExtension ext) {
-        if (ext.isCompiled()) {
-            // recursion from subquery in function: do nothing
-        }
-        else {
-            ext.setCompiled(true);
-            for (Function fun : ext.getFunList()) {
-                compileFunction(q, ast, fun);
-            }
-            ext.setCompiled(false);
-        }
-    }
-    
-    void compileFunction(Query q, ASTQuery ast, Function fun) {
-        fun.compile(ast);
-        compileExist(fun, false);
-        q.defineFunction(fun);
-    }
-
     void error(Query q, ASTQuery ast) {
         if (ast.isFail()) {
             q.setFail(true);
@@ -604,123 +573,158 @@ public class Transformer implements ExpType {
             // TODO: because template st:profile may not have been read yet ...
             return;
         }
-        undefinedFunction(q, ast);
+        funCompiler.undefinedFunction(q, ast);
     }
+    
+    
+//    /**
+//     * defined functions use case: transformation profile PRAGMA: expressions
+//     * have declared local variables (see ASTQuery Processor)
+//     */
+//    void define(Query q, ASTQuery ast) {
+//        if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
+//            return;
+//        }
+//        if (Access.reject(Feature.FUNCTION_DEFINITION, ast.getLevel())){ //(ast.isUserQuery()) {
+//            System.out.println("Compiler: extension function not available in server mode");
+//            return;
+//        }
+//       
+//        define(ast.getDefine(), q);
+//    }
+//    
+//    void functionCompiler(Query q, ASTQuery ast) {
+//        compileFunction(q, ast);
+//        compileLambda(q, ast);
+//    }
+//    
+//    void compileFunction(Query q, ASTQuery ast) {
+//        compileFunction(q, ast, ast.getDefine());
+//        define(q, ast);
+//    }
+//    
+//    void compileLambda(Query q, ASTQuery ast) {
+//        compileFunction(q, ast, ast.getDefineLambda());      
+//        define(ast.getDefineLambda(), q);
+//    }
+//    
+//    void compileFunction(Query q, ASTQuery ast, ASTExtension ext) {
+//        if (ext.isCompiled()) {
+//            // recursion from subquery in function: do nothing
+//        }
+//        else {
+//            ext.setCompiled(true);
+//            for (Function fun : ext.getFunList()) {
+//                compileFunction(q, ast, fun);
+//            }
+//            ext.setCompiled(false);
+//        }
+//    }
+//    
+//    void compileFunction(Query q, ASTQuery ast, Function fun) {
+//        fun.compile(ast);
+//        compileExist(fun, false);
+//        q.defineFunction(fun);
+//    }
+//
 
-    void undefinedFunction(Query q, ASTQuery ast) {
-        for (Expression exp : ast.getUndefined().values()) {
-            boolean ok = Interpreter.isDefined(exp);
-            if (ok) { } 
-            else {
-                ok = Access.accept(Feature.LINKED_FUNCTION, ast.getLevel()) //!ast.isUserQuery()
-                        //&& (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
-                        && importFunction(q, exp);
-                if (!ok) {
-                    ast.addError("undefined expression: " + exp);
-                }
-            }
-        }
-    }
-     
-    boolean importFunction(Query q, Expression exp) {
-        boolean b = getLinkedFunctionBasic(exp.getLabel());
-        if (b) {
-            return Interpreter.isDefined(exp);
-        }
-        return false;
-    }
+//
+//    void undefinedFunction(Query q, ASTQuery ast) {
+//        for (Expression exp : ast.getUndefined().values()) {
+//            boolean ok = Interpreter.isDefined(exp);
+//            if (ok) { } 
+//            else {
+//                ok = Access.accept(Feature.LINKED_FUNCTION, ast.getLevel()) //!ast.isUserQuery()
+//                        //&& (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
+//                        && importFunction(q, exp);
+//                if (!ok) {
+//                    ast.addError("undefined expression: " + exp);
+//                }
+//            }
+//        }
+//    }
+//     
+//    boolean importFunction(Query q, Expression exp) {
+//        boolean b = getLinkedFunctionBasic(exp.getLabel());
+//        if (b) {
+//            return Interpreter.isDefined(exp);
+//        }
+//        return false;
+//    }
     
     public boolean getLinkedFunction(String label) {
         if (Access.reject(Feature.LINKED_FUNCTION, Level.DEFAULT)) { //(! isLinkedFunction()){
             return false;
         }
-        return getLinkedFunctionBasic(label);
+        return funCompiler.getLinkedFunctionBasic(label);
     }
         
     public boolean getLinkedFunctionBasic(String label) {
-        String path = NSManager.namespace(label);  
-        if (loaded.containsKey(path)) {
-            return true;
-        }
-        logger.info("Load Linked Function: " + label);
-        loaded.put(path, path);
-        Query imp = sparql.parseQuery(path);
-        if (imp != null && imp.hasDefinition()) {
-            // loaded functions are exported in Interpreter  
-            definePublic(imp.getExtension(), imp);
-            return true;
-        }
-        return false;
+        return funCompiler.getLinkedFunctionBasic(label);
     }
     
     public static void removeLinkedFunction() {
-        for (String name : loaded.values()) {
-            Interpreter.getExtension().removeNamespace(name);
-        }
-        loaded.clear();
+        FunctionCompiler.removeLinkedFunction();
     }
     
-
-    /**
-     * Define function into Extension Export into Interpreter
-     */
-    void define(ASTExtension aext,  Query q) {
-        Extension ext = q.getCreateExtension(); 
-        DatatypeHierarchy dh = new DatatypeHierarchy();
-        if (q.isDebug()) dh.setDebug(true);
-        ext.setHierarchy(dh);
-        
-        for (ASTFunMap m : aext.getMaps()) {
-            for (Function exp : m.values()) {
-                ext.define(exp);
-                if (exp.isPublic()) {
-                    definePublic(exp, q);
-                }
-            }
-        }
-    }
-      
-    // TODO: check isSystem() because it is exported
-    /**
-     * ext is loaded function definitions define them as public
-     *
-     * @param ext
-     * @param q
-     */
-    void definePublic(Extension ext, Query q) {
-        definePublic(ext, q, true);
-    }
-
     /**
      * isDefine = true means export to Interpreter Use case: Transformation
      * st:profile does not export to Interpreter hence it uses isDefine = false
      */
     public void definePublic(Extension ext, Query q, boolean isDefine) {
-        for (FunMap m : ext.getMaps()) {
-            for (Expr exp : m.values()) {
-                Function e = (Function) exp;
-                definePublic(e, q, isDefine);
-            }
-        }
+        funCompiler.definePublic(ext, q, isDefine);
     }
+    
 
-    void definePublic(Function fun, Query q) {
-        definePublic(fun, q, true);
-    }
-
-    void definePublic(Function fun, Query q, boolean isDefine) {
-        if (isDefine) {
-            if (Interpreter.getExtension().getHierarchy() == null) {
-                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
-            }
-            Interpreter.define(fun);
-        }
-        fun.setPublic(true);
-        if (fun.isSystem()) {
-            // export function with exists {} 
-            fun.getTerm().setPattern(q);
-        }
-    }
+//    /**
+//     * Define function into Extension Export into Interpreter
+//     */
+//    void define(ASTExtension aext,  Query q) {
+//        Extension ext = q.getCreateExtension(); 
+//        DatatypeHierarchy dh = new DatatypeHierarchy();
+//        if (q.isDebug()) dh.setDebug(true);
+//        ext.setHierarchy(dh);
+//        
+//        for (ASTFunMap m : aext.getMaps()) {
+//            for (Function exp : m.values()) {
+//                ext.define(exp);
+//                if (exp.isPublic()) {
+//                    definePublic(exp, q);
+//                }
+//            }
+//        }
+//    }
+      
+//    // TODO: check isSystem() because it is exported
+//    /**
+//     * ext is loaded function definitions define them as public
+//     *
+//     * @param ext
+//     * @param q
+//     */
+//    void definePublic(Extension ext, Query q) {
+//        definePublic(ext, q, true);
+//    }
+//
+    
+//
+//    void definePublic(Function fun, Query q) {
+//        definePublic(fun, q, true);
+//    }
+//
+//    void definePublic(Function fun, Query q, boolean isDefine) {
+//        if (isDefine) {
+//            if (Interpreter.getExtension().getHierarchy() == null) {
+//                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
+//            }
+//            Interpreter.define(fun);
+//        }
+//        fun.setPublic(true);
+//        if (fun.isSystem()) {
+//            // export function with exists {} 
+//            fun.getTerm().setPattern(q);
+//        }
+//    }
 
     void construct(Query q, ASTQuery ast) {
         validate(ast.getInsert(), ast);
@@ -739,7 +743,7 @@ public class Transformer implements ExpType {
         Exp ee = compile(ast.getExtBody(), false);
         Query q = Query.create(ee);
         q.setUseBind(isUseBind);
-        compileFunction(q, ast);
+        //compileFunction(q, ast);
         q.setAST(ast);
         q.setHasFunctional(ast.hasFunctional());
         q.setService(ast.getService());

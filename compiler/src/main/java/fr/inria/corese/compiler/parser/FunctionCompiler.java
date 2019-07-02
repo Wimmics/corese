@@ -1,0 +1,240 @@
+package fr.inria.corese.compiler.parser;
+
+import fr.inria.corese.compiler.eval.Interpreter;
+import static fr.inria.corese.compiler.parser.Transformer.loaded;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.datatype.DatatypeHierarchy;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.HashMap;
+import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ *
+ * @author corby
+ */
+public class FunctionCompiler {
+
+    private static Logger logger = LoggerFactory.getLogger(FunctionCompiler.class);
+    static HashMap<String, String> loaded;
+    HashMap<String, String> imported;
+    Transformer transformer;
+
+    static {
+        loaded = new HashMap<>();
+    }
+
+    FunctionCompiler(Transformer t) {
+        transformer = t;
+        imported = new HashMap<>();
+    }
+
+    void compile(Query q, ASTQuery ast) {
+        imports(q, ast);
+        compileFunction(q, ast);
+        compileLambda(q, ast);
+    }
+
+    void compileFunction(Query q, ASTQuery ast) {
+        compile(q, ast, ast.getDefine());
+        define(q, ast);
+    }
+
+    void compileLambda(Query q, ASTQuery ast) {
+        compile(q, ast, ast.getDefineLambda());
+        define(ast.getDefineLambda(), q);
+    }
+
+    /**
+     * defined functions use case: transformation profile PRAGMA: expressions
+     * have declared local variables (see ASTQuery Processor)
+     */
+    void define(Query q, ASTQuery ast) {
+        if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
+            return;
+        }
+        if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { //(ast.isUserQuery()) {
+            System.out.println("Compiler: extension function not available in server mode");
+            return;
+        }
+
+        define(ast.getDefine(), q);
+    }
+
+    void compile(Query q, ASTQuery ast, ASTExtension ext) {
+        if (ext.isCompiled()) {
+            // recursion from subquery in function: do nothing
+        } else {
+            ext.setCompiled(true);
+            for (Function fun : ext.getFunList()) {
+                compile(q, ast, fun);
+            }
+            ext.setCompiled(false);
+        }
+    }
+
+    void compile(Query q, ASTQuery ast, Function fun) {
+        if (fun.getMetadata() != null) {
+            imports(q, ast, fun.getMetadata());
+        }
+        fun.compile(ast);
+        transformer.compileExist(fun, false);
+        q.defineFunction(fun);
+    }
+
+    // @imports <uri> select where 
+    void imports(Query q, ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.IMPORT)) {
+            imports(q, ast, ast.getMetadata());
+        }
+    }
+    
+    void imports(Query q, ASTQuery ast, Metadata m) {
+        if (Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())) {
+            basicImports(q, ast, m);
+        }
+    }
+    
+    void basicImports(Query q, ASTQuery ast, Metadata m) {
+        if (m.hasMetadata(Metadata.IMPORT)) {
+            for (String path : m.getValues(Metadata.IMPORT)) {
+                try {
+                    imports(q, ast, path);
+                } catch (EngineException ex) {
+                    logger.error("Import:" + path);
+                }
+            }
+        }
+    }
+
+    void imports(Query q, ASTQuery ast, String path) throws EngineException {
+        if (imported.containsKey(path)) {
+            return;
+        }
+        logger.info("Import: " + path);
+        imported.put(path, path);
+        ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
+        compile(q, ast, ast2.getDefine());
+        define(ast2.getDefine(), q);
+        compile(q, ast, ast2.getDefineLambda());
+        define(ast2.getDefineLambda(), q);
+    }
+
+    void undefinedFunction(Query q, ASTQuery ast) {
+        for (Expression exp : ast.getUndefined().values()) {
+            boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
+            if (ok) {
+            } else {
+                ok = Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())
+                        && importFunction(q, exp);
+                if (!ok) {
+                    ast.addError("undefined expression: " + exp);
+                }
+            }
+        }
+    }
+
+    boolean importFunction(Query q, Expression exp) {
+        boolean b = getLinkedFunctionBasic(exp.getLabel());
+        if (b) {
+            return Interpreter.isDefined(exp);
+        }
+        return false;
+    }
+
+    boolean getLinkedFunctionBasic(String label) {
+        String path = NSManager.namespace(label);
+        if (loaded.containsKey(path)) {
+            return true;
+        }
+        logger.info("Load Linked Function: " + label);
+        loaded.put(path, path);
+        Query imp = transformer.getSPARQLEngine().parseQuery(path);
+        if (imp != null && imp.hasDefinition()) {
+            // loaded functions are exported in Interpreter  
+            definePublic(imp.getExtension(), imp);
+            return true;
+        }
+        return false;
+    }
+
+    static void removeLinkedFunction() {
+        for (String name : loaded.values()) {
+            Interpreter.getExtension().removeNamespace(name);
+        }
+        loaded.clear();
+    }
+
+    /**
+     * Define function into Extension Export into Interpreter
+     */
+    void define(ASTExtension aext, Query q) {
+        fr.inria.corese.kgram.filter.Extension ext = q.getCreateExtension();
+        DatatypeHierarchy dh = new DatatypeHierarchy();
+        if (q.isDebug()) {
+            dh.setDebug(true);
+        }
+        ext.setHierarchy(dh);
+
+        for (ASTExtension.ASTFunMap m : aext.getMaps()) {
+            for (Function exp : m.values()) {
+                ext.define(exp);
+                if (exp.isPublic()) {
+                    definePublic(exp, q);
+                }
+            }
+        }
+    }
+
+    // TODO: check isSystem() because it is exported
+    /**
+     * ext is loaded function definitions define them as public
+     *
+     * @param ext
+     * @param q
+     */
+    void definePublic(fr.inria.corese.kgram.filter.Extension ext, Query q) {
+        definePublic(ext, q, true);
+    }
+
+    /**
+     * isDefine = true means export to Interpreter Use case: Transformation
+     * st:profile does not export to Interpreter hence it uses isDefine = false
+     */
+    public void definePublic(fr.inria.corese.kgram.filter.Extension ext, Query q, boolean isDefine) {
+        for (fr.inria.corese.kgram.filter.Extension.FunMap m : ext.getMaps()) {
+            for (Expr exp : m.values()) {
+                Function e = (Function) exp;
+                definePublic(e, q, isDefine);
+            }
+        }
+    }
+
+    void definePublic(Function fun, Query q) {
+        definePublic(fun, q, true);
+    }
+
+    void definePublic(Function fun, Query q, boolean isDefine) {
+        if (isDefine) {
+            if (Interpreter.getExtension().getHierarchy() == null) {
+                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
+            }
+            Interpreter.define(fun);
+        }
+        fun.setPublic(true);
+        if (fun.isSystem()) {
+            // export function with exists {} 
+            fun.getTerm().setPattern(q);
+        }
+    }
+
+}

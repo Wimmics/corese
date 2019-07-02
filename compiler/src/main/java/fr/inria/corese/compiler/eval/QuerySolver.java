@@ -820,6 +820,10 @@ public class QuerySolver  implements SPARQLEngine {
     public Query parseQuery(String path) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public ASTQuery parse(String path) throws EngineException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     /**
      * @return the loadFunction

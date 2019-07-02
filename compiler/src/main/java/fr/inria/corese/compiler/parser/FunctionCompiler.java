@@ -1,7 +1,6 @@
 package fr.inria.corese.compiler.parser;
 
 import fr.inria.corese.compiler.eval.Interpreter;
-import static fr.inria.corese.compiler.parser.Transformer.loaded;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeHierarchy;
@@ -14,7 +13,6 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.HashMap;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,23 +82,27 @@ public class FunctionCompiler {
 
     void compile(Query q, ASTQuery ast, Function fun) {
         if (fun.getMetadata() != null) {
-            imports(q, ast, fun.getMetadata());
+            basicImports(q, ast, fun.getMetadata());
         }
         fun.compile(ast);
         transformer.compileExist(fun, false);
         q.defineFunction(fun);
     }
 
-    // @imports <uri> select where 
+    // @import <uri> select where 
     void imports(Query q, ASTQuery ast) {
         if (ast.hasMetadata(Metadata.IMPORT)) {
-            imports(q, ast, ast.getMetadata());
+            basicImports(q, ast, ast.getMetadata());
         }
     }
     
     void imports(Query q, ASTQuery ast, Metadata m) {
         if (Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())) {
             basicImports(q, ast, m);
+        }
+        else 
+            if (m.hasMetadata(Metadata.IMPORT)){
+            logger.error("Unauthorized import: " + m.getValues(Metadata.IMPORT));
         }
     }
     
@@ -110,7 +112,7 @@ public class FunctionCompiler {
                 try {
                     imports(q, ast, path);
                 } catch (EngineException ex) {
-                    logger.error("Import:" + path);
+                    logger.error("Undefined import: " + path);
                 }
             }
         }
@@ -120,7 +122,9 @@ public class FunctionCompiler {
         if (imported.containsKey(path)) {
             return;
         }
-        logger.info("Import: " + path);
+        if (ast.isDebug()) {
+            logger.info("Import: " + path);
+        }
         imported.put(path, path);
         ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
         compile(q, ast, ast2.getDefine());
@@ -137,7 +141,7 @@ public class FunctionCompiler {
                 ok = Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())
                         && importFunction(q, exp);
                 if (!ok) {
-                    ast.addError("undefined expression: " + exp);
+                    ast.addError("Undefined expression: " + exp);
                 }
             }
         }

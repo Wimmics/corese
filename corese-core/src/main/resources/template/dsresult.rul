@@ -2,10 +2,28 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Display SHACL validation result on server 
+#
+prefix sh: <http://www.w3.org/ns/shacl#>
+ 
+template st:start {
+    st:call-template(st:main)
+}
+where {
+    
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -56,16 +74,21 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Display SHACL validation result on server 
-#
 prefix sh: <http://www.w3.org/ns/shacl#>
  
-template st:start {
-    st:call-template(st:main)
+template st:index {
+    format {
+        "<h4>%s: %s</h4>" 
+        
+        strafter(?s, sh:) ?c
+    }
 }
 where {
-    
+    select ?s (count(*) as ?c) where {
+        graph st:visitor { ?x a sh:ValidationResult ; sh:resultSeverity ?s }
+    } 
+    group by ?s
+    order by ?s
 }
 ]]>
 </body>
@@ -102,22 +125,8 @@ order by ?s
 <rule>
 <body>
 <![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#>
- 
-template st:index {
-    format {
-        "<h4>%s: %s</h4>" 
-        
-        strafter(?s, sh:) ?c
-    }
-}
-where {
-    select ?s (count(*) as ?c) where {
-        graph st:visitor { ?x a sh:ValidationResult ; sh:resultSeverity ?s }
-    } 
-    group by ?s
-    order by ?s
-}
+template st:profile {}
+where {}
 ]]>
 </body>
 </rule>
@@ -141,15 +150,6 @@ where {
     }}
     filter (?c > 0)
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:profile {}
-where {}
 ]]>
 </body>
 </rule>

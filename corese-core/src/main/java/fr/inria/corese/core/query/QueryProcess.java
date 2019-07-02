@@ -565,6 +565,19 @@ public class QueryProcess extends QuerySolver {
     }
     
     @Override
+    public ASTQuery parse(String path) throws EngineException {
+        QueryLoad ql = QueryLoad.create();
+        String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
+        String str = null;
+        try {
+            str = ql.readWE(pp);
+        } catch (LoadException ex) {
+            throw new EngineException(ex) ;
+        }
+        return transformer().parse(str);
+    }
+    
+    @Override
     public Query parseQuery(String path) {
         QueryLoad ql = QueryLoad.create();
         try {

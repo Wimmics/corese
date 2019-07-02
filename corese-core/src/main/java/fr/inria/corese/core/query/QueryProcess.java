@@ -47,6 +47,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -72,6 +73,7 @@ public class QueryProcess extends QuerySolver {
     private static final String EVENT = "event";
     static final String DB_FACTORY  = "fr.inria.corese.tinkerpop.Factory";
     static final String DB_INPUT    = "fr.inria.corese.tinkerpop.dbinput";
+    static final String FUNLIB = "/function/";
 
     //sort query edges taking cardinality into account
     static boolean isSort = false;
@@ -107,20 +109,6 @@ public class QueryProcess extends QuerySolver {
             Query.testJoin = false;
         }
     }
-
-    /**
-	 * True means SPARQL semantics (default value) False means Corese
-	 * semantics (deprecated)
-     */
-//    public static void setOptional(boolean b) {
-//        if (b) {
-//            Optional.isOptional = true;
-//            Query.isOptional = true;
-//        } else {
-//            Optional.isOptional = false;
-//            Query.isOptional = false;
-//        }
-//    }
    
     protected QueryProcess(Producer p, Evaluator e, Matcher m) {
         super(p, e, m);
@@ -564,17 +552,32 @@ public class QueryProcess extends QuerySolver {
                 param);
     }
     
+    /**
+     * Parse a function definition document 
+     * use case: @import <uri>
+     */
     @Override
     public ASTQuery parse(String path) throws EngineException {
         QueryLoad ql = QueryLoad.create();
         String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
         String str = null;
         try {
-            str = ql.readWE(pp);
-        } catch (LoadException ex) {
+            if (pp.startsWith(NSManager.STL)) {
+                // @import <function/test.rq> within transformation such as st:turtle
+                // the import uri is st:function/test.rq
+                // consider it as a resource
+                String name = "/"+NSManager.nsm().strip(pp, NSManager.STL);
+                str = ql.getResource(name);
+            }
+            else {
+                str = ql.readWE(pp);
+            }
+        } catch (LoadException | IOException ex) {
             throw new EngineException(ex) ;
         }
-        return transformer().parse(str);
+        Transformer t = transformer();
+        t.setBase(path);
+        return t.parse(str);
     }
     
     @Override

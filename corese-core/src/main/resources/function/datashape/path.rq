@@ -1,0 +1,223 @@
+#
+# Data Shape Property Path Interpreter
+# PP expressions are searched in graph ?shape 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <http://www.w3.org/ns/shacl#>  
+
+@public {
+
+#
+# Rewrite Property Path shape expression as a LDScript list
+#
+# ([sh:zeroOrMorePath rdf:rest] rdf:first)
+# ->
+# (sh:sequence ((sh:zeroOrMorePath rdf:rest) rdf:first))
+# URI may be URI of a subpath such as:
+# [sh:path ex:parent] .
+# ex:parent sh:alternativePath (ex:father ex:mother)
+#
+function sh:path(dt:graph ?shape, ?pp) {
+
+  if (isURI(?pp)) { ?pp }
+  else {
+    let ( 
+        select ?shape ?pp ?q ?path where {
+            graph ?shape { 
+                # rdf:rest is for a sequence
+                values ?q { 
+                    rdf:rest sh:inversePath sh:alternativePath 
+                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  }
+                ?pp ?q ?path   
+            }
+        } ) {
+          
+             if (! bound(?q))
+                { return(error()) }   
+                else { 
+                if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
+                    else { return(xt:list(?q, sh:path(?shape, ?path))) }
+                }                
+    }
+  }
+}
+
+
+#
+# Rewrite recursively RDF list ?pp as a list
+#
+function dt:list sh:listsh(dt:graph ?shape, ?pp){
+   let ( 
+        select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
+        where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
+        return(?l)
+    }
+}
+
+
+
+
+#
+# Return list of nodes related to node ?s by path ?p
+# ?s is subject, ?p is PP expression
+# ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
+#
+function dt:list sh:path(dt:graph shape, s, p){    
+    sh:path(shape, s, sh:getPath(shape, p), false)
+}
+
+
+#
+# rewrite PP once as a list and record it
+#
+function sh:getPath(dt:graph shape, p){
+    let (res = coalesce(st:cget(sh:path, p), st:null)) {
+        if (res = st:null) {
+            return (st:cset(sh:path, p, sh:path(shape, p)))
+        }
+        else {
+            return(res)
+        }
+    }
+}
+
+
+#
+# Evaluate PP p as a list
+# Return list of target nodes that match the path
+# inv = true means within inverse path
+#
+function dt:list sh:path(dt:graph shape, s, p, xsd:boolean inv){
+  if (isURI(p)){
+     return(sh:pathProperty(s, p, inv))
+  }
+  else {
+    let ((oper, path) = p) {      
+      return(funcall(oper, shape, s, path, inv))
+   }
+  } 
+}
+
+
+
+function dt:list sh:zeroOrOnePath(dt:graph shape, s, p, xsd:boolean inv){
+    let (l = sh:path(shape, s, p, inv)){
+        if (xt:member(s, l), 
+            return(l), 
+            return(xt:cons(s, l)))
+    }
+}
+
+function dt:list sh:zeroOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
+    sh:rec(shape, s, p, xt:list(s), inv)
+}
+
+function dt:list sh:oneOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
+    sh:rec(shape, s, p, xt:list(), inv)
+}
+
+#
+# ?p is a PP expression exp
+# compute exp*
+# ?res is the list of nodes already reached by exp*
+# ?res prevents loops
+#
+function dt:list sh:rec(dt:graph shape, s, p, dt:list res, xsd:boolean inv){
+    let (l = sh:path(shape, s, p, inv)){
+        if (xt:size(l) = 0){ return(res) }
+        else {
+            for (ee in l){
+                if (! xt:member(ee, res)){
+                    xt:add(res, ee) ; 
+                    sh:rec(shape, ee, p, res, inv)
+                }             
+            } ;
+            return(res)             
+        }
+    }
+}
+
+
+#
+# s ^exp
+# inverse PP expression
+#
+function dt:list sh:inversePath(dt:graph shape, s, p, xsd:boolean inv){
+    sh:path(shape, s, p, ! inv)
+}
+
+
+#
+# p is  a sequence list
+#
+function dt:list sh:sequence(dt:graph shape, s, p, xsd:boolean inv){
+    if (inv) {
+        return(sh:seqlist(shape, s, xt:reverse(p), inv))
+    }
+    else{
+        return(sh:seqlist(shape, s, p, inv))
+    }
+}
+
+
+#
+# Recursive traversal of sequence list lp
+# recurse on xt:rest(lp)
+#
+function dt:list sh:seqlist(dt:graph shape, s, dt:list lp, xsd:boolean inv){
+    if (xt:size(lp) = 0){
+        # reach end of sequence: add target node s
+        return(xt:list(s))
+    }
+    else {
+        let (l = sh:path(shape, s, xt:first(lp), inv), 
+            res = xt:list()){
+            for (ee in l){ 
+                # merge removes duplicate nodes
+                set(res = xt:merge(res, sh:seqlist(shape, ee, xt:rest(lp), inv)))
+            } ;
+            return(res)
+        }
+    }
+}
+
+# p = (sh:sequence (exp .. exp))
+function dt:list sh:alternativePath(dt:graph shape, s, p, xsd:boolean inv){
+    let (l = xt:get(p, 1)) {
+        return(mapmerge(sh:pathmap, l, xt:list(shape), s, inv))
+    }
+}
+
+function dt:list sh:pathmap(l, dt:graph shape, s, xsd:boolean inv){
+    sh:path(shape, s, l, inv)
+}
+
+function dt:list sh:pathProperty(s, p, xsd:boolean inv){
+    if (inv) {
+        return(sh:inverse(s, p))
+    }
+    else {
+        return(sh:predicate(s, p))    
+    }
+}
+
+function dt:list sh:predicate(?s, ?p){
+    let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
+        return(?l)
+    }
+}
+
+function dt:list sh:inverse(?o, ?p){
+    let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
+        return(?l)
+    }
+}
+
+
+
+
+
+}

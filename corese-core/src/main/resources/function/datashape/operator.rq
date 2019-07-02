@@ -1,0 +1,212 @@
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix fun:  <http://www.w3.org/ns/shacl#> 
+prefix java: <http://www.w3.org/ns/shacl#>  
+
+@public {
+
+function sh:count(s, p){
+  let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
+  { return(?c) }
+}
+
+function sh:invCount(?o, ?p){
+  let (select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
+  { return(?c) }
+}
+
+
+function sh:minCount(s, p, m){
+    sh:count(s, p) >= m
+}
+
+function sh:maxCount(s, p, m){
+    sh:count(s, p) <= m
+}
+
+function xsd:boolean sh:nodeKind(dt:graph shape, value, dt:uri kind){
+    (isURI(value)     && kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isLiteral(value) && kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
+    (isBlank(value)   && kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+}
+
+function xsd:boolean sh:minLength(dt:graph shape, s, m){
+    ! isBlank(s) && coalesce(strlen(s) >= m, false) 
+}
+
+function xsd:boolean sh:maxLength(shape, s, m){
+    ! isBlank(s) && coalesce(strlen(s) <= m, false) 
+}
+
+function xsd:boolean sh:minInclusive(shape, o, m){
+    o >= m
+}
+
+function xsd:boolean sh:minExclusive(shape, o, m){
+    o > m
+}
+
+function xsd:boolean sh:maxInclusive(shape, o, m){
+    o <= m
+}
+
+function xsd:boolean sh:maxExclusive(shape, o, m){
+    o < m
+}
+
+function xsd:boolean sh:datatype(shape, o, dt){
+    sh:datatype(o, dt)
+}
+
+function xsd:boolean sh:datatype(o, dt){
+    if (isLiteral(o), return(datatype(o) = dt && isWellFormed(o)), false)
+}
+
+function xsd:boolean sh:minCount(s, m){
+    s >= m
+}
+
+function xsd:boolean sh:maxCount(s, m){
+    s <= m
+}
+
+function xsd:boolean sh:hasValue(shape, s, v) {
+    s = v
+}
+
+@skip
+function xsd:boolean sh:class(?shape, ?o, ?c){
+  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+}
+
+function xsd:boolean sh:classsh(?shape, ?o, ?c){
+  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+}
+
+function xsd:boolean sh:in(dt:graph ?shape, ?o, ?lv){
+  exists { 
+    # "declare" Node ?o to allow parameter passing
+    values ?o { UNDEF }
+    graph ?shape { values ?o { UNDEF }
+        ?lv rdf:rest*/rdf:first ?v  
+        filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
+    }
+  } 
+}
+
+
+function xsd:boolean sh:languageIn(dt:graph ?shape, ?o, ?lv){
+  exists { 
+    # "declare" Node ?o to allow parameter passing
+    values ?o { UNDEF }
+    bind (lang(?o) as ?lang)
+    filter bound(?lang)
+    graph ?shape { values ?lang { UNDEF }
+        ?lv rdf:rest*/rdf:first ?l  
+        filter langMatches(?lang, ?l)
+    }
+  } 
+}
+
+function xsd:boolean sh:node(dt:graph shape, o, cst){
+    sh:testShapeCore(shape, cst, o)
+}
+
+function xsd:boolean sh:property(dt:graph shape, o, cst){
+    sh:hasShape(shape, cst, true, o)
+}
+
+function xsd:boolean sh:qualifiedShape(subject, dt:graph shape, qsh){
+    sh:testShapeCore(shape, qsh, subject)
+}
+
+# used by predicate/path 
+# count failure
+function xsd:boolean sh:and(and, s, p, o, dt:graph shape){
+    (sh:bool(and, s, p, o, shape, 0, 1) = 0)
+}
+
+# used by predicate/path 
+# count success
+function xsd:boolean sh:or(or, s, p, o, dt:graph shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  > 0)
+}
+
+# used by predicate/path 
+# count success
+function xsd:boolean sh:xone(or, s, p, o, dt:graph shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  = 1)
+}
+
+# property (predicate or path)
+# ?fun = sh:hasPath
+function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, ?p, ?o, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
+    let ( 
+        SELECT ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+			GRAPH ?shape {
+				?sh rdf:rest*/rdf:first ?cst
+				optional { ?cst sh:property|sh:path|sh:closed ?prop }
+			}
+			BIND (
+                if (bound(?prop), 
+                    java:testShapeCore(?shape, ?cst, ?o),
+                    java:hasPath(?shape, ?cst, false, ?s, ?p, ?o))
+			AS ?hasShape)
+			BIND (IF (bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		}
+		values (?s ?suc ?fail ?p ?o ) { (UNDEF UNDEF UNDEF UNDEF UNDEF) }) 
+		{ return(?count) }
+}
+
+
+# used by core
+# count fail
+function xsd:boolean sh:and(and, s, dt:graph shape){
+    (sh:bool(and, s, shape, 0, 1) = 0)
+}
+
+# used by core
+# count success
+function xsd:boolean sh:or(or, s, dt:graph shape){
+    (sh:bool(or, s, shape, 1, 0) > 0)
+}
+
+# used by core
+# count success
+function xsd:boolean sh:xone(or, s, dt:graph shape){
+    (sh:bool(or, s, shape, 1, 0) = 1)
+}
+
+# core
+function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
+    let ( 
+        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+            graph ?shape { 
+                ?sh rdf:rest*/rdf:first ?cst
+            }			
+			BIND (java:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
+		}
+		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) })
+		{ return(?count) }
+}
+
+
+
+
+
+function xsd:boolean sh:disjoint(dt:list l1, dt:list l2){
+    for (x in l1){
+            if (xt:member(x, l2)){
+                return(false) 
+            }     
+    } ;
+    return(true)
+}
+
+function xsd:boolean sh:equal(dt:list l1, dt:list l2){
+    return (l1 = l2)
+}
+
+}

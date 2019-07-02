@@ -1,23 +1,23 @@
 <div>
-	<div class="panel" id="selectViewerPanel" style="overflow:auto;resize:both;">
-		<div class="panel-heading" align="center"><strong>Viewer for select results using <a href='https://github.com/ktym/d3sparql'>d3sparql</a></strong></div>
-		<div class="panel-body" align="left" >
-			<ul id="navbar-header" class="nav nav-tabs">
-				<!--				<li class="active"><a data-toggle="tab" href="#viewerSelector">Graph</a></li> -->
-			</ul>
-			<div id="navbar-content" class="tab-content">
-			<!--	<div id="viewerSelector" class="tab-pane fade in active">
-					<select id="selector">
-						<option value="barchart">barchart</option>
-						<option value="piechart">piechart</option>
-					</select>
-					<button id="addViewer" onclick="window.pageDrawer.addViewer()">Add Viewer</button>
-					<div id="viewerConfiguration"></div>
-					<svg id="result"></svg>
-			</div> -->
-			</div>
-		</div>
-	</div>
+    <div class="panel" id="selectViewerPanel" style="overflow:auto;resize:both;">
+        <div class="panel-heading" align="center"><strong>Viewer for select results using <a href='https://github.com/ktym/d3sparql'>d3sparql</a></strong></div>
+        <div class="panel-body" align="left" >
+            <ul id="navbar-header" class="nav nav-tabs">
+                <!--				<li class="active"><a data-toggle="tab" href="#viewerSelector">Graph</a></li> -->
+            </ul>
+            <div id="navbar-content" class="tab-content">
+                <div id="viewerSelector" class="tab-pane fade in active">
+                    <select id="selector">
+                        <option value="barchart">barchart</option>
+                        <option value="piechart">piechart</option>
+                    </select>
+                    <button id="addViewer" onclick="window.pageDrawer.addViewer()">Add Viewer</button>
+                    <div id="viewerConfiguration"></div>
+                    <svg id="result"></svg>
+                </div> 
+            </div>
+        </div>
+    </div>
 </div>
 <script>
 	var data%1$s = %2$s;

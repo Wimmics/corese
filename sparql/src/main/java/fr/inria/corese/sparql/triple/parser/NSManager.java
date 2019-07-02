@@ -103,6 +103,8 @@ public class NSManager extends ASTObject {
     static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
     static final String pchar = ":";
     int count = 0;
+    static final NSManager nsm = create();
+    
     HashMap<String, String> def; // system namespace with prefered prefix
     HashMap<String, Integer> index;  // namespace -> number
     HashMap<String, String> tns;     // namespace -> prefix
@@ -136,7 +138,11 @@ public class NSManager extends ASTObject {
         this();
         this.defaultNamespaces = defaultNamespaces;
     }
-
+    
+    public static NSManager nsm() {
+        return nsm;
+    }
+    
     /**
      * Warning: to be used only when we don't need default namespaces and their
      * prefixes

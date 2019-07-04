@@ -8,7 +8,6 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <http://www.w3.org/ns/shacl#>  
 
-@public {
 
 #
 # Rewrite Property Path shape expression as a LDScript list
@@ -214,10 +213,4 @@ function dt:list sh:inverse(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
-}
-
-
-
-
-
 }

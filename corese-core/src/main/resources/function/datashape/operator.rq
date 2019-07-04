@@ -2,7 +2,6 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <http://www.w3.org/ns/shacl#>  
 
-@public {
 
 function sh:count(s, p){
   let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
@@ -209,4 +208,3 @@ function xsd:boolean sh:equal(dt:list l1, dt:list l2){
     return (l1 = l2)
 }
 
-}

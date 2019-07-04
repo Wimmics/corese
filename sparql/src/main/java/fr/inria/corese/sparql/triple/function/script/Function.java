@@ -320,7 +320,7 @@ public class Function extends Statement {
      * @param isExport the isExport to set
      */
     @Override
-    public void setPublic(boolean isExport) {
+    public void setPublic(boolean isExport) {        
         this.isPublic = isExport;
     }
 

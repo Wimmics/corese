@@ -31,6 +31,7 @@ public class Extension extends LDScript {
     Computer cc;
     boolean visit = true;
     boolean typecheck = Function.typecheck;
+    boolean todo = true;
  
     public Extension() {}
     
@@ -62,13 +63,19 @@ public class Extension extends LDScript {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        if (function == null) {
-            function = (Function) eval.getDefine(this, env);
-            if (function == null) {
-                logger.error("Undefined function: " + this.getLabel() + " " + this);
-                return null;
-            } else {
-                init();
+        if (todo) {
+            synchronized (this) {
+                // public functions are shared ...
+                if (function == null) {
+                    function = (Function) eval.getDefine(this, env);
+                    if (function == null) {
+                        logger.error("Undefined function: " + this.getLabel() + " " + this);
+                        return null;
+                    } else {
+                        init();
+                    }
+                }
+                todo = false;
             }
         }
                 

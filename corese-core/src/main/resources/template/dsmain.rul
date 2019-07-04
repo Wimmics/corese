@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 02 15:09:01 CEST 2019
+Thu Jul 04 09:23:44 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -110,7 +110,7 @@ prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
 # @import <../../../function/datashape.rq>
 
-@import  <function/datashape/target.rq> <function/datashape/path.rq> <function/datashape/operator.rq>
+@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/path.rq> <function/datashape/operator.rq>
 
 template st:profile {} where {}
 
@@ -139,278 +139,7 @@ function st:optimize(shape, sh){
     true
 }
 
-@public {
 
-function sh:test(){
-    st:get(st:test, true) 
-}
-
-function sh:pack(test, name){
-    if (sh:test(), 
-        return(concat("/user/corby/home/AAData/sttl/datashape/", test)), name)
-}
-
-function sh:main(){
-    sh:pack("main", st:dsmain)
-}
-
-function sh:core(){
-    sh:pack("core", st:dscore)
-}
-
-function sh:constraint(){
-    sh:pack("constraint", st:dsconstraint)
-}
-
-function sh:path(){
-    sh:pack("path", st:dspath)
-}
-
-
-# test and may report error
-# main target & noscope
-function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
-    st:apply-templates-with-all(sh:core(), shape, sh, vis, ls)
-}
-
-# test without target and do not report error
-# sh:node  sh:or sh:and sh:not
-function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, s) {
-    st:apply-templates-with-all(sh:core(), shape, sh, false, s)
-}
-
-function xsd:boolean sh:hasConstraint(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
-    st:apply-templates-with-all(sh:constraint(), shape, sh, vis, s)
-}
-
-function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
-}
-
-function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p, o) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p, o)
-}
-
-function xsd:boolean sh:path(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
-}
-
-function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
-    suc
-}
-
-function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
-    if (vis) {
-        sh:visit(name, s, suc)
-    } ;
-    return (true)
-}
-
-#
-# suc is success/failure of the shape
-# vis true means generate a ValidationResult
-#
-function xsd:boolean st:report(name,  sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
-    if (vis && ! suc) { 
-        sh:result(name, sh, shape, foc,  p, o) ;
-        sh:visit(name, foc, suc)
-    } ;
-    return(true)
-}
-
-function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
-    st:report(name, sh, shape, foc, st:null, st:null, suc, vis)
-}
-
-function sh:value(v){
-    if (v = st:null, return(error()), v)
-}
-
-# start
-function sh:starter() {
-    sh:start() ;
-    # validation report graph
-    set(validationReport = query(construct where {})) ;
-    sh:init()
-}
-
-# finish
-function xsd:boolean sh:success(xsd:boolean bb) {
-    if (bb) {
-        let (g = 
-            construct { [] a sh:ValidationReport ; sh:conforms true }
-            where { }
-            ) {
-            us:insert(g, validationReport)
-        }
-    } ;
-    sh:finish() ;
-    return (true)
-}
-
-
-
-#
-# transformer visitor
-#
-function sh:start() {
-    st:visit(st:start, st:trace) 
-}
-
-# declare report graph to transformer visitor graph, use case: shape workflow
-function sh:finish() {
-    st:visit(st:trace, st:graph, validationReport) 
-}
-
-# when suc = false, declare error on node (for future pprint)
-function sh:visit(name, node, suc) {
-    st:visit(name, node, suc)
-}
-
-
-
-# insert report element g into report
-function us:insert(dt:graph g, dt:graph report) {
-    for ((s p o) in g) {
-        xt:focus(report, xt:insert(s, p, o))
-    } 
-}
-
-#
-# create a validation result  graph
-# stored in the visitor graph
-# get it with st:visitedGraph()
-#
-function xsd:boolean sh:result(?name, ?sh, dt:graph ?shape, ?foc, ?p, ?o){
-    let (g = 
-       construct {
-        ?bnode a sh:ValidationReport ; 
-            sh:result ?r ; 
-            sh:conforms false .
-        
-        ?r rdf:type sh:ValidationResult ;
-            sh:resultSeverity ?sev ;
-            sh:focusNode ?foc ;
-            sh:focusNodeDetail ?focDetail ;
-            sh:resultPath ?pathDetail ; 
-            #sh:resultPath ?pp ; 
-            #sh:pathDetail ?pathDetail ; 
-            sh:value ?oo ;
-            sh:valueDetail ?valueDetail ;
-            sh:resultMessage ?mes ;
-            sh:sourceConstraintComponent ?def ;
-            sh:sourceShape ?sh
-        } 
-        where { 
-            bind (uuid() as ?r)
-            bind (coalesce(java:isdefby(?name), ?name) as ?def)
-            bind (xt:focus(?shape, java:severity(?sh)) as ?sev)
-            bind (xt:focus(?shape, java:message(?sh)) as ?m)
-            bind (if (bound(?m), ?m, concat("Fail at: ", xt:focus(?shape, xt:turtle(?sh)))) as ?mes)
-            bind (java:value(?p) as ?pp)
-            bind (java:value(?o) as ?oo)            
-            bind (if (bound(?pp), xt:focus(?shape, java:graph(?pp)), error())  as ?pathDetail)                                       
-            bind (java:graphbnode(?foc) as ?focDetail)
-            bind (if (bound(?oo), java:graphbnode(?oo), error())  as ?valueDetail)
-            bind (java:bnodeid() as ?bnode)
-        } 
-        values (?name ?sh ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
-        ) 
-    {
-        us:insert(g, validationReport);
-        return(true)
-    }
-}
-
-# within graph shape {}
-function dt:uri sh:severity(sh) {
-    for ((s, p, o) in xt:edges(sh, sh:severity)){
-        return (o)
-    } ;
-    return (sh:Violation)
-}
-
-function sh:message(sh){
-    for ((s, p, o) in xt:edges(sh, sh:message)){
-        return (o)
-    } ;
-    return (error())
-}
-
-function dt:bnode sh:bnodeid(){
-    let (bn = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
-        if (bn = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (bn)) 
-    }
-}
-
-function sh:bnodeid2(){
-    coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
-}
-
-# trick datatype for st:turtle transformation to pprint a graph in Turtle format
-function sh:graph(var){
-if (isBlank(var), 
-    return(strdt(st:apply-templates-with(st:turtle, var), xt:graph)), 
-    var)
-}
-
-function sh:graphbnode(var){
-    if (isBlank(var),  
-        return(sh:graph(var)),
-        return(error()))
-}
-
-
-function sh:init(){
-    map (sh:define, sh:def())
-}
-
-function sh:define(def){
-    let ((name, value) = def){
-        st:cset(sh:def, name, value)
-    } ;
-    return(true)
-}
-
-function dt:list sh:def(){
-    let (list = @(
-        (sh:class       sh:ClassConstraintComponent)
-        (sh:datatype    sh:DatatypeConstraintComponent)
-        (sh:nodeKind    sh:NodeKindConstraintComponent)
-        (sh:minCount    sh:MinCountConstraintComponent)
-        (sh:maxCount    sh:MaxCountConstraintComponent)
-        
-        (sh:minExclusive	sh:MinExclusiveConstraintComponent)
-        (sh:minInclusive	sh:MinInclusiveConstraintComponent)
-        (sh:maxExclusive    sh:MaxExclusiveConstraintComponent)
-        (sh:maxInclusive    sh:MaxInclusiveConstraintComponent)
-        (sh:minLength       sh:MinLengthConstraintComponent)
-        (sh:maxLength       sh:MaxLengthConstraintComponent)
-        (sh:pattern	        sh:PatternConstraintComponent)
-        (sh:languageIn      sh:LanguageInConstraintComponent)
-        (sh:uniqueLang      sh:UniqueLangConstraintComponent)
-        (sh:equals          sh:EqualsConstraintComponent)
-        (sh:disjoint        sh:DisjointConstraintComponent)
-        (sh:lessThan        sh:LessThanConstraintComponent)
-        (sh:lessThanOrEquals sh:LessThanOrEqualsConstraintComponent)
-        (sh:not             sh:NotConstraintComponent)
-        (sh:and             sh:AndConstraintComponent)
-        (sh:or              sh:OrConstraintComponent)
-        (sh:xone            sh:XoneConstraintComponent)
-        (sh:node            sh:NodeConstraintComponent)
-        (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
-        (sh:qualifiedMinCount   sh:QualifiedMinCountConstraintComponent)
-        (sh:qualifiedMaxCount   sh:QualifiedMaxCountConstraintComponent)
-        (sh:qualifiedValueShapeDisjoint sh:qualifiedValueShapeDisjointConstraintComponent)
-        (sh:closed      sh:ClosedConstraintComponent)
-        (sh:hasValue    sh:HasValueConstraintComponent)
-        (sh:in          sh:InConstraintComponent)
-        
-        (sh:sparql      sh:SPARQLConstraintComponent)
-    ) ) {
-        return(?list)
-    } 
-} 
 
 # within xt:focus(?shape, sh:sibling())
 # record sibling qualifiedValueShape in a table
@@ -434,20 +163,8 @@ function sh:sibling() {
 
 
 
-function sh:isdefby(name){
-    st:cget(sh:def, name)
-}
-
-function sh:functioncall(q, shape, s, m){
-    funcall(sh:clean(q), shape, s, m)
-}
-
-function sh:clean(q){
-    if (q = sh:class, sh:classsh, q)
-}
 
 
-}
 ]]>
 </body>
 </rule>

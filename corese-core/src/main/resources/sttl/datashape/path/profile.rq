@@ -1,6 +1,8 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
+@import <function/datashape/main.rq> <function/datashape/path.rq> <function/datashape/operator.rq> 
+
 template st:profile {}
 where {}
 

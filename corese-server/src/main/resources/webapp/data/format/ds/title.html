@@ -10,11 +10,11 @@
         <h3 class="panel-title">Data Shape</h3>
     </div>
     <div class="panel-body">
-        <form method='POST' action='/tutorial/shape' id='datashape'>
+        <form method='POST' action='%1$s' id='datashape'> <!--   /service/shape    -->
             <label for='uri'>RDF Graph URL: </label>
-            <input type='text' id='param' name='param' value ='%s' class="form-control custom-control" /><br/>
-            <label for='sel'>Shape URL: </label><br>
-            <input type="text" id='sel2'  name='mode'  value='%s'   class="form-control"  />               
+            <input type='text' id='param' name='param' value ='%2$s' class="form-control custom-control" /><br/>
+            <label for='sel'>SHACL Shape URL: </label><br>
+            <input type="text" id='sel2'  name='mode'  value='%3$s'   class="form-control"  />               
             <br/>
             <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
         </form>
@@ -30,7 +30,7 @@
         <h3 class="panel-title">Data Shape</h3>
     </div>
     <div class="panel-body">
-        <form method='POST' action='/tutorial/shape' id='datashape2'>
+        <form method='POST' action='%1$s' id='datashape2'>     <!--   /service/shape    -->
         <label for='format'>Input Format</label>
         <select name="format"   id='format'>
             <option value='st:undef'>Undefined</option>
@@ -41,10 +41,10 @@
                 <br/>
 
             <label for='uri'>RDF Graph Text:</label>
-            <textarea  class="form-control custom-control"  rows='8' name='param'>%s</textarea>   
+            <textarea  class="form-control custom-control"  rows='8' name='param'>%4$s</textarea>   
             <br/>
             <label for='sel'>Shape Text: </label><br>
-            <textarea  class="form-control custom-control"  rows='8' name='mode'>%s</textarea>  
+            <textarea  class="form-control custom-control"  rows='8' name='mode'>%5$s</textarea>  
             <br/>
             <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
         </form>

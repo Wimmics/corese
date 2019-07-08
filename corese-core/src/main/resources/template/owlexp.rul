@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -38,7 +38,22 @@ function st:process(?in) {
 <body>
 <![CDATA[
 template {
-    if (bound(?t), "DataUnionOf", "ObjectUnionOf") 
+  if (isBlank(?e), st:nl(), "")
+  ?e 
+  ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "DataIntersectionOf", "ObjectIntersectionOf") 
     "(" 
 	ibox {
 	  ?y  
@@ -46,7 +61,7 @@ template {
     ")" 
 }
 where {
-  ?in owl:unionOf ?y 
+  ?in owl:intersectionOf ?y 
   filter (?y != rdf:nil)
   optional { ?in a ?t  filter(?t = rdfs:Datatype) }
 }
@@ -78,16 +93,18 @@ where {
 <rule>
 <body>
 <![CDATA[
-template {
-  xsd:string(?l) "(" ?y ")"  
-}
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {}
 where {
-  ?in ?p ?y
+  ?in a ?t
+  filter (strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:))
 }
-values (?p ?l){
-(owl:complementOf 	  "ObjectComplementOf")
-(owl:datatypeComplementOf "DataComplementOf")
-}
+limit 1
+pragma { st:template st:priority 1000 }
 ]]>
 </body>
 </rule>
@@ -96,68 +113,33 @@ values (?p ?l){
 <body>
 <![CDATA[
 template {
-    if (bound(?t), "DataIntersectionOf", "ObjectIntersectionOf") 
-    "(" 
-	ibox {
-	  ?y  
-	}
-    ")" 
-}
-where {
-  ?in owl:intersectionOf ?y 
-  filter (?y != rdf:nil)
-  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "ObjectInverseOf(" ?y ")"  
-}
-where {
-  ?in owl:inverseOf ?y 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), "DataHasValue", "ObjectHasValue") 
-  "(" ?y " " ?v ")"  
-}
-where {
-  ?in owl:hasValue ?v ;
-    owl:onProperty ?y .
-    optional { ?y a ?t  filter (?t = owl:DatatypeProperty) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  "DatatypeRestriction(" ?dt " " 
-      group  { 
-	?p " " 
-	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
-      }
+  xsd:string(?l)
+  "(" 
+    st:turtle(?n) " " ?p " "  ?c 
   ")"  
 }
 where {
-  ?in a rdfs:Datatype ;
-    owl:onDatatype ?dt ;
-    owl:withRestrictions [
-      rdf:rest*/rdf:first [ ?p ?v ]
-    ]
+  ?in owl:onClass ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
+}
+values (?q ?l) {
+  (owl:maxQualifiedCardinality "ObjectMaxCardinality")
+  (owl:minQualifiedCardinality "ObjectMinCardinality")
+  (owl:qualifiedCardinality    "ObjectExactCardinality")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    owl:Thing
+}
+where {
+  ?in owl:intersectionOf ()
 }
 ]]>
 </body>
@@ -188,11 +170,101 @@ where {
 <body>
 <![CDATA[
 template {
-  "ObjectHasSelf(" ?y ")"  
+    owl:Nothing
 }
 where {
-  ?in owl:hasSelf true ;
-    owl:onProperty ?y 
+  ?in owl:unionOf ()
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), "DataOneOf", "ObjectOneOf")
+  "("  ?y ")"  
+}
+where {
+  ?in owl:oneOf ?y 
+  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "DataUnionOf", "ObjectUnionOf") 
+    "(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
+}
+where {
+  ?in owl:unionOf ?y 
+  filter (?y != rdf:nil)
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "DatatypeRestriction(" ?dt " " 
+      group  { 
+	?p " " 
+	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
+      }
+  ")"  
+}
+where {
+  ?in a rdfs:Datatype ;
+    owl:onDatatype ?dt ;
+    owl:withRestrictions [
+      rdf:rest*/rdf:first [ ?p ?v ]
+    ]
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
+    "(" st:turtle(?n) " " ?p ")"  
+}
+where {
+  ?in ?q ?n ;
+    owl:onProperty ?p 
+    optional { ?p a ?t . filter(?t = owl:DatatypeProperty) }
+}
+values (?q ?lo ?ld) {
+  (owl:cardinality 	"ObjectExactCardinality" "DataExactCardinality")
+  (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
+  (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "ObjectInverseOf(" ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y 
 }
 ]]>
 </body>
@@ -204,14 +276,13 @@ where {
 #
 # Olivier Corby - Wimmics Inria I3S - 2013
 #
-template {}
-where {
-  ?in a ?t
-  filter (strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:))
+template {
+  st:xsdLiteral(?in)
 }
-limit 1
+where {
+  bind(st:getFocusNode() as ?in)
+  filter(isLiteral(?in))
+}
 pragma { st:template st:priority 1000 }
 ]]>
 </body>
@@ -221,23 +292,11 @@ pragma { st:template st:priority 1000 }
 <body>
 <![CDATA[
 template {
-    owl:Thing
+  "ObjectHasSelf(" ?y ")"  
 }
 where {
-  ?in owl:intersectionOf ()
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    owl:Nothing
-}
-where {
-  ?in owl:unionOf ()
+  ?in owl:hasSelf true ;
+    owl:onProperty ?y 
 }
 ]]>
 </body>
@@ -270,59 +329,13 @@ values (?q ?l) {
 <body>
 <![CDATA[
 template {
-  xsd:string(?l)
-  "(" 
-    st:turtle(?n) " " ?p " "  ?c 
-  ")"  
+  if (bound(?t), "DataHasValue", "ObjectHasValue") 
+  "(" ?y " " ?v ")"  
 }
 where {
-  ?in owl:onClass ?c ;
-    owl:onProperty ?p ;
-    ?q  ?n 
-}
-values (?q ?l) {
-  (owl:maxQualifiedCardinality "ObjectMaxCardinality")
-  (owl:minQualifiedCardinality "ObjectMinCardinality")
-  (owl:qualifiedCardinality    "ObjectExactCardinality")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-  st:xsdLiteral(?in)
-}
-where {
-  bind(st:getFocusNode() as ?in)
-  filter(isLiteral(?in))
-}
-pragma { st:template st:priority 1000 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
-    "(" st:turtle(?n) " " ?p ")"  
-}
-where {
-  ?in ?q ?n ;
-    owl:onProperty ?p 
-    optional { ?p a ?t . filter(?t = owl:DatatypeProperty) }
-}
-values (?q ?lo ?ld) {
-  (owl:cardinality 	"ObjectExactCardinality" "DataExactCardinality")
-  (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
-  (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
+  ?in owl:hasValue ?v ;
+    owl:onProperty ?y .
+    optional { ?y a ?t  filter (?t = owl:DatatypeProperty) }
 }
 ]]>
 </body>
@@ -332,27 +345,14 @@ values (?q ?lo ?ld) {
 <body>
 <![CDATA[
 template {
-  if (isBlank(?e), st:nl(), "")
-  ?e 
-  ; separator = " "
+  xsd:string(?l) "(" ?y ")"  
 }
 where {
-  ?in rdf:rest*/rdf:first ?e
+  ?in ?p ?y
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), "DataOneOf", "ObjectOneOf")
-  "("  ?y ")"  
-}
-where {
-  ?in owl:oneOf ?y 
-  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
+values (?p ?l){
+(owl:complementOf 	  "ObjectComplementOf")
+(owl:datatypeComplementOf "DataComplementOf")
 }
 ]]>
 </body>

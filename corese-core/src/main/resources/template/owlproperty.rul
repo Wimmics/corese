@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,6 +46,99 @@ function st:process(?in) {  owlfs:process(?in) }
 <body>
 <![CDATA[
 template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:domain ?d 
+  bind (
+    if (exists { ?in a owl:DatatypeProperty },   "DataPropertyDomain",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyDomain",
+    "ObjectPropertyDomain"))
+    as ?label)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (?dp, "DisjointDataProperties", "DisjointObjectProperties") 
+    "("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointProperties ;
+    owl:members ?l 
+    
+    bind( 
+    exists {
+      ?l rdf:rest*/rdf:first ?p 
+      ?p a owl:DatatypeProperty
+    } 
+    as ?dp)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   xsd:string(?label) "(" ?in " " ?p ")"
+}
+where {
+  ?in rdfs:subPropertyOf ?p 
+  
+  bind (
+  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
+  "SubDataPropertyOf",
+  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
+  "SubAnnotationPropertyOf",
+  "SubObjectPropertyOf"))
+  as ?label)
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    str(?label)  "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:range ?d 
+  bind (
+    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
+    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
+    "ObjectPropertyRange"))
+    as ?label)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
     xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
@@ -71,28 +164,6 @@ template {
 where {
   ?in owl:inverseOf ?y
   filter(isURI(?in))
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   xsd:string(?label) "(" ?in " " ?p ")"
-}
-where {
-  ?in rdfs:subPropertyOf ?p 
-  
-  bind (
-  if (exists {{?in a owl:DatatypeProperty} union {?p a owl:DatatypeProperty}}, 
-  "SubDataPropertyOf",
-  if (exists {{?in a owl:AnnotationProperty} union {?p a owl:AnnotationProperty}},
-  "SubAnnotationPropertyOf",
-  "SubObjectPropertyOf"))
-  as ?label)
-  
 }
 ]]>
 </body>
@@ -150,77 +221,6 @@ where {
 values (?tt ?l) {
   (owl:ObjectProperty   "EquivalentObjectProperties")
   (owl:DatatypeProperty "EquivalentDataProperties")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    str(?label)  "(" ?in " " ?d ")"
-}
-where {
-  ?in rdfs:range ?d 
-  bind (
-    if (exists { {?in a owl:DatatypeProperty} union {?d a rdfs:Datatype} },   "DataPropertyRange",
-    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyRange",
-    "ObjectPropertyRange"))
-    as ?label)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-      "SubObjectPropertyOf(ObjectPropertyChain(" ?l ") " ?in ")"
-}
-where {
-  ?in owl:propertyChainAxiom ?l 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    str(?label)  "(" ?in " " ?d ")"
-}
-where {
-  ?in rdfs:domain ?d 
-  bind (
-    if (exists { ?in a owl:DatatypeProperty },   "DataPropertyDomain",
-    if (exists { ?in a owl:AnnotationProperty }, "AnnotationPropertyDomain",
-    "ObjectPropertyDomain"))
-    as ?label)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (?dp, "DisjointDataProperties", "DisjointObjectProperties") 
-    "("  ?l ")"   
-}
-where {
-  ?in a owl:AllDisjointProperties ;
-    owl:members ?l 
-    
-    bind( 
-    exists {
-      ?l rdf:rest*/rdf:first ?p 
-      ?p a owl:DatatypeProperty
-    } 
-    as ?dp)
 }
 ]]>
 </body>

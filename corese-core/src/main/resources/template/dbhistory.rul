@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Mon Oct 01 18:27:54 CEST 2018
+Fri Jun 21 14:24:37 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -109,6 +109,25 @@ where {
 <body>
 <![CDATA[
 #
+# Navigator on DBpedia topmost resource updates
+#
+#
+template st:start {
+
+   st:call-template(st:month)
+ 
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Generate title
 # Generate Navigation links to month before and after, 
 # to year before and after
@@ -134,25 +153,6 @@ template st:title(?date) {
 }
 where {
     
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Navigator on DBpedia topmost resource updates
-#
-#
-template st:start {
-
-   st:call-template(st:month)
- 
-}
-where {
-  
 }
 ]]>
 </body>
@@ -287,8 +287,8 @@ function us:root(){
 }
 
 function us:clean(?s){
-  if (strcontains(?s, "Swastika")
-   || strcontains(?s, "Panzer-Division")
+  if (contains(?s, "Swastika")
+   || contains(?s, "Panzer-Division")
    , 
     "", ?s)
 }
@@ -309,21 +309,26 @@ function us:split(?list, ?n) {
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
-function us:table(?list, ?size){
- let (?table  = us:split(?list, ?size)) {
+function us:table(list, size){
+ let (table  = us:split(list, size)) {
      st:format(ft:table.html, 
-      let (?n = 0){
-	    loop (?row in ?table){
+      letdyn (n = 0) {
+	     us:mapconcat (
+        lambda(row) { 
 	      st:format(ft:tr.html, 
-	        set(?n = ?n + 1), 
-	        loop (?cell in ?row){
-		      st:format(ft:td.html, ?cell)
-	        } )
-	    }
+	        set(n = n + 1), 
+	        us:mapconcat (lambda(cell) { st:format(ft:td.html, cell) }, row ) ) 
+	    }, table)  
 	  }
-     )
+     ) 
   }
 }
+
+function us:mapconcat(fun, exp) {
+    reduce(rq:concat, maplist(fun, exp))
+}
+
+
 
 
 #

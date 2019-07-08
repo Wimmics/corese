@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -49,51 +49,6 @@ where {}
 <rule>
 <body>
 <![CDATA[
-template {
-  ?suc
-}
-where {
-  ?in owl:intersectionOf|owl:unionOf ?z 
-  ?z rdf:rest*/rdf:first ?e 
-  
-  bind (
-    st:call-template(st:subClassExpression, ?e)
-    as ?suc
-  )
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  ?suc
-}
-where {
-   ?in a owl:Restriction ;
-	owl:onProperty ?p 
-	
-   bind (
-     exists {
-	{ ?in owl:hasValue ?v }
-	union
-	{ ?in owl:someValuesFrom ?e
-	  filter (?e = owl:Thing ||
-	    st:call-template(st:subClassExpression, ?e)) }
-      }
-      as ?suc)     
-}
-	    
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 #
 # Check if there is an unauthorized OWL property for subClassExpression ?in
 # return false in this case, otherwise template fails (return nothing)
@@ -128,6 +83,31 @@ template {
   ?suc
 }
 where {
+   ?in a owl:Restriction ;
+	owl:onProperty ?p 
+	
+   bind (
+     exists {
+	{ ?in owl:hasValue ?v }
+	union
+	{ ?in owl:someValuesFrom ?e
+	  filter (?e = owl:Thing ||
+	    st:call-template(st:subClassExpression, ?e)) }
+      }
+      as ?suc)     
+}
+	    
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
   ?in owl:oneOf ?z 
   
   bind (    
@@ -137,6 +117,26 @@ where {
     }
     as ?suc)
     
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  ?suc
+}
+where {
+  ?in owl:intersectionOf|owl:unionOf ?z 
+  ?z rdf:rest*/rdf:first ?e 
+  
+  bind (
+    st:call-template(st:subClassExpression, ?e)
+    as ?suc
+  )
+  
 }
 ]]>
 </body>

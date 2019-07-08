@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -77,13 +77,12 @@ where {
 <body>
 <![CDATA[
 template {
-   "DifferentIndividuals("  
-      ?in " " ?l 
-   ")"   
+  if (isBlank(?e), st:nl(), "")
+  ?e 
+  ; separator = " "
 }
 where {
-  ?in a owl:allDifferent   
-  ?in owl:members | owl:distinctMembers ?l 
+  ?in rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>
@@ -120,6 +119,22 @@ where {
 <body>
 <![CDATA[
 template {
+   "DifferentIndividuals("  
+      ?in " " ?l 
+   ")"   
+}
+where {
+  ?in a owl:allDifferent   
+  ?in owl:members | owl:distinctMembers ?l 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
    xsd:string(?l)
    "("  ?in " " ?y ")"
 }
@@ -129,41 +144,6 @@ where {
 values (?p ?l) {
   (owl:differentFrom "DifferentIndividuals")
   (owl:sameAs "SameIndividual")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-   "ClassAssertion(" ?t " " ?in ")"
-}
-where {
-  ?in a ?t
-  filter (!(strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:)) )
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "AnnotationAssertion(owl:deprecated " ?in " " st:xsdLiteral(true) 
-   ")"  
-}
-where {
-  { ?in a owl:DeprecatedClass } union 
-  { ?in a owl:DeprecatedProperty }  
-
 }
 ]]>
 </body>
@@ -196,12 +176,32 @@ values (?q ?l) {
 <body>
 <![CDATA[
 template {
-  if (isBlank(?e), st:nl(), "")
-  ?e 
-  ; separator = " "
+   "AnnotationAssertion(owl:deprecated " ?in " " st:xsdLiteral(true) 
+   ")"  
 }
 where {
-  ?in rdf:rest*/rdf:first ?e
+  { ?in a owl:DeprecatedClass } union 
+  { ?in a owl:DeprecatedProperty }  
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+   "ClassAssertion(" ?t " " ?in ")"
+}
+where {
+  ?in a ?t
+  filter (!(strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:)) )
 }
 ]]>
 </body>

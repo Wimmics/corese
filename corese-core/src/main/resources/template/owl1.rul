@@ -2,39 +2,10 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
-<rule>
-<body>
-<![CDATA[
-#
-# template called by subclass in special case:
-# subclassOf(intersectionOf() ?y)
-#
-template st:interunion {
-    xsd:string(if (bound(?t), ?ld, ?lo))
-    "(" 
-      ibox {
-	?x  
-      }
-    ")" 
-}
-where {
-  ?in ?p ?x 
-  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
- }
-values (?p ?lo ?ld) {
-  (owl:unionOf         "ObjectUnionOf" 		"DataUnionOf")
-  (owl:intersectionOf  "ObjectIntersectionOf" 	"DataIntersectionOf")
-  (owl:complementOf 	"ObjectComplementOf" 	"DataComplementOf")
-  (owl:datatypeComplementOf "DataComplementOf" 	"DataComplementOf")
-}
-]]>
-</body>
-</rule>
-
 <rule>
 <body>
 <![CDATA[
@@ -69,6 +40,35 @@ where {
         
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# template called by subclass in special case:
+# subclassOf(intersectionOf() ?y)
+#
+template st:interunion {
+    xsd:string(if (bound(?t), ?ld, ?lo))
+    "(" 
+      ibox {
+	?x  
+      }
+    ")" 
+}
+where {
+  ?in ?p ?x 
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+ }
+values (?p ?lo ?ld) {
+  (owl:unionOf         "ObjectUnionOf" 		"DataUnionOf")
+  (owl:intersectionOf  "ObjectIntersectionOf" 	"DataIntersectionOf")
+  (owl:complementOf 	"ObjectComplementOf" 	"DataComplementOf")
+  (owl:datatypeComplementOf "DataComplementOf" 	"DataComplementOf")
+}
 ]]>
 </body>
 </rule>
@@ -215,6 +215,469 @@ function st:protect(?in) {
 <body>
 <![CDATA[
 template {
+    if (bound(?t), "DataPropertyDomain", "ObjectPropertyDomain")
+    "(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:domain ?d 
+  optional { ?in a ?t . filter(?t = owl:DatatypeProperty) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (isBlank(?e), st:nl(), "")
+  ?e 
+  ; separator = " "
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+pragma {st:template st:priority 1}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "Data", "Object") 
+    "IntersectionOf(" 
+	ibox {
+	  ?y  
+	}
+    ")" 
+}
+where {
+  ?in owl:intersectionOf ?y 
+  
+  # in case there is also subClassof, 
+  # a named template is used: interunion.rq
+  filter not exists { 
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
+
+  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration(" xsd:string(?l) "(" 
+    ?in  
+    "))"   
+}
+where {
+  ?in a ?t
+  filter(isURI(?in))
+}
+values (?t ?l) {
+  (owl:ObjectProperty "ObjectProperty")
+  (owl:DatatypeProperty "DataProperty")
+  (owl:AnnotationProperty "AnnotationProperty")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
+  "(" ?p " " ?z ")"  
+}
+where {
+  ?in owl:someValuesFrom ?z ;
+  owl:onProperty ?p .
+    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
+    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration(Class(" ?in  "))"  "\n"
+}
+where {
+  ?in a owl:Class 
+  filter(isURI(?in))
+}
+pragma { st:template st:priority 2 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "DisjointClasses("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointClasses ;
+    owl:members ?l
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+    "SubClassOf(" 
+      ?in
+      
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in rdfs:subClassOf ?y 
+  filter not exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
+    "("
+	?p " " ?in " " ?v
+    ")"
+}
+where {
+  ?in ?p ?v 
+  filter(
+    ! strstarts(?p, owl:) &&
+    ! strstarts(?p, rdf:) && 
+    ! strstarts(?p, rdfs:) 
+  )
+  filter not exists { ?in a owl:Axiom }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {}
+where {
+  ?in a ?t
+  filter (strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:))
+}
+pragma { st:template st:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" ?in  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:AsymmetricProperty 	"Asymmetric")
+  (owl:ReflexiveProperty 	"Reflexive")
+  (owl:IrreflexiveProperty 	"Irreflexive")
+  (owl:InverseFunctionalProperty "InverseFunctional")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?p), "DisjointDataProperties", "DisjointObjectProperties") 
+    "("  ?l ")"   
+}
+where {
+  ?in a owl:AllDisjointProperties ;
+    owl:members ?l 
+    
+    optional {
+      ?l rdf:rest*/rdf:first ?p 
+      ?p a owl:DatatypeProperty
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "DifferentIndividuals("  
+      ?in " " ?l 
+   ")"   
+}
+where {
+  ?in a owl:allDifferent 
+  
+  { ?in owl:members ?l } union 
+  { ?in owl:distinctMembers ?l }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), xsd:string(?ld), xsd:string(?lo))
+  "(" 
+    st:turtle(?n) " " ?p " "  ?c 
+  ")"  
+}
+where {
+  ?in owl:onClass ?c ;
+    owl:onProperty ?p ;
+    ?q  ?n 
+    optional { ?p a owl:DatatypeProperty, ?t}
+}
+values (?q ?lo ?ld) {
+  (owl:maxQualifiedCardinality "ObjectMaxCardinality"   "DataMaxCardinality")
+  (owl:minQualifiedCardinality "ObjectMinCardinality"   "DataMinCardinality")
+  (owl:qualifiedCardinality    "ObjectExactCardinality" "DataExactCardinality")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+    "DisjointClasses("  
+     if (bound(?z),
+# special case: use a named template
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
+    ")" 
+}
+where {
+  ?in owl:disjointWith ?y 
+  optional { 
+    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
+  }
+}
+#pragma { st:template st:priority 2 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
+#
+template {
+   "DisjointUnion("  
+     if (?iu,
+	st:call-template(st:interunion, ?in),
+	?in) 
+      " "  ?y  
+    ")" 
+}
+where {
+  ?in owl:disjointUnionOf ?y 
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
+  as ?iu)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
+    "("  
+      if (?iu, 
+	st:call-template(st:interunion, ?in),
+	?in)
+	
+      ibox {
+	if (isBlank(?y), st:nl(), " ")  ?y 
+      }
+      
+    ")" 
+}
+where {
+  ?in owl:equivalentClass  ?y 
+  
+  bind (
+   exists { 
+     ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+   } 
+  as ?iu)
+  
+  optional { ?y a ?t filter(?t = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Starting template for OWL pretty printing from RDF to Functional Syntax
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template   {
+
+  st:apply-templates-all(?in ; separator = "\n") 
+   
+   ; separator = "\n\n"
+    
+}
+where {
+
+select distinct ?in where {
+  ?in ?p ?y
+  filter(isURI(?in))
+  # OWL vocabulary must not be pretty printed
+  filter (! strstarts(?in, owl:) 
+       && ! strstarts(?in, rdf:) 
+       && ! strstarts(?in, rdfs:)
+       && ! strstarts(?in, xsd:)
+       )
+  }     
+}
+pragma { st:template st:priority 1 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  if (bound(?t1) || bound(?t2), "DataAllValuesFrom", "ObjectAllValuesFrom")  
+  "(" ?p " " ?z ")"  
+}
+where {
+  ?in owl:allValuesFrom ?z;
+  owl:onProperty ?p .
+    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
+    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
+}
+
+#pragma { st:template st:priority 2 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t) || bound(?dt), "Data", "Object")
+    "PropertyRange(" ?in " " ?d ")"
+}
+where {
+  ?in rdfs:range ?d 
+  optional { ?in a ?t  filter(?t  = owl:DatatypeProperty) }
+  optional { ?d a ?dt  filter(?dt = rdfs:Datatype) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "SubObjectPropertyOf(" 
+      "ObjectPropertyChain(" ?l ") "
+      ?in
+   ")"
+}
+where {
+  ?in owl:propertyChainAxiom ?l 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
     xsd:string(?l) "("  ?in " "  ?p ")"   
 }
 where {
@@ -226,6 +689,21 @@ where {
 values (?tt ?l) {
   (owl:ObjectProperty   "DisjointObjectProperties")
   (owl:DatatypeProperty "DisjointDataProperties")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), "DataOneOf", "ObjectOneOf")
+  "("  ?y ")"  
+}
+where {
+  ?in owl:oneOf ?y 
+  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
 }
 ]]>
 </body>
@@ -262,64 +740,28 @@ values (?p ?lo ?ld) {
 <body>
 <![CDATA[
 #
-# Olivier Corby - Wimmics Inria I3S - 2013
+# tricky case:
+# subclassOf(intersectionOf() ?y)
+# there are two templates for intersection/union 
+# depending if it is embedded in subClassOf or not
 #
 template {
-  if (bound(?t1) || bound(?t2), "DataSomeValuesFrom", "ObjectSomeValuesFrom")  
-  "(" ?p " " ?z ")"  
-}
-where {
-  ?in owl:someValuesFrom ?z ;
-  owl:onProperty ?p .
-    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
-    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  xsd:string(?l) "(" ?y ")"  
-}
-where {
-  ?in ?p ?y
-  filter not exists { 
-    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
-   }
-}
-values (?p ?l){
-(owl:complementOf 	  "ObjectComplementOf")
-(owl:datatypeComplementOf "DataComplementOf")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?t), "Data", "Object") 
-    "IntersectionOf(" 
-	ibox {
-	  ?y  
-	}
+    "SubClassOf(" 
+    
+    box { 
+      st:call-template(st:interunion, ?in)
+      st:nl()
+      ?y 
+    }
+      
     ")" 
 }
 where {
-  ?in owl:intersectionOf ?y 
-  
-  # in case there is also subClassof, 
-  # a named template is used: interunion.rq
-  filter not exists { 
-    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
-   }
-
-  optional { ?in a ?t  filter(?t = rdfs:Datatype) }
+  ?in rdfs:subClassOf ?y 
+  filter  exists { 
+    ?in owl:intersectionOf | owl:unionOf | 
+      owl:complementOf | owl:datatypeComplementOf ?z 
+  } 
 }
 ]]>
 </body>
@@ -329,15 +771,19 @@ where {
 <body>
 <![CDATA[
 template {
-   "DifferentIndividuals("  
-      ?in " " ?l 
-   ")"   
+  "DatatypeRestriction(" ?dt " " 
+      group  { 
+	?p " " 
+	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
+      }
+  ")"  
 }
 where {
-  ?in a owl:allDifferent 
-  
-  { ?in owl:members ?l } union 
-  { ?in owl:distinctMembers ?l }
+  ?in a rdfs:Datatype ;
+    owl:onDatatype ?dt ;
+    owl:withRestrictions [
+      rdf:rest*/rdf:first [ ?p ?v ]
+    ]
 }
 ]]>
 </body>
@@ -346,23 +792,51 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
 template {
-    if (isLiteral(?v), "DataPropertyAssertion", "ObjectPropertyAssertion") 
-    "("
-	?p " " ?in " " ?v
-    ")"
+  if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
+    "(" st:turtle(?n) " " ?p ")"  
 }
 where {
-  ?in ?p ?v 
-  filter(
-    ! strstarts(?p, owl:) &&
-    ! strstarts(?p, rdf:) && 
-    ! strstarts(?p, rdfs:) 
-  )
-  filter not exists { ?in a owl:Axiom }
+  ?in ?q ?n ;
+    owl:onProperty ?p 
+    optional { ?p a ?t . filter(?t = owl:DatatypeProperty) }
+}
+values (?q ?lo ?ld) {
+  (owl:cardinality 	"ObjectExactCardinality" "DataExactCardinality")
+  (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
+  (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectInverseOf(" ?y ")"  
+}
+where {
+  ?in owl:inverseOf ?y
+  filter(isBlank(?in))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   xsd:string(?l)
+   "("  ?in " " ?y ")"
+}
+where {
+   ?in ?p ?y 
+}
+values (?p ?l) {
+  (owl:differentFrom "DifferentIndividuals")
+  (owl:sameAs "SameIndividual")
 }
 ]]>
 </body>
@@ -386,13 +860,20 @@ where {
 <body>
 <![CDATA[
 template {
-  if (bound(?t), "DataHasValue", "ObjectHasValue") 
-  "(" ?y " " ?v ")"  
+    xsd:string(?l)  
+    "(" 
+      ?p " " ?s " "  ?t
+    ")"
 }
 where {
-  ?in owl:hasValue ?v ;
-    owl:onProperty ?y .
-    optional { ?y a owl:DatatypeProperty, ?t }
+  ?in a owl:NegativePropertyAssertion ;
+     owl:sourceIndividual  ?s ;
+     owl:assertionProperty ?p ;
+     ?q  ?t
+}
+values (?q ?l) {
+  (owl:targetIndividual "NegativeObjectPropertyAssertion")
+  (owl:targetValue      "NegativeDataPropertyAssertion")
 }
 ]]>
 </body>
@@ -402,19 +883,169 @@ where {
 <body>
 <![CDATA[
 template {
-  "DatatypeRestriction(" ?dt " " 
-      group  { 
-	?p " " 
-	if (isURI(?v), st:turtle(?v), st:apply-templates(?v))
-      }
-  ")"  
+   "AnnotationAssertion(owl:deprecated " ?in " "true 
+   ")"  
 }
 where {
-  ?in a rdfs:Datatype ;
-    owl:onDatatype ?dt ;
-    owl:withRestrictions [
-      rdf:rest*/rdf:first [ ?p ?v ]
-    ]
+  { ?in a owl:DeprecatedClass } union 
+  { ?in a owl:DeprecatedProperty }  
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+   "ClassAssertion(" ?t " " ?in ")"
+}
+where {
+  ?in a ?t
+  filter (!(strstarts(?t, owl:) 
+     || strstarts(?t, rdf:) 
+     || strstarts(?t, rdfs:)) )
+}
+pragma { st:template st:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics Inria I3S - 2013
+#
+template {
+  st:xsdLiteral(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+  filter(isLiteral(?in))
+}
+pragma { st:template st:priority 1000 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "AnnotationAssertion(" 
+      st:uri(rdfs:comment) " " 
+      ?in " " st:turtle(?l)
+   ")"
+}
+where {
+  ?in rdfs:comment ?l 
+  filter(not exists { ?in a owl:Axiom })
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
+    "(" ?in  ")"   
+}
+where {
+  ?in a owl:FunctionalProperty 
+  optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "HasKey(" ?in  " ("  
+     group distinct { ?op } ") ("
+     group distinct { ?dp } 
+   "))"
+}
+where {
+  ?in owl:hasKey ?l
+  
+  optional { 
+    ?l rdf:rest*/rdf:first ?op
+    ?op a owl:ObjectProperty }
+    
+  optional { 
+    ?l rdf:rest*/rdf:first ?dp
+    ?dp a owl:DatatypeProperty }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    xsd:string(?l) 
+    "ObjectProperty(" ?in  ")" 
+}
+where {
+  ?in a ?t
+}
+values (?t ?l) {
+  (owl:SymmetricProperty 	"Symmetric")
+  (owl:TransitiveProperty 	"Transitive")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  "ObjectHasSelf(" ?y ")"  
+}
+where {
+  ?in owl:hasSelf true ;
+    owl:onProperty ?y 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+    "Declaration(NamedIndividual(" ?in  "))"   
+}
+where {
+  ?in a owl:NamedIndividual
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+  if (bound(?t), "DataHasValue", "ObjectHasValue") 
+  "(" ?y " " ?v ")"  
+}
+where {
+  ?in owl:hasValue ?v ;
+    owl:onProperty ?y .
+    optional { ?y a owl:DatatypeProperty, ?t }
 }
 ]]>
 </body>
@@ -458,124 +1089,6 @@ where {
 <body>
 <![CDATA[
 template {
-   xsd:string(?l)
-   "("  ?in " " ?y ")"
-}
-where {
-   ?in ?p ?y 
-}
-values (?p ?l) {
-  (owl:differentFrom "DifferentIndividuals")
-  (owl:sameAs "SameIndividual")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "Declaration(NamedIndividual(" ?in  "))"   
-}
-where {
-  ?in a owl:NamedIndividual
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Starting template for OWL pretty printing from RDF to Functional Syntax
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template   {
-
-  st:apply-templates-all(?in ; separator = "\n") 
-   
-   ; separator = "\n\n"
-    
-}
-where {
-
-select distinct ?in where {
-  ?in ?p ?y
-  filter(isURI(?in))
-  # OWL vocabulary must not be pretty printed
-  filter (! strstarts(?in, owl:) 
-       && ! strstarts(?in, rdf:) 
-       && ! strstarts(?in, rdfs:)
-       && ! strstarts(?in, xsd:)
-       )
-  }     
-}
-pragma { st:template st:priority 1 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "Declaration(Class(" ?in  "))"  "\n"
-}
-where {
-  ?in a owl:Class 
-  filter(isURI(?in))
-}
-pragma { st:template st:priority 2 }
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-  if (bound(?t1) || bound(?t2), "DataAllValuesFrom", "ObjectAllValuesFrom")  
-  "(" ?p " " ?z ")"  
-}
-where {
-  ?in owl:allValuesFrom ?z;
-  owl:onProperty ?p .
-    optional { ?z a ?t1 filter(?t1 = rdfs:Datatype) }
-    optional { ?p a ?t2 filter(?t2 = owl:DatatypeProperty) }
-}
-
-#pragma { st:template st:priority 2 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?t), "FunctionalDataProperty", "FunctionalObjectProperty")
-    "(" ?in  ")"   
-}
-where {
-  ?in a owl:FunctionalProperty 
-  optional { ?in a ?t filter(?t = owl:DatatypeProperty) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
    xsd:string(?l) "(" ?in " " ?p ")"
 }
 where {
@@ -587,119 +1100,6 @@ where {
 values (?tt ?l){ 
   (owl:ObjectProperty   "SubObjectPropertyOf")
   (owl:DatatypeProperty "SubDataPropertyOf" )
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  "ObjectHasSelf(" ?y ")"  
-}
-where {
-  ?in owl:hasSelf true ;
-    owl:onProperty ?y 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# tricky case:
-# subclassOf(intersectionOf() ?y)
-# there are two templates for intersection/union 
-# depending if it is embedded in subClassOf or not
-#
-template {
-    "DisjointClasses("  
-     if (bound(?z),
-# special case: use a named template
-	st:call-template(st:interunion, ?in),
-	?in) 
-      " "  ?y  
-    ")" 
-}
-where {
-  ?in owl:disjointWith ?y 
-  optional { 
-    { ?in owl:intersectionOf ?z } union { ?in owl:unionOf ?z } 
-  }
-}
-#pragma { st:template st:priority 2 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {}
-where {
-  ?in a ?t
-  filter (strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:))
-}
-pragma { st:template st:priority 1000 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-   "ClassAssertion(" ?t " " ?in ")"
-}
-where {
-  ?in a ?t
-  filter (!(strstarts(?t, owl:) 
-     || strstarts(?t, rdf:) 
-     || strstarts(?t, rdfs:)) )
-}
-pragma { st:template st:priority 1000 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    xsd:string(?l) 
-    "ObjectProperty(" ?in  ")" 
-}
-where {
-  ?in a ?t
-}
-values (?t ?l) {
-  (owl:SymmetricProperty 	"Symmetric")
-  (owl:TransitiveProperty 	"Transitive")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  "ObjectInverseOf(" ?y ")"  
-}
-where {
-  ?in owl:inverseOf ?y
-  filter(isBlank(?in))
 }
 ]]>
 </body>
@@ -729,417 +1129,17 @@ values (?tt ?l) {
 <body>
 <![CDATA[
 template {
-    if (bound(?t) || bound(?dt), "Data", "Object")
-    "PropertyRange(" ?in " " ?d ")"
+  xsd:string(?l) "(" ?y ")"  
 }
 where {
-  ?in rdfs:range ?d 
-  optional { ?in a ?t  filter(?t  = owl:DatatypeProperty) }
-  optional { ?d a ?dt  filter(?dt = rdfs:Datatype) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "AnnotationAssertion(owl:deprecated " ?in " "true 
-   ")"  
-}
-where {
-  { ?in a owl:DeprecatedClass } union 
-  { ?in a owl:DeprecatedProperty }  
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), xsd:string(?ld), xsd:string(?lo))
-  "(" 
-    st:turtle(?n) " " ?p " "  ?c 
-  ")"  
-}
-where {
-  ?in owl:onClass ?c ;
-    owl:onProperty ?p ;
-    ?q  ?n 
-    optional { ?p a owl:DatatypeProperty, ?t}
-}
-values (?q ?lo ?ld) {
-  (owl:maxQualifiedCardinality "ObjectMaxCardinality"   "DataMaxCardinality")
-  (owl:minQualifiedCardinality "ObjectMinCardinality"   "DataMinCardinality")
-  (owl:qualifiedCardinality    "ObjectExactCardinality" "DataExactCardinality")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    xsd:string(?l)  
-    "(" 
-      ?p " " ?s " "  ?t
-    ")"
-}
-where {
-  ?in a owl:NegativePropertyAssertion ;
-     owl:sourceIndividual  ?s ;
-     owl:assertionProperty ?p ;
-     ?q  ?t
-}
-values (?q ?l) {
-  (owl:targetIndividual "NegativeObjectPropertyAssertion")
-  (owl:targetValue      "NegativeDataPropertyAssertion")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "SubObjectPropertyOf(" 
-      "ObjectPropertyChain(" ?l ") "
-      ?in
-   ")"
-}
-where {
-  ?in owl:propertyChainAxiom ?l 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# tricky case:
-# subclassOf(intersectionOf() ?y)
-# there are two templates for intersection/union 
-# depending if it is embedded in subClassOf or not
-#
-template {
-    "SubClassOf(" 
-      ?in
-      
-      ibox {
-	if (isBlank(?y), st:nl(), " ")  ?y 
-      }
-      
-    ")" 
-}
-where {
-  ?in rdfs:subClassOf ?y 
+  ?in ?p ?y
   filter not exists { 
-    ?in owl:intersectionOf | owl:unionOf | 
-      owl:complementOf | owl:datatypeComplementOf ?z 
-  } 
-
+    { ?in rdfs:subClassOf | owl:equivalentClass |owl:disjointUnionOf ?z } 
+   }
 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  "HasKey(" ?in  " ("  
-     group distinct { ?op } ") ("
-     group distinct { ?dp } 
-   "))"
-}
-where {
-  ?in owl:hasKey ?l
-  
-  optional { 
-    ?l rdf:rest*/rdf:first ?op
-    ?op a owl:ObjectProperty }
-    
-  optional { 
-    ?l rdf:rest*/rdf:first ?dp
-    ?dp a owl:DatatypeProperty }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Olivier Corby - Wimmics Inria I3S - 2013
-#
-template {
-  st:xsdLiteral(?in)
-}
-where {
-  bind(st:getFocusNode() as ?in)
-  filter(isLiteral(?in))
-}
-pragma { st:template st:priority 1000 }
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?t), "DataPropertyDomain", "ObjectPropertyDomain")
-    "(" ?in " " ?d ")"
-}
-where {
-  ?in rdfs:domain ?d 
-  optional { ?in a ?t . filter(?t = owl:DatatypeProperty) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), xsd:string(?ld), xsd:string(?lo)) 
-    "(" st:turtle(?n) " " ?p ")"  
-}
-where {
-  ?in ?q ?n ;
-    owl:onProperty ?p 
-    optional { ?p a ?t . filter(?t = owl:DatatypeProperty) }
-}
-values (?q ?lo ?ld) {
-  (owl:cardinality 	"ObjectExactCardinality" "DataExactCardinality")
-  (owl:maxCardinality 	"ObjectMaxCardinality"   "DataMaxCardinality")
-  (owl:minCardinality 	"ObjectMinCardinality"   "DataMinCardinality")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "Declaration(" xsd:string(?l) "(" 
-    ?in  
-    "))"   
-}
-where {
-  ?in a ?t
-  filter(isURI(?in))
-}
-values (?t ?l) {
-  (owl:ObjectProperty "ObjectProperty")
-  (owl:DatatypeProperty "DataProperty")
-  (owl:AnnotationProperty "AnnotationProperty")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    xsd:string(?l) 
-    "ObjectProperty(" ?in  ")" 
-}
-where {
-  ?in a ?t
-}
-values (?t ?l) {
-  (owl:AsymmetricProperty 	"Asymmetric")
-  (owl:ReflexiveProperty 	"Reflexive")
-  (owl:IrreflexiveProperty 	"Irreflexive")
-  (owl:InverseFunctionalProperty "InverseFunctional")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?t), "DatatypeDefinition", "EquivalentClasses")
-    "("  
-      if (?iu, 
-	st:call-template(st:interunion, ?in),
-	?in)
-	
-      ibox {
-	if (isBlank(?y), st:nl(), " ")  ?y 
-      }
-      
-    ")" 
-}
-where {
-  ?in owl:equivalentClass  ?y 
-  
-  bind (
-   exists { 
-     ?in owl:intersectionOf | owl:unionOf | 
-      owl:complementOf | owl:datatypeComplementOf ?z 
-   } 
-  as ?iu)
-  
-  optional { ?y a ?t filter(?t = rdfs:Datatype) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "AnnotationAssertion(" 
-      st:uri(rdfs:comment) " " 
-      ?in " " st:turtle(?l)
-   ")"
-}
-where {
-  ?in rdfs:comment ?l 
-  filter(not exists { ?in a owl:Axiom })
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# tricky case:
-# subclassOf(intersectionOf() ?y)
-# there are two templates for intersection/union 
-# depending if it is embedded in subClassOf or not
-#
-template {
-    "SubClassOf(" 
-    
-    box { 
-      st:call-template(st:interunion, ?in)
-      st:nl()
-      ?y 
-    }
-      
-    ")" 
-}
-where {
-  ?in rdfs:subClassOf ?y 
-  filter  exists { 
-    ?in owl:intersectionOf | owl:unionOf | 
-      owl:complementOf | owl:datatypeComplementOf ?z 
-  } 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (isBlank(?e), st:nl(), "")
-  ?e 
-  ; separator = " "
-}
-where {
-  ?in rdf:rest*/rdf:first ?e
-}
-pragma {st:template st:priority 1}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  if (bound(?t), "DataOneOf", "ObjectOneOf")
-  "("  ?y ")"  
-}
-where {
-  ?in owl:oneOf ?y 
-  optional { ?in a ?t . filter(?t = rdfs:Datatype) }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    "DisjointClasses("  ?l ")"   
-}
-where {
-  ?in a owl:AllDisjointClasses ;
-    owl:members ?l
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-    if (bound(?p), "DisjointDataProperties", "DisjointObjectProperties") 
-    "("  ?l ")"   
-}
-where {
-  ?in a owl:AllDisjointProperties ;
-    owl:members ?l 
-    
-    optional {
-      ?l rdf:rest*/rdf:first ?p 
-      ?p a owl:DatatypeProperty
-    }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# tricky case:
-# subclassOf(intersectionOf() ?y)
-# there are two templates for intersection/union 
-# depending if it is embedded in subClassOf or not
-#
-template {
-   "DisjointUnion("  
-     if (?iu,
-	st:call-template(st:interunion, ?in),
-	?in) 
-      " "  ?y  
-    ")" 
-}
-where {
-  ?in owl:disjointUnionOf ?y 
-  bind (
-   exists { 
-     ?in owl:intersectionOf | owl:unionOf | 
-      owl:complementOf | owl:datatypeComplementOf ?z 
-   } 
-  as ?iu)
+values (?p ?l){
+(owl:complementOf 	  "ObjectComplementOf")
+(owl:datatypeComplementOf "DataComplementOf")
 }
 ]]>
 </body>

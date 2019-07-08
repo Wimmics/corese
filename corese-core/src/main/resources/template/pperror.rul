@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -49,19 +49,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:mainOWL(?tag) {
-	st:call-template(st:axiomClassExp, ?tag)
-}
-where {
-	
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:allEL(?tag) {
 
 	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
@@ -86,6 +73,19 @@ where {
 	### classExp ###
 	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
 	("classExp" "Not a valid Class Expression" "Class_Expressions")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:mainOWL(?tag) {
+	st:call-template(st:axiomClassExp, ?tag)
+}
+where {
+	
 }
 ]]>
 </body>
@@ -122,6 +122,25 @@ template st:mainEL(?tag) {
 where {
 	
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:start(?in) {
+  format {
+    """
+    <span class='errors'>%s</span>
+    """
+    ?res 
+  }  
+}
+where {
+    bind (st:call-template(st:main, ?in) as ?res)
+    filter (bound(?res) && strlen(?res) > 0)
+} 
 ]]>
 </body>
 </rule>
@@ -174,51 +193,11 @@ values (?type ?uri) {
 <rule>
 <body>
 <![CDATA[
-template st:start(?in) {
-  format {
-    """
-    <span class='errors'>%s</span>
-    """
-    ?res 
-  }  
-}
-where {
-    bind (st:call-template(st:main, ?in) as ?res)
-    filter (bound(?res) && strlen(?res) > 0)
-} 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:mainQL(?tag) {
 	st:call-template(st:allQL, ?tag)
 }
 where {
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:axiomClassExp(?tag) {
-
-	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
-
-}
-where {
-
-	bind(st:linkOWL(?id) as ?href)
-	bind(st:linkOWL(?idb) as ?hrefb)
-	
-} values (?tag ?mess ?id ?messb ?idb) {
-	### axiom ###
-	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
 }
 ]]>
 </body>
@@ -240,6 +219,27 @@ function st:linkOWL(?x) {
   URI(concat("http://www.w3.org/TR/owl2-syntax/#", str(?x)))
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:axiomClassExp(?tag) {
+
+	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+
+}
+where {
+
+	bind(st:linkOWL(?id) as ?href)
+	bind(st:linkOWL(?idb) as ?hrefb)
+	
+} values (?tag ?mess ?id ?messb ?idb) {
+	### axiom ###
+	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
+}
 ]]>
 </body>
 </rule>

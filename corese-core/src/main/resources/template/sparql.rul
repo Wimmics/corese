@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -79,12 +79,11 @@ template st:d3selectviewer {
     format {
         d3:frameselect.html
         ?id
-	?h
+        coalesce(xt:json(st:get(st:mappings)), "{ error: 'error when reading st:mappings'}")
     }
 }
 where {
     bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind ( xt:json(st:get(st:mappings)) as ?h)
 }
 ]]>
 </body>
@@ -216,25 +215,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
-template st:pageselect {
-    #st:call-template(st:d3selectviewer)
-    format {
-        ft:select.html
-        st:call-template(st:variable)
-        st:call-template(st:table)
-    }
-}
-where {
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#>
 prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
 template st:variable {
@@ -250,6 +230,25 @@ where {
   ?x rs:resultVariable ?v
 }
 order by ?v
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/sparql/>
+template st:pageselect {
+    #st:call-template(st:d3selectviewer)
+    format {
+        ft:select.html
+        st:call-template(st:variable)
+        st:call-template(st:table)
+    }
+}
+where {
+}
+
 ]]>
 </body>
 </rule>

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 14:24:37 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -124,6 +124,25 @@ where {
 <body>
 <![CDATA[
 #
+# Navigator on DBpedia topmost resource updates
+#
+#
+template st:start {
+
+   st:call-template(st:month)
+ 
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # Generate title
 # Generate Navigation links to month before and after, 
 # to year before and after
@@ -149,25 +168,6 @@ template st:title(?date) {
 }
 where {
     
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Navigator on DBpedia topmost resource updates
-#
-#
-template st:start {
-
-   st:call-template(st:month)
- 
-}
-where {
-  
 }
 ]]>
 </body>
@@ -262,46 +262,6 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# URI <http://ns.inria.fr/sparql-template/date/10/2015>
-# translated as "10/2015"^^xsd:gYearMonth
-#
-template st:month {
-
-  st:call-template(st:title, ?date)
-
-  format {
-
-    """<p>%s</p>"""
-    
-    if (bound(?type), 
-      st:call-template(st:dbpediafortype, ?date, ?type),
-      st:call-template(st:dbpediafortest, ?date))
-    
-  }
-  
-  st:call-template(st:title, ?date)
-  
-  st:call-template(st:tail)
- 
-}
-where {
-
-   bind (st:get(st:uri)  as ?uri)
-   # type of resoures to focus on
-   bind (st:get(st:mode) as ?type)
-   bind (strafter(?uri, us:root()) as ?str)
-   bind (strdt(?str, xsd:gYearMonth) as ?date)
-   bind (st:set(st:date, ?date) as ?tmp)
-   
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 template st:profile {}
 where {}
 
@@ -344,8 +304,8 @@ function us:root(){
 }
 
 function us:clean(?s){
-  if (strcontains(?s, "Swastika")
-   || strcontains(?s, "Panzer-Division")
+  if (contains(?s, "Swastika")
+   || contains(?s, "Panzer-Division")
    , 
     "", ?s)
 }
@@ -366,24 +326,27 @@ function us:split(?list, ?n) {
 #
 # Generation of HTML table of DBpedia updates given ?list of updates 
 #
-function us:table(?list, ?size){
- let ( ?table  = us:split(?list, ?size),
-       ?ftable = coalesce(us:format("table.html"), "<table class='table'>\n%s</table>\n"),
-       ?frow   = coalesce(us:format("tr.html"),    "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n"),
-       ?fcell  = coalesce(us:format("td.html"),    "<td style='vertical-align: bottom'>%s</td>\n"))
+
+function us:table(list, size) {
+ let ( table  = us:split(list, size),
+       ftable = coalesce(us:format("table.html"), "<table class='table'>\n%s</table>\n"),
+       frow   = coalesce(us:format("tr.html"),    "<tr><th style='vertical-align: middle'>%s</th>%s</tr>\n"),
+       fcell  = coalesce(us:format("td.html"),    "<td style='vertical-align: bottom'>%s</td>\n"))
        {
-     st:format(?ftable, 
-      let (?n = 0){
-	    loop (?row in ?table){
-	      st:format(?frow, 
-	        set(?n = ?n + 1), 
-	        loop (?cell in ?row){
-		      st:format(?fcell, ?cell)
-	        })
-	    }
-	  }
+     st:format(ftable, 
+      letdyn (n = 0) {
+	    us:mapconcat (lambda(row) { 
+	      st:format(frow, 
+	        set(n = n + 1), 
+	        us:mapconcat (lambda(cell) { st:format(fcell, cell) }, row) )
+	        } , table)
+	  } 
      )
   }
+}
+
+function us:mapconcat(fun, exp) {
+    reduce(rq:concat, maplist(fun, exp))
 }
 
 # URL of HTML format in the server (/data/format/dbedit/name) 
@@ -413,6 +376,46 @@ function us:cell(?l, ?c, ?x, ?i){
     )
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# URI <http://ns.inria.fr/sparql-template/date/10/2015>
+# translated as "10/2015"^^xsd:gYearMonth
+#
+template st:month {
+
+  st:call-template(st:title, ?date)
+
+  format {
+
+    """<p>%s</p>"""
+    
+    if (bound(?type), 
+      st:call-template(st:dbpediafortype, ?date, ?type),
+      st:call-template(st:dbpediafortest, ?date))
+    
+  }
+  
+  st:call-template(st:title, ?date)
+  
+  st:call-template(st:tail)
+ 
+}
+where {
+
+   bind (st:get(st:uri)  as ?uri)
+   # type of resoures to focus on
+   bind (st:get(st:mode) as ?type)
+   bind (strafter(?uri, us:root()) as ?str)
+   bind (strdt(?str, xsd:gYearMonth) as ?date)
+   bind (st:set(st:date, ?date) as ?tmp)
+   
+}
 ]]>
 </body>
 </rule>

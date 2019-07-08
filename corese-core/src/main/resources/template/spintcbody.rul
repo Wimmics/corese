@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -36,119 +36,6 @@ where {
    as ?suc)
    
    
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# share with filter: triple bind values
-#
-prefix sp: <http://spinrdf.org/sp#> 
-
-template {
-  ?suc 
-}
-where {
-    
-    ?q sp:resultVariables ?sel    
-    ?sel rdf:rest*/rdf:first ?v
-    ?v sp:varName ?n
-
-    bind ( 
-      exists { ?q sp:where/(! sp:void)+ ?b
-      filter (st:call-template(st:bound, ?b, ?n)) }
-    as ?bound) 
-    
-    bind (
-      if (exists { ?v sp:expression ?e }, ! ?bound, ?bound)
-    as ?suc)
-    
-    filter (st:visit(st:fail, ?v, ?suc))
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sp: <http://spinrdf.org/sp#> 
-
-template {
-  ?suc
-}
-where {
-  ?q (sp:orderBy|sp:groupBy)/rdf:rest*/rdf:first/(!sp:void)* ?v 
-  ?v sp:varName ?n
-  
-  bind (st:call-template(st:bound, ?q, ?n) as ?suc)
-  
-  filter (st:visit(st:fail, ?v, ?suc))
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-#
-prefix sp: <http://spinrdf.org/sp#> 
-
-template {
-  ?suc
-}
-where {
-  
-   ?q (sp:where|sp:resultVariables)/(! sp:void)+ ?f
-   ?f ?p ?v
-   ?v sp:varName ?n
-   filter(strstarts(?p, sp:arg))
-   
-   bind ( 
-    exists { ?q sp:where/(! sp:void)+ ?b
-      filter (st:call-template(st:bound, ?b, ?n)) }
-   as ?suc)
-   
-   filter(st:visit(st:fail, ?v, ?suc))
-   
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sp: <http://spinrdf.org/sp#> 
-
-template {
-  ?suc
-}
-where {
-  
-  ?a rdf:rest+ ?b
-  ?b rdf:first ?f
-  
-  ?f a sp:Bind ; sp:variable ?v
-  ?v sp:varName ?n
-   
-  bind (
-    not exists { 
-	     ?a rdf:rest* ?c 
-	     ?c rdf:rest* ?b
-	     filter (?b != ?c)
-	     ?c rdf:first ?d
-	     filter st:call-template(st:bound, ?d, ?n) 
-	     }
-    as ?suc)
-  
-   filter (st:visit(st:fail, ?f, ?suc))
 }
 ]]>
 </body>
@@ -230,6 +117,119 @@ where {
     
     filter(st:visit(st:fail, ?v, ?suc))
       
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+  ?a rdf:rest+ ?b
+  ?b rdf:first ?f
+  
+  ?f a sp:Bind ; sp:variable ?v
+  ?v sp:varName ?n
+   
+  bind (
+    not exists { 
+	     ?a rdf:rest* ?c 
+	     ?c rdf:rest* ?b
+	     filter (?b != ?c)
+	     ?c rdf:first ?d
+	     filter st:call-template(st:bound, ?d, ?n) 
+	     }
+    as ?suc)
+  
+   filter (st:visit(st:fail, ?f, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  ?q (sp:orderBy|sp:groupBy)/rdf:rest*/rdf:first/(!sp:void)* ?v 
+  ?v sp:varName ?n
+  
+  bind (st:call-template(st:bound, ?q, ?n) as ?suc)
+  
+  filter (st:visit(st:fail, ?v, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# share with filter: triple bind values
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc 
+}
+where {
+    
+    ?q sp:resultVariables ?sel    
+    ?sel rdf:rest*/rdf:first ?v
+    ?v sp:varName ?n
+
+    bind ( 
+      exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+    as ?bound) 
+    
+    bind (
+      if (exists { ?v sp:expression ?e }, ! ?bound, ?bound)
+    as ?suc)
+    
+    filter (st:visit(st:fail, ?v, ?suc))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+#
+prefix sp: <http://spinrdf.org/sp#> 
+
+template {
+  ?suc
+}
+where {
+  
+   ?q (sp:where|sp:resultVariables)/(! sp:void)+ ?f
+   ?f ?p ?v
+   ?v sp:varName ?n
+   filter(strstarts(?p, sp:arg))
+   
+   bind ( 
+    exists { ?q sp:where/(! sp:void)+ ?b
+      filter (st:call-template(st:bound, ?b, ?n)) }
+   as ?suc)
+   
+   filter(st:visit(st:fail, ?v, ?suc))
+   
 }
 ]]>
 </body>

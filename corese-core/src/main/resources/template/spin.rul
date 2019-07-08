@@ -2,10 +2,32 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:<http://spinrdf.org/sp#> .
+
+template sp:values {
+  ?b
+}
+where {
+  ?in sp:values ?b
+}
+
+
+
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -39,13 +61,14 @@ where {
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-prefix sp:<http://spinrdf.org/sp#> .
+prefix sp:      <http://spinrdf.org/sp#> .
 
-template sp:values {
-  ?b
+template st:start {
+
+   st:call-template(st:main)
+
 }
 where {
-  ?in sp:values ?b
 }
 
 
@@ -79,29 +102,6 @@ where {
    }
     
   filter( not exists { { ?a sp:query ?in } union { ?a rdf:first ?in } } )
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template st:start {
-
-   st:call-template(st:main)
-
-}
-where {
 }
 
 
@@ -189,6 +189,23 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 <![CDATA[
 #
 # SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, INRIA, Wimmics, 2013
+#
+template st:default {
+  st:turtle(?in)
+}
+where {
+  bind(st:getFocusNode() as ?in)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 prefix sp:      <http://spinrdf.org/sp#> .
@@ -202,23 +219,6 @@ where {
 
 
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, INRIA, Wimmics, 2013
-#
-template st:default {
-  st:turtle(?in)
-}
-where {
-  bind(st:getFocusNode() as ?in)
-}
 ]]>
 </body>
 </rule>
@@ -337,28 +337,6 @@ order by xsd:integer(substr(?p, 1 + strlen(sp:arg)))
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template sp:usingNamed {
-   "using named " ?f "\n" ; separator = ""
-}
-where {
-  ?in sp:usingNamed/rdf:rest*/rdf:first ?f
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
 template sp:construct {
     "{" 
     box { 
@@ -386,11 +364,11 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template sp:from {
-   st:kw("from") " " ?f st:nl() ; separator = ""
+template sp:usingNamed {
+   "using named " ?f "\n" ; separator = ""
 }
 where {
-  ?in sp:from/rdf:rest*/rdf:first ?f
+  ?in sp:usingNamed/rdf:rest*/rdf:first ?f
 }
 
 
@@ -442,6 +420,28 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
+template sp:from {
+   st:kw("from") " " ?f st:nl() ; separator = ""
+}
+where {
+  ?in sp:from/rdf:rest*/rdf:first ?f
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
 template st:mode(?m) {
 
    st:call-template(st:main)
@@ -464,410 +464,15 @@ where {
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  "insert data {" 
-    if (?d = rdf:nil, "", st:call-template(sp:listnl, ?d) ) 
-  "}"
-}
-where {
-  ?in a sp:InsertData ;
-      sp:data ?d
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  "load " 
-   if (bound(?s), " silent ", "")
-  ?d
-  if (bound(?g), 
-    concat( " into graph ", ?g), 
-    "")
-}
-where {
-  ?in a sp:Load ;
-  sp:document ?d
-  optional { ?in sp:into ?g }
-  optional { ?in sp:silent ?s }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  ?u
-  ; separator = ";\n"
-}
-where {
-  ?in a sp:SPARQLUpdate ;
-  sp:updates/rdf:rest*/rdf:first ?u
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  "delete data {" 
-  st:call-template(sp:listnl, ?d) 
-  "}"
-}
-where {
-  ?in a sp:DeleteData ;
-      sp:data ?d
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  str(?l) " " 
-  if (bound(?s), "silent ", "")
-  if (?f = sp:default, "default", concat("graph ", ?f)) " to "
-  if (?t = sp:default, "default", ?t)
-}
-where {
-  ?in a ?tt 
-  
-  values (?tt ?l) { 
-     (sp:Move "move") (sp:Add "add") (sp:Copy "copy")
-  }
-  
-  ?in sp:from ?f 
-  ?in sp:to ?t 
-  
-  optional { ?in sp:silent ?s }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  "create " 
-  if (bound(?s), "silent ", "")
-  if (bound(?d), "default", "")
-  if (bound(?g), concat("graph ", ?g), "")
-}
-where {
-  ?in a sp:Create 
-  optional { ?in sp:silent ?s }
-  optional { ?in sp:default ?d }
-  optional { ?in sp:graphIRI ?g }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  str(?l) " " 
-  if (bound(?s), "silent ", "")
-  if (bound(?a), "all", "")
-  if (bound(?d), "default", "")
-  if (bound(?n), "named", "")
-  if (bound(?g), concat("graph ", ?g), "")
-}
-where {
-  ?in a ?t 
-  values (?t ?l) { 
-    (sp:Clear "clear") (sp:Drop "drop")
-  }
-  optional { ?in sp:graphIRI ?g }
-  optional { ?in sp:silent ?s }
-  optional { ?in sp:default ?d }
-  optional { ?in sp:all ?a }
-  optional { ?in sp:named ?n }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  if (bound(?g), concat("with ", ?g, "\n"), "")
-  "delete where {" 
-    st:call-template(sp:listnl, ?w) 
-  "}"
-}
-where {
-  ?in a sp:DeleteWhere ;
-  sp:where ?w
-  optional { ?in sp:with ?g }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template  {
-  st:prolog() 
-  if (bound(?g), concat("with ", ?g, "\n"), "")
-
-  if (bound(?d), 
-  concat("delete {", st:call-template(sp:listnl, ?d), "} \n"), "")
-
-  if (bound(?i), 
-  concat("insert {", st:call-template(sp:listnl, ?i), "} \n"), "")
-
-  st:call-template(sp:using, ?in)
-  st:call-template(sp:usingNamed, ?in)
-  "where {" 
-    st:call-template(sp:listnl, ?w) 
-  "}"
-}
-where {
-  ?in a sp:Modify ;
-  sp:where ?w
-  optional { ?in sp:graphIRI ?g }
-  optional { ?in sp:deletePattern ?d }
-  optional { ?in sp:insertPattern ?i }
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-    
-      ?e1
-      st:nl() st:kw( "union") st:nl() 
-      ?e2
-       
-}
-where {
-  ?in a sp:Union ; 
-      sp:elements ?l 
-  ?l rdf:first ?e1 ;
-      rdf:rest/rdf:first ?e2
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
 prefix sp:<http://spinrdf.org/sp#> .
 
 template  {
-  "(" st:call-template(sp:list, ?val)    ")"
+  "{" ?q  "}" 
 }
 where {
-  ?x sp:values ?in
-  ?in rdf:rest*/rdf:first ?val
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  ?x " " ?p " "
-  if (bound(?v), concat(":: ", ?v, " "), "")
-   ?y " ."
-}
-where {
-?in a sp:TriplePath ;
-    sp:subject  ?x ; 
-    sp:path ?p ; 
-    sp:object   ?y 
-    optional { ?in sp:pathVariable ?v }
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:kw( "group by") " " st:call-template(sp:list, ?in)
-  st:nl()
-}
-where {
-  ?q sp:groupBy ?in
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  "(" ?f " " xt:pprotect(?lab) " " ?r ")"
-}
-where {
-  ?in a ?ope  ;
-      sp:arg1 ?f ;
-      sp:arg2 ?r 
-}
-values (?ope ?lab) {
-(sp:lt  "<")
-(sp:gt  ">")
-(sp:le  "<=")
-(sp:ge  ">=")
-(sp:eq  "=")
-(sp:ne  "!=")
-
-(sp:add     "+")
-(sp:mul     "*")
-(sp:divide  "/")
-(sp:sub     "-")
-
-(sp:and "&&")
-(sp:or  "||")
-
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:kw( "having") " (" st:call-template(sp:list, ?in) ")\n"
-}
-where {
-  ?q sp:having ?in
+  ?in a sp:SubQuery ;
+    sp:query ?q 
+  
 }
 
 
@@ -886,36 +491,13 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template{
-  "(" ?e " as ?" xsd:string(?var) ")"
+  "(" ?e " as (" 
+      group { ?var ; separator = ", " }
+  "))"
 }
 where {
-  ?in sp:varName ?var ;
+  ?in sp:varList/rdf:rest*/rdf:first ?var ;
       sp:expression ?e
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  ?x " " ?p " "  ?y 
-  " ."
-}
-where {
-?in sp:subject   ?x ; 
-    sp:predicate ?p ; 
-    sp:object    ?y 
 }
 
 
@@ -934,11 +516,67 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:kw( "order by") " " st:call-template(sp:list, ?in)
-  st:nl()
+  "{" 
+    group { ?exp  ; separator = "\n" }
+  "}"
 }
 where {
-  ?q sp:orderBy ?in
+  ?in rdf:rest*/rdf:first ?exp
+}
+# default list is behind all other list templates
+# after listoption
+pragma {st:template st:priority 1001}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  ?p1 "/" ?p2
+}
+where {
+  ?in a sp:SeqPath ;
+    sp:path1 ?p1 ;
+    sp:path2 ?p2 
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+   st:kw( "minus") " {" 
+      box {
+	st:call-template(sp:listnl, ?e)
+      }
+   "}"
+}
+where {
+  ?in a sp:Minus ; sp:elements  ?e   
 }
 
 
@@ -1016,15 +654,143 @@ where {
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-prefix sp:<http://spinrdf.org/sp#> .
+prefix sp:      <http://spinrdf.org/sp#> .
 
-template  {
-  "{" ?q  "}" 
+template {
+  st:kw( "desc") "(" st:call-template(sp:list, ?e) ")"
 }
 where {
-  ?in a sp:SubQuery ;
-    sp:query ?q 
+  ?in a sp:Desc ;
+  sp:expression ?e
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template{
+  "?" xsd:string(?var)
+}
+where {
+  ?in sp:varName ?var 
+  filter(not exists { ?in sp:expression ?e })
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  xsd:string(?l) "(" ?p ")" 
   
+}
+where {
+  ?in a ?t ;
+      sp:subPath ?p 
+}
+values (?t ?l) {
+(sp:ReversePath  "^")
+(sp:NegPath "!")
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template{
+  "(" ?e " as ?" xsd:string(?var) ")"
+}
+where {
+  ?in sp:varName ?var ;
+      sp:expression ?e
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  ?x " " ?p " "  ?y 
+  " ."
+}
+where {
+?in sp:subject   ?x ; 
+    sp:predicate ?p ; 
+    sp:object    ?y 
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  ?x " " ?p " "
+  if (bound(?v), concat(":: ", ?v, " "), "")
+   ?y " ."
+}
+where {
+?in a sp:TriplePath ;
+    sp:subject  ?x ; 
+    sp:path ?p ; 
+    sp:object   ?y 
+    optional { ?in sp:pathVariable ?v }
 }
 
 
@@ -1043,11 +809,287 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:kw("filter") " (" ?exp ")"
+  ?e " " st:kw( str(?l)) " ("     
+     st:call-template(sp:argin, ?in)
+  ")"
 }
 where {
-?in a sp:Filter ;
-    sp:expression ?exp  
+  ?in a ?t ; sp:arg1 ?e
+}
+values (?t ?l) {
+  (sp:in "in")
+  (sp:IN "in")
+  (sp:notIn "not in")
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw( "graph") " " ?g " {" 
+  box {
+    if (?b = rdf:nil, "", 
+      st:call-template(sp:listnl, ?b))
+  }
+  "}"
+}
+where {
+  ?in a sp:NamedGraph ;
+    sp:graphNameNode ?g ;
+    sp:elements  ?b
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:namespace() 
+  st:kw("ask") " {" 
+    box {
+      st:call-template(sp:listnl, ?a) 
+    }
+  "}"
+}
+where {
+  ?in a sp:Ask ;
+    sp:where ?a
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "()"  
+}
+where {
+  ?x ?p ?in 
+  filter(?in = rdf:nil && ?p != rdf:rest)
+}
+#default list is behind all other list templates
+pragma {st:template st:priority 1000}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  "(" ?p1 "|" ?p2 ")"
+}
+where {
+  ?in a sp:AltPath ;
+    sp:path1 ?p1 ;
+    sp:path2 ?p2 
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+   st:kw( "optional") " {" 
+      box {   
+	st:call-template(sp:listnl, ?b)
+      }  
+   "}"
+}
+where {
+  ?in a sp:Optional ;
+      sp:elements ?b
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw("exists") " {" st:call-template(sp:listnl, ?b) "}"
+}
+where {
+  ?in a sp:Exists  ;
+      sp:elements ?b
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Given a RDF graph which contains a SPIN Query
+# This query search the triples and return a string in turtle syntax
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+template {
+  "(" ?p ")" 
+  if (bound(?min) && ?min = 1, "+", 
+  if (bound(?max) && ?max = -1, "?", "*"))
+}
+where {
+  ?in a sp:ModPath ;
+    sp:subPath ?p 
+  optional { ?in sp:modMin ?min }
+  optional { ?in sp:modMax ?max }
+}
+
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:prolog() 
+  st:kw("describe") " " st:call-template(sp:list, ?list)    
+  st:nl()
+  "where {"
+     box {
+      st:call-template(sp:listnl, ?w)
+     }
+  "}"
+}
+where {
+  ?in a sp:Describe ;
+  sp:resultNodes ?list ;
+  sp:where ?w 
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+    
+      ?e1
+      st:nl() st:kw( "union") st:nl() 
+      ?e2
+       
+}
+where {
+  ?in a sp:Union ; 
+      sp:elements ?l 
+  ?l rdf:first ?e1 ;
+      rdf:rest/rdf:first ?e2
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw( "group by") " " st:call-template(sp:list, ?in)
+  st:nl()
+}
+where {
+  ?q sp:groupBy ?in
 }
 
 
@@ -1111,14 +1153,299 @@ optional { ?in sp:offset ?o }
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  "()"  
+  st:kw( "having") " (" st:call-template(sp:list, ?in) ")\n"
 }
 where {
-  ?x ?p ?in 
-  filter(?in = rdf:nil && ?p != rdf:rest)
+  ?q sp:having ?in
 }
-#default list is behind all other list templates
-pragma {st:template st:priority 1000}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw("bind") " (" ?e " " 
+  st:kw("as") " " ?v ")"
+}
+where {
+  ?in a sp:Bind  ;
+      sp:expression ?e ;
+      sp:variable ?v
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:<http://spinrdf.org/sp#> .
+
+template  {
+  st:kw( "values") " (" 
+    st:call-template(sp:list, ?var)    
+  ") {"
+     box { ?list }
+  "}"
+}
+where {
+  ?in a sp:Values ;
+    sp:variables ?var ;
+    sp:values ?list
+  
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw( "service") " " 
+  if (bound(?b), concat(st:kw( "silent"), " "), "")
+  ?g 
+  ibox { st:nl() ?b } 
+}
+where {
+  ?in a sp:Service ;
+    sp:serviceURI ?g ;
+    sp:elements  ?b
+    optional { ?in sp:silent ?b }
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:<http://spinrdf.org/sp#> .
+
+template  {
+  "(" st:call-template(sp:list, ?val)    ")"
+}
+where {
+  ?x sp:values ?in
+  ?in rdf:rest*/rdf:first ?val
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw( "order by") " " st:call-template(sp:list, ?in)
+  st:nl()
+}
+where {
+  ?q sp:orderBy ?in
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "undef"
+}
+where {
+  ?in a sp:Undef  
+}
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "(" ?f " " xt:pprotect(?lab) " " ?r ")"
+}
+where {
+  ?in a ?ope  ;
+      sp:arg1 ?f ;
+      sp:arg2 ?r 
+}
+values (?ope ?lab) {
+(sp:lt  "<")
+(sp:gt  ">")
+(sp:le  "<=")
+(sp:ge  ">=")
+(sp:eq  "=")
+(sp:ne  "!=")
+
+(sp:add     "+")
+(sp:mul     "*")
+(sp:divide  "/")
+(sp:sub     "-")
+
+(sp:and "&&")
+(sp:or  "||")
+
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:namespace() 
+  st:kw("describe") " " st:call-template(sp:list, ?list)   
+}
+where {
+  ?in a sp:Describe ;
+  sp:resultNodes ?list
+  minus { ?in sp:where ?w }
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  "! (" ?f ")"
+}
+where {
+  ?in a sp:not  ;
+      sp:arg1 ?f 
+}
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  ?in  
+}
+where {
+  ?q sp:where ?in
+  filter(?in != rdf:nil)
+}
+
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template {
+  st:kw("filter") " (" ?exp ")"
+}
+where {
+?in a sp:Filter ;
+    sp:expression ?exp  
+}
 
 
 
@@ -1163,440 +1490,13 @@ pragma {st:template st:priority 1000}
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template {
-  st:kw( "desc") "(" st:call-template(sp:list, ?e) ")"
-}
-where {
-  ?in a sp:Desc ;
-  sp:expression ?e
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  "undef"
-}
-where {
-  ?in a sp:Undef  
-}
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template{
-  "?" xsd:string(?var)
-}
-where {
-  ?in sp:varName ?var 
-  filter(not exists { ?in sp:expression ?e })
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:kw("bind") " (" ?e " " 
-  st:kw("as") " " ?v ")"
-}
-where {
-  ?in a sp:Bind  ;
-      sp:expression ?e ;
-      sp:variable ?v
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  "! (" ?f ")"
-}
-where {
-  ?in a sp:not  ;
-      sp:arg1 ?f 
-}
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  ?p1 "/" ?p2
-}
-where {
-  ?in a sp:SeqPath ;
-    sp:path1 ?p1 ;
-    sp:path2 ?p2 
-}
-
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  xsd:string(?l) "(" ?p ")" 
-  
-}
-where {
-  ?in a ?t ;
-      sp:subPath ?p 
-}
-values (?t ?l) {
-(sp:ReversePath  "^")
-(sp:NegPath "!")
-}
-
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  ?e " " st:kw( str(?l)) " ("     
-     st:call-template(sp:argin, ?in)
-  ")"
-}
-where {
-  ?in a ?t ; sp:arg1 ?e
-}
-values (?t ?l) {
-  (sp:in "in")
-  (sp:IN "in")
-  (sp:notIn "not in")
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  ?in  
+  ""  
 }
 where {
   ?q sp:where ?in
-  filter(?in != rdf:nil)
+  filter(?in = rdf:nil)
 }
 
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:kw( "graph") " " ?g " {" 
-  box {
-    if (?b = rdf:nil, "", 
-      st:call-template(sp:listnl, ?b))
-  }
-  "}"
-}
-where {
-  ?in a sp:NamedGraph ;
-    sp:graphNameNode ?g ;
-    sp:elements  ?b
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:prolog() 
-  st:kw("describe") " " st:call-template(sp:list, ?list)    
-  st:nl()
-  "where {"
-     box {
-      st:call-template(sp:listnl, ?w)
-     }
-  "}"
-}
-where {
-  ?in a sp:Describe ;
-  sp:resultNodes ?list ;
-  sp:where ?w 
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-  st:namespace() 
-  st:kw("ask") " {" 
-    box {
-      st:call-template(sp:listnl, ?a) 
-    }
-  "}"
-}
-where {
-  ?in a sp:Ask ;
-    sp:where ?a
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template{
-  "(" ?e " as (" 
-      group { ?var ; separator = ", " }
-  "))"
-}
-where {
-  ?in sp:varList/rdf:rest*/rdf:first ?var ;
-      sp:expression ?e
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-   st:kw( "minus") " {" 
-      box {
-	st:call-template(sp:listnl, ?e)
-      }
-   "}"
-}
-where {
-  ?in a sp:Minus ; sp:elements  ?e   
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  "(" ?p ")" 
-  if (bound(?min) && ?min = 1, "+", 
-  if (bound(?max) && ?max = -1, "?", "*"))
-}
-where {
-  ?in a sp:ModPath ;
-    sp:subPath ?p 
-  optional { ?in sp:modMin ?min }
-  optional { ?in sp:modMax ?max }
-}
-
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-
-template {
-   st:kw( "optional") " {" 
-      box {   
-	st:call-template(sp:listnl, ?b)
-      }  
-   "}"
-}
-where {
-  ?in a sp:Optional ;
-      sp:elements ?b
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL-based RDF AST Pretty-printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:<http://spinrdf.org/sp#> .
-
-template  {
-  st:kw( "values") " (" 
-    st:call-template(sp:list, ?var)    
-  ") {"
-     box { ?list }
-  "}"
-}
-where {
-  ?in a sp:Values ;
-    sp:variables ?var ;
-    sp:values ?list
-  
-}
 
 
 
@@ -1662,51 +1562,21 @@ where {
 <body>
 <![CDATA[
 #
-# Given a RDF graph which contains a SPIN Query
-# This query search the triples and return a string in turtle syntax
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-prefix sp:      <http://spinrdf.org/sp#> .
-template {
-  "(" ?p1 "|" ?p2 ")"
-}
-where {
-  ?in a sp:AltPath ;
-    sp:path1 ?p1 ;
-    sp:path2 ?p2 
-}
-
-
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # SPARQL-based RDF AST Pretty-printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template {
-  "{" 
-    group { ?exp  ; separator = "\n" }
+template  {
+  st:prolog() 
+  "delete data {" 
+  st:call-template(sp:listnl, ?d) 
   "}"
 }
 where {
-  ?in rdf:rest*/rdf:first ?exp
+  ?in a sp:DeleteData ;
+      sp:data ?d
 }
-# default list is behind all other list templates
-# after listoption
-pragma {st:template st:priority 1001}
-
-
-
 ]]>
 </body>
 </rule>
@@ -1720,21 +1590,20 @@ pragma {st:template st:priority 1001}
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template {
-  st:kw( "service") " " 
-  if (bound(?b), concat(st:kw( "silent"), " "), "")
-  ?g 
-  ibox { st:nl() ?b } 
+template  {
+  st:prolog() 
+  "create " 
+  if (bound(?s), "silent ", "")
+  if (bound(?d), "default", "")
+  if (bound(?g), concat("graph ", ?g), "")
 }
 where {
-  ?in a sp:Service ;
-    sp:serviceURI ?g ;
-    sp:elements  ?b
-    optional { ?in sp:silent ?b }
+  ?in a sp:Create 
+  optional { ?in sp:silent ?s }
+  optional { ?in sp:default ?d }
+  optional { ?in sp:graphIRI ?g }
+
 }
-
-
-
 ]]>
 </body>
 </rule>
@@ -1748,17 +1617,22 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template {
-  ""  
+template  {
+  st:prolog() 
+  "load " 
+   if (bound(?s), " silent ", "")
+  ?d
+  if (bound(?g), 
+    concat( " into graph ", ?g), 
+    "")
 }
 where {
-  ?q sp:where ?in
-  filter(?in = rdf:nil)
+  ?in a sp:Load ;
+  sp:document ?d
+  optional { ?in sp:into ?g }
+  optional { ?in sp:silent ?s }
+
 }
-
-
-
-
 ]]>
 </body>
 </rule>
@@ -1772,16 +1646,27 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template {
-  st:kw("exists") " {" st:call-template(sp:listnl, ?b) "}"
+template  {
+  st:prolog() 
+  str(?l) " " 
+  if (bound(?s), "silent ", "")
+  if (bound(?a), "all", "")
+  if (bound(?d), "default", "")
+  if (bound(?n), "named", "")
+  if (bound(?g), concat("graph ", ?g), "")
 }
 where {
-  ?in a sp:Exists  ;
-      sp:elements ?b
+  ?in a ?t 
+  values (?t ?l) { 
+    (sp:Clear "clear") (sp:Drop "drop")
+  }
+  optional { ?in sp:graphIRI ?g }
+  optional { ?in sp:silent ?s }
+  optional { ?in sp:default ?d }
+  optional { ?in sp:all ?a }
+  optional { ?in sp:named ?n }
+
 }
-
-
-
 ]]>
 </body>
 </rule>
@@ -1795,18 +1680,133 @@ where {
 #
 prefix sp:      <http://spinrdf.org/sp#> .
 
-template {
-  st:namespace() 
-  st:kw("describe") " " st:call-template(sp:list, ?list)   
+template  {
+  st:prolog() 
+  "insert data {" 
+    if (?d = rdf:nil, "", st:call-template(sp:listnl, ?d) ) 
+  "}"
 }
 where {
-  ?in a sp:Describe ;
-  sp:resultNodes ?list
-  minus { ?in sp:where ?w }
+  ?in a sp:InsertData ;
+      sp:data ?d
 }
+]]>
+</body>
+</rule>
 
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
 
+template  {
+  st:prolog() 
+  if (bound(?g), concat("with ", ?g, "\n"), "")
+  "delete where {" 
+    st:call-template(sp:listnl, ?w) 
+  "}"
+}
+where {
+  ?in a sp:DeleteWhere ;
+  sp:where ?w
+  optional { ?in sp:with ?g }
 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template  {
+  st:prolog() 
+  if (bound(?g), concat("with ", ?g, "\n"), "")
+
+  if (bound(?d), 
+  concat("delete {", st:call-template(sp:listnl, ?d), "} \n"), "")
+
+  if (bound(?i), 
+  concat("insert {", st:call-template(sp:listnl, ?i), "} \n"), "")
+
+  st:call-template(sp:using, ?in)
+  st:call-template(sp:usingNamed, ?in)
+  "where {" 
+    st:call-template(sp:listnl, ?w) 
+  "}"
+}
+where {
+  ?in a sp:Modify ;
+  sp:where ?w
+  optional { ?in sp:graphIRI ?g }
+  optional { ?in sp:deletePattern ?d }
+  optional { ?in sp:insertPattern ?i }
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template  {
+  ?u
+  ; separator = ";\n"
+}
+where {
+  ?in a sp:SPARQLUpdate ;
+  sp:updates/rdf:rest*/rdf:first ?u
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL-based RDF AST Pretty-printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix sp:      <http://spinrdf.org/sp#> .
+
+template  {
+  st:prolog() 
+  str(?l) " " 
+  if (bound(?s), "silent ", "")
+  if (?f = sp:default, "default", concat("graph ", ?f)) " to "
+  if (?t = sp:default, "default", ?t)
+}
+where {
+  ?in a ?tt 
+  
+  values (?tt ?l) { 
+     (sp:Move "move") (sp:Add "add") (sp:Copy "copy")
+  }
+  
+  ?in sp:from ?f 
+  ?in sp:to ?t 
+  
+  optional { ?in sp:silent ?s }
+
+}
 ]]>
 </body>
 </rule>

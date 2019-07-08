@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -97,7 +97,7 @@ template st:page {
 
   "<h3>SPARQL-SPIN Translator</h3>"
   
-   if (strcontains(st:get(st:service),  "tospin"),
+   if (contains(st:get(st:service),  "tospin"),
      st:call-template(st:tospin),
      st:call-template(st:tosparql))
   
@@ -184,15 +184,16 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:queryspin(?q) {
+template st:query(?q) {
+
 format {
   """
-  <h3>SPIN Query</h3>
-  <form method='post' id='sparql' action='/spin/tosparql'> 
+  <h3>SPARQL Query</h3>
+  <form method='post' id='spin' action='/spin/tospin'>  
     <input type='hidden' name='transform' value='%s' />    
-    <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
-    <br/>           
-    <input type='submit' value='submit'"  class='btn btn-default' onClick='trans(this.form); return false;'  />      
+    <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
+    <br/>       
+    <input type='submit' value='submit' class='btn btn-default' onClick='trans(this.form); return false;' />      
   </form>
   """
   
@@ -209,16 +210,15 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:query(?q) {
-
+template st:queryspin(?q) {
 format {
   """
-  <h3>SPARQL Query</h3>
-  <form method='post' id='spin' action='/spin/tospin'>  
+  <h3>SPIN Query</h3>
+  <form method='post' id='sparql' action='/spin/tosparql'> 
     <input type='hidden' name='transform' value='%s' />    
-    <textarea cols='60' rows='15' id='query' name='query'>%s</textarea>
-    <br/>       
-    <input type='submit' value='submit' class='btn btn-default' onClick='trans(this.form); return false;' />      
+    <textarea cols='60' rows='15' id='query2' name='query'>%s</textarea>
+    <br/>           
+    <input type='submit' value='submit'"  class='btn btn-default' onClick='trans(this.form); return false;'  />      
   </form>
   """
   

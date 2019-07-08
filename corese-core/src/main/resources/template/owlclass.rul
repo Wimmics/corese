@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -14,6 +14,31 @@ template st:default(?in) {
 where {
 }
 
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:annotate(?s, ?p, ?o) {
+       
+    "Annotation(" ?q  " "  ?c ")" "\n"
+    ; separator = ""
+  
+}
+where {
+  
+  ?a owl:annotatedSource   ?s ;
+     owl:annotatedProperty ?p ;
+     owl:annotatedTarget   ?o ;
+     a owl:Axiom ;
+     ?q ?c 
+    
+    filter (?q not in 
+      (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
+   
+}
 ]]>
 </body>
 </rule>
@@ -52,42 +77,13 @@ where {}
 <rule>
 <body>
 <![CDATA[
-template st:annotate(?s, ?p, ?o) {
-       
-    "Annotation(" ?q  " "  ?c ")" "\n"
-    ; separator = ""
-  
-}
-where {
-  
-  ?a owl:annotatedSource   ?s ;
-     owl:annotatedProperty ?p ;
-     owl:annotatedTarget   ?o ;
-     a owl:Axiom ;
-     ?q ?c 
-    
-    filter (?q not in 
-      (rdf:type, owl:annotatedSource, owl:annotatedProperty, owl:annotatedTarget))
-   
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
 
 template {
-    "DisjointClasses("
-    
-    xt:annotate(?in, owl:disjointWith, ?y)
-    
-     	?in " "  ?y  
-    ")" 
+    "DisjointClasses("  ?l ")"   
 }
 where {
-  ?in owl:disjointWith ?y 
+  ?in a owl:AllDisjointClasses ;
+    owl:members ?l
 }
 ]]>
 </body>
@@ -118,24 +114,33 @@ where {
 <rule>
 <body>
 <![CDATA[
+
 template {
-  "HasKey(" ?in  
-  box {
-    "(" group distinct { ?op } ")" st:nl()
-    "(" group distinct { ?dp } ")"
-   }
-   ")"
+    "DisjointClasses("
+    
+    xt:annotate(?in, owl:disjointWith, ?y)
+    
+     	?in " "  ?y  
+    ")" 
 }
 where {
-  ?in owl:hasKey ?l
-  
-  optional { 
-    ?l rdf:rest*/rdf:first ?op
-    ?op a owl:ObjectProperty }
-    
-  optional { 
-    ?l rdf:rest*/rdf:first ?dp
-    ?dp a owl:DatatypeProperty }
+  ?in owl:disjointWith ?y 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+   "DisjointUnion("  
+     	?in " " box { group { ?e ; separator = "\n" } }
+    ")" 
+}
+where {
+  ?in owl:disjointUnionOf ?y 
+  ?y rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>
@@ -170,29 +175,24 @@ where {
 <rule>
 <body>
 <![CDATA[
-
 template {
-    "DisjointClasses("  ?l ")"   
+  "HasKey(" ?in  
+  box {
+    "(" group distinct { ?op } ")" st:nl()
+    "(" group distinct { ?dp } ")"
+   }
+   ")"
 }
 where {
-  ?in a owl:AllDisjointClasses ;
-    owl:members ?l
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-   "DisjointUnion("  
-     	?in " " box { group { ?e ; separator = "\n" } }
-    ")" 
-}
-where {
-  ?in owl:disjointUnionOf ?y 
-  ?y rdf:rest*/rdf:first ?e
+  ?in owl:hasKey ?l
+  
+  optional { 
+    ?l rdf:rest*/rdf:first ?op
+    ?op a owl:ObjectProperty }
+    
+  optional { 
+    ?l rdf:rest*/rdf:first ?dp
+    ?dp a owl:DatatypeProperty }
 }
 ]]>
 </body>

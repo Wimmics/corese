@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -71,6 +71,32 @@ where {
 <body>
 <![CDATA[
 #
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:start(?in) {
+format {
+  us:format(ft:head.html)  
+  ibox { st:call-template(st:prefix) }
+  str(?body)  
+}
+}
+where {
+   bind(
+    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+   as ?body )
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # select top level terms ?in
 # URI
 # Top level bnodes (not object of a property)
@@ -106,24 +132,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# RDF/XML Transformation
-#
-# Olivier Corby - Wimmics INRIA I3S - 2015
-#
 prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
-
-template st:start(?in) {
+template st:listtriple(?x, ?p, ?y) {
 format {
-  us:format(ft:head.html)  
-  ibox { st:call-template(st:prefix) }
-  str(?body)  
+   us:format(ft:property.html) 
+   
+   st:turtle(?p, true)
+   box { st:call-template(st:listrec, ?y) }
 }
 }
 where {
-   bind(
-    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
-   as ?body )
+  
 }
 ]]>
 </body>
@@ -150,25 +169,6 @@ where {
     bind (st:set(st:html, true) as ?b)
 }
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
-template st:listtriple(?x, ?p, ?y) {
-format {
-   us:format(ft:property.html) 
-   
-   st:turtle(?p, true)
-   box { st:call-template(st:listrec, ?y) }
-}
-}
-where {
-  
-}
 ]]>
 </body>
 </rule>
@@ -352,6 +352,24 @@ where {
 <rule>
 <body>
 <![CDATA[
+template st:list {
+
+if (isBlank(?e) && ! st:visited(?e),
+  st:call-template(st:blank, ?r, rdf:first, ?e),
+  st:call-template(st:resourceref, ?e))
+  
+}
+where {
+  ?in rdf:rest* ?r 
+  ?r  rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 #
 # List that contains a literal rendered with rdf:first/rdf:rest
 # otherwise as a Collection
@@ -371,24 +389,6 @@ where {
       
 }
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:list {
-
-if (isBlank(?e) && ! st:visited(?e),
-  st:call-template(st:blank, ?r, rdf:first, ?e),
-  st:call-template(st:resourceref, ?e))
-  
-}
-where {
-  ?in rdf:rest* ?r 
-  ?r  rdf:first ?e
-}
 ]]>
 </body>
 </rule>
@@ -485,6 +485,26 @@ where {
 prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
+   us:format(ft:property.html) 
+   
+   st:turtle(?p, true)
+   st:literal(str(?y)) 
+   }
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) && datatype(?y) = xsd:string)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
    us:format(ft:propertylang.html) 
    
    st:turtle(?p, true)
@@ -506,19 +526,14 @@ where {
 prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-  us:format(ft:property.html)
-  
-  st:turtle(?p, true)
-  box {  
-      if (st:visited(?y),
-        st:call-template(st:resourceref, ?y),
-        st:call-template(st:blank, ?x, ?p, ?y))
-    }
- } 
+   us:format(ft:resource.html)
+   st:turtle(?p, true)
+   st:linkuri(?y)
+}
 }
 where {
    ?x ?p ?y
-   filter isBlank(?y)
+   filter isURI(?y)
 }
 ]]>
 </body>
@@ -555,34 +570,19 @@ where {
 prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 template (?x, ?p, ?y) {
 format {
-   us:format(ft:resource.html)
-   st:turtle(?p, true)
-   st:linkuri(?y)
-}
-}
-where {
-   ?x ?p ?y
-   filter isURI(?y)
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
-template (?x, ?p, ?y) {
-format {
-   us:format(ft:property.html) 
-   
-   st:turtle(?p, true)
-   st:literal(str(?y)) 
-   }
+  us:format(ft:property.html)
+  
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+ } 
 }
 where {
    ?x ?p ?y
-   filter (isLiteral(?y) && datatype(?y) = xsd:string)
+   filter isBlank(?y)
 }
 ]]>
 </body>

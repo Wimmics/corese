@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -50,18 +50,18 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
-template st:main(?year) {
-  st:call-template(st:head, ?year)
+template st:start {
 
-  format {
-    ft:main.html
-    st:call-template(st:calendar, ?year)
-  }
-
+  st:call-template(st:main, ?year)
+    
+  st:call-template(st:tail)
+  
 }
 where {
   
+  bind (st:get(st:uri) as ?uri)
+  bind (xsd:integer(substr(?uri, strlen(st:) + 2))   as ?tmp)
+  bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
 }
 ]]>
 </body>
@@ -112,18 +112,18 @@ order by ?date
 <rule>
 <body>
 <![CDATA[
-template st:start {
+prefix ft: <http://ns.inria.fr/sparql-template/format/calendar/>
+template st:main(?year) {
+  st:call-template(st:head, ?year)
 
-  st:call-template(st:main, ?year)
-    
-  st:call-template(st:tail)
-  
+  format {
+    ft:main.html
+    st:call-template(st:calendar, ?year)
+  }
+
 }
 where {
   
-  bind (st:get(st:uri) as ?uri)
-  bind (xsd:integer(substr(?uri, strlen(st:) + 2))   as ?tmp)
-  bind (st:set(st:year, coalesce(?tmp, year(now()))) as ?year)
 }
 ]]>
 </body>

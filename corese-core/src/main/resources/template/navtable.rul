@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -34,6 +34,27 @@ limit 1
 <rule>
 <body>
 <![CDATA[
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Open Data
+# such as dbpedia
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+template st:start {
+
+  st:call-template(st:main)
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
 prefix o:   <http://dbpedia.org/ontology/>
 
@@ -54,27 +75,6 @@ where {
     optional { ?uri rdfs:label ?label }
 }
 limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL Template Transformation 
-# Generate a HTML hypertext navigator on top of Linked Open Data
-# such as dbpedia
-#
-# Olivier Corby - Wimmics INRIA I3S - 2018
-#
-template st:start {
-
-  st:call-template(st:main)
-  
-}
-where {
-}
 ]]>
 </body>
 </rule>

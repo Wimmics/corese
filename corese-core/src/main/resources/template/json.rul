@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -63,6 +63,30 @@ where {
 <body>
 <![CDATA[
 #
+# JSON LD Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:start {
+
+  st:call-template(st:head)
+  
+  str(?body)
+  
+  st:call-template(st:tail)
+}
+where {
+   bind(st:call-template(st:main) as ?body )
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
 # select top level terms ?in
 # URI
 # Top level bnodes (not object of a property)
@@ -82,30 +106,6 @@ template st:main {
 }
 where {
   
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# JSON LD Transformation
-#
-# Olivier Corby - Wimmics INRIA I3S - 2015
-#
-
-template st:start {
-
-  st:call-template(st:head)
-  
-  str(?body)
-  
-  st:call-template(st:tail)
-}
-where {
-   bind(st:call-template(st:main) as ?body )
 }
 ]]>
 </body>
@@ -195,6 +195,28 @@ order by ?p
 <rule>
 <body>
 <![CDATA[
+template st:head {
+
+"""{
+"@context": {"""
+  ibox {       
+    st:call-template(st:prefix)    
+  }
+"\n},"
+
+st:nl()
+st:nl()
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 template st:propertyvalue(?x, ?p) {
 
      '"' 
@@ -228,28 +250,6 @@ where {
   ?x ?p ?y  
 }
 order by ?y
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:head {
-
-"""{
-"@context": {"""
-  ibox {       
-    st:call-template(st:prefix)    
-  }
-"\n},"
-
-st:nl()
-st:nl()
-}
-where {
-
-}
 ]]>
 </body>
 </rule>

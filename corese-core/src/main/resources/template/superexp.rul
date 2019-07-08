@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -53,24 +53,6 @@ template {
   ?suc
 }
 where {
-  ?in owl:complementOf ?z 
-  
-  bind (
-    st:call-template-with(st:subexp, st:subClassExpression, ?z)
-  as ?suc)
-  
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-  ?suc
-}
-where {
   ?in owl:intersectionOf ?z 
   ?z rdf:rest*/rdf:first ?e 
   
@@ -80,6 +62,36 @@ where {
   )
   
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Check if there is an unauthorized OWL property for superClassExpression ?in
+# return false in this case, otherwise template fails (return nothing)
+#
+template {
+  false
+}
+where {
+    ?in ?p ?y
+    
+    bind (
+      ?p in (
+        owl:intersectionOf, owl:complementOf, 
+	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
+	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
+	rdf:type
+	)
+      as ?suc)
+      	
+      filter (st:visit(st:err("failSuper"), ?in, ?suc))
+      filter (! ?suc)
+}
+limit 1
 ]]>
 </body>
 </rule>
@@ -124,29 +136,17 @@ where {
 <rule>
 <body>
 <![CDATA[
-#
-# Check if there is an unauthorized OWL property for superClassExpression ?in
-# return false in this case, otherwise template fails (return nothing)
-#
 template {
-  false
+  ?suc
 }
 where {
-    ?in ?p ?y
-    
-    bind (
-      ?p in (
-        owl:intersectionOf, owl:complementOf, 
-	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
-	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
-	rdf:type
-	)
-      as ?suc)
-      	
-      filter (st:visit(st:err("failSuper"), ?in, ?suc))
-      filter (! ?suc)
+  ?in owl:complementOf ?z 
+  
+  bind (
+    st:call-template-with(st:subexp, st:subClassExpression, ?z)
+  as ?suc)
+  
 }
-limit 1
 ]]>
 </body>
 </rule>

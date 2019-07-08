@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Feb 15 13:46:26 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -14,51 +14,6 @@ where {}
 
 function us:escape(?str) {
     replace(replace(?str, "\n", "\\\\n"), "\"", "\\\\\"")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-
-  "{\"@id\": \""  str(?in)  "\"}"
-  
-}
-where {
-  ?x ?p ?in
-  filter isBlank(?in)
-  filter ( 
-    not exists { ?in rdf:rest ?r } ||
-	exists { ?y  rdf:first ?in }
-  )
-}
-limit 1
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template {
-
-  "{\"@list\": [" 
-  
-  group { 
-    st:apply-templates(?e) 
-    ; separator = ", "
-  }
-  
-  "]}"
-}
-where {
-  ?x ?p ?in
-  filter isBlank(?in)
-  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
-  ?in rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>
@@ -106,13 +61,11 @@ where {
 <body>
 <![CDATA[
 template {
-
-  "\"" us:escape(?in) "\""
-  
+  "{\"@id\": \""  us:escape(?in)  "\"}"
 }
 where {
   bind (st:getFocusNode() as ?in)
-  filter (datatype(?in) = xsd:string)
+  filter isURI(?in)
 }
 ]]>
 </body>
@@ -136,6 +89,22 @@ where {
     ! strstarts(datatype(?in), rdf:) 
   )
   
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "\"" us:escape(?in) "\""
+  
+}
+where {
+  bind (st:getFocusNode() as ?in)
+  filter (datatype(?in) = xsd:string)
 }
 ]]>
 </body>
@@ -171,11 +140,42 @@ pragma { kg:template kg:priority 100 }
 <body>
 <![CDATA[
 template {
-  "{\"@id\": \""  us:escape(?in)  "\"}"
+
+  "{\"@id\": \""  str(?in)  "\"}"
+  
 }
 where {
-  bind (st:getFocusNode() as ?in)
-  filter isURI(?in)
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter ( 
+    not exists { ?in rdf:rest ?r } ||
+	exists { ?y  rdf:first ?in }
+  )
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template {
+
+  "{\"@list\": [" 
+  
+  group { 
+    st:apply-templates(?e) 
+    ; separator = ", "
+  }
+  
+  "]}"
+}
+where {
+  ?x ?p ?in
+  filter isBlank(?in)
+  filter (exists { ?in rdf:rest ?r } && not exists { ?y rdf:first ?in })
+  ?in rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>

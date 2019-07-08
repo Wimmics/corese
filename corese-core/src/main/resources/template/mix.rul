@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -58,6 +58,29 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
+template st:start {
+
+  st:call-template(st:open)
+  
+  st:call-template(st:main)
+    
+  st:call-template(st:close)
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
 template st:main {
 
 st:call-template(st:next)
@@ -80,29 +103,6 @@ st:call-template(st:button)
 where {
 
    filter(st:visit(st:start, st:trace))
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:start {
-
-  st:call-template(st:open)
-  
-  st:call-template(st:main)
-    
-  st:call-template(st:close)
-}
-where {
 
 }
 

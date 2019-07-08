@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:40 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -111,6 +111,92 @@ where {
 <rule>
 <body>
 <![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  ?e
+}
+where {
+  ?in rdf:rest*/rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+    "("   
+      st:call-template(sql:comma, ?columns) 
+    ")"
+}
+where {     
+     	?in a sql:Columns ;
+	     sql:args ?columns
+    
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  	"SELECT " st:call-template(sql:comma, ?select)
+}
+where {
+  ?in a sql:Select ;
+     sql:args ?select
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+   ?label "(" 
+      st:call-template(sql:comma, ?args)
+   ")"
+}
+where {
+	?in a ?function ;
+	    sql:args ?args
+}
+values (?function ?label) {
+	(sql:Min   "MIN")
+	(sql:Max   "MAX")
+	(sql:Avg   "AVG")
+	(sql:Last  "LAST")
+	(sql:First "FIRST")
+	(sql:Count "COUNT")
+	(sql:Sum   "SUM")
+	(sql:len   "LEN")
+	(sql:Upper "UPPER")
+	(sql:Lower "LOWER")
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
@@ -119,6 +205,28 @@ template  {
 where {
   ?in a sql:Column ;
      sql:label ?name
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+?label ?args
+}
+where {
+	?in a ?create ;
+	sql:args ?args
+}
+values (?create ?label) {
+	(sql:CreateTable 	"CREATE TABLE ")
+	(sql:CreateDatabase 	"CREATE DATABASE ")
+	(sql:CreateIndex 	"CREATE INDEX ")
+	(sql:CreateIndexUnique 	"CREATE UNIQUE INDEX ")
 }
 ]]>
 </body>
@@ -158,6 +266,182 @@ where {
   ?in a sql:And ;
      sql:args ?args
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+	?arg1 " IN (" ?arg2 ")"
+}
+where {
+  ?in a sql:In ;
+     sql:args (?arg1 ?arg2)
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+   st:turtle(?value)
+}
+where {
+  ?in a sql:Constant 
+  { ?in sql:label ?value } union
+  { ?in sql:value ?value } 
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+    st:call-template(sql:line, ?body)
+    if (! bound(?x), ";", "")
+}
+where { 
+  ?in a sql:Query ;
+      sql:args ?body
+  optional { ?x ?q ?in }
+}
+
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+"ALTER TABLE " ?arg1 ?label "\n" ?arg2
+}
+where {
+	?in a ?alter ;
+	sql:args (?arg1 ?arg2)
+}
+values (?alter ?label) {
+	(sql:AlterTableAdd "ADD ")
+	(sql:AlterTableDrop "DROP COLUMN ")
+	(sql:AlterTableAlter "ALTER COLUMN ")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  ?name 
+}
+where {
+  ?in a sql:As ;
+     sql:args ?name
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?arg1 "\n" ?label ?arg2 "\n" ?arg3 
+}
+where {
+	?in a ?join ;
+	sql:args (?arg1 ?arg2 ?arg3)
+}
+values (?join ?label) {
+	(sql:InnerJoin "INNER JOIN ")
+	(sql:FullJoin "FULL OUTER JOIN ")
+	(sql:LeftJoin "LEFT JOIN ")
+	(sql:RightJoin "RIGHT JOIN ")
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  st:call-template(sql:or, ?args)
+}
+where {
+  ?in a sql:Or ;
+     sql:args ?args
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+  ?label st:call-template(sql:comma, ?args)
+}
+where {
+	?in a ?clause ;
+	sql:args ?args
+}
+values (?clause ?label) {
+	(sql:From 	"FROM ")
+	(sql:GroupBy 	"GROUP BY ")
+	(sql:OrderBy 	"ORDER BY ")
+	(sql:ListOfValues "")
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template  {
+  "VALUES (" st:call-template(sql:comma, ?values)  ")"
+}
+where {
+  ?in a sql:Values ;
+     sql:args ?values
+}
+
+
+
 ]]>
 </body>
 </rule>
@@ -207,22 +491,16 @@ values (?ope ?label) {
 <![CDATA[
 @prefix sql: <http://ns.inria.fr/ast/sql#> 
 
-template {
-?label ?args
+template  {
+    "(\n" 
+      st:call-template(sql:semicolon, ?columnstable) 
+    "\n)"
 }
-where {
-	?in a ?clause ;
-	sql:args ?args
+where {    
+     	?in a sql:ColumnsTable ;
+	     sql:args ?columnstable     
 }
-values (?clause ?label) {
-	(sql:Where 	"WHERE ")
-	(sql:Update 	"UPDATE ")
-	(sql:Set 	"SET ")
-	(sql:On 	"ON ")
-	(sql:Into 	"INTO ")
-	(sql:Insert 	"INSERT INTO ")
-	(sql:Having 	"HAVING ")
-}
+
 
 
 ]]>
@@ -251,316 +529,11 @@ where {
 prefix sql: <http://ns.inria.fr/ast/sql#> 
 
 template  {
-   st:turtle(?value)
-}
-where {
-  ?in a sql:Constant 
-  { ?in sql:label ?value } union
-  { ?in sql:value ?value } 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-  	"SELECT " st:call-template(sql:comma, ?select)
-}
-where {
-  ?in a sql:Select ;
-     sql:args ?select
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template {
-"ALTER TABLE " ?arg1 ?label "\n" ?arg2
-}
-where {
-	?in a ?alter ;
-	sql:args (?arg1 ?arg2)
-}
-values (?alter ?label) {
-	(sql:AlterTableAdd "ADD ")
-	(sql:AlterTableDrop "DROP COLUMN ")
-	(sql:AlterTableAlter "ALTER COLUMN ")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template {
-   ?label "(" 
-      st:call-template(sql:comma, ?args)
-   ")"
-}
-where {
-	?in a ?function ;
-	    sql:args ?args
-}
-values (?function ?label) {
-	(sql:Min   "MIN")
-	(sql:Max   "MAX")
-	(sql:Avg   "AVG")
-	(sql:Last  "LAST")
-	(sql:First "FIRST")
-	(sql:Count "COUNT")
-	(sql:Sum   "SUM")
-	(sql:len   "LEN")
-	(sql:Upper "UPPER")
-	(sql:Lower "LOWER")
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-    "("   
-      st:call-template(sql:comma, ?columns) 
-    ")"
-}
-where {     
-     	?in a sql:Columns ;
-	     sql:args ?columns
-    
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-  ?name 
-}
-where {
-  ?in a sql:As ;
-     sql:args ?name
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-    "(\n" 
-      st:call-template(sql:semicolon, ?columnstable) 
-    "\n)"
-}
-where {    
-     	?in a sql:ColumnsTable ;
-	     sql:args ?columnstable     
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template {
-  ?label st:call-template(sql:comma, ?args)
-}
-where {
-	?in a ?clause ;
-	sql:args ?args
-}
-values (?clause ?label) {
-	(sql:From 	"FROM ")
-	(sql:GroupBy 	"GROUP BY ")
-	(sql:OrderBy 	"ORDER BY ")
-	(sql:ListOfValues "")
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-	?arg1 " IN (" ?arg2 ")"
-}
-where {
-  ?in a sql:In ;
-     sql:args (?arg1 ?arg2)
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-  st:call-template(sql:or, ?args)
-}
-where {
-  ?in a sql:Or ;
-     sql:args ?args
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template {
-  ?arg1 "\n" ?label ?arg2 "\n" ?arg3 
-}
-where {
-	?in a ?join ;
-	sql:args (?arg1 ?arg2 ?arg3)
-}
-values (?join ?label) {
-	(sql:InnerJoin "INNER JOIN ")
-	(sql:FullJoin "FULL OUTER JOIN ")
-	(sql:LeftJoin "LEFT JOIN ")
-	(sql:RightJoin "RIGHT JOIN ")
-}
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-    st:call-template(sql:line, ?body)
-    if (! bound(?x), ";", "")
-}
-where { 
-  ?in a sql:Query ;
-      sql:args ?body
-  optional { ?x ?q ?in }
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template {
-?label ?args
-}
-where {
-	?in a ?create ;
-	sql:args ?args
-}
-values (?create ?label) {
-	(sql:CreateTable 	"CREATE TABLE ")
-	(sql:CreateDatabase 	"CREATE DATABASE ")
-	(sql:CreateIndex 	"CREATE INDEX ")
-	(sql:CreateIndexUnique 	"CREATE UNIQUE INDEX ")
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
    " AS " xsd:string(?name) 
 }
 where {
   ?in a sql:Alias ;
      sql:label ?name
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-  "VALUES (" st:call-template(sql:comma, ?values)  ")"
-}
-where {
-  ?in a sql:Values ;
-     sql:args ?values
-}
-
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-@prefix sql: <http://ns.inria.fr/ast/sql#> 
-
-template  {
-  ?e
-}
-where {
-  ?in rdf:rest*/rdf:first ?e
 }
 ]]>
 </body>
@@ -582,6 +555,33 @@ values (?delete ?label) {
 	(sql:Delete 	"DELETE ")
 	(sql:Deletestar "DELETE * FROM ")
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+@prefix sql: <http://ns.inria.fr/ast/sql#> 
+
+template {
+?label ?args
+}
+where {
+	?in a ?clause ;
+	sql:args ?args
+}
+values (?clause ?label) {
+	(sql:Where 	"WHERE ")
+	(sql:Update 	"UPDATE ")
+	(sql:Set 	"SET ")
+	(sql:On 	"ON ")
+	(sql:Into 	"INTO ")
+	(sql:Insert 	"INSERT INTO ")
+	(sql:Having 	"HAVING ")
+}
+
+
 ]]>
 </body>
 </rule>

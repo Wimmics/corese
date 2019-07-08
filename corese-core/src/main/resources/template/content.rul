@@ -2,10 +2,33 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Mar 30 00:03:43 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# For each day of a calendar (see st:calendar/st:date)
+# generate href with query to dbpedia about event of this date
+# use year 2000 to have a bisextile year (to get January 29)
+#
+template st:dbpedia(?date) {
+  format {
+    "<a href='%s'>%s</a>"
+    
+    st:plink(concat("st:d2000-", month(?date), "-", day(?date)))
+    day(?date)
+  } 
+}
+where {
+
+}
+]]>
+</body>
+</rule>
+
 <rule>
 <body>
 <![CDATA[
@@ -54,50 +77,18 @@ where {
 <body>
 <![CDATA[
 #
-# For each day of a calendar (see st:calendar/st:date)
-# generate href with query to dbpedia about event of this date
-# use year 2000 to have a bisextile year (to get January 29)
-#
-template st:dbpedia(?date) {
-  format {
-    "<a href='%s'>%s</a>"
-    
-    st:plink(concat("st:d2000-", month(?date), "-", day(?date)))
-    day(?date)
-  } 
-}
-where {
-
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # Display a calendar and a graph content
-# ?uri = st:y2000 | st:dyyyy-mm-dd
 #
-template st:main {
-
-  "<h2 class='center'>" st:get(st:title) "</h2>"
-
-  st:call-template-with(st:calendar, st:main, ?year)
+template st:start {
   
-  st:call-template(st:content, ?year)
+  st:call-template(st:main)
   
 }
 where {
-  bind (st:get(st:uri) as ?uri)
-  bind (substr(?uri, strlen(st:) + 2) as ?str)
-  bind (if (contains(?str, "-"), strbefore(?str, "-"), ?str) 
-  as ?tmp)
-  bind (coalesce(xsd:integer(?tmp), year(now())) as ?year)
   
-  bind (st:export(st:service, st:get(st:service)) as ?serv)
-  bind (st:export(st:profile, st:get(st:profile)) as ?prof)
+  # export to st:calendar (see st:calendar/st:date)
+  bind (st:export(st:content, st:content) as ?c)
+  bind (st:export(st:date, st:date)       as ?d)
 }
 ]]>
 </body>
@@ -157,17 +148,26 @@ order by ?date
 <![CDATA[
 #
 # Display a calendar and a graph content
+# ?uri = st:y2000 | st:dyyyy-mm-dd
 #
-template st:start {
+template st:main {
+
+  "<h2 class='center'>" st:get(st:title) "</h2>"
+
+  st:call-template-with(st:calendar, st:main, ?year)
   
-  st:call-template(st:main)
+  st:call-template(st:content, ?year)
   
 }
 where {
+  bind (st:get(st:uri) as ?uri)
+  bind (substr(?uri, strlen(st:) + 2) as ?str)
+  bind (if (contains(?str, "-"), strbefore(?str, "-"), ?str) 
+  as ?tmp)
+  bind (coalesce(xsd:integer(?tmp), year(now())) as ?year)
   
-  # export to st:calendar (see st:calendar/st:date)
-  bind (st:export(st:content, st:content) as ?c)
-  bind (st:export(st:date, st:date)       as ?d)
+  bind (st:export(st:service, st:get(st:service)) as ?serv)
+  bind (st:export(st:profile, st:get(st:profile)) as ?prof)
 }
 ]]>
 </body>

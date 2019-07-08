@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jan 10 15:40:15 CET 2019
+Fri Jun 21 13:43:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,39 +46,6 @@ where {
 <body>
 <![CDATA[
 #
-# Compute aggregates (min, max, etc.)
-# Generate a map and spot geo:Point
-# Display sensor values
-#
-prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
-template st:main {
-
-    format { <ft:title.html> }
-    
-    # generate a map
-    st:call-template(st:place)
-
-    format  {
-        <ft:frame.html>
-        
-        st:call-template(st:header)
-        ?agg        
-        st:call-template(st:header)
-        st:call-template(st:resource)        
-    }    
-}
-where {
-    bind (st:call-template(st:aggregate)  as ?agg)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
 # SPARQL Template Transformation 
 # Generate a HTML hypertext navigator on top of Linked Data
 # Start template
@@ -111,6 +78,39 @@ function us:finish(?map) {
 xt:print('finish', let (((?out)) = ?map) { ?out }) 
 }
 
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Compute aggregates (min, max, etc.)
+# Generate a map and spot geo:Point
+# Display sensor values
+#
+prefix ft:   <http://ns.inria.fr/sparql-template/format/sensor/>
+template st:main {
+
+    format { <ft:title.html> }
+    
+    # generate a map
+    st:call-template(st:place)
+
+    format  {
+        <ft:frame.html>
+        
+        st:call-template(st:header)
+        ?agg        
+        st:call-template(st:header)
+        st:call-template(st:resource)        
+    }    
+}
+where {
+    bind (st:call-template(st:aggregate)  as ?agg)
+}
 
 ]]>
 </body>

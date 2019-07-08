@@ -1,0 +1,50 @@
+@prefix : <http://www.ai4eu.eu/ontologies/data#> .
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
+
+@base <http://www.ai4eu.eu/ontologies/data> .
+
+:wildcatpytorch a owl:NamedIndividual, ai:SoftwareComponent ;
+  foaf:name "wildcat.pytorch"^^xsd:string ;
+  ai:distributed_as :wildcatpytorch-distro ;
+  ai:requires :GPU ;
+  dcterms:subject cso:computer_vision ;
+  ai:keyword "Object Segmentation"@en ;
+  dcterms:bibliographicCitation "https://doi.org/10.1109/CVPR.2017.631"^^xsd:anyURI ;
+  dcterms:creator :upmc ;
+  dcterms:creator :thales .
+
+:wildcatpytorch-distro a owl:NamedIndividual, ai:Library ;
+                   ai:atTRL :trl4 ;
+                   ai:under_license :mit ;
+                   ai:download "https://github.com/durandtibo/wildcat.pytorch"^^xsd:anyURI .
+
+:GPU a owl:NamedIndividual, ai:ComputationalResource .
+
+:upmc a owl:NamedIndividual, foaf:Organization ;
+        foaf:name "UPMC"@en ;
+        foaf:homepage "http://www.upmc.fr/en/"^^xsd:anyURI ;
+        ai:location <http://dbpedia.org/resource/France>.
+
+:thales a owl:NamedIndividual, ai:Company ;
+        foaf:name "Thales Group"@en ;
+        foaf:homepage "https://www.thalesgroup.com/en"^^xsd:anyURI ;
+        ai:location <http://dbpedia.org/resource/France> .
+
+:eu a owl:NamedIndividual, foaf:Organization ;
+      foaf:name "European Commission"@en .
+
+:mit a owl:NamedIndividual, dcterms:LicenseDocument ;
+        dcterms:source "https://opensource.org/licenses/MIT"^^xsd:anyURI .
+
+:trl4 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
+        ai:authority :eu ;
+        ai:trl 4 ;
+        dcterms:description "technology validated in lab"@en .

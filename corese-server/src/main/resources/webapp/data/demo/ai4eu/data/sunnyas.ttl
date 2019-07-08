@@ -1,0 +1,48 @@
+@prefix : <http://www.ai4eu.eu/ontologies/data#> .
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
+
+@base <http://www.ai4eu.eu/ontologies/data> .
+
+:sunnyas a ai:SoftwareComponent ;
+  foaf:name "SUNNY-AS"^^xsd:string ;
+  ai:distributed_as :sunnyas-distri ;
+  ai:requires :CPU ;
+  dct:subject cso:knn ;
+  ai:keyword "Algorithm Selection"@en ,
+           "kNN"@en ,
+           "Portfolio-based optimization"@en,
+           "ML"@en;
+#  dct:bibliographicCitation ""^^xsd:anyURI ;
+  dct:creator :uni-bologna .
+
+:sunnyas-distri a ai:StandAlone ;
+#                   ai:atTRL :trl9 ;
+#                   ai:accompanied_by :sunnyas-devguide ,
+#                                     :sunnyas-specs ,
+#                                     :sunnyas-userguide ;
+                   ai:under_license :gpl ;
+                   ai:download "https://github.com/lteu/oasc"^^xsd:anyURI .
+
+:CPU a ai:ComputationalResource .
+
+:uni-bologna a foaf:Organization ;
+        foaf:name "University of Bologna"@en ;
+        foaf:homepage "https://www.unibo.it/en"^^xsd:anyURI ;
+        ai:location <http://dbpedia.org/resource/Italy> .
+
+:eu a foaf:Organization ;
+      foaf:name "European Commission"@en .
+
+
+
+:gpl a dct:LicenseDocument ;
+        dct:source "https://www.gnu.org/licenses/gpl.html"^^xsd:anyURI .
+

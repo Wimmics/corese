@@ -1,34 +1,57 @@
+@prefix : <http://www.ai4eu.eu/ontologies/data#> .
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
-@prefix de: <http://purl.org/dc/elements/1.1/> 
-@prefix dc: <http://purl.org/dc/terms/>
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
 
-ai:corese a ai:SoftwareComponent ;
-  ai:described_by _:b2273 ;
-  ai:distributed_as <http://project.inria.fr/corese> ;
-  ai:keyword "Semantic Web"@en, "Linked Data"@en, "Web of Data"@en ;
-  ai:refers_to _:b2275 ;
-  ai:used_in <http://corese.inria.fr> ;
-  foaf:name "Corese" ;
-  de:creator  <http://www.inria.fr> ;
-  ai:country <http://fr.dbpedia.org/resource/France> ;
-  ai:uses ai:CPU .
-  
-<http://project.inria.fr/corese> a ai:Library, ai:StandAlone ;
-  dc:license ai:CeCILLC ;
-  ai:accompanied_by <http://project.inria.fr/corese/documentation/> ;
-  ai:atTRL ai:TRL1 ;
-  ai:provider <http://www.inria.fr> ;
-  de:creator  <http://www.inria.fr> ;
-  ai:under_license ai:CeCILLC . 
-  
-  
+@base <http://www.ai4eu.eu/ontologies/data> .
 
+:corese a ai:SoftwareComponent ;
+  foaf:name "Corese"^^xsd:string ;
+  ai:distributed_as :corese-distri ;
+  ai:requires :CPU ;
+  ai:keyword "Semantic Web"@en ,
+           "Linked Data"@en ,
+           "Knowledge Graph"@en ;
+  dct:subject <https://cso.kmi.open.ac.uk/topics/SemanticWeb>    ;     
+#  dct:bibliographicCitation ""^^xsd:anyURI ;
+  dct:creator :inria .
 
-<http://corese.inria.fr> a ai:Application .
+:corese-distri a ai:StandAlone ;
+                   ai:atTRL :trl7 ;
+                   ai:accompanied_by :corese-devguide ,
+                                     :corese-specs ,
+                                     :corese-userguide ;
+                   ai:under_license :cecillc ;
+                   ai:download "http://project.inria.fr/corese"^^xsd:anyURI .
 
-<http://project.inria.fr/corese/documentation/> a ai:Documentation . 
+:CPU a ai:ComputationalResource .
 
+:inria a foaf:Organization ;
+        foaf:name "INRIA"@en ;
+        foaf:homepage "http://www.inria.fr"^^xsd:anyURI ;
+        ai:location <http://dbpedia.org/resource/France> .
 
+:eu a foaf:Organization ;
+      foaf:name "European Commission"@en .
 
-ai:CeCILLC rdf:type <http://purl.org/dc/terms/LicenseDocument> ;
-      de:source <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html> .
+:corese-devguide a ai:Manual ;
+                    dct:title " Developers Guide"@en ;
+                    ai:download ""^^xsd:anyURI .
+
+:corese-specs a ai:Manual ;
+                 dct:title "Specification"@en ;
+                 ai:download ""^^xsd:anyURI .
+
+:corese-userguide a ai:Manual ;
+                     dct:title "Users Guide"@en ;
+                     ai:download ""^^xsd:anyURI .
+
+:cecillc a dct:LicenseDocument ;
+        dct:source "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"^^xsd:anyURI .
+

@@ -382,6 +382,18 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return env.getQuery();
     }
+    
+    Eval createEval(Eval currentEval, Expr exp, Environment env, Producer p) {
+        Exp pat = env.getQuery().getPattern(exp);
+        Memory memory = currentEval.createMemory(env, pat);
+        if (memory == null) {
+            return null;
+        }
+        // producer below must be original Producer, it is used for cast purpose
+        Eval eval = currentEval.copy(memory, p, exp.isSystem());
+        eval.setSubEval(true);
+        return eval;
+    }
 
     /**
      * filter exists { } exists statement is also used to embed LDScript nested
@@ -404,25 +416,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Query q = env.getQuery();
         Exp pat = q.getPattern(exp);
         Node gNode = env.getGraphNode();
-        Memory memory = null;
-        Eval currentEval = getEval(env);
-
-        // push env Bind stack into new memory
-        if (env instanceof Memory) {
-            //memory = kgram .getMemory((Memory) env, pat);
-            memory = currentEval.getMemory((Memory) env, pat);
-        } else if (env instanceof Mapping) {
-            memory = currentEval.getMemory((Mapping) env, pat);
-        } else {
-            return null;
-        }
-        
-        //Eval eval = kgram .copy(memory, p, this, exp.isSystem());
-        //Interpreter in = new Interpreter(proxy);
-        // producer below must be original Producer, it is used for cast purpose
-        //in.setProducer(producer);
-        Eval eval = currentEval.copy(memory, p, exp.isSystem());
-        eval.setSubEval(true);
+        Eval currentEval = getEval(env);               
         Mappings map = null;
 
         if (exp.isSystem()) {
@@ -433,31 +427,41 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             Exp sub = pat.get(0).get(0);
 
             if (sub.isQuery()) {
-                Query qq = sub.getQuery();
-                qq.setFun(true);              
-                if (qq.isConstruct() || qq.isUpdate()) {
-                    // let (?g =  construct where)
-                    Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                    return DatatypeMap.createObject(m.getGraph());
-                }
-                if (qq.getService() != null) {
-                    // @federate <uri> let (?m = select where)
-                    Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
-                    //return (IDatatype) producer.getValue(m);
-                    return DatatypeMap.createObject(m);
-                } else {
-                    // let (?m = select where)
-                    map = eval.subEval(qq, gNode, Stack.create(sub), 0);
-                    // PB: below, memory is initialized with outer query, not with qq
+                //synchronized (sub) {
+                    Query qq = sub.getQuery();
+                    qq.setFun(true);
+                    if (qq.isConstruct() || qq.isUpdate()) {
+                        // let (?g =  construct where)
+                        Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
+                        return DatatypeMap.createObject(m.getGraph());
+                    }
+                    if (qq.getService() != null) {
+                        // @federate <uri> let (?m = select where)
+                        Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
+                        return DatatypeMap.createObject(m);
+                    } else {
+                        // let (?m = select where)
+                        Eval eval = createEval(currentEval, exp, env, p);
+                        if (eval == null) {
+                            return null;
+                        }
+                        map = eval.subEval(qq, gNode, Stack.create(sub), 0);
+                        // PB: below, memory is initialized with outer query, not with qq
 //                    eval.setSubEval(false);
 //                    map = eval.query(gNode==null?null:qq.getGraphNode(gNode), gNode==null?null:env.getNode(gNode), qq);
-                }
+                    }
+               // }
             } else {
                 // never happen
-                map = eval.subEval(q, gNode, Stack.create(pat), 0);
+                //map = eval.subEval(q, gNode, Stack.create(pat), 0);
+                return null;
             }
         } else {
             // SPARQL exists {}
+            Eval eval = createEval(currentEval, exp, env, p);
+            if (eval == null) {
+                return null;
+            }
             eval.setLimit(1);
             map = eval.subEval(q, gNode, Stack.create(pat), 0);
         }

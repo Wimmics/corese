@@ -274,7 +274,6 @@ public class Memory extends PointerObject implements Environment {
             // use case: ?x :p ?z  {select ?z where {?x :q ?z}}
             // ?x in sub query is not the same as ?x in outer query (it is not bound here)
             // only ?z is the same
-
             for (Node subNode : sub.getSelect()) {
                 // get out Node with same label as sub Node :
                 // TODO:  optimize it ? 
@@ -1019,7 +1018,7 @@ public class Memory extends PointerObject implements Environment {
         int n = node.getIndex();
         if (n == -1) {
             return null;
-        }
+        }       
         return nodes[n];
     }
 

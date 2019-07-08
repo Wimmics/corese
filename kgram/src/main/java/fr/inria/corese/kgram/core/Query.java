@@ -1269,13 +1269,18 @@ public class Query extends Exp implements Graphable {
      * Only on global query, not on subquery
      */
     public void complete(Producer prod) {
-        if (isCompiled()) {
-            return;
-        } else {
-            setCompiled(true);
+        synchronized (this) {
+            if (isCompiled()) {
+                return;
+            } else {
+                basicComplete(prod);
+                setCompiled(true);
+            }
         }
-
-		// sort edges according to var connexity, assign filters
+    }
+        
+    void basicComplete(Producer prod) {
+        // sort edges according to var connexity, assign filters
         // recurse on subquery
         querySorter.compile(prod);
         setAggregate();

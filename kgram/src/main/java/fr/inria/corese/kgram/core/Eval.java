@@ -557,6 +557,16 @@ public class Eval implements ExpType, Plugin {
         }
         return ev;
     }
+    
+    public Memory createMemory(Environment env, Exp exp) {
+        if (env instanceof Memory) {
+            return getMemory((Memory) env, exp);
+        } else if (env instanceof Mapping) {
+            return getMemory((Mapping) env, exp);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * copy of Memory may be stored in exp. Reuse data structure after cleaning

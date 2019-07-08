@@ -513,7 +513,7 @@ public class WorkflowParser {
         int format = (isText) ?  getFormat(dtformat.getLabel()) : Load.UNDEF_FORMAT ;
         
         ShapeWorkflow ap = null;
-        if (shape != null && uri != null) {
+        if (shape != null) { // && uri != null) {
             ap = new ShapeWorkflow(shape, uri, result, isText, format, test);
         }
         return ap;
@@ -547,6 +547,9 @@ public class WorkflowParser {
             String value = getStringParam(name);
             if (value != null){
                 if (uri){
+                    if (value.isEmpty()) {
+                        return null;
+                    }
                     return resolve(value);
                 }
                 else {

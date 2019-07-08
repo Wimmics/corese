@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 04 09:23:44 CEST 2019
+Sat Jul 06 17:19:17 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -562,6 +562,7 @@ where {
     filter (! sh:isPredicate(?oper))
   }
   
+  values ?o { UNDEF }
   values ?s { unnest(?ls) }
 
 }
@@ -603,7 +604,9 @@ where {
         }
         ?sh ?q ?m    
     }
-
+    
+  values ?value { UNDEF }
+  
   values ?s { unnest(?ls) }
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
@@ -630,17 +633,15 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
 }
 where {
   graph ?shape {  
-    values ?oper { 
-      #sh:equals sh:disjoint sh:maxCount sh:minCount
-      #sh:and sh:or sh:xone sh:not 
-      
+    values ?oper {       
       sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan  
       sh:qualifiedValueShape sh:sparql
     }
     ?sh ?oper ?b  
     filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
   }
-  values ?s { unnest(?ls) }
+ values ?o { UNDEF }
+ values ?s { unnest(?ls) }
 
 }
 ]]>
@@ -665,7 +666,7 @@ where {
     }
     ?sh ?oper ?b  
   }
-  #filter xt:print("*****************", ?oper)
+  values ?o { UNDEF }
   values ?s { unnest(?ls) }
 }
 ]]>

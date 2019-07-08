@@ -13,10 +13,12 @@
             <li><a href="javascript:trans('/service/sparql');">SPARQL Tutorial</a></li>
             <!-- <li><a href="javascript:trans('/spin/tospin');">SPARQL-SPIN Converter</a></li>-->
             
-              <li class="dropdown">
+            <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">AI4EU <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu"> 
                     <li><a href="javascript:trans('/service/ai4eu');">AI4EU Query</a></li>
+                    <li><a href="javascript:trans('/service/ai4eushape?mode=/data/demo/ai4eu/shape/data.ttl');">AI4EU Data Shape</a></li>
+                    <li><a href="javascript:trans('/service/ai4eushape?mode=/data/demo/ai4eu/shape/ontology.ttl');">AI4EU Ontology Shape</a></li>
 
                     <li><a href="javascript:trans('/service/ontology?param=/data/demo/ai4eu/ai4eu.ttl');">AI4EU Ontology</a></li>
                     <li><a href="javascript:trans('/service/class?param=/data/demo/ai4eu/ai4eu.ttl');">AI4EU Class</a></li>
@@ -24,8 +26,22 @@
                     <li><a href="javascript:trans('/service/signature?param=/data/demo/ai4eu/ai4eu.ttl');">AI4EU Signature</a></li>
                     <li><a href="javascript:trans('/service/individual?param=/data/demo/ai4eu/ai4eu.ttl');">AI4EU Individual</a></li>
                 </ul>
-            </li>  
-            
+            </li> 
+            <!--
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Physics <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"> 
+                    <li><a href="javascript:trans('/service/physics');">Query</a></li>
+                    <li><a href="javascript:trans('/service/phiindividual');">Ontology</a></li>
+
+                    <li><a href="javascript:trans('/service/ontology?param=/data/demo/physics/data/physics.ttl');">Ontology</a></li>
+                    <li><a href="javascript:trans('/service/class?param=/data/demo/physics/data/physics.ttl');">Class</a></li>
+                    <li><a href="javascript:trans('/service/property?param=/data/demo/physics/data/physics.ttl');">Property</a></li>
+                    <li><a href="javascript:trans('/service/signature?param=/data/demo/physics/data/physics.ttl');">Signature</a></li>
+                    <li><a href="javascript:trans('/service/individual?param=/data/demo/physics/data/physics.ttl');">Individual</a></li>
+                </ul>
+            </li> 
+            -->
             <li><a href="javascript:trans('/service/halopendata');">HAL Query</a></li>
 
 
@@ -108,6 +124,7 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:trans('/service/demo');">Demo</a></li>
                     <li><a href="http://sms.i3s.unice.fr/demo-sms?param=Delphinapterus+leucas" onclick="window.open('http://sms.i3s.unice.fr/demo-sms?param=Delphinapterus+leucas'); return false;">SPARQL Micro-Services</a></li>
+                    <!--<li><a href="javascript:trans('/service/log');">Server Log</a></li>-->
                 </ul>
             </li>   
 

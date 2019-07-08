@@ -11,10 +11,10 @@
 <http://www.ai4eu.eu/ontologies/core> rdf:type owl:Ontology ;
                                        owl:versionIRI <http://www.ai4eu.eu/ontologies/0.1/core> ;
                                        owl:imports foaf: ;
-                                       dct:date "2019-04-24"@en ;
+                                       dct:date "2019-06-17"@en ;
                                        rdfs:comment "The AI4EU ontology aims to formally represent the AI4EU model for describing AI resources"@en ;
                                        rdfs:label "The AI4EU Ontology"@en ;
-                                       owl:versionInfo "0.1"@en .
+                                       owl:versionInfo "0.9"@en .
 
 #################################################################
 #    Annotation properties
@@ -66,6 +66,13 @@ dct:date rdf:type owl:AnnotationProperty .
                 rdfs:label "Distributed as"@en .
 
 
+###  http://www.ai4eu.eu/ontologies/core#location
+:location rdf:type owl:ObjectProperty ;
+          rdfs:domain foaf:Organization ;
+          rdfs:comment "The country where an organisation participating in the development or management of a resource is located. It is recommended that the DBPedia URI of the corresponding country is provided."@en ;
+          rdfs:label "Location"@en .
+
+
 ###  http://www.ai4eu.eu/ontologies/core#provider
 :provider rdf:type owl:ObjectProperty ;
           rdfs:domain :Distribution ;
@@ -109,14 +116,6 @@ dct:date rdf:type owl:AnnotationProperty .
           rdfs:range xsd:anyURI ;
           rdfs:comment "A web address from where a distribution is made available."@en ;
           rdfs:label "Download"@en .
-
-
-###  http://www.ai4eu.eu/ontologies/core#location
-:location rdf:type owl:DatatypeProperty ;
-          rdfs:domain foaf:Organization ;
-          rdfs:range xsd:anyURI ;
-          rdfs:comment "The country where an organisation participating in the development or management of a resource is located. It is recommended that the dbPedia URI of the corresponding country is provided."@en ;
-          rdfs:label "Location"@en .
 
 
 ###  http://www.ai4eu.eu/ontologies/core#trl

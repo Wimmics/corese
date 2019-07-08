@@ -29,7 +29,6 @@ sw:body (
     st:simple01
     st:simple02
     st:simple03
-    st:simple04
     st:simple05
     
     st:simple1
@@ -89,7 +88,7 @@ st:selectCreator
     st:name "mode" ;
     st:uri st:mode ;
     st:graph st:dataset ;
-    st:predicate de:creator
+    st:predicate dc:creator
 .
 
 
@@ -117,19 +116,21 @@ rdfs:comment """Simple"""@fr ;
 st:query 
 """prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 prefix o:   <http://dbpedia.org/ontology/>
-prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix dct: <http://purl.org/dc/terms/> .
 select ?a ?name ?type  (group_concat(distinct ?w ; separator = "; ") as ?ww) ?location
 where {
   ?a a ?type  ;
   foaf:name ?name ;
-  ai:keyword ?w .  
+  ai:keyword ?w ;  
+  dct:creator ?org .
   filter (?type = $mode)
   filter regex(?w, "$param")
   filter regex(?name, "$arg")  
   
   optional {
-    ?a ai:country ?location
-        service <http://fr.dbpedia.org/sparql> {
+    ?org ai:location ?location
+        service <http://dbpedia.org/sparql> {
             ?location geo:lat ?lat ; geo:long ?lon             
         }
     }
@@ -160,22 +161,22 @@ st:query
 """prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 prefix dc:  <http://purl.org/dc/terms/>
 prefix de:  <http://purl.org/dc/elements/1.1/> 
+prefix dct: <http://purl.org/dc/terms/> .
 prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 
-select ?a ?name ?distrib ?creator (group_concat(?kw ; separator = "; ") as ?ww)
+select ?a ?name ?distrib ?creator (group_concat(distinct ?kw ; separator = "; ") as ?ww)
 where {
   ?a foaf:name ?name ;
-  ai:distributed_as ?distrib ;
-  ai:keyword ?kw .
-  ?distrib de:creator ?creator
+  ai:keyword ?kw ;
+  dct:creator ?creator
 
   filter (?creator = $mode)
   filter regex(?kw, "$param")
   
   optional {
-    ?a ai:country ?location
-        service <http://fr.dbpedia.org/sparql> {
+    ?creator ai:location ?location
+        service <http://dbpedia.org/sparql> {
                 ?location geo:lat ?lat ; geo:long ?lon 
         }
     }
@@ -204,15 +205,17 @@ st:query
 """prefix ai: <http://www.ai4eu.eu/ontologies/core#>
 prefix o:   <http://dbpedia.org/ontology/>
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix dct: <http://purl.org/dc/terms/> .
 select ?w (count(distinct ?a) as ?count)
 where {
   ?a a ?type  ;
   foaf:name ?name ;
+  dct:creator ?org ;
   ai:keyword ?w .  
  
   optional {
-    ?a ai:country ?location
-        service <http://fr.dbpedia.org/sparql> {
+    ?org ai:location ?location
+        service <http://dbpedia.org/sparql> {
             ?location geo:lat ?lat ; geo:long ?lon             
         }
     }
@@ -228,44 +231,6 @@ order by desc(?count)
 
 
 
-st:simple04 a sw:Query ;
-st:name st:simple04 ;
-rdfs:label "Creator" ;
-rdfs:comment """Select AI resource by creator ."""@en ;
-rdfs:comment """Simple"""@fr ;
-
-st:query 
-"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
-prefix dc:  <http://purl.org/dc/terms/>
-prefix de:  <http://purl.org/dc/elements/1.1/> 
-prefix o:   <http://dbpedia.org/ontology/>
-prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-
-select (strafter(?creator, "http://") as ?author) (count(distinct ?distrib) as ?count)
-where {
-  ?a foaf:name ?name ;
-  ai:distributed_as ?distrib .
-  ?distrib de:creator ?creator
-  
-  optional {
-    ?a ai:country ?location
-        service <http://fr.dbpedia.org/sparql> {
-                ?location geo:lat ?lat ; geo:long ?lon 
-        }
-    }
-    
-   bind (st:location(?location, ?lat, ?lon) as ?tmp)
-  
-} 
-group by ?creator
-order by desc(?count)
-
-""" ;
-
-st:select st:selectCreator ;
-st:select st:select
-
-.
 
 
 
@@ -278,39 +243,68 @@ rdfs:comment """Insert Resource ."""@en ;
 rdfs:comment """Simple"""@fr ;
 
 st:query 
-"""@prefix :   <http://www.ai4eu.eu/ontologies/core#>
+"""@prefix : <http://www.ai4eu.eu/ontologies/data#> .
 @prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
-@prefix de: <http://purl.org/dc/elements/1.1/> 
-@prefix dc: <http://purl.org/dc/terms/>
-
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
+@base <http://www.ai4eu.eu/ontologies/data> .
 
 insert data {
 
-###  http://www.ai4eu.eu/ontologies/core#test
-:test rdf:type $mode ;
-         :distributed_as :test-distrib ;
-         :uses :CPU ;
-         :country <http://fr.dbpedia.org/resource/Grèce> ;
-         <http://purl.org/dc/terms/bibliographicCitation> "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
-         :keyword "Language Engineering Platform"@en ,
-                  "Linguistic Pipelines"@en ,
-                  "NLP"@en ;
-         <http://xmlns.com/foaf/0.1/name> "Test"^^xsd:string ;
-         <http://purl.org/dc/elements/1.1/creator> :creator ;
-         <http://purl.org/dc/elements/1.1/subject> <http://cso.kmi.open.ac.uk/topics/natural%20language%20processing%20systems> .
+:resource a ai:SoftwareComponent ;
+  foaf:name ""^^xsd:string ;
+  ai:distributed_as :resource-distri ;
+  ai:requires :CPU ;
+  dct:subject cso:natural_language_processing_systems ;
+  ai:keyword "Linguistic Pipelines"@en ,
+           "Language Engineering Platform"@en ,
+           "NLP"@en ;
+  dct:bibliographicCitation ""^^xsd:anyURI ;
+  dct:creator :org .
 
+:resource-distri a ai:StandAlone ;
+                   ai:atTRL :trl9 ;
+                   ai:accompanied_by :resource-devguide ,
+                                     :resource-specs ,
+                                     :resource-userguide ;
+                   ai:under_license :lgpl ;
+                   ai:download ""^^xsd:anyURI .
 
-###  http://www.ai4eu.eu/ontologies/core#test-distro
-:test-distrib rdf:type :StandAlone ;
-                :atTRL :TRL9 ;
-                :under_license :LGPL ;
-                <http://purl.org/dc/elements/1.1/creator> :creator .
+:CPU a ai:ComputationalResource .
 
+:org a foaf:Organization ;
+        foaf:name ""@en ;
+        foaf:homepage ""^^xsd:anyURI ;
+        ai:location <http://dbpedia.org/resource/Country> .
 
-###  http://www.ai4eu.eu/ontologies/core#ncsr
-:creator rdf:type <http://xmlns.com/foaf/0.1/Organization> ;
-      <http://xmlns.com/foaf/0.1/name> "Creator"^^xsd:string .
-      
+:eu a foaf:Organization ;
+      foaf:name "European Commission"@en .
+
+:resource-devguide a ai:Manual ;
+                    dct:title " Developers Guide"@en ;
+                    ai:download ""^^xsd:anyURI .
+
+:resource-specs a ai:Manual ;
+                 dct:title "Specification"@en ;
+                 ai:download ""^^xsd:anyURI .
+
+:resource-userguide a ai:Manual ;
+                     dct:title "Users Guide"@en ;
+                     ai:download ""^^xsd:anyURI .
+
+:lgpl a dct:LicenseDocument ;
+        dct:source "https://www.gnu.org/copyleft/lesser.html"^^xsd:anyURI .
+
+:trl9 a ai:TechnologyReadinessLevel ;
+        ai:authority :eu ;
+        ai:trl 9 ;
+        dct:description "actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space)"@en .
 }
 """ ;
 st:select st:selectType ;
@@ -366,19 +360,12 @@ prefix dc:  <http://purl.org/dc/terms/>
 prefix de:  <http://purl.org/dc/elements/1.1/> 
 
 construct {
- ?x a ai:AIResource ;
-  ai:distributed_as ?z ;
-  ai:keyword ?kw   ;
-  ai:uses ?v .
-  ?x ?p ?w  .
-  ?z dc:creator ?create
+  ?x ?p ?w  
 }
 where {
   ?x a ?type  ;
-  ai:distributed_as ?z ;
   ai:keyword ?kw ;
-  ai:uses ?v .
-  ?z de:creator ?create
+  dc:creator ?create  .
 
   filter (?create = $mode)
   filter regex(?kw, "$param")
@@ -392,63 +379,6 @@ st:select st:selectCreator ;
 st:select st:selectKeyword 
 .
 
-
-
-
-
-st:simple20 a sw:Query ;
-st:name st:simple20 ;
-rdfs:label "Type Keyword Name, Detail" ;
-rdfs:comment """Select AI resource by type, keyword, name. Display the content of the resource."""@en ;
-rdfs:comment """Detail"""@fr ;
-
-st:query 
-"""prefix ai: <http://www.ai4eu.eu/ontologies/core#>
-prefix dc:  <http://purl.org/dc/terms/>
-prefix de:  <http://purl.org/dc/elements/1.1/> 
-
-construct {
- ?x a ?type ;
-  ai:distributed_as ?z ;
-  ai:keyword ?kw   ;
-  ai:uses ?v .
-  ?x ?p ?w  
-  ?z ?q ?t
-}
-where {
-  ?x a ?type  ;
-  ai:distributed_as ?z ;
-  ai:keyword ?kw ;
-  ai:uses ?v .
-  
-  filter (?type = $mode)
-  filter regex(?kw, "$param")
-  
-  ?x ?p ?w  
-  ?z ?q ?t
-} 
-
-""" ;
-
-
-
-st:select [
-    st:title "Type" ;
-    st:name "mode" ;
-    st:uri st:mode ;
-    st:graph st:dataset ;
-    st:predicate [ rdfs:subClassOf ai:AIResource ]
-] ;
-
-st:select [
-    st:title "Keyword" ;
-    st:default "" ; st:defaultLabel "Any" ;
-    st:name "param" ;
-    st:uri st:param ;
-    st:graph st:dataset ;
-    st:predicate ai:keyword
-] ;
-.
 
 
 

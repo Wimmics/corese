@@ -25,7 +25,9 @@ where {
         }
         ?sh ?q ?m    
     }
-
+    
+  values ?value { UNDEF }
+  
   values ?s { unnest(?ls) }
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }

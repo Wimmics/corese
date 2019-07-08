@@ -11,6 +11,7 @@ where {
     filter (! sh:isPredicate(?oper))
   }
   
+  values ?o { UNDEF }
   values ?s { unnest(?ls) }
 
 }

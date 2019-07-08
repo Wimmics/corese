@@ -13,6 +13,6 @@ where {
     }
     ?sh ?oper ?b  
   }
-  #filter xt:print("*****************", ?oper)
+  values ?o { UNDEF }
   values ?s { unnest(?ls) }
 }

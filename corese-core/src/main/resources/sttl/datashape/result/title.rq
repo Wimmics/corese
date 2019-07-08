@@ -4,11 +4,13 @@ template st:title {
     format {
         ft:title.html
         
-        if (! ?text, st:get(st:param), "")
-        if (! ?text, st:get(st:mode), "")  
+        st:get(st:service)
         
-        if (?text, st:get(st:param), "")
-        if (?text, st:get(st:mode), "")  
+        if (! ?text, coalesce(st:get(st:param), ""), "")
+        if (! ?text, coalesce(st:get(st:mode), ""), "")  
+        
+        if (?text,   coalesce(st:get(st:param), ""), "")
+        if (?text,   coalesce(st:get(st:mode), ""), "")  
     } 
 }
 where {

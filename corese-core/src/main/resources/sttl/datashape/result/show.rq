@@ -11,7 +11,7 @@ format {
     st:apply-templates-with(st:hturtle)
 }
 
-st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/d3#frame>, st:shape)
+#st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/d3#frame>, st:shape)
 
 }
 where {

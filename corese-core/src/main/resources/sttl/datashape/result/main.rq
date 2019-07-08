@@ -10,7 +10,7 @@ template st:main {
     #st:apply-templates-with-graph(st:hturtle, ?g)
 }
 where {
-    bind (st:get(st:param) as ?par)
+    #bind (st:get(st:param) as ?par)
     bind (st:visitedGraph() as ?g)
-    filter bound(?par)
+    #filter bound(?par)
 }

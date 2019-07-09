@@ -251,11 +251,13 @@ function sh:define(def){
 
 function dt:list sh:def(){
     let (list = @(
-        (sh:class       sh:ClassConstraintComponent)
-        (sh:datatype    sh:DatatypeConstraintComponent)
-        (sh:nodeKind    sh:NodeKindConstraintComponent)
-        (sh:minCount    sh:MinCountConstraintComponent)
-        (sh:maxCount    sh:MaxCountConstraintComponent)
+        (sh:function        sh:FunctionConstraintComponent)
+        (sh:functioncst     sh:FunctionConstraintComponent)
+        (sh:class           sh:ClassConstraintComponent)
+        (sh:datatype        sh:DatatypeConstraintComponent)
+        (sh:nodeKind        sh:NodeKindConstraintComponent)
+        (sh:minCount        sh:MinCountConstraintComponent)
+        (sh:maxCount        sh:MaxCountConstraintComponent)
         
         (sh:minExclusive	sh:MinExclusiveConstraintComponent)
         (sh:minInclusive	sh:MinInclusiveConstraintComponent)

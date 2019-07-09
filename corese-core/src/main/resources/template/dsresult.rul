@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Mon Jul 08 20:08:23 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -32,6 +32,7 @@ prefix ft: <http://ns.inria.fr/sparql-template/format/ds/>
 template st:title {
     format {
         ft:title.html
+        
         st:get(st:service)
         
         if (! ?text, coalesce(st:get(st:param), ""), "")
@@ -161,13 +162,15 @@ where {
 prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 prefix ft: <http://ns.inria.fr/sparql-template/format/ds/>
+prefix tt: <http://ns.inria.fr/sparql-template/hturtle#>
 
 template st:show {
 format {
     ft:show.html
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
-    st:apply-templates-with-graph(st:hturtle, st:visitor)
+    #st:apply-templates-with-graph(st:hturtle, st:visitor)
+    st:apply-templates-with-graph(tt:startshape, st:visitor)
     st:apply-templates-with(st:hturtle)
 }
 

@@ -29,12 +29,7 @@
     foaf:name "European Commission"@en .
 
 
-###  http://www.ai4eu.eu/ontologies/data#trl6
-:trl6 rdf:type owl:NamedIndividual ,
-               ai:TechnologyReadinessLevel ;
-      dcterms:description "actual system proven for simple academic use cases"@en ;
-      ai:authority :eu ;
-      ai:trl 6 .
+
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#gpl3
@@ -58,14 +53,15 @@
                                                                "Probabilistic Graphical Model"@en ,
                                                                "Probabilistic Reasoning"@en ;
                                                                dcterms:creator :unb ;
-                                                    foaf:name "UnBBayes"@en .
+ai:distributed_as :unbbayes-distro ;
+foaf:name "UnBBayes"@en .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#unbbayes-distro
 :unbbayes-distro rdf:type owl:NamedIndividual ,
                                                                     ai:StandAlone ;
                                                            ai:download "https://sourceforge.net/projects/unbbayes/files/"@en ;
-                                                           ai:trl :trl6 .
+                                                           ai:atTRL :trl6 .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#unbbayes-userguide

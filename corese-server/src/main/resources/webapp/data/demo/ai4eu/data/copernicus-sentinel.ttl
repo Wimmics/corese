@@ -16,18 +16,7 @@
 #    Individuals
 #################################################################
 
-###  http://www.ai4eu.eu/ontologies/data#eu
-:eu rdf:type owl:NamedIndividual ,
-             foaf:Organization ;
-    foaf:name "European Commission"@en .
 
-
-###  http://www.ai4eu.eu/ontologies/data#trl9
-:trl9 rdf:type owl:NamedIndividual ,
-               ai:TechnologyReadinessLevel ;
-      dcterms:description "dataset from eu copernicus project"@en ;
-      ai:authority :eu ;
-      ai:trl 9 .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#Data

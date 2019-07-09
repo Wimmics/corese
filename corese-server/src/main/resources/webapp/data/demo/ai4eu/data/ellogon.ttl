@@ -42,20 +42,16 @@
 
 :ellogon-devguide a owl:NamedIndividual, ai:Manual ;
                     dct:title "Ellogon Developers Guide"@en ;
-                    ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=21:ellogondevelopersguide"^^xsd:anyURI .
+                    foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=21:ellogondevelopersguide"^^xsd:anyURI .
 
 :ellogon-specs a owl:NamedIndividual, ai:Manual ;
                  dct:title "Ellogon Components' Specification"@en ;
-                 ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=19:ellogoncomponentsspecifications"^^xsd:anyURI .
+                 foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=19:ellogoncomponentsspecifications"^^xsd:anyURI .
 
 :ellogon-userguide a owl:NamedIndividual, ai:Manual ;
                      dct:title "Ellogon Users Guide"@en ;
-                     ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=23:ellogonuserguide"^^xsd:anyURI .
+                     foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=23:ellogonuserguide"^^xsd:anyURI .
 
 :lgpl a owl:NamedIndividual, dct:LicenseDocument ;
         dct:source "https://www.gnu.org/copyleft/lesser.html"^^xsd:anyURI .
 
-:trl9 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
-        ai:authority :eu ;
-        ai:trl 9 ;
-        dct:description "actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space)"@en .

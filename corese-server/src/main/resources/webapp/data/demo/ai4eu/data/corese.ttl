@@ -42,15 +42,15 @@
 
 :corese-devguide a ai:Manual ;
                     dct:title " Developers Guide"@en ;
-                    ai:download ""^^xsd:anyURI .
+                    foaf:homepage ""^^xsd:anyURI .
 
 :corese-specs a ai:Manual ;
                  dct:title "Specification"@en ;
-                 ai:download ""^^xsd:anyURI .
+                 foaf:homepage ""^^xsd:anyURI .
 
 :corese-userguide a ai:Manual ;
                      dct:title "Users Guide"@en ;
-                     ai:download ""^^xsd:anyURI .
+                     foaf:homepage ""^^xsd:anyURI .
 
 :cecillc a dct:LicenseDocument ;
         dct:source "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"^^xsd:anyURI .

@@ -24,7 +24,7 @@
   dct:creator :uni-bologna .
 
 :sunnyas-distri a ai:StandAlone ;
-#                   ai:atTRL :trl9 ;
+                  ai:atTRL :trl9 ;
 #                   ai:accompanied_by :sunnyas-devguide ,
 #                                     :sunnyas-specs ,
 #                                     :sunnyas-userguide ;

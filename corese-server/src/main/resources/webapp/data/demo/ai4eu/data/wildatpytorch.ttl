@@ -44,7 +44,3 @@
 :mit a owl:NamedIndividual, dcterms:LicenseDocument ;
         dcterms:source "https://opensource.org/licenses/MIT"^^xsd:anyURI .
 
-:trl4 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
-        ai:authority :eu ;
-        ai:trl 4 ;
-        dcterms:description "technology validated in lab"@en .

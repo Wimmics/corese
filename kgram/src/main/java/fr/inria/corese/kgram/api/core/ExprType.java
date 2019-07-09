@@ -372,6 +372,7 @@ public interface ExprType {
         public static int XT_MINDEGREE   = 477;
         public static int XT_INSERT      = 478;
         public static int XT_DELETE      = 479;
+        public static int XT_VALID_URI   = 480;
         
      
         public static int SLICE       = 500;

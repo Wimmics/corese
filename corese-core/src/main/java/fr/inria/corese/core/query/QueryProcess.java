@@ -573,6 +573,8 @@ public class QueryProcess extends QuerySolver {
                 str = ql.readWE(pp);
             }
         } catch (LoadException | IOException ex) {
+            ex.printStackTrace();
+            logger.error(ex.toString());
             throw new EngineException(ex) ;
         }
         Transformer t = transformer();

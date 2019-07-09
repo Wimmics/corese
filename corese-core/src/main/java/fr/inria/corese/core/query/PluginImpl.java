@@ -1432,7 +1432,7 @@ public class PluginImpl
             LoggerFactory.getLogger(PluginImpl.class.getName()).error(  "", ex);
         }
         if (str == null){
-            str = "";
+            return null; //str = "";
         }
         return DatatypeMap.newInstance(str);
     }

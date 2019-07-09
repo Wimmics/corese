@@ -18,7 +18,7 @@
   ai:keyword "Semantic Web"@en ,
            "Linked Data"@en ,
            "Knowledge Graph"@en ;
-  dct:subject <https://cso.kmi.open.ac.uk/topics/SemanticWeb>    ;     
+  dct:subject <https://cso.kmi.open.ac.uk/topics/semantic_web>    ;     
 #  dct:bibliographicCitation ""^^xsd:anyURI ;
   dct:creator :inria .
 

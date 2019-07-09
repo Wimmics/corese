@@ -42,7 +42,7 @@
 :unb rdf:type owl:NamedIndividual ,
                                                         foaf:Organization ;
                                                ai:location <http://dbpedia.org/resource/Brazil> ;
-                                               foaf:homepage "https://www.unb.br/"^^xsd:anyURI ;
+                                               foaf:homepage "http://www.unb.br/"^^xsd:anyURI ;
                                                foaf:name "University of Brasilia"@en .
 
 

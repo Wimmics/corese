@@ -106,7 +106,7 @@ public class DatasetProcess extends WorkflowProcess {
             if (res != null) {
                 Graph g = res.getGraph();
                 for (Data dd : data.getDataList()) {                   
-                    if (dd.getName() != null && dd.getGraph() != null && dd != res) {                        
+                    if (dd.getName() != null && dd.getGraph() != null) { // && dd != res) {  
                         namedGraph(g, dd);
                     }
                 }

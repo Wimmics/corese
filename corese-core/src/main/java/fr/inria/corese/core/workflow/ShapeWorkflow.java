@@ -107,15 +107,19 @@ public class ShapeWorkflow extends SemanticWorkflow {
             resultFormat = trans;
         }
         setCollect(true);
-        ParallelProcess para = new ParallelProcess();
-        LoadProcess ls = (text) ?  LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
-        SemanticWorkflow loader = new SemanticWorkflow();
+        SemanticWorkflow rdfWorkflow   = new SemanticWorkflow();
+        SemanticWorkflow shapeWorkflow = new SemanticWorkflow(SHAPE_NAME);
+        if (shape != null) {
+            LoadProcess shapeLoader = (text) ?  LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
+            shapeWorkflow.add(shapeLoader);
+        }
         if (data != null) {
             load = (text) ?  LoadProcess.createStringLoader(data, format) :  new LoadProcess(data);
-            loader.add(load);
+            rdfWorkflow.add(load);
         }
-        para.insert(loader);
-        para.insert(new SemanticWorkflow(SHAPE_NAME).add(ls));
+        ParallelProcess para = new ParallelProcess();
+        para.insert(rdfWorkflow);
+        para.insert(shapeWorkflow);
         // test = true: use DataShape transformation not compiled
         if (test){
             transformer = new TransformationProcess((lds)?SHAPE_TRANS_TEST_LDS:SHAPE_TRANS_TEST);          

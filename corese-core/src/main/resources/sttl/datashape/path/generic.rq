@@ -22,6 +22,8 @@ where {
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
             sh:in sh:languageIn sh:node sh:property
+            # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
+            sh:function sh:functioncst
         }
         ?sh ?q ?m    
     }
@@ -32,7 +34,7 @@ where {
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
 
-  bind (coalesce(sh:functioncall(?q, ?shape, ?o, ?m), false) as ?suc )
+  bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s, ?p, ?o), funcall(?q, ?shape, ?o, ?m)), false) as ?suc )
   
   bind (
     if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))

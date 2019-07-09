@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Jul 06 17:19:17 CEST 2019
+Tue Jul 09 11:39:15 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -601,6 +601,8 @@ where {
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
             sh:in sh:languageIn sh:node sh:property
+            # extension with LDScript function that returns xsd:boolean 
+            sh:function sh:functioncst
         }
         ?sh ?q ?m    
     }
@@ -611,7 +613,7 @@ where {
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
 
-  bind (coalesce(sh:functioncall(?q, ?shape, ?o, ?m), false) as ?suc )
+  bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s, ?p, ?o), funcall(?q, ?shape, ?o, ?m)), false) as ?suc )
   
   bind (
     if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))

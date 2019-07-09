@@ -1,0 +1,19 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+template st:startshape {
+
+    st:apply-templates(?x)
+    
+    ; separator = "\n\n"
+}
+where {
+  
+  select distinct ?x where { 
+   {?x a sh:ValidationReport} union {?x sh:focusNode ?y}       
+    
+  } order by bound(?y) ?y
+}
+

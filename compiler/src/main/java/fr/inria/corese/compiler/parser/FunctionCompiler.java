@@ -112,7 +112,8 @@ public class FunctionCompiler {
                 try {
                     imports(q, ast, path);
                 } catch (EngineException ex) {
-                    logger.error("Undefined import: " + path);
+                    logger.error("Error in import: " + path);
+                    logger.error(ex.toString());
                 }
             }
         }

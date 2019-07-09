@@ -82,24 +82,19 @@ st:param [
 
 
 
-
-
 st:ai4euContent a sw:Workflow ; 
 sw:body ( 
     [ a sw:Parallel ; sw:body ( 
       # main is empty
 
       [ a sw:Workflow ; sw:body ( 
-#        [ a sw:Load ; sw:path <demo/ai4eu/shape/shape.ttl> ] 
+#        [ a sw:Load ; sw:path <demo/ai4eu/shape/data.ttl> ] 
         [ a sw:Load ; sw:path <demo/ai4eu/ai4eu.ttl> ] 
-        [ a sw:Load ; sw:path <demo/ai4eu/data/ellogon.ttl>, 
-        
-        <demo/ai4eu/data/corese.ttl> , 
-#        <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>, <demo/ai4eu/data/agroportal.ttl>, 
-        
-        <demo/ai4eu/data/sunnyas.ttl>, <demo/ai4eu/data/sciff.ttl>, <demo/ai4eu/data/drools.ttl>
+        [ a sw:Load ; sw:path <demo/ai4eu/data/data.ttl> ]
+        [ a sw:Load ; sw:path <demo/ai4eu/data/corese.ttl> ]
+        [ a sw:Load ; sw:path <demo/ai4eu/data/ellogon.ttl>,                 
+          <demo/ai4eu/data/sunnyas.ttl>, <demo/ai4eu/data/sciff.ttl>, <demo/ai4eu/data/drools.ttl>
         , <demo/ai4eu/data/unbbayes.ttl> , <demo/ai4eu/data/copernicus-sentinel.ttl> , <demo/ai4eu/data/mc-giver.ttl> , <demo/ai4eu/data/wildatpytorch.ttl>
-        
         ] 
         [ a sw:RuleBase ;  sw:uri sw:owlrl ]
         ) ]
@@ -115,4 +110,8 @@ sw:body (
     # set st:context graph as named graph of main
     [a sw:Dataset]
 ).
+
+
+#   <demo/ai4eu/data/jena.ttl>,  <demo/ai4eu/data/dbpedia.ttl>,  <demo/ai4eu/data/sparklis.ttl>, <demo/ai4eu/data/ai4eu.ttl> , <demo/ai4eu/data/ai4euonto.ttl>, <demo/ai4eu/data/agroportal.ttl>, 
+
 

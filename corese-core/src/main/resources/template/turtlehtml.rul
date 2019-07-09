@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jun 26 16:12:45 CEST 2019
+Mon Jul 08 20:08:23 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -16,6 +16,32 @@ template st:pperrorsp(?in) {
 }
 where {
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+template st:startshape {
+
+    st:apply-templates(?x)
+    
+    ; separator = "\n\n"
+}
+where {
+  
+  select distinct ?x where { 
+   {?x a sh:ValidationReport} union {?x sh:focusNode ?y}       
+    
+  } order by bound(?y) ?y
+}
+
 ]]>
 </body>
 </rule>

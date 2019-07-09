@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Mon Jul 08 20:08:23 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -17,28 +17,6 @@ template st:close {
   
   "\n</pre>\n"
   st:tail()
-  
-}
-where {
-
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:open {
-
-  st:head()
-
-"\n<pre>\n"
   
 }
 where {
@@ -79,11 +57,35 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:start {
+prefix tt: <http://ns.inria.fr/sparql-template/turtlehtml#>
+template st:mainshape {
+      
+    st:clean(st:prolog("prefix"))
+    st:nl()
+    str(?main)
+
+}
+where {
+   bind (st:apply-templates-with(tt:startshape) as ?main)
+    
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:startshape {
 
   st:call-template(st:open)
   
-  st:call-template(st:main)
+  st:call-template(st:mainshape)
     
   st:call-template(st:close)
 }
@@ -101,18 +103,15 @@ where {
 # Turtle Pretty Printer
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
-template st:dataset {
+template st:start {
 
   st:call-template(st:open)
   
-  str(?res)
+  st:call-template(st:main)
     
   st:call-template(st:close)
 }
 where {
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml) as ?res)
-  }
 }
 
 ]]>
@@ -142,30 +141,6 @@ where {
     st:call-template(st:resultset),
     st:apply-templates-with(st:turtlehtml)) as ?main)
     
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Turtle Pretty Printer
-# Olivier Corby, Wimmics Inria I3S, 2013
-#
-template st:error {
-  if (bound(?c), concat(?c, " errors"), "") 
-}
-where {
-
-  select (count(*) as ?c)
-  where {
-    bind(kg:unnest(st:visited()) as ?x)
-  }
-  having (?c > 0)
-  
 }
 
 ]]>
@@ -263,6 +238,77 @@ where {}
 function st:clean(?in){
     replace(?in, "<", "&lt;") 		
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:open {
+
+  st:head()
+
+"\n<pre>\n"
+  
+}
+where {
+
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:dataset {
+
+  st:call-template(st:open)
+  
+  str(?res)
+    
+  st:call-template(st:close)
+}
+where {
+  graph eng:dataset {
+     bind (st:apply-templates-with(st:turtlehtml) as ?res)
+  }
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:error {
+  if (bound(?c), concat(?c, " errors"), "") 
+}
+where {
+
+  select (count(*) as ?c)
+  where {
+    bind(kg:unnest(st:visited()) as ?x)
+  }
+  having (?c > 0)
+  
+}
+
 ]]>
 </body>
 </rule>

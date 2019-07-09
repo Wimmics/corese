@@ -1,0 +1,17 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+prefix tt: <http://ns.inria.fr/sparql-template/turtlehtml#>
+template st:mainshape {
+      
+    st:clean(st:prolog("prefix"))
+    st:nl()
+    str(?main)
+
+}
+where {
+   bind (st:apply-templates-with(tt:startshape) as ?main)
+    
+}
+

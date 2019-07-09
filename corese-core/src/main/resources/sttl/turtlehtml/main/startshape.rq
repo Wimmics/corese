@@ -1,0 +1,15 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:startshape {
+
+  st:call-template(st:open)
+  
+  st:call-template(st:mainshape)
+    
+  st:call-template(st:close)
+}
+where {
+}
+

@@ -1,13 +1,15 @@
 prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix doc: <http://w3c.github.io/data-shapes/shacl/#>
 prefix ft: <http://ns.inria.fr/sparql-template/format/ds/>
+prefix tt: <http://ns.inria.fr/sparql-template/hturtle#>
 
 template st:show {
 format {
     ft:show.html
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
-    st:apply-templates-with-graph(st:hturtle, st:visitor)
+    #st:apply-templates-with-graph(st:hturtle, st:visitor)
+    st:apply-templates-with-graph(tt:startshape, st:visitor)
     st:apply-templates-with(st:hturtle)
 }
 

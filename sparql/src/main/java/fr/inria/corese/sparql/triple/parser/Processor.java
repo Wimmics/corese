@@ -392,6 +392,7 @@ public class Processor {
         static final String RQ_GE 	= SPARQL + "ge";
         static final String RQ_GT 	= SPARQL + "gt";
                       
+        static final String XT_VALID_URI= EXT + "validURI";
         static final String XT_LOAD 	= EXT + "load";
         static final String XT_CONTENT 	= EXT + "content";
         public static final String XT_DISPLAY 	= EXT + "display";
@@ -912,6 +913,7 @@ public class Processor {
                 defoper(RQ_GE,     ExprType.GE); 
                 
                 
+                defoper(XT_VALID_URI,ExprType.XT_VALID_URI);  
                 defoper(XT_LOAD,   ExprType.LOAD);  
                 defoper(XT_CONTENT,ExprType.XT_CONTENT);  
                 defoper(XT_PRETTY, ExprType.XT_PRETTY);  

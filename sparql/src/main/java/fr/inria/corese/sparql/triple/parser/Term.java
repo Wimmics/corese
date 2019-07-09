@@ -539,6 +539,9 @@ public class Term extends Expression {
             case ExprType.XT_TOGRAPH:
                 return new GraphSpecificFunction(name);
                 
+            case ExprType.XT_VALID_URI:
+                return new IOFunction(name);
+                
             case ExprType.XT_VALUE:
             case ExprType.XT_GRAPH:
             case ExprType.XT_SUBJECT:

@@ -29,6 +29,11 @@ function xt:turtle(x) {
     }
 }
 
+function xt:turtle(g, x) {  
+    st:apply-templates-with-graph(st:turtle, g, x)
+}
+
+
 function xt:rdfxml() {  
     st:apply-templates-with(st:rdfxml)
 }

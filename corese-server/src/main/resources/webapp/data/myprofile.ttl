@@ -101,7 +101,8 @@ sw:body (
       
       # context dataset with predefined queries in a specific graph
       [ a sw:Workflow ; sw:name st:context ; sw:body ( 
-        [ a sw:Query ; sw:uri  <demo/ai4eu/process.rq> ] # function definition
+        [ a sw:Query ; sw:uri  <demo/ai4eu/function/process.rq> ] # function definition
+       # [ a sw:Query ; sw:uri  <demo/ai4eu/function/shape.rq> ] # function definition
         [ a sw:Load  ; sw:path <demo/ai4eu/workflow.ttl>  ; sw:name st:context ]
         st:indexQuery ) ]
                 	  

@@ -523,6 +523,7 @@ public class Term extends Expression {
             case ExprType.DEPTH:
             case ExprType.XT_EDGES:
             case ExprType.XT_EXISTS: 
+            case ExprType.XT_VALUE:                
             case ExprType.XT_INSERT: 
             case ExprType.XT_DELETE: 
             case ExprType.XT_DEGREE:
@@ -542,7 +543,6 @@ public class Term extends Expression {
             case ExprType.XT_VALID_URI:
                 return new IOFunction(name);
                 
-            case ExprType.XT_VALUE:
             case ExprType.XT_GRAPH:
             case ExprType.XT_SUBJECT:
             case ExprType.XT_OBJECT:

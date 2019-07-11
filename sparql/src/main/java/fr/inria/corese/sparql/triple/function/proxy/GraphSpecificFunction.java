@@ -32,6 +32,9 @@ import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.Pointerable;
 
 /**
  *
@@ -86,6 +89,9 @@ public class GraphSpecificFunction extends LDScript {
                 
             case XT_TUNE:
                 return proc.tune(this, env, p, param);
+                               
+            case XT_VALUE:
+                return value(proc, env, p, param);    
                 
             case XT_EDGES:
                 return edge(proc, env, p, param);
@@ -160,6 +166,37 @@ public class GraphSpecificFunction extends LDScript {
             default:return proc.entailment(env, p, param[0]);
         }
     }
+    
+     /**
+     * xt:value([graph], subject, predicate [, index of result node]) 
+     */
+    IDatatype value(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) { 
+        IDatatype dt = param[0];
+        IDatatype g = null;
+        if (dt.pointerType() == PointerType.GRAPH) {
+            g = dt;
+        }
+        switch (param.length) {
+            case 2: return proc.value(env, p, g, param[0], param[1], 1);
+            case 3: 
+                if (g == null) {
+                    return proc.value(env, p, g, param[0], param[1], param[2].intValue());
+                } else {
+                    return proc.value(env, p, g, param[1], param[2], 1);
+                }
+            case 4: return proc.value(env, p, g, param[1], param[2], param[3].intValue());
+            default: return null;
+        }        
+    }
+    
+//    IDatatype value2(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {   
+//        int index = (param.length == 3) ? param[2].intValue() : 1;
+//        Node node = p.getGraph().value(param[0], param[1], index);
+//        if (node == null) {
+//            return null;
+//        }
+//        return (IDatatype) node.getDatatypeValue();
+//    }
     
     IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {

@@ -1,0 +1,34 @@
+@prefix fun: <>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+
+select (xt:print("define function", fun:projectName) as ?t)
+where {}
+
+@public {
+
+function fun:projectName() {
+    let (select (aggregate(?name) as ?list) 
+        where { ?x a ai:AIResource ; foaf:name ?name } 
+        order by ?name ) {
+        xt:sort(?list)
+    }
+}
+
+
+function fun:projectType() {
+    let (select (aggregate(distinct ?type) as ?list) 
+        where { ?x a ai:AIResource , ?type filter (strstarts(?type, ai:)) } 
+        order by ?type ) {
+        xt:sort(?list)
+    }
+}
+
+function fun:access() {
+    let (?key = str(rand())) {
+        # set cookie
+        ds:setPublicDatatypeValue(true, ?key);
+        return (xt:list(?key))
+    }
+}
+
+}

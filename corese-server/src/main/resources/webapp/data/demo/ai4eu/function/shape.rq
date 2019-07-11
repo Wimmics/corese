@@ -1,0 +1,26 @@
+@prefix fun: <>
+@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+select (xt:print("define function shape") as ?t)
+where {}
+
+@public {
+
+
+function sh:trace(shape, sh, subject, path, object) {
+    xt:print("trace:", subject, path, object, coalesce(xt:focus(shape, xt:value(sh, sh:functioncst) ), "undef") ) ;
+#    xt:print(xt:focus(shape, xt:turtle(sh))) ;
+    return (true)
+}
+
+
+function sh:test(subject) {
+    xt:print("test:", subject)
+}
+
+function sh:test(shape, sh, subject) {
+    xt:print("test:", shape, sh, subject)
+}
+
+}

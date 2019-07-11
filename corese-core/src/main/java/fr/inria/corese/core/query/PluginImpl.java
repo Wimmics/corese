@@ -858,6 +858,16 @@ public class PluginImpl
     }
     
     @Override
+    public IDatatype value(Environment env, Producer p, IDatatype graph, IDatatype node, IDatatype predicate, int n) {
+        Graph g = (Graph) ((graph == null) ?  p.getGraph() :  graph.getPointerObject());
+        Node val = g.value(node, predicate, n);
+        if (val == null) {
+            return null;
+        }
+        return (IDatatype) val.getDatatypeValue();
+    }
+    
+    @Override
     public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         DataProducer dp = new DataProducer(getGraph(p));
         if (env.getGraphNode() != null) {

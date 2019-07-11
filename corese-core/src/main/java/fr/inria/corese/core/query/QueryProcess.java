@@ -552,12 +552,8 @@ public class QueryProcess extends QuerySolver {
                 param);
     }
     
-    /**
-     * Parse a function definition document 
-     * use case: @import <uri>
-     */
-    @Override
-    public ASTQuery parse(String path) throws EngineException {
+    
+    String basicParse(String path) throws EngineException {
         QueryLoad ql = QueryLoad.create();
         String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
         String str = null;
@@ -566,34 +562,44 @@ public class QueryProcess extends QuerySolver {
                 // @import <function/test.rq> within transformation such as st:turtle
                 // the import uri is st:function/test.rq
                 // consider it as a resource
-                String name = "/"+NSManager.nsm().strip(pp, NSManager.STL);
+                String name = "/" + NSManager.nsm().strip(pp, NSManager.STL);
                 str = ql.getResource(name);
-            }
-            else {
+            } else {
                 str = ql.readWE(pp);
             }
+            return str;
         } catch (LoadException | IOException ex) {
             ex.printStackTrace();
             logger.error(ex.toString());
-            throw new EngineException(ex) ;
+            throw new EngineException(ex);
         }
+    }
+    
+    
+    /**
+     * Parse a function definition document 
+     * use case: @import <uri>
+     */
+    @Override
+    public ASTQuery parse(String path) throws EngineException {
+        String str = basicParse(path);
         Transformer t = transformer();
         t.setBase(path);
         return t.parse(str);
     }
     
+    /**
+     * 1- Linked Function
+     * 2- owl:imports
+     */
     @Override
     public Query parseQuery(String path) {
-        QueryLoad ql = QueryLoad.create();
         try {
-            String pp =  (path.endsWith("/")) ? path.substring(0, path.length()-1) : path;
-            String str = ql.readWE(pp);
+            String str = basicParse(path);
             Query q = compile(str, new Dataset().setBase(path));
             return q;
-        } catch (LoadException ex) {
-			logger.error(ex.getMessage());
         } catch (EngineException ex) {
-			logger.error(ex.getMessage());
+            logger.error(ex.getMessage());
         }
         return null;
     }

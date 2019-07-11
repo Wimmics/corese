@@ -43,6 +43,7 @@ import fr.inria.corese.core.load.jsonld.JsonldLoader;
 import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
 import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
+import fr.inria.corese.core.query.QueryProcess;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
@@ -811,7 +812,7 @@ public class Load
             build = BuildImpl.create(graph);
             build.setLimit(save.getLimit());
             try {
-                parse(uri);
+                basicImport(uri);
             } catch (LoadException ex) {
                 logger.error(ex.getMessage());
             }
@@ -825,7 +826,16 @@ public class Load
             if (debug) {
                 logger.info("Import: " + uri);
             }
-            parse(uri);
+            basicImport(uri);
+        }
+    }
+    
+    void basicImport(String uri) throws LoadException {
+        switch (getFormat(uri)) {
+            case Loader.QUERY_FORMAT:
+                QueryProcess.create().parseQuery(uri);
+                break;
+            default: parse(uri);
         }
     }
 

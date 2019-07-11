@@ -92,7 +92,7 @@ function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:b
 }
 
 function sh:value(v){
-    if (v = st:null, return(error()), v)
+    if (isURI(v) && v = st:null, return(error()), v)
 }
 
 
@@ -158,14 +158,16 @@ function xsd:boolean sh:result(?name, ?sh, dt:graph ?shape, ?foc, ?p, ?o){
         where { 
             bind (uuid() as ?r)
             bind (coalesce(java:isdefby(?name), ?name) as ?def)
-            bind (xt:focus(?shape, java:severity(?sh)) as ?sev)
-            bind (xt:focus(?shape, java:message(?sh)) as ?m)
-            bind (if (bound(?m), ?m, concat("Fail at: ", xt:focus(?shape, xt:turtle(?sh)))) as ?mes)
+            #bind (xt:focus(?shape, sh:severity(?sh)) as ?sev)
+            #bind (xt:focus(?shape, sh:message(?sh)) as ?m)
+            bind (coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
+            bind (xt:value(?shape, ?sh, sh:message) as ?m)
+            bind (if (bound(?m), ?m, concat("Fail at: ", xt:turtle(?shape, ?sh))) as ?mes)
             bind (java:value(?p) as ?pp)
             bind (java:value(?o) as ?oo)            
-            bind (if (bound(?pp), xt:focus(?shape, java:graph(?pp)), error())  as ?pathDetail)                                       
-            bind (java:graphbnode(?foc) as ?focDetail)
-            bind (if (bound(?oo), java:graphbnode(?oo), error())  as ?valueDetail)
+            bind (if (bound(?pp), sh:graph(?shape, ?pp), error())  as ?pathDetail)                                       
+            bind (java:graphbnode(?shape, ?foc) as ?focDetail)
+            bind (if (bound(?oo), java:graphbnode(?shape, ?oo), error())  as ?valueDetail)
             bind (java:bnodeid() as ?bnode)
         } 
         values (?name ?sh ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
@@ -195,24 +197,15 @@ function sh:visit(name, node, suc) {
     st:visit(name, node, suc)
 }
 
-
-
-
-
 # within graph shape {}
 function dt:uri sh:severity(sh) {
-    for ((s, p, o) in xt:edges(sh, sh:severity)){
-        return (o)
-    } ;
-    return (sh:Violation)
+    coalesce(xt:value(sh, sh:severity), sh:Violation)
 }
 
 function sh:message(sh){
-    for ((s, p, o) in xt:edges(sh, sh:message)){
-        return (o)
-    } ;
-    return (error())
+    xt:value(sh, sh:message)
 }
+
 
 function dt:bnode sh:bnodeid(){
     let (bn = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
@@ -225,15 +218,15 @@ function sh:bnodeid2(){
 }
 
 # trick datatype for st:turtle transformation to pprint a graph in Turtle format
-function sh:graph(var){
+function sh:graph(shape, var){
 if (isBlank(var), 
-    return(strdt(st:apply-templates-with(st:turtle, var), xt:graph)), 
+    return(strdt(xt:turtle(shape, var), xt:graph)), 
     var)
 }
 
-function sh:graphbnode(var){
+function sh:graphbnode(shape, var){
     if (isBlank(var),  
-        return(sh:graph(var)),
+        return(sh:graph(shape, var)),
         return(error()))
 }
 

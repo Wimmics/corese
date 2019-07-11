@@ -9,17 +9,17 @@ function sh:function(shape, node, name) {
 
 
 function sh:validURI(url) {
-    let (value = xt:read(url)) {
-        xt:print(url, coalesce(strlen(value), "undef")) ;
-        return (strlen(value) > 0)
+    let (value = xt:validURI(url)) {
+        xt:print(url, value) ;
+        return (value)
     }
 }
 
 function sh:validURI(shape, sh, subject, path, url) {
-    let (value = xt:read(url)) {
-        xt:print(subject, path, url, coalesce(strlen(value), "undef")) ;
+    let (value = xt:validURI(url)) {
+        xt:print("validate URL:", subject, path, url, value) ;
 #        xt:print("cst:", xt:focus(shape, xt:turtle(sh)));
-        return (strlen(value) > 0)
+        return (value)
     }
 }
 

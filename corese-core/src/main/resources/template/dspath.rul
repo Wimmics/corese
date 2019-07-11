@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Tue Jul 09 11:39:15 CEST 2019
+Wed Jul 10 12:06:36 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -183,12 +183,11 @@ template sh:hasValue (?shape, ?sh, ?vis, ?s, ?p, ?v, ?o){
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-
   bind ( exists {
     values ?o { unnest(sh:path(?shape, ?s, ?p)) }
-    filter coalesce(?o = ?v, false) }
+    filter coalesce(?o = ?v, false) 
+    }
   as ?suc)
-  
   
   bind (st:report(sh:hasValue, ?sh, ?shape, ?s, ?p, ?v, ?suc, ?vis) as ?b)
 }
@@ -601,7 +600,7 @@ where {
             sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
             sh:nodeKind sh:class 
             sh:in sh:languageIn sh:node sh:property
-            # extension with LDScript function that returns xsd:boolean 
+            # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
             sh:function sh:functioncst
         }
         ?sh ?q ?m    

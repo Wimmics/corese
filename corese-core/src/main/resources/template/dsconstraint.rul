@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 04 13:53:56 CEST 2019
+Wed Jul 10 09:48:42 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -191,13 +191,15 @@ where {
   graph ?shape {  
     values ?q { 
         sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
+        sh:function sh:functioncst
     }
     ?sh ?q ?m  
   }
   
   values ?s { unnest(?ls) }
     
-  bind (coalesce(sh:functioncall(?q, ?shape, ?s, ?m), false) as ?suc )
+  bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s), funcall(?q, ?shape, ?s, ?m)), false) as ?suc )
+#  bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   
   bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }

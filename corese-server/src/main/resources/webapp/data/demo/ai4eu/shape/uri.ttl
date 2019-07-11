@@ -1,0 +1,48 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix us:   <http://example.org/test#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ai:   <http://www.ai4eu.eu/ontologies/core#>
+@prefix aid:  <http://www.ai4eu.eu/ontologies/data#> 
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix cso:  <https://cso.kmi.open.ac.uk/topics/> .
+#
+# Shape for AI4EU AI resources
+# http://www.ai4eu.org
+#
+
+[] owl:imports <../function/shape.rq> .
+
+
+
+ai:distribShape a sh:NodeShape ;
+sh:targetClass ai:Distribution ;
+sh:property [
+    sh:path  ai:download  ;
+    sh:functioncst sh:validURI ;
+    sh:datatype xsd:anyURI
+] 
+.
+
+
+
+ai:orgShape a sh:NodeShape ;
+sh:targetClass foaf:Organization, ai:Manual ;
+sh:property [
+    sh:path  foaf:homepage  ;
+    sh:functioncst sh:validURI ;
+    sh:datatype xsd:anyURI    
+]
+.
+
+
+
+ai:licenseShape a sh:NodeShape ;
+sh:targetClass dct:LicenseDocument ;
+sh:property [
+    sh:path  dct:source ;
+    sh:functioncst sh:validURI ;
+    sh:datatype xsd:anyURI 
+]
+.
+
+

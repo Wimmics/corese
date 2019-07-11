@@ -1,0 +1,103 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix us:   <http://example.org/test#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ai:   <http://www.ai4eu.eu/ontologies/core#>
+@prefix aid:  <http://www.ai4eu.eu/ontologies/data#> 
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix cso:  <https://cso.kmi.open.ac.uk/topics/> .
+#
+# Shape for AI4EU AI resources
+# http://www.ai4eu.org
+#
+
+[] owl:imports <../function/shape.rq> .
+
+
+ai:resourceShape a sh:NodeShape ;
+sh:targetClass ai:AIResource ;
+sh:property [
+    sh:path  dct:creator  ;
+    sh:minCount 1 ;
+    sh:class foaf:Organization 
+]
+;
+sh:property [
+    sh:path  foaf:name  ;
+    sh:functioncst sh:trace ;
+    sh:minCount 1
+]
+;
+sh:property [
+    sh:path  dct:subject  ;
+    sh:minCount 1 ;
+    sh:pattern "^https://cso.kmi.open.ac.uk/topics/"
+]
+;
+sh:property [
+    sh:path  ai:keyword  ;
+    sh:minCount 1 ;
+    sh:datatype rdf:langString
+]
+;
+sh:property [
+    sh:path  ai:distributed_as  ;
+    sh:minCount 1 
+]
+
+.
+
+
+
+ai:distribShape a sh:NodeShape ;
+sh:targetClass ai:Distribution ;
+sh:property [
+    sh:path  ai:download  ;
+    sh:minCount 1 ;
+    sh:datatype xsd:anyURI
+] ;
+sh:property [
+    sh:path  ai:atTRL  ;
+    sh:minCount 1 ;
+    sh:pattern "^http://www.ai4eu.eu/ontologies/data#trl[1-9]"
+] ;
+sh:property [
+    sh:path  ai:under_license  ;
+    sh:minCount 1
+] 
+.
+
+
+
+
+ai:orgShape a sh:NodeShape ;
+sh:targetClass foaf:Organization ;
+sh:property [
+    sh:path  ai:location ;
+    sh:pattern "^http://dbpedia.org/resource/" ;
+    sh:minCount 1
+]
+;
+sh:property [
+    sh:path  foaf:name  ;
+    sh:minCount 1
+]
+;
+sh:property [
+    sh:path  foaf:homepage  ;
+    sh:minCount 1 ;
+    sh:datatype xsd:anyURI    
+]
+.
+
+
+
+ai:licenseShape a sh:NodeShape ;
+sh:targetClass dct:LicenseDocument ;
+sh:property [
+    sh:path  dct:source ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1
+]
+.
+
+

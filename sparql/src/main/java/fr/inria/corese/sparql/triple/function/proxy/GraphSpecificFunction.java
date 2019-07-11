@@ -171,19 +171,24 @@ public class GraphSpecificFunction extends LDScript {
      * xt:value([graph], subject, predicate [, index of result node]) 
      */
     IDatatype value(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) { 
+        int default_index = 1;
         IDatatype dt = param[0];
         IDatatype g = null;
         if (dt.pointerType() == PointerType.GRAPH) {
             g = dt;
         }
         switch (param.length) {
-            case 2: return proc.value(env, p, g, param[0], param[1], 1);
+            // xt:value(s, p) (where s may be a graph, in this case g=null)
+            case 2: return proc.value(env, p, null, param[0], param[1], default_index);
+            // xt:value(s, p, 1)
+            // xt:value(g, s, p)
             case 3: 
                 if (g == null) {
                     return proc.value(env, p, g, param[0], param[1], param[2].intValue());
                 } else {
-                    return proc.value(env, p, g, param[1], param[2], 1);
+                    return proc.value(env, p, g, param[1], param[2], default_index);
                 }
+            // xt:value(g, s, p, 1)
             case 4: return proc.value(env, p, g, param[1], param[2], param[3].intValue());
             default: return null;
         }        

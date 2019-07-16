@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 04 13:53:56 CEST 2019
+Thu Jul 11 18:12:45 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -110,7 +110,7 @@ prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
 # @import <../../../function/datashape.rq>
 
-@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/path.rq> <function/datashape/operator.rq>
+@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/ppath.rq> <function/datashape/operator.rq>
 
 template st:profile {} where {}
 

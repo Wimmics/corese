@@ -1,216 +1,232 @@
-#
-# Data Shape Property Path Interpreter
-# PP expressions are searched in graph ?shape 
-#
-# Olivier Corby - Wimmics Inria I3S - 2016
-#
-prefix sh:   <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <http://www.w3.org/ns/shacl#>  
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix java: <http://www.w3.org/ns/shacl#> 
 
 
-#
-# Rewrite Property Path shape expression as a LDScript list
-#
-# ([sh:zeroOrMorePath rdf:rest] rdf:first)
-# ->
-# (sh:sequence ((sh:zeroOrMorePath rdf:rest) rdf:first))
-# URI may be URI of a subpath such as:
-# [sh:path ex:parent] .
-# ex:parent sh:alternativePath (ex:father ex:mother)
-#
-function sh:path(dt:graph ?shape, ?pp) {
 
-  if (isURI(?pp)) { ?pp }
-  else {
-    let ( 
-        select ?shape ?pp ?q ?path where {
-            graph ?shape { 
-                # rdf:rest is for a sequence
-                values ?q { 
-                    rdf:rest sh:inversePath sh:alternativePath 
-                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  }
-                ?pp ?q ?path   
+
+function sh:minCount (shape, sh, vis, s, p, m, o) {
+    sh:minCount (shape, sh, vis, s, p, m)
+}
+
+function sh:maxCount (shape, sh, vis, s, p, m, o) {
+    sh:maxCount (shape, sh, vis, s, p, m)
+}
+
+function sh:minCount (shape, sh, vis, s, p, m) {
+    let (val = xt:size(sh:path(shape, s, p)),
+         suc = val >= m) { 
+        st:report(sh:minCount, sh, shape, s, p, val, suc, vis);
+        return(suc)
+    }
+}
+
+function sh:maxCount (shape, sh, vis, s, p, m) {
+    let (val = xt:size(sh:path(shape, s, p)),
+         suc = val <= m) { 
+        st:report(sh:maxCount, sh, shape, s, p, val, suc, vis);
+        return(suc)
+    }
+}
+
+
+
+
+
+function sh:disjoint (shape, sh, vis, s, p, q) {
+    let (res = true, 
+         l1 = sh:path(shape, s, p),
+         l2 = sh:path(shape, s, q)) {
+        for (o in l1) {
+            let (suc = ! xt:member(o, l2)) {
+                st:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
+                set (res = res && suc)
             }
-        } ) {
-          
-             if (! bound(?q))
-                { return(error()) }   
-                else { 
-                if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
-                    else { return(xt:list(?q, sh:path(?shape, ?path))) }
-                }                
+        } ;
+        return (res)
     }
-  }
 }
 
-
-#
-# Rewrite recursively RDF list ?pp as a list
-#
-function dt:list sh:listsh(dt:graph ?shape, ?pp){
-   let ( 
-        select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
-        where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
-        return(?l)
+function sh:disjoint (shape, sh, vis, s, p, q, o) {
+    let (l1 = sh:path(shape, s, p),
+         l2 = sh:path(shape, s, q)) {
+        if (xt:member(o, l1)) {
+            let (suc = ! xt:member(o, l2)) {
+                st:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
+                return (suc)
+            }
+        } ;
+        return (true)
     }
 }
 
 
 
 
-#
-# Return list of nodes related to node ?s by path ?p
-# ?s is subject, ?p is PP expression
-# ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
-#
-function dt:list sh:path(dt:graph shape, s, p){    
-    sh:path(shape, s, sh:getPath(shape, p), false)
-}
 
 
-#
-# rewrite PP once as a list and record it
-#
-function sh:getPath(dt:graph shape, p){
-    let (res = coalesce(st:cget(sh:path, p), st:null)) {
-        if (res = st:null) {
-            return (st:cset(sh:path, p, sh:path(shape, p)))
-        }
-        else {
-            return(res)
+function sh:equals (shape, sh, vis, s, p, q) {
+    let (l1 = sh:path(shape, s, p), 
+         l2 = sh:path(shape, s, q)) {         
+         let (b1 = sh:myequals (shape, sh, vis, s, p, q, l1, l2),
+              b2 = sh:myequals (shape, sh, vis, s, p, q, l2, l1)) {
+        return (b1 && b2)
         }
     }
 }
 
-
-#
-# Evaluate PP p as a list
-# Return list of target nodes that match the path
-# inv = true means within inverse path
-#
-function dt:list sh:path(dt:graph shape, s, p, xsd:boolean inv){
-  if (isURI(p)){
-     return(sh:pathProperty(s, p, inv))
-  }
-  else {
-    let ((oper, path) = p) {      
-      return(funcall(oper, shape, s, path, inv))
-   }
-  } 
-}
-
-
-
-function dt:list sh:zeroOrOnePath(dt:graph shape, s, p, xsd:boolean inv){
-    let (l = sh:path(shape, s, p, inv)){
-        if (xt:member(s, l), 
-            return(l), 
-            return(xt:cons(s, l)))
-    }
-}
-
-function dt:list sh:zeroOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:rec(shape, s, p, xt:list(s), inv)
-}
-
-function dt:list sh:oneOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:rec(shape, s, p, xt:list(), inv)
-}
-
-#
-# ?p is a PP expression exp
-# compute exp*
-# ?res is the list of nodes already reached by exp*
-# ?res prevents loops
-#
-function dt:list sh:rec(dt:graph shape, s, p, dt:list res, xsd:boolean inv){
-    let (l = sh:path(shape, s, p, inv)){
-        if (xt:size(l) = 0){ return(res) }
-        else {
-            for (ee in l){
-                if (! xt:member(ee, res)){
-                    xt:add(res, ee) ; 
-                    sh:rec(shape, ee, p, res, inv)
-                }             
-            } ;
-            return(res)             
-        }
+function sh:myequals (shape, sh, vis, s, p, q, l1, l2) {
+    let (res = true) {
+        for (o in l1) {
+            let (suc = xt:member(o, l2)) {
+                 st:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
+                 set(res = res && suc) 
+            }
+        } ;
+        return (res)
     }
 }
 
 
-#
-# s ^exp
-# inverse PP expression
-#
-function dt:list sh:inversePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:path(shape, s, p, ! inv)
+function sh:equals (shape, sh, vis, s, p, q, o) {
+    let (l1 = sh:path(shape, s, p), 
+         l2 = sh:path(shape, s, q),
+         b1 = if (xt:member(o, l2), sh:equal (shape, sh, vis, s, p, q, o, l1), true),
+         b2 = if (xt:member(o, l1), sh:equal (shape, sh, vis, s, p, q, o, l2), true)) {
+        return (b1 && b2)
+    }
 }
 
-
-#
-# p is  a sequence list
-#
-function dt:list sh:sequence(dt:graph shape, s, p, xsd:boolean inv){
-    if (inv) {
-        return(sh:seqlist(shape, s, xt:reverse(p), inv))
-    }
-    else{
-        return(sh:seqlist(shape, s, p, inv))
+function sh:equal (shape, sh, vis, s, p, q, o, l) {
+    let (suc = xt:member(o, l)) {
+        st:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
+        return (suc)
     }
 }
 
 
-#
-# Recursive traversal of sequence list lp
-# recurse on xt:rest(lp)
-#
-function dt:list sh:seqlist(dt:graph shape, s, dt:list lp, xsd:boolean inv){
-    if (xt:size(lp) = 0){
-        # reach end of sequence: add target node s
-        return(xt:list(s))
-    }
-    else {
-        let (l = sh:path(shape, s, xt:first(lp), inv), 
-            res = xt:list()){
-            for (ee in l){ 
-                # merge removes duplicate nodes
-                set(res = xt:merge(res, sh:seqlist(shape, ee, xt:rest(lp), inv)))
-            } ;
-            return(res)
-        }
+
+
+
+
+
+
+########################## from path profile
+
+function sh:not (shape, sh, vis, s, p, cst) {
+    let (res = true) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = ! sh:hasPath(shape, cst, false, s, p, o)) {
+                st:report(sh:not, sh, shape, s, p, o, suc, vis);
+                set (res = res && suc)
+            }
+        } ;
+        return (res)
     }
 }
 
-# p = (sh:sequence (exp .. exp))
-function dt:list sh:alternativePath(dt:graph shape, s, p, xsd:boolean inv){
-    let (l = xt:get(p, 1)) {
-        return(mapmerge(sh:pathmap, l, xt:list(shape), s, inv))
+
+function sh:and (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:and, shape, sh, vis, s, p, and)
+}
+
+function sh:or (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:or, shape, sh, vis, s, p, and)
+}
+
+function sh:xone (shape, sh, vis, s, p, and) {
+    msh:boolean (sh:xone, shape, sh, vis, s, p, and)
+}
+
+function msh:boolean (oper, shape, sh, vis, s, p, and) {
+    let (res = true) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
+                st:report(oper, sh, shape, s, p, o, suc, vis);
+                set (res = res && suc)
+            }
+        };
+        return (res)
     }
 }
 
-function dt:list sh:pathmap(l, dt:graph shape, s, xsd:boolean inv){
-    sh:path(shape, s, l, inv)
-}
 
-function dt:list sh:pathProperty(s, p, xsd:boolean inv){
-    if (inv) {
-        return(sh:inverse(s, p))
-    }
-    else {
-        return(sh:predicate(s, p))    
-    }
-}
-
-function dt:list sh:predicate(?s, ?p){
-    let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
-        return(?l)
+function sh:not (shape, sh, vis, s, p, cst, o) {
+    let (l = sh:path(shape, s, p)) {
+        if (xt:member(o, l)) {
+            let (suc = ! sh:hasPath(shape, cst, false, s, p, o)) {
+                st:report(sh:not, sh, shape, s, p, o, suc, vis);
+                return(suc)
+            }
+        } ;
+        return (true)
     }
 }
 
-function dt:list sh:inverse(?o, ?p){
-    let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
-        return(?l)
+
+function sh:and (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:and, shape, sh, vis, s, p, and, o)
+}
+
+function sh:or (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:or, shape, sh, vis, s, p, and, o)
+}
+
+function sh:xone (shape, sh, vis, s, p, and, o) {
+    msh:boolean (sh:xone, shape, sh, vis, s, p, and, o)
+}
+
+function msh:boolean (oper, shape, sh, vis, s, p, and, o) {
+    let (l = sh:path(shape, s, p)) {
+        if (xt:member(o, l)) {
+            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
+                st:report(oper, sh, shape, s, p, o, suc, vis);
+                return (suc)
+            }
+        };
+        return (true)
     }
+}
+
+
+
+
+
+# used by predicate/path 
+# count failure
+function xsd:boolean sh:and(and, s, p, o, dt:graph shape){
+    (sh:bool(and, s, p, o, shape, 0, 1) = 0)
+}
+
+# used by predicate/path 
+# count success
+function xsd:boolean sh:or(or, s, p, o, dt:graph shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  > 0)
+}
+
+# used by predicate/path 
+# count success
+function xsd:boolean sh:xone(or, s, p, o, dt:graph shape){
+    (sh:bool(or, s, p, o, shape, 1, 0)  = 1)
+}
+
+# property (predicate or path)
+# ?fun = sh:hasPath
+function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, ?p, ?o, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
+    let ( 
+        SELECT ?sh ?s ?p ?o ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+			GRAPH ?shape {
+				?sh rdf:rest*/rdf:first ?cst
+				optional { ?cst sh:property|sh:path|sh:closed ?prop }
+			}
+			BIND (
+                if (bound(?prop), 
+                    java:testShapeCore(?shape, ?cst, ?o),
+                    java:hasPath(?shape, ?cst, false, ?s, ?p, ?o))
+			AS ?hasShape)
+			BIND (IF (bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) .
+		}
+		values (?s ?suc ?fail ?p ?o ) { (UNDEF UNDEF UNDEF UNDEF UNDEF) }) 
+		{ return(?count) }
 }

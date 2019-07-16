@@ -1,0 +1,105 @@
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix java: <http://www.w3.org/ns/shacl#> 
+
+function msh:fun(name) {
+    if (name = sh:and,  msh:and,
+    if (name = sh:or,   msh:or, 
+    if (name = sh:xone, msh:xone,
+    msh:not)))
+}
+
+function msh:not (shape, sh, cst, vis, ls) {
+    if (isExtension(ls)) {
+        let (res = true) {
+            for (s in ls) {
+                let (suc = ! sh:testShapeCore(shape, cst, s)) {
+                    set(res = res && suc);
+                    st:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
+                }
+            };
+            return (res)
+        }
+    }
+    else {
+        let (suc = ! sh:testShapeCore(shape, cst, ls)) {
+            st:report(sh:not, sh, shape, s, st:null, ls,  suc, vis) ;
+            return (suc)
+        }    
+    }
+}
+
+
+
+function msh:and (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:and, shape, sh, bool, vis, ls)
+}
+
+function msh:or (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:or, shape, sh, bool, vis, ls)
+}
+
+function msh:xone (shape, sh, bool, vis, ls) {
+    msh:boolean(sh:xone, shape, sh, bool, vis, ls)
+}
+
+
+# oper = sh:and | sh:or 
+function msh:boolean (oper, shape, sh, bool, vis, ls) {
+    if (isExtension(ls)) {
+        let (res = true) {
+            for (s in ls) {
+                let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
+                    set (res = res && suc)
+                }
+            } ;
+            return(res)
+        }
+    }
+    else {
+        msh:basic (oper, shape, sh, bool, vis, ls)
+    }
+}
+
+function msh:basic (oper, shape, sh, bool, vis, s) {
+    let (suc = coalesce(funcall(oper, bool, s, shape), false)){
+        st:report(oper, sh, shape, s, st:null, s, suc, vis);
+        return (suc)
+    }
+}
+
+
+
+
+# used by core
+# count fail
+function xsd:boolean sh:and(and, s, dt:graph shape){
+    (sh:bool(and, s, shape, 0, 1) = 0)
+}
+
+# used by core
+# count success
+function xsd:boolean sh:or(or, s, dt:graph shape){
+    (sh:bool(or, s, shape, 1, 0) > 0)
+}
+
+# used by core
+# count success
+function xsd:boolean sh:xone(or, s, dt:graph shape){
+    (sh:bool(or, s, shape, 1, 0) = 1)
+}
+
+# core
+function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
+    let ( 
+        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+		WHERE {
+            graph ?shape { 
+                ?sh rdf:rest*/rdf:first ?cst
+            }			
+			BIND (java:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
+			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
+		}
+		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) })
+		{ return(?count) }
+}

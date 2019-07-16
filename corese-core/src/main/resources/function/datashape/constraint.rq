@@ -1,0 +1,50 @@
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix java: <http://www.w3.org/ns/shacl#> 
+
+
+
+function sh:class (shape, sh, vis, s, ?c) {
+    let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
+        st:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+
+function sh:disjoint (shape, sh, vis, s, p) {
+    let (l = sh:path(shape, s, p), suc = ! xt:member(s, l)) {
+        st:report(sh:disjoint, sh, shape, s, p, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:equals (shape, sh, vis, s, p) {
+    let (l  = sh:path(shape, s, p),
+         b1 = sh:equals1(shape, sh, vis, s, p, l),
+         b2 = sh:equals2(shape, sh, vis, s, p, l)) {
+            return (b1 && b2)
+    }
+}
+
+
+function sh:equals1 (shape, sh, vis, s, p, l) {
+    let (suc = xt:member(s, l)) {
+        st:report(sh:equals, sh, shape, s, p, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:equals2 (shape, sh, vis, s, p, l) {
+    let (res = true) {
+        for (m in l) {
+            let (suc = s = m) {
+                st:report(sh:equals, sh, shape, s, p, m, suc, vis);
+                set (res = res && suc)
+            }
+        } ;
+        return (res)
+    }
+}
+
+

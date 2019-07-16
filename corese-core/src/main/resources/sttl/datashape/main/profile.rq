@@ -9,7 +9,7 @@ prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
 # @import <../../../function/datashape.rq>
 
-@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/path.rq> <function/datashape/operator.rq>
+@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/ppath.rq> <function/datashape/operator.rq>
 
 template st:profile {} where {}
 

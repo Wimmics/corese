@@ -1,6 +1,6 @@
 prefix msh: <http://ns.inria.fr/shacl/>
 
-@import <function/datashape/main.rq> <function/datashape/path.rq> <function/datashape/operator.rq> 
+@import <function/datashape/main.rq> <function/datashape/ppath.rq> <function/datashape/operator.rq> <function/datashape/core.rq> 
 
 template st:profile {}
 where {}
@@ -27,68 +27,3 @@ function st:optimize(shape, sh){
 }
 
 
-function msh:fun(name) {
-    if (name = sh:and,  msh:and,
-    if (name = sh:or,   msh:or, 
-    if (name = sh:xone, msh:xone,
-    msh:not)))
-}
-
-function msh:not (shape, sh, cst, vis, ls) {
-    if (isExtension(ls)) {
-        let (res = true) {
-            for (s in ls) {
-                let (suc = ! sh:testShapeCore(shape, cst, s)) {
-                    set(res = res && suc);
-                    st:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
-                }
-            };
-            return (res)
-        }
-    }
-    else {
-        let (suc = ! sh:testShapeCore(shape, cst, ls)) {
-            st:report(sh:not, sh, shape, s, st:null, ls,  suc, vis) ;
-            return (suc)
-        }    
-    }
-}
-
-
-
-function msh:and (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:and, shape, sh, bool, vis, ls)
-}
-
-function msh:or (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:or, shape, sh, bool, vis, ls)
-}
-
-function msh:xone (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:xone, shape, sh, bool, vis, ls)
-}
-
-
-# oper = sh:and | sh:or 
-function msh:boolean (oper, shape, sh, bool, vis, ls) {
-    if (isExtension(ls)) {
-        let (res = true) {
-            for (s in ls) {
-                let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
-                    set (res = res && suc)
-                }
-            } ;
-            return(res)
-        }
-    }
-    else {
-        msh:basic (oper, shape, sh, bool, vis, ls)
-    }
-}
-
-function msh:basic (oper, shape, sh, bool, vis, s) {
-    let (suc = coalesce(funcall(oper, bool, s, shape), false)){
-        st:report(oper, sh, shape, s, st:null, s, suc, vis);
-        return (suc)
-    }
-}

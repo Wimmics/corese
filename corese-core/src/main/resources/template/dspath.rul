@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 11 18:12:45 CEST 2019
+Wed Jul 17 11:40:07 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -414,19 +414,10 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape {  
-        values ?q { 
-            sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
-            sh:nodeKind sh:class 
-            sh:in sh:languageIn sh:node sh:property
-            # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
-            sh:function sh:functioncst
-        }
-        ?sh ?q ?m    
-    }
-    
-  values ?value { UNDEF }
+  values (?value ?shape ?sh) { (UNDEF UNDEF UNDEF) }
   
+  values (?q ?m) { unnest(sh:getConstraint(sh:generic, ?shape, ?sh)) }  
+    
   values ?s { unnest(?ls) }
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
@@ -437,6 +428,31 @@ where {
     if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
     as ?b)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ]]>
 </body>
 </rule>
@@ -452,16 +468,11 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
     st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b))
 }
 where {
-  graph ?shape {  
-    values ?oper {       
-      sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan  
-      sh:qualifiedValueShape sh:sparql
-    }
-    ?sh ?oper ?b  
-    filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
-  }
- values ?o { UNDEF }
- values ?s { unnest(?ls) }
+  values (?o ?shape ?sh) { (UNDEF UNDEF UNDEF) }
+  
+  values (?oper ?b) { unnest(sh:getConstraint(sh:generic2, ?shape, ?sh)) }  
+
+  values ?s { unnest(?ls) }
 
 }
 ]]>
@@ -479,14 +490,10 @@ template  (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
     funcall(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b))
 }
 where {
-  graph ?shape {  
-    values ?oper { 
-      sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
-      sh:maxCount sh:minCount
-    }
-    ?sh ?oper ?b  
-  }
-  values ?o { UNDEF }
+  values (?o ?shape ?sh) { (UNDEF UNDEF UNDEF) }
+  
+  values (?oper ?b) { unnest(sh:getConstraint(sh:generic4, ?shape, ?sh)) }  
+  
   values ?s { unnest(?ls) }
 }
 ]]>

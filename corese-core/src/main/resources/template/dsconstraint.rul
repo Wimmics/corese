@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 11 18:12:45 CEST 2019
+Wed Jul 17 11:40:07 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -117,14 +117,12 @@ function st:optimize(shape, sh){
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
-    #st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
     funcall(?q, ?shape, ?sh, ?vis, ?s, ?m)
 }
 where {
-  graph ?shape {  
-    values ?q { sh:class sh:disjoint sh:equals }
-    ?sh ?q ?m            
-  }
+  values (?shape ?sh) { (UNDEF UNDEF) }
+  
+  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric3, ?shape, ?sh)) }
   
   values ?s { unnest(?ls) }
 }
@@ -143,18 +141,13 @@ template (?shape, ?sh, ?vis, ?ls) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-  graph ?shape {  
-    values ?q { 
-        sh:hasValue sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive sh:minLength sh:maxLength sh:nodeKind sh:node sh:in sh:languageIn 
-        sh:function sh:functioncst
-    }
-    ?sh ?q ?m  
-  }
+  values (?shape ?sh) { (UNDEF UNDEF) }
+  
+  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric, ?shape, ?sh)) }  
   
   values ?s { unnest(?ls) }
     
   bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s), funcall(?q, ?shape, ?s, ?m)), false) as ?suc )
-#  bind (coalesce(funcall(?q, ?shape, ?s, ?m), false) as ?suc )
   
   bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
@@ -172,10 +165,9 @@ template (?shape, ?sh, ?vis, ?ls) {
     st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
 }
 where {
-  graph ?shape {  
-    values ?q {  sh:pattern sh:sparql }
-    ?sh ?q ?m            
-  }
+  values (?shape ?sh) { (UNDEF UNDEF) }
+  
+  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric2, ?shape, ?sh)) } 
   
   values ?s { unnest(?ls) }
 }

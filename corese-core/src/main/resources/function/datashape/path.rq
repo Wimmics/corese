@@ -2,6 +2,59 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix msh: <http://ns.inria.fr/shacl/>
 prefix java: <http://www.w3.org/ns/shacl#> 
 
+# record relevant properties of sh as a list in a table
+function sh:getConstraint(name, shape, sh) {
+    coalesce(st:cget(name, sh), st:cset(name, sh, funcall(name, shape, sh)))
+}
+
+# properties for path/generic.rq
+function sh:generic(shape, sh) {
+    let (select ?shape ?sh (aggregate(xt:list(?q, ?m)) as ?list) where {
+        graph ?shape {  
+            values ?q { 
+                sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
+                sh:nodeKind sh:class 
+                sh:in sh:languageIn sh:node sh:property
+                # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
+                sh:function sh:functioncst
+            }
+            ?sh ?q ?m    
+        }
+    } ) {
+        return(list)
+    }
+}
+
+# properties for path/generic2.rq
+function sh:generic2(shape, sh) {
+    let (select ?shape ?sh (aggregate(xt:list(?oper, ?b)) as ?list) where {
+        graph ?shape {  
+            values ?oper {       
+            sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan  
+            sh:qualifiedValueShape sh:sparql
+            }
+            ?sh ?oper ?b  
+            filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
+        }
+        } ) {
+        return(list)
+    }
+}
+
+# properties for path/generic4.rq
+function sh:generic4(shape, sh) {
+    let (select ?shape ?sh (aggregate(xt:list(?oper, ?b)) as ?list) where {
+        graph ?shape {  
+            values ?oper { 
+                sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
+                sh:maxCount sh:minCount
+            }
+            ?sh ?oper ?b  
+        }
+        } ) {
+        return(list)
+    }
+}
 
 
 

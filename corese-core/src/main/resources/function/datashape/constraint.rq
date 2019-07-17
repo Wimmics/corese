@@ -2,6 +2,42 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix msh: <http://ns.inria.fr/shacl/>
 prefix java: <http://www.w3.org/ns/shacl#> 
 
+# record relevant properties of sh as a list in a table
+function sh:getConstraint(name, shape, sh) {
+    coalesce(st:cget(name, sh), st:cset(name, sh, funcall(name, shape, sh)))
+}
+
+# properties for constraint/generic.rq
+function sh:cstgeneric(shape, sh, list) {
+    let (select ?shape ?sh ?list (aggregate(xt:list(?q, ?m)) as ?res) where {
+        graph ?shape {  
+            values ?list {UNDEF}
+            values ?q { unnest(?list) }
+            ?sh ?q ?m    
+        }
+    } ) {
+        return(res)
+    }
+}
+
+# properties for constraint/generic.rq
+function sh:cstgeneric(shape, sh) {
+    sh:cstgeneric(shape, sh, xt:list(
+                sh:hasValue, sh:datatype, sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive, sh:minLength, sh:maxLength, sh:nodeKind, sh:node, sh:in, sh:languageIn, 
+                sh:function, sh:functioncst))
+}
+
+
+# properties for constraint/generic2.rq
+function sh:cstgeneric2(shape, sh) {
+    sh:cstgeneric(shape, sh, xt:list(sh:pattern, sh:sparql))
+}
+
+# properties for constraint/generic3.rq
+function sh:cstgeneric3(shape, sh) {
+    sh:cstgeneric(shape, sh, xt:list(sh:class, sh:disjoint, sh:equals))
+}
+
 
 
 function sh:class (shape, sh, vis, s, ?c) {

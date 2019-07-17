@@ -73,14 +73,7 @@ function dt:list sh:path(dt:graph shape, s, p){
 # rewrite PP once as a list and record it
 #
 function sh:getPath(dt:graph shape, p){
-    let (res = coalesce(st:cget(sh:path, p), st:null)) {
-        if (res = st:null) {
-            return (st:cset(sh:path, p, sh:path(shape, p)))
-        }
-        else {
-            return(res)
-        }
-    }
+   coalesce(st:cget(sh:path, p), st:cset(sh:path, p, sh:path(shape, p)))
 }
 
 

@@ -1,14 +1,12 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
-    #st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
     funcall(?q, ?shape, ?sh, ?vis, ?s, ?m)
 }
 where {
-  graph ?shape {  
-    values ?q { sh:class sh:disjoint sh:equals }
-    ?sh ?q ?m            
-  }
+  values (?shape ?sh) { (UNDEF UNDEF) }
+  
+  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric3, ?shape, ?sh)) }
   
   values ?s { unnest(?ls) }
 }

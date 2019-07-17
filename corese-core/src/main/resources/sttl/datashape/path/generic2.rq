@@ -6,15 +6,10 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
     st:call-template(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b))
 }
 where {
-  graph ?shape {  
-    values ?oper {       
-      sh:pattern sh:uniqueLang sh:hasValue sh:lessThanOrEquals sh:lessThan  
-      sh:qualifiedValueShape sh:sparql
-    }
-    ?sh ?oper ?b  
-    filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
-  }
- values ?o { UNDEF }
- values ?s { unnest(?ls) }
+  values (?o ?shape ?sh) { (UNDEF UNDEF UNDEF) }
+  
+  values (?oper ?b) { unnest(sh:getConstraint(sh:generic2, ?shape, ?sh)) }  
+
+  values ?s { unnest(?ls) }
 
 }

@@ -17,19 +17,10 @@ template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
   sh:safe(?shape, ?sh, ?suc)
 }
 where {
-    graph ?shape {  
-        values ?q { 
-            sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
-            sh:nodeKind sh:class 
-            sh:in sh:languageIn sh:node sh:property
-            # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
-            sh:function sh:functioncst
-        }
-        ?sh ?q ?m    
-    }
-    
-  values ?value { UNDEF }
+  values (?value ?shape ?sh) { (UNDEF UNDEF UNDEF) }
   
+  values (?q ?m) { unnest(sh:getConstraint(sh:generic, ?shape, ?sh)) }  
+    
   values ?s { unnest(?ls) }
 
   values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
@@ -40,3 +31,28 @@ where {
     if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
     as ?b)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

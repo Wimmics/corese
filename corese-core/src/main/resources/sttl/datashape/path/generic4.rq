@@ -6,13 +6,9 @@ template  (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
     funcall(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b))
 }
 where {
-  graph ?shape {  
-    values ?oper { 
-      sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
-      sh:maxCount sh:minCount
-    }
-    ?sh ?oper ?b  
-  }
-  values ?o { UNDEF }
+  values (?o ?shape ?sh) { (UNDEF UNDEF UNDEF) }
+  
+  values (?oper ?b) { unnest(sh:getConstraint(sh:generic4, ?shape, ?sh)) }  
+  
   values ?s { unnest(?ls) }
 }

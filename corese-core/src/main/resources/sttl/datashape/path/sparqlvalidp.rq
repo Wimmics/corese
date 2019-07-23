@@ -52,7 +52,7 @@ function sh:display(?shape, ?p) {
 }
 
 function sh:variable(?uri) {
-    concat("?", st:strip(?uri))
+    concat("?", xt:strip(?uri))
 }
 
 # pseudo declare variables in case they are not in a triple of query ?q

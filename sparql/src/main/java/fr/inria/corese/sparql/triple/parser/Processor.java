@@ -764,6 +764,7 @@ public class Processor {
 		defsysoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
 		defoper(KG_SPARQL, ExprType.KGRAM);
+		defoper(EXT+"sparql", ExprType.KGRAM);
 		defoper(EXTERN, ExprType.EXTERN);
 		defoper(UNNEST, ExprType.UNNEST);
 		defoper(KGUNNEST, ExprType.UNNEST);

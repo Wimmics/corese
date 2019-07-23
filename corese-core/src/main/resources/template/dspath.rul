@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jul 17 11:40:07 CEST 2019
+Mon Jul 22 18:17:03 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -411,22 +411,12 @@ function sh:isPredicate(?p) {
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
-  sh:safe(?shape, ?sh, ?suc)
+  (sh:generic(?shape, ?sh, ?vis, ?ls, ?p, if (?bound, ?value, st:null), ?bound)
+  && 
+  sh:generic4(?shape, ?sh, ?vis, ?ls, ?p, if (?bound, ?value, st:null), ?bound))
 }
 where {
-  values (?value ?shape ?sh) { (UNDEF UNDEF UNDEF) }
-  
-  values (?q ?m) { unnest(sh:getConstraint(sh:generic, ?shape, ?sh)) }  
-    
-  values ?s { unnest(?ls) }
-
-  values ?o { unnest(if (bound(?value), ?value, sh:path(?shape, ?s, ?p))) }
-
-  bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s, ?p, ?o), funcall(?q, ?shape, ?o, ?m)), false) as ?suc )
-  
-  bind (
-    if (?q in (sh:property), true, st:report(?q, ?sh, ?shape, ?s, ?p, ?o, ?suc, ?vis))
-    as ?b)
+    bind (bound(?value) as ?bound)
 }
 
 
@@ -474,27 +464,6 @@ where {
 
   values ?s { unnest(?ls) }
 
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template  (?shape, ?sh, ?vis, ?ls, ?p, ?o) {
-  if (bound(?o), 
-    funcall(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b, ?o),
-    funcall(?oper, ?shape, ?sh, ?vis, ?s, ?p, ?b))
-}
-where {
-  values (?o ?shape ?sh) { (UNDEF UNDEF UNDEF) }
-  
-  values (?oper ?b) { unnest(sh:getConstraint(sh:generic4, ?shape, ?sh)) }  
-  
-  values ?s { unnest(?ls) }
 }
 ]]>
 </body>

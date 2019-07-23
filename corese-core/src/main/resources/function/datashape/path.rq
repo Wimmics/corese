@@ -2,6 +2,53 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix msh: <http://ns.inria.fr/shacl/>
 prefix java: <http://www.w3.org/ns/shacl#> 
 
+
+
+# bound = true -> value is bound
+function sh:generic(shape, sh, vis, ls, p, value, isbound) {
+    let (res = true) {
+        for ((oper val) in sh:getConstraint(sh:generic, shape, sh)) {
+            for (s in if (isExtension(ls), ls, xt:list(ls))) {
+                for (o in (if (isbound, xt:list(value), sh:path(shape, s, p)))) {
+                    let (suc = coalesce(if (oper = sh:functioncst,  
+                            funcall(val, shape, sh, s, p, o), 
+                            funcall(oper, shape, o, val)), false)) {
+                        if (oper in (sh:property), true, st:report(oper, sh, shape, s, p, o, suc, vis)) ;
+                        if (! suc) {
+                            set(res = false) 
+                        }
+                    }
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:generic4(shape, sh, vis, ls, p, value, isbound) {
+    let (res = true) {
+        for ((oper val) in sh:getConstraint(sh:generic4, shape, sh)) {
+            for (s in if (isExtension(ls), ls, xt:list(ls))) {
+                let (suc = 
+                    if (isbound, 
+                        funcall(oper, shape, sh, vis, s, p, val, value),
+                        funcall(oper, shape, sh, vis, s, p, val) ) ) {
+                    if (! suc) {
+                        set(res = false) 
+                    }
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+
+
+
+
 # record relevant properties of sh as a list in a table
 function sh:getConstraint(name, shape, sh) {
     coalesce(st:cget(name, sh), st:cset(name, sh, funcall(name, shape, sh)))

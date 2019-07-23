@@ -19,11 +19,11 @@ public class Extension {
   	private static final Logger logger = LoggerFactory.getLogger(Extension.class);
   
     private static final String[] NAMES = 
-    { "system.rq", "extension.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
+    { "system.rq", "extension.rq", "shape.rq", "calendar.rq", "calendar2.rq", "spqr.rq" };
     
     public void process(){
         for (String name : NAMES){
-            process("/query/" + name);
+            process("/function/system/" + name);
         }
     }
     

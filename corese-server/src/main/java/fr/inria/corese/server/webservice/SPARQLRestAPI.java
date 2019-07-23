@@ -235,7 +235,8 @@ public class SPARQLRestAPI {
     public Response getTriplesXMLForGet(@javax.ws.rs.core.Context HttpServletRequest request,
             @QueryParam("query") String query, 
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
-            @QueryParam("named-graph-uri") List<String> namedGraphUris) {
+            @QueryParam("named-graph-uri")   List<String> namedGraphUris,
+            @QueryParam ("format")           String format) {
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Rest Get SPARQL Result XML/plain: " + query);
@@ -243,7 +244,13 @@ public class SPARQLRestAPI {
                 throw new Exception("No query");
 
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris));
-            return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
+            if (format != null && format.equals("json")) {
+                String res = String.format("<div>%s</div>", JSONFormat.create(map).toString());
+                return Response.status(200).header(headerAccept, "*").entity(res).build();                
+            }
+            else {
+                return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
+            }
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine", ex);
             return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();

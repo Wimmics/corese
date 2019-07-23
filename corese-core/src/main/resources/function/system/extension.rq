@@ -1,0 +1,82 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+
+@public { 
+
+
+function xt:strip(url) {
+    java:nstrip(xt:nsmanager(), url)
+}
+
+function xt:mapreduce(freduce, flist, exp) {
+    reduce(freduce, maplist(flist, exp))
+}
+
+# Specify focus node of transformation 
+# default is st:get(st:uri) as usual
+# no focus :
+# st:param [ st:focus false ]
+# focus on st:get(st:elem)
+# st:param [ st:focus st:elem ]
+function st:focus(){
+    st:get(coalesce(st:get(st:focus), st:uri))
+}
+
+function xt:turtle() {  
+    st:apply-templates-with(st:turtle)
+}
+
+function xt:turtle(x) {  
+    if (isLiteral(x) && datatype(x) = dt:graph){
+        xt:focus(x, st:apply-templates-with(st:turtle))
+    }
+    else {
+        st:apply-templates-with(st:turtle, x)
+    }
+}
+
+function xt:turtle(g, x) {  
+    st:apply-templates-with-graph(st:turtle, g, x)
+}
+
+
+function xt:rdfxml() {  
+    st:apply-templates-with(st:rdfxml)
+}
+
+function xt:owl() {  
+    st:apply-templates-with(st:owl)
+}
+
+function xt:owl(x) {  
+    st:apply-templates-with(st:owl, x)
+}
+
+function st:list(t) { 
+    let (l = st:call-template-with(st:list, st:list, t)){
+        if (! isLiteral(l) || datatype(l) != dt:list){
+            xt:list(l) }
+        else { l }
+    }
+}
+
+function xt:rdftolist(?l) {
+  let (
+    select ?l 
+      (aggregate(if (?b, xt:rdftolist(?e), 
+                 if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+    where {
+        ?l rdf:rest*/rdf:first ?e
+        bind (exists { ?e rdf:rest ?a } as ?b)
+    }) {
+    ?list
+  }
+}
+
+
+function xt:profileowlrl() {
+    st:call-template-with(st:owlrl, st:main) 
+}
+
+
+}
+

@@ -1,0 +1,69 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+
+@public { 
+
+
+function xt:conform(?g) {
+    xt:focus(?g,
+    let (select * where { ?x sh:conforms ?b } ) {
+        ?b
+    }
+    )
+}
+
+function us:ldGraph(shape) {
+    if (isURI(shape), xt:load(shape), shape)
+}
+
+function xt:validationGraph() {
+    # st:visitedGraph()
+    # global variable bound by shape transformation
+    return (validationReport)
+}
+
+function xt:shapeGraph() {
+    st:call-template-with(st:dsmain, st:start, xt:graph()) ;
+    return (xt:validationGraph())
+}
+
+function xt:shapeGraph(shape) {
+    st:call-template-with(st:dsmain, st:start, us:ldGraph(shape)) ;
+    return (xt:validationGraph())
+}
+
+function xt:shapeGraph(shape, sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeGraph, sh) ;
+    return (xt:validationGraph())
+}
+
+function xt:shapeNode(url) {
+    st:call-template-with(st:dsmain, st:main, xt:graph(), sh:shapeNode, url) ;
+    return (xt:validationGraph())
+}
+
+function xt:shapeNode(url, shape) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url) ;
+    return (xt:validationGraph())
+}
+
+function xt:shapeNode(url, shape, sh) {
+    st:call-template-with(st:dsmain, st:main, us:ldGraph(shape), sh:shapeNode, url, sh) ;
+    return (xt:validationGraph())
+}
+
+function xt:testShapeNode(url, shape) {
+    let (g = xt:shapeNode(url, shape)) {
+        xt:conform(g)
+    }
+}
+
+function xt:testShapeNode(url) {
+    let (g = xt:shapeNode(url, xt:graph())) {
+        xt:conform(g)
+    }
+}
+
+
+
+}
+

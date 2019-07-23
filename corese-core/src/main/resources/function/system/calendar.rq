@@ -1,0 +1,101 @@
+#
+# Compute the day of a date
+# http://fr.wikipedia.org/wiki/Détermination_du_jour
+#
+# Olivier Corby - Wimmics, Inria, I3S - 2015
+#
+prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
+
+select (cal:jour(now()) as fr)
+where  { }
+
+
+@public {
+
+function xt:day(dt)  { cal:day(dt) }
+
+function xt:jour(dt) { cal:jour(dt) }
+
+function cal:day(dt)  { cal:en(cal:find(dt)) }
+
+function cal:jour(dt) { cal:fr(cal:find(dt)) }
+
+function cal:div(aa, bb) { xsd:integer(floor(aa / bb)) }
+
+function cal:mod(aa, bb) { xsd:integer(aa - (bb * cal:div(aa, bb))) }
+
+function cal:bisextile(y) {
+    ((cal:mod(y, 4) = 0) &&
+      ((cal:mod(y, 100) != 0) || (cal:mod(y, 400) = 0)))
+}
+      
+function cal:ab(y) { cal:div(y, 100) }
+function cal:cd(y) { cal:mod(y, 100) }
+function cal:k(y)  { cal:div(cal:cd(y), 4) }
+function cal:q(y)  { cal:div(cal:ab(y), 4) }
+
+function cal:monthday(m, y) {
+  if (m <= 2,
+    if (cal:bisextile(y),
+      if (m = 1, 3, 6),
+      if (m = 1, 4, 0)),
+  if (m in (3, 11), 0,
+    if (m in (6), 1,
+      if (m in (9, 12), 2,
+	if (m in (4, 7), 3,
+	  if (m in (10), 4,
+	    if (m in (5), 5, 6)))))))
+}
+	    
+function cal:get(y, m, dt) {
+  let (n = cal:k(y) + cal:q(y) + cal:cd(y) +
+        cal:monthday(m, y) + dt + 2 + 5 * cal:ab(y))
+    {
+      cal:mod(n, 7)
+    }
+}
+    
+function cal:find(dt) {
+  cal:get(year(dt), month(dt), day(dt))
+}
+  
+function cal:en(n) {
+  if (n = 0, "Sunday",
+  if (n = 1, "Monday",
+  if (n = 2, "Tuesday",
+  if (n = 3, "Wednesday",
+  if (n = 4, "Thursday",
+  if (n = 5, "Friday",
+  if (n = 6, "Saturday", "Unknown")))))))
+}
+  
+function cal:fr(n) {
+  if (n = 0, "Dimanche",
+  if (n = 1, "Lundi",
+  if (n = 2, "Mardi",
+  if (n = 3, "Mercredi",
+  if (n = 4, "Jeudi",
+  if (n = 5, "Vendredi",
+  if (n = 6, "Samedi", "Inconnu")))))))
+}
+
+function cal:num(dtay) {
+    if (dtay in( "Lundi", "Monday"), 1,
+    if (dtay in( "Mardi", "Tuesday"), 2,
+    if (dtay in( "Mercredi", "Wednesday"), 3,
+    if (dtay in( "Jeudi", "Thursday"), 4,
+    if (dtay in( "Vendredi", "Friday"), 5,
+    if (dtay in( "Samedi", "Saturday"), 6,
+    if (dtay in( "Dimanche", "Sunday"), 7, 0)))))))
+}
+
+function cal:days(y, m) {
+    let (list = 
+	xt:list(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)){ 
+        if (m != 2, xt:get(list, m - 1),
+            if (cal:bisextile(y), 29, 28))
+    }
+}
+
+
+}

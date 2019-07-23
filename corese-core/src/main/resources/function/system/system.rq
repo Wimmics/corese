@@ -1,0 +1,45 @@
+@public {
+
+function xt:div(?a, ?b) {  xsd:integer(floor(?a / ?b)) }
+
+function xt:mod(?a, ?b) {  xsd:integer(?a - (?b * xt:div(?a, ?b))) }
+
+function kg:compare(?x, ?y) { 
+  if (?x < ?y, -1, 
+  if (?x > ?y, 1, 0)) }
+
+function xt:prime(?x) { 
+    if (?x = 1, false,
+    if (?x = 2, true, 
+    ! mapany (xt:divisible, ?x, xt:cons(2, xt:iota(3, power(?x, 0.5), 2)))))
+ }
+                             
+function xt:divisible(?x, ?n) { 
+   (xt:mod(?x, ?n) = 0)
+}
+
+function xt:ast(?q) {
+    java:getAST(?q)
+}
+
+function xt:namedgraph(?name, ?graph){
+    java:setNamedGraph(xt:graph(), ?name, ?graph)
+}
+
+function xt:values(?s, ?p) {
+    maplist(xt:object, xt:edges(?s, ?p))
+}
+
+function xt:trace(?s, ?p) {
+    xt:tune(xt:debug, ?s, ?p)
+}
+
+function xt:trace(?s, ?p, ?o) {
+    xt:tune(xt:debug, ?s, ?p, ?o)
+}
+
+function xt:transformer(?t, ?b) {
+    xt:tune(xt:debug, xt:transformer, ?t, ?b)
+}
+
+}

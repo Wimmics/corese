@@ -12,6 +12,7 @@ where {
         ?sh sh:sparql ?cst 
         ?cst sh:select ?q
         filter not exists { ?cst sh:deactivated true }
+        optional { ?cst sh:message ?mes }
         
         # collect prefix definitions
         # TBD: do it once and record it
@@ -20,8 +21,7 @@ where {
               (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
               as ?define) 
             where {
-                ?cst sh:prefixes ?ns
-                [] sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
             }
             group by ?cst
         }
@@ -29,14 +29,9 @@ where {
     
     bind (sh:path(?shape, ?s, ?p) as ?list)
     
-    values ?o { unnest(?list) }  
+    values ?o { unnest(?list) } 
     
-    values ($this ?path ?value) { unnest(kg:sparql(concat(?define, ?q), "$this", ?o)) }
-
-    # SPARQL query returns solutions that fail
-    bind (false as ?suc)
-    
-    bind (st:report(sh:sparql, ?cst, ?shape, ?o, ?path, ?value, ?suc, ?vis) as ?b)
+    bind (sh:mysparql(concat(?define, ?q), ?sh, ?cst, ?shape, ?s, ?o, ?vis, coalesce(?mes, st:null), bound(?mes)) as ?suc)
     
 }
 

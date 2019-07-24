@@ -14,9 +14,7 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls, ?p, ?value) {
-  (sh:generic(?shape, ?sh, ?vis, ?ls, ?p, if (?bound, ?value, st:null), ?bound)
-  && 
-  sh:generic4(?shape, ?sh, ?vis, ?ls, ?p, if (?bound, ?value, st:null), ?bound))
+  sh:generic(?shape, ?sh, ?vis, ?ls, ?p, if (?bound, ?value, st:null), ?bound)
 }
 where {
     bind (bound(?value) as ?bound)

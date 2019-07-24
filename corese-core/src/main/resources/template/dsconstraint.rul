@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jul 17 11:40:07 CEST 2019
+Wed Jul 24 14:29:26 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -50,6 +50,7 @@ where {
         ?sh sh:sparql ?cst 
         ?cst sh:select ?q
         filter not exists { ?cst sh:deactivated true }
+        optional { ?cst sh:message ?mes }
         
         # collect prefix definitions
         # TBD: do it once and record it
@@ -58,22 +59,15 @@ where {
               (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
               as ?define) 
             where {
-                ?cst sh:prefixes ?ns
-                [] sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
             }
             group by ?cst
         }
     }
     
-    values ($this ?path ?value) { unnest(kg:sparql(concat(?define, ?q), "$this", ?s)) }
-
-    # SPARQL query returns solutions that fail
-    bind (false as ?suc)
-    
-    bind (st:report(sh:sparql, ?cst, ?shape, ?s, ?path, ?value, ?suc, ?vis) as ?b)
+    bind (sh:mysparql(concat(?define, ?q), ?sh, ?cst, ?shape, ?s, ?s, ?vis, coalesce(?mes, st:null), bound(?mes)) as ?suc)
     
 }
-
 
 ]]>
 </body>

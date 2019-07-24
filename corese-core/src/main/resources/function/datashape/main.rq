@@ -92,7 +92,7 @@ function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:b
 }
 
 function sh:value(v){
-    if (isURI(v) && v = st:null, return(error()), v)
+    if (isURI(v) && v = st:null, error(), v)
 }
 
 
@@ -158,8 +158,6 @@ function xsd:boolean sh:result(?name, ?sh, dt:graph ?shape, ?foc, ?p, ?o){
         where { 
             bind (uuid() as ?r)
             bind (coalesce(java:isdefby(?name), ?name) as ?def)
-            #bind (xt:focus(?shape, sh:severity(?sh)) as ?sev)
-            #bind (xt:focus(?shape, sh:message(?sh)) as ?m)
             bind (coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
             bind (xt:value(?shape, ?sh, sh:message) as ?m)
             bind (if (bound(?m), ?m, concat("Fail at: ", xt:turtle(?shape, ?sh))) as ?mes)

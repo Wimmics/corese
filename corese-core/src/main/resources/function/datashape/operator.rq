@@ -3,6 +3,49 @@ prefix fun:  <http://www.w3.org/ns/shacl#>
 prefix java: <http://www.w3.org/ns/shacl#> 
 
 
+#
+# SPARQL constraint
+# focus is the focus node, val is the value of focus to be tested
+# for constraint: they are the same, for path: focus=subject ; val=object
+# Query MUST return variables: ?this ?path ?value
+#
+function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
+    let (maps = xt:sparql(q, "$this", val)) {
+      #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
+        for (m in maps) {
+            let ((this path value) = m) {
+                if (hasmes) {
+                    let (mmes = sh:mymessage(mes, m)) {
+                        # xt:print(mmes);
+                        # suc = false
+                        st:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                    }
+                }
+                else {
+                    # suc = false
+                    st:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                }
+            }
+        } ;
+        # results are errors
+        return (xt:size(maps) = 0)
+    }
+}
+
+
+# replace {?var} by {val} in message
+function sh:mymessage(xsd:string mes, dt:mapping m) {
+    for ((var val) in m) {
+        let (pat = concat('{', var, '}')) {
+            if (contains(mes, pat), set(mes = xt:replace(mes, pat, concat('{', val, '}'))), true)
+        }
+    } ;
+    return(mes)
+}
+
+
+
+
 function sh:function(shape, node, name) {
     funcall(name, node)
 } 

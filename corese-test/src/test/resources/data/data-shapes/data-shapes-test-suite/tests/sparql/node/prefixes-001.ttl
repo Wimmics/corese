@@ -28,7 +28,7 @@ ex:TestPrefixes
 ex:TestSPARQL
   sh:prefixes ex:TestPrefixes ;
   sh:select """
-		SELECT $this ?value
+		SELECT $this ?value (ex:property as ?path)
 		WHERE {
 			$this ex:property ?value .
             FILTER (?value = test:Value) .

@@ -63,7 +63,7 @@ ex:ValidCountry
           sh:sourceConstraint ex:LanguageExampleShape ;
           sh:sourceConstraintComponent sh:SPARQLConstraintComponent ;
           sh:sourceShape ex:LanguageExampleShape ;
-          sh:value ex:InvalidCountry ;
+          sh:value "Spain"@en ;
         ] ;
     ] ;
   mf:status sht:approved ;

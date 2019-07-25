@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed Jul 24 14:29:26 CEST 2019
+Thu Jul 25 11:55:24 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -143,7 +143,7 @@ where {
     
   bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s), funcall(?q, ?shape, ?s, ?m)), false) as ?suc )
   
-  bind (st:report(?q, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
+  bind (st:report(?q, ?sh, if (?q = sh:node, ?m, st:null), ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
 }
 
 ]]>

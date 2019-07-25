@@ -170,7 +170,7 @@ function xsd:boolean sh:languageIn(dt:graph ?shape, ?o, ?lv){
 }
 
 function xsd:boolean sh:node(dt:graph shape, o, cst){
-    sh:testShapeCore(shape, cst, o)
+    sh:testShapeCore(shape, cst,  o)
 }
 
 function xsd:boolean sh:property(dt:graph shape, o, cst){

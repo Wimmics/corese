@@ -25,7 +25,8 @@ function sh:generic1(shape, sh, vis, ls, p, value, isbound) {
             for (s in if (isExtension(ls), ls, xt:list(ls))) {
                 for (o in (if (isbound, xt:list(value), sh:path(shape, s, p)))) {
                     let (suc = coalesce(sh:operator(oper, val, shape, sh, s, p, o), false)) {
-                        if (oper in (sh:property), true, st:report(oper, sh, shape, s, p, o, suc, vis)) ;
+                        if (oper in (sh:property), true, 
+                            st:report(oper, sh, if (oper = sh:node, val, st:null), shape, s, p, o, suc, vis)) ;
                         if (! suc) {
                             set(res = false) 
                         }

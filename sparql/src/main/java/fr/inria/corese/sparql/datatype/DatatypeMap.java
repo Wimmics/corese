@@ -82,7 +82,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     static long COUNT = 0;
     public static CoreseBoolean TRUE = CoreseBoolean.TRUE;
     public static CoreseBoolean FALSE = CoreseBoolean.FALSE;
-    public static final IDatatype EMPTY_LIST = createList(new IDatatype[0]);
+    public static final IDatatype EMPTY_LIST = createList();
     public static final IDatatype EMPTY_STRING = newInstance("");
     static final String LIST = ExpType.EXT + "List";
     private static final int INTMAX = 100;
@@ -708,7 +708,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
 
     public static IDatatype createList() {
-        return createList(new ArrayList<IDatatype>(0));
+        return createList(new ArrayList<>(0));
     }
 
     public static IDatatype createList(List<IDatatype> ldt) {

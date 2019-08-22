@@ -49,7 +49,11 @@ public class Reduce extends Funcall {
         }
         List<IDatatype> list = dt.getValues();
         if (list.isEmpty()){
-            return neutral(function, dt);
+            IDatatype res = neutral(function, name, dt);
+            if (res == dt) {
+                return neutral(eval, b, env, p, name, dt);
+            }
+            return res;
         }
         IDatatype[] value = new IDatatype[2];
         IDatatype res = list.get(0);
@@ -68,7 +72,7 @@ public class Reduce extends Funcall {
         return res;
     }
     
-    IDatatype neutral(Expr exp, IDatatype dt){
+    IDatatype neutral(Function exp, IDatatype name, IDatatype dt){
         switch (exp.oper()){
             case OR:
                 return FALSE;
@@ -89,10 +93,19 @@ public class Reduce extends Funcall {
                 
             case XT_APPEND:
             case XT_MERGE:
-                return DatatypeMap.EMPTY_LIST;
+                return DatatypeMap.createList();
                 
             default: return dt;
         }
+    }
+    
+    // fun with no arg returns neutral element
+    IDatatype neutral(Computer eval, Binding b, Environment env, Producer p, IDatatype name, IDatatype dt) {
+        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 0);
+        if (function == null) {
+            return dt;
+        }
+        return call(eval, b, env, p, function);   
     }
     
     

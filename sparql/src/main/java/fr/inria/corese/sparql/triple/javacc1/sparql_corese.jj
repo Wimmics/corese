@@ -2148,7 +2148,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
         | t1 = <MD5> | t1 = <SHA1> | t1 = <SHA256> | t1 = <SHA384> | t1 = <SHA512>
         | t1 =  <ROUND> | t1 = <FLOOR> | t1 = <CEIL>  | t1 = <ABS> 
         | t1 =  <YEAR> | t1 = <MONTH> | t1 = <DAY> | t1 = <HOURS> | t1 = <MINUTES> | t1 = <SECONDS> | t1 = <TIMEZONE> | t1 = <TZ>
-        | t1 = <UNNEST>  | t1 = <RETURN> | t1 = <SELF> 
+        | t1 = <UNNEST>  | t1 = <RETURN> | t1 = <SELF> | t1 = <EVAL>
    )
  
 
@@ -2919,6 +2919,7 @@ TOKEN [IGNORE_CASE] :
 | <MAPEVERY: "mapevery">
 | <MAPANY: "mapany">
 | <FUNCALL: "funcall">
+| <EVAL: "eval">
 | <METHOD: "method">
 | <APPLY: "apply">
 | <REDUCE: "reduce">

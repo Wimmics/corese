@@ -42,4 +42,14 @@ function xt:transformer(?t, ?b) {
     xt:tune(xt:debug, xt:transformer, ?t, ?b)
 }
 
+function xt:setPublicDatatypeValue(val) {
+     ds:setPublicDatatypeValue(true, val)
+}
+
+function xt:getPublicDatatypeValue() {
+     ds:getPublicDatatypeValue(true)
+}
+
+
+
 }

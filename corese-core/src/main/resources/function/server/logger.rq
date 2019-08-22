@@ -1,0 +1,114 @@
+#
+# Functions for st:logger
+#
+
+
+# generate a list of json description of IP address
+function us:jsonlist() {
+    let (amap = ds:getPublicDatatypeValue(true),
+         #host = xt:get(amap, st:host),
+         host = us:map(),
+         iplist   = us:iplist(host),
+         jsonlist = maplist(us:describe, iplist)) {
+        return(jsonlist)
+    }
+}
+
+function us:jsonlist2() {
+    let (iplist   = us:hostlist(),
+         jsonlist = maplist(us:describe, iplist)) {
+        return(jsonlist)
+    }
+}
+
+function us:hostlist() {
+    let (select (aggregate(?key) as ?list) 
+         where { 
+          service <http://corese.inria.fr/sparql> {
+            select * where {
+                bind (ds:getPublicDatatypeValue(true) as ?map)
+                bind (xt:get(?map, st:host) as ?host)
+                values (?key ?value) { unnest(?host) }
+            } 
+            limit 50
+         }}) {
+    ?list
+    }
+}
+
+
+# list of location of IP address
+function us:location(jsonlist) {
+    maplist(us:locate, jsonlist)
+}
+
+# map(ip->nb)
+# generate a list of IP address
+function us:iplist(amap) {
+    maplist(lambda((key, value)) { key }, amap)
+}
+
+# extract location from json description of IP address
+function us:locate(json) {
+    let (ip   = xt:get(json, "ip"),
+         pair = xt:get(json, "loc"),
+         lat  = strbefore(pair, ","),
+         lon  = strafter(pair,  ",")) {
+         xt:list(ip, xsd:decimal(lat), xsd:decimal(lon))
+    }
+}
+
+# call a service to get a json description of IP address
+function us:describe(ip) {
+ let (res  = xt:read(concat("https://ipinfo.io/", ip)),
+      json = xt:json(res)) {
+      xt:print(json, "\n") ;
+      return(json)
+    }
+}
+
+# jsonlist: list of json description of IP address
+# generate a map(slotvalue->nb)
+function us:nbmap(jsonlist, key) {
+    let (amap = xt:map()) {
+        for (json in jsonlist) {
+            let (cc = xt:get(json, key)) {
+                xt:set(amap, cc, coalesce(1 + xt:get(amap, cc), 1))
+            }
+        } ;
+        #xt:set(amap, "total", xt:size(jsonlist)) ;
+        return (amap)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function us:map() {
+    let (amap = xt:map()) {
+    map(lambda(ip, amap) { xt:set(amap, ip, 1) }, 
+    xt:list(
+    # IP address list
+    ), xt:list(amap) );
+        return (amap)
+    }
+}
+
+function us:json(json, key) {
+    let (astr  = strafter(json, concat("\"", key, "\": \"")),
+         pair = strbefore(astr, "\"")) {
+         return(pair)
+    }
+}
+

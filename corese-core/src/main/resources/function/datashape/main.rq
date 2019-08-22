@@ -8,7 +8,15 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <http://www.w3.org/ns/shacl#>  
 
+# when true, generate validation report for sh:node constraints and one report for sh:node 
+# otherwise, generate only one report for sh:node (default)
+function sh:detail(xsd:boolean bb) {
+    set(detailShapeMode = bb)
+}
 
+function sh:detail() {
+    return (bound(detailShapeMode) && detailShapeMode)
+}
 
 function sh:test(){
     st:get(st:test, true) 

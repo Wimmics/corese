@@ -15,11 +15,19 @@ function us:jsonlist() {
 }
 
 function us:jsonlist2() {
-    let (iplist   = us:hostlist(),
+    letdyn (iplist   = us:hostlist(),
+         ccount = 0, card = xt:size(iplist),
          jsonlist = maplist(us:describe, iplist)) {
         return(jsonlist)
     }
 }
+
+
+function us:describe(ip) {
+    xt:print(set(ccount = ccount + 1), "/", card);
+    us:describe2(ip)
+}
+
 
 function us:hostlist() {
     let (select (aggregate(?key) as ?list) 
@@ -30,7 +38,7 @@ function us:hostlist() {
                 bind (xt:get(?map, st:host) as ?host)
                 values (?key ?value) { unnest(?host) }
             } 
-            limit 50
+            limit 999
          }}) {
     ?list
     }
@@ -48,25 +56,69 @@ function us:iplist(amap) {
     maplist(lambda((key, value)) { key }, amap)
 }
 
+
+
 # extract location from json description of IP address
 function us:locate(json) {
-    let (ip   = xt:get(json, "ip"),
-         pair = xt:get(json, "loc"),
-         lat  = strbefore(pair, ","),
-         lon  = strafter(pair,  ",")) {
+    let (ip  = xt:get(json, "ip"),
+         lat = xt:get(json, "lat"),
+         lon = xt:get(json, "lon")
+         ) {
          xt:list(ip, xsd:decimal(lat), xsd:decimal(lon))
     }
 }
 
+# ipinfo.io
+# extract location from json description of IP address
+function us:compile1(json) {
+    let (pair = xt:get(json, "loc"),
+         lat  = strbefore(pair, ","),
+         lon  = strafter(pair,  ",")) {
+         xt:set(json, "lon", lon);
+         xt:set(json, "lat", lat)
+    } ;
+    return(json)
+}
+
+# geo.ipify.org
+# extract location from json description of IP address
+function us:compile2(json) {
+    let (pair = xt:get(json, "location"),
+         lat  = xt:get(pair, "lat"),
+         lon  = xt:get(pair, "lng"),
+         country = xt:get(pair, "country")
+         ) {
+        xt:set(json, "lon", lon);
+        xt:set(json, "lat", lat);   
+        xt:set(json, "country", country)  
+    } ;
+    return(json)
+}
+
+
+
 # call a service to get a json description of IP address
-function us:describe(ip) {
+function us:describe1(ip) {
  let (res  = xt:read(concat("https://ipinfo.io/", ip)),
       json = xt:json(res)) {
       xt:print(json, "\n") ;
-      return(json)
+      return(us:compile1(json))
     }
 }
 
+# call a service to get a json description of IP address
+function us:describe2(ip) {
+ let (res  = xt:read(concat("https://geo.ipify.org/api/v1?apiKey=at_XoGzTcrWBTSvdYhyQygXxP2NgBCNJ&ipAddress=", ip)),
+      json = xt:json(res)) {
+      xt:print(json, "\n") ;
+      return(us:compile2(json))
+    }
+}
+
+
+
+
+#
 # jsonlist: list of json description of IP address
 # generate a map(slotvalue->nb)
 function us:nbmap(jsonlist, key) {
@@ -80,17 +132,6 @@ function us:nbmap(jsonlist, key) {
         return (amap)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

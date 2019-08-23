@@ -35,13 +35,26 @@ public class Compiler {
 
     public void d3() {
         String lib = SRCLIB;
-        translate(ROOT + "d3", lib + "d3.rul");
-//        translate(ROOT + "json", lib + "json.rul");
+//        translate(ROOT + "turtlehtml/template", lib + "turtlehtml.rul");
+//        translate(ROOT + "turtlehtml/main", lib + "hturtle.rul");
         
-//        translate(ROOT + "datashape/main", lib + "dsmain.rul");
-//            translate(ROOT + "datashape/core", lib + "dscore.rul");
-//            translate(ROOT + "datashape/path", lib + "dspath.rul");
-//            translate(ROOT + "datashape/constraint", lib + "dsconstraint.rul");
+        //translate(ROOT + "test",       lib + "test.rul");       
+        
+        translate(ROOT + "logger", lib + "logger.rul");
+        //translate(ROOT + "turtle", lib + "turtle.rul");
+//
+//                translate(ROOT + "cdn", lib + "cdn.rul");
+//                translate(ROOT + "dbedit", lib + "dbedit.rul");
+//                translate(ROOT + "dbhistory", lib + "dbhistory.rul");
+ //       translate(ROOT + "turtlehtml/template", lib + "turtlehtml.rul");
+
+//        translate(ROOT + "datashape/main",       lib + "dsmain.rul");       
+//        translate(ROOT + "datashape/core",       lib + "dscore.rul");
+//        translate(ROOT + "datashape/constraint", lib + "dsconstraint.rul");
+//        translate(ROOT + "datashape/path",       lib + "dspath.rul");
+
+        //translate(ROOT + "d3", lib + "d3.rul");
+//        translate(ROOT + "json", lib + "json.rul");
 //            translate(ROOT + "datashape/pprint", lib + "dspprint.rul");
 //            translate(ROOT + "datashape/result", lib + "dsresult.rul");
     }
@@ -57,6 +70,8 @@ public class Compiler {
             translate(ROOT + "datashape/pprint", lib + "dspprint.rul");
             translate(ROOT + "datashape/result", lib + "dsresult.rul");
         }
+
+        translate(ROOT + "combine", lib + "combine.rul");
         translate(ROOT + "d3", lib + "d3.rul");
         translate(ROOT + "sensor", lib + "sensor.rul");
         translate(ROOT + "list", lib + "list.rul");
@@ -68,7 +83,9 @@ public class Compiler {
         translate(ROOT + "rdfxml", lib + "rdfxml.rul");
         translate(ROOT + "rdfxmlhtml", lib + "hrdfxml.rul");
         translate(ROOT + "turtle", lib + "turtle.rul");
-        //translate(ROOT + "turtle2", lib + "turtle2.rul");
+        translate(ROOT + "logger", lib + "logger.rul");
+        translate(ROOT + "jsonld-light", lib + "jsonld-light.rul");
+        translate(ROOT + "jsonld-light-term", lib + "jsonld-light-term.rul");
         translate(ROOT + "json", lib + "json.rul");
         translate(ROOT + "jsonterm", lib + "jsonterm.rul");
 

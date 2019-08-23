@@ -11,16 +11,18 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 
 /**
@@ -35,8 +37,10 @@ public class DataShapeTest {
        DataShapeTest.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
     
     static String[] names = {
-        "core/property", "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports"
-    //   "sparql/node" , "sparql/property", "sparql/component"
+        //"sparql/property"
+        "core/property", "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports",
+       "sparql/node" , "sparql/property"
+        //, "sparql/component"
     };
     static String qm =
             "prefix mf:      <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .\n"
@@ -123,7 +127,29 @@ public class DataShapeTest {
     }
 
     public static void main(String [] args) throws LoadException, EngineException, IOException {
-        new DataShapeTest().testSimple();
+        //new DataShapeTest().testSimple();
+        new DataShapeTest().testThread();
+    }
+    
+    void testThread() {
+        for (int i = 0; i<1; i++) {
+            new ShapeThread().start();
+        }
+    }
+    
+    class ShapeThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                new DataShapeTest().testSimple();
+            } catch (LoadException ex) {
+                Logger.getLogger(DataShapeTest.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (EngineException ex) {
+                Logger.getLogger(DataShapeTest.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(DataShapeTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
       @Test
@@ -154,7 +180,7 @@ public class DataShapeTest {
     }
 
     public void process() throws LoadException, EngineException, IOException {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             // warm up
             test();
         }
@@ -170,7 +196,11 @@ public class DataShapeTest {
 
    
     public void test() throws LoadException, EngineException, IOException {
+          Access.set(Access.Feature.LINKED_FUNCTION, Access.Level.DEFAULT);
+
         // 4 distinct from 4.0
+//        Function.typecheck = true;
+//        Function.rdftypecheck = true;
         report = new EarlReport("file://" + data);
         //DatatypeMap.setSPARQLCompliant(true);
         for (String name : names) {

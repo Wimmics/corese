@@ -373,11 +373,19 @@ public interface ExprType {
         public static int XT_INSERT      = 478;
         public static int XT_DELETE      = 479;
         public static int XT_VALID_URI   = 480;
-        
-     
+        public static int XT_STACK       = 481;
+             
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;
         public static int DB          = 502;
+        
+        
+        public static int XT_ATTRIBUTES = 600;
+        public static int XT_NODE_TYPE  = 601;
+        public static int XT_ELEMENTS   = 602;
+        public static int XT_TEXT_CONTENT= 603;
+        public static int XT_NODE_NAME   = 604;
+        public static int XT_NODE_PROPERTY   = 605;
         
 
 }

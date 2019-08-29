@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import org.json.JSONObject;
+import org.w3c.dom.NodeList;
 
 /**
  * <p>
@@ -328,6 +329,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
         return null;
     }
+    
+    public static IDatatype cast(NodeList list) {
+        return CoreseXML.singleton.cast(list);
+    }
 
     public static IDatatype cast(Object obj) {
         if (obj instanceof Number) {
@@ -456,7 +461,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype newStringBuilder(String result) {
         return new CoreseStringBuilder(new StringBuilder(result));
     }
-
+    
     public static IDatatype newInstance(boolean result) {
         if (result) {
             return CoreseBoolean.TRUE;
@@ -535,7 +540,18 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         IDatatype dt = CoreseDatatype.create(JavaType, datatype, label, lang);
         return dt;
     }
-
+    
+    public static IDatatype newXMLLiteral(String label, org.w3c.dom.Node node) {
+        IDatatype dt = new CoreseXMLLiteral(label);
+        dt.setObject(node);
+        return dt;
+    }
+    
+    public static IDatatype newXMLObject(String label, org.w3c.dom.Node node) {
+        //return newXMLLiteral(label, node);
+        return xml(label, node);
+    }
+    
     public static IDatatype newLiteral(String label) {
         if (literalAsString) {
             return newInstance(label);
@@ -659,6 +675,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     
     public static CoreseJSON json() {
         return new CoreseJSON(new JSONObject());
+    }
+    
+    public static CoreseXML xml(org.w3c.dom.Node node) {
+        return new CoreseXML(node);
+    }
+    
+    public static CoreseXML xml(String str, org.w3c.dom.Node node) {
+        return new CoreseXML(str, node);
     }
 
     public static IDatatype createList(IDatatype... ldt) {

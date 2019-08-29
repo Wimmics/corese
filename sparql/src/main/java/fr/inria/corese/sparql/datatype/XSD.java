@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 public interface XSD {
 
     static final String XSD = NSManager.XSD;
+    static final String XSI = NSManager.XSI;
     static final String xsdboolean = XSD + "boolean";
     static final String xsdinteger = XSD + "integer";
     static final String xsdlong = XSD + "long";

@@ -199,26 +199,4 @@ public class CoreseJSON extends CoreseExtension {
         return getValueList();
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

@@ -329,6 +329,7 @@ public class Processor {
 	static final String PROCESS  = KGRAM + "process";
 	static final String ENV  	 = KGRAM + "env";
 	static final String XT_ENV  	 = EXT + "env";
+	static final String XT_STACK  	 = EXT + "stack";
 	public static final String PATHNODE = KGRAM + "pathNode";
 	static final String SLICE       = KGRAM + "slice";
 	static final String DB          = KGRAM + "db";
@@ -398,6 +399,7 @@ public class Processor {
         public static final String XT_DISPLAY 	= EXT + "display";
         public static final String XT_PRINT 	= EXT + "print";
         static final String XT_PRETTY   = EXT + "pretty";
+        static final String XT_ATTRIBUTES= EXT + "attributes";
         static final String XT_XML      = EXT + "xml";
         static final String XT_RDF      = EXT + "rdf";
         static final String XT_JSON     = EXT + "json";
@@ -913,13 +915,19 @@ public class Processor {
                 defoper(RQ_GT,     ExprType.GT); 
                 defoper(RQ_GE,     ExprType.GE); 
                 
+                defoper(EXT+"nodetype",  ExprType.XT_NODE_TYPE);
+                defoper(EXT+"nodename",  ExprType.XT_NODE_NAME);
+                defoper(EXT+"nodeproperty",ExprType.XT_NODE_PROPERTY);
+                defoper(EXT+"elements",  ExprType.XT_ELEMENTS);
+                defoper(EXT+"text",      ExprType.XT_TEXT_CONTENT);
+                defoper(EXT+"attributes",ExprType.XT_ATTRIBUTES);
                 
                 defoper(XT_VALID_URI,ExprType.XT_VALID_URI);  
                 defoper(XT_LOAD,   ExprType.LOAD);  
                 defoper(XT_CONTENT,ExprType.XT_CONTENT);  
                 defoper(XT_PRETTY, ExprType.XT_PRETTY);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
-                defoper(XT_PRINT,  ExprType.XT_PRINT);  
+                defoper(XT_PRINT,  ExprType.XT_PRINT);                 
                 defoper(XT_XML,    ExprType.XT_XML);
                 defoper(XT_RDF,    ExprType.XT_RDF);
                 defoper(XT_JSON,   ExprType.XT_JSON);
@@ -944,6 +952,7 @@ public class Processor {
 		defoper(PROCESS, ExprType.PROCESS);
 		defoper(ENV, 	 ExprType.ENV);
 		defoper(XT_ENV,  ExprType.ENV);
+		defoper(XT_STACK,ExprType.XT_STACK);
 		defoper(SLICE, 	 ExprType.SLICE);
 		defoper(DB, 	 ExprType.DB);
 

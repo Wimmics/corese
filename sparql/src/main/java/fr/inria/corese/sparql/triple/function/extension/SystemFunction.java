@@ -23,7 +23,7 @@ public class SystemFunction extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {       
         IDatatype[] param = evalArguments(eval, b, env, p, 0);
         if (param == null) return null;
         
@@ -34,6 +34,9 @@ public class SystemFunction extends TermEval {
             
             case ExprType.ENV: 
                 return DatatypeMap.createObject(env);
+                
+            case ExprType.XT_STACK: 
+                return DatatypeMap.createObject(b);    
                 
             case ExprType.XT_RESULT: 
                 return DatatypeMap.createObject(env.getMapping()); 

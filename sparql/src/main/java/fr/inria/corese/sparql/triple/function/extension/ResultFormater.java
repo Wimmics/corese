@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
+import static fr.inria.corese.kgram.api.core.ExprType.XT_ATTRIBUTES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JSON;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_RDF;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_XML;
@@ -10,41 +11,65 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
+import fr.inria.corese.sparql.datatype.CoreseXML;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.function.XPathFun;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class ResultFormater extends TermEval {
 
-    public ResultFormater() {}
-    
+    public ResultFormater() {
+    }
+
     public ResultFormater(String name) {
         super(name);
     }
-        
+
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        
+
         switch (oper()) {
-            case XT_JSON: 
+            case XT_JSON:
                 if (arity() == 0) {
                     return DatatypeMap.json();
                 }
         }
-        
+
         IDatatype dt = getArg(0).eval(eval, b, env, p);
-        
-        if (dt == null) { 
+
+        if (dt == null) {
             return null;
         }
-        
-        if (oper() == XT_JSON && (dt.getCode() == IDatatype.STRING || dt.getCode() == IDatatype.LITERAL)) {
-            return DatatypeMap.json(dt.stringValue());
-        } 
-        else if (dt.pointerType() != MAPPINGS || dt.getPointerObject() == null) {
-            return null;
+
+        switch (oper()) {
+            case XT_JSON:
+                if (dt.getCode() == IDatatype.STRING || dt.getCode() == IDatatype.LITERAL) {
+                    return DatatypeMap.json(dt.stringValue());
+                }
+                break;
+
+            case XT_XML: 
+                switch (dt.getCode()) {
+                    case IDatatype.STRING:
+                    case IDatatype.LITERAL:
+                    case IDatatype.XMLLITERAL:
+                    case IDatatype.URI:
+                    return parseXML(dt);
+                }
+                break;
+                            
         }
-        else {
+
+        if (dt.pointerType() != MAPPINGS || dt.getPointerObject() == null) {
+            return null;
+        } else {
             Mappings map = dt.getPointerObject().getMappings();
             switch (oper()) {
                 case XT_XML:
@@ -58,7 +83,18 @@ public class ResultFormater extends TermEval {
                     return dt;
             }
         }
-        
     }
+    
+    IDatatype parseXML(IDatatype dt) {
+        try {
+            Node node = new XPathFun().parse(dt);
+            IDatatype res = DatatypeMap.newXMLObject(dt.getLabel(), node); 
+            return res;
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(ResultFormater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+       
 
 }

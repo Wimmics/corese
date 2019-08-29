@@ -225,11 +225,21 @@ public class Term extends Expression {
             case ExprType.XT_PRINT:
             case ExprType.XT_PRETTY:
                 return new Display(name);
+                
             case ExprType.XT_XML:
             case ExprType.XT_JSON:
             case ExprType.XT_RDF:
                 // return text format for Mappings
                 return new ResultFormater(name);
+                
+            case ExprType.XT_ATTRIBUTES:
+            case ExprType.XT_NODE_TYPE:
+            case ExprType.XT_NODE_NAME:    
+            case ExprType.XT_NODE_PROPERTY:    
+            case ExprType.XT_ELEMENTS:
+            case ExprType.XT_TEXT_CONTENT:
+                return new XML(name);
+ 
             case ExprType.XT_SPIN:
                 // return SPIN graph for query
                 return new SPINFormater(name);
@@ -1380,7 +1390,7 @@ public class Term extends Expression {
         return (str.equals(Processor.UNNEST)
                 || str.equals(Processor.KGUNNEST)
                 || str.equals(Processor.SQL)
-                || str.equals(XPATH)
+                //|| str.equals(XPATH)
                 || //str.equals(Processor.SPARQL) ||
                 str.equals(Processor.EXTERN));
     }

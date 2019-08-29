@@ -23,11 +23,16 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * <p>Title: Corese</p>
- * <p>Description: A Semantic Search Engine</p>
- * <p>Copyright: Copyright INRIA (c) 2007</p>
- * <p>Company: INRIA</p>
- * <p>Project: Acacia</p>
+ * <p>
+ * Title: Corese</p>
+ * <p>
+ * Description: A Semantic Search Engine</p>
+ * <p>
+ * Copyright: Copyright INRIA (c) 2007</p>
+ * <p>
+ * Company: INRIA</p>
+ * <p>
+ * Project: Acacia</p>
  * <br>
  * This class is used to manage prefixes and namespaces.
  * <br>
@@ -46,49 +51,51 @@ public class NSManager extends ASTObject {
      */
     private static Logger logger = LoggerFactory.getLogger(NSManager.class);
     public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
-    public static final String XSD  = RDFS.XSD;
-    public static final String RDF  = RDFS.RDF;
-    public static final String OWL  = RDFS.OWL;
+    public static final String XSD = RDFS.XSD;
+    public static final String XSI = "http://www.w3.org/2001/XMLSchema-instance#";
+    public static final String XML = fr.inria.corese.sparql.datatype.RDF.XML;
+    public static final String RDF = RDFS.RDF;
+    public static final String OWL = RDFS.OWL;
     public static final String SPIN = "http://spinrdf.org/sp#";
-    public static final String SQL  = "http://ns.inria.fr/ast/sql#";
-    public static final String FOAF  = "http://xmlns.com/foaf/0.1/";
+    public static final String SQL = "http://ns.inria.fr/ast/sql#";
+    public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
-    public static final String SHAPE    = "http://www.w3.org/ns/shacl#";
-    public static final String DCTERM   = "http://purl.org/dc/terms/";
-    public static final String DBPEDIAFR= "http://fr.dbpedia.org/resource/";
-    public static final String DBPEDIA  = "http://dbpedia.org/resource/";
-    
-    public static final String COSNS      = RDFS.COSNS;
-    public static final String COS        = RDFS.COS;
-    public static final String SWL        = ExpType.SWL;
-    public static final String STL        = ExpType.STL;
-    public static final String D3         = STL + "d3#";
+    public static final String SHAPE = "http://www.w3.org/ns/shacl#";
+    public static final String DCTERM = "http://purl.org/dc/terms/";
+    public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
+    public static final String DBPEDIA = "http://dbpedia.org/resource/";
+
+    public static final String COSNS = RDFS.COSNS;
+    public static final String COS = RDFS.COS;
+    public static final String SWL = ExpType.SWL;
+    public static final String STL = ExpType.STL;
+    public static final String D3 = STL + "d3#";
     public static final String STL_FORMAT = STL + "format/";
-    public static final String JAVA       = ExpType.EXT+"java/";    
-    public static final String DS         = ExpType.EXT+"ds/";    
-    public static final String CAST       = ExpType.EXT+"cast/";    
-    public static final String EXT        = ExpType.EXT;
-    public static final String DT         = ExpType.DT;
-    public static final String USER       = ExpType.UXT;
-    public static final String KGRAM      = ExpType.KGRAM;
-    public static final String SPARQL     = ExpType.SPARQL;
-    public static final String CUSTOM     = ExpType.CUSTOM;
-    public static final String KPREF      = ExpType.KPREF;
+    public static final String JAVA = ExpType.EXT + "java/";
+    public static final String DS = ExpType.EXT + "ds/";
+    public static final String CAST = ExpType.EXT + "cast/";
+    public static final String EXT = ExpType.EXT;
+    public static final String DT = ExpType.DT;
+    public static final String USER = ExpType.UXT;
+    public static final String KGRAM = ExpType.KGRAM;
+    public static final String SPARQL = ExpType.SPARQL;
+    public static final String CUSTOM = ExpType.CUSTOM;
+    public static final String KPREF = ExpType.KPREF;
     // extended named graph: eng:describe eng:queries
-    public static final String KGEXT      = ExpType.KGRAM + "extension/";    
+    public static final String KGEXT = ExpType.KGRAM + "extension/";
     // construct extended named graph
-    public static final String KGEXTCONS  = ExpType.KGRAM + "construct/";    
-    public static final String KEPREF  = "eng";    
-    public static final String KECPREF = "cw";    
+    public static final String KGEXTCONS = ExpType.KGRAM + "construct/";
+    public static final String KEPREF = "eng";
+    public static final String KECPREF = "cw";
     static final String FPPP = "fp";
     public static final String PPN = KGRAM + "pprinter/";
     static final String PPP = "pp";
     private static final String SPIN_PREF = "sp";
     private static final String FOAF_PREF = "foaf";
-    public static final String  STL_PREF = "st";
-    public static final String  SWL_PREF = "sw";
-    public static final String  EXT_PREF = "xt";
-    public static final String  SPARQL_PREF = "rq";
+    public static final String STL_PREF = "st";
+    public static final String SWL_PREF = "sw";
+    public static final String EXT_PREF = "xt";
+    public static final String SPARQL_PREF = "rq";
     public static final String OWLRL = SWL + "owlrl";
     public static final String RDFSRL = SWL + "rdfs";
 
@@ -99,25 +106,20 @@ public class NSManager extends ASTObject {
     private static final String DOT = ".";
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
-    static final char[] END_CHAR = {'#', '/', '?'} ; //, ':'}; // may end an URI ...
+    static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
     static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
     static final String pchar = ":";
     int count = 0;
     static final NSManager nsm = create();
-    
+
     HashMap<String, String> def; // system namespace with prefered prefix
     HashMap<String, Integer> index;  // namespace -> number
     HashMap<String, String> tns;     // namespace -> prefix
     HashMap<String, String> tprefix; // prefix -> namespace
-    HashMap<String, String> trecord; 
+    HashMap<String, String> trecord;
     String base;
     URI baseURI;
-    private String uri, exp;
-    private Object object;
-    private Object dt;
-    private boolean isValid = true, ishtDoc = true;
-    private HashMap<String, Object> htDoc;
-    private HashMap<String, Boolean> htValid;
+
     /**
      * Corresponds to the namespaces declared by default
      *
@@ -138,11 +140,11 @@ public class NSManager extends ASTObject {
         this();
         this.defaultNamespaces = defaultNamespaces;
     }
-    
+
     public static NSManager nsm() {
         return nsm;
     }
-    
+
     /**
      * Warning: to be used only when we don't need default namespaces and their
      * prefixes
@@ -173,18 +175,18 @@ public class NSManager extends ASTObject {
         }
         return nsm;
     }
-    
+
     /**
-     * Import nsm definitions     
+     * Import nsm definitions
      */
-    public NSManager complete(NSManager nsm){
-       if (getBase() == null) {
-           setBase(nsm.getBase());
-       }
-       for (String p : nsm.getPrefixSet()) {
+    public NSManager complete(NSManager nsm) {
+        if (getBase() == null) {
+            setBase(nsm.getBase());
+        }
+        for (String p : nsm.getPrefixSet()) {
             definePrefix(p, nsm.getNamespace(p));
-       }
-       return this;
+        }
+        return this;
     }
 
     public void init() {
@@ -237,7 +239,7 @@ public class NSManager extends ASTObject {
         def.put(DCTERM, "dc");
         def.put(DBPEDIAFR, "db");
         def.put(DBPEDIA, "dbe");
-       
+
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
         def.put(KGEXTCONS, KECPREF);
@@ -251,9 +253,9 @@ public class NSManager extends ASTObject {
         def.put(USER, "us");
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
-        def.put(SPARQL, SPARQL_PREF);        
+        def.put(SPARQL, SPARQL_PREF);
         def.put(SHAPE, "sh");
-        def.put("http://example.org/ns#", "ex");        
+        def.put("http://example.org/ns#", "ex");
         def.put(JAVA, "java");
         def.put(DS, "ds");
         def.put(CAST, "cast");
@@ -304,7 +306,7 @@ public class NSManager extends ASTObject {
     }
 
     public String definePrefix(String prefix, String ns) {
-        if (prefix.equals(pchar)){
+        if (prefix.equals(pchar)) {
             prefix = "";
         }
         return defNamespace(ns, prefix);
@@ -381,18 +383,18 @@ public class NSManager extends ASTObject {
     public String toPrefixURI(String nsname) {
         return toPrefixURI(nsname, true);
     }
-    
+
     public String toPrefixURI(String nsname, boolean skip) {
         return toPrefixURI(nsname, skip, false);
     }
-    
+
     /**
-     * 
+     *
      * @param skip: do not generate prefxi when prefix undefined
      * @param display: display mode, generate prefixed named even with ' or ()
      */
     public String toPrefixURI(String nsname, boolean skip, boolean display) {
-        if (! display && containsChar(nsname)) {
+        if (!display && containsChar(nsname)) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, skip);
@@ -403,10 +405,10 @@ public class NSManager extends ASTObject {
             }
         }
     }
-    
-    boolean containsChar(String str){
-        for (String s : PB_CHAR){
-            if (str.contains(s)){
+
+    boolean containsChar(String str) {
+        for (String s : PB_CHAR) {
+            if (str.contains(s)) {
                 return true;
             }
         }
@@ -414,7 +416,7 @@ public class NSManager extends ASTObject {
 //        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
 //            return true;
 //        }
-        
+
         return false;
     }
 
@@ -451,12 +453,12 @@ public class NSManager extends ASTObject {
         str += nsname.substring(ns.length());
         return str;
     }
-    
+
     /**
      * Remember namespace is used for later pprint
      */
-    void record(String ns){
-         if (isRecord() && ! trecord.containsKey(ns)){
+    void record(String ns) {
+        if (isRecord() && !trecord.containsKey(ns)) {
             trecord.put(ns, ns);
         }
     }
@@ -531,7 +533,7 @@ public class NSManager extends ASTObject {
     public String toString() {
         return toString(null, false, true);
     }
-    
+
     public String toString(String title) {
         return toString(title, false, true);
     }
@@ -539,9 +541,9 @@ public class NSManager extends ASTObject {
     public String toString(String title, boolean all) {
         return toString(title, all, true);
     }
-    
+
     public String toString(String title, boolean all, boolean bas) {
-        if (title == null){
+        if (title == null) {
             title = "prefix";
         }
         StringBuilder sb = new StringBuilder();
@@ -553,7 +555,7 @@ public class NSManager extends ASTObject {
             if (all || isDisplayable(ns)) {
                 sb.append(title).append(" ").append(p);
                 sb.append(": <").append(getNamespace(p)).append(">");
-                if (title.equals("@prefix")){
+                if (title.equals("@prefix")) {
                     sb.append(" ").append(".");
                 }
                 sb.append(NL);
@@ -561,30 +563,31 @@ public class NSManager extends ASTObject {
         }
         return sb.toString();
     }
-    
+
     public IDatatype turtle(IDatatype dt) {
         return turtle(dt, false);
     }
+
     public IDatatype turtle(IDatatype dt, boolean force) {
         return turtle(dt, force, false);
     }
-    
+
     /**
-     * 
-     * @param force:   generate a prefix if no prefix exist
+     *
+     * @param force: generate a prefix if no prefix exist
      * @param display: display mode, generate prefixed name even with ' or ()
      */
     public IDatatype turtle(IDatatype dt, boolean force, boolean display) {
         String label = dt.getLabel();
         if (dt.isURI()) {
             setRecord(true);
-            String uri = toPrefixURI(label, ! force, display);
-            dt = DatatypeMap.newStringBuilder(uri);          
+            String uri = toPrefixURI(label, !force, display);
+            dt = DatatypeMap.newStringBuilder(uri);
         } else if (dt.isLiteral()) {
-            if ((dt.getCode() == IDatatype.INTEGER 
-                    && dt.getDatatypeURI().equals(fr.inria.corese.sparql.datatype.XSD.xsdinteger) 
-                    && (! (label.startsWith("0") && label.length() > 1))) 
-             || (dt.getCode() == IDatatype.BOOLEAN && (label.equals("true") || label.equals("false")))) {
+            if ((dt.getCode() == IDatatype.INTEGER
+                    && dt.getDatatypeURI().equals(fr.inria.corese.sparql.datatype.XSD.xsdinteger)
+                    && (!(label.startsWith("0") && label.length() > 1)))
+                    || (dt.getCode() == IDatatype.BOOLEAN && (label.equals("true") || label.equals("false")))) {
                 // print string value as is
             } else {
                 // add quotes around string, add lang tag if any
@@ -593,16 +596,15 @@ public class NSManager extends ASTObject {
         }
         return dt;
     }
-    
-        
-    boolean isDisplayable(String ns){
-        if (isRecorded(ns)){
+
+    boolean isDisplayable(String ns) {
+        if (isRecorded(ns)) {
             return true;
         }
-        return ! isSystem(ns);
+        return !isSystem(ns);
     }
-    
-    public boolean isRecorded(String ns){
+
+    public boolean isRecorded(String ns) {
         return isRecord() && trecord.containsKey(ns);
     }
 
@@ -620,7 +622,7 @@ public class NSManager extends ASTObject {
             }
         }
     }
-    
+
     public static String toURI(String path) {
         String str;
         try {
@@ -637,13 +639,12 @@ public class NSManager extends ASTObject {
         }
         return str;
     }
-    
 
     /**
      * s can be relative to the actual base ...
      */
     String getBase(String s) {
-        if (isBase()){
+        if (isBase()) {
             s = toBase(s);
         }
         return s;
@@ -722,7 +723,7 @@ public class NSManager extends ASTObject {
         for (int i = 0; i < END_CHAR.length; i++) {
             index = name.lastIndexOf(END_CHAR[i]);// ???
             if (index != -1) {
-                return  name.substring(index + 1);
+                return name.substring(index + 1);
             }
         }
         return name;
@@ -746,9 +747,6 @@ public class NSManager extends ASTObject {
         }
     }
 
-    
-	
-	
     public static String namespace(String type) {  //retourne le namespace d'un type
         if (type.startsWith(HASH)) {
             return "";
@@ -758,7 +756,7 @@ public class NSManager extends ASTObject {
             index = type.lastIndexOf(END_CHAR[i]);
             if (index != -1) {
                 String str = type.substring(0, index + 1);
-                if (! str.equals("http://")) {
+                if (!str.equals("http://")) {
                     return str;
                 }
             }
@@ -788,85 +786,27 @@ public class NSManager extends ASTObject {
         return defaultNamespaces;
     }
 
-    // xpath document:
-    public void set(String name, Object obj) {
-        uri = name;
-        object = obj;
-        isValid = obj != null;
-        if (ishtDoc) {
-            htValid.put(name, (isValid) ? Boolean.TRUE : Boolean.FALSE);
-            if (isValid) {
-                htDoc.put(name, obj);
-            }
-        }
-    }
-
-    public Object get(String name) {
-        if (uri != null && name.equals(uri)) {
-            return object;
-        } else if (ishtDoc) {
-            uri = name;
-            exp = null;
-            object = htDoc.get(name);
-            return object;
-        } else {
-            return null;
-        }
-    }
-
-    public boolean isValid(String name) {
-        if (ishtDoc) {
-            if (htDoc == null) {
-                htDoc = new HashMap<String, Object>();
-                htValid = new HashMap<String, Boolean>();
-            }
-            Boolean valid = htValid.get(name);
-            return (valid == null || valid);
-        }
-        if (uri != null && name.equals(uri)) {
-            return isValid;
-        } else {
-            return true;
-        }
-    }
-
-    // xpath expression:
-    public void put(String name, String ee, Object val) {
-        uri = name;
-        exp = ee;
-        dt = val;
-    }
-
-    public Object pop(String name, String ee) {
-        if (exp != null && exp.equals(ee) && uri != null && uri.equals(name)) {
-            return dt;
-        } else {
-            return null;
-        }
-    }
-
     @Override
     public PointerType pointerType() {
         return NSMANAGER;
-    } 
-    
-    
+    }
+
     @Override
-    public IDatatype getList(){
+    public IDatatype getList() {
         ArrayList<IDatatype> list = new ArrayList<IDatatype>();
-        for (String p : tprefix.keySet()){
+        for (String p : tprefix.keySet()) {
             String n = getNamespace(p);
-            if (isDisplayable(n)){
+            if (isDisplayable(n)) {
                 IDatatype ldt = DatatypeMap.createList(DatatypeMap.newInstance(p), DatatypeMap.newResource(n));
                 list.add(ldt);
             }
         }
         return DatatypeMap.createList(list);
     }
-    
-     @Override
+
+    @Override
     public String getDatatypeLabel() {
-       return String.format("[NSManager: size=%s]", size());
+        return String.format("[NSManager: size=%s]", size());
     }
 
     /**
@@ -882,5 +822,5 @@ public class NSManager extends ASTObject {
     public void setRecord(boolean record) {
         this.record = record;
     }
-    
+
 }

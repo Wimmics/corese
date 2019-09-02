@@ -295,6 +295,8 @@ public interface IDatatype
      */
     IDatatype datatype();
     IDatatype getDatatype();
+    // IDatatype value of Pointer Object (eg XML TEXT Node as xsd:string)
+    IDatatype getObjectDatatypeValue();
 
     // same as getDatatype but URI return rdfs:Resource
     IDatatype getIDatatype();

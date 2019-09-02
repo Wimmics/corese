@@ -26,6 +26,7 @@ public class Processor {
 	private static Logger logger = LoggerFactory.getLogger(Processor.class);
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
+        static final String DOM      = NSManager.DOM;
         static final String EXT      = NSManager.EXT;
         static final String EXT_PREF = NSManager.EXT_PREF + ":";
         static final String SPARQL   = NSManager.SPARQL;       
@@ -915,13 +916,45 @@ public class Processor {
                 defoper(RQ_GT,     ExprType.GT); 
                 defoper(RQ_GE,     ExprType.GE); 
                 
-                defoper(EXT+"nodetype",  ExprType.XT_NODE_TYPE);
-                defoper(EXT+"nodename",  ExprType.XT_NODE_NAME);
-                defoper(EXT+"nodeproperty",ExprType.XT_NODE_PROPERTY);
-                defoper(EXT+"elements",  ExprType.XT_ELEMENTS);
-                defoper(EXT+"text",      ExprType.XT_TEXT_CONTENT);
-                defoper(EXT+"attributes",ExprType.XT_ATTRIBUTES);
+                defoper(EXT+"nodetype",     ExprType.XT_NODE_TYPE);
+                defoper(EXT+"nodename",     ExprType.XT_NODE_NAME);
+                defoper(EXT+"nodevalue",    ExprType.XT_NODE_VALUE);
+                defoper(EXT+"nodeproperty", ExprType.XT_NODE_PROPERTY);
+                defoper(EXT+"attributes",   ExprType.XT_ATTRIBUTES);
+                defoper(EXT+"elements",     ExprType.XT_ELEMENTS);
+                defoper(EXT+"children",     ExprType.XT_CHILDREN);
+                defoper(EXT+"text",         ExprType.XT_TEXT_CONTENT);
+                defoper(EXT+"nodetext",     ExprType.XT_TEXT_CONTENT);
+                defoper(EXT+"nodeparent",   ExprType.XT_NODE_PARENT);
+                defoper(EXT+"nodedocument", ExprType.XT_NODE_DOCUMENT);
+                defoper(EXT+"nodeelement",  ExprType.XT_NODE_ELEMENT);
+                defoper(EXT+"objectvalue",  ExprType.XT_DATATYPE_VALUE);
+                defoper(EXT+"namespace",    ExprType.XT_NAMESPACE);
+                defoper(EXT+"base",         ExprType.XT_BASE);
                 
+                defoper(DOM+"getNodeType",     ExprType.XT_NODE_TYPE);
+                defoper(DOM+"getNodeName",     ExprType.XT_NODE_NAME);
+                defoper(DOM+"getLocalName",    ExprType.XT_NODE_LOCAL_NAME);
+                defoper(DOM+"getNodeValue",    ExprType.XT_NODE_VALUE);
+                defoper(DOM+"getNodeProperty", ExprType.XT_NODE_PROPERTY);
+                defoper(DOM+"getAttributes",   ExprType.XT_ATTRIBUTES);
+                defoper(DOM+"getElementsByTagName",     ExprType.XT_ELEMENTS);
+                defoper(DOM+"getElementsByTagNameNS",   ExprType.XT_ELEMENTS);
+                defoper(DOM+"getFirstChild",    ExprType.XT_NODE_FIRST_CHILD);
+                defoper(DOM+"getChildNodes",    ExprType.XT_CHILDREN);
+                defoper(DOM+"getTextContent",   ExprType.XT_TEXT_CONTENT);
+                defoper(DOM+"getNodeParent",    ExprType.XT_NODE_PARENT);
+                defoper(DOM+"getOwnerDocument", ExprType.XT_NODE_DOCUMENT);
+                defoper(DOM+"getElementById",   ExprType.XT_NODE_ELEMENT);
+                defoper(DOM+"getNamespaceURI",  ExprType.XT_NAMESPACE);
+                defoper(DOM+"getBaseURI",       ExprType.XT_BASE);
+                defoper(DOM+"hasAttribute",     ExprType.XT_HAS_ATTRIBUTE);
+                defoper(DOM+"hasAttributeNS",   ExprType.XT_HAS_ATTRIBUTE);
+                defoper(DOM+"getAttribute",     ExprType.XT_ATTRIBUTE);
+                defoper(DOM+"getAttributeNS",   ExprType.XT_ATTRIBUTE);
+                
+                
+              
                 defoper(XT_VALID_URI,ExprType.XT_VALID_URI);  
                 defoper(XT_LOAD,   ExprType.LOAD);  
                 defoper(XT_CONTENT,ExprType.XT_CONTENT);  

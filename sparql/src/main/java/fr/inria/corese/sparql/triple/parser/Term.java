@@ -233,11 +233,22 @@ public class Term extends Expression {
                 return new ResultFormater(name);
                 
             case ExprType.XT_ATTRIBUTES:
+            case ExprType.XT_ATTRIBUTE:
+            case ExprType.XT_HAS_ATTRIBUTE:
             case ExprType.XT_NODE_TYPE:
+            case ExprType.XT_NODE_VALUE:
             case ExprType.XT_NODE_NAME:    
+            case ExprType.XT_NODE_LOCAL_NAME:    
+            case ExprType.XT_NODE_PARENT:    
+            case ExprType.XT_NODE_DOCUMENT:    
+            case ExprType.XT_NODE_ELEMENT:    
             case ExprType.XT_NODE_PROPERTY:    
             case ExprType.XT_ELEMENTS:
+            case ExprType.XT_CHILDREN:
+            case ExprType.XT_NODE_FIRST_CHILD:
             case ExprType.XT_TEXT_CONTENT:
+            case ExprType.XT_NAMESPACE:
+            case ExprType.XT_BASE:
                 return new XML(name);
  
             case ExprType.XT_SPIN:
@@ -443,6 +454,7 @@ public class Term extends Expression {
 
             case ExprType.INDEX:
             case ExprType.XT_CONTENT:
+            case ExprType.XT_DATATYPE_VALUE:
             case ExprType.XT_LOWERCASE:
             case ExprType.XT_UPPERCASE:
                 return new UnaryExtension(name);
@@ -563,7 +575,7 @@ public class Term extends Expression {
                 return new GraphFunction(name);
                 
             case ExprType.XT_METADATA:
-            case ExprType.XT_CONTEXT:    
+            case ExprType.XT_CONTEXT:  
             case ExprType.XT_QUERY:    
             case ExprType.XT_FROM:    
             case ExprType.XT_NAMED:

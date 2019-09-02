@@ -15,7 +15,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 
 /**
- * Datatype to manage XML objects such as Node, document, etc. Implements (part
+ * Datatype to manage XML objects as DOM Node, Document, etc. Implements (part
  * of) DOM CoreseXML is used by xpath() and by xt:xml() parser. CoreseXMLLiteral
  * remains the std datatype for rdf:XMLLiteral.
  *
@@ -56,11 +56,18 @@ public class CoreseXML extends CoreseExtension {
     }
 
     private static void deftype() {
-        nodeType.put(Node.DOCUMENT_NODE, DatatypeMap.newInstance("DOCUMENT"));
-        nodeType.put(Node.ELEMENT_NODE, DatatypeMap.newInstance("ELEMENT"));
-        nodeType.put(Node.ATTRIBUTE_NODE, DatatypeMap.newInstance("ATTRIBUTE"));
-        nodeType.put(Node.TEXT_NODE, DatatypeMap.newInstance("TEXT"));
-        nodeType.put(Node.PROCESSING_INSTRUCTION_NODE, DatatypeMap.newInstance("INSTRUCTION"));
+        deftype(Node.DOCUMENT_NODE, "DOCUMENT");
+        deftype(Node.DOCUMENT_TYPE_NODE, "DOCTYPE");
+        deftype(Node.ELEMENT_NODE, "ELEMENT");
+        deftype(Node.ATTRIBUTE_NODE, "ATTRIBUTE");
+        deftype(Node.TEXT_NODE, "TEXT");
+        deftype(Node.PROCESSING_INSTRUCTION_NODE, "INSTRUCTION");
+        deftype(Node.CDATA_SECTION_NODE, "CDATA");
+        deftype(Node.COMMENT_NODE, "COMMENT");
+    }
+
+    static void deftype(short type, String name) {
+        nodeType.put(type, DatatypeMap.newInstance(name));
     }
 
     @Override
@@ -124,17 +131,81 @@ public class CoreseXML extends CoreseExtension {
         return getElementsByTagName(node, dt);
     }
 
+    public IDatatype getElementsByTagNameNS(IDatatype ns, IDatatype dt) {
+        return getElementsByTagNameNS(node, ns, dt);
+    }
+
+    public IDatatype getElementById(IDatatype dt) {
+        return getElementById(node, dt);
+    }
+
+    public IDatatype hasAttribute(IDatatype dt) {
+        return hasAttribute(node, dt);
+    }
+
+    public IDatatype hasAttributeNS(IDatatype ns, IDatatype dt) {
+        return hasAttributeNS(node, ns, dt);
+    }
+
+    public IDatatype getAttribute(IDatatype dt) {
+        return getAttribute(node, dt);
+    }
+
+    public IDatatype getAttributeNS(IDatatype ns, IDatatype dt) {
+        return getAttributeNS(node, ns, dt);
+    }
+
     public IDatatype getTextContent() {
         return getTextContent(node);
+    }
+
+    public IDatatype getNodeValue() {
+        return getNodeValue(node);
     }
 
     public IDatatype getNodeName() {
         return getNodeName(node);
     }
-    
+
+    public IDatatype getLocalName() {
+        return getLocalName(node);
+    }
+
     // generic function name for testing API
     public IDatatype getNodeProperty() {
-        return getNodeProperty(node);
+        return getBaseURI(node);
+    }
+
+    Element getElement(Node node) {
+        return (Element) node;
+    }
+
+    public IDatatype getFirstChild() {
+        return getFirstChild(node);
+    }
+
+    public IDatatype getChildNodes() {
+        return DatatypeMap.newList(childNodes());
+    }
+
+    public IDatatype getChildElements() {
+        return DatatypeMap.newList(childElements());
+    }
+
+    public IDatatype getOwnerDocument() {
+        return getOwnerDocument(node);
+    }
+
+    public IDatatype getParentNode() {
+        return getParentNode(node);
+    }
+
+    public IDatatype getNamespaceURI() {
+        return getNamespaceURI(node);
+    }
+
+    public IDatatype getBaseURI() {
+        return getBaseURI(node);
     }
 
     /**
@@ -145,22 +216,131 @@ public class CoreseXML extends CoreseExtension {
      ********************************************************************
      */
     
-    IDatatype getNodeProperty(Node node) {
-        return DatatypeMap.newInstance(node.getNodeValue());
+
+    IDatatype getAttribute(Node node, IDatatype dt) {
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                String val = getElement(node).getAttribute(dt.getLabel());
+                if (val == null) {
+                    return null;
+                }
+                return DatatypeMap.newInstance(val);
+        }
+        return null;
+    }
+
+    IDatatype getAttributeNS(Node node, IDatatype ns, IDatatype dt) {
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                String val = getElement(node).getAttributeNS(ns.getLabel(), dt.getLabel());
+                if (val == null) {
+                    return null;
+                }
+                return DatatypeMap.newInstance(val);
+        }
+        return null;
     }
     
+    IDatatype hasAttribute(Node node, IDatatype dt) {
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                return DatatypeMap.newInstance(getElement(node).hasAttribute(dt.getLabel()));
+        }
+        return DatatypeMap.FALSE;
+    }
+
+    IDatatype hasAttributeNS(Node node, IDatatype ns, IDatatype dt) {
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                boolean b = getElement(node).hasAttributeNS(ns.getLabel(), dt.getLabel());
+                return DatatypeMap.newInstance(b);
+        }
+        return DatatypeMap.FALSE;
+    }
+
+    IDatatype getNamespaceURI(Node node) {
+        String uri = node.getNamespaceURI();
+        if (uri == null) {
+            return null;
+        }
+        return DatatypeMap.newResource(uri);
+    }
+
+    IDatatype getBaseURI(Node node) {
+        String uri = node.getBaseURI();
+        if (uri == null) {
+            return null;
+        }
+        return DatatypeMap.newResource(uri);
+    }
+
+    IDatatype getOwnerDocument(Node node) {
+        Document doc = node.getOwnerDocument();
+        return cast(doc);
+    }
+
+    IDatatype getParentNode(Node node) {
+        Node n = node.getParentNode();
+        return cast(n);
+    }
+
+    IDatatype getTagName(Node node) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            return DatatypeMap.newInstance(getElement(node).getTagName());
+        }
+        return getNodeName(node);
+    }
+
     IDatatype getNodeName(Node node) {
         return DatatypeMap.newInstance(node.getNodeName());
     }
+    
+    IDatatype getLocalName(Node node) {
+        return DatatypeMap.newInstance(node.getLocalName());
+    }
+
+    IDatatype getNodeValue(Node node) {
+        String str = node.getNodeValue();
+        if (str == null) {
+            return null;
+        }
+        return DatatypeMap.newInstance(node.getNodeValue());
+    }
 
     IDatatype getTextContent(Node node) {
-        return DatatypeMap.newInstance(node.getTextContent());
+        String str = node.getTextContent();
+        if (str == null) {
+            return null;
+        }
+        return DatatypeMap.newInstance(str);
+    }
+    
+    IDatatype getElementsByTagNameNS(Node node, IDatatype ns, IDatatype dt) {
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                return cast(getElement(node).getElementsByTagNameNS(ns.getLabel(), dt.getLabel()));
+            case Node.DOCUMENT_NODE:
+                return cast(((Document) node).getElementsByTagNameNS(ns.getLabel(),dt.getLabel()));
+        }
+        return DatatypeMap.newList();
     }
 
     IDatatype getElementsByTagName(Node node, IDatatype dt) {
-        Document doc = node.getOwnerDocument();
-        NodeList list = doc.getElementsByTagName(dt.getLabel());
-        return cast(list);
+        switch (node.getNodeType()) {
+            case Node.ELEMENT_NODE:
+                return cast(getElement(node).getElementsByTagName(dt.getLabel()));
+            case Node.DOCUMENT_NODE:
+                return cast(((Document) node).getElementsByTagName(dt.getLabel()));
+        }
+        return DatatypeMap.newList();
+    }
+
+    IDatatype getElementById(Node node, IDatatype dt) {
+        Node res = node.getOwnerDocument().getElementById(dt.getLabel());
+        if (res == null) {
+            return null;
+        }
+        return cast(res);
     }
 
     IDatatype getNodeType(Node node) {
@@ -184,30 +364,65 @@ public class CoreseXML extends CoreseExtension {
         return dt;
     }
 
+    // value for iterators
     List<IDatatype> valueList() {
+        return childElements();
+    }
+    
+    IDatatype getFirstChild(Node node) {
+        NodeList nodeList = node.getChildNodes();
+        if (nodeList == null || nodeList.getLength() == 0) {
+            return null;
+        }
+        return cast(nodeList.item(0));
+    }
+
+    List<IDatatype> childNodes() {
         NodeList nodeList = node.getChildNodes();
         if (nodeList == null) {
             return new ArrayList<>(0);
         }
-        IDatatype list = cast(nodeList);
-        if (list != null && list.isList()) {
-            return list.getValueList();
-        }
-        return new ArrayList<>(0);
+        return asList(nodeList);
     }
 
-    public IDatatype cast(NodeList nodes) {
+    List<IDatatype> childElements() {
+        NodeList nodeList = node.getChildNodes();
+        if (nodeList == null) {
+            return new ArrayList<>(0);
+        }
+        return asList(nodeList, true);
+    }
+
+    List<IDatatype> asList(NodeList nodes) {
+        return asList(nodes, false);
+    }
+
+    List<IDatatype> asList(NodeList nodes, boolean elementOnly) {
         Node node;
         IDatatype dt;
-        ArrayList<IDatatype> vec = new ArrayList<>();
+        ArrayList<IDatatype> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             node = nodes.item(i);
-            //node.DOCUMENT_NODE;
-            dt = cast(node);
-            if (dt != null) {
-                vec.add(dt);
+            if (!elementOnly || node.getNodeType() == Node.ELEMENT_NODE) {
+                dt = cast(node);
+                if (dt != null) {
+                    list.add(dt);
+                }
             }
         }
+        return list;
+    }
+
+    /**
+     * NodeList is: 1) child node list 2) result of xpath(exp) cast TEXT Node as
+     * IDatatype with datatype and lang if any
+     */
+    public static IDatatype cast(NodeList nodes) {
+        return singleton.castNodeList(nodes);
+    }
+
+    IDatatype castNodeList(NodeList nodes) {
+        List<IDatatype> vec = asList(nodes);
         IDatatype adt = DatatypeMap.createList(vec);
         return adt;
     }
@@ -245,35 +460,65 @@ public class CoreseXML extends CoreseExtension {
                 dt = dom2dt(node, node.getNodeValue());
                 break;
 
+            case Node.TEXT_NODE:
+                //dt = text2dt(node);
+                dt = dom2dt(node, getName(node));
+                break;
+
             default:
-                // text(), etc
-                String value = node.getNodeValue();
-                NamedNodeMap map = node.getParentNode().getAttributes();
-                Node datatype = null,
-                 lang = null;
-                if (map != null) {
-                    // rdf:datatype
-                    datatype = map.getNamedItemNS(RDFNS, "datatype");
-                    if (datatype == null) {
-                        // xsi:type
-                        datatype = map.getNamedItemNS(XSINS, "type");
-                        if (datatype == null) {
-                            lang = map.getNamedItemNS(XMLNS, "lang");
-                        }
-                    }
+                dt = dom2dt(node, getName(node));
+
+        }
+        return dt;
+    }
+
+    @Override
+    public IDatatype getObjectDatatypeValue() {
+        switch (node.getNodeType()) {
+            case Node.TEXT_NODE:
+                return text2dt(node);
+            default:
+                return this;
+        }
+    }
+
+    /**
+     * text(), etc Return text value as IDatatype and take into account
+     * rdf:datatype, xsi:type and xml:lang Hence it may return an integer or a
+     * literal with lang tag Use case: xpath(node, exp/text()) iterate child
+     * nodes
+     *
+     */
+    IDatatype text2dt(Node node) {
+        IDatatype dt = null;
+        String value = node.getNodeValue();
+        NamedNodeMap map = node.getParentNode().getAttributes();
+        Node datatype = null,
+                lang = null;
+
+        if (map != null) {
+            // rdf:datatype
+            datatype = map.getNamedItemNS(RDFNS, "datatype");
+            if (datatype == null) {
+                // xsi:type
+                datatype = map.getNamedItemNS(XSINS, "type");
+                if (datatype == null) {
+                    // xml:lang
+                    lang = map.getNamedItemNS(XMLNS, "lang");
                 }
-                if (value == null) {
-                    value = getName(node);
-                }
-                if (value != null) {
-                    if (datatype != null) {
-                        dt = DatatypeMap.createLiteral(value, datatype.getTextContent(), null);
-                    } else if (lang != null) {
-                        dt = DatatypeMap.createLiteral(value, null, lang.getTextContent());
-                    } else {
-                        dt = DatatypeMap.newInstance(value);
-                    }
-                }
+            }
+        }
+        if (value == null) {
+            value = getName(node);
+        }
+        if (value != null) {
+            if (datatype != null) {
+                dt = DatatypeMap.createLiteral(value, datatype.getTextContent(), null);
+            } else if (lang != null) {
+                dt = DatatypeMap.createLiteral(value, null, lang.getTextContent());
+            } else {
+                dt = DatatypeMap.newInstance(value);
+            }
         }
         return dt;
     }

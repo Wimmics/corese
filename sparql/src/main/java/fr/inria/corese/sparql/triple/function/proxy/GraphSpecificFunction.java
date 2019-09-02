@@ -33,8 +33,6 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.core.Pointerable;
 
 /**
  *

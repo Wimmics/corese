@@ -5,11 +5,22 @@
  */
 package fr.inria.corese.sparql.triple.function.extension;
 
+import static fr.inria.corese.kgram.api.core.ExprType.XT_ATTRIBUTE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ATTRIBUTES;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_BASE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_CHILDREN;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ELEMENTS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_HAS_ATTRIBUTE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NAMESPACE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_DOCUMENT;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_ELEMENT;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_FIRST_CHILD;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_LOCAL_NAME;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_NAME;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_PARENT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_TYPE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_VALUE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TEXT_CONTENT;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -24,22 +35,35 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
  *
  */
 public class XML extends TermEval {
-    
+
     public XML() {
     }
 
     public XML(String name) {
         super(name);
+        setArity(1);
     }
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt = getArg(0).eval(eval, b, env, p);
+        IDatatype[] param = evalArguments(eval, b, env, p, 0);
 
-        if (dt == null) {
+        if (param == null) {
             return null;
         }
-        
+
+        IDatatype dt = param[0], ns = null, label = null;
+
+        switch (arity()) {
+            case 2:
+                label = param[1];
+                break;
+            case 3:
+                ns = param[1];
+                label = param[2];
+                break;
+        }
+
         if (isXML(dt)) {
             CoreseXML node = (CoreseXML) dt;
             switch (oper()) {
@@ -48,50 +72,95 @@ public class XML extends TermEval {
 
                 case XT_NODE_TYPE:
                     return node.getNodeType();
-                    
+
+                case XT_NODE_VALUE:
+                    return node.getNodeValue();
+
+                case XT_NAMESPACE:
+                    return node.getNamespaceURI();
+
+                case XT_BASE:
+                    return node.getBaseURI();
+
                 case XT_ELEMENTS:
-                    IDatatype dt2 = getArg(1).eval(eval, b, env, p);
-                    if (dt2 == null) {
-                        return null;
+                    switch (arity()) {
+                        case 1:
+                            return node.getChildElements();
+                        case 2:
+                            return node.getElementsByTagName(label);
+                        default:
+                            return node.getElementsByTagNameNS(ns, label);
                     }
-                    return node.getElementsByTagName(dt2);
+
+                case XT_NODE_ELEMENT:
+                    return node.getElementById(label);
+
+                case XT_ATTRIBUTE:
+                    if (arity() == 2) {
+                        return node.getAttribute(label);
+                    } else {
+                        return node.getAttributeNS(ns, label);
+                    }
                     
+                case XT_HAS_ATTRIBUTE:
+                    if (arity() == 2) {
+                        return node.hasAttribute(label);
+                    } else {
+                        return node.hasAttributeNS(ns, label);
+                    }    
+
+                case XT_CHILDREN:
+                    return node.getChildNodes();
+                    
+                case XT_NODE_FIRST_CHILD:
+                    return node.getFirstChild();
+
                 case XT_TEXT_CONTENT:
                     return node.getTextContent();
-                    
-                case XT_NODE_NAME:    
+
+                case XT_NODE_NAME:
                     return node.getNodeName();
                     
+                case XT_NODE_LOCAL_NAME:
+                    return node.getLocalName();    
+
                 case XT_NODE_PROPERTY:
                     return node.getNodeProperty();
 
+                case XT_NODE_PARENT:
+                    return node.getParentNode();
+
+                case XT_NODE_DOCUMENT:
+                    return node.getOwnerDocument();
+
             }
         }
-        else {
-            switch (oper()) {
-                case XT_ATTRIBUTES:
-                    return DatatypeMap.map();
+//        else {
+//            switch (oper()) {
+//                case XT_ATTRIBUTES:
+//                    return DatatypeMap.map();
+//
+//                case XT_NODE_TYPE:
+//                    return CoreseXML.TEXT;
+//                      
+//                case XT_ELEMENTS: 
+//                    return DatatypeMap.newList();
+//                    
+//                case XT_TEXT_CONTENT:
+//                    return dt; 
+//                    
+//                case XT_NODE_NAME:    
+//                case XT_NODE_PROPERTY:
+//                case XT_NODE_VALUE:
+//                    return dt;    
+//            }
+//        }      
 
-                case XT_NODE_TYPE:
-                    return CoreseXML.TEXT;
-                      
-                case XT_ELEMENTS: 
-                    return DatatypeMap.newList();
-                    
-                case XT_TEXT_CONTENT:
-                    return dt; 
-                    
-                case XT_NODE_NAME:    
-                case XT_NODE_PROPERTY:
-                    return dt;    
-            }
-        }      
-        
         return null;
     }
 
     boolean isXML(IDatatype dt) {
         return dt.getDatatype() == CoreseXML.singleton.getDatatype();
     }
-    
+
 }

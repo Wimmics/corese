@@ -38,6 +38,9 @@ public class UnaryExtension extends TermEval {
             case ExprType.XT_CONTENT:
                 return content(dt);
                 
+            case ExprType.XT_DATATYPE_VALUE:
+                return dt.getObjectDatatypeValue();
+                
             case ExprType.XT_LOWERCASE:
                 return DatatypeMap.newInstance(dt.stringValue().toLowerCase());
                 

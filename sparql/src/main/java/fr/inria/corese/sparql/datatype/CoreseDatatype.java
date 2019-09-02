@@ -1215,6 +1215,11 @@ public class CoreseDatatype
     public IDatatype getDatatypeValue() {
         return this;
     }
+    
+    @Override
+    public IDatatype getObjectDatatypeValue() {
+        return this;
+    }
 
     public String getStringValue() {
         return getLabel();

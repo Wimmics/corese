@@ -331,7 +331,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype cast(NodeList list) {
-        return CoreseXML.singleton.cast(list);
+        return CoreseXML.cast(list);
     }
 
     public static IDatatype cast(Object obj) {
@@ -342,7 +342,9 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
                 return newInstance((Float) obj);
             } else if (obj instanceof Double) {
                 return newInstance((Double) obj);
-            }
+            }  else if (obj instanceof Short) {
+                return newInstance(Integer.valueOf((Short)obj));
+            }          
         } else if (obj instanceof Boolean) {
             return newInstance((Boolean) obj);
         } else if (obj instanceof String) {

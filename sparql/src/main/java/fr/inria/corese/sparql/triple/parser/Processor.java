@@ -932,11 +932,13 @@ public class Processor {
                 defoper(EXT+"namespace",    ExprType.XT_NAMESPACE);
                 defoper(EXT+"base",         ExprType.XT_BASE);
                 
+                defoper(DOM+"getNodeProperty", ExprType.XT_NODE_PROPERTY);
+                defoper(DOM+"getNodeDatatypeValue", ExprType.XT_DATATYPE_VALUE);
+
                 defoper(DOM+"getNodeType",     ExprType.XT_NODE_TYPE);
                 defoper(DOM+"getNodeName",     ExprType.XT_NODE_NAME);
                 defoper(DOM+"getLocalName",    ExprType.XT_NODE_LOCAL_NAME);
                 defoper(DOM+"getNodeValue",    ExprType.XT_NODE_VALUE);
-                defoper(DOM+"getNodeProperty", ExprType.XT_NODE_PROPERTY);
                 defoper(DOM+"getAttributes",   ExprType.XT_ATTRIBUTES);
                 defoper(DOM+"getElementsByTagName",     ExprType.XT_ELEMENTS);
                 defoper(DOM+"getElementsByTagNameNS",   ExprType.XT_ELEMENTS);
@@ -944,6 +946,7 @@ public class Processor {
                 defoper(DOM+"getChildNodes",    ExprType.XT_CHILDREN);
                 defoper(DOM+"getTextContent",   ExprType.XT_TEXT_CONTENT);
                 defoper(DOM+"getNodeParent",    ExprType.XT_NODE_PARENT);
+                defoper(DOM+"getOwnerElement",  ExprType.XT_NODE_PARENT);
                 defoper(DOM+"getOwnerDocument", ExprType.XT_NODE_DOCUMENT);
                 defoper(DOM+"getElementById",   ExprType.XT_NODE_ELEMENT);
                 defoper(DOM+"getNamespaceURI",  ExprType.XT_NAMESPACE);

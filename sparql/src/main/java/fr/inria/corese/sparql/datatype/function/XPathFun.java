@@ -24,6 +24,16 @@ import org.xml.sax.SAXException;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
 
 public class XPathFun {
 
@@ -101,9 +111,9 @@ public class XPathFun {
         }
     }
 
-    public Node parse(IDatatype idoc) throws ParserConfigurationException, SAXException, IOException {
+    public Document parse(IDatatype idoc) throws ParserConfigurationException, SAXException, IOException {
         String name = idoc.getLabel();
-        Node doc;
+        Document doc;
         DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
         fac.setNamespaceAware(true);
         DocumentBuilder builder = fac.newDocumentBuilder();
@@ -120,6 +130,18 @@ public class XPathFun {
                 doc = builder.parse(name);
         }
         return doc;
+    }
+    
+    public String print(Document doc) throws IOException, TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        StringWriter str = new StringWriter();
+        transformer.transform(new DOMSource(doc), new StreamResult(str));
+        return str.toString();
     }
   
     /**

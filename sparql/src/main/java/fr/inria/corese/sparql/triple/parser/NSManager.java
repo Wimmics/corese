@@ -64,7 +64,6 @@ public class NSManager extends ASTObject {
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
-    public static final String DOM = "http://www.w3.org/dom/";
 
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
@@ -76,6 +75,7 @@ public class NSManager extends ASTObject {
     public static final String DS = ExpType.EXT + "ds/";
     public static final String CAST = ExpType.EXT + "cast/";
     public static final String EXT = ExpType.EXT;
+    public static final String DOM = ExpType.DOM;
     public static final String DT = ExpType.DT;
     public static final String USER = ExpType.UXT;
     public static final String KGRAM = ExpType.KGRAM;

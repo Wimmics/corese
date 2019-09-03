@@ -2,11 +2,15 @@ package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
+import fr.inria.corese.sparql.datatype.function.XPathFun;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.transform.TransformerException;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -93,7 +97,15 @@ public class CoreseXML extends CoreseExtension {
 
     @Override
     public String getContent() {
-        return node.toString();
+        try {
+            switch (node.getNodeType()) {
+                case Node.DOCUMENT_NODE:
+                    return new XPathFun().print(getDocument(node));
+            }
+            return node.toString();
+        } catch (IOException | TransformerException ex) {
+            return node.toString();
+        }
     }
 
     @Override
@@ -178,6 +190,14 @@ public class CoreseXML extends CoreseExtension {
 
     Element getElement(Node node) {
         return (Element) node;
+    }
+    
+    Attr getAttribute(Node node) {
+        return (Attr) node;
+    }
+    
+    Document getDocument(Node node) {
+        return (Document) node;
     }
 
     public IDatatype getFirstChild() {
@@ -280,8 +300,16 @@ public class CoreseXML extends CoreseExtension {
     }
 
     IDatatype getParentNode(Node node) {
-        Node n = node.getParentNode();
+        Node n = genericParentNode(node);       
         return cast(n);
+    }
+    
+    Node genericParentNode(Node node) {
+        switch (node.getNodeType()) {
+            case Node.ATTRIBUTE_NODE:
+                return getAttribute(node).getOwnerElement();
+        }
+        return node.getParentNode();
     }
 
     IDatatype getTagName(Node node) {
@@ -320,7 +348,7 @@ public class CoreseXML extends CoreseExtension {
             case Node.ELEMENT_NODE:
                 return cast(getElement(node).getElementsByTagNameNS(ns.getLabel(), dt.getLabel()));
             case Node.DOCUMENT_NODE:
-                return cast(((Document) node).getElementsByTagNameNS(ns.getLabel(),dt.getLabel()));
+                return cast(getDocument(node).getElementsByTagNameNS(ns.getLabel(),dt.getLabel()));
         }
         return DatatypeMap.newList();
     }
@@ -330,16 +358,13 @@ public class CoreseXML extends CoreseExtension {
             case Node.ELEMENT_NODE:
                 return cast(getElement(node).getElementsByTagName(dt.getLabel()));
             case Node.DOCUMENT_NODE:
-                return cast(((Document) node).getElementsByTagName(dt.getLabel()));
+                return cast(getDocument(node).getElementsByTagName(dt.getLabel()));
         }
         return DatatypeMap.newList();
     }
 
     IDatatype getElementById(Node node, IDatatype dt) {
-        Node res = node.getOwnerDocument().getElementById(dt.getLabel());
-        if (res == null) {
-            return null;
-        }
+        Node res = node.getOwnerDocument().getElementById(dt.getLabel());       
         return cast(res);
     }
 
@@ -444,6 +469,9 @@ public class CoreseXML extends CoreseExtension {
     }
 
     IDatatype cast(Node node) {
+        if (node == null) {
+            return null;
+        }
         IDatatype dt = null;
         switch (node.getNodeType()) {
             case Node.ELEMENT_NODE:

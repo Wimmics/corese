@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -87,7 +88,7 @@ public class ResultFormater extends TermEval {
     
     IDatatype parseXML(IDatatype dt) {
         try {
-            Node node = new XPathFun().parse(dt);
+            Document node = new XPathFun().parse(dt);
             IDatatype res = DatatypeMap.newXMLObject(dt.getLabel(), node); 
             return res;
         } catch (ParserConfigurationException | SAXException | IOException ex) {

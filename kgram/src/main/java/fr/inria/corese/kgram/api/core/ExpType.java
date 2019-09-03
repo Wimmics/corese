@@ -15,6 +15,7 @@ public interface ExpType {
 	public static final String SPARQL = "http://ns.inria.fr/sparql-function/";
 	public static final String STL    = "http://ns.inria.fr/sparql-template/";
 	public static final String EXT    = "http://ns.inria.fr/sparql-extension/";
+	public static final String DOM    = "http://ns.inria.fr/sparql-extension/dom/";
 	public static final String CUSTOM = "http://ns.inria.fr/sparql-custom/";
 	public static final String BNODE  = EXT + "bnode";
 	public static final String UXT    = "http://ns.inria.fr/sparql-extension/user/";

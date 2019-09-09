@@ -8,17 +8,15 @@ import java.util.List;
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
-public class Service extends And {
+public class Service extends SourceExp {
 
-    Atom uri;
     private List<Atom> serviceList;
     boolean silent;
 
     Service() {}
     
     Service(Atom serv, Exp exp, boolean b) {
-        super(exp);
-        uri = serv;
+        super(serv, exp);
         silent = b;
     }
 
@@ -60,7 +58,7 @@ public class Service extends And {
     @Override
     public Service copy() {
         Service exp = super.copy().getService();
-        exp.uri = this.uri;
+        exp.setSource(getSource());
         exp.silent = this.silent;
         exp.serviceList = this.serviceList;
         return exp;
@@ -71,12 +69,6 @@ public class Service extends And {
             return this;
     }
     
-    @Override
-    void getVariables(List<Variable> list) {
-        super.getVariables(list);
-        getServiceName().getVariables(list);
-    }
-
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
         sb.append(Term.SERVICE);
@@ -113,24 +105,13 @@ public class Service extends And {
     }
 
     public Atom getServiceName() {
-        return uri;
+        return getSource();
     }
     
     public void setServiceName(Atom at) {
-        uri = at;
+        setSource(at);
     }
-
-    @Override
-    public boolean validate(ASTQuery ast, boolean exist) {
-        if (uri.isVariable()) {
-            ast.bind(uri.getVariable());
-            if (!exist) {
-                ast.defSelect(uri.getVariable());
-            }
-        }
-        return super.validate(ast, exist);
-    }
-    
+   
     public void clearServiceList() {
         setServiceList(new ArrayList<>(0));
     }
@@ -141,6 +122,23 @@ public class Service extends And {
             list.add(at.getConstant());
         }
         return list;
+    }
+    
+    public void insert(Exp exp) {
+        Exp body = getBodyExp();
+        if (body.size() == 0) {
+            body.add(exp);
+        }
+        else {
+            Exp ee = body.get(0);
+            if (ee.isQuery()) {
+                ASTQuery q = ee.getQuery();
+                q.getBody().add(0, exp);
+            }
+            else {
+               body.add(0, exp); 
+            }
+        }
     }
 
     /**

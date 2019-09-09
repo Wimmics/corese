@@ -1417,7 +1417,7 @@ public class Exp extends PointerObject
      * optional = true :  we are inside an optional
      */
     void getNodes(List<Node> nodeList, List<Node> selectList, List<Node> existList, 
-            boolean inSubScope, boolean optional, boolean blank) {
+            boolean inSubScope, boolean optional, boolean bind, boolean blank) {
 
         switch (type()) {
 
@@ -1467,21 +1467,21 @@ public class Exp extends PointerObject
             case MINUS:
                 // second argument does not bind anything: skip it
                 if (first() != null) {
-                    first().getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                    first().getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
                 }
                 break;
                 
             case OPTIONAL:
-                first().getNodes(nodeList, selectList, existList, inSubScope, true, blank);
+                first().getNodes(nodeList, selectList, existList, inSubScope, true, bind, blank);
                 if (! inSubScope){               
-                    rest().getNodes(nodeList, selectList, existList, inSubScope, true, blank);   
+                    rest().getNodes(nodeList, selectList, existList, inSubScope, true, bind, blank);   
                 }
                 break;
                 
             case GRAPH: 
                 add(nodeList, getGraphName(), blank);
                 if (size() > 1) {
-                    rest().getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                    rest().getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
                 }
                 break;
                 
@@ -1489,8 +1489,8 @@ public class Exp extends PointerObject
                 if (inSubScope) {
                     // in-subscope record nodes that are surely bound
                     // record nodes that are bound in both branches of union
-                    List<Node> left  = first().getInScopeNodes();
-                    List<Node> right = rest().getInScopeNodes();
+                    List<Node> left  = first().getInScopeNodes(bind);
+                    List<Node> right = rest().getInScopeNodes(bind);
                     for (Node node : left) {
                         if (right.contains(node)) {
                             add(nodeList, node);
@@ -1499,19 +1499,22 @@ public class Exp extends PointerObject
                 }
                 else {
                    for (Exp ee : this) {
-                       ee.getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                       ee.getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
                    }
                 }
                 break;
                 
             case BIND:
                 //add(selectNodeList, getNode());
-                if (getNodeList() == null) {
-                    add(nodeList, getNode());
-                }
-                else for (Node node : getNodeList()) {
-                        add(nodeList, node);
+                if (bind) {
+                    if (getNodeList() == null) {
+                        add(nodeList, getNode());
+                    } else {
+                        for (Node node : getNodeList()) {
+                            add(nodeList, node);
+                        }
                     }
+                }
                 
                 break;
                            
@@ -1522,7 +1525,7 @@ public class Exp extends PointerObject
             default:
                 // BGP, service, union, named graph pattern
                 for (Exp ee : this) {
-                    ee.getNodes(nodeList, selectList, existList, inSubScope, optional, blank);
+                    ee.getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
                     if (inSubScope && (ee.isMinus() || ee.isOptional() || ee.isUnion() || ee.isGraph())) {
                         // skip statements after optional/minus/union for in-subscope nodes
                         break;
@@ -1565,7 +1568,7 @@ public class Exp extends PointerObject
 
             case ExprType.EXIST:
                 Exp pat = getPattern(exp);
-                List<Node> lNode = pat.getNodes(true, false, false);
+                List<Node> lNode = pat.getNodes(true, false, true, false);
                 for (Node node : lNode) {
                     add(lExistNode, node);
                 }
@@ -1584,7 +1587,7 @@ public class Exp extends PointerObject
      * minus nodes
      */
     public List<Node> getNodes() {
-        List<Node> list = getNodes(false, false, false);
+        List<Node> list = getNodes(false, false, true, false);
         return list;
     }
     
@@ -1594,19 +1597,33 @@ public class Exp extends PointerObject
         }
         return getInScopeNodeList();
     }
+   
+    public List<Node> getRecordInScopeNodesForService() {
+        return getRecordInScopeNodes(false);
+    }
 
+    public List<Node> getRecordInScopeNodes(boolean bind) {
+        if (getInScopeNodeList() == null) {
+            setInScopeNodeList(getInScopeNodes(bind));
+        }
+        return getInScopeNodeList();
+    }
     
     /**
      * in-scope nodes minus nodes in right optional (as well as in subquery right optional)
      * @return 
      */
     public List<Node> getInScopeNodes() {
-        List<Node> list = getNodes(false, true, false);
+        return getInScopeNodes(true);
+    }
+    
+    List<Node> getInScopeNodes(boolean bind) {
+        List<Node> list = getNodes(false, true, bind, false);
         return list;
     }
 
     public List<Node> getAllNodes() {
-        List<Node> list = getNodes(false, false, true);
+        List<Node> list = getNodes(false, false, true, true);
         return list;
     }
 
@@ -1617,12 +1634,12 @@ public class Exp extends PointerObject
      * @param blank
      * @return 
      */
-    public List<Node> getNodes(boolean exist, boolean inSubScope, boolean blank) {
+    public List<Node> getNodes(boolean exist, boolean inSubScope, boolean bind, boolean blank) {
         List<Node> nodeList         = new ArrayList<Node>();
         List<Node> selectNodeList   = new ArrayList<Node>();
         List<Node> existNodeList    = new ArrayList<Node>();
 
-        getNodes(nodeList, selectNodeList, existNodeList, inSubScope, false, blank);
+        getNodes(nodeList, selectNodeList, existNodeList, inSubScope, false, bind, blank);
 
         // add select nodes that are not in lNode
         for (Node selectNode : selectNodeList) {

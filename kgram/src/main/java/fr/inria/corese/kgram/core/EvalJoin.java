@@ -35,7 +35,13 @@ public class EvalJoin {
             return backtrack;
         }
         Date d1 = new Date();
-        MappingSet set1 = new MappingSet(map1);
+        Mappings arg = map1; 
+        if (data != null && relevant(exp)) {
+            // use case: join(data, values ?s { <uri> }, service ?s { })
+            // data may be relevant for service
+            arg = map1.join(data);
+        }
+        MappingSet set1 = new MappingSet(arg);
         Exp rest = eval.prepareRest(exp, set1);
         Date d2 = new Date();
         if (stop) {
@@ -51,6 +57,12 @@ public class EvalJoin {
         }
        
         return join(p, gNode, stack, env, map1, map2, n);
+    }
+    
+    // use case: join(data, and(values ?s { <uri> }), service ?s { })
+    boolean relevant(Exp exp) {
+        Exp fst = exp.first();
+        return fst.isBGPAnd() && fst.size() == 1 && fst.get(0).isValues() ;
     }
 
     private int join(Producer p, Node gNode, Exp exp, Mappings map1, Mappings map2, Stack stack, int n) {

@@ -364,8 +364,20 @@ public class CoreseXML extends CoreseExtension {
     }
 
     IDatatype getElementById(Node node, IDatatype dt) {
-        Node res = node.getOwnerDocument().getElementById(dt.getLabel());       
-        return cast(res);
+        Document doc = genericGetDocument(node);
+        if (doc == null) {
+            return null;
+        }
+        return cast(doc.getElementById(dt.getLabel()));
+    }
+    
+    Document genericGetDocument(Node node) {
+        switch (node.getNodeType()) {
+            case Node.DOCUMENT_NODE:
+                return getDocument(node);
+            default:
+                return node.getOwnerDocument();
+        }
     }
 
     IDatatype getNodeType(Node node) {

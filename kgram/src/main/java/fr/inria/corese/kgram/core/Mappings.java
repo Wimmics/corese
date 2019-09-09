@@ -1264,7 +1264,7 @@ public class Mappings extends PointerObject
     }
 
     public Mappings join(Mappings lm) {
-        Mappings res = new Mappings();
+        Mappings res =  Mappings.create(getQuery());
         for (Mapping m1 : this) {
             for (Mapping m2 : lm) {
                 Mapping map = m1.join(m2);

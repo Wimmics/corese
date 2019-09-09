@@ -73,7 +73,7 @@ public class TransformerVisitor implements QueryVisitor {
                 Node n = query.getNode(var);
                 if (n != null) {
                     // bind exists node 
-                    exp.setNodeList(exp.getNodes(true, false, false));
+                    exp.setNodeList(exp.getNodes(true, false, true, false));
                     exp.setBGPAble(true);
                     exp.cache(n);
                 }

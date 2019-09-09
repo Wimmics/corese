@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -272,13 +273,23 @@ public class Simplify {
         return isUnionTripleOnly(bgp) || isTripleOnly(bgp);
     }
     
-      /**
+    Exp simplify(Exp exp) {
+        Exp simple = basicSimplify(exp);
+        if (simple.isOptional() || simple.isMinus()) {
+            Exp split = split(simple);
+            return split;
+        }
+        return simple;
+    }
+    
+    
+    /**
      * service s {e1} optional { service s {e2}}
      * ->
      * service s { e1 optional {e2} }
      * and simplifySelectFrom(exp)
      */
-    Exp simplifyStatement(Exp exp) {
+    Exp basicSimplify(Exp exp) {
         if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
             Exp e1 = exp.get(0).get(0);
             Exp e2 = exp.get(1).get(0);
@@ -402,5 +413,75 @@ public class Simplify {
         }
         return exp;       
     }
+    
+    
+    
+    
+    /**
+     * 
+     * service s1 {A} service s2 {B} optional { service s2 {C} }
+     * with condition: x in var(C) & x not in B => x not in A
+     * ->
+     * service s1 {A} service s2 {B optional {C}}
+     * 
+     * service s1 {A} service s2 {B} minus { service s2 {C} }
+     * with condition: x in var(C) & x not in B => x not in A
+     * -> 
+     * service s1 {A} service s2 {B minus {C}}
+     */
+    Exp split(Exp exp) {
+        Exp fst = exp.get(0);
+        Exp rst = exp.get(1);
+        if (fst.size() == 2 && fst.get(0).isService() && fst.get(1).isService()
+                && rst.size() == 1 && rst.get(0).isService()) {
+            Service s1 = fst.get(0).getService();
+            Service s2 = fst.get(1).getService();
+            Service s3 = rst.get(0).getService();
+            if (!s2.isFederate() && !s3.isFederate() && s2.getServiceName().equals(s3.getServiceName())
+                    && gentle(s1, s2, s3)) {
+                ASTQuery a = visitor.getAST();
+                Service s = a.service(s2.getServiceName(), copy(a, exp, s2.getBodyExp(), s3.getBodyExp()));
+                BasicGraphPattern bgp = a.bgp(s1, s);
+                return bgp;
+            }
+        }
+        return exp;
+    }
+    
+    // condition: x in var(C) & x not in B => x not in A
+    boolean gentle (Service s1, Service s2, Service s3) {
+        return gentle(s1.getInscopeVariables(), s2.getInscopeVariables(), s3.getInscopeVariables());
+    }
+    
+   
+    boolean gentle(List<Variable> l1, List<Variable> l2, List<Variable> l3) {
+        for (Variable var : l3) {
+            if (! l2.contains(var) && l1.contains(var)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    Exp copy(ASTQuery a, Exp exp, Exp e1, Exp e2) {
+        if (exp.isMinus()) {
+            return a.minus(e1, e2);
+        } else {
+            return a.optional(e1, e2);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 }

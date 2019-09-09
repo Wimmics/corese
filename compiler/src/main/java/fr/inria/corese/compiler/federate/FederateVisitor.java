@@ -18,6 +18,7 @@ import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
@@ -334,13 +335,18 @@ public class FederateVisitor implements QueryVisitor {
             else if (exp.isMinus() || exp.isOptional() || exp.isUnion()) {
                 exp = rewrite(name, exp);
                 if (simplify) {
-                    Exp simple = sim.simplifyStatement(exp);
-                    body.set(i, simple);
+                    Exp simple = sim.simplify(exp);
+                    if (simple.isBGP()) {
+                        body.set(i, simple.get(0));
+                        body.add(i + 1, simple.get(1));
+                        i++;
+                    } else {
+                        body.set(i, simple);
+                    }
                 } else {
                     body.set(i, exp);
                 }
-            }
-            else {
+            } else {
                 // BGP
                 rewrite(name, exp);
             }
@@ -357,10 +363,30 @@ public class FederateVisitor implements QueryVisitor {
         
         if (body.isBGP()) {
             sim.simplifyBGP(body);
+            filterExist(body);
             new Sorter().process(body);
         }
-        
+                
         return body;
+    }
+    
+    
+    /**
+     * Move filter exists { service uri { exp }} into appropriate service uri { exp }
+     */
+    void filterExist (Exp body) {
+        ArrayList<Exp> list = new ArrayList<>();
+        for (Exp exp : body) {
+            if (exp.isFilter() && exp.getFilter().isTermExistRec()) {
+                boolean b = rew.filterExist(body, exp);
+                if (b) {
+                    list.add(exp);
+                }
+            }
+        }
+        for (Exp exp : list) {
+            body.getBody().remove(exp);
+        }
     }
     
      ASTQuery getAST() {
@@ -582,18 +608,15 @@ public class FederateVisitor implements QueryVisitor {
     }
     
     boolean isRecExist(Exp f) {
-        return f.getFilter().isTerm() && f.getFilter().getTerm().isTermExistRec() ;
+        return f.getFilter().isTermExistRec();
     }
     
     boolean isExist(Exp f) {
-        return f.getFilter().isTerm() && f.getFilter().getTerm().isTermExist() ;
+        return f.getFilter().isTermExist();
     }
 
     boolean isNotExist(Exp f) {
-        return f.getFilter().isTerm() && 
-               f.getFilter().getTerm().isNot() && 
-               f.getFilter().getTerm().getArg(0).isTerm() &&
-               f.getFilter().getTerm().getArg(0).getTerm().isTermExist() ;
+        return f.getFilter().isNotTermExist() ;
     }
     
       /**

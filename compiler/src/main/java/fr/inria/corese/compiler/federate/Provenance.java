@@ -1,5 +1,6 @@
 package fr.inria.corese.compiler.federate;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Group;
 import fr.inria.corese.kgram.core.Mapping;
@@ -75,7 +76,10 @@ public class Provenance {
         StringBuilder sb = new StringBuilder();
         for (Mapping m : getServers()) {
             for (Variable var : getVariables()) {
-                sb.append(m.getValue(var.getLabel()).stringValue()).append(NL);
+                DatatypeValue res = m.getValue(var.getLabel());
+                if (res != null) {
+                    sb.append(res.stringValue()).append(NL);
+                }
             }
             sb.append("Number: ").append(getMappings(m).size()).append(NL);
             sb.append("__").append(NL);

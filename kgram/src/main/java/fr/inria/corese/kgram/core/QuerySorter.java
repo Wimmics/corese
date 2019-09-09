@@ -336,7 +336,7 @@ public class QuerySorter implements ExpType {
                 expVar.clear(size);
 
                 filterVar = ff.getVariables();
-                boolean isExist = ff.getExp().isExist();
+                boolean isExist = ff.getExp().isRecExist();
 
                 for (int je = 0; je < exp.size(); je++) {
                     // search exp e after which filter f is bound
@@ -371,7 +371,6 @@ public class QuerySorter implements ExpType {
                 }
             }
         }
-
         expVar.clear(size);
 
     }

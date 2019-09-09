@@ -983,6 +983,13 @@ public class ASTQuery
         return rule;
     }
     
+    public List<Variable> getSelect() {
+        if (isSelectAll()) {
+            return getSelectVariables();
+        }
+        return getSelectVar();
+    }
+    
     public List<Variable> getSelectVariables() {
         ArrayList<Variable> list = new ArrayList<>();
         list.addAll(getSelectVar());

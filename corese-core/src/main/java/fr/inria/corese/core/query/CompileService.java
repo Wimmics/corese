@@ -129,7 +129,7 @@ public class CompileService {
         ArrayList<Constant> lval = new ArrayList<Constant>();
 
         //for (Node qv : q.getSelect()) {
-        for (Node qv : q.getBody().getRecordInScopeNodes()) {
+        for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
@@ -161,7 +161,7 @@ public class CompileService {
         Values values = Values.create();
 
         //for (Node qv : q.getSelect()) {
-        for (Node qv : q.getBody().getRecordInScopeNodes()) {
+        for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
@@ -178,7 +178,7 @@ public class CompileService {
             boolean ok = false;
             lval = new ArrayList<>();
 
-            for (Node qnode : q.getBody().getRecordInScopeNodes()) {
+            for (Node qnode : q.getBody().getRecordInScopeNodesForService()) {
                 Node val = m.getNode(qnode);
                 
                 if (val != null && ! val.isBlank()) {
@@ -229,7 +229,7 @@ public class CompileService {
         ArrayList<Term> lt = new ArrayList<Term>();
 
         //for (Node qv : q.getSelect()) {
-        for (Node qv : q.getBody().getRecordInScopeNodes()) {
+        for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String var = qv.getLabel();
             Node val = env.getNode(var);
 
@@ -279,7 +279,7 @@ public class CompileService {
         ArrayList<Term> lt = new ArrayList<Term>();
         ASTQuery ast = (ASTQuery) q.getAST();
 
-        for (Node varNode : q.getBody().getRecordInScopeNodes()) {
+        for (Node varNode : q.getBody().getRecordInScopeNodesForService()) {
             String varName = varNode.getLabel();
             Node valNode = m.getNodeValue(varName);
             if (valNode != null) { // && ! valNode.isBlank()) {

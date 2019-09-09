@@ -42,5 +42,13 @@ public class Exist extends BasicGraphPattern {
         public Exp getContent(){
             return get(0).get(0);
         }
+        
+        public Exp getBGP() {
+            return get(0);
+        }
+        
+        public void setBGP(Exp exp) {
+            set(0, exp);
+        }
 	
 }

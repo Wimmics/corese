@@ -89,5 +89,10 @@ public class Binding extends Exp {
     void getVariables(List<Variable> list) {
         add(getVariable(), list);
     }
+    
+    @Override
+    void getVariables(VariableSort sort, List<Variable> list) {
+        getVariables(list);
+    }
 
 }

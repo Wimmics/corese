@@ -64,20 +64,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             add(Triple.create(exp));
             return this;
         }
-        
-//        public  boolean add2(Exp exp){
-//		if (exp.isBinary() && exp.size() == 1){
-//			BasicGraphPattern bgp = BasicGraphPattern.create();
-//			for (Exp e : body){
-//				bgp.add(e);
-//			}
-//			exp.add(0, bgp);
-//			body.clear();
-//			return add(exp);
-//		}
-//		return body.add(exp);
-//	}
-        
+               
         // for structured exp only
         public void include(Exp exp) {
             for (Exp ee : exp) {
@@ -147,12 +134,33 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
             return this;
        }
-                 
+       
+       // variable that are surely bound in a result
+       // subset of inscope
+       public List<Variable> getSubscopeVariables() {
+            return getVariables(VariableSort.SUBSCOPE);
+       }
+       
+       // std inscope variables
+       public List<Variable> getInscopeVariables() {
+            return getVariables(VariableSort.INSCOPE);
+       }
+       
+       public List<Variable> getAllVariables() {
+            return getVariables(VariableSort.ALL);
+       }
+           
+       /**
+        * Same as SUBSCOPE
+        * Variables that are surely bound:
+        * left part of optional & minus, common variables of union branchs
+        * It is not the list of all variables
+        */
         public List<Variable> getVariables() {
             ArrayList<Variable> list = new ArrayList<>();
             getVariables(list);
             return list;
-        }
+        }        
         
         void add(Variable var, List<Variable> list) {
             if (! list.contains(var)) {
@@ -165,7 +173,19 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
                 exp.getVariables(list);
             }
         }
-	
+        
+        public List<Variable> getVariables(VariableSort sort) {
+            ArrayList<Variable> list = new ArrayList<>();
+            getVariables(sort, list);
+            return list;
+        }        
+               
+        void getVariables(VariableSort sort, List<Variable> list) {
+            for (Exp exp : this) {
+                exp.getVariables(sort, list);
+            }
+        }
+        	
 	public ASTQuery getQuery(){
 		return null;
 	}

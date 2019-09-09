@@ -118,6 +118,11 @@ public class Values extends Exp {
             add(var, list);
         }
     }
+    
+    @Override
+    void getVariables(VariableSort sort, List<Variable> list) {
+        getVariables(list);
+    }
 
     @Override
     public boolean isValues() {

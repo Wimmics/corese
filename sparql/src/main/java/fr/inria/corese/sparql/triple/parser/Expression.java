@@ -17,6 +17,7 @@ import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.EXIST;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.EXPRESSION;
@@ -30,7 +31,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * <p>Title: Corese</p>
@@ -91,7 +91,9 @@ public class Expression extends TopExp
     void getVariables(List<Variable> list) {
         
     }
-    
+    void getVariables(VariableSort sort, List<Variable> list) {
+        
+    }
 
     /**
      * Every filter/select/bind exp is compiled
@@ -284,11 +286,6 @@ public class Expression extends TopExp
     }
 
     public boolean isFunction(String str) {
-        return false;
-    }
-
-    @Override
-    public boolean isRecExist() {
         return false;
     }
 
@@ -489,6 +486,10 @@ public class Expression extends TopExp
     public Term getTerm() {
         return null;
     }
+    
+    public Term getTermExist() {
+        return null;
+    }
 
     @Override
     public Variable getVariable() {
@@ -624,27 +625,44 @@ public class Expression extends TopExp
 
     @Override
     public boolean isAggregate() {
-
         return false;
     }
+    
+    public boolean isTermExist() {
+        return false;
+    }
+
+    public boolean isTermExistRec() {
+        return false;
+    }
+    
+    public boolean isNotTermExist() {
+        return false;
+    }
+
 
     @Override
     public boolean isExist() {
-        if (oper() == ExprType.EXIST) {
-            return true;
-        } else {
-            for (Expr ee : getExpList()) {
-                if (ee.isExist()) {
-                    return true;
-                }
-            }
-        }
+//        if (oper() == ExprType.EXIST) {
+//            return true;
+//        } else {
+//            for (Expr ee : getExpList()) {
+//                if (ee.isExist()) {
+//                    return true;
+//                }
+//            }
+//        }
+        return false;
+    }
+    
+    @Override
+    public boolean isRecExist() {
         return false;
     }
 
+
     @Override
     public boolean isRecAggregate() {
-
         return false;
     }
 

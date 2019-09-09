@@ -581,7 +581,7 @@ public class Triple extends Exp {
     }
 
     @Override
-    public void getVariables(List<Variable> list) {
+    void getVariables(List<Variable> list) {
         if (!isFilter()) {
             getSubject().getVariables(list);
             if (!isPath()) {
@@ -589,6 +589,11 @@ public class Triple extends Exp {
             }
             getObject().getVariables(list);
         }
+    }
+    
+    @Override
+    void getVariables(VariableSort sort, List<Variable> list) {
+        getVariables(list);
     }
 
     public boolean bind(String name) {

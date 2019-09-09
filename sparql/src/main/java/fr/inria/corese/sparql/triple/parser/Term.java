@@ -873,22 +873,24 @@ public class Term extends Expression {
         return ok;
     }
 
+    // when it is not compiled !
     @Override
-    public boolean isExist() {
+    public boolean isTermExist() {
         return getExist() != null;
     }
 
-    // when it is not compiled !
-    public boolean isTermExist() {
-        return getName().equals(EXIST);
+    @Override
+    public boolean isNotTermExist() {
+        return isNot() && getArg(0).isTermExist();
     }
 
+    @Override
     public boolean isTermExistRec() {
         if (isTermExist()) {
             return true;
         }
         for (Expression exp : getArgs()) {
-            if (exp.isTerm() && exp.getTerm().isTermExistRec()) {
+            if (exp.isTermExistRec()) {
                 return true;
             }
         }
@@ -896,16 +898,22 @@ public class Term extends Expression {
     }
 
     @Override
+    public boolean isExist() {
+        return getExist() != null;
+    }
+    
+    @Override
     public boolean isRecExist() {
-        if (isExist()) {
-            return true;
-        }
-        for (Expression exp : getArgs()) {
-            if (exp.isRecExist()) {
-                return true;
-            }
-        }
-        return false;
+        return isTermExistRec();
+//        if (isExist()) {
+//            return true;
+//        }
+//        for (Expression exp : getArgs()) {
+//            if (exp.isRecExist()) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
     
     @Override
@@ -1608,7 +1616,7 @@ public class Term extends Expression {
         exist = exp;
     }
 
-    public Exp getExist() {
+    public Exist getExist() {
         return exist;
     }
 
@@ -1621,6 +1629,19 @@ public class Term extends Expression {
             return null;
         }
         return exist.getContent();
+    } 
+    
+    public Exp getExistBGP() {
+        if (exist == null) {
+            return null;
+        }
+        return exist.getBGP();
+    }
+    
+    public void setExistBGP(Exp exp) {
+        if (exist != null) {
+            exist.setBGP(exp);
+        }
     }
 
     // Exp
@@ -1752,6 +1773,15 @@ public class Term extends Expression {
 
     @Override
     public Term getTerm() {
+        return this;
+    }
+    
+    // PRAGMA: this is term(exists{}) or not(term(exists{}))
+    @Override
+    public Term getTermExist() {
+        if (isNot()) {
+            return getArg(0).getTermExist();
+        }
         return this;
     }
 

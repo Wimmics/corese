@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import static fr.inria.corese.sparql.triple.parser.TopExp.VariableSort.INSCOPE;
 
 /**
  * <p>
@@ -58,7 +59,7 @@ public class Union extends Binary {
     @Override
     void getVariables(List<Variable> list) {
         if (size() > 1) {
-            List<Variable> left = get(0).getVariables();
+            List<Variable> left  = get(0).getVariables();
             List<Variable> right = get(1).getVariables();
 
             for (Variable var : left) {
@@ -68,7 +69,15 @@ public class Union extends Binary {
             }
         }
     }
-
+    
+    @Override
+    void getVariables(VariableSort sort, List<Variable> list) {
+        switch (sort) {
+            case SUBSCOPE:  getVariables(list); break;
+            default:  super.getVariables(sort, list); break;
+        }
+    }
+    
     String getOper() {
         return Keyword.SEOR;
     }

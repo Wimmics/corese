@@ -133,6 +133,11 @@ public class Variable extends Atom {
             list.add(this);
         }
     }
+    
+    @Override
+    void getVariables(VariableSort sort, List<Variable> list) {
+        getVariables(list);
+    }
 
     public String getSimpleName() {
         return getName().substring(1);

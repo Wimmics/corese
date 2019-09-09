@@ -10,6 +10,12 @@ import fr.inria.corese.sparql.triple.api.ASTVisitor;
  */
 
 public class TopExp implements ASTVisitable  {
+    
+    public enum VariableSort { ALL,
+    INSCOPE, 
+    // Variable surely bound: left part of optional, common var in union branchs
+    // former getVariables()
+    SUBSCOPE } ;
 
     /**
      * @return the generated

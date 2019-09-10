@@ -60,24 +60,93 @@ public class RewriteBGP {
         HashMap<String, List<BasicGraphPattern>> getMap() {
             return map;
         }
+        
+        void merge() {
+            for (String uri : map.keySet()) {
+                List<BasicGraphPattern> list = map.get(uri);
+                BasicGraphPattern bgp = list.get(0);
+                for (BasicGraphPattern exp : list) {
+                    if (exp != bgp) {
+                        bgp.include(exp);
+                    }
+                }
+                for (int i = 1; i<list.size(); i++) {
+                    list.remove(i);
+                }
+            }
+        }
+        
+        /**
+         * merge two service bgp with same URI if there is a filter with two variables
+         * and each service bind one of the two variable
+         */
+        void merge(List<Expression> filterList) {
+            for (String uri : map.keySet()) {
+                List<BasicGraphPattern> list = map.get(uri);
+                if (list.size() == 2) {
+                    List<Variable> l1 = list.get(0).getSubscopeVariables();
+                    List<Variable> l2 = list.get(1).getSubscopeVariables();
+                    for (Expression filter : filterList) {
+                        List<Variable> varList = filter.getVariableList();
+                        if (varList.size() == 2) {
+                            if (gentle(l1, l2, varList.get(0), varList.get(1))) {
+                                list.get(0).include(list.get(1));
+                                list.remove(1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        boolean gentle(List<Variable> l1, List<Variable> l2, String x, String y) {
+            Variable xx = Variable.create(x);
+            Variable yy = Variable.create(y);
+            return gentle(l1, l2, xx, yy) || gentle(l1, l2, yy, xx);
+        }
+        
+        boolean gentle(List<Variable> l1, List<Variable> l2, Variable x, Variable y) {
+            return l1.contains(x) && l2.contains(y) && ! l1.contains(y) && ! l2.contains(x);
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for (String uri : map.keySet()) {
+                sb.append(uri).append(": ");
+                for (BasicGraphPattern bgp : map.get(uri)) {
+                    sb.append(bgp).append(" ");
+                }
+                sb.append("\n");
+            }
+            return sb.toString();
+        }
 
     }
 
     /**
-     * group triple patterns that share the same service URI into one service
-     * URI modify the body (replace triples by BGPs) filterList: list to be
-     * filled with filters that are copied into service
+     * group triple patterns that share the same service URI into one or several 
+     * connected service URI 
+     * modify the body (replace triples by BGPs) 
+     * copy bind (exp as var) if possible and copy filters if possible
+     * filterList: list to be filled with bind & filters that are copied into service
+     * TODO: bind (exp as var) could also be assignToConnectedBGP
      */
-    void groupTripleInServiceWithOneURI(Atom name, Exp body, List<Exp> filterList) {
+    void groupTripleInServiceWithOneURI(Atom name, Exp main, Exp body, List<Exp> filterList) {
         ServiceBGP map = new ServiceBGP();
         boolean tripleFilter = true;
         // create BGPs for triples that share same service URI
-        // create a table service -> BGP
+        // create a map serviceURI -> (BGP1 .. BGPn)
+        List<Expression> flist = new ArrayList<>();
         for (int i = 0; i < body.size(); i++) {
             Exp exp = body.get(i);
-            if (exp.isFilter() || exp.isValues() || exp.isBind()) {
+            if (exp.isFilter() ) {
+                flist.add(exp.getFilter());
+            } 
+            else if (exp.isValues() ||  exp.isBind()) {
                 // do nothing
-            } else if (exp.isTriple()) {
+            }
+            else if (exp.isTriple()) {
                 Triple triple = exp.getTriple();
                 List<Atom> list = visitor.getServiceList(triple);
                 if (list.size() == 1) {
@@ -90,7 +159,16 @@ public class RewriteBGP {
                 tripleFilter = false;
             }
         }
-
+        
+        if (visitor.isMerge()) {
+            if (main.isBinaryExp()) {
+                map.merge();
+            }
+            else if (! flist.isEmpty()) {
+                map.merge(flist);
+            }
+        }
+        
         HashMap<Triple, BasicGraphPattern> table = new HashMap<>();
         HashMap<BasicGraphPattern, Service> done = new HashMap<>();
 
@@ -250,8 +328,8 @@ public class RewriteBGP {
     }
 
     /**
-     * Draft for testing TODO: test conditions to move exists clause into
-     * service
+     * Draft for testing 
+     * Copy filter exists into appropriate service URI, first phase
      *
      * body = service URI { BGP } filter exists { EXP } -> service URI { BGP }
      * filter exists { service URI { EXP } } -> service URI { BGP filter exists
@@ -263,23 +341,17 @@ public class RewriteBGP {
      * are in the prepare phase
      */
     void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
-        boolean isNotExist = visitor.isNotExist(filterExist);
         Expression filter = filterExist.getFilter();
         visitor.rewriteFilter(name, filter);
-        Exist exist;
-        if (isNotExist) {
-            exist = filter.getTerm().getArg(0).getTerm().getExistPattern();
-        } else {
-            exist = filter.getTerm().getExistPattern();
-        }
-        Exp bgpExist = exist.get(0);
+        Term termExist = filterExist.getFilter().getTermExist();        
+        Exp bgpExist = termExist.getExistBGP();
 
         if (bgpExist.size() == 1 && bgpExist.get(0).isService()) {
             Service servExist = bgpExist.get(0).getService();
             if (servExist.getServiceList().size() == 1) {
 
                 List<BasicGraphPattern> bgpList = new ArrayList<>();
-                List<Variable> existVarList = bgpExist.getVariables();
+                List<Variable> existVarList = bgpExist.getInscopeVariables();
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists
@@ -288,7 +360,7 @@ public class RewriteBGP {
                 for (BasicGraphPattern bgp : bgpMap.keySet()) {
 
                     Service servBGP = bgpMap.get(bgp);
-                    List<Variable> bgpVarList = bgp.getVariables();
+                    List<Variable> bgpVarList = bgp.getInscopeVariables();
                     List<Variable> currentIntersection = intersection(existVarList, bgpVarList);
 
                     if (isDebug()) {
@@ -325,7 +397,7 @@ public class RewriteBGP {
 
                 if (bgpList.size() == 1) {
                     // remove service from exists
-                    exist.set(0, servExist.get(0));
+                    termExist.setExistBGP(servExist.getBodyExp());
                     // move exist into relevant service 
                     bgpList.get(0).add(filterExist);
                     if (!filterList.contains(filterExist)) {
@@ -339,25 +411,22 @@ public class RewriteBGP {
 
     /**
      * 
-     * Move filter exists { service uri { exp }} into appropriate service uri { exp }
+     * Copy filter exists { service uri { exp }} into appropriate service uri { exp }
+     * second phase: the whole content of a BGP have been rewritten, some filter exists remain : try again
+     * The difference with first phase is that here the service where to copy a filter exists may contain optional, union, etc.
      */
     boolean filterExist(Exp body, Exp filterExist) {
         if (!(visitor.isExist() && accept(filterExist))) {
             return false;
         }
-        Term termExist = filterExist.getFilter().getTermExist();
-        //boolean isNotExist = visitor.isNotExist(filterExist);
-//        if (isNotExist) {
-//            termExist = termExist.getArg(0).getTerm();
-//        }
-        //Exist exist  = termExist.getExistPattern();
+        Term termExist = filterExist.getFilter().getTermExist();        
         Exp bgpExist = termExist.getExistBGP();
         if (bgpExist.size() == 1 && bgpExist.get(0).isService()) {
             Service servExist = bgpExist.get(0).getService();
             if (servExist.getServiceList().size() == 1) {
 
                 List<Service> serviceList = new ArrayList<>();
-                List<Variable> existVarList = bgpExist.getVariables();
+                List<Variable> existVarList = bgpExist.getInscopeVariables();
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists
@@ -410,7 +479,6 @@ public class RewriteBGP {
 
                 if (serviceList.size() == 1) {
                     // remove service from exists
-                    //termExist.setExistBGP(servExist.get(0));
                     termExist.setExistBGP(servExist.getBodyExp());
                     // move exist into relevant service 
                     Service serv = serviceList.get(0);

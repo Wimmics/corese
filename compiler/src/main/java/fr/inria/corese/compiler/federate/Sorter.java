@@ -44,7 +44,6 @@ public class Sorter {
                 j = i;
             }
         }
-        
         if (j > 0) {
             // ee has a filter: put it first
             setFirst(bgp, j);

@@ -67,53 +67,78 @@ public class Simplify {
      * TODO: merge when there is only one URI ???
      */ 
     Exp merge(Exp bgp) {    
-        ServiceList map1 = new ServiceList();
-        ServiceList map2 = new ServiceList();        
+        ServiceList include = new ServiceList();
+        ServiceList exclude = new ServiceList();        
         // create map: service URI -> list (Service)
         for (Exp exp : bgp) {
             if (exp.isService()){ 
                 if (exp.getService().isFederate()) {
                     // skip
                 }               
-                else if (isTripleOnly(exp.getBodyExp())) {
+                else if (isTripleFilterOnly(exp.getBodyExp())) {
                     // do not merge basic BGP with same service URI
                     // because they are not connected 
-                    map2.add(exp.getService());
+                    exclude.add(exp.getService());
                 }
                 else {
-                    map1.add(exp.getService());
+                    include.add(exp.getService());
                 }
             }
         }
               
         // group several services with same URI into one service
-        for (List<Service> list : map1.getMap().values()) {
-            if (list.size() > 1) {
-                int i = 0;
-                Service first = list.get(0);
-                
-                for (Service s : list) {
-                    if (i++ > 0) {
-                        first.getBodyExp().include(s.getBodyExp());                       
+        for (List<Service> list : include.getMap().values()) {
+            Service first = list.get(0);
+            int i = 0;
+            boolean mod = false;
+            
+            for (Service s : list) {
+                if (i++ > 0) {
+                    first.getBodyExp().include(s.getBodyExp());
+                    bgp.getBody().remove(s);
+                    mod = true;
+                }
+            }
+            
+            List<Service> alist = exclude.getMap().get(first.getServiceName().getLabel());
+            if (alist != null) {
+                for (Service s : alist) {
+                    // TODO: take constant node into account for connect
+                    if (first.getBodyExp().isConnect(s.getBodyExp())) {
+                        first.getBodyExp().include(s.getBodyExp());
                         bgp.getBody().remove(s);
+                        mod = true;
                     }
                 }
             }
+
+            if (mod) {
+                new Sorter().process(first.getBodyExp());
+            }
         }
         
-        // @local rdfs:label
-        /**
-         * if there is a service s1 with several uri with  a triple 
-         *  annotated as @local and if there is a service s2 with 
-         * one of the URI of s1, s1 can be merged with s2
-         */
+        bgp = move(bgp, exclude);
+        
+        return bgp;
+    }
+    
+    /**
+     * @move rdfs:label
+     * if there is a service s1 with several uri with a triple annotated as
+     * @move and if there is a service s2 with one of the URI of s1, s1 can be
+     * merged with s2
+     */
+    Exp move(Exp bgp, ServiceList serviceList) {
+        if (! visitor.getAST().hasMetadata(Metadata.MOVE)) {
+            return bgp;
+        }
         boolean go = true;
         while (go) {
             go = false;
             ArrayList<Service> list = new ArrayList<>();
             for (Exp exp : bgp) {
                 if (exp.isService() && isMoveable(exp.getService())) {
-                    Service serv = getCandidate(exp.getService(), map2);
+                    Service serv = getCandidate(exp.getService(), serviceList);
                     if (serv != null) {
                         serv.getBodyExp().include(exp.getService().getBodyExp());
                         list.add(exp.getService());
@@ -126,7 +151,7 @@ public class Simplify {
                 bgp.getBody().remove(s);
             }
         }
-               
+        
         return bgp;
     }
     
@@ -150,7 +175,7 @@ public class Simplify {
             if (list != null) {
                 if (res == null) {
                     res = list.get(0);
-                    if (! serv.getBodyExp().isConnected(res.getBodyExp())) {
+                    if (! serv.getBodyExp().isConnect(res.getBodyExp())) {
                         return null;
                     }
                 } else {
@@ -251,10 +276,17 @@ public class Simplify {
     boolean bounce(Service s) {
         return visitor.getAST().hasMetadataValue(Metadata.BOUNCE, s.getServiceName().getLabel());
     }
-       
-    boolean isTripleOnly(Exp exp) {
+      
+    /**
+     * exp contains only triple and filter
+     * TODO: accept bind (exp as var)
+     */
+    boolean isTripleFilterOnly(Exp exp) {
         for (Exp ee : exp) {
-            if (! ee.isTriple()) {
+            if (ee.isFilter() || ee.isTriple()) {
+                // ok
+            }
+            else {
                 return false;
             }
         }
@@ -264,13 +296,13 @@ public class Simplify {
     boolean isUnionTripleOnly(Exp bgp) {
         if (bgp.size() == 1 && bgp.get(0).isUnion()) {
             Union union = bgp.get(0).getUnion();
-            return isTripleOnly(union.get(0)) && isTripleOnly(union.get(1)) ;
+            return isTripleFilterOnly(union.get(0)) && isTripleFilterOnly(union.get(1)) ;
         }
         return false;
     }
     
     boolean isUnionOrTripleOnly(Exp bgp) {
-        return isUnionTripleOnly(bgp) || isTripleOnly(bgp);
+        return isUnionTripleOnly(bgp) || isTripleFilterOnly(bgp);
     }
     
     Exp simplify(Exp exp) {
@@ -437,15 +469,28 @@ public class Simplify {
             Service s1 = fst.get(0).getService();
             Service s2 = fst.get(1).getService();
             Service s3 = rst.get(0).getService();
-            if (!s2.isFederate() && !s3.isFederate() && s2.getServiceName().equals(s3.getServiceName())
-                    && gentle(s1, s2, s3)) {
-                ASTQuery a = visitor.getAST();
-                Service s = a.service(s2.getServiceName(), copy(a, exp, s2.getBodyExp(), s3.getBodyExp()));
-                BasicGraphPattern bgp = a.bgp(s1, s);
-                return bgp;
+            
+            if (splitable(s1, s2, s3)) {
+                return split(exp, s1, s2, s3);
+            }
+            else if (splitable(s2, s1, s3)) {
+                return split(exp, s2, s1, s3);
             }
         }
         return exp;
+    }
+    
+    boolean splitable(Service s1, Service s2, Service s3) {
+        return !s2.isFederate() && !s3.isFederate()
+                && s2.getServiceName().equals(s3.getServiceName())
+                && gentle(s1, s2, s3);
+    }
+    
+    Exp split(Exp exp, Service s1, Service s2, Service s3) {
+        ASTQuery a = visitor.getAST();
+        Service s = a.service(s2.getServiceName(), copy(a, exp, s2.getBodyExp(), s3.getBodyExp()));
+        BasicGraphPattern bgp = a.bgp(s1, s);
+        return bgp;
     }
     
     // condition: x in var(C) & x not in B => x not in A

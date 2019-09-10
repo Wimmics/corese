@@ -16,5 +16,10 @@ public class Binary extends Exp {
     public Exp add(Exp exp) {
         return super.add((exp.isBGP()) ? exp : BasicGraphPattern.create(exp));
     }
+    
+    @Override
+    public boolean isBinaryExp() {
+        return true;
+    }
 
 }

@@ -92,6 +92,7 @@ public class Metadata extends ASTObject
     public static final String VERBOSE          = PREF + "verbose";
     public static final String SELECT           = PREF + "select";
     public static final String GROUP            = PREF + "group";
+    public static final String MERGE            = PREF + "merge";
     public static final String SIMPLIFY         = PREF + "simplify";
     public static final String EXIST            = PREF + "exist";
     public static final String SKIP_STR         = PREF + "skip";

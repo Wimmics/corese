@@ -1082,7 +1082,7 @@ public class ASTQuery
     /**
      * BIND( f(?x) as ?y )
      */
-    public Exp createBind(Expression exp, Variable var) {
+    public Binding createBind(Expression exp, Variable var) {
        return Binding.create(exp, var);
     }
     
@@ -2985,7 +2985,7 @@ public class ASTQuery
                }
             }
             
-            Exp b = createBind(val.getExp(), meta);
+            Binding b = createBind(val.getExp(), meta);
             val.setBind(b); 
         }
        

@@ -81,6 +81,7 @@ public class Term extends Expression {
     private ExpressionList nestedList;
     // additional system arg:
     Expression exp;
+    // compiled kgram Exp
     ExpPattern pattern;
     boolean isFunction = false,
             isCount = false,
@@ -1038,6 +1039,7 @@ public class Term extends Expression {
         return term;
     }
 
+    @Override
     void getConstants(List<Constant> list) {
         if (isNot()) {
             // ! p is a problem because we do not know the predicate nodes ...
@@ -1496,21 +1498,22 @@ public class Term extends Expression {
         return this;
     }
 
+    
     /**
-     * KGRAM
+     * Variables of a filter
+     * 
      */
-    // Filter
     @Override
     public void getVariables(List<String> list, boolean excludeLocal) {
         for (Expression ee : getArgs()) {
             ee.getVariables(list, excludeLocal);
         }
         if (oper() == ExprType.EXIST && getPattern() != null) {
+            // runtime: compiled kgram Exp
             getPattern().getVariables(list, excludeLocal);
         }
         else if (getExist() != null) {
-            // when used before compiling
-            // use case: visitor
+            // compile time: return subscope variables:  surely bound in exists {}
             List<Variable> varList = getExist().getVariables();
             for (Variable var : varList) {
                 var.getVariables(list, excludeLocal);
@@ -1520,7 +1523,7 @@ public class Term extends Expression {
 
     // this = xt:fun(?x, ?y)
     List<Variable> getFunVariables() {
-        ArrayList<Variable> list = new ArrayList<Variable>();
+        ArrayList<Variable> list = new ArrayList<>();
         for (Expression exp : getArgs()) {
             if (exp.isVariable()) {
                 list.add(exp.getVariable());
@@ -1598,18 +1601,11 @@ public class Term extends Expression {
 
     @Override
     public ExpPattern getPattern() {
-//        if (proc == null) {
-//            return null;
-//        }
-//        return proc.getPattern();
         return pattern;
     }
 
     public void setPattern(ExpPattern pat) {
         pattern = pat;
-//        if (proc != null) {            
-//            proc.setPattern(pat);
-//        }
     }
 
     void setExist(Exist exp) {

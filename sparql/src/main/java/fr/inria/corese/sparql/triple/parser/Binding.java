@@ -41,6 +41,11 @@ public class Binding extends Exp {
     }
     
     @Override
+    public Binding getBind() {
+        return this;
+    }
+    
+    @Override
     public Expression getFilter(){
 	return exp;
     }

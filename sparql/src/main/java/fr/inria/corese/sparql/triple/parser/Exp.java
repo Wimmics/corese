@@ -92,6 +92,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	boolean isBinary(){
 		return isMinus() || isOptional();
 	}
+        
+        public boolean isBinaryExp() {
+            return false;
+        }
 	
 	public  void add(int n, Exp exp){
 		 body.add(n, exp);
@@ -127,6 +131,19 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             return false;
         }
         
+        public boolean isConnect(Exp exp) {
+            return intersect(getSubscopeVariables(), exp.getSubscopeVariables());
+        }
+        
+        boolean intersect(List<Variable> l1, List<Variable> l2) {
+            for (Variable var : l1) {
+                if (l2.contains(var)) {
+                    return true;
+                }                       
+            }
+            return false;
+        }
+        
         // BGP body of service, graph
        public Exp getBodyExp() {
             if (size() > 0) {
@@ -152,7 +169,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
            
        /**
         * Same as SUBSCOPE
-        * Variables that are surely bound:
+        * Variables that are surely bound in this Exp
         * left part of optional & minus, common variables of union branchs
         * It is not the list of all variables
         */
@@ -205,6 +222,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	public Triple getTriple(){
 		return null;
 	}
+        
+        public Binding getBind() {
+            return null;
+        }
 	
 	public Expression getFilter(){
 		return null;

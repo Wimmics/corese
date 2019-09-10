@@ -203,6 +203,7 @@ public class Triple extends Exp {
         return true;
     }
 
+    @Override
     public boolean isConnected(Triple t) {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {

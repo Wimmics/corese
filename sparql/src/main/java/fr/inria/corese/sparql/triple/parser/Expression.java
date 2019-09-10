@@ -86,15 +86,6 @@ public class Expression extends TopExp
         return null;
     }
     
-    // Exp getVariables()
-    // overloaded by Variable
-    void getVariables(List<Variable> list) {
-        
-    }
-    void getVariables(VariableSort sort, List<Variable> list) {
-        
-    }
-
     /**
      * Every filter/select/bind exp is compiled
      */
@@ -556,15 +547,35 @@ public class Expression extends TopExp
     public Expr getExp() {
         return this;
     }
+    
+    // Statement Exp getVariables() overloaded by Variable
+    void getVariables(List<Variable> list) {
+        
+    }
+    void getVariables(VariableSort sort, List<Variable> list) {
+        
+    }
+    
+    public List<Variable> getVariableList() {
+        List<String> list = getVariables();
+        ArrayList<Variable> vlist = new ArrayList<>();
+        for (String name : list) {
+            vlist.add(Variable.create(name));
+        }
+        return vlist;
+    }
 
+    /**
+     * Variables of a filter
+     */
     @Override
     public List<String> getVariables() {
         return getVariables(false);
     }
-
+    
     @Override
     public List<String> getVariables(boolean excludeLocal) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         getVariables(list, excludeLocal);
         return list;
     }

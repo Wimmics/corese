@@ -126,6 +126,14 @@ public class Variable extends Atom {
         }
         return false;
     }
+    
+    @Override
+    public void getVariables(List<String> list, boolean excludeLocal) {
+        if (!list.contains(getName())
+                && !(excludeLocal && isLocal())) {
+            list.add(getName());
+        }
+    }
 
     @Override
     void getVariables(List<Variable> list) {
@@ -240,15 +248,6 @@ public class Variable extends Atom {
     @Override
     public int type() {
         return ExprType.VARIABLE;
-    }
-
-    @Override
-    public void getVariables(List<String> list, boolean excludeLocal) {
-        // TODO Auto-generated method stub
-        if (!list.contains(getName())
-                && !(excludeLocal && isLocal())) {
-            list.add(getName());
-        }
     }
 
     @Override

@@ -583,6 +583,23 @@ public class Expression extends TopExp
     public void getVariables(List<String> list, boolean excludeLocal) {
     }
     
+    /**
+     * AST Variables of filter
+     * exist BGP : subscope variables: they are surely bound 
+     */
+    public List<Variable> getASTVariables() {
+        return getASTVariables(false);
+    }
+    
+    public List<Variable> getASTVariables(boolean excludeLocal) {
+        List<Variable> list = new ArrayList<>();
+        getASTVariables(list, excludeLocal);
+        return list;
+    }
+
+    public void getASTVariables(List<Variable> list, boolean excludeLocal) {
+    }
+    
     public boolean isBound(List<Variable> varList) {
         List<String> list = getVariables();
         for (String name : list){

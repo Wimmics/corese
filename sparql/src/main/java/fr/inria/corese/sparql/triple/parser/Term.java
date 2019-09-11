@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import static fr.inria.corese.sparql.triple.parser.TopExp.VariableSort.SUBSCOPE;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1510,13 +1511,32 @@ public class Term extends Expression {
         }
         if (oper() == ExprType.EXIST && getPattern() != null) {
             // runtime: compiled kgram Exp
+            // return exists BGP variables except right part of minus
+            // **and** filter variables **and** recursively in sub exists
+            // use case: list of filter variables relevant for placing a filter in a BGP when sorting
+            // see kgram QuerySorter sortFilter()
             getPattern().getVariables(list, excludeLocal);
         }
         else if (getExist() != null) {
             // compile time: return subscope variables:  surely bound in exists {}
+            // no filter variables as above
             List<Variable> varList = getExist().getVariables();
             for (Variable var : varList) {
                 var.getVariables(list, excludeLocal);
+            }
+        }
+    }
+    
+     @Override
+    public void getASTVariables(List<Variable> list, boolean excludeLocal) {
+        for (Expression ee : getArgs()) {
+            ee.getASTVariables(list, excludeLocal);
+        }
+        if (getExist() != null) {
+            // return subscope variables:  surely bound in exists {}
+            List<Variable> varList = getExist().getVariables(SUBSCOPE);
+            for (Variable var : varList) {
+                var.getASTVariables(list, excludeLocal);
             }
         }
     }

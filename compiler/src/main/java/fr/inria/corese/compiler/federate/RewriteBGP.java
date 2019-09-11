@@ -87,7 +87,7 @@ public class RewriteBGP {
                     List<Variable> l1 = list.get(0).getSubscopeVariables();
                     List<Variable> l2 = list.get(1).getSubscopeVariables();
                     for (Expression filter : filterList) {
-                        List<Variable> varList = filter.getVariableList();
+                        List<Variable> varList = filter.getASTVariables();
                         if (varList.size() == 2) {
                             if (gentle(l1, l2, varList.get(0), varList.get(1))) {
                                 list.get(0).include(list.get(1));
@@ -364,7 +364,7 @@ public class RewriteBGP {
                     List<Variable> currentIntersection = intersection(existVarList, bgpVarList);
 
                     if (isDebug()) {
-                        System.out.println("R: " + existVarList + " " + bgpVarList);
+                        System.out.println("R: bgp: " + bgpVarList  + " exist: " + existVarList);
                         System.out.println("Intersection: " + currentIntersection);
                     }
 

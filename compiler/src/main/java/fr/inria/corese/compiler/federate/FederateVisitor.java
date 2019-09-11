@@ -67,7 +67,7 @@ public class FederateVisitor implements QueryVisitor {
     private boolean merge = true;
     // factorize unique service in optional/minus/union
     boolean simplify  = true;
-    boolean exist = false;
+    boolean exist = true;
     private boolean bounce = false;
     boolean verbose = false;
     boolean variable = false;
@@ -203,9 +203,8 @@ public class FederateVisitor implements QueryVisitor {
         if (skip(Metadata.SIMPLIFY)) {
             simplify = false;
         }
-        if (ast.hasMetadataValue(Metadata.TYPE, Metadata.EXIST)) {
-            System.out.println("exist: true");
-            exist = true;
+        if (skip(Metadata.EXIST)) {
+            exist = false;
         }
         if (ast.hasMetadata(Metadata.BOUNCE)) {
             bounce = true;

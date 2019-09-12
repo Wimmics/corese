@@ -1,16 +1,15 @@
 package fr.inria.corese.compiler.federate;
 
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Exist;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.VariableScope;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +86,7 @@ public class RewriteBGP {
                     List<Variable> l1 = list.get(0).getSubscopeVariables();
                     List<Variable> l2 = list.get(1).getSubscopeVariables();
                     for (Expression filter : filterList) {
-                        List<Variable> varList = filter.getASTVariables();
+                        List<Variable> varList = filter.getInscopeVariables();
                         if (varList.size() == 2) {
                             if (gentle(l1, l2, varList.get(0), varList.get(1))) {
                                 list.get(0).include(list.get(1));
@@ -352,6 +351,7 @@ public class RewriteBGP {
 
                 List<BasicGraphPattern> bgpList = new ArrayList<>();
                 List<Variable> existVarList = bgpExist.getInscopeVariables();
+                existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists
@@ -396,6 +396,7 @@ public class RewriteBGP {
                 }
 
                 if (bgpList.size() == 1) {
+                    if (isDebug()) System.out.println("move1: " + filterExist);
                     // remove service from exists
                     termExist.setExistBGP(servExist.getBodyExp());
                     // move exist into relevant service 
@@ -427,6 +428,7 @@ public class RewriteBGP {
 
                 List<Service> serviceList = new ArrayList<>();
                 List<Variable> existVarList = bgpExist.getInscopeVariables();
+                existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists
@@ -478,6 +480,7 @@ public class RewriteBGP {
                 }
 
                 if (serviceList.size() == 1) {
+                    if (isDebug()) System.out.println("move2: " + filterExist);
                     // remove service from exists
                     termExist.setExistBGP(servExist.getBodyExp());
                     // move exist into relevant service 

@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
@@ -547,24 +548,7 @@ public class Expression extends TopExp
     public Expr getExp() {
         return this;
     }
-    
-    // Statement Exp getVariables() overloaded by Variable
-    void getVariables(List<Variable> list) {
-        
-    }
-    void getVariables(VariableSort sort, List<Variable> list) {
-        
-    }
-    
-    public List<Variable> getVariableList() {
-        List<String> list = getVariables();
-        ArrayList<Variable> vlist = new ArrayList<>();
-        for (String name : list) {
-            vlist.add(Variable.create(name));
-        }
-        return vlist;
-    }
-
+   
     /**
      * Variables of a filter
      */
@@ -582,24 +566,7 @@ public class Expression extends TopExp
 
     public void getVariables(List<String> list, boolean excludeLocal) {
     }
-    
-    /**
-     * AST Variables of filter
-     * exist BGP : subscope variables: they are surely bound 
-     */
-    public List<Variable> getASTVariables() {
-        return getASTVariables(false);
-    }
-    
-    public List<Variable> getASTVariables(boolean excludeLocal) {
-        List<Variable> list = new ArrayList<>();
-        getASTVariables(list, excludeLocal);
-        return list;
-    }
-
-    public void getASTVariables(List<Variable> list, boolean excludeLocal) {
-    }
-    
+        
     public boolean isBound(List<Variable> varList) {
         List<String> list = getVariables();
         for (String name : list){

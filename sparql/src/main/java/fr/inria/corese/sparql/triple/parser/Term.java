@@ -21,7 +21,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import static fr.inria.corese.sparql.triple.parser.TopExp.VariableSort.SUBSCOPE;
+import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1501,8 +1501,8 @@ public class Term extends Expression {
 
     
     /**
-     * Variables of a filter
-     * 
+     * Variables of filter and filter exists
+     * Runtime version (Query)
      */
     @Override
     public void getVariables(List<String> list, boolean excludeLocal) {
@@ -1519,25 +1519,27 @@ public class Term extends Expression {
         }
         else if (getExist() != null) {
             // compile time: return subscope variables:  surely bound in exists {}
-            // no filter variables as above
-            List<Variable> varList = getExist().getVariables();
+            // when exists { filter f }, variables of filter f are not returned
+            List<Variable> varList = getExist().getSubscopeVariables();
             for (Variable var : varList) {
                 var.getVariables(list, excludeLocal);
             }
         }
     }
     
-     @Override
-    public void getASTVariables(List<Variable> list, boolean excludeLocal) {
+    /**
+     * Filter variables
+     * if scope.isExist()  collect exists {} variables, default is true
+     * if scope.isFilter() collect filter variables within exists { .. filter f } default is false
+     * compile time version (AST)
+     */
+    @Override
+    void getVariables(VariableScope scope, List<Variable> list) {
         for (Expression ee : getArgs()) {
-            ee.getASTVariables(list, excludeLocal);
+            ee.getVariables(scope, list);
         }
-        if (getExist() != null) {
-            // return subscope variables:  surely bound in exists {}
-            List<Variable> varList = getExist().getVariables(SUBSCOPE);
-            for (Variable var : varList) {
-                var.getASTVariables(list, excludeLocal);
-            }
+        if (getExist() != null && scope.isExist()) {
+            getExist().getVariables(scope, list);
         }
     }
 

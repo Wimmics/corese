@@ -51,21 +51,20 @@ public class Minus extends Binary {
         return b1 && b2;
     }
 
-    @Override
-    void getVariables(List<Variable> list) {
+    void basicVariables(VariableScope sort, List<Variable> list) {
         if (size() > 0) {
-            get(0).getVariables(list);
+            get(0).getVariables(sort, list);
         }
     }
 
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
-        switch (sort) {
+    void getVariables(VariableScope sort, List<Variable> list) {
+        switch (sort.getScope()) {
             case SUBSCOPE:
             case INSCOPE:
-                getVariables(list);
+                basicVariables(sort, list);
                 break;
-            case ALL:
+            case ALLSCOPE:
                 super.getVariables(sort, list);
                 break;
         }

@@ -112,7 +112,6 @@ public class Values extends Exp {
         return sb;
     }
 
-    @Override
     void getVariables(List<Variable> list) {
         for (Variable var : getVarList()) {
             add(var, list);
@@ -120,7 +119,7 @@ public class Values extends Exp {
     }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
+    void getVariables(VariableScope sort, List<Variable> list) {
         getVariables(list);
     }
 

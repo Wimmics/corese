@@ -580,34 +580,29 @@ public class Triple extends Exp {
         }
         return bind(var.getName());
     }
-
-    @Override
-    void getVariables(List<Variable> list) {
-        if (!isFilter()) {
-            getTripleVariables(list);
-        }
-    }
     
-    void getTripleVariables(List<Variable> list) {
-        getSubject().getVariables(list);
+    void getTripleVariables(VariableScope sort,List<Variable> list) {
+        getSubject().getVariables(sort, list);
         if (!isPath()) {
-            getPredicate().getVariables(list);
+            getPredicate().getVariables(sort, list);
         }
-        getObject().getVariables(list);
+        getObject().getVariables(sort, list);
     }
     
-    void getFilterVariables(VariableSort sort, List<Variable> list) {
-        //getFilter().getASTVariables(list, true);
+    void getFilterVariables(VariableScope scope, List<Variable> list) {
+        if (scope.isFilter()) {
+            getFilter().getVariables(scope, list);
+        }
     }
 
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
+    void getVariables(VariableScope sort, List<Variable> list) {
         if (isFilter()) {
             getFilterVariables(sort, list);
         }
         else {
-            getTripleVariables(list);
+            getTripleVariables(sort, list);
         }
     }
 

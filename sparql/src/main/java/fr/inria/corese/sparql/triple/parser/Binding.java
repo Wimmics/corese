@@ -90,13 +90,12 @@ public class Binding extends Exp {
         return b;
     }
 
-    @Override
     void getVariables(List<Variable> list) {
         add(getVariable(), list);
     }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
+    void getVariables(VariableScope sort, List<Variable> list) {
         getVariables(list);
     }
 

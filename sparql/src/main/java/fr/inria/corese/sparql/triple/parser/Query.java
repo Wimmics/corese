@@ -41,20 +41,19 @@ public class Query extends Exp {
         return this;
     }
 
-    @Override
-    void getVariables(List<Variable> list) {
+    void basicVariables(List<Variable> list) {
         for (Variable var : ast.getSelect()) {
             add(var, list);
         }
     }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
+    void getVariables(VariableScope sort, List<Variable> list) {
         //System.out.println("query: "+ ast.getSelectVariables());
-        switch (sort) {
+        switch (sort.getScope()) {
             case INSCOPE:
-            case SUBSCOPE:  getVariables(list); break;
-            case ALL:  getVariables(list); ast.getBody().getVariables(sort, list); break;
+            case SUBSCOPE:  basicVariables(list); break;
+            case ALLSCOPE:  basicVariables(list); ast.getBody().getVariables(sort, list); break;
         }
     }
 

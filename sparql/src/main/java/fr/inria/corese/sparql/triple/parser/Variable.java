@@ -136,23 +136,16 @@ public class Variable extends Atom {
     }
     
     @Override
-    public void getASTVariables(List<Variable> list, boolean excludeLocal) {
-        if (!list.contains(this)
-                && !(excludeLocal && isLocal())) {
-            list.add(this);
+    void getVariables(VariableScope scope, List<Variable> list) {
+        if (!(scope.isExcludeLocal() && isLocal())) {
+            getVariables(list);
         }
     }
-
-    @Override
+    
     void getVariables(List<Variable> list) {
         if (!list.contains(this)) {
             list.add(this);
         }
-    }
-    
-    @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
-        getVariables(list);
     }
 
     public String getSimpleName() {

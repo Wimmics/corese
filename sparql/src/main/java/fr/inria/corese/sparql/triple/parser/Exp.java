@@ -7,10 +7,14 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
+import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.INSCOPE;
+import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.ALLSCOPE;
+//import static java.util.logging.Level.ALL;
 
 /**
  * <p>Title: Corese</p>
@@ -151,53 +155,24 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
             return this;
        }
-       
-       // variable that are surely bound in a result
-       // subset of inscope
-       public List<Variable> getSubscopeVariables() {
-            return getVariables(VariableSort.SUBSCOPE);
-       }
-       
-       // std inscope variables
-       public List<Variable> getInscopeVariables() {
-            return getVariables(VariableSort.INSCOPE);
-       }
-       
-       public List<Variable> getAllVariables() {
-            return getVariables(VariableSort.ALL);
-       }
-           
+               
        /**
-        * Same as SUBSCOPE
         * Variables that are surely bound in this Exp
         * left part of optional & minus, common variables of union branchs
         * It is not the list of all variables
         */
         public List<Variable> getVariables() {
-            ArrayList<Variable> list = new ArrayList<>();
-            getVariables(list);
-            return list;
+              return getSubscopeVariables();
         }        
         
         void add(Variable var, List<Variable> list) {
             if (! list.contains(var)) {
                 list.add(var);
             }
-        }
-        
-        void getVariables(List<Variable> list) {
-            for (Exp exp : this) {
-                exp.getVariables(list);
-            }
-        }
-        
-        public List<Variable> getVariables(VariableSort sort) {
-            ArrayList<Variable> list = new ArrayList<>();
-            getVariables(sort, list);
-            return list;
-        }        
+        }      
                
-        void getVariables(VariableSort sort, List<Variable> list) {
+        @Override
+        void getVariables(VariableScope sort, List<Variable> list) {
             for (Exp exp : this) {
                 exp.getVariables(sort, list);
             }

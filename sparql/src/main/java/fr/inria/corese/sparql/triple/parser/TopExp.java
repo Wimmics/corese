@@ -2,20 +2,16 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.api.ASTVisitable;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Root of SPARQL Expression (filter) and Exp (triple, option, ...) 
+ * Root of SPARQL Expression (filter) and Exp (triple, option, ...)
+ *
  * @author corby
  *
  */
-
-public class TopExp implements ASTVisitable  {
-    
-    public enum VariableSort { ALL,
-    INSCOPE, 
-    // Variable surely bound: left part of optional, common var in union branchs
-    // former getVariables()
-    SUBSCOPE } ;
+public class TopExp implements ASTVisitable {
 
     /**
      * @return the generated
@@ -31,33 +27,54 @@ public class TopExp implements ASTVisitable  {
         this.generated = generated;
     }
     private boolean generated = false;
-	
-        @Override
-	public String toString(){
-		ASTBuffer sb = new ASTBuffer();
-		toString(sb);
-		return sb.toString();
-	}
-	
-	public StringBuffer toString(StringBuffer sb){
-		return sb;
-	}
-        
-        public ASTBuffer toString(ASTBuffer sb){
-		return sb;
-	}
-	
-	public String toSparql(){
-		return toString();
-	}
-        
-        public StringBuffer toJava(StringBuffer sb){
-		return toString(sb);
-	}
-        
-        @Override
-        public void accept(ASTVisitor visitor) {
-		
-	}
+
+    @Override
+    public String toString() {
+        ASTBuffer sb = new ASTBuffer();
+        toString(sb);
+        return sb.toString();
+    }
+
+    public StringBuffer toString(StringBuffer sb) {
+        return sb;
+    }
+
+    public ASTBuffer toString(ASTBuffer sb) {
+        return sb;
+    }
+
+    public String toSparql() {
+        return toString();
+    }
+
+    public StringBuffer toJava(StringBuffer sb) {
+        return toString(sb);
+    }
+
+    @Override
+    public void accept(ASTVisitor visitor) {
+
+    }
+
+    public List<Variable> getSubscopeVariables() {
+        return getVariables(VariableScope.subscope);
+    }
+
+    public List<Variable> getInscopeVariables() {
+        return getVariables(VariableScope.inscope);
+    }
+
+    public List<Variable> getAllVariables() {
+        return getVariables(VariableScope.allscope);
+    }
+
+    public List<Variable> getVariables(VariableScope scope) {
+        List<Variable> list = new ArrayList<>();
+        getVariables(scope, list);
+        return list;
+    }
+
+    void getVariables(VariableScope scope, List<Variable> list) {
+    }
 
 }

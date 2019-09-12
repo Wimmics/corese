@@ -5,7 +5,6 @@ import java.util.List;
 
 import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
-import static fr.inria.corese.sparql.triple.parser.TopExp.VariableSort.INSCOPE;
 
 /**
  * <p>
@@ -56,11 +55,10 @@ public class Union extends Binary {
         return this;
     }
 
-    @Override
-    void getVariables(List<Variable> list) {
+    void basicVariables(VariableScope sort, List<Variable> list) {
         if (size() > 1) {
-            List<Variable> left  = get(0).getVariables();
-            List<Variable> right = get(1).getVariables();
+            List<Variable> left  = get(0).getVariables(sort);
+            List<Variable> right = get(1).getVariables(sort);
 
             for (Variable var : left) {
                 if (right.contains(var)) {
@@ -71,9 +69,9 @@ public class Union extends Binary {
     }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
-        switch (sort) {
-            case SUBSCOPE:  getVariables(list); break;
+    void getVariables(VariableScope sort, List<Variable> list) {
+        switch (sort.getScope()) {
+            case SUBSCOPE:  basicVariables(sort, list); break;
             default:  super.getVariables(sort, list); break;
         }
     }

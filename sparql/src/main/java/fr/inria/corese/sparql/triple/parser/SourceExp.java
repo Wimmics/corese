@@ -30,18 +30,22 @@ public class SourceExp extends And {
         source = at;
     }
     
-    @Override
-    void getVariables(List<Variable> list) {
-        super.getVariables(list);
-        getSource().getVariables(list);
-    }
+    // SUBSCOPE used to record source 
+    // other did not
+    
+//    void getVariables(List<Variable> list) {
+//        super.getVariables(list);
+//        getSource().getVariables(list);
+//    }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
-        switch (sort) {
-            case SUBSCOPE:  getVariables(list); break;
-            default:  super.getVariables(sort, list); break;
-        }
+    void getVariables(VariableScope sort, List<Variable> list) {
+        super.getVariables(sort, list);
+        getSource().getVariables(sort, list);
+//        switch (sort) {
+//            case SUBSCOPE:  getVariables(list); break;
+//            default:  super.getVariables(sort, list); break;
+//        }
     }
 
     @Override

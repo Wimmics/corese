@@ -114,17 +114,16 @@ public class Optional extends Binary {
         return sb;
     }
 
-    @Override
-    void getVariables(List<Variable> list) {
+    void basicVariables(VariableScope sort, List<Variable> list) {
         if (size() > 0) {
-            get(0).getVariables(list);
+            get(0).getVariables(sort, list);
         }
     }
     
     @Override
-    void getVariables(VariableSort sort, List<Variable> list) {
-        switch (sort) {
-            case SUBSCOPE:  getVariables(list); break;
+    void getVariables(VariableScope sort, List<Variable> list) {
+        switch (sort.getScope()) {
+            case SUBSCOPE:  basicVariables(sort, list); break;
             default:  super.getVariables(sort, list); break;
         }
     }

@@ -67,7 +67,27 @@ public class TopExp implements ASTVisitable {
     public List<Variable> getAllVariables() {
         return getVariables(VariableScope.allscope);
     }
-
+    
+    // if statement: consider filter and statement inscope 
+    // if filter:    consider filter
+    // use case: when called on object of type Exp that contains a filter (Triple as Filter)
+    public List<Variable> getFilterVariables() {
+        return getVariables(VariableScope.filterscope);
+    }
+    
+    /**
+     * List of variables of statement Exp (bgp, optional, union, etc.) and/or filter Expression
+     * inscope:  std SPARQL inscope variables
+     * subscope: subset of inscope variables which are surely bound by statement
+     * eg not optional variables, surely bound by union, etc.
+     * There are 2 use cases:
+     * 1. entering a statement (eg bgp) by default do not consider filters because we want *inscope* variables
+     * 1.1 getVariables(VariableScope.inscope().setFilter(true)) consider also filter variables and filter exists variables
+     * getVariables(VariableScope.inscope().setFilter(true).setExist(false)) consider also filter but not filter exist variables
+     * 2. entering a filter Expression (i.e. not a Triple that contains a filter) consider filter variables and filter exists variables
+     * 2.1 getVariables(VariableScope.inscope().setExist(false)) consider filter variables but not filter exists variables
+     * Hence there is a subtle difference when entering a filter as statement Exp or as filter Expression
+     */
     public List<Variable> getVariables(VariableScope scope) {
         List<Variable> list = new ArrayList<>();
         getVariables(scope, list);

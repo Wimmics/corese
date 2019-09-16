@@ -13,12 +13,10 @@ import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
-import static fr.inria.corese.kgram.api.core.ExprType.EXIST;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.EXPRESSION;
@@ -566,8 +564,19 @@ public class Expression extends TopExp
 
     public void getVariables(List<String> list, boolean excludeLocal) {
     }
-        
+    
+    // filter variables bound by varList 
     public boolean isBound(List<Variable> varList) {
+        List<Variable> list = getInscopeVariables();
+        for (Variable var : list) {
+            if (! varList.contains(var)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean isBound2(List<Variable> varList) {
         List<String> list = getVariables();
         for (String name : list){
             boolean bound = false;

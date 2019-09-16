@@ -5,8 +5,7 @@ import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.ALLSCOPE;
 
 /**
- *
- * @author corby
+ * Used by  TopExp getVariables(scope)
  */
 public class VariableScope {
 
@@ -21,6 +20,7 @@ public class VariableScope {
     public static final VariableScope inscope  = inscope();
     public static final VariableScope subscope = subscope();
     public static final VariableScope allscope = allscope();
+    public static final VariableScope filterscope = filterscope();
     
     private boolean excludeLocal = false;
     // from  BGP to filter and from exists to filter
@@ -36,6 +36,10 @@ public class VariableScope {
          
     public VariableScope(Scope s) {
         setScope(s);
+    }
+    
+    public static VariableScope filterscope() {
+        return new VariableScope(INSCOPE).setFilter(true);
     }
     
     public static VariableScope inscope() {

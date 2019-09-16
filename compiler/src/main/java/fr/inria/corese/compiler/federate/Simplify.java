@@ -199,6 +199,7 @@ public class Simplify {
                 && isMoveable(t.getPredicate().getConstant());
     }
     
+    // TODO: there could be a bind  
     Triple getUniqueTriple(Exp body) {
         Triple t = null;
         for (Exp exp : body) {

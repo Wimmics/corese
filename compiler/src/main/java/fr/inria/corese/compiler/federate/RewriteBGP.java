@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Binding;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -76,8 +77,8 @@ public class RewriteBGP {
         }
         
         /**
-         * merge two service bgp with same URI if there is a filter with two variables
-         * and each service bind one of the two variable
+         * merge two service bgp with same URI if there is a filter with variables
+         * and each service bind some (but not all) of the variables
          */
         void merge(List<Expression> filterList) {
             for (String uri : map.keySet()) {
@@ -87,26 +88,31 @@ public class RewriteBGP {
                     List<Variable> l2 = list.get(1).getSubscopeVariables();
                     for (Expression filter : filterList) {
                         List<Variable> varList = filter.getInscopeVariables();
-                        if (varList.size() == 2) {
-                            if (gentle(l1, l2, varList.get(0), varList.get(1))) {
-                                list.get(0).include(list.get(1));
-                                list.remove(1);
-                            }
+                        if (gentle(l1, l2, varList)) {
+                            list.get(0).include(list.get(1));
+                            list.remove(1);
                         }
                     }
                 }
             }
         }
-        
-        boolean gentle(List<Variable> l1, List<Variable> l2, String x, String y) {
-            Variable xx = Variable.create(x);
-            Variable yy = Variable.create(y);
-            return gentle(l1, l2, xx, yy) || gentle(l1, l2, yy, xx);
+          
+        // every var in l3 in l1 or l2
+        // some  var in l3 not in l1 and in l2
+        boolean gentle(List<Variable> l1, List<Variable> l2, List<Variable> l3) {
+            for (Variable var : l3) {
+                if (!(l1.contains(var) || l2.contains(var))) {
+                    return false;
+                }
+            }
+            for (Variable var : l3) {
+                if (!l1.contains(var) || !l2.contains(var)) {
+                    return true;
+                }
+            }
+            return false;
         }
-        
-        boolean gentle(List<Variable> l1, List<Variable> l2, Variable x, Variable y) {
-            return l1.contains(x) && l2.contains(y) && ! l1.contains(y) && ! l2.contains(x);
-        }
+
         
         @Override
         public String toString() {
@@ -313,7 +319,7 @@ public class RewriteBGP {
         for (BasicGraphPattern bgp : bgpList.keySet()) {
             Service serv = bgpList.get(bgp);
             if (!serv.getServiceName().getLabel().equals(FAKE_SERVER)) {
-                List<Variable> varList = bgp.getVariables();
+                List<Variable> varList = bgp.getSubscopeVariables();
                 if (exp.getFilter().isBound(varList)) {
                     bgp.add(exp);
                     move = true;
@@ -325,6 +331,8 @@ public class RewriteBGP {
         }
         return move;
     }
+    
+ 
 
     /**
      * Draft for testing 
@@ -350,8 +358,8 @@ public class RewriteBGP {
             if (servExist.getServiceList().size() == 1) {
 
                 List<BasicGraphPattern> bgpList = new ArrayList<>();
-                List<Variable> existVarList = bgpExist.getInscopeVariables();
-                existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
+                //List<Variable> existVarList = bgpExist.getInscopeVariables();
+                List<Variable> existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists
@@ -409,6 +417,37 @@ public class RewriteBGP {
             }
         }
     }
+    
+    
+    /**
+     * second phase: the whole content of a BGP have been rewritten
+     * Move bind/filter when there is *only one* service which binds it with *inscope* variables
+     * We are not sure that it succeeds but there is one service that can do it
+     */
+    boolean move(Exp current, Exp body) {
+        boolean move = false;
+        boolean fake = false;
+        List<Exp> list = new ArrayList<>();
+        for (Exp exp : body) {
+            if (exp.isService()) {
+                Service serv = exp.getService();
+                Exp bgp = serv.getBodyExp();
+                if (! bgp.getBody().contains(current)) {
+                    List<Variable> varList = bgp.getInscopeVariables();
+                    if (current.getFilter().isBound(varList)) {
+                        fake = serv.getServiceName().getLabel().equals(FAKE_SERVER);
+                        list.add(bgp);
+                    }
+                }
+            }
+        }
+        if (list.size() == 1 && !fake) {
+            list.get(0).add(current);
+            move = true;
+        }
+        return move;
+    }
+    
 
     /**
      * 
@@ -416,7 +455,7 @@ public class RewriteBGP {
      * second phase: the whole content of a BGP have been rewritten, some filter exists remain : try again
      * The difference with first phase is that here the service where to copy a filter exists may contain optional, union, etc.
      */
-    boolean filterExist(Exp body, Exp filterExist) {
+    boolean filterExist(Exp filterExist, Exp body) {
         if (!(visitor.isExist() && accept(filterExist))) {
             return false;
         }
@@ -427,8 +466,7 @@ public class RewriteBGP {
             if (servExist.getServiceList().size() == 1) {
 
                 List<Service> serviceList = new ArrayList<>();
-                List<Variable> existVarList = bgpExist.getInscopeVariables();
-                existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
+                List<Variable> existVarList = bgpExist.getVariables(VariableScope.inscope().setFilter(true));
                 List<Variable> previousIntersection = null;
 
                 // select relevant BGP with same URI as exists

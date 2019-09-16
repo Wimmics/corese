@@ -24,7 +24,7 @@ import java.util.List;
  *
  */
 public class RewriteTriple {
-  
+      
     FederateVisitor vis;
     // true:  graph g exp; false: select from g where exp
     boolean withGraph = true;
@@ -68,8 +68,12 @@ public class RewriteTriple {
             // graph name { bgp }
             exp = named(name, bgp);
         }        
-        Service s = Service.create(serviceList, bgp(exp), false);
+        Service s = service(serviceList, bgp(exp));
         return s;
+    }
+     
+    Service service(List<Atom> serviceList, Exp exp) {
+        return Service.create(serviceList, exp, false);
     }
     
     Exp bgp(Exp exp) {

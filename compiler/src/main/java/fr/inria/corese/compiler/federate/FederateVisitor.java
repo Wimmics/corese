@@ -16,9 +16,7 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
-import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
@@ -48,6 +46,7 @@ import org.slf4j.Logger;
 public class FederateVisitor implements QueryVisitor {
 
     private static Logger logger = LoggerFactory.getLogger(FederateVisitor.class);
+    static final String UNDEF = "?undef_serv";
     
     public static final String PROXY = "_proxy_";
     private static HashMap<String, List<Atom>> federation;
@@ -61,6 +60,8 @@ public class FederateVisitor implements QueryVisitor {
     boolean distributeDefault = false;
     // service selection for triples
     boolean select = true;
+    // consider filter in source selection
+    private boolean selectFilter = true;
     // group connected triples with same service into connected service s { BGP }
     boolean group = true;
     // in optional/minus/union: group every triples with same service into one service s { BGP }
@@ -193,6 +194,9 @@ public class FederateVisitor implements QueryVisitor {
         }
         if (skip(Metadata.SELECT)) {
             select = false;
+        }
+        if (skip(Metadata.SELECT_FILTER)) {
+            setSelectFilter(false);
         }
         if (skip(Metadata.GROUP)) {
             group = false;
@@ -381,7 +385,8 @@ public class FederateVisitor implements QueryVisitor {
         
         if (body.isBGP()) {
             sim.simplifyBGP(body);
-            filterExist(body);
+            bind(body);
+            filter(body);
             new Sorter().process(body);
         }
                 
@@ -403,15 +408,14 @@ public class FederateVisitor implements QueryVisitor {
         return i;
     }
     
-    
-    /**
-     * Move filter exists { service uri { exp }} into appropriate service uri { exp }
+      /**
+     * Move bind (exp as var) into appropriate service uri { } if any
      */
-    void filterExist (Exp body) {
+    void bind(Exp body) {
         ArrayList<Exp> list = new ArrayList<>();
         for (Exp exp : body) {
-            if (exp.isFilter() && exp.getFilter().isTermExistRec()) {
-                boolean b = rew.filterExist(body, exp);
+            if (exp.isBind() && ! exp.getFilter().isTermExistRec()) {
+                boolean b = rew.move(exp, body);
                 if (b) {
                     list.add(exp);
                 }
@@ -422,6 +426,46 @@ public class FederateVisitor implements QueryVisitor {
         }
     }
     
+    
+    /**
+     * Move filter  into appropriate service 
+     */
+    void filter(Exp body) {
+        ArrayList<Exp> list = new ArrayList<>();
+        for (Exp exp : body) {
+            if (exp.isFilter()) {
+                if (exp.getFilter().isTermExistRec()) {
+                    boolean b = rew.filterExist(exp, body);
+                    if (b) {
+                        list.add(exp);
+                    }
+                }
+                else {
+                   boolean b = rew.move(exp, body);
+                    if (b) {
+                        list.add(exp);
+                    } 
+                }
+            }
+        }
+        for (Exp exp : list) {
+            body.getBody().remove(exp);
+        }
+    }
+    
+    /**
+     * Filter may be copied into additional service
+     */
+    void filter(Exp body, List<Exp> filterList) {
+        for (Exp exp : filterList) {
+            if (exp.isFilter() && !exp.getFilter().isTermExistRec()) {
+                boolean b = rew.move(exp, body);               
+            }
+        }
+    }
+    
+    
+     
      ASTQuery getAST() {
          return ast;
      }
@@ -563,8 +607,8 @@ public class FederateVisitor implements QueryVisitor {
             list.add(at);
         }
     }
-    
-     List<Atom> getServiceList(Constant p) {          
+       
+    List<Atom> getServiceList(Constant p) {          
         if (select) {
             List<Atom> list = selector.getPredicateService(p);
             if (! list.isEmpty()) {
@@ -586,9 +630,16 @@ public class FederateVisitor implements QueryVisitor {
     
     // when there is no service for a triple
     List<Atom> getDefaultServiceList() {
-        //return ast.getServiceList();
-        return empty;
+        return undefinedService();
+        //return empty;
     }
+    
+    List<Atom> undefinedService() {
+        ArrayList<Atom> list = new ArrayList<>();
+        list.add(Variable.create(UNDEF));
+        return list;      
+    }
+ 
            
    
     boolean rewriteFilter(Atom name, Expression exp) {
@@ -685,6 +736,20 @@ public class FederateVisitor implements QueryVisitor {
      */
     public void setMerge(boolean merge) {
         this.merge = merge;
+    }
+
+    /**
+     * @return the selectFilter
+     */
+    public boolean isSelectFilter() {
+        return selectFilter;
+    }
+
+    /**
+     * @param selectFilter the selectFilter to set
+     */
+    public void setSelectFilter(boolean selectFilter) {
+        this.selectFilter = selectFilter;
     }
 
    

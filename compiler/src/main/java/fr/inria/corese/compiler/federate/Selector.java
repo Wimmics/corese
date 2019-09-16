@@ -310,47 +310,85 @@ public class Selector {
             }                      
         }
         
-        for (Triple t : ast.getTripleList()) {
-            if (selectable(t)) {
-                // triple with constant
+        selectTriple(aa, bgp, i);
                 
-                Variable var;
-                if (count) {
-                    var = count(aa, bgp, t, i);
-                }
-                else {
-                    var = exist(aa, bgp, t, i);
-                }
-                declare(t, var);
-                                             
-                i++;
-            }
-        }
-        
         return bgp;
     }
     
+    void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        if (vis.isSelectFilter()) {
+            selectTripleFilter(aa, bgp, i);
+        }
+        else {
+            selectTripleBasic(aa, bgp, i);
+        }
+    }
+
+    
+    void selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        List<BasicGraphPattern> list = new SelectorFilter(ast).process();
+        for (BasicGraphPattern exp : list) {
+            Triple t = exp.get(0).getTriple();
+            if (exp.size() > 1 || selectable(t)) {
+                Variable var;
+                if (count) {
+                    var = count(aa, bgp, exp, i);
+                } else {
+                    var = exist(aa, bgp, exp, i);
+                }
+                declare(t, var);
+                i++;
+            }
+        }
+    }
+
+    
+    void selectTripleBasic(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        for (Triple t : ast.getTripleList()) {
+            if (selectable(t)) {
+                // triple with constant
+
+                Variable var;
+                if (count) {
+                    var = count(aa, bgp, t, i);
+                } else {
+                    var = exist(aa, bgp, t, i);
+                }
+                declare(t, var);
+
+                i++;
+            }
+        }
+    }
+    
     Variable count(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
+        return count(aa, bgp, aa.bgp(t), i);
+    }
+    
+    Variable count(ASTQuery aa, BasicGraphPattern bgp, BasicGraphPattern bb, int i) {
         ASTQuery a = aa.subCreate();
         
         Term fun = Term.function(Processor.COUNT);
-        Variable var = Variable.create("?c_" + i);
+        Variable var = a.variable("?c_" + i);
         a.defSelect(var, fun);
         
         Term bound = Term.create(">", var, Constant.create(0));
-        Variable varBound = Variable.create("?v_" + i);
+        Variable varBound = a.variable("?v_" + i);
         aa.defSelect(varBound, bound);
         
-        a.setBody(BasicGraphPattern.create(t));
+        a.setBody(bb);
         
-        bgp.add(BasicGraphPattern.create(Query.create(a)));
+        bgp.add(a.bgp(Query.create(a)));
         
         return varBound;
     }
     
     Variable exist(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
-        BasicGraphPattern bb = BasicGraphPattern.create(t);
-        Variable var = Variable.create("?b" + i++);
+        return exist(aa, bgp, aa.bgp(t), i);
+    }
+    
+    Variable exist(ASTQuery aa, BasicGraphPattern bgp, BasicGraphPattern bb, int i) {
+        Variable var = aa.variable("?b" + i++);
         Binding exist = Binding.create(aa.createExist(bb, false), var);
         bgp.add(exist);
         return var;
@@ -358,8 +396,7 @@ public class Selector {
     
     
     boolean selectable(Triple t) {
-        return //t.getPredicate().isConstant() &&
-                 (t.getSubject().isConstant() || t.getObject().isConstant());
+        return (t.getSubject().isConstant() || t.getObject().isConstant());
     }
     
     /**

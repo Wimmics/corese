@@ -61,6 +61,7 @@ public class Metadata extends ASTObject
     public static final int SPLIT     = 42;
     public static final int LOCK      = 43;
     public static final int UNLOCK    = 44;
+    public static final int LIMIT     = 45;
     
     
     public static final int EVENT   = 50;
@@ -137,6 +138,7 @@ public class Metadata extends ASTObject
         define("@relax",    RELAX);      
         define("@federate", FEDERATE);      
         define("@federation",FEDERATION);      
+        define("@limit",    LIMIT);      
         define("@move",     MOVE);      
         define("@bounce",   BOUNCE);      
         define("@sparqlzero", SPARQL10);      

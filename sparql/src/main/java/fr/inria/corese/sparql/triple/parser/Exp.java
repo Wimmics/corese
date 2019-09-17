@@ -155,6 +155,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
             return this;
        }
+       
+       public void setBodyExp(Exp exp) {
+           set(0, exp);
+       }
                
        /**
         * Variables that are surely bound in this Exp

@@ -84,6 +84,8 @@ public class ASTQuery
     public final static int L_LIST = 1;
     public final static int L_DEFAULT = 0;
     
+    public static int LIMIT_DEFAULT = Integer.MAX_VALUE;
+    
     public static final String OUT = "?out";
     public static final String IN = "?in";
     public static final String IN2 = "?in_1";
@@ -172,13 +174,13 @@ public class ASTQuery
     /**
      * max cg result
      */
-    int MaxResult = Integer.MAX_VALUE;
-    int DefaultMaxResult = Integer.MAX_VALUE;
+    int MaxResult = LIMIT_DEFAULT;
+    int DefaultMaxResult = LIMIT_DEFAULT;
     /**
      * max projection
      */
-    int MaxProjection = Integer.MAX_VALUE;
-    int DefaultMaxProjection = Integer.MAX_VALUE;
+    int MaxProjection = LIMIT_DEFAULT;
+    int DefaultMaxProjection = LIMIT_DEFAULT;
     // path length max
     int DefaultMaxLength = 5;
     int MaxDisplay = 10000;
@@ -816,6 +818,10 @@ public class ASTQuery
     public void setLimit(int maxResult) {
         MaxResult = maxResult;
     }
+    
+    public int getLimit() {
+        return MaxResult;
+    }
 
     public void setMore(boolean more) {
         this.more = more;
@@ -922,6 +928,10 @@ public class ASTQuery
 
     public int getMaxResult() {
         return MaxResult;
+    }
+    
+    public boolean hasLimit() {
+        return getMaxResult() != LIMIT_DEFAULT;
     }
 
     public boolean isMore() {
@@ -2838,6 +2848,22 @@ public class ASTQuery
     public boolean hasService() {
         return service != null;
     }
+    
+    public ASTQuery getSetSubQuery(Service s) {
+        Exp bgp = s.getBodyExp();
+        ASTQuery aa;
+
+        if (bgp.size() == 1 && bgp.get(0).isQuery()) {
+            aa = bgp.get(0).getQuery();
+        } else {
+            aa = subCreate();
+            aa.setSelectAll(true);
+            aa.setBody(bgp);
+            s.setBodyExp(bgp(Query.create(aa)));
+        }
+        return aa;
+    }
+    
 
     public void defNSNamespace(String prefix, String ns) {
         if (prefix.endsWith(":")) {
@@ -3228,6 +3254,23 @@ public class ASTQuery
 
     boolean hasExpression(Variable var) {
         return getExpression(var) != null;
+    }
+    
+    public List<Expression> getModifierExpressions() {
+        ArrayList<Expression> list = new ArrayList<>();
+        for (Expression exp : getSelectFunctions().values()) {
+            list.add(exp);
+        }
+        for (Expression exp : getGroupBy()) {
+            list.add(exp);
+        }
+        for (Expression exp : getOrderBy()) {
+            list.add(exp);
+        }
+        if (getHaving() != null) {
+            list.add(getHaving());
+        }
+        return list;
     }
 
     public Expression getExtExpression(String name) {

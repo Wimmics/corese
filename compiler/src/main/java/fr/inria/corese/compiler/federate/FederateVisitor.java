@@ -249,6 +249,7 @@ public class FederateVisitor implements QueryVisitor {
     void rewrite(ASTQuery ast) {
         prepare(ast);
         rewrite(null, ast);
+        complete(ast);
         variable(ast);
         ast.getVisitorList().add(this);
     }
@@ -257,6 +258,26 @@ public class FederateVisitor implements QueryVisitor {
         if (ast.getValues() != null) {
             ast.where().add(0, ast.getValues());
             ast.setValues(null);
+        }
+    }
+    
+    void complete(ASTQuery ast) {
+        setLimit(ast);
+    }
+    
+    /**
+     * Unique service inherits query limit if any
+     */
+    void setLimit(ASTQuery ast) {
+        if (ast.hasLimit()) {
+            Exp body = ast.getBody();
+            if (body.size() == 1 && body.get(0).isService()) {
+                Service s = body.get(0).getService();
+                ASTQuery aa = ast.getSetSubQuery(s);
+                if (!aa.hasLimit()) {
+                    aa.setLimit(ast.getLimit());
+                }
+            }
         }
     }
     
@@ -291,19 +312,9 @@ public class FederateVisitor implements QueryVisitor {
      * name is embedding named graph if any
      */
     void rewrite(Atom name, ASTQuery ast) {
-        for (Expression exp : ast.getSelectFunctions().values()) {
+        for (Expression exp : ast.getModifierExpressions()) {
             rewriteFilter(name, exp);
-        }
-        for (Expression exp : ast.getGroupBy()) {
-            rewriteFilter(name, exp);
-        }
-        for (Expression exp : ast.getOrderBy()) {
-            rewriteFilter(name, exp);
-        }
-        if (ast.getHaving() != null) {
-            rewriteFilter(name, ast.getHaving());
-        }
-
+        }       
         rewrite(name, ast.getBody());
     }
     

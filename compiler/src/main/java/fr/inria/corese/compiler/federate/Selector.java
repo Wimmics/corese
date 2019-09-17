@@ -21,6 +21,7 @@ import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,6 +69,10 @@ public class Selector {
         trace = ast.hasMetadata(Metadata.TRACE);
     }
     
+    /**
+     * BUG when service 1.0 & service 1.1 and there are triples in 1.1
+     * the triples of 1.0 are considered as absent although they are present as predicate
+     */
     void process() {
         if (sparql10) {
             process10(getServiceList(true));
@@ -99,9 +104,13 @@ public class Selector {
     }
     
     void process11(List<Constant> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+        Date d1 = new Date();
         ASTQuery aa = createSelector(list, false);
         Mappings map = exec.basicQuery(aa);
-
+        
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
             
@@ -122,11 +131,12 @@ public class Selector {
             }
             
         }
-
-        trace(map);
+        Date d2 = new Date();
+        trace(map, d1, d2);
     }
           
     void process10(List<Constant> list) {
+        Date d1 = new Date();
         ASTQuery aa = createSelector(list, true);
         Mappings map = exec.basicQuery(aa);
         if (ast.isDebug()) {
@@ -143,7 +153,8 @@ public class Selector {
             }
         }
         
-        trace(map);
+        Date d2 = new Date();
+        trace(map, d1, d2);
     }
     
     List<Atom> getPredicateService(Constant pred) {
@@ -161,7 +172,10 @@ public class Selector {
         return getPredicateService(t.getPredicate().getConstant());
     }
    
-    void trace(Mappings map) {
+    void trace(Mappings map, Date d1, Date d2) {
+        if (ast.hasMetadata(Metadata.TRACE)) {
+            System.out.println("Selection Time: " + (d2.getTime() - d1.getTime()) / 1000.0);
+        }
         if (ast.isDebug()) {
             System.out.println("Triple Selection");
             for (String pred : predicateService.keySet()) {

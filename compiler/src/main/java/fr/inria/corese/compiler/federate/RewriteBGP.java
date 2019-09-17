@@ -276,7 +276,6 @@ public class RewriteBGP {
             if (exp.isFilter()) {
                 if (visitor.isRecExist(exp)) {
                     if (visitor.isExist() && tripleFilter && accept(exp)) {
-                        // draft for testing
                         filterExist(name, body, bgpList, filterList, exp);
                     }
                 } else {
@@ -299,8 +298,17 @@ public class RewriteBGP {
         // copy bind(exp as var) from body into BGP who bind all exp variables
         for (Exp exp : body) {
             if (exp.isBind()) {
+//                if (visitor.isRecExist(exp)) {
+//                    success = false;
+//                } 
                 if (visitor.isRecExist(exp)) {
-                    success = false;
+                    if (visitor.isExist() && tripleFilter && accept(exp)) {
+                        boolean move = filterExist(name, body, bgpList, filterList, exp);
+                        success &= move;
+                    }
+                    else {
+                        success = false;
+                    }
                 } else {
                     boolean move = move(exp, bgpList, filterList);
                     success &= move;
@@ -347,7 +355,7 @@ public class RewriteBGP {
      * does not work if some triples are not yet in a service clause because we
      * are in the prepare phase
      */
-    void filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
+    boolean filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
         Expression filter = filterExist.getFilter();
         visitor.rewriteFilter(name, filter);
         Term termExist = filterExist.getFilter().getTermExist();        
@@ -389,7 +397,7 @@ public class RewriteBGP {
                                 // do nothing, its ok
                             } else {
                                 // two BGP intersect differently the exists clause
-                                return;
+                                return false;
                             }
                         }
                     } // service with another URI
@@ -398,7 +406,7 @@ public class RewriteBGP {
                             previousIntersection = currentIntersection;
                         } else if (!equal(previousIntersection, currentIntersection)) {
                             // two BGP intersect differently the exists clause
-                            return;
+                            return false;
                         }
                     }
                 }
@@ -412,10 +420,12 @@ public class RewriteBGP {
                     if (!filterList.contains(filterExist)) {
                         filterList.add(filterExist);
                     }
+                    return true;
                 }
 
             }
         }
+        return false;
     }
     
     

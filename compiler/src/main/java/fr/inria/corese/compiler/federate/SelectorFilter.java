@@ -20,22 +20,13 @@ public class SelectorFilter {
     }
     
     List<BasicGraphPattern> process() {
-        process(ast.getBody());       
+        process(ast);       
         return res;
     }
     
     void process(ASTQuery ast) {
-        for (Expression exp : ast.getSelectFunctions().values()) {
+        for (Expression exp : ast.getModifierExpressions()) {
             process(exp);
-        }
-        for (Expression exp : ast.getGroupBy()) {
-            process(exp);
-        }
-        for (Expression exp : ast.getOrderBy()) {
-            process(exp);
-        }
-        if (ast.getHaving() != null) {
-            process(ast.getHaving());
         }
         process(ast.getBody());
     }

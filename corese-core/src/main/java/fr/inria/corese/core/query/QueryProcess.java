@@ -354,7 +354,6 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public Mappings query(String squery) throws EngineException {
-        //System.out.println(squery);
         return doQuery(squery, null, null);
     }
 

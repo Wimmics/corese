@@ -30,7 +30,9 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.core.load.Service;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Metadata;
@@ -122,9 +124,10 @@ public class ProviderImpl implements Provider {
 
     @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) {
+        Query qq = eval.getEnvironment().getQuery();
         Exp body = exp.rest();
         Query q = body.getQuery();
-
+        
         QueryProcess exec = null ;
         
         if (serv != null) {
@@ -196,6 +199,8 @@ public class ProviderImpl implements Provider {
      * Take Mappings variable binding into account when sending service
      * Split Mappings into buckets with size = slice
      * Iterate service on each bucket
+     * When several services, they are evaluated in parallel by default, unless @sequence metadata
+     * When several services, return *distinct* Mappings, unless @duplicate metadata.
      */
     Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) {
         
@@ -270,7 +275,7 @@ public class ProviderImpl implements Provider {
     }
        
     /**
-     * Execute service with possibly input Mappings map and possibly slicing map into packet of size length
+     * Execute one service with possibly input Mappings map and possibly slicing map into packet of size length
      * Add results into Mappings sol which is empty when entering
      */
     void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
@@ -310,6 +315,12 @@ public class ProviderImpl implements Provider {
         }
     }
     
+    /**
+     * Return final result Mappings
+     * mapList is the list of result Mappings of each service
+     * When there are *several* services, return *distinct* Mappings
+     * unless @duplicate metadata 
+     */
     Mappings getResult(Query q, List<Mappings> mapList) {
         if (mapList.size() == 1) {
             return mapList.get(0);
@@ -517,11 +528,27 @@ public class ProviderImpl implements Provider {
     }
     
     Mappings send(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
+        return post1(q, serv, env, timeout);
+    }
+    
+    
+    Mappings post1(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
         InputStream stream = doPost(serv.getLabel(), query, timeout);       
         return parse(stream, trap);
+    }
+    
+    
+    Mappings post2(Query q, Node serv, Environment env, int timeout) throws IOException {
+        try {
+            Service service = new Service(serv.getLabel()) ;
+            Mappings map = service.query(q, null);
+            return map;
+        } catch (LoadException ex) {
+            throw (new IOException(ex.getMessage() + " " + serv.getLabel()));
+        }
     }
 
     /**

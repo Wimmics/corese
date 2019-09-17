@@ -50,6 +50,7 @@ public class CompileService {
      * generate filter (var = m.value(var))
      */
     public boolean compile(Node serv, Query q, Mappings map, Environment env, int start, int limit) {
+        complete(q);
         Query out = q.getOuterQuery();
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
@@ -68,6 +69,18 @@ public class CompileService {
             return filter(q, map, start, limit);
         } else {
             return bindings(q, map, start, limit);
+        }
+    }
+    
+    void complete(Query q) {
+        Query out = q.getOuterQuery();
+        ASTQuery ast = (ASTQuery) out.getAST();
+        if (ast.hasMetadata(Metadata.LIMIT)) {
+            ASTQuery aa = (ASTQuery) q.getAST();
+            int limit = ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue();
+            if (limit < aa.getLimit()) {
+                aa.setLimit(limit);
+            }
         }
     }
 

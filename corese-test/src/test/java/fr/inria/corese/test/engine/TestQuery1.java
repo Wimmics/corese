@@ -52,13 +52,13 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.datatype.CoresePointer;
-import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import javax.xml.transform.TransformerException;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -253,6 +253,207 @@ public class TestQuery1 {
         }
 
         return graph;
+    }
+    
+    
+     @Test
+    public void testXML4() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+               
+        String q = "select "
+                + " ?x ?y ?z "
+                + "where {"
+                + "bind ('"
+                + "<doc xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance#\" xmlns:ns=\"http://example.org/\"  xml:base=\"http://example.org/\">"
+                + "<name xml:lang=\"en\">label</name>"
+                + "<age xsi:type=\"http://www.w3.org/2001/XMLSchema#integer\">10</age>"
+                + "<test rdf:datatype=\"http://www.w3.org/2001/XMLSchema#boolean\">true</test>"              
+                + "</doc>' as ?doc)"
+                + "bind (xt:xml(?doc) as ?xml)"
+                + "bind (xt:list(us:test(?xml)) as ?test)"
+                + "values (?x ?y ?z) {unnest(?test)}"
+                + "}"
+                
+                + "function us:test(xml) {"
+                + "let (list = xpath(xml,'/doc/*/text()')"
+                + ") {"
+                + "maplist(dom:getNodeDatatypeValue, list)"
+                + "}"
+                + "}" ;
+        
+        Mappings map = exec.query(q);
+         
+        assertEquals("label", map.getValue("?x").stringValue());
+        assertEquals("en", map.getValue("?x").getLang());
+        assertEquals(10, map.getValue("?y").intValue());
+        assertEquals(true, map.getValue("?z").booleanValue());
+    }
+    
+     @Test
+    public void testXML3() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        
+        String q = "select "
+                + " ?x ?y ?z "
+                + "where {"
+                + "bind ('"
+                + "<doc xmlns:ns=\"http://example.org/\"  xml:base=\"http://example.org/\">"
+                + "<ns:test ns:att=\"att\">text</ns:test>"
+                + "<other>"
+                + "<![CDATA[cdata text]]>"
+                + "<!--comment text-->"
+                + "<?proc proc text?>"
+                + "</other>"
+                + "</doc>' as ?doc)"
+                + "bind (xt:xml(?doc) as ?xml)"
+                + "bind (xt:list(us:test(?xml)) as ?test)"
+                + "values (?x ?y ?z) {unnest(?test)}"
+                + "}"
+                
+                + "function us:test(xml) {"
+                + "let ((other) = dom:getElementsByTagName(xml,  \"other\"), "
+                //+ "sublist = dom:getChildNodes(other)"
+                + "sublist = xpath(xml,'//other/node()')"
+                + ") {"
+                + "maplist(dom:getNodeValue, sublist)"
+                + "}"
+                + "}" ;
+        
+        Mappings map = exec.query(q);
+        assertEquals("cdata text", map.getValue("?x").stringValue());
+        assertEquals("comment text", map.getValue("?y").stringValue());
+        assertEquals("proc text", map.getValue("?z").stringValue());
+    }
+    
+    
+      @Test
+    public void testXML2() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        
+        
+        String q = "select "
+                + "(us:fun(?xml) as ?t) "
+                + "(dom:getNamespaceURI(?elem) as ?ns)"
+                + "(dom:getBaseURI(?elem) as ?base)"
+                + "(dom:getNodeName(?elem) as ?name)"
+                + "(dom:getLocalName(?elem) as ?local)"
+                + "(dom:hasAttributeNS(?elem, ?ns, 'att') as ?b)"
+                + "(dom:getAttributeNS(?elem, ?ns, 'att') as ?att)"
+                + "(dom:getFirstChild(?elem) as ?child)"
+                + "(dom:getTextContent(?child) as ?text)"
+               + "where {"
+                + "bind (xt:xml('<doc xmlns:ns=\"http://example.org/\"  xml:base=\"http://example.org/\">"
+                + "<ns:test ns:att=\"att\">text</ns:test></doc>') as ?xml)"
+                + "bind (us:fun(?xml) as ?elem)"
+                + "}"
+                
+                + "function us:fun(xml) {"
+                + "let (dom = dom:getFirstChild(xml), ns = \"http://example.org/\","
+                + "list = dom:getElementsByTagNameNS(dom, ns, \"test\"),"
+                + "(first | rest) = list"
+                + ") {"
+                + "first"
+                + "}"
+                + "}" ;
+        
+        Mappings map = exec.query(q);
+        assertEquals("http://example.org/", map.getValue("?ns").stringValue());
+        assertEquals("http://example.org/", map.getValue("?base").stringValue());
+        assertEquals("test", map.getValue("?local").stringValue());
+        assertEquals("ns:test", map.getValue("?name").stringValue());
+        assertEquals("text", map.getValue("?text").stringValue());
+    }
+    
+    
+     @Test
+    public void testXML1() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        String init
+                = "insert data {"
+                + "<doc> us:contain "
+                + "'<doc xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance#\">"
+                + "<phrase color=\"red\"><subject>Cat</subject><verb>on</verb><object>mat</object>"
+                + "<size xsi:type=\"http://www.w3.org/2001/XMLSchema#integer\">10</size></phrase>"
+                + "<phrase><subject xml:lang=\"en\">Cat</subject><verb>eat</verb><object>mouse</object></phrase>"
+                + "</doc>'^^rdf:XMLLiteral   "
+                + "}";
+
+        String query = "select (xt:text(?dom) as ?t) "
+                + "(xt:get(xt:attributes(?dom), 'color') as ?c)"
+                + "(xt:nodename(?dom) as ?n)"
+                + "where { "
+                + "?x us:contain ?xml "
+                + "bind (xt:xml(?xml) as ?doc)"
+                + "bind (us:phrase(?doc) as ?dom)"
+                + "}"
+                
+                + "function us:phrase(root) {"
+                + "for (doc in root) {"
+                + "for (phrase in xt:elements(doc, 'phrase')) {"
+                + "return (phrase)"
+                + "}"
+                + "}"         
+                + "}" 
+               ;
+        
+        exec.query(init);
+        Mappings map = exec.query(query);
+         //System.out.println(map);
+        assertEquals("Catonmat10", map.getValue("?t").stringValue());
+        assertEquals("red", map.getValue("?c").stringValue());
+        assertEquals("phrase", map.getValue("?n").stringValue());
+    }
+       
+        @Test
+    public void testEval() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "@event "
+                + "select * "
+                + "where {"
+                + "values ?x { 1 } "
+                + "filter (?x > 0)"
+                + ""
+                + "}"
+                
+                + "@filter "
+                + "function us:filter(g, exp, bb) {"
+                + "xt:setPublicDatatypeValue(eval(exp))"
+                + "}" 
+               
+               ;
+        Mappings map = exec.query(q);
+        assertEquals(true, DatatypeMap.getPublicDatatypeValue().booleanValue());
+
+    }
+      
+        @Test
+    public void testReduce() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);       
+        String q = "select (reduce(us:test, xt:list()) as ?x) "
+                + "(reduce(us:test, xt:list(1)) as ?y)"
+                + "(reduce(us:test, xt:list(1, 2)) as ?z)"
+                + "where {}"
+                
+                + "function us:test(x, y) {"
+                + "x + y"
+                + "}" 
+                
+                + "function us:test() {"
+                + "0"
+                + "}" 
+               ;
+        Mappings map = exec.query(q);
+        assertEquals(0, map.getValue("?x").intValue());
+        assertEquals(1, map.getValue("?y").intValue());
+        assertEquals(3, map.getValue("?z").intValue());
+
     }
     
     
@@ -2326,7 +2527,7 @@ public class TestQuery1 {
     @Test
     public void testSparql() throws LoadException, EngineException {
         Graph g = Graph.create();
-        String q = "select (kg:sparql('select * (sum(?i) as ?sum) where { values ?i { unnest(xt:iota(5))} }') as ?res) "
+        String q = "select (xt:sparql('select * (sum(?i) as ?sum) where { values ?i { unnest(xt:iota(5))} }') as ?res) "
                 + "where {}";
 
         QueryProcess exec = QueryProcess.create(g);
@@ -2337,6 +2538,21 @@ public class TestQuery1 {
         assertEquals(15, sum.intValue());
     } 
     
+    
+     @Test
+    public void testSparql2() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (xt:sparql('select * (sum(?i) as ?sum) "
+                + "where { values ?n {UNDEF} values ?i { unnest(xt:iota(?n))} }', '?n', 5) as ?res) "
+                + "where {}";
+
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);        
+        IDatatype dt = (IDatatype) map.getValue("?res");
+        Mappings m = dt.getPointerObject().getMappings();
+        IDatatype sum = (IDatatype) m.getValue("?sum");
+        assertEquals(15, sum.intValue());
+    } 
     
     @Test
     public void testNumber() throws LoadException, EngineException {
@@ -3950,45 +4166,7 @@ public class TestQuery1 {
         assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
     }
 
-    @Test
-    public void testmserv() throws LoadException, IOException, EngineException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-
-        String q =
-                "@federate <http://fr.dbpedia.org/sparql> "
-                        + " <http://dbpedia.org/sparql> "
-                        + "select distinct ?l where { "
-                        + "?x rdfs:label 'Paris'@fr, ?l "
-                        + "filter langMatches(lang(?l), 'en') "
-                        + "}"
-                        + "order by ?l";
-
-        Mappings map = exec.query(q);
-        assertEquals(14, map.size());
-    }
-
-
-    @Test
-    public void testmserv2() throws LoadException, IOException, EngineException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-
-        String q =
-                "@federate <http://fr.dbpedia.org/sparql> "
-                        + " <http://dbpedia.org/sparql> "
-                        + "select distinct ?g ?l "
-                        + "from <http://dbpedia.org> "
-                        + "from <http://fr.dbpedia.org> "
-                        + "where { "
-                        + "?x rdfs:label 'Paris'@fr, ?l "
-                        + "filter langMatches(lang(?l), 'en') "
-                        + "}"
-                        + "order by ?l";
-
-        Mappings map = exec.query(q);
-        assertEquals(1, map.size());
-    }
+   
 
     @Test
     public void testinsertdata() throws EngineException {
@@ -5020,33 +5198,7 @@ public class TestQuery1 {
         //1.41421
     }
 
-    @Test
-    public void testServAnnot() throws EngineException {
-        Graph g = createGraph();
-        QueryProcess exec = QueryProcess.create(g);
-        String qq = "select "
-                + "(us:foo() as ?f)"
-                + "(us:bar() as ?b)"
-                + "where {}"
-                + "@federate <http://fr.dbpedia.org/sparql>"
-                + "package {"
-                + "@federate <http://dbpedia.org/sparql>"
-                + "function us:foo(){"
-                + "let (?g = construct  where {?x rdfs:label ?l} limit 10)"
-                + "{?g}}"
-                + "function us:bar(){"
-                + "let (?m = select *  where {?x rdfs:label ?l} limit 10)"
-                + "{?m}}"
-                + "}";
-
-        Mappings map = exec.query(qq);
-        IDatatype dg = (IDatatype) map.getValue("?f");
-        IDatatype dm = (IDatatype) map.getValue("?b");
-        Graph gg = (Graph) dg.getObject();
-        Mappings mm = (Mappings) dm.getObject();
-        assertEquals(10, gg.size());
-        assertEquals(10, mm.size());
-    }
+  
 
     @Test
     public void testCustom() throws EngineException {
@@ -5085,22 +5237,7 @@ public class TestQuery1 {
         assertEquals(10, dt.intValue());
     }
 
-    @Test
-    public void testService() throws EngineException, LoadException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-
-        String q1 = "@federate <http://fr.dbpedia.org/sparql>"
-                + "select * where {?x ?p ?y } limit 10";
-        Mappings m1 = exec.query(q1);
-        assertEquals(10, m1.size());
-
-        String q2 = "@federate <http://fr.dbpedia.org/sparql>"
-                + "construct where {?x ?p ?y } limit 10";
-        Mappings m2 = exec.query(q2);
-        Graph g2 = (Graph) m2.getGraph();
-        assertEquals(10, g2.size());
-    }
+ 
 
     @Test
     public void testSPARQLfun() throws EngineException {
@@ -8780,8 +8917,8 @@ public class TestQuery1 {
                         + "insert data {"
                         + "<doc> i:contain "
                         + "'<doc>"
-                        + "<person><name>John</name><lname>K</lname></person>"
-                        + "<person><name>James</name><lname>C</lname></person>"
+                        + "<person><name>John</name><lname>K</lname><year>2000</year></person>"
+                        + "<person><name>James</name><lname>C</lname><year>1950</year></person>"
                         + "</doc>'^^rdf:XMLLiteral   "
                         + "}";
 
@@ -8790,18 +8927,25 @@ public class TestQuery1 {
                 + "construct {"
                 + "[i:name ?name]"
                 + "} where {"
-                + "select (concat(?n, '.', ?l) as ?name) where {"
+                + "select (concat(xt:objectvalue(?n), '.', xt:objectvalue(?l)) as ?name) "
+                + "(xsd:integer(xt:objectvalue(?y)) as ?yy) where {"
                 + "?x i:contain ?xml "
-                + "bind (xpath(?xml, '/doc/person') as ?p) "
-                + "bind (xpath(?p, 'name/text()')  as ?n)  "
-                + "bind (xpath(?p, 'lname/text()') as ?l) "
+              //  + "bind (xpath(?xml, '/doc/person') as ?p) "
+                //+ "bind (xpath(?p, 'name/text()')  as ?n)  "
+                //+ "bind (xpath(?p, 'lname/text()') as ?l) " 
+                
+                + "values ?p { unnest(xpath(?xml, '/doc/person')) } "
+                + "values ?n { unnest(xpath(?p, 'name/text()')) }  "
+                + "values ?l { unnest(xpath(?p, 'lname/text()')) }  "
+                + "values ?y { unnest(xpath(?p, 'year/text()')) }  "
+               
                 + "}}";
 
 
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            ////System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
 
@@ -8833,27 +8977,29 @@ public class TestQuery1 {
                 + "base      <http://www.example.org/schema/>"
                 + "prefix s: <http://www.example.org/schema/>"
                 + "prefix i: <http://www.inria.fr/test/> "
-                + "construct {?su ?pr ?o} "
+                + "construct {?su ?pr ?ob} "
                 + "where {"
-                + "select  * where {"
-                + "values ?xml {<file://"
-                + text + "phrase.xml>"
-                + "}"
-                + "bind  (xpath(?xml, '/doc/phrase')   as ?st)"
-                + "bind  (xpath(?st, 'subject/text()')  as ?s)"
-                + "bind  (xpath(?st, 'verb/text()')     as ?p) "
-                + "bind  (xpath(?st, 'object/text()')   as ?o) "
-                + "bind  (uri(?s) as ?su) "
-                + "bind  (uri(?p) as ?pr)   "
-                + "}}";
+                    + "select * where {"
+                    + "values ?xml { <file://" + text + "phrase.xml> } "
+                    + "values ?st { unnest(xpath(?xml, '/doc/phrase')) }  "
+                    + "values ?s  { unnest(xpath(?st, 'subject/text()')) }  "
+                    + "values ?p  { unnest(xpath(?st, 'verb/text()')) }   "
+                    + "values ?o  { unnest(xpath(?st, 'object/text()')) }  "
+
+                    + "bind  (uri(xt:objectvalue(?s)) as ?su) "
+                    + "bind  (uri(xt:objectvalue(?p)) as ?pr)   "
+                    + "bind  (uri(xt:objectvalue(?o)) as ?ob)   "
+                
+                    + "}"
+                + "}";
 
 
         try {
             Mappings map = exec.query(init);
             map = exec.query(query);
-            ////System.out.println(map);
+            //System.out.println(map);
             ResultFormat f = ResultFormat.create(map);
-            ////System.out.println(f);
+            //System.out.println(f);
             assertEquals("Result", 2, map.size());
 
 
@@ -9627,20 +9773,7 @@ public class TestQuery1 {
         assertEquals("Result", 17, q.nbNodes());
     }
 
-    @Test
-    public void testSparqlInriaAccess() throws EngineException {
-        String query = "prefix h: <http://www.inria.fr/2015/humans#>\n" +
-                "@federate <http://corese.inria.fr/sparql>  \n" +
-                "select  * {\n" +
-                " ?x h:name ?n \n" +
-                "}";
-        Graph g = createGraph();
-        QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(query);
-        assertEquals("Result", 16, map.size());
-
-    }
-
+   
     IDatatype getValue(Mapping map, String name) {
         return datatype(map.getValue(name));
     }

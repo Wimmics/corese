@@ -32,6 +32,7 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.triple.parser.Atom;
 
 /**
  * 
@@ -97,7 +98,7 @@ public class TestAST {
 		body.add(q);
 
 
-		List<Expression> ll = new ArrayList<Expression>();
+		List<Atom> ll = new ArrayList<Atom>();
 		ll.add(ast.createConstant("1", "xsd:integer"));
 		ll.add(ast.createConstant("2", "xsd:integer"));
 		RDFList l = ast.createRDFList(ll);

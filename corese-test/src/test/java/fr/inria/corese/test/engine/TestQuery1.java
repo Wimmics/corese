@@ -1162,7 +1162,7 @@ public class TestQuery1 {
         Mappings map = exec.query(i11);
         Graph g1 = graph.getNamedGraph("http://example.org/g1");
         Mappings m4 = exec.query(q4);
-        System.out.println(m4);
+        //System.out.println(m4);
         
         Mappings m1 = exec.query(q);
         exec.query(i2);
@@ -3383,7 +3383,7 @@ public class TestQuery1 {
         exec.query(q);
         Mappings map = exec.query(q2);
         IDatatype dt = (IDatatype) map.getValue("?t");
-        System.out.println(dt);
+        //System.out.println(dt);
         for (IDatatype pair : dt.getValueList()) {
             assertEquals(true, pair.getValueList().get(0).equals(pair.getValueList().get(1)));
         }
@@ -9690,7 +9690,7 @@ public class TestQuery1 {
 
             exec.query(init);
             Mappings map = exec.query(query);
-            System.out.println(map);
+            //System.out.println(map);
 
             assertEquals("Results", 9, map.size());
 
@@ -9735,8 +9735,8 @@ public class TestQuery1 {
             Mappings map = exec.query(query);
 //			////System.out.println(map);
 //
-            System.out.println("*****************");
-            System.out.println(map);
+           // System.out.println("*****************");
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
         } catch (EngineException e) {

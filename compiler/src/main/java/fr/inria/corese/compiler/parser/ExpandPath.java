@@ -293,7 +293,7 @@ public class ExpandPath implements QueryVisitor {
 		BasicGraphPattern bgp = BasicGraphPattern.create(e1);
 		
 		if (diff != null){
-			bgp.add(Triple.create(diff));
+			bgp.add(diff);
 		}
 		
 		bgp.add(e2);
@@ -382,7 +382,7 @@ public class ExpandPath implements QueryVisitor {
 			}
 		}
 		
-		bgp.add(Triple.create(f));
+		bgp.add(f);
 		
 		return bgp;
 	}

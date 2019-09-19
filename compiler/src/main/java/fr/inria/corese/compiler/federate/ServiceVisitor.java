@@ -253,8 +253,8 @@ public class ServiceVisitor implements QueryVisitor {
                 Expression e = ast.createFunction(ast.createQName(Processor.COALESCE), 
                         Term.create(Term.SEQ, var, var.getVariableProxy()), 
                         Constant.create(true));
-                Triple filter = Triple.create(e);
-                exp.add(filter);
+                //Triple filter = Triple.create(e);
+                exp.add(e);
             }
         }
         return res;

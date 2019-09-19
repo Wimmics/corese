@@ -249,6 +249,7 @@ public class FederateVisitor implements QueryVisitor {
     void rewrite(ASTQuery ast) {
         prepare(ast);
         rewrite(null, ast);
+        graph(ast);
         complete(ast);
         variable(ast);
         ast.getVisitorList().add(this);
@@ -263,6 +264,10 @@ public class FederateVisitor implements QueryVisitor {
     
     void complete(ASTQuery ast) {
         setLimit(ast);
+    }
+    
+    void graph(ASTQuery ast) {
+        new RewriteServiceGraph(this).process(ast);
     }
     
     /**
@@ -641,7 +646,10 @@ public class FederateVisitor implements QueryVisitor {
     
     // when there is no service for a triple
     List<Atom> getDefaultServiceList() {
-        return undefinedService();
+        if (select) {
+            return undefinedService();
+        }
+        return ast.getServiceList();
         //return empty;
     }
     

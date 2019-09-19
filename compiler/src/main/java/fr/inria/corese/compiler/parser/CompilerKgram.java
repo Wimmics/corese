@@ -71,9 +71,8 @@ public class CompilerKgram implements ExpType, Compiler {
 
 
     @Override
-    public List<Filter> compileFilter(Triple t) {
-        Expression exp = t.getExp();
-        ArrayList<Filter> list = new ArrayList<Filter>();
+    public List<Filter> compileFilter(Expression exp) {
+        ArrayList<Filter> list = new ArrayList<>();
         compile(exp, list);
         return list;
     }

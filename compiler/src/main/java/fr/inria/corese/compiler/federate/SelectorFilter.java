@@ -19,6 +19,11 @@ public class SelectorFilter {
         res = new ArrayList<>();
     }
     
+    /**
+     * Return list of all triples with possibly filters bound by triples
+     * One BGP per triple/filters
+     * Focus on filter (exp = exp)
+     */
     List<BasicGraphPattern> process() {
         process(ast);       
         return res;
@@ -74,13 +79,17 @@ public class SelectorFilter {
         List<Variable> list = t.getVariables();
         if (!list.isEmpty()) {
             for (Exp exp : body) {
-                if (exp.isFilter() && !exp.getFilter().isTermExistRec()) {
+                if (exp.isFilter() && accept(exp.getFilter())) {
                     if (exp.getFilter().isBound(list)) {
                         bgp.add(exp);
                     }
                 }
             }
         }
+    }
+    
+    boolean accept(Expression exp) {
+        return exp.getName().equals("=");
     }
     
     

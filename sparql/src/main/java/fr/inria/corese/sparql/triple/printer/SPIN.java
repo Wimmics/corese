@@ -434,13 +434,16 @@ public class SPIN implements ASTVisitor {
     @Override
     public void visit(Exp exp) {
         if (exp.isBind()){
-            visit((Binding) exp);
+            visit(exp.getBind());
         }
         else if (exp.isAnd()) {
             visit((And) exp);
         } 
+        else if (exp.isFilter()) {
+            visitFilter(exp.getFilter());
+        }
         else if (exp.isTriple()) {
-            visit((Triple) exp);
+            visit(exp.getTriple());
         } 
         else if (exp.isQuery()) {
             ASTQuery ast = exp.getQuery();
@@ -461,7 +464,7 @@ public class SPIN implements ASTVisitor {
             visit((Values) exp);
         } 
         else if (exp.isUnion()) {
-            visit((Union) exp);
+            visit(exp.getUnion());
         } 
         else if (exp.isMinus()) {
             visit(exp.getMinus());
@@ -474,20 +477,22 @@ public class SPIN implements ASTVisitor {
 
 
     }
+    
+    void visitFilter(Expression exp) {
+        sb.append(tab() + OSBRACKET + SPACE + ATAB);
+        counter++;
+        sb.append("sp:Filter" + PT_COMMA);
+        sb.append(tab() + "sp:expression" + SPACE + NL);
+        visit(exp);
+        counter--;
+        sb.append(tab() + CSBRACKET);
+    }
 
     @Override
     public void visit(Triple triple) {
 
-        if (triple.isExpression()) {
-
-            sb.append(tab() + OSBRACKET + SPACE + ATAB);
-            counter++;
-            sb.append("sp:Filter" + PT_COMMA);
-            sb.append(tab() + "sp:expression" + SPACE + NL);
-            visit(triple.getExp());
-            counter--;
-
-            sb.append(tab() + CSBRACKET);
+        if (triple.isFilter()) {
+            visitFilter(triple.getFilter());
         } else if (triple.isPath()) {
             path(triple);
         } else {
@@ -512,8 +517,6 @@ public class SPIN implements ASTVisitor {
             counter--;
             sb.append(NL + tab() + CSBRACKET + NL);
         }
-
-
     }
 
     void path(Triple triple) {
@@ -893,14 +896,11 @@ public class SPIN implements ASTVisitor {
      */
     @Override
     public void visit(Expression expression) {
-
         if (expression.isTerm()) {
-            visit((Term) expression);
+            visit(expression.getTerm());
         } else {
-            visit((Atom) expression);
+            visit(expression.getAtom());
         }
-
-
     }
 
     @Override

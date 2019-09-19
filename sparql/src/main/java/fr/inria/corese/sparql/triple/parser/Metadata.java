@@ -62,6 +62,7 @@ public class Metadata extends ASTObject
     public static final int LOCK      = 43;
     public static final int UNLOCK    = 44;
     public static final int LIMIT     = 45;
+    public static final int GRAPH     = 46;
     
     
     public static final int EVENT   = 50;
@@ -165,7 +166,8 @@ public class Metadata extends ASTObject
         define("@option",   OPTION); 
         define("@split",    SPLIT); 
         define("@lock",     LOCK); 
-        define("@unlock",     UNLOCK); 
+        define("@unlock",   UNLOCK); 
+        define("@graph",    GRAPH); 
         
         
         define("@event",    EVENT);  
@@ -251,6 +253,20 @@ public class Metadata extends ASTObject
         }
         else if (val.isLiteral()) {
             literal.put(name, val.getDatatypeValue());
+        }
+    }
+    
+    public void add(int type, IDatatype val){
+        add(name(type), val);
+    }
+
+    
+    public void add(String name, IDatatype val){
+        if (val.isURI()) {
+            add(name, val.getLabel());
+        }
+        else if (val.isLiteral()) {
+            literal.put(name, val);
         }
     }
     

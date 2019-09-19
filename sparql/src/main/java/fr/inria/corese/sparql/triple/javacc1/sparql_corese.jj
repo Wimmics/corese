@@ -1402,13 +1402,13 @@ void Constraint(Exp stack) : { }
 }
 
 
-void Filter(Exp stack) : { Expression expression1; Triple triple; }
+void Filter(Exp stack) : { Expression expression1; Exp filter; }
 {
   expression1 = FilterExp(stack)
   { 
   		if (expression1 != null ) {
-	    	triple = astq.createTriple(expression1);
-	    	stack.add(triple);    	
+	    	filter = astq.checkCreateFilter(expression1);
+	    	stack.add(filter);    	
 	    }
   }
 }

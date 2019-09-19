@@ -44,17 +44,17 @@ public class And extends Exp {
 		return true;
 	}
 	      	
-	boolean validateNegation() {
-		Triple triple;
-		boolean negation=false;
-		for (int i = 0; i < size(); i++) {
-			triple = (Triple) get(i);
-			if (! triple.isExp()){
-				return true;
-			}
-		}
-		return ! negation;
-	}
+//	boolean validateNegation() {
+//		Triple triple;
+//		boolean negation=false;
+//		for (int i = 0; i < size(); i++) {
+//			triple = (Triple) get(i);
+//			if (! triple.isExp()){
+//				return true;
+//			}
+//		}
+//		return ! negation;
+//	}
 	
 	
         @Override

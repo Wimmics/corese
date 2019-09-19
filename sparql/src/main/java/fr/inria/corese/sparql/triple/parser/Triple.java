@@ -24,7 +24,7 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
  * Represents a triple (resource property value)
  * <br>
  *
- * @author Olivier Savoie
+ * @author Olivier Corby & Olivier Savoie
  */
 public class Triple extends Exp {
 
@@ -72,9 +72,9 @@ public class Triple extends Exp {
     // draft for tuple
     List<Atom> larg;
     // tuple contain a filter
-    Expression exp,
-            // path regex
-            regex;
+    //Expression exp;
+    // path regex
+    Expression regex;
     String mode;
     int id = -1; // an unique id for triple (if needed to generate variable/option)
     int star = 0; // for path of length n	
@@ -160,14 +160,14 @@ public class Triple extends Exp {
         return t;
     }
 
-    // for filters
-    public static Triple create(Expression exp) {
-        Triple t = new Triple();
-        t.exp = exp;
-        t.isexp = true;
-        t.setID();
-        return t;
-    }
+//    // for filters
+//    public static Triple create(Expression exp) {
+//        Triple t = new Triple();
+//        t.exp = exp;
+//        t.isexp = true;
+//        t.setID();
+//        return t;
+//    }
 
     public static Triple createNS(Constant type, Constant prefix, Constant uri) {
         return create(type, prefix, uri);
@@ -175,10 +175,10 @@ public class Triple extends Exp {
 
     @Override
     public Triple copy() {
-        if (isFilter()) {
-            Expression exp = getFilter().copy();
-            return create(exp);
-        }
+//        if (isFilter()) {
+//            Expression exp = getFilter().copy();
+//            return create(exp);
+//        }
         return this;
     }
 
@@ -260,9 +260,9 @@ public class Triple extends Exp {
      *
      * @return
      */
-    Expression toTerm() {
-        return exp;
-    }
+//    Expression toTerm() {
+//        return exp;
+//    }
 
 //	boolean isString(String str) {
 //		if ((str.startsWith("\"") && str.endsWith("\""))
@@ -392,9 +392,9 @@ public class Triple extends Exp {
         larg = l;
     }
 
-    public void setExp(Expression e) {
-        exp = e;
-    }
+//    public void setExp(Expression e) {
+//        exp = e;
+//    }
 
     public void setSubject(Atom e1) {
         subject = e1;
@@ -404,14 +404,14 @@ public class Triple extends Exp {
         object = e2;
     }
 
-    public Expression getExp() {
-        return exp;
-    }
+//    public Expression getExp() {
+//        return exp;
+//    }
 
-    @Override
-    public Expression getFilter() {
-        return exp;
-    }
+//    @Override
+//    public Expression getFilter() {
+//        return exp;
+//    }
 
     public Expression getRegex() {
         return regex;
@@ -427,10 +427,6 @@ public class Triple extends Exp {
 
     public void setMode(String m) {
         mode = m;
-    }
-
-    public boolean isExpression() {
-        return isexp;
     }
 
     public int getStar() {
@@ -458,29 +454,29 @@ public class Triple extends Exp {
         return str;
     }
 
-    public ASTBuffer ftoSparql(Expression exp, ASTBuffer sb) {
-        if (exp == null) {
-            return sb;
-        }
-        boolean isAtom = (exp.isAtom());
-        sb.append(KeywordPP.FILTER + KeywordPP.SPACE);
-        if (isAtom) {
-            sb.append("(");
-        }
-        exp.toString(sb);
-        if (isAtom) {
-            sb.append(")");
-        }
-        sb.append(KeywordPP.SPACE);
-        return sb;
-    }
+//    public ASTBuffer ftoSparql(Expression exp, ASTBuffer sb) {
+//        if (exp == null) {
+//            return sb;
+//        }
+//        boolean isAtom = (exp.isAtom());
+//        sb.append(KeywordPP.FILTER + KeywordPP.SPACE);
+//        if (isAtom) {
+//            sb.append("(");
+//        }
+//        exp.toString(sb);
+//        if (isAtom) {
+//            sb.append(")");
+//        }
+//        sb.append(KeywordPP.SPACE);
+//        return sb;
+//    }
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
 
-        if (isExpression()) {
-            return ftoSparql(getExp(), sb);
-        }
+//        if (isFilter()) {
+//            return ftoSparql(getFilter(), sb);
+//        }
 
         String SPACE = " ";
 
@@ -546,22 +542,21 @@ public class Triple extends Exp {
         }
     }
 
-    @Override
-    public boolean isExp() {
-        return isexp;
-    }
+//    public boolean isExp() {
+//        return isexp;
+//    }
 
-    @Override
-    public boolean isFilter() {
-        return isexp;
-    }
+//    @Override
+//    public boolean isFilter() {
+//        return isexp;
+//    }
 
     @Override
     Bind validate(Bind global, int n) {
         Bind env = new Bind();
-        if (isExp()) {
-            return exp.validate(env);
-        }
+//        if (isFilter()) {
+//            return getFilter().validate(env);
+//        }
         for (int i = 0; i < getArity(); i++) {
             Atom arg = getExp(i);
             if (arg != null && arg.isVariable()) {
@@ -575,9 +570,9 @@ public class Triple extends Exp {
      * Does triple bind this variable ?
      */
     public boolean bind(Variable var) {
-        if (isExp()) {
-            return false;
-        }
+//        if (isFilter()) {
+//            return false;
+//        }
         return bind(var.getName());
     }
     
@@ -589,21 +584,23 @@ public class Triple extends Exp {
         getObject().getVariables(sort, list);
     }
     
-    void getFilterVariables(VariableScope scope, List<Variable> list) {
-        if (scope.isFilter()) {
-            getFilter().getVariables(scope, list);
-        }
-    }
+//    void getFilterVariables(VariableScope scope, List<Variable> list) {
+//        if (scope.isFilter()) {
+//            getFilter().getVariables(scope, list);
+//        }
+//    }
 
     
     @Override
     void getVariables(VariableScope sort, List<Variable> list) {
-        if (isFilter()) {
-            getFilterVariables(sort, list);
-        }
-        else {
-            getTripleVariables(sort, list);
-        }
+//        if (isFilter()) {
+//            getFilterVariables(sort, list);
+//        }
+//        else {
+//            getTripleVariables(sort, list);
+//        }
+          getTripleVariables(sort, list);
+
     }
 
     public boolean bind(String name) {
@@ -698,17 +695,17 @@ public class Triple extends Exp {
     /**
      * @return a variable on which we attach the evaluable expression
      */
-    public String getExpVariable() {
-        if (exp == null) {
-            return null;
-        }
-        Variable var = exp.getVariable();
-        if (var != null) {
-            return var.getName();
-        } else {
-            return null;
-        }
-    }
+//    public String getExpVariable() {
+//        if (exp == null) {
+//            return null;
+//        }
+//        Variable var = exp.getVariable();
+//        if (var != null) {
+//            return var.getName();
+//        } else {
+//            return null;
+//        }
+//    }
 
     public String getVariableName() {
         if (variable == null) {
@@ -789,10 +786,10 @@ public class Triple extends Exp {
 
     @Override
     public boolean validate(ASTQuery ast, boolean exist) {
-        if (isFilter()) {
-            // validate exists {}
-            return getExp().validate(ast);
-        }
+//        if (isFilter()) {
+//            // validate exists {}
+//            return getFilter().validate(ast);
+//        }
 
         if (getSubject().isVariable()) {
             ast.bind(getSubject().getVariable());
@@ -860,9 +857,9 @@ public class Triple extends Exp {
     @Override
     void visit(ExpressionVisitor v) {
         v.visit(this);
-        if (isExp()) {
-            getFilter().visit(v);
-        }
+//        if (isFilter()) {
+//            getFilter().visit(v);
+//        }
     }
 
 }

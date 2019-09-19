@@ -21,7 +21,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
-import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

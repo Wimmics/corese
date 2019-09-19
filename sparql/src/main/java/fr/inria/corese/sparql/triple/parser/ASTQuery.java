@@ -1713,7 +1713,7 @@ public class ASTQuery
         Variable var = new Variable(FOR_VAR + nbd++);
         return defLoop(var, exp, let(defLet(lvar, var), body, false));
     }
-
+    
     public void exportFunction(Expression def) {
         def.getArg(0).setPublic(true);
         def.setPublic(true);
@@ -1825,10 +1825,16 @@ public class ASTQuery
      }
     
 
-    public Triple createTriple(Expression exp) {
+    public Exp checkCreateFilter(Expression exp) {
         checkBlank(exp);
-        return Triple.create(exp);
+        return createFilter(exp);
     }
+    
+    public static Exp createFilter(Expression exp) {
+        return Filter.create(exp);
+        //return Triple.create(exp);
+    }
+
 
     public Term createList(ExpressionList el) {
         Term list = Term.list();
@@ -2693,7 +2699,7 @@ public class ASTQuery
      */
     boolean checkConstruct(Exp body) {
         for (Exp exp : body.getBody()) {
-            if (!exp.isTriple() || exp.isExp()) {
+            if (!exp.isTriple() || exp.isFilter()) {
                 return false;
             }
         }
@@ -2913,14 +2919,12 @@ public class ASTQuery
     }
 
     public void setHaving(Exp exp) {
-        if (exp.getBody().isEmpty()) {
-            return;
+        if (!exp.getBody().isEmpty()) {
+            Exp body = exp.getBodyExp();
+            if (body.isFilter()) {
+                setHaving(body.getFilter());
+            }
         }
-        Exp body = exp.getBody().get(0);
-        if (!body.isTriple()) {
-            return;
-        }
-        setHaving(body.getTriple().getExp());
     }
 
     public void setHaving(Expression exp) {
@@ -3578,8 +3582,8 @@ public class ASTQuery
         return new Minus(abgp(e1), abgp(e2));
     }
     
-    public Triple filter(Expression e) {
-        return Triple.create(e);
+    public Exp filter(Expression e) {
+        return createFilter(e);
     }
     
     public Term count(Expression exp) {

@@ -3795,11 +3795,11 @@
   }
 
   final public void Filter(Exp stack) throws ParseException {
-                           Expression expression1; Triple triple;
+                           Expression expression1; Exp filter;
     expression1 = FilterExp(stack);
                 if (expression1 != null ) {
-                triple = astq.createTriple(expression1);
-                stack.add(triple);
+                filter = astq.checkCreateFilter(expression1);
+                stack.add(filter);
             }
   }
 

@@ -7,13 +7,10 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
-import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.INSCOPE;
-import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.SUBSCOPE;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import static fr.inria.corese.sparql.triple.parser.VariableScope.Scope.ALLSCOPE;
 //import static java.util.logging.Level.ALL;
 
 /**
@@ -65,7 +62,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         
         // exp is a filter
         public Exp add(Expression exp) {
-            add(Triple.create(exp));
+            add(ASTQuery.createFilter(exp));
             return this;
         }
                
@@ -238,7 +235,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	}
 	
 	public void append(Expression e){
-		add(Triple.create(e));
+		add(e);
 	}
 	
 
@@ -309,12 +306,12 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 	 * If the triples are all filter
 	 * @return
 	 */
-	boolean isExp(){
-		for (int i=0; i<size(); i++){
-			if (! eget(i).isExp()) return false;
-		}
-		return true;
-	}
+//	boolean isExp(){
+//		for (int i=0; i<size(); i++){
+//			if (! eget(i).isExp()) return false;
+//		}
+//		return true;
+//	}
 
 	public boolean isTriple(){
 		return false;

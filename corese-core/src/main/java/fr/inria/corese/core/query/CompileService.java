@@ -375,7 +375,7 @@ public class CompileService {
             body.add(e);
         }
         if (f != null) {
-            body.add(Triple.create(f));
+            body.add(f);
         }
         ast.setBody(body);
     }

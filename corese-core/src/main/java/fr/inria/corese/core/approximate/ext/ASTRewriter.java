@@ -98,10 +98,9 @@ public class ASTRewriter implements QueryVisitor {
         exTemp.addAll(exp.getBody());
 
         for (Exp e : exTemp) {
+            if (e.isFilter()) {}
             if (e.isTriple()){
-                if (! e.isFilter()) {
-                    process(exp, e.getTriple());
-                }
+                process(exp, e.getTriple());
             }
             else for (Exp ee : e) {
                     visit(ee);
@@ -126,7 +125,7 @@ public class ASTRewriter implements QueryVisitor {
         }
 
         //2 rewrite triples in AST
-        List<Triple> filters = new ArrayList<Triple>();
+        List<Exp> filters = new ArrayList<>();
         List<Optional> options = new ArrayList<Optional>();
 
         rewrite(map.get(S), filters, options);
@@ -135,7 +134,7 @@ public class ASTRewriter implements QueryVisitor {
         }
         rewrite(map.get(O), filters, options);
 
-        for (Triple filter : filters) {
+        for (Exp filter : filters) {
             exp.add(filter);
         }
 
@@ -192,7 +191,7 @@ public class ASTRewriter implements QueryVisitor {
     //approximate the name of URI
     //ex, kg:john, kg:Johnny
     //applicable to: subject, predicate and object
-    private void rewrite(TripleWrapper tw, List<Triple> filters, List<Optional> options) {
+    private void rewrite(TripleWrapper tw, List<Exp> filters, List<Optional> options) {
         if (tw == null) {
             return;
         }
@@ -254,13 +253,13 @@ public class ASTRewriter implements QueryVisitor {
     }
 
     //add a filter with a specific function and parameters
-    private Triple createFilter(Variable var, Atom atom, String algs) {
+    private Exp createFilter(Variable var, Atom atom, String algs) {
         Term function = Term.function(APPROXIMATE);
         function.add(var);
         function.add(atom);
         function.add(Constant.createString(algs)); //, qrdfsLiteral));
         function.add(Constant.create(Parameters.THRESHOLD));
-        return Triple.create(function);
+        return ASTQuery.createFilter(function);
     }
 
     private void initOptions(ASTQuery ast) {

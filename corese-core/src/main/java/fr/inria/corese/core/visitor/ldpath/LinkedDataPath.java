@@ -341,12 +341,21 @@ public class LinkedDataPath implements QueryVisitor {
         if (trace) {
             System.out.println(ast1);
         }
+        complete(ast1);
         Mappings map = exec.query(ast1);
         if (trace) {
             System.out.println(map);
         }
         List<Constant> list = getPropertyList(map);
         process(ast1, list, i, varIndex);
+    }
+    
+    void complete(ASTQuery a) {
+        if (getAST().hasMetadata(Metadata.LIMIT)) {
+            System.out.println("limit: " + getAST().getMetadata().getDatatypeValue(Metadata.LIMIT));
+            a.getMetadata().add(Metadata.LIMIT, getAST().getMetadata().getDatatypeValue(Metadata.LIMIT));
+            a.setLimit(getAST().getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
+        }       
     }
 
     /**

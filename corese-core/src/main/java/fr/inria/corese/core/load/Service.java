@@ -54,6 +54,9 @@ public class Service {
 
     public Mappings query(Query query, Mapping m) throws LoadException {
         ASTQuery ast = (ASTQuery) query.getAST();
+        if (ast.hasMetadata(Metadata.LIMIT) && ! ast.hasLimit()) {
+            ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
+        }      
         Mappings map;
         if (m != null) {
             mapping(query, m);

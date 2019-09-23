@@ -24,7 +24,7 @@
 .node circle {fill: #fff;stroke: steelblue;stroke-width: 3px;}
 .node--leaf circle {}
 .node text { font: 12px sans-serif; }
-.nodes circle.literal { fill: lightgreen ; }
+.nodes circle.literal { fill: steelblue ; }
 .nodes circle.bnode   { fill: orange; }
 .nodes circle.uri     { fill: lightblue; }
 .nodes circle.other   { fill: blue; }
@@ -75,7 +75,7 @@ g.node--folded circle {stroke: red;stroke-width: 2px; fill: lightblue;}
 g.node--cycle circle {stroke: lightblue;stroke-width: 2px; fill: lightblue;}
 
 
-text.literal { fill: lightgreen; }
+text.literal { fill: steelblue; }
 text.main    { fill: green; }
 text.other   { fill: blue; }
               
@@ -242,7 +242,8 @@ pre  a {
 }
 
 .maplarge {
-   height: 100%            
+   height: 100%  ;
+   width: 150%
 }
 
  .head { 

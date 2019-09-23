@@ -22,6 +22,10 @@ function xt:ast(?q) {
     java:getAST(?q)
 }
 
+function xt:ast() {
+    xt:ast(xt:query())
+}
+
 function xt:namedgraph(?name, ?graph){
     java:setNamedGraph(xt:graph(), ?name, ?graph)
 }

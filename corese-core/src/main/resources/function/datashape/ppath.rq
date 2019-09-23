@@ -6,7 +6,6 @@
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <http://www.w3.org/ns/shacl#>  
 
 
 #
@@ -18,7 +17,7 @@ prefix java: <http://www.w3.org/ns/shacl#>
 # URI may be URI of a subpath such as:
 # [sh:path ex:parent] .
 # ex:parent sh:alternativePath (ex:father ex:mother)
-#
+#  sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
 function sh:path(dt:graph ?shape, ?pp) {
 
   if (isURI(?pp)) { ?pp }
@@ -29,17 +28,17 @@ function sh:path(dt:graph ?shape, ?pp) {
                 # rdf:rest is for a sequence
                 values ?q { 
                     rdf:rest sh:inversePath sh:alternativePath 
-                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  }
+                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  
+                    sh:service
+                    }
                 ?pp ?q ?path   
             }
         } ) {
           
-             if (! bound(?q))
-                { return(error()) }   
-                else { 
-                if (?q = rdf:rest) { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
-                    else { return(xt:list(?q, sh:path(?shape, ?path))) }
-                }                
+    if (! bound(?q)) { error() }   
+    else if (?q = rdf:rest)   { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
+    else if (?q = sh:service) { return(xt:list(sh:service,  sh:listsh(?shape, ?path))) }
+    else { return(xt:list(?q, sh:path(?shape, ?path))) }
     }
   }
 }
@@ -50,7 +49,7 @@ function sh:path(dt:graph ?shape, ?pp) {
 #
 function dt:list sh:listsh(dt:graph ?shape, ?pp){
    let ( 
-        select ?shape ?pp (aggregate(java:path(?shape, ?e)) as ?l)  
+        select ?shape ?pp (aggregate(sh:path(?shape, ?e)) as ?l)  
         where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
         return(?l)
     }
@@ -205,5 +204,51 @@ function dt:list sh:predicate(?s, ?p){
 function dt:list sh:inverse(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
+    }
+}
+
+function us:trace() {
+    return (false)
+}
+
+# [] sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
+# ?arg = (<http://dbpedia.org/sparql> rdf:type )
+#
+function dt:list sh:service(?shape, ?s, ?arg, ?inv) {
+    if (us:trace(), xt:print("service1:", ?s, ?arg), false);
+    
+    let ((?uri  | ?path) = ?arg,
+         (?p ?q | ?rst)  = ?path,
+         (?oper ?r)      = ?p,         # (sh:inversePath rdfs:label)
+         ?list = 
+            if (bound(?q),    sh:myservice(?uri, ?s, ?p, ?q), 
+            if (bound(?oper), sh:myserviceinv(?uri, ?s, ?r),
+            sh:myservice(?uri, ?s, ?p)))) {
+            
+        if (us:trace()) {
+            xt:print("service3:", ?uri, ?s, ?p, coalesce(?q, ""), ?rst);
+            xt:print(?list)
+        } ;
+        return (?list)
+    }
+}
+
+function dt:list sh:myservice(?uri, ?s, ?p) {
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p ?o } }) {
+        return (?l)
+    }
+}
+
+# inverse
+function dt:list sh:myserviceinv(?uri, ?s, ?p) {
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?o ?p ?s } }) {
+        return (?l)
+    }
+}
+
+function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
+    if (us:trace(), xt:print("service2:", ?p, ?q), false);
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p [ ?q ?o ] } }) {
+        return (?l)
     }
 }

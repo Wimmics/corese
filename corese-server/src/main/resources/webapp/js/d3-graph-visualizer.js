@@ -303,7 +303,7 @@ export class D3GraphVisualizer extends Observer {
                 return d.id;
             }))
             .force("collide", d3.forceCollide().radius(function (d, i, nodes) {
-                    return d.r * 2;
+                    return d.r * 8; // 2
                 }
             ).iterations(2))
             .on("tick", visualizer.graph.ticked);
@@ -326,7 +326,7 @@ export class D3GraphVisualizer extends Observer {
             .attr('xoverflow', 'visible')
             .attr('markerUnits', 'userSpaceOnUse')
             .append('svg:path')
-            .attr('d', 'M 0,-20 L 100 ,0 L 0,20')
+            .attr('d', 'M 0,-20 L 100 ,0 L 0,20')  // -20
             // .style('stroke','grey')
             .style('markerUnits', 'userSpaceOnUse')
             .style('fill', 'grey')

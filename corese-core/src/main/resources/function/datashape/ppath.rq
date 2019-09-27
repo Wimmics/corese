@@ -73,9 +73,7 @@ function sh:usernamespace(oper) {
     ! mapany(rq:strstarts, oper, xt:list(rdf:, rdfs:, owl:, sh:))
 }
 
-
-# (us:location [sh:service (<http://dbpedia.org/sparql> rdf:type) ] )
-# (us:location [<http://dbpedia.org/sparql> (rdf:type) ] )
+#
 # (us:location [sh:pattern 'dbpedia'] [<http://dbpedia.org/sparql> (rdf:type) ] ) 
 #
 function sh:extension(shape, oper, path) {
@@ -157,33 +155,42 @@ function sh:getPath(dt:graph shape, p){
 # Return list of target nodes that match the path
 # inv = true means within inverse path
 #
-function dt:list sh:path(dt:graph shape, s, p, xsd:boolean inv){
-  if (isURI(p)){
-     return(sh:pathProperty(shape, s, p, inv))
+function dt:list sh:path(dt:graph shape, node, exp, xsd:boolean inv){
+    sh:evalpath(shape, node, exp, inv, st:null)
+}
+
+
+# url = st:null || server URL
+# if null, triple patterns are evaluated on local dataset
+# if not null, triple patterns are evaluated on SPARQL endpoint url with service url { s p o }
+#
+function dt:list sh:evalpath(dt:graph shape, node, exp, xsd:boolean inv, url){
+  if (isExtension(exp)) { # dt:list
+     let ((oper path) = exp) {      
+       return(funcall(oper, shape, node, path, inv, url))
+     }  
   }
-  else {
-    let ((oper path) = p) {      
-      return(funcall(oper, shape, s, path, inv))
-   }
+  else { # URI or *
+     return(sh:pathProperty(shape, node, exp, inv, url))
   } 
 }
 
 
-
-function dt:list sh:zeroOrOnePath(dt:graph shape, s, p, xsd:boolean inv){
-    let (l = sh:path(shape, s, p, inv)){
-        if (xt:member(s, l), 
-            return(l), 
-            return(xt:cons(s, l)))
+# exp is a list of path expressions
+function dt:list sh:zeroOrOnePath(dt:graph shape, node, exp, xsd:boolean inv, url){
+    let (nodeList = sh:evalpath(shape, node, exp, inv, url)){
+        if (xt:member(node, nodeList), 
+            return(nodeList), 
+            return(xt:cons(node, nodeList)))
     }
 }
 
-function dt:list sh:zeroOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:rec(shape, s, p, xt:list(s), inv)
+function dt:list sh:zeroOrMorePath(dt:graph shape, node, exp, xsd:boolean inv, url){
+    sh:rec(shape, node, exp, xt:list(node), inv, url)
 }
 
-function dt:list sh:oneOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:rec(shape, s, p, xt:list(), inv)
+function dt:list sh:oneOrMorePath(dt:graph shape, node, exp, xsd:boolean inv, url){
+    sh:rec(shape, node, exp, xt:list(), inv, url)
 }
 
 #
@@ -192,14 +199,14 @@ function dt:list sh:oneOrMorePath(dt:graph shape, s, p, xsd:boolean inv){
 # ?res is the list of nodes already reached by exp*
 # ?res prevents loops
 #
-function dt:list sh:rec(dt:graph shape, s, p, dt:list res, xsd:boolean inv){
-    let (l = sh:path(shape, s, p, inv)){
-        if (xt:size(l) = 0){ return(res) }
+function dt:list sh:rec(dt:graph shape, node, exp, dt:list res, xsd:boolean inv, url){
+    let (nodeList = sh:evalpath(shape, node, exp, inv, url)){
+        if (xt:size(nodeList) = 0){ return(res) }
         else {
-            for (ee in l){
-                if (! xt:member(ee, res)){
-                    xt:add(res, ee) ; 
-                    sh:rec(shape, ee, p, res, inv)
+            for (next in nodeList){
+                if (! xt:member(next, res)){
+                    xt:add(res, next) ; 
+                    sh:rec(shape, next, exp, res, inv, url)
                 }             
             } ;
             return(res)             
@@ -212,73 +219,95 @@ function dt:list sh:rec(dt:graph shape, s, p, dt:list res, xsd:boolean inv){
 # s ^exp
 # inverse PP expression
 #
-function dt:list sh:inversePath(dt:graph shape, s, p, xsd:boolean inv){
-    sh:path(shape, s, p, ! inv)
+function dt:list sh:inversePath(dt:graph shape, node, exp, xsd:boolean inv, url){
+    sh:evalpath(shape, node, exp, ! inv, url)
 }
 
 
 #
-# p is  a sequence list
+# (sh:sequence (exp .. exp))
+# exp = (exp .. exp)
 #
-function dt:list sh:sequence(dt:graph shape, s, p, xsd:boolean inv){
+function dt:list sh:sequence(dt:graph shape, node, exp, xsd:boolean inv, url){
     if (inv) {
-        return(sh:seqlist(shape, s, xt:reverse(p), inv))
+        return(sh:seqlist(shape, node, xt:reverse(exp), inv, url))
     }
     else{
-        return(sh:seqlist(shape, s, p, inv))
+        return(sh:seqlist(shape, node, exp, inv, url))
     }
 }
 
 
 #
-# Recursive traversal of sequence list lp
-# recurse on xt:rest(lp)
+# Recursive traversal of sequence list expList
+# recurse on xt:rest(expList)
 #
-function dt:list sh:seqlist(dt:graph shape, node, dt:list lp, xsd:boolean inv){
-    if (xt:size(lp) = 0){
+function dt:list sh:seqlist(dt:graph shape, node, dt:list expList, xsd:boolean inv, url){
+    if (xt:size(expList) = 0){
         # reach end of sequence: add target node subject
         return(xt:list(node))
     }
     else {
-        let (nodelist = sh:path(shape, node, xt:first(lp), inv), 
+        let (nodelist = sh:evalpath(shape, node, xt:first(expList), inv, url), 
             res = xt:list()){
             for (next in nodelist){ 
                 # merge removes duplicate nodes
-                set(res = xt:merge(res, sh:seqlist(shape, next, xt:rest(lp), inv)))
+                set(res = xt:merge(res, sh:seqlist(shape, next, xt:rest(expList), inv, url)))
             } ;
             return(res)
         }
     }
 }
 
-# p = (sh:sequence (exp .. exp))
-function dt:list sh:alternativePath(dt:graph shape, s, p, xsd:boolean inv){
-    let (l = xt:get(p, 1)) {
-        return(mapmerge(sh:pathmap, l, xt:list(shape), s, inv))
+# p = (sh:alternativePath (exp .. exp))
+function dt:list sh:alternativePath(dt:graph shape, node, exp, xsd:boolean inv, url){
+    let (expList = xt:get(exp, 1)) {
+        return(mapmerge(sh:pathmap, expList, xt:list(shape), node, inv, url))
     }
 }
 
-function dt:list sh:pathmap(l, dt:graph shape, s, xsd:boolean inv){
-    sh:path(shape, s, l, inv)
+function dt:list sh:pathmap(exp, dt:graph shape, node, xsd:boolean inv, url){
+    sh:evalpath(shape, node, exp, inv, url)
 }
 
 
 
 
 
-function dt:list sh:pathProperty(shape, s, p, xsd:boolean inv){
-    if (inv) {
-        return(sh:inverse(s, p))
+function dt:list sh:pathProperty(shape, node, p, xsd:boolean inv, url){
+    if (url = st:null) {
+        if (inv) {
+            return(sh:inverse(node, p))
+        }
+        else if (isLiteral(p)) { # p = *
+            return (sh:star(node)) 
+        }
+        else {
+            return(sh:predicate(node, p))    
+        }
+
     }
-    else {
-        return(sh:predicate(s, p))    
-    }
+    else if (inv) {
+            return(sh:inverseService(node, p, url))
+        }
+        else if (isLiteral(p)) { # p = *
+            return (sh:starService(node, url)) 
+        }
+        else {
+            return(sh:predicateService(node, p, url))    
+        }
 }
 
 
 
 function dt:list sh:predicate(?s, ?p){
     let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
+        return(?l)
+    }
+}
+
+function dt:list sh:star(?s){
+    let (select ?s (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }
@@ -290,6 +319,29 @@ function dt:list sh:inverse(?o, ?p){
     }
 }
 
+function dt:list sh:predicateService(?s, ?p, ?url){
+    if (us:trace(), xt:print("predicate service:", ?url, ?s, ?p), true);
+    if (isBlank(?s)) { return(xt:list()) } ;
+    let (select ?s ?p ?url (aggregate(?o) as ?l) where  { service ?url { ?s ?p ?o } }){
+    if (us:trace(), xt:print("list:", l), true);
+        return(?l)
+    }
+}
 
+function dt:list sh:starService(?s, ?url){
+    if (us:trace(), xt:print("predicate service:", ?url, ?s), true);
+    if (isBlank(?s)) { return(xt:list()) } ;
+    let (select ?s ?url (aggregate(?o) as ?l) where  { service ?url { ?s ?p ?o } }){
+    if (us:trace(), xt:print("list:", l), true);
+        return(?l)
+    }
+}
+
+function dt:list sh:inverseService(?o, ?p, ?url){
+    if (isBlank(?o)) { return(xt:list()) } ;
+    let (select ?o ?p ?url (aggregate(?s) as ?l) where  { service ?url { ?s ?p ?o } }){
+        return(?l)
+    }
+}
 
 

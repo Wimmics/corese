@@ -120,7 +120,7 @@ public class QueryProcess extends QuerySolver {
             setManager(new ManagerImpl(getGraphManager()));
         }
         // service
-        set(ProviderImpl.create());
+        set(ProviderImpl.create(this));
         init();
     }
 

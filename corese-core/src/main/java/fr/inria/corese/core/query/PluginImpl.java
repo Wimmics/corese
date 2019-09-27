@@ -659,7 +659,7 @@ public class PluginImpl
     
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat) {
-         Graph g;
+        Graph g;
          if (graph == null || graph.pointerType() != GRAPH) {
              g = Graph.create();
          }
@@ -673,14 +673,14 @@ public class PluginImpl
                     ld.parse(dt.getLabel(), getFormat(expectedFormat));
                  }
                  else {
-                     System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
+                    //System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
                     ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
                  }
              }
          } catch (LoadException ex) {
-             logger.error("Load error: " + dt);
+             logger.error("Load error: " + dt + " "+ ((requiredFormat!=null)?requiredFormat:""));
              logger.error(ex.getMessage());
-             ex.printStackTrace();
+             //ex.printStackTrace();
          }
         IDatatype res = DatatypeMap.createObject(g);
         return res;

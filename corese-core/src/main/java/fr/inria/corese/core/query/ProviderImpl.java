@@ -39,6 +39,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -55,12 +56,13 @@ public class ProviderImpl implements Provider {
     private static final String DB = "db:";
     private static final String SERVICE_ERROR = "Service error: ";
     static Logger logger = LoggerFactory.getLogger(ProviderImpl.class);
+    private static final String LOCAL_SERVICE = "http://example.org/sparql";
     static final String LOCALHOST = "http://localhost:8080/sparql";
     static final String LOCALHOST2 = "http://localhost:8090/sparql";
     static final String DBPEDIA = "http://fr.dbpedia.org/sparql";
     HashMap<String, QueryProcess> table;
     Hashtable<String, Double> version;
-    QueryProcess defaut;
+    private QueryProcess defaut;
     private int limit = 30;
 
     private ProviderImpl() {
@@ -75,6 +77,12 @@ public class ProviderImpl implements Provider {
         p.set("https://data.archives-ouvertes.fr/sparql", 1.1);
         p.set("http://corese.inria.fr/sparql", 1.1);
         return p;
+    }
+    
+    public static ProviderImpl create(QueryProcess exec) {
+        ProviderImpl pi = ProviderImpl.create();
+        pi.setDefault(exec);
+        return pi;
     }
 
     @Override
@@ -107,7 +115,7 @@ public class ProviderImpl implements Provider {
     public void add(Graph g) {
         QueryProcess exec = QueryProcess.create(g);
         exec.set(this);
-        defaut = exec;
+        setDefault(exec);
     }
 
     /**
@@ -141,14 +149,14 @@ public class ProviderImpl implements Provider {
                 return map;
             }
 
-            if (defaut == null) {
+            if (getDefault() == null) {
                 map = Mappings.create(q);
                 if (q.isSilent()) {
                     map.add(Mapping.create());
                 }
                 return map;
             } else {
-                exec = defaut;
+                exec = getDefault();
             }
         }
 
@@ -511,6 +519,9 @@ public class ProviderImpl implements Provider {
         if (isDB(serv)){
             return db(q, serv);
         }
+        if (serv.getLabel().equals(LOCAL_SERVICE)) {
+            return getDefault().query(getDefault().getAST(q));
+        }
         return send(q, serv,env, timeout);
     }
     
@@ -632,4 +643,18 @@ public class ProviderImpl implements Provider {
 //		ProviderImpl impl = new ProviderImpl();
 //		System.out.println(impl.callSoapEndPoint());
 //	}
+
+    /**
+     * @return the defaut
+     */
+    public QueryProcess getDefault() {
+        return defaut;
+    }
+
+    /**
+     * @param defaut the defaut to set
+     */
+    public void setDefault(QueryProcess defaut) {
+        this.defaut = defaut;
+    }
 }

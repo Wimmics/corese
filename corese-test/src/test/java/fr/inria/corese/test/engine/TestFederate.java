@@ -26,6 +26,211 @@ public class TestFederate {
         return exec.query(q);
     }
     
+    
+       
+       @Test
+    public void testshape5() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+
+           String i = "insert data { "
+                   + "us:John us:location <http://fr.dbpedia.org/resource/France>, 'France' . "
+                   + "us:John foaf:name 'Jean'@fr ; foaf:knows us:Jack . "
+                   + "us:Jack us:location <http://dbpedia.org/resource/Nice> ; foaf:name 'Jack' . "
+                   
+                   + "us:shape a sh:NodeShape ;"
+                   + "sh:targetSubjectsOf us:location ;"
+                   + "sh:property ["
+                   + "sh:path (foaf:name [<http://fr.dbpedia.org/sparql> "
+                   + "( [sh:inversePath rdfs:label] <http://purl.org/dc/terms/subject> '*' )] "
+                   + "[sh:nodeKind sh:Literal]"
+                   + ");"
+                   + "sh:datatype rdf:langString"
+                   + "]"
+                   + "}";
+        
+         String q = 
+                "select ?r where { "
+                + "bind (us:test() as ?t)"
+                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "graph ?g { [] sh:result ?r }"
+                + "}  "
+                + "function us:test() {set(traceService=false)}";
+                       
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map);
+        assertEquals(4, map.size());
+    }
+    
+       @Test
+    public void testshape4() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+
+        String i = "insert data { "
+                + "us:John us:location <http://fr.dbpedia.org/resource/France>, 'France' . "
+                + "us:John foaf:name 'Jean'@fr ; foaf:knows us:Jack . "
+                + "us:Jack us:location <http://dbpedia.org/resource/Nice> ; foaf:name 'Jack' . "
+                
+                 + "us:shape a sh:NodeShape ;"
+                 + "sh:targetSubjectsOf us:location ;"
+                 + "sh:property ["
+                 + "sh:path ("
+                 + "us:location [sh:nodeKind sh:IRI]"
+                 + "[sh:alternativePath ("
+                 + "([sh:pattern 'http://fr.dbpedia.org/resource']"               
+                 + "[<http://fr.dbpedia.org/sparql> (rdf:type  rdfs:label) ]  )"
+                 + "([sh:pattern 'http://dbpedia.org/resource']"               
+                 + "[<http://dbpedia.org/sparql> (rdf:type rdfs:label)]  )"
+                 + ") ] );"
+                 + "sh:datatype rdf:langString "
+                 + "]"
+                
+                + "}" ;
+        
+         String q = 
+                "select ?r where { "
+                + "bind (us:test() as ?t)"
+                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "graph ?g { [] sh:result ?r }"
+                + "}  "
+                + "function us:test() {set(traceService=false)}";
+                       
+        exec.query(i);
+        Mappings map = exec.query(q);
+        //System.out.println(map);
+        assertEquals(2, map.size());
+    }
+    
+    
+    
+    
+     @Test
+    public void testshape3() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+
+        String i = "insert data { "
+                + "us:John us:location <http://fr.dbpedia.org/resource/France>, 'France' . "
+                + "us:John foaf:name 'Jean'@fr ; foaf:knows us:Jack . "
+                + "us:Jack us:location <http://dbpedia.org/resource/Nice> ; foaf:name 'Jack' . "
+                
+                + "us:shape a sh:NodeShape ;"
+                + "sh:targetSubjectsOf us:location ;"
+                + "sh:property ["
+                + "sh:path (us:location [sh:nodeKind sh:IRI]"
+                + "[sh:or ("
+                + "[sh:not ([sh:pattern 'http://fr.dbpedia.org/resource'])]"
+                + "[sh:hasValue <http://fr.dbpedia.org/resource/Francee>] "
+                + "[sh:not ([sh:minLength 100])] "
+                + ") ]"
+                + "[<http://fr.dbpedia.org/sparql> (rdf:type rdfs:label)]  "
+                + ");"
+                + "sh:datatype rdf:langString "
+                + "]"
+                + "}" ;
+        
+         String q = 
+                "select ?r where { "
+                + "bind (us:test() as ?t)"
+                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "graph ?g { [] sh:result ?r }"
+                + "}  "
+                + "function us:test() {set(traceService=false)}";
+                       
+        exec.query(i);
+        Mappings map = exec.query(q);
+         assertEquals(1, map.size());
+    }
+
+    
+    
+      @Test
+    public void testshape2() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+             
+        String i =  "insert data { "
+                + "us:John us:location <http://fr.dbpedia.org/resource/France> ; rdfs:label 'Augustin'@fr "
+                + "us:Jack us:location <http://fr.dbpedia.org/resource/Nice> "
+                
+                + "us:shape a sh:NodeShape ;"
+                + "sh:targetSubjectsOf us:location ;"
+                               
+                + "sh:property ["
+                + "sh:path (us:location [<http://fr.dbpedia.org/sparql>  (rdf:type  ) ] ) ;"
+                + "sh:hasValue  dbo:Country ;"
+                + "sh:node ["
+                + "sh:property ["
+                + "sh:path ( [<http://fr.dbpedia.org/sparql> (rdfs:label ) ] ) ;"
+                + "sh:datatype  rdf:langString " 
+                + "]"
+                + "]"
+                + "] ;"
+                
+                + "sh:property ["
+                + "sh:path (rdfs:label [<http://fr.dbpedia.org/sparql>  ( [sh:inversePath rdfs:label ]  ) ] ) ;"
+                + "sh:nodeKind sh:IRI "
+                + "]"
+                
+                + "}";
+        
+        String q = "select ?r where { "
+                + "bind (xt:shapeGraph() as ?g) "
+               // + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "graph ?g { [] sh:result ?r }"
+                + "}  ";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(3, map.size());
+    }
+    
+    
+    
+      @Test
+    public void testshape1() throws EngineException {
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+        String i = "insert data { "
+                + "us:John us:location <http://fr.dbpedia.org/resource/France> "
+                + "us:Jack us:location <http://fr.dbpedia.org/resource/Nice> "
+                
+                + "us:shape a sh:NodeShape ;"
+                + "sh:targetSubjectsOf us:location ;"
+                + "sh:property ["
+                + "sh:path (us:location [sh:alternativePath ("
+                + "[sh:service (<http://corese.inria.fr/sparql> rdf:type ) ]"
+                + "[sh:service (<http://fr.dbpedia.org/sparql>  rdf:type ) ]"
+                + " ) ] );"
+                + "sh:hasValue dbo:Country ;"
+                + "sh:pattern 'http://' ;"
+                + "sh:minCount 10"
+                + "]"
+                
+                + "}";
+        
+        String q = 
+                "select ?r where { "
+                + "bind (xt:shapeGraph() as ?g) "
+               // + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "graph ?g { [] sh:result ?r }"
+                + "}  ";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        assertEquals(2, map.size());
+    }
+    
+    
+    
+    
+    
+    
     @Test
     public void process9() throws EngineException, LoadException {
         Graph g = Graph.create();
@@ -64,6 +269,7 @@ public class TestFederate {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
+               // + "@trace @debug "
                 + "@variable "
                 + "@type  kg:exist "
                 + "@federate "
@@ -76,7 +282,8 @@ public class TestFederate {
                 + "bind (strlang(?n, 'fr') as ?m)"
                 + "optional {?y rdfs:label ?m optional { ?y foaf:isPrimaryTopicOf ?c }}"
                 + "}";
-
+        //Query qq = exec.compile(q);
+        
         Mappings map = process(exec, q);
         //System.out.println(map);
         Assert.assertEquals(9, map.size());
@@ -358,6 +565,34 @@ public class TestFederate {
         assertEquals("Result", 16, map.size());
 
     }
+    
+//     @Test
+//    public void testService2() throws EngineException, LoadException {
+//        Graph g = Graph.create();
+//        QueryProcess exec = QueryProcess.create(g);
+//        String q = "select * where {"
+//
+//                + "values (?s ?l) { "
+//                + "(<http://dbpedia.org/sparql>     'Antibes'@en  )"
+//                + "(<http://fr.dbpedia.org/sparql>  'Antibes'@fr  )"
+//                + "} "
+//
+//                + " { ?x rdfs:label ?l } union "
+//                + "{ "
+//                + "service ?s {"
+//                + "select * where {?x rdfs:label ?l} limit 1 "
+//                + "}"
+//                + "} "
+//                + "}";
+//
+//        Mappings map = exec.query(q);
+//        //System.out.println(map);
+//        assertEquals(2, map.size());
+//        Node s1 = map.get(0).getNode("?s");
+//        assertEquals("http://dbpedia.org/sparql", s1.getLabel());
+//        Node s2 = map.get(1).getNode("?s");
+//        assertEquals("http://fr.dbpedia.org/sparql", s2.getLabel());
+//    }
 
     
 }

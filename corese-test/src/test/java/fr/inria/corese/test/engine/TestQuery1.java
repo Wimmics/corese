@@ -2695,33 +2695,7 @@ public class TestQuery1 {
     
 
 
-    @Test
-    public void testService2() throws EngineException, LoadException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "select * where {"
-
-                + "values (?s ?l) { "
-                + "(<http://dbpedia.org/sparql>     'Antibes'@en  )"
-                + "(<http://fr.dbpedia.org/sparql>  'Antibes'@fr  )"
-                + "} "
-
-                + " { ?x rdfs:label ?l } union "
-                + "{ "
-                + "service ?s {"
-                + "select * where {?x rdfs:label ?l} limit 1 "
-                + "}"
-                + "} "
-                + "}";
-
-        Mappings map = exec.query(q);
-        //System.out.println(map);
-        assertEquals(2, map.size());
-        Node s1 = map.get(0).getNode("?s");
-        assertEquals("http://dbpedia.org/sparql", s1.getLabel());
-        Node s2 = map.get(1).getNode("?s");
-        assertEquals("http://fr.dbpedia.org/sparql", s2.getLabel());
-    }
+   
 
 
     @Test

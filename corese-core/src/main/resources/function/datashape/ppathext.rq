@@ -1,0 +1,128 @@
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+
+
+# PPath interpreter Extension 
+
+
+# generic filter function for all filters
+# path = (sh:pattern 'dbpedia')
+function dt:list sh:filter(shape, s, path, inv) {
+    if (sh:evalfilter(shape, s, path), xt:list(s), xt:list())
+}
+
+function sh:evalfilter(shape, node, exp) {
+    let ((oper arg) = exp) {
+        funcall(oper, shape, node, arg)
+    }
+}
+
+function sh:pattern(shape, node, arg) {
+    regex(node, arg)
+}
+
+
+function sh:myand(shape, node, list) {
+    # oper = sh:filter ; arg = (name param)
+    letdyn(varshape = shape, varnode = node){
+        mapevery(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
+    }
+}
+
+function sh:myor(shape, node, list) {
+    # oper = sh:filter ; arg = (name param)
+    letdyn(varshape = shape, varnode = node){
+        mapany(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
+    }
+}
+
+function sh:mynot(shape, node, list) {
+    # oper = sh:filter ; arg = (name param)
+    letdyn(varshape = shape, varnode = node){
+        ! mapany(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
+    }
+}
+
+
+# ***********************************************
+
+
+# sh:path (us:location [ sh:ldpath (rdf:type) ])
+# ?path = (rdf:type)
+function dt:list sh:ldpath(?shape, ?s, ?path, ?inv) {
+    let ((?p ?q) = ?path) {
+    if (bound(?q), 
+        sh:myldpath(?s, ?p, ?q), 
+        sh:myldpath(?s, ?p))
+    }
+}
+
+# dereference URI ?s and compute path ?p on graph URI
+function dt:list sh:myldpath(?s, ?p){
+    let (?g = xt:load(?s, st:nt, st:turtle)) {
+        let (select ?g ?s ?p (aggregate(?o) as ?l) where  { graph ?g { ?s ?p ?o }}){
+            if (us:trace(), xt:print("ldpath:", ?s, ?p, ?l), false);
+            return(?l)
+        }
+    }
+}
+
+function dt:list sh:myldpath(?s, ?p, ?q){
+    let (?g = xt:load(?s, st:nt, st:nt)) {
+        let (select ?g ?s ?p ?q (aggregate(?o) as ?l) where  { graph ?g { ?s ?p [ ?q ?o ] }}){
+        if (us:trace(), xt:print("ldpath:", ?s, ?p, ?q, ?l), false);
+            return(?l)
+        }
+    }
+}
+
+function us:trace() {
+    return (coalesce(traceService, set(traceService = false)))
+}
+# ***********************************************
+# sh:service (<uri> rdf:type)
+
+
+
+# [] sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
+# ?arg = (<http://dbpedia.org/sparql> rdf:type )
+#
+function dt:list sh:service(?shape, ?s, ?arg, ?inv) {
+    #if (us:trace(), xt:print("service1:", ?s, ?arg), false);
+    
+    let ((?uri  | ?path) = ?arg,
+         (?p ?q | ?rst)  = ?path,
+         (?oper ?r)      = ?p,         # (sh:inversePath rdfs:label)
+         ?list = 
+            if (bound(?q),    sh:myservice(?uri, ?s, ?p, ?q), 
+            if (bound(?oper), sh:myserviceinv(?uri, ?s, ?r),
+            sh:myservice(?uri, ?s, ?p)))) {
+            
+        if (us:trace()) {
+            xt:print("service:", ?uri, ?s, ?p, coalesce(?q, ""));
+            xt:print(?list)
+        } ;
+        return (?list)
+    }
+}
+
+function dt:list sh:myservice(?uri, ?s, ?p) {
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p ?o } }) {
+        return (?l)
+    }
+}
+
+# inverse
+function dt:list sh:myserviceinv(?uri, ?s, ?p) {
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?o ?p ?s } }) {
+        return (?l)
+    }
+}
+
+function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
+    #if (us:trace(), xt:print("service2:", ?p, ?q), false);
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p [ ?q ?o ] } }) {
+        return (?l)
+    }
+}
+
+

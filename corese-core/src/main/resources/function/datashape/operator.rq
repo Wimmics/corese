@@ -58,6 +58,12 @@ function sh:validURI(url) {
     }
 }
 
+function sh:validURI(shape, url, any) {
+    let (value = xt:validURI(url)) {
+        return (value)
+    }
+}
+
 function sh:validURI(shape, sh, subject, path, url) {
     let (value = xt:validURI(url)) {
         xt:print("validate URL:", subject, path, url, value) ;

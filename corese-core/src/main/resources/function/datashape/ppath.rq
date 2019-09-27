@@ -5,8 +5,11 @@
 # Olivier Corby - Wimmics Inria I3S - 2016
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
 
+
+#
+# SHACL Path Compiler from RDF graph to list expression
+#
 
 #
 # Rewrite Property Path shape expression as a LDScript list
@@ -17,45 +20,110 @@ prefix fun:  <http://www.w3.org/ns/shacl#>
 # URI may be URI of a subpath such as:
 # [sh:path ex:parent] .
 # ex:parent sh:alternativePath (ex:father ex:mother)
-#  sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
-function sh:path(dt:graph ?shape, ?pp) {
+# sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
 
-  if (isURI(?pp)) { ?pp }
+@import <ppathext.rq>
+
+function sh:path(dt:graph ?shape, ?exp) {
+
+  if (isURI(?exp) || isLiteral(?exp)) { ?exp }
   else {
     let ( 
-        select ?shape ?pp ?q ?path where {
+        select ?shape ?exp ?q ?path  where {
             graph ?shape { 
-                # rdf:rest is for a sequence
-                values ?q { 
-                    rdf:rest sh:inversePath sh:alternativePath 
-                    sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  
-                    sh:service
-                    }
-                ?pp ?q ?path   
+               # rdf:rest is for a sequence
+               # values ?q { 
+               #     rdf:rest sh:inversePath sh:alternativePath 
+               #     sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  
+               #     sh:service sh:ldpath }
+                ?exp ?q ?path   filter (?q not in (rdf:first))
             }
         } ) {
           
     if (! bound(?q)) { error() }   
-    else if (?q = rdf:rest)   { return(xt:list(sh:sequence, sh:listsh(?shape, ?pp))) }
-    else if (?q = sh:service) { return(xt:list(sh:service,  sh:listsh(?shape, ?path))) }
+    else if (?q = rdf:rest)    { return(xt:list(sh:sequence, sh:listsh(?shape, ?exp))) }
+    else if (sh:extension(?exp, ?q)) { return (sh:extension(?shape, ?q, ?path)) }
     else { return(xt:list(?q, sh:path(?shape, ?path))) }
     }
   }
 }
 
 
+# [<http://dbpedia.org/sparql> (rdf:type)]
+# test isBlank because a path element may be an URI which may have properties
+# focus on local bnode 
+function sh:extension(exp, q) {
+    return (sh:statement(q) || sh:operator(q) || (isBlank(exp) && sh:usernamespace(q)))
+}
+
+function sh:statement(oper) {
+    oper in (sh:service, sh:ldpath)
+}
+
+function sh:operator(oper) {
+    sh:boolean(oper) || 
+    oper in (sh:pattern, sh:nodeKind, sh:datatype, sh:minLength, sh:maxLength, sh:hasValue, sh:validURI)
+}
+
+function sh:boolean(oper) {
+    oper in (sh:and, sh:or, sh:not)
+}
+
+function sh:usernamespace(oper) {
+    ! mapany(rq:strstarts, oper, xt:list(rdf:, rdfs:, owl:, sh:))
+}
+
+
+# (us:location [sh:service (<http://dbpedia.org/sparql> rdf:type) ] )
+# (us:location [<http://dbpedia.org/sparql> (rdf:type) ] )
+# (us:location [sh:pattern 'dbpedia'] [<http://dbpedia.org/sparql> (rdf:type) ] ) 
 #
-# Rewrite recursively RDF list ?pp as a list
+function sh:extension(shape, oper, path) {
+         if (sh:statement(oper))     { return(xt:list(oper,   sh:listsh(shape, path))) }
+    else if (sh:operator(oper))      { return(sh:parseOperator(shape, oper, path)) }
+    else if (sh:usernamespace(oper)) { return(xt:list(sh:service, xt:cons(oper, sh:listsh(shape, path)))) }
+}
+
+
+
+# oper = sh:pattern ; path = 'http://dbpedia' 
+# return (sh:filter (sh:pattern 'http://dbpedia'))
+function sh:parseOperator(shape, oper, path) {
+    if (sh:boolean(oper), sh:parseBoolean(shape, oper, path),
+        xt:list(sh:filter, xt:list(oper, path)))
+}
+
+# [sh:and ([sh:nodeKind sh:IRI] [sh:pattern 'dbpedia']) ]
+# oper = sh:and ; path = list bnode 
+function sh:parseBoolean(shape, oper, path) {
+    let (list = sh:listsh(shape, path)) {
+        xt:list(sh:filter, xt:list(sh:booleanoper(oper), list))
+    }
+}
+
+function sh:booleanoper(oper) {
+    if (oper = sh:and, sh:myand, if (oper = sh:or, sh:myor, sh:mynot))
+}
+
+
 #
-function dt:list sh:listsh(dt:graph ?shape, ?pp){
+# Rewrite recursively RDF list ?exp as a list
+#
+function dt:list sh:listsh(dt:graph ?shape, ?exp){
    let ( 
-        select ?shape ?pp (aggregate(sh:path(?shape, ?e)) as ?l)  
-        where { graph ?shape { ?pp rdf:rest*/rdf:first ?e }}) {
+        select ?shape ?exp (aggregate(sh:path(?shape, ?e)) as ?l)  
+        where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
         return(?l)
     }
 }
 
-
+function dt:list sh:tolist(dt:graph ?shape, ?exp){
+   let ( 
+        select ?shape ?exp (aggregate(?e) as ?l)  
+        where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
+        return(?l)
+    }
+}
 
 
 #
@@ -76,6 +144,14 @@ function sh:getPath(dt:graph shape, p){
 }
 
 
+
+# ********************************************************************************************
+
+#
+# Path expression interpreter
+#
+
+
 #
 # Evaluate PP p as a list
 # Return list of target nodes that match the path
@@ -83,10 +159,10 @@ function sh:getPath(dt:graph shape, p){
 #
 function dt:list sh:path(dt:graph shape, s, p, xsd:boolean inv){
   if (isURI(p)){
-     return(sh:pathProperty(s, p, inv))
+     return(sh:pathProperty(shape, s, p, inv))
   }
   else {
-    let ((oper, path) = p) {      
+    let ((oper path) = p) {      
       return(funcall(oper, shape, s, path, inv))
    }
   } 
@@ -158,17 +234,17 @@ function dt:list sh:sequence(dt:graph shape, s, p, xsd:boolean inv){
 # Recursive traversal of sequence list lp
 # recurse on xt:rest(lp)
 #
-function dt:list sh:seqlist(dt:graph shape, s, dt:list lp, xsd:boolean inv){
+function dt:list sh:seqlist(dt:graph shape, node, dt:list lp, xsd:boolean inv){
     if (xt:size(lp) = 0){
-        # reach end of sequence: add target node s
-        return(xt:list(s))
+        # reach end of sequence: add target node subject
+        return(xt:list(node))
     }
     else {
-        let (l = sh:path(shape, s, xt:first(lp), inv), 
+        let (nodelist = sh:path(shape, node, xt:first(lp), inv), 
             res = xt:list()){
-            for (ee in l){ 
+            for (next in nodelist){ 
                 # merge removes duplicate nodes
-                set(res = xt:merge(res, sh:seqlist(shape, ee, xt:rest(lp), inv)))
+                set(res = xt:merge(res, sh:seqlist(shape, next, xt:rest(lp), inv)))
             } ;
             return(res)
         }
@@ -186,7 +262,11 @@ function dt:list sh:pathmap(l, dt:graph shape, s, xsd:boolean inv){
     sh:path(shape, s, l, inv)
 }
 
-function dt:list sh:pathProperty(s, p, xsd:boolean inv){
+
+
+
+
+function dt:list sh:pathProperty(shape, s, p, xsd:boolean inv){
     if (inv) {
         return(sh:inverse(s, p))
     }
@@ -195,11 +275,14 @@ function dt:list sh:pathProperty(s, p, xsd:boolean inv){
     }
 }
 
+
+
 function dt:list sh:predicate(?s, ?p){
     let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
 }
+
 
 function dt:list sh:inverse(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
@@ -207,48 +290,6 @@ function dt:list sh:inverse(?o, ?p){
     }
 }
 
-function us:trace() {
-    return (false)
-}
 
-# [] sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
-# ?arg = (<http://dbpedia.org/sparql> rdf:type )
-#
-function dt:list sh:service(?shape, ?s, ?arg, ?inv) {
-    if (us:trace(), xt:print("service1:", ?s, ?arg), false);
-    
-    let ((?uri  | ?path) = ?arg,
-         (?p ?q | ?rst)  = ?path,
-         (?oper ?r)      = ?p,         # (sh:inversePath rdfs:label)
-         ?list = 
-            if (bound(?q),    sh:myservice(?uri, ?s, ?p, ?q), 
-            if (bound(?oper), sh:myserviceinv(?uri, ?s, ?r),
-            sh:myservice(?uri, ?s, ?p)))) {
-            
-        if (us:trace()) {
-            xt:print("service3:", ?uri, ?s, ?p, coalesce(?q, ""), ?rst);
-            xt:print(?list)
-        } ;
-        return (?list)
-    }
-}
 
-function dt:list sh:myservice(?uri, ?s, ?p) {
-    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p ?o } }) {
-        return (?l)
-    }
-}
 
-# inverse
-function dt:list sh:myserviceinv(?uri, ?s, ?p) {
-    let (select * (aggregate(?o) as ?l) where { service ?uri { ?o ?p ?s } }) {
-        return (?l)
-    }
-}
-
-function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
-    if (us:trace(), xt:print("service2:", ?p, ?q), false);
-    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p [ ?q ?o ] } }) {
-        return (?l)
-    }
-}

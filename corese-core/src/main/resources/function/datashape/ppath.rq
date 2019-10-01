@@ -238,26 +238,61 @@ function dt:list sh:sequence(dt:graph shape, node, exp, xsd:boolean inv, url){
 }
 
 
+
+
 #
 # Recursive traversal of sequence list expList
 # recurse on xt:rest(expList)
 #
-function dt:list sh:seqlist(dt:graph shape, node, dt:list expList, xsd:boolean inv, url){
-    if (xt:size(expList) = 0){
+function dt:list sh:seqlist1(dt:graph shape, node, dt:list expList, xsd:boolean inv, url) {
+    if (xt:size(expList) = 0) {
         # reach end of sequence: add target node subject
         return(xt:list(node))
     }
     else {
-        let (nodelist = sh:evalpath(shape, node, xt:first(expList), inv, url), 
-            res = xt:list()){
-            for (next in nodelist){ 
+        let ((firstExp | restExpList) = expList,
+              nodelist = sh:evalpath(shape, node, firstExp, inv, url), 
+            res = xt:list()) {
+            for (next in nodelist) { 
                 # merge removes duplicate nodes
-                set(res = xt:merge(res, sh:seqlist(shape, next, xt:rest(expList), inv, url)))
+                set(res = xt:merge(res, sh:seqlist1(shape, next, restExpList, inv, url)))
             } ;
             return(res)
         }
     }
 }
+
+#
+# Recursive traversal of sequence list expList
+# recurse on xt:rest(expList)
+#
+function dt:list sh:seqlist(dt:graph shape, node, dt:list expList, xsd:boolean inv, url) {
+    if (xt:size(expList) = 0) {
+        # reach end of sequence: add target node subject
+        return(xt:list(node))
+    }
+    else {
+        let ((firstExp | restExpList) = expList,
+              nodeList = sh:evalpath(shape, node, firstExp, inv, url)) { 
+            return (sh:seqlistmap(shape, nodeList, restExpList, inv, url))
+        }
+    }
+}
+
+# if next exp is service, we can execute it with values nodeList for focus nodes
+#
+function dt:list sh:seqlistmap(dt:graph shape, nodeList, dt:list expList, xsd:boolean inv, url) {
+    let (res = xt:list()) {
+        for (next in nodeList) { 
+            # merge removes duplicate nodes
+            set(res = xt:merge(res, sh:seqlist(shape, next, expList, inv, url)))
+        } ;
+        return (res)
+    }
+}
+
+
+
 
 # p = (sh:alternativePath (exp .. exp))
 function dt:list sh:alternativePath(dt:graph shape, node, exp, xsd:boolean inv, url){

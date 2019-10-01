@@ -16,10 +16,10 @@ for (
    where { 
   
     {graph ?shape {
-        ?sh sh:targetSubjectsOf ?p 				
+        ?sh sh:targetSubjectsOf ?p 			
         filter not exists { ?sh sh:deactivated true} }
-        
-     ?s ?p ?o}
+     ?s ?p ?o 	
+     }
     
     union
     
@@ -53,7 +53,6 @@ for (
     }
                       
   } group by ?sh ) {
-  
   if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
         set(?suc = false) , true)
         

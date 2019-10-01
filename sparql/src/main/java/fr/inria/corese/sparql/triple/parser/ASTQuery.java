@@ -2685,26 +2685,41 @@ public class ASTQuery
     }
 
     public void duplicateConstruct(Exp exp) {
-        boolean check = checkConstruct(exp);
-        if (check) {
+        boolean check = checkTriple(exp);
+        if (checkTriple(exp)) {
             setConstruct(exp);
-        } else {
+        } 
+        else if (checkTripleList(exp)) {
+            setConstruct(exp.expandList());
+        }
+        else {
             setConstruct(null);
         }
     }
+    
 
     /**
      * construct where {exp} construct = duplicate(exp) and exp should have no
      * filter and no graph pattern
      */
-    boolean checkConstruct(Exp body) {
+    boolean checkTriple(Exp body) {
         for (Exp exp : body.getBody()) {
-            if (!exp.isTriple() || exp.isFilter()) {
+            if (!exp.isTriple()) {
                 return false;
             }
         }
         return true;
     }
+    
+    boolean checkTripleList(Exp body) {
+        for (Exp exp : body.getBody()) {
+            if (!exp.isTriple() && ! exp.isRDFList()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 
     public Exp getConstruct() {
         return constructExp;

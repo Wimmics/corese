@@ -25,6 +25,7 @@ public class RDFList extends And {
         return new RDFList();
     }
 
+    @Override
     public boolean isRDFList() {
         return true;
     }

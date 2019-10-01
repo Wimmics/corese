@@ -509,5 +509,25 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
         
+        Exp expandList() {
+            BasicGraphPattern bgp = BasicGraphPattern.create();
+            expandList(bgp);
+            return bgp;
+        }
+
+        
+        void expandList(Exp exp) {
+            for (Exp e : this) {
+                if (e.isTriple()) {
+                    exp.add(e);
+                }
+                else if (e.isRDFList()) {
+                    e.expandList(exp);
+                }
+            }
+        }
+        
+        
+        
 	
 }

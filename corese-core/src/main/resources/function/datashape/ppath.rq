@@ -156,7 +156,16 @@ function sh:getPath(dt:graph shape, p){
 # inv = true means within inverse path
 #
 function dt:list sh:path(dt:graph shape, node, exp, xsd:boolean inv){
+    #xt:print("path:", set(nb = coalesce(nb + 1, 1))) ;
     sh:evalpath(shape, node, exp, inv, st:null)
+}
+
+
+#
+# Public extension function to be used out of SHACL
+#
+function sh:evalpath(node, exp) {
+    sh:evalpath(xt:graph(), node, exp, false, st:null)
 }
 
 
@@ -333,9 +342,11 @@ function dt:list sh:pathProperty(shape, node, p, xsd:boolean inv, url){
         }
 }
 
-
-
 function dt:list sh:predicate(?s, ?p){
+    xt:objects(?s, ?p)
+}
+
+function dt:list sh:predicate1(?s, ?p){
     let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
@@ -347,8 +358,11 @@ function dt:list sh:star(?s){
     }
 }
 
-
 function dt:list sh:inverse(?o, ?p){
+    xt:subjects(?p, ?o)
+}
+
+function dt:list sh:inverse1(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }

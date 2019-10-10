@@ -53,11 +53,12 @@ for (
     }
                       
   } group by ?sh ) {
-  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
-        set(?suc = false) , true)
-        
-  } ;
-  return(?suc)
+    #xt:print("target:", coalesce(sh, "undef"), xt:size(list));
+    if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
+            set(?suc = false) , true)
+            
+    } ;
+    return(?suc)
   }
 }
   

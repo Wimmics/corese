@@ -256,6 +256,42 @@ public class TestQuery1 {
     }
     
     
+        @Test
+    public void testForLoop() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {[] rdf:value (1)}";
+        String q = "select (us:fun() as ?list) where {"
+                + "}"
+                + "function us:fun() {"
+                + "let (list = xt:list()) {"
+                + "for ((s, p, o) in select * where {?s ?p ?o}) {"
+                + "xt:add(list, xt:list(s, p, o))"
+                + "};"
+                + "return (list)"
+                + "} "
+                + "}";
+        
+        exec.query(i);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?list");
+        assertEquals(3, dt.size());
+    }
+    
+       @Test
+    public void testRDFList() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        String i = "insert data {[] rdf:value (1)}";
+        String q = "construct where { [] rdf:value (1) }";
+        exec.query(i);
+        Mappings map = exec.query(q);
+        Graph res = (Graph) map.getGraph();
+        //System.out.println(map.getGraph());
+        assertEquals(3, res.size());
+    }
+    
+    
      @Test
     public void testXML4() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
@@ -2150,6 +2186,7 @@ public class TestQuery1 {
                ;        
         exec.query(i);       
         Mappings map = exec.query(q);
+        //System.out.println(map);
         IDatatype dt = (IDatatype) map.getValue("?o");
         assertEquals(20, dt.intValue());
 }
@@ -4450,7 +4487,7 @@ public class TestQuery1 {
 
 
     // loop return concat of results of body of loop
-    @Test
+    
     public void testGLoop() throws EngineException, IOException {
         Graph g = GraphStore.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -4469,41 +4506,7 @@ public class TestQuery1 {
     }
 
 
-    @Test
-    public void testMetaBind1() throws LoadException, EngineException {
-        Graph g = createGraph();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "@bind kg:values " +
-                "select  * where {"
-                + "bind (<http://fr.dbpedia.org/resource/Auguste> as ?x) "
-                + "service <http://fr.dbpedia.org/sparql> {"
-                + "select * where {"
-                + "?x ?p ?y"
-                + "} limit 10}"
-                + "}";
-        Mappings map = exec.query(q);
-        assertEquals(10, map.size());
-        ASTQuery ast = (ASTQuery) map.getAST();
-        assertEquals(true, ast.toString().contains("values ("));
-    }
-
-    @Test
-    public void testMetaBind2() throws LoadException, EngineException {
-        Graph g = createGraph();
-        QueryProcess exec = QueryProcess.create(g);
-        String q = "@bind kg:filter " +
-                "select  * where {"
-                + "bind (<http://fr.dbpedia.org/resource/Auguste> as ?x) "
-                + "service <http://fr.dbpedia.org/sparql> {"
-                + "select * where {"
-                + "?x ?p ?y"
-                + "} limit 10}"
-                + "}";
-        Mappings map = exec.query(q);
-        assertEquals(10, map.size());
-        ASTQuery ast = (ASTQuery) map.getAST();
-        assertEquals(true, ast.toString().contains("filter ("));
-    }
+  
 
 
     @Test

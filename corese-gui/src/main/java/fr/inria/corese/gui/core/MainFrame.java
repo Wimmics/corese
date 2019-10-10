@@ -78,7 +78,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-06-06";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-10-16";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -1358,7 +1358,7 @@ public class MainFrame extends JFrame implements ActionListener {
         if (wp.getProcessList() != null) {
             for (WorkflowProcess wf : wp.getProcessList()) {
                 if (wf.isQuery()) {
-                    defQuery(wf.getQueryProcess().getQuery(), run);
+                    defQuery(wf.getQueryProcess().getQuery(), wf.getPath(), run);
                 } else {
                     defQuery(wf, run);
                 }
@@ -1478,9 +1478,9 @@ public class MainFrame extends JFrame implements ActionListener {
         newQuery(textQuery, getFileName());
     }
     
-    void defQuery(String text, boolean run){
+    void defQuery(String text, String name, boolean run){
         textQuery = text;
-        MyJPanelQuery panel = newQuery(textQuery);
+        MyJPanelQuery panel = newQuery(textQuery, name);
         if (run){
             panel.exec(this, text);
         }

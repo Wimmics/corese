@@ -161,6 +161,7 @@ public final class MyJPanelQuery extends JPanel {
         scrollPaneXMLResult = new JScrollPane();
         scrollPaneTable = new JScrollPane();
         tableResults = new JTable(new DefaultTableModel());
+        tableResults.setFont(new Font("Sanserif", Font.PLAIN, 18));
         textAreaXMLResult = new JTextArea();
         textAreaXMLResult.setFont(new Font("Sanserif", Font.BOLD, FontSize));
 

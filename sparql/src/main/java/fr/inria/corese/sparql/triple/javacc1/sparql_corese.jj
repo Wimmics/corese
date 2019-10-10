@@ -2352,7 +2352,7 @@ Term Let (Exp stack) :
         <LPAREN> 
                { list = new ExpressionList(); }
                (
-                arg = LetDef(stack) { list.add(arg); }   
+                arg = LetDef(stack)           { list.add(arg); }   
                 ( <COMMA> arg = LetDef(stack) { list.add(arg); } )*   
                )
         <RPAREN>

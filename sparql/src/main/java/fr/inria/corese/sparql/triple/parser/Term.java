@@ -688,7 +688,7 @@ public class Term extends Expression {
     @Override
     public String getModality() {
         return modality;
-    }
+    }   
 
     public static Term negation(Expression exp) {
         //return new Term(SENOT, exp);

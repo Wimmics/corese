@@ -122,16 +122,35 @@ public class Binding implements Binder {
                 allocate(exp);
                 break;
 
-            case ExprType.LET:
+            case ExprType.LET:               
             case ExprType.FOR:
-                if (exp.getNbVariable() > 0) {
-                    allocate(exp);
-                }
+                allocation(exp);
         }
         set(var, val);
-//        if (isDebug()) {
-//            trace(exp, val);
-//        }
+    }
+    
+    // must perform allocation before
+    public void setlet(Expr exp, Expr var, IDatatype val) {
+        set(var, val);
+    }
+    
+    // do it when desallocation return false
+    public void unsetlet(Expr exp, Expr var, IDatatype val) {
+        unset(var);
+    }
+    
+    public void allocation(Expr exp) {
+        if (exp.getNbVariable() > 0) {
+            allocate(exp);
+        }
+    }
+    
+    public boolean desallocation(Expr exp) {
+        if (exp.getNbVariable() > 0) {
+            desallocate(exp);
+            return true;
+        }
+        return false;
     }
 
     public void unset(Expr exp, Expr var, IDatatype val) {
@@ -143,10 +162,13 @@ public class Binding implements Binder {
 
             case ExprType.LET:
             case ExprType.FOR:
-                if (exp.getNbVariable() > 0) {
-                    desallocate(exp);
+                if (desallocation(exp)) {
                     return;
                 }
+//                if (exp.getNbVariable() > 0) {
+//                    desallocate(exp);
+//                    return;
+//                }
             // else continue
 
             default:

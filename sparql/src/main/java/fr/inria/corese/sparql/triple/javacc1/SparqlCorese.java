@@ -6502,7 +6502,7 @@
     jj_consume_token(LPAREN);
                  list = new ExpressionList();
     arg = LetDef(stack);
-                                      list.add(arg);
+                                                list.add(arg);
     label_48:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {

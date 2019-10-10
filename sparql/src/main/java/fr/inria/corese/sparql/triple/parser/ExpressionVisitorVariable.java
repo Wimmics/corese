@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.sparql.triple.function.script.Let;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         switch (t.oper()){
             
             case ExprType.LET:
-                let(t);
+                let(t.getLet());
                 break;
                 
             case ExprType.FOR:
@@ -234,16 +235,23 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
      * toplevel means SPARQL filter (not in function)
      * toplevel let/for manage its own number of local variables for stack allocation (Bind)
      */ 
-    void letloop(Term t) {
+    void let(Let t) {
         boolean isTopLevel = isTopLevel();
-        Variable var    = t.getVariable();
-        Expression exp  = t.getDefinition();
-        Expression body = t.getBody();
-
-        exp.visit(this);
-        define(var);
-        body.visit(this);
-        pop(var);
+        
+        for (Expression decl : t.getDeclaration()){
+            Variable var    = t.getVariable(decl);
+            Expression exp  = t.getDefinition(decl);        
+            exp.visit(this);
+            define(var);
+        }
+        
+        t.getBody().visit(this);
+        
+        for (int i = t.getDeclaration().size() - 1; i>=0; i--) {
+            Expression decl = t.getDeclaration().get(i);
+            pop(t.getVariable(decl));
+        }
+        
         if (isTopLevel) {
             // top level let/for, not in function
             t.setNbVariable(getNbVariable());
@@ -251,16 +259,24 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
-    /**
-     * let (var = exp) { body }
-     */    
-    void let(Term t) {
-        letloop(t);
-    }
-    
-    // for (var in exp){ body }
-    void loop(Term t) {
-        letloop(t);
+     void loop(Term t) {
+        boolean isTopLevel = isTopLevel();
+        
+        Variable var    = t.getVariable();
+        Expression exp  = t.getDefinition();
+        
+        exp.visit(this);
+        define(var);
+        
+        t.getBody().visit(this);
+        
+        pop(var);
+        
+        if (isTopLevel) {
+            // top level let/for, not in function
+            t.setNbVariable(getNbVariable());
+            setNbVariable(0);
+        }
     }
     
        

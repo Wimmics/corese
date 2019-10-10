@@ -16,6 +16,11 @@ public class Statement  extends LDScript {
     
     public Statement(){}
     
+    Statement(String name){
+        super(name);
+        setFunction(true);
+    }
+    
     Statement(String name, Expression fun, Expression body){
         super(name, fun, body);
         setFunction(true);

@@ -26,6 +26,7 @@ import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -1192,11 +1193,10 @@ public class ASTQuery
              // lambda((?x, ?y)){ exp } 
              // ->
              // lambda(?m) { let ((?x, ?y) = ?m) { exp }}
-             Variable var = new Variable(LET_VAR + nbd++);
-             ExpressionList list = new ExpressionList(var);
-             Term deflet = defLet(el.getList().get(0), var);
-             Term let = let(deflet, exp, false);
-             return defineLambda(list, let, annot);
+             Variable var = newLetVar();
+             ExpressionList varList = new ExpressionList(var);
+             Term let = let(defLet(el.getList().get(0), var), exp);
+             return defineLambda(varList, let, annot);
          }
          return getGlobalAST().defineLambdaUtil(el, exp, annot);
      }
@@ -1349,7 +1349,7 @@ public class ASTQuery
 
     public Expression defineBody(ExpressionList lexp) {
         Expression exp;
-        if (lexp.size() == 0) {
+        if (lexp.isEmpty()) {
             exp = Constant.create(true);
         } else if (lexp.size() == 1) {
             exp = lexp.get(0);
@@ -1380,37 +1380,82 @@ public class ASTQuery
      * @param body
      * @return
      */
-    Let let(ExpressionList el, Expression body) {
-        return defineLet(el, body, 0, false);
+    
+    Let let(Expression exp, Expression body) {
+        List<Expression> list = new ArrayList<>();
+        list.add(exp);
+        return let(list, body, false);
     }
     
-    public Let let(ExpressionList el, Expression body, boolean dynamic) {
-        Let let = defineLet(el, body, 0, dynamic);
+    Let let(List<Expression> el, Expression body) {
+        return let(el, body, false);
+    }
+    
+    public Let let(List<Expression> el, Expression body, boolean dynamic) {
+        expandLet(el);
+        Let let = defineLet2(el, body, 0, dynamic);
         return let;
     }
+    
+    // new version where let has several declarations
+    Let defineLet2(List<Expression> el, Expression body, int n, boolean dynamic) {
+        return new Let(el, body, dynamic);
+    }
 
-    Let defineLet(ExpressionList el, Expression body, int n, boolean dynamic) {
+    // old version where let has one declaration
+    Let defineLet(List<Expression> el, Expression body, int n, boolean dynamic) {
         if (n == el.size() - 1) {
-            return let(el.get(n), body, dynamic);
+            return createLet(el.get(n), body, dynamic);
         }
-        return let(el.get(n), defineLet(el, body, n + 1, dynamic), dynamic);
+        return createLet(el.get(n), defineLet(el, body, n + 1, dynamic), dynamic);
     }
     
-    /**
-     * exp: var = ee | match(var_1, .., var_n) = ee
-     * match(?x, ?y) is AST for let ((?x, ?y) = ee)
-     * this match() AST is compiled by Processor
-     * nested: let (((?x, ?y)) = select where)
-     */
-    Let let(Expression exp, Expression body, boolean dynamic) {
-        if (exp.getArg(0).isTerm() && exp.getArg(0).getTerm().isNested()) {
-            return let(exp.getArg(0).getTerm().getNestedList(), exp.getArg(1), body, dynamic);
+    // expand ((x, y)) = exp
+    void expandLet(List<Expression> expList) {
+        for (int i = 0; i < expList.size();) {
+            Expression exp = expList.get(i);
+            if (exp.getArg(0).isTerm()) {
+                // match() = exp
+                Term match = exp.getArg(0).getTerm();
+                List<Expression> list;
+                
+                if (match.isNested()) {
+                    list = letList(match.getNestedList(), exp.getArg(1));
+
+                } else {
+                    list = expandMatch(exp);
+                }
+
+                int j = 0;
+                for (Expression ee : list) {
+                    if (j++ == 0) {
+                        expList.set(i++, ee);
+                    } else {
+                        expList.add(i++, ee);
+                    }
+                }
+                
+                if (list.isEmpty()) {
+                    i++;
+                }
+            } else {
+                i++;
+            }
         }
+    }
+   
+    Let createLet(Expression exp, Expression body, boolean dynamic) {
         return new Let(exp, body, dynamic);
     }
           
+    Variable newLetVar() {
+        return new Variable(LET_VAR + nbd++);
+    }
+    
     /**
-     * let(varList = exp)
+     * let ((x, y) = exp)
+     * (x, y) was compiled as nested match((x, y)) 
+     * we have now let(match(varList) = exp)
      * compile as 
      * let (var = xt:get(exp, 0), match(varList) = var){ body }
      * use case: let (((?x, ?y)) = select where)
@@ -1418,29 +1463,48 @@ public class ASTQuery
      * use case: let (((?var, ?val)) = ?m)
      * get first Binding, match it
      */
-    
-    Let let(ExpressionList expList, Expression exp, Expression body, boolean dynamic) { 
+    ArrayList<Expression> letList(ExpressionList expList, Expression exp) { 
          if (! exp.isTerm() || expList.getList().size() == 1){
-            return let(expList, exp, body, 0, dynamic);
+            return letList(expList, exp, 0);
          }
          // let (var = exp)
-         Variable var = new Variable(LET_VAR + nbd++);
-         return let(defLet(var, exp), let(expList, var, body, 0, dynamic), dynamic);
+         Variable var = newLetVar();
+         ArrayList<Expression> letList = letList(expList, var, 0);
+         letList.add(0, defLet(var, exp));
+         return letList;
      }
     
     // recurse on  expList 
-    Let let(ExpressionList expList, Expression exp, Expression body, int n, boolean dynamic) { 
-        Variable var = new Variable(LET_VAR + nbd++);
+    ArrayList<Expression> letList(ExpressionList expList, Expression exp, int n) { 
+        Variable var = newLetVar();
         ExpressionList list = expList.getList().get(n) ;
         Term fst = defGet(var, exp, n);
-        Term snd = defLet(list, var);  
-        Expression rest =  body;
+        List<Expression> alist = defineExpand(list, var);
+        ArrayList<Expression> letList;
         if (n+1 < expList.getList().size()){
-            rest = let(expList, exp, body, n+1, dynamic);
+            letList = letList(expList, exp, n+1);
         }
-        return new Let(fst, new Let(snd, rest, dynamic), dynamic);
+        else {
+            letList = new ArrayList<>();           
+        }
+        for (int i = 0; i<alist.size(); i++) {
+            letList.add(i, alist.get(i));
+        }
+        letList.add(0, fst);
+        return letList;
     }
-
+    
+    public List<Expression> defineExpand(ExpressionList expList, Expression exp) {
+         Term matchTerm = defLet(expList, exp); 
+         return expandMatch(matchTerm);
+    }
+    
+    public List<Expression> defLetList(Variable var, Constant type, Expression exp) {
+        ArrayList<Expression> list = new ArrayList<>();
+        list.add(defLet(var, type, exp));
+        return list;
+    }
+    
     public Term defLet(Variable var, Constant type, Expression exp) {
         return Term.create("=", var, exp);
     }
@@ -1449,6 +1513,11 @@ public class ASTQuery
         return Term.create("=", var, exp);
     }
     
+    /**
+     * place holder to manage lvar = (x | y) ;
+     * return (match(lvar) = exp)
+     * match() is expanded in let by expandMatch or letList
+     */
     public Term defLet(ExpressionList lvar, Expression exp) {
         complete(lvar, exp, true);
         Term t = createFunction(Processor.MATCH, lvar);
@@ -1463,61 +1532,69 @@ public class ASTQuery
      * xt:get(?l, 1), ?y = xt:get(?l, 2)) {}
      *
      */
-    void processMatch(Let term) {
-        Expression match = term.getVariableDefinition().getArg(0);
-        Expression list  = term.getDefinition();
-
+    @Deprecated
+    void processMatch(Let let) {
+        Expression match = let.getVariableDefinition().getArg(0);
         if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
-            ExpressionList l = new ExpressionList();
-
-            Variable var;
-            if (list.isVariable()) {
-                var = list.getVariable();
-            } else {
-                // eval list exp once, store it in variable
-                var = Variable.create(LET_VAR + nbd++);
-                l.add(defLet(var, list));
-            }
-
-            ExpressionList nestedList =  match.getTerm().getNestedList();
-            boolean isRest  = nestedList != null && nestedList.isRest();
-            int subList     = nestedList.getSubListIndex();
-            int lastElement = nestedList.getLastElementIndex();
-            int nbLast      = 0;
-            if (subList >= 0 && lastElement >= 0) {
-                nbLast = nestedList.size() - lastElement;
-            }
-            int last = nestedList.size() - 1;
-            /**
-             * (?a ?b | ?l . ?c ?d)
-             * subList = 2  -- index of ?l subList variable
-             * lastElem = 3 -- index of last elements variable ?c            /**
-             * (?a ?b | ?l . ?c ?d)
-             * subList = 2  -- index of ?l subList variable
-             * lastElem = 3 -- index of last elements variable ?c
-             */
-
-            for (int i = 0; i < match.getArgs().size(); i++) {
-                Expression arg = match.getArg(i);
-                
-                if (i == subList) {
-                    l.add(defRest(arg.getVariable(), var, i, nbLast));
-                }
-                else if (lastElement >= 0 && i >= lastElement) {
-                    l.add(defGenericGetLast(arg.getVariable(), var, last - i));
-                }
-                else {
-                    l.add(defGenericGet(arg.getVariable(), var, i));
-                }
-            } 
-            if (l.isEmpty()) {
-                Term t = defLet(Variable.create("?_tmp_"), Constant.create(true));
-                l.add(t);
-            }
-            Term let = defineLet(l, term.getBody(), 0, term.isDynamic());
-            term.setArgs(let.getArgs());
+            List<Expression> expList = expandMatch(let.getVariableDefinition());
+            Term tmpLet = let(expList, let.getBody(), let.isDynamic());
+            let.setArgs(tmpLet.getArgs());
         }
     }
+    
+    /**
+     * term : match(var) = list
+     */
+    List<Expression> expandMatch(Expression term) {
+        Expression match = term.getArg(0);
+        Expression list  = term.getArg(1);
+        ArrayList<Expression> expList = new ArrayList<>();
+
+        Variable var;
+        if (list.isVariable()) {
+            var = list.getVariable();
+        } else {
+            // eval list exp once, store it in variable
+            var = newLetVar();
+            expList.add(defLet(var, list));
+        }
+
+        ExpressionList nestedList = match.getTerm().getNestedList();
+        boolean isRest = nestedList != null && nestedList.isRest();
+        int subList = nestedList.getSubListIndex();
+        int lastElement = nestedList.getLastElementIndex();
+        int nbLast = 0;
+        if (subList >= 0 && lastElement >= 0) {
+            nbLast = nestedList.size() - lastElement;
+        }
+        int last = nestedList.size() - 1;
+        /**
+         * (?a ?b | ?l . ?c ?d) subList = 2 -- index of ?l subList variable
+         * lastElem = 3 -- index of last elements variable ?c /** (?a ?b | ?l .
+         * ?c ?d) subList = 2 -- index of ?l subList variable lastElem = 3 --
+         * index of last elements variable ?c
+         */
+
+        for (int i = 0; i < match.getArgs().size(); i++) {
+            Expression arg = match.getArg(i);
+
+            if (i == subList) {
+                expList.add(defRest(arg.getVariable(), var, i, nbLast));
+            } else if (lastElement >= 0 && i >= lastElement) {
+                expList.add(defGenericGetLast(arg.getVariable(), var, last - i));
+            } else {
+                expList.add(defGenericGet(arg.getVariable(), var, i));
+            }
+        }
+        
+        if (expList.isEmpty()) {
+            Term t = defLet(Variable.create("?_tmp_"), Constant.create(true));
+            expList.add(t);
+        }
+        
+        return expList;
+    }
+    
     
     /**
          * map(rq:fun, ?list)
@@ -1577,7 +1654,7 @@ public class ASTQuery
                 ASTQuery ast = query.getQuery();
                 ast.validate();
                 ExpressionList el = new ExpressionList();
-                for (Variable var : ast.getSelectVariables()) {
+                for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
                     el.add(var);
                 }
                 lvar.add(el);
@@ -1595,19 +1672,13 @@ public class ASTQuery
             if (query != null){
                 ASTQuery ast = query.getQuery();
                 ast.validate();
-                for (Variable var : ast.getSelectVariables()) {
+                for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
                     lvar.add(var);
                 }
             }
         }
     }
     
-    public Term defLet2(ExpressionList lvar, Expression exp) {
-        Term t = createFunction(Processor.MATCH, lvar);
-        t.setNestedList(lvar);
-        t.setNested(lvar.isNested());
-        return Term.create("=", t, exp);
-    }
     /**
      * 
      * 
@@ -1658,6 +1729,7 @@ public class ASTQuery
         return defLet(var, fun);
     }
     
+    @Deprecated
     public Term defineLoop(Variable var, ExpressionList lvar, 
             Expression exp, Expression body, boolean isLoop){
         if (lvar == null){
@@ -1673,13 +1745,13 @@ public class ASTQuery
     }
 
     /**
-     * for ((?s, ?p, ?o) in exp){body} -> for (?var in exp){ let ((?s, ?p, ?o) =
-     * ?var){body}} }
+     * for ((?s, ?p, ?o) in exp){body} -> 
+     * for (?var in exp){ let ((?s, ?p, ?o) = ?var) { body }} }
      */
     public Term defFor(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
         complete(lvar, exp);
-        return defFor(var, exp, let(defLet(lvar, var), body, false));
+        return defFor(var, exp, let(defLet(lvar, var), body));
     }
     
     /*
@@ -1692,6 +1764,7 @@ public class ASTQuery
      *   reduce(rq:concat, ?list)
      * }
      */
+    @Deprecated
     public Term defLoop(Variable var, Expression exp, Expression body) {
         Variable list = new Variable("?_list_" + nbd++);
         Expression let = defLet(list, createFunction(createQName("xt:list")));
@@ -1702,16 +1775,17 @@ public class ASTQuery
                 createQName("rq:concat"), list);
         Expression stmt = createFunction(Constant.createResource("sequence"), 
                 loop, app);
-        return let(let, stmt, false);
+        return createLet(let, stmt, false);
     }
 
     /**
      * loop ((?s, ?p, ?o) in exp){body} -> for (?var in exp){ let ((?s, ?p, ?o) =
      * ?var){body}} }
      */
+    @Deprecated
     public Term defLoop(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
-        return defLoop(var, exp, let(defLet(lvar, var), body, false));
+        return defLoop(var, exp, createLet(defLet(lvar, var), body, false));
     }
     
     public void exportFunction(Expression def) {

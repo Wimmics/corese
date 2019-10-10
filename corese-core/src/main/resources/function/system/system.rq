@@ -34,6 +34,14 @@ function xt:values(?s, ?p) {
     maplist(xt:object, xt:edges(?s, ?p))
 }
 
+function xt:objects(?s, ?p) {
+    maplist(xt:object, xt:edges(?s, ?p))
+}
+
+function xt:subjects(?p, ?o) {
+    maplist(xt:subject, xt:edges(bnode(), ?p, ?o))
+}
+
 function xt:trace(?s, ?p) {
     xt:tune(xt:debug, ?s, ?p)
 }

@@ -5,11 +5,9 @@ prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
 # @compile <fr.inria.corese.extension.DataShape>  @path </user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/>
 
-# @import <http://ns.inria.fr/sparql-template/function/datashape.rq>
+# @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
 
-# @import <../../../function/datashape.rq>
-
-@import <function/datashape/main.rq>  <function/datashape/target.rq> <function/datashape/ppath.rq> <function/datashape/operator.rq>
+@import <function/datashape/main.rq>  <function/datashape/target.rq>  
 
 template st:profile {} where {}
 

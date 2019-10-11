@@ -1,11 +1,100 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
-prefix java: <http://www.w3.org/ns/shacl#> 
+
+function sh:constraint(shape, sh, vis, nodeList) {
+    let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
+         b2 = sh:cstsparql (shape, sh, vis, nodeList),
+         b3 = sh:constraint3 (shape, sh, vis, nodeList),
+         b4 = sh:cstpattern  (shape, sh, vis, nodeList)
+         ) {
+        return (b1 && b2 && b3 && b4)
+    }
+}
+
+function sh:constraint1 (shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((oper value) in sh:getConstraint(sh:cstgeneric, shape, sh)) {  
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+                let (suc = coalesce(if (oper = sh:functioncst,  
+                    funcall(value, shape, sh, node), 
+                    funcall(oper, shape, node, value)), false)) {
+                        st:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis) ;
+                        if (suc, true, set(res = false))
+                    }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:cstsparql (shape, sh, vis, nodeList) {
+   let (res = true) {
+        for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+                let (suc = coalesce(
+                    sh:mysparql(concat(define, q), sh, cst, shape, node, node, vis, 
+                        mes, isLiteral(mes)),
+                    false)) {
+                    if (suc, true, set(res = false))
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:constraint3 (shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((oper value) in sh:getConstraint(sh:cstgeneric3, shape, sh)) {  
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+                let (suc = coalesce(funcall(oper, shape, sh, vis, node, value), false)) {
+                    if (suc, true, set(res = false))
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+function sh:cstpattern (shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) { 
+                let (suc = !isBlank(node) && coalesce(
+                        if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
+                        false)) {    
+                    if (!suc) {
+                        set(res = false) ;
+                        st:report(sh:pattern, sh, shape, node, st:null, node, suc, vis)
+                    }
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
 
 # record relevant properties of sh as a list in a table
 function sh:getConstraint(name, shape, sh) {
-    coalesce(st:cget(name, sh), st:cset(name, sh, funcall(name, shape, sh)))
+    coalesce(sh:getConstraint(name, sh), sh:setConstraint(name, sh, funcall(name, shape, sh)))
 }
+
+
+# properties for constraint/pattern.rq
+function sh:cstpattern(shape, sh) {
+    let (select ?shape ?sh (aggregate(xt:list(?exp, coalesce(?flag, st:null))) as ?list) where {
+        graph ?shape {  
+            ?sh sh:pattern ?exp   
+            optional { ?sh sh:flags ?flag } 
+        }
+    } ) {
+        return(list)
+    }
+}
+
 
 # properties for constraint/generic.rq
 function sh:cstgeneric(shape, sh, list) {
@@ -28,10 +117,33 @@ function sh:cstgeneric(shape, sh) {
 }
 
 
-# properties for constraint/generic2.rq
-function sh:cstgeneric2(shape, sh) {
-    sh:cstgeneric(shape, sh, xt:list(sh:pattern, sh:sparql))
+
+
+function sh:cstsparql(shape, sh) {
+    let (select * (aggregate (xt:list(cst, define, q, coalesce(mes, st:null))) as ?list)
+        where {
+        graph ?shape {  
+                ?sh sh:sparql ?cst 
+                ?cst sh:select ?q
+                filter not exists { ?cst sh:deactivated true }
+                optional { ?cst sh:message ?mes }
+                
+                # collect prefix definitions
+                {
+                    select ?cst 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    as ?define) 
+                    where {
+                        ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                    }
+                    group by ?cst
+                }
+        } }
+        ) {
+        return(list)
+        }
 }
+
 
 # properties for constraint/generic3.rq
 function sh:cstgeneric3(shape, sh) {
@@ -82,5 +194,69 @@ function sh:equals2 (shape, sh, vis, s, p, l) {
         return (res)
     }
 }
+
+
+
+
+
+
+# sparql deprecated
+function sh:cstgeneric2(shape, sh) {
+    sh:cstgeneric(shape, sh, xt:list(sh:sparql))
+}
+
+
+# sparql deprecated
+function sh:constraint2 (shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((oper value) in sh:getConstraint(sh:cstgeneric2, shape, sh)) {  
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+                let (suc = coalesce(
+                    #st:call-template(oper, shape, sh, vis, node, value),
+                    sh:sparql(shape, sh, vis, node, value),
+                    false)) {
+                    if (suc, true, set(res = false))
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+# sparql deprecated
+function sh:sparql(shape, sh, vis, node, cst) {
+    let (select * where {
+        graph ?shape {  
+                ?sh sh:sparql ?cst 
+                ?cst sh:select ?q
+                filter not exists { ?cst sh:deactivated true }
+                optional { ?cst sh:message ?mes }
+                
+                # collect prefix definitions
+                # TBD: do it once and record it
+                {
+                    select ?cst 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    as ?define) 
+                    where {
+                        ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                    }
+                    group by ?cst
+                }
+        }
+    } ) {    
+        let (suc = sh:mysparql(concat(?define, ?q), ?sh, ?cst, ?shape, node, node, ?vis, 
+                coalesce(?mes, st:null), bound(?mes))) {
+            return (suc)
+        } 
+    }
+}
+
+
+
+
+
+
+
 
 

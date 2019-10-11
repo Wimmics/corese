@@ -80,13 +80,55 @@ function sh:generic4(shape, sh, vis, ls, p, value, isbound) {
 }
 
 
-
+function msh:sparql(shape, sh, vis, node, p, cst, value, isbound) {
+    let (select * where {
+        graph ?shape {  
+                ?sh sh:sparql ?cst 
+                ?cst sh:select ?q
+                filter not exists { ?cst sh:deactivated true }
+                optional { ?cst sh:message ?mes }
+                
+                # collect prefix definitions
+                # TBD: do it once and record it
+                {
+                    select ?cst 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    as ?define) 
+                    where {
+                        ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                    }
+                    group by ?cst
+                }
+        }
+    } ) {
+    
+    let (suc = true, list = sh:path(shape, node, p)) {
+        if (isbound) {
+            if (xt:member(value, list)) {
+                let (res = sh:mysparql(concat(define, q), sh, cst, shape, node, value, vis, 
+                    coalesce(mes, st:null), bound(mes))) {
+                    if (res, true, set(suc = false))
+                } 
+            }
+        }
+        else {
+            for (object in list){ 
+                let (res = sh:mysparql(concat(define, q), sh, cst, shape, node, object, vis, 
+                    coalesce(mes, st:null), bound(mes))) {
+                    if (res, true, set(suc = false))
+                } 
+            } 
+        } ;
+        return (suc)
+    }
+    }
+}
 
 
 
 # record relevant properties of sh as a list in a table
 function sh:getConstraint(name, shape, sh) {
-    coalesce(st:cget(name, sh), st:cset(name, sh, funcall(name, shape, sh)))
+    coalesce(sh:getConstraint(name, sh), sh:setConstraint(name, sh, funcall(name, shape, sh)))
 }
 
 # properties for path/generic.rq

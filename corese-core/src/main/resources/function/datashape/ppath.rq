@@ -25,7 +25,6 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 @import <ppathext.rq>
 
 function sh:path(dt:graph ?shape, ?exp) {
-
   if (isURI(?exp) || isLiteral(?exp)) { ?exp }
   else {
     let ( 
@@ -138,9 +137,8 @@ function dt:list sh:path(dt:graph shape, s, p){
 # rewrite PP once as a list and record it
 #
 function sh:getPath(dt:graph shape, p){
-   coalesce(st:cget(sh:path, p), st:cset(sh:path, p, sh:path(shape, p)))
+   coalesce(sh:getConstraint(sh:path, p), sh:setConstraint(sh:path, p, sh:path(shape, p)))
 }
-
 
 
 # ********************************************************************************************

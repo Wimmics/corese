@@ -1,6 +1,149 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
-prefix java: <http://www.w3.org/ns/shacl#> 
+
+
+function sh:core(shape, sh, vis, nodeList) {
+    let (b1 = sh:pathcore(shape, sh, vis, nodeList),
+         b2 = sh:booleancore(shape, sh, vis, nodeList),
+         b3 = sh:constraintcore(shape, sh, vis, nodeList),
+         b4 = sh:closedcore(shape, sh, vis, nodeList)         
+         ) {
+        return (b1 && b2 && b3 && b4)
+    }
+}
+
+function sh:closedcore(shape, sh, vis, nodeList) {
+    let (suc = true) {
+        if (sh:isClosed(shape, sh)) {
+            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {
+                for ((s p o) in xt:edges(node, bnode())) {
+                    if (! xt:member(p, sh:getPredicates(shape, sh))) {
+                        set(suc = false);
+                        st:report(sh:closed, sh, shape, s, p, o, suc, vis)
+                    }
+                }
+            }
+        } ;
+        return (suc)
+    } 
+}
+ 
+
+function sh:pathcore(shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((cst path) in sh:getConstraint(sh:pathcore, shape, sh)) {
+            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path), false)) {
+                if (suc, true, set(res = false))
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:booleancore(shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((bool cst) in sh:getConstraint(sh:booleancore, shape, sh)) {
+            let (tmp = coalesce(funcall(msh:fun(bool), shape, sh, cst, vis, nodeList), st:null),
+                 suc = if (isURI(tmp), false, tmp)) {
+                if (suc, true, set(res = false))
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+
+function sh:constraintcore(shape, sh, vis, nodeList) {
+    let (cst = sh:getConstraint(sh:constraintcore, shape, sh)) {
+        if (cst) {
+            let (suc = sh:hasConstraint(shape, sh, vis, nodeList)) {
+                return (suc)
+            }
+        }
+        else {
+            return (true)
+        }
+    }
+}
+
+
+
+
+# record relevant properties of sh  in a table
+function sh:getConstraint(name, shape, sh) {
+    coalesce(sh:getConstraint(name, sh), sh:setConstraint(name, sh, funcall(name, shape, sh)))
+}
+
+function sh:isClosed(shape, sh) {
+    sh:getConstraint(sh:isclosedcore, shape, sh)
+}
+
+function sh:getPredicates(shape, sh) {
+    sh:getConstraint(sh:closedcore, shape, sh)
+}
+
+function sh:isclosedcore(shape, sh) {
+    let (suc = exists { graph ?shape { ?sh sh:closed true } } ) {
+        return (suc)
+    }
+}
+
+function sh:closedcore(shape, sh) {
+    let (select * (aggregate(distinct ?p) as ?list)
+         where {
+            graph ?shape {    
+                ?sh sh:closed true                 
+                { ?sh sh:property [ sh:path ?p ] filter isURI(?p) }
+                union
+                { ?sh sh:ignoredProperties/rdf:rest*/rdf:first ?p }
+            }
+         } ) {
+         return (list)
+    }
+}
+
+function sh:constraintcore(shape, sh) {
+    let (suc = exists { graph ?shape { values ?sh { UNDEF } filter not exists { ?sh sh:path ?ppp } } } ) {
+        return (suc)
+    }
+}
+
+
+
+function sh:pathcore(shape, sh) {
+    let (select * (aggregate(xt:list(coalesce(?cst, ?sh), ?p)) as ?list) 
+        where {
+            graph ?shape {  
+                {?sh sh:property ?cst . ?cst sh:path ?p 
+                filter not exists { ?cst sh:deactivated true } }
+                union
+                {?sh sh:path ?p  filter not exists { ?sh sh:deactivated true}}
+            } } ) {
+        return (list)
+    }
+}
+
+
+function sh:booleancore(shape, sh) {
+    let (select * (aggregate(xt:list(?bool, ?cst)) as ?list) where {
+        graph ?shape {  
+            values ?bool { sh:and sh:or sh:xone sh:not } 
+            ?sh ?bool ?cst
+        }
+    } ) {
+        return (?list)
+    }
+}
+
+
+
+
+
+
+
+
 
 function msh:fun(name) {
     if (name = sh:and,  msh:and,
@@ -14,7 +157,7 @@ function msh:not (shape, sh, cst, vis, ls) {
         let (res = true) {
             for (s in ls) {
                 let (suc = ! sh:testShapeCore(shape, cst, s)) {
-                    set(res = res && suc);
+                    if (suc, true, set(res = false));
                     st:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
                 }
             };
@@ -22,8 +165,9 @@ function msh:not (shape, sh, cst, vis, ls) {
         }
     }
     else {
-        let (suc = ! sh:testShapeCore(shape, cst, ls)) {
-            st:report(sh:not, sh, shape, s, st:null, ls,  suc, vis) ;
+        let (tmp = coalesce(! sh:testShapeCore(shape, cst, ls), st:null),
+             suc = if (isURI(tmp), false, tmp)) {
+            st:report(sh:not, sh, shape, ls, st:null, ls,  suc, vis) ;
             return (suc)
         }    
     }
@@ -50,7 +194,7 @@ function msh:boolean (oper, shape, sh, bool, vis, ls) {
         let (res = true) {
             for (s in ls) {
                 let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
-                    set (res = res && suc)
+                    if (suc, true, set (res = false))
                 }
             } ;
             return(res)
@@ -97,7 +241,7 @@ function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer 
             graph ?shape { 
                 ?sh rdf:rest*/rdf:first ?cst
             }			
-			BIND (java:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
+			BIND (sh:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
 			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
 		}
 		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) })

@@ -8,6 +8,10 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 prefix fun:  <http://www.w3.org/ns/shacl#> 
 prefix java: <http://www.w3.org/ns/shacl#>  
 
+@import <ppath.rq> <operator.rq> <core.rq> <constraint.rq>
+
+
+
 # when true, generate validation report for sh:node constraints and one report for sh:node 
 # otherwise, generate only one report for sh:node (default)
 function sh:detail(xsd:boolean bb) {
@@ -47,21 +51,21 @@ function sh:path(){
 # test and may report error
 # main target & noscope
 function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
-    st:apply-templates-with-all(sh:core(), shape, sh, vis, ls)
+    sh:core(shape, sh, vis, ls)
 }
 
 # test without target and do not report error
 # sh:node  sh:or sh:and sh:not
 function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, s) {
-    st:apply-templates-with-all(sh:core(), shape, sh, false, s)
+    sh:core(shape, sh, false, s)
 }
 
 function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
-    st:apply-templates-with-all(sh:core(), shape, sh, vis, s)
+    sh:core(shape, sh, vis, s)
 }
 
 function xsd:boolean sh:hasConstraint(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
-    st:apply-templates-with-all(sh:constraint(), shape, sh, vis, s)
+    sh:constraint(shape, sh, vis, s)
 }
 
 function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
@@ -74,6 +78,22 @@ function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis
 
 function xsd:boolean sh:path(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
     st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
+}
+
+
+# get relevant properties of sh  in a table
+function sh:getConstraint(name, sh) {
+    xt:get(sh:getmap(name), sh)
+}
+
+# record relevant properties of sh  in a table
+function sh:setConstraint(name, sh, value) {
+    xt:set(sh:getmap(name), sh, value)
+}
+
+
+function sh:getmap(name) {
+    coalesce(xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
 }
 
 function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
@@ -119,6 +139,7 @@ function sh:starter() {
     sh:start() ;
     # validation report graph
     set(validationReport = query(construct where {})) ;
+    set(mapmap = xt:map()) ;
     sh:init()
 }
 
@@ -232,16 +253,10 @@ function sh:message(sh){
     xt:value(sh, sh:message)
 }
 
-
-function dt:bnode sh:bnodeid(){
-    let (bn = coalesce(st:cget(sh:bnodeid, sh:bnodeid), st:null)) {
-        if (bn = st:null, return (st:cset(sh:bnodeid, sh:bnodeid, bnode())), return (bn)) 
-    }
+function sh:bnodeid(){
+    coalesce(bnodeid, set(bnodeid = bnode()))
 }
 
-function sh:bnodeid2(){
-    coalesce(st:get(sh:bnodeid), st:set(sh:bnodeid, bnode())) 
-}
 
 # trick datatype for st:turtle transformation to pprint a graph in Turtle format
 function sh:graph(shape, var){
@@ -263,7 +278,7 @@ function sh:init(){
 
 function sh:define(def){
     let ((name, value) = def){
-        st:cset(sh:def, name, value)
+        sh:setConstraint(sh:def, name, value)
     } ;
     return(true)
 }
@@ -313,7 +328,7 @@ function dt:list sh:def(){
 
 
 function sh:isdefby(name){
-    st:cget(sh:def, name)
+    sh:getConstraint(sh:def, name)
 }
 
 function sh:functioncall(q, shape, s, m){

@@ -89,7 +89,7 @@ public class CoreseMap extends CoreseExtension {
     
     @Override
     public IDatatype has(IDatatype key) {
-        return map.get(key) == null ? FALSE : TRUE;
+        return map.containsKey(key) ? TRUE : FALSE;
     }
     
     @Override

@@ -1,7 +1,15 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-
+#
+# main function
+#
 function sh:core(shape, sh, vis, nodeList) {
     let (b1 = sh:pathcore(shape, sh, vis, nodeList),
          b2 = sh:booleancore(shape, sh, vis, nodeList),
@@ -15,11 +23,15 @@ function sh:core(shape, sh, vis, nodeList) {
 function sh:closedcore(shape, sh, vis, nodeList) {
     let (suc = true) {
         if (sh:isClosed(shape, sh)) {
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {
-                for ((s p o) in xt:edges(node, bnode())) {
-                    if (! xt:member(p, sh:getPredicates(shape, sh))) {
-                        set(suc = false);
-                        st:report(sh:closed, sh, shape, s, p, o, suc, vis)
+            let (anypred = bnode(), predList = sh:getPredicates(shape, sh)) {
+                #xt:print("closed:", predList, nodeList);
+                if (sh:trace(), xt:print("core closed:", sh, nodeList), true); 
+                for (node in dt:list(nodeList)) {
+                    for ((s p o) in xt:edges(node, anypred)) {
+                        if (! xt:member(p, predList)) {
+                            set(suc = false);
+                            st:report(sh:closed, sh, shape, s, p, o, suc, vis)
+                        }
                     }
                 }
             }
@@ -32,7 +44,8 @@ function sh:closedcore(shape, sh, vis, nodeList) {
 function sh:pathcore(shape, sh, vis, nodeList) {
     let (res = true) {
         for ((cst path) in sh:getConstraint(sh:pathcore, shape, sh)) {
-            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path), false)) {
+            if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
+            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path, st:null, false), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -44,6 +57,7 @@ function sh:pathcore(shape, sh, vis, nodeList) {
 function sh:booleancore(shape, sh, vis, nodeList) {
     let (res = true) {
         for ((bool cst) in sh:getConstraint(sh:booleancore, shape, sh)) {
+            if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
             let (tmp = coalesce(funcall(msh:fun(bool), shape, sh, cst, vis, nodeList), st:null),
                  suc = if (isURI(tmp), false, tmp)) {
                 if (suc, true, set(res = false))
@@ -58,7 +72,8 @@ function sh:booleancore(shape, sh, vis, nodeList) {
 function sh:constraintcore(shape, sh, vis, nodeList) {
     let (cst = sh:getConstraint(sh:constraintcore, shape, sh)) {
         if (cst) {
-            let (suc = sh:hasConstraint(shape, sh, vis, nodeList)) {
+            if (sh:trace(), xt:print("core constraint:", sh, nodeList), true); 
+            let (suc = sh:constraint(shape, sh, vis, nodeList)) {
                 return (suc)
             }
         }
@@ -67,8 +82,6 @@ function sh:constraintcore(shape, sh, vis, nodeList) {
         }
     }
 }
-
-
 
 
 # record relevant properties of sh  in a table
@@ -152,25 +165,17 @@ function msh:fun(name) {
     msh:not)))
 }
 
+# TODO: check coalesce()
 function msh:not (shape, sh, cst, vis, ls) {
-    if (isExtension(ls)) {
         let (res = true) {
-            for (s in ls) {
-                let (suc = ! sh:testShapeCore(shape, cst, s)) {
+            for (s in dt:list(ls)) {
+                let (suc = coalesce(! sh:core(shape, cst, false, s), false)) {
                     if (suc, true, set(res = false));
-                    st:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
+                    if (suc, true, st:report(sh:not, sh, shape, s, st:null, s,  suc, vis))
                 }
             };
             return (res)
         }
-    }
-    else {
-        let (tmp = coalesce(! sh:testShapeCore(shape, cst, ls), st:null),
-             suc = if (isURI(tmp), false, tmp)) {
-            st:report(sh:not, sh, shape, ls, st:null, ls,  suc, vis) ;
-            return (suc)
-        }    
-    }
 }
 
 
@@ -190,24 +195,19 @@ function msh:xone (shape, sh, bool, vis, ls) {
 
 # oper = sh:and | sh:or 
 function msh:boolean (oper, shape, sh, bool, vis, ls) {
-    if (isExtension(ls)) {
-        let (res = true) {
-            for (s in ls) {
-                let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
-                    if (suc, true, set (res = false))
-                }
-            } ;
-            return(res)
-        }
-    }
-    else {
-        msh:basic (oper, shape, sh, bool, vis, ls)
+    let (res = true) {
+        for (s in dt:list(ls)) {
+            let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
+                if (suc, true, set (res = false))
+            }
+        } ;
+        return(res)
     }
 }
 
 function msh:basic (oper, shape, sh, bool, vis, s) {
     let (suc = coalesce(funcall(oper, bool, s, shape), false)){
-        st:report(oper, sh, shape, s, st:null, s, suc, vis);
+        if (suc, true, st:report(oper, sh, shape, s, st:null, s, suc, vis));
         return (suc)
     }
 }
@@ -233,17 +233,41 @@ function xsd:boolean sh:xone(or, s, dt:graph shape){
     (sh:bool(or, s, shape, 1, 0) = 1)
 }
 
-# core
 function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
-    let ( 
-        SELECT ?sh ?s ?shape ?suc ?fail (SUM(?val) AS ?count)
+   let (cc = 0) {
+        for (cst in sh:getConstraint(sh:coreboolean, shape, sh)) {
+            let (res = sh:core(shape, cst, false, xt:list(s))) 
+            {
+                 set (cc = cc +  if (res, suc, fail))  
+            }
+        } ;
+        return (cc)
+    }
+}
+
+
+function sh:coreboolean(shape, sh) {
+     let ( 
+        SELECT ?sh  ?shape (aggregate(?cst) as ?list)
 		WHERE {
             graph ?shape { 
                 ?sh rdf:rest*/rdf:first ?cst
-            }			
-			BIND (sh:testShapeCore(?shape, ?cst, ?s) AS ?hasShape)
-			BIND (IF(bound(?hasShape), IF (?hasShape, ?suc, ?fail), 'error') AS ?val) 
-		}
-		values (?s ?suc ?fail) { (UNDEF UNDEF UNDEF) })
-		{ return(?count) }
+            } } ) {  
+            return (list)
+        }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

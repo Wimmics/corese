@@ -1,6 +1,10 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
 prefix sh:   <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <http://www.w3.org/ns/shacl#> 
 
 
 #
@@ -53,7 +57,7 @@ function sh:function(shape, node, name) {
 
 function sh:validURI(url) {
     let (value = xt:validURI(url)) {
-        xt:print(url, value) ;
+       # xt:print(url, value) ;
         return (value)
     }
 }
@@ -66,11 +70,12 @@ function sh:validURI(shape, url, any) {
 
 function sh:validURI(shape, sh, subject, path, url) {
     let (value = xt:validURI(url)) {
-        xt:print("validate URL:", subject, path, url, value) ;
+      #  xt:print("validate URL:", subject, path, url, value) ;
 #        xt:print("cst:", xt:focus(shape, xt:turtle(sh)));
         return (value)
     }
 }
+
 
 function sh:count(s, p){
   let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
@@ -81,7 +86,6 @@ function sh:invCount(?o, ?p){
   let (select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
   { return(?c) }
 }
-
 
 function sh:minCount(s, p, m){
     sh:count(s, p) >= m
@@ -141,52 +145,51 @@ function xsd:boolean sh:hasValue(shape, s, v) {
     s = v
 }
 
-@skip
 function xsd:boolean sh:class(?shape, ?o, ?c){
   exists { ?o rdf:type/rdfs:subClassOf* ?c }
 }
 
-function xsd:boolean sh:classsh(?shape, ?o, ?c){
-  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+
+function xsd:boolean sh:in(dt:graph ?shape, ?o, ?lv) {
+    letdyn (object = o, list = sh:getConstraint(sh:in, shape, lv)) {
+        mapany(lambda(value) { 
+            object = value && ( ! isLiteral(object) || datatype(object) = datatype(value)) }, 
+            list)
+    }
 }
 
-function xsd:boolean sh:in(dt:graph ?shape, ?o, ?lv){
-  exists { 
-    # "declare" Node ?o to allow parameter passing
-    values ?o { UNDEF }
-    graph ?shape { values ?o { UNDEF }
-        ?lv rdf:rest*/rdf:first ?v  
-        filter (?o = ?v && ( ! isLiteral(?o) || datatype(?o) = datatype(?v)))
+function sh:in(shape, sh) {
+    let (select * (aggregate(?val) as ?list)
+         where { graph ?shape { ?sh rdf:rest*/rdf:first ?val } } ) {
+         return(list)
     }
-  } 
 }
 
 
 function xsd:boolean sh:languageIn(dt:graph ?shape, ?o, ?lv){
-  exists { 
-    # "declare" Node ?o to allow parameter passing
-    values ?o { UNDEF }
-    bind (lang(?o) as ?lang)
-    filter bound(?lang)
-    graph ?shape { values ?lang { UNDEF }
-        ?lv rdf:rest*/rdf:first ?l  
-        filter langMatches(?lang, ?l)
+   if (isLiteral(o)) {
+        letdyn (object = o, lan = lang(object), list = sh:getConstraint(sh:in, shape, lv)) {
+            return (mapany(lambda(value) { langMatches(lan, value) }, list))
+        }
     }
-  } 
+    else {
+        return (false)
+    }
 }
+
 
 # by default, generate no report for sh:node constraints
 # if sh:detail() generate report for sh:node constraints
 function xsd:boolean sh:node(dt:graph shape, o, cst){
-    sh:testShapeCore(shape, cst, sh:detail(), o)
+    sh:core(shape, cst, sh:detail(), o)
 }
 
 function xsd:boolean sh:property(dt:graph shape, o, cst){
-    sh:hasShape(shape, cst, true, o)
+    sh:core(shape, cst, true, o)
 }
 
 function xsd:boolean sh:qualifiedShape(subject, dt:graph shape, qsh){
-    sh:testShapeCore(shape, qsh, subject)
+    sh:core(shape, qsh, false, subject)
 }
 
 

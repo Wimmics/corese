@@ -1,14 +1,11 @@
 #
-# Generic functions for datashape
-# shared by main core constraint path
-# their profile.rq @import <function/datashape/main.rq>
+# SHACL Interpreter 
 #
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <http://www.w3.org/ns/shacl#>  
 
-@import <ppath.rq> <operator.rq> <core.rq> <constraint.rq>
+@import <ppath.rq> <operator.rq> <path.rq> <core.rq> <constraint.rq>
 
 
 
@@ -35,59 +32,25 @@ function sh:main(){
     sh:pack("main", st:dsmain)
 }
 
-function sh:core(){
-    sh:pack("core", st:dscore)
-}
-
-function sh:constraint(){
-    sh:pack("constraint", st:dsconstraint)
-}
-
 function sh:path(){
     sh:pack("path", st:dspath)
 }
 
 
-# test and may report error
-# main target & noscope
+# main function 
 function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
     sh:core(shape, sh, vis, ls)
 }
 
-# test without target and do not report error
-# sh:node  sh:or sh:and sh:not
-function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, s) {
-    sh:core(shape, sh, false, s)
-}
-
-function xsd:boolean sh:testShapeCore(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
-    sh:core(shape, sh, vis, s)
-}
-
-function xsd:boolean sh:hasConstraint(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s) {
-    sh:constraint(shape, sh, vis, s)
-}
-
-function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
-}
-
-function xsd:boolean sh:hasPath(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p, o) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p, o)
-}
-
-function xsd:boolean sh:path(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, s, p) {
-    st:apply-templates-with-all(sh:path(), shape, sh, vis, s, p)
-}
-
-
 # get relevant properties of sh  in a table
 function sh:getConstraint(name, sh) {
+    #xt:print("get:", name, sh, xt:get(sh:getmap(name), sh)) ;
     xt:get(sh:getmap(name), sh)
 }
 
 # record relevant properties of sh  in a table
 function sh:setConstraint(name, sh, value) {
+    #xt:print("set:", name, sh, value, xt:size(mapmap), xt:size(sh:getmap(name)));
     xt:set(sh:getmap(name), sh, value)
 }
 
@@ -140,7 +103,38 @@ function sh:starter() {
     # validation report graph
     set(validationReport = query(construct where {})) ;
     set(mapmap = xt:map()) ;
+    sh:trace(false);
     sh:init()
+}
+
+
+# within xt:focus(?shape, sh:sibling())
+# record sibling qualifiedValueShape in a table
+function sh:sibling() {
+    for (select  ?qsh ?list where {
+            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
+            where {
+                select distinct ?qsh ?sibling ?path
+                where {
+                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
+                          sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
+                    filter (?sibling != ?qsh)
+                }
+            }
+            group by ?qsh
+        } ) {
+            if (bound(?qsh), sh:setConstraint(sh:sibling, ?qsh, ?list), true) 
+    } ;
+    return (true)
+}
+
+
+function sh:trace() {
+    return (shaclTrace)
+}
+
+function sh:trace(bb) {
+    set (shaclTrace = bb )
 }
 
 # finish
@@ -196,16 +190,16 @@ function xsd:boolean sh:result(?name, ?sh, ?cst, dt:graph ?shape, ?foc, ?p, ?o){
         } 
         where { 
             bind (uuid() as ?r)
-            bind (coalesce(java:isdefby(?name), ?name) as ?def)
+            bind (coalesce(sh:isdefby(?name), ?name) as ?def)
             bind (coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
             bind (sh:getMessage(?shape, ?sh, ?cst) as ?m)
             bind (if (bound(?m), ?m, concat("Fail at: ", sh:createMessage(?shape, ?sh, ?cst))) as ?mes)
-            bind (java:value(?p) as ?pp)
-            bind (java:value(?o) as ?oo)            
+            bind (sh:value(?p) as ?pp)
+            bind (sh:value(?o) as ?oo)            
             bind (if (bound(?pp), sh:graph(?shape, ?pp), error())  as ?pathDetail)                                       
-            bind (java:graphbnode(?shape, ?foc) as ?focDetail)
-            bind (if (bound(?oo), java:graphbnode(?shape, ?oo), error())  as ?valueDetail)
-            bind (java:bnodeid() as ?bnode)
+            bind (sh:graphbnode(?shape, ?foc) as ?focDetail)
+            bind (if (bound(?oo), sh:graphbnode(?shape, ?oo), error())  as ?valueDetail)
+            bind (sh:bnodeid() as ?bnode)
         } 
         values (?name ?sh ?cst ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
@@ -236,7 +230,17 @@ function sh:start() {
 
 # declare report graph to transformer visitor graph, use case: shape workflow
 function sh:finish() {
+    #sh:tracefinish();
     st:visit(st:trace, st:graph, validationReport) 
+}
+
+function sh:tracefinish() {
+    xt:print(xt:turtle(validationReport));
+    let (cc = 0) {
+        for ((key val) in mapmap) {
+                xt:print(set(cc = cc + 1), key, xt:size(val))
+        }
+    }
 }
 
 # when suc = false, declare error on node (for future pprint)
@@ -331,10 +335,4 @@ function sh:isdefby(name){
     sh:getConstraint(sh:def, name)
 }
 
-function sh:functioncall(q, shape, s, m){
-    funcall(sh:clean(q), shape, s, m)
-}
 
-function sh:clean(q){
-    if (q = sh:class, sh:classsh, q)
-}

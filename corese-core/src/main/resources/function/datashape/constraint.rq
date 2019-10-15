@@ -1,9 +1,15 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(shape, sh, vis, nodeList) {
     let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
-         b2 = sh:cstsparql (shape, sh, vis, nodeList),
+         b2 = sh:cstsparql   (shape, sh, vis, nodeList),
          b3 = sh:constraint3 (shape, sh, vis, nodeList),
          b4 = sh:cstpattern  (shape, sh, vis, nodeList)
          ) {
@@ -11,14 +17,22 @@ function sh:constraint(shape, sh, vis, nodeList) {
     }
 }
 
+# shape sh has several operators with value, ex: oper=sh:datatype value=xsd:string
+# operator defined as a function (in operator.rq) with same name
+# operator executed as funcall(oper, value)
+# list of (oper value) is computed once for each shape sh and stored in a table 
+# sh:getConstraint retrieve the list (oper value)
+# nodeList is either a list of nodes or a single node
+# st:report generates a validation report in case of error
+#
 function sh:constraint1 (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper value) in sh:getConstraint(sh:cstgeneric, shape, sh)) {  
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+            for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(if (oper = sh:functioncst,  
                     funcall(value, shape, sh, node), 
                     funcall(oper, shape, node, value)), false)) {
-                        st:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis) ;
+                        if (suc, true, st:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis)) ;
                         if (suc, true, set(res = false))
                     }
             }
@@ -31,7 +45,8 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
 function sh:cstsparql (shape, sh, vis, nodeList) {
    let (res = true) {
         for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+            for (node in dt:list(nodeList)) {   
+                if (sh:trace(), xt:print("cstsparql:", node, q), true);
                 let (suc = coalesce(
                     sh:mysparql(concat(define, q), sh, cst, shape, node, node, vis, 
                         mes, isLiteral(mes)),
@@ -48,7 +63,7 @@ function sh:cstsparql (shape, sh, vis, nodeList) {
 function sh:constraint3 (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper value) in sh:getConstraint(sh:cstgeneric3, shape, sh)) {  
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
+            for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(funcall(oper, shape, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))
                 }
@@ -61,7 +76,7 @@ function sh:constraint3 (shape, sh, vis, nodeList) {
 function sh:cstpattern (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) { 
+            for (node in dt:list(nodeList)) { 
                 let (suc = !isBlank(node) && coalesce(
                         if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
                         false)) {    
@@ -74,12 +89,6 @@ function sh:cstpattern (shape, sh, vis, nodeList) {
         } ;
         return (res)
     }
-}
-
-
-# record relevant properties of sh as a list in a table
-function sh:getConstraint(name, shape, sh) {
-    coalesce(sh:getConstraint(name, sh), sh:setConstraint(name, sh, funcall(name, shape, sh)))
 }
 
 
@@ -154,7 +163,7 @@ function sh:cstgeneric3(shape, sh) {
 
 function sh:class (shape, sh, vis, s, ?c) {
     let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
-        st:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis) ;
+        if (suc, true, st:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis)) ;
         return (suc)
     }
 }
@@ -162,7 +171,7 @@ function sh:class (shape, sh, vis, s, ?c) {
 
 function sh:disjoint (shape, sh, vis, s, p) {
     let (l = sh:path(shape, s, p), suc = ! xt:member(s, l)) {
-        st:report(sh:disjoint, sh, shape, s, p, s, suc, vis) ;
+        if (suc, true, st:report(sh:disjoint, sh, shape, s, p, s, suc, vis)) ;
         return (suc)
     }
 }
@@ -178,7 +187,7 @@ function sh:equals (shape, sh, vis, s, p) {
 
 function sh:equals1 (shape, sh, vis, s, p, l) {
     let (suc = xt:member(s, l)) {
-        st:report(sh:equals, sh, shape, s, p, s, suc, vis) ;
+        if (suc, true, st:report(sh:equals, sh, shape, s, p, s, suc, vis)) ;
         return (suc)
     }
 }
@@ -187,7 +196,7 @@ function sh:equals2 (shape, sh, vis, s, p, l) {
     let (res = true) {
         for (m in l) {
             let (suc = s = m) {
-                st:report(sh:equals, sh, shape, s, p, m, suc, vis);
+                if (suc, true, st:report(sh:equals, sh, shape, s, p, m, suc, vis));
                 set (res = res && suc)
             }
         } ;
@@ -195,62 +204,6 @@ function sh:equals2 (shape, sh, vis, s, p, l) {
     }
 }
 
-
-
-
-
-
-# sparql deprecated
-function sh:cstgeneric2(shape, sh) {
-    sh:cstgeneric(shape, sh, xt:list(sh:sparql))
-}
-
-
-# sparql deprecated
-function sh:constraint2 (shape, sh, vis, nodeList) {
-    let (res = true) {
-        for ((oper value) in sh:getConstraint(sh:cstgeneric2, shape, sh)) {  
-            for (node in if (isExtension(nodeList), nodeList, xt:list(nodeList))) {    
-                let (suc = coalesce(
-                    #st:call-template(oper, shape, sh, vis, node, value),
-                    sh:sparql(shape, sh, vis, node, value),
-                    false)) {
-                    if (suc, true, set(res = false))
-                }
-            }
-        } ;
-        return (res)
-    }
-}
-
-# sparql deprecated
-function sh:sparql(shape, sh, vis, node, cst) {
-    let (select * where {
-        graph ?shape {  
-                ?sh sh:sparql ?cst 
-                ?cst sh:select ?q
-                filter not exists { ?cst sh:deactivated true }
-                optional { ?cst sh:message ?mes }
-                
-                # collect prefix definitions
-                # TBD: do it once and record it
-                {
-                    select ?cst 
-                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
-                    as ?define) 
-                    where {
-                        ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
-                    }
-                    group by ?cst
-                }
-        }
-    } ) {    
-        let (suc = sh:mysparql(concat(?define, ?q), ?sh, ?cst, ?shape, node, node, ?vis, 
-                coalesce(?mes, st:null), bound(?mes))) {
-            return (suc)
-        } 
-    }
-}
 
 
 

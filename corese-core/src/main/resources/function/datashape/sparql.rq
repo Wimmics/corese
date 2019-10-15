@@ -1,0 +1,85 @@
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+
+function sh:sparqlvalid (shape, sh, vis, ls, p, o, isbound) {
+    let (res = true) {
+        for ((cst define q oper value) in sh:getConstraint(sh:sparqlvalid, shape, sh)) {  
+            xt:print("sparql:", define, oper, value, q);
+            for (s in dt:list(ls)) {
+                let (suc = coalesce(
+                    if (isbound, 
+                        sh:sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value),
+                        sh:sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value)),
+                        false) ) {
+                        if (suc, true, set(res = false))
+                    }
+                }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:sparqlvalid(?shape, ?sh) {
+    let (select * (aggregate(xt:list(?cst, ?define, ?q, ?oper, ?value)) as ?list) 
+            where {
+            graph ?shape {  
+                ?sh ?oper ?value    
+                filter (! sh:isPredicate(?oper))
+            
+                ?cst sh:parameter [ sh:path ?oper ] ;
+                    sh:propertyValidator ?valid 
+                ?valid sh:select ?q 
+                    
+                filter not exists { ?cst sh:deactivated true }
+                
+                # collect prefix definitions
+                {
+                    select ?valid 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    as ?define) 
+                    where {
+                        ?valid sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
+                    }
+                    group by ?valid
+                }
+            
+            } } ) {
+        return (list)
+    }
+}
+
+
+function sh:sparqlvalidp (shape, sh, cst, define, q, vis, s, p, oper, obj) {
+    let (res = true, var = sh:variable(oper),
+         qq = concat(define, replace(q, "\\$PATH", sh:display(shape, p)), sh:values(var))) {
+        for (($this value) in xt:sparql(qq, "$this", s, var, obj)) { 
+            # SPARQL query returns solutions that fail
+            let (suc = false) {
+                set (res = false);
+                st:report(cst, sh, cst, shape, s, p, value, suc, vis)
+            }
+        } ;
+        return (res)
+    }
+}
+
+function sh:display(?shape, ?p) {
+    if (isURI(?p), st:turtle(?p), st:apply-templates-with-graph(st:dspprint, ?shape, ?p))
+}
+
+function sh:variable(?uri) {
+    concat("?", xt:strip(?uri))
+}
+
+# pseudo declare variables in case they are not in a triple of query ?q
+function sh:values(?oper){
+    concat("values (?this ", ?oper, ") { (UNDEF UNDEF) }")
+}
+
+
+
+function sh:isPredicate(?p) {
+    strstarts(?p, sh:) || strstarts(?p, rdfs:) || strstarts(?p, rdf:) || strstarts(?p, owl:)
+}
+
+

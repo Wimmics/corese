@@ -459,6 +459,9 @@ public class Term extends Expression {
             case ExprType.XT_LOWERCASE:
             case ExprType.XT_UPPERCASE:
                 return new UnaryExtension(name);
+          
+            case ExprType.XT_CAST:
+                return new Cast(name, longName);
                 
             case ExprType.XT_FOCUS:
                 return new Focus(name);

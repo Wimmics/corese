@@ -1101,7 +1101,11 @@ public class Processor {
             if (name.startsWith(RDFS.XSDPrefix) || name.startsWith(RDFS.XSD)
                     || name.startsWith(RDFS.RDFPrefix) || name.startsWith(RDFS.RDF)) {
                 n = ExprType.CAST;
-            } else if (name.startsWith(CUSTOM)) {
+            } 
+            else if (name.startsWith(NSManager.DT)) {
+                n = ExprType.XT_CAST;
+            } 
+            else if (name.startsWith(CUSTOM)) {
                 n = ExprType.CUSTOM;
             } else if (name.startsWith(KeywordPP.CORESE_PREFIX)) {
                 n = ExprType.EXTERNAL;

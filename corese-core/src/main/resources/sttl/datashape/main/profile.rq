@@ -38,26 +38,6 @@ function st:optimize(shape, sh){
 
 
 
-# within xt:focus(?shape, sh:sibling())
-# record sibling qualifiedValueShape in a table
-function sh:sibling() {
-    for (select  ?qsh ?list where {
-            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
-            where {
-                select distinct ?qsh ?sibling ?path
-                where {
-                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
-                        sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
-                    filter (?sibling != ?qsh)
-                }
-            }
-            group by ?qsh
-        } ) {
-            if (bound(?qsh), st:cset(sh:sibling, ?qsh, ?list), true) 
-    } ;
-    return (true)
-}
-
 
 
 

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Oct 11 09:39:41 CEST 2019
+Mon Oct 14 13:34:52 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -10,16 +10,16 @@ Fri Oct 11 09:39:41 CEST 2019
 <body>
 <![CDATA[
 #
-# Data Shape Validator
+# SHACL Interpreter
 # http://w3c.github.io/data-shapes/shacl/
+# Functions are defined in resources/function/datashape, see target.rq and main.rq
 #
 # main: shapes with targets
 # core: shape constraints (property, path, constraint, and, or, not, closed)
-# property:   property predicate constraint
 # path:       property path constraint
 # constraint: node constraint
 #
-# Olivier Corby - Inria I3S - 2016
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
@@ -138,26 +138,6 @@ function st:optimize(shape, sh){
 }
 
 
-
-# within xt:focus(?shape, sh:sibling())
-# record sibling qualifiedValueShape in a table
-function sh:sibling() {
-    for (select  ?qsh ?list where {
-            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
-            where {
-                select distinct ?qsh ?sibling ?path
-                where {
-                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
-                        sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
-                    filter (?sibling != ?qsh)
-                }
-            }
-            group by ?qsh
-        } ) {
-            if (bound(?qsh), st:cset(sh:sibling, ?qsh, ?list), true) 
-    } ;
-    return (true)
-}
 
 
 

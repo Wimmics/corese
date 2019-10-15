@@ -228,12 +228,12 @@ public class ProducerImpl implements Producer, IProducerQP {
     public Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge edge,
             Environment env) {
 
-        if (gNode != null) {
-            if (gNode.isVariable()) {
-                System.out.println(gNode);
-                System.out.println(env.getQuery().getAST());
-            }
-        }
+//        if (gNode != null) {
+//            if (gNode.isVariable()) {
+//                System.out.println(gNode);
+//                System.out.println(env.getQuery().getAST());
+//            }
+//        }
         
         Node predicate = getPredicate(edge, env);
         if (predicate == null) {

@@ -195,6 +195,10 @@ public class ShapeWorkflow extends SemanticWorkflow {
      * graph = true means check whole graph, false means check uri
      * param = shape | uri | uri, shape
      */
+    public Graph process(Graph g) {
+        return process(g, g, true);
+    }
+    
     public Graph process(Graph g, Graph s, boolean graph, IDatatype... param) {
         Transformer t = Transformer.create(g, SHAPE_TRANS);
         t.getContext().export(SHAPE_NAME, DatatypeMap.createObject(s));

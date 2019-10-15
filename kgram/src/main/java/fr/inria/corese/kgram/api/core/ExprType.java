@@ -375,6 +375,7 @@ public interface ExprType {
         public static int XT_VALID_URI   = 480;
         public static int XT_STACK       = 481;
         public static int XT_DATATYPE_VALUE= 482;
+        public static int XT_CAST        = 483;
              
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

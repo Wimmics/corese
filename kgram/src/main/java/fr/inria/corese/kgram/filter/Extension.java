@@ -131,6 +131,12 @@ public class Extension {
     
     void defineFunction(Expr exp) {       
         Expr fun = exp.getFunction(); 
+        Expr def = get(fun.getLabel(), fun.arity());
+        if  (def != null) {
+            logger.info("Redefine function: " +fun.getLabel());
+            logger.info(def.toString());
+            logger.info(exp.toString());
+        }
         getMap(fun).put(fun.getLabel(), exp);
         getMap(fun).setMetadata(exp);
     }

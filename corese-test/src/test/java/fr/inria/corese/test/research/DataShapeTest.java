@@ -8,6 +8,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
@@ -15,7 +16,9 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,16 +34,19 @@ import org.junit.Test;
  *
  */
 public class DataShapeTest {
+    static final String SHACL = NSManager.SHAPE+"shacl";
 
     //static String data = "/user/corby/home/AATest/data-shapes/data-shapes-test-suite/tests/";
     static final String data = 
        DataShapeTest.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
     
     static String[] names = {
-        //"sparql/property"
-        "core/property", "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports",
-       "sparql/node" , "sparql/property"
-        //, "sparql/component"
+        "core/property"
+            , "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports",
+       "sparql/property"
+            
+       //,"sparql/node" ,
+       //  "sparql/component"
     };
     static String qm =
             "prefix mf:      <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .\n"
@@ -84,7 +90,8 @@ public class DataShapeTest {
     int count = 0;
     int error = 0;
     boolean lds = true;
-    boolean benchmark = false, repeat = false;
+    boolean benchmark = false, repeat = false, verbose=true;
+    boolean done = false;
     HashMap<String, Double> tjava, tlds;
 
     public DataShapeTest() {
@@ -260,9 +267,11 @@ public class DataShapeTest {
     }
 
     void file(String file) throws EngineException, LoadException {
-
-//        if ( file.contains("shacl-shacl")){
-//            return;
+//        if (file.contains("datatype-001.ttl")) { // || file.contains("and-001")){
+//            //ok
+//        }
+//        else {
+//            //return;
 //        }
 
         Graph g = Graph.create();
@@ -272,13 +281,16 @@ public class DataShapeTest {
         Mappings map = exec.query(qdata);
         IDatatype datadt  = (IDatatype) map.getValue("?data");
         IDatatype shapedt = (IDatatype) map.getValue("?shape");
-//        System.out.println(datadt.getLabel());
-//        System.out.println(shapedt.getLabel());
-        ShapeWorkflow wf = new ShapeWorkflow(shapedt.getLabel(), datadt.getLabel(), false, lds);       
-        Data res = wf.process();
-        Graph greport = res.getVisitedGraph();
         
-        //greport = new ShapeWorkflow().process(datadt.getLabel(), shapedt.getLabel());
+        Graph greport    = exec2(shapedt.getLabel(), datadt.getLabel());
+
+//        Graph greport = exec(shapedt.getLabel(), datadt.getLabel());
+//        if (greport.size() != ggg.size()) {
+//            System.out.println("error: " + greport.size() + " " + ggg.size());
+//            System.out.println(Transformer.create(greport, Transformer.TURTLE).process().getLabel());
+//            System.out.println(Transformer.create(ggg, Transformer.TURTLE).process().getLabel());
+//
+//        }
 
         QueryProcess exec0 = QueryProcess.create(greport);
         Mappings mm = exec0.query(qcheck);
@@ -296,7 +308,9 @@ public class DataShapeTest {
         }
 
         if (!benchmark || mapkgram.size() != mapw3c.size()) {
-            System.out.println(count++ + " " + mes + file + " " + mapw3c.size() + " " + mapkgram.size());
+            if (verbose) {
+                System.out.println(count++ + " " + mes + file + " " + mapw3c.size() + " " + mapkgram.size());
+            }
 //            System.out.println("w3c: \n"   + mapw3c);
 //            System.out.println("--");
 //            System.out.println("kgram: \n" + mapkgram);
@@ -316,6 +330,32 @@ public class DataShapeTest {
             report.result(mapw3c, false);
         }
     }
+    
+    Graph exec(String shape, String data) throws EngineException {
+        ShapeWorkflow wf = new ShapeWorkflow(shape, data, false, lds);
+        Data res = wf.process();
+        return res.getVisitedGraph();
+    }
+    
+    
+    Graph load(String path) throws LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.parse(path);
+        g.index(); 
+        return g;
+    }
+    
+    Graph exec2(String shape, String data) throws EngineException, LoadException {
+        Graph g  = load(data);        
+        Graph sh = (data.equals(shape)) ? g : load(shape);  
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        Graph res = shacl.eval(sh);
+        return res;
+    }
+
+    
     
     void result(Mappings map) {
     }

@@ -58,8 +58,8 @@ public class Binding implements Binder {
         varList = new ArrayList();
         valList = new ArrayList();
         level = new ArrayList();
-        globalValue    = new HashMap<>();
-        globalVariable = new HashMap<>();
+        setGlobalVariableValues(new HashMap<>());
+        setGlobalVariableNames(new HashMap<>());
     }
 
     public static Binding create() {
@@ -308,7 +308,7 @@ public class Binding implements Binder {
                     }
                 }
                 
-                IDatatype dt = globalValue.get(var.getLabel());
+                IDatatype dt = getGlobalVariableValues().get(var.getLabel());
                 if (dt == null) {
 
                     if (isDebug()) {
@@ -415,8 +415,8 @@ public class Binding implements Binder {
     }
     
     void define(Variable var, IDatatype val) {
-        globalValue.put(var.getLabel(), val);
-        globalVariable.put(var.getLabel(), var);
+        getGlobalVariableValues().put(var.getLabel(), val);
+        getGlobalVariableNames().put(var.getLabel(), var);
     }
 
     @Override
@@ -445,7 +445,7 @@ public class Binding implements Binder {
                 list.add(varList.get(i));
             }
         }
-        for (Variable var : globalVariable.values()) {
+        for (Variable var : getGlobalVariableNames().values()) {
             if (! list.contains(var)) {
                 list.add(var);
             }

@@ -4,6 +4,7 @@
  */
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -81,6 +82,7 @@ public class Context extends ASTObject {
     HashMap<String, Boolean> export;
     private HashMap<String, Context> context;
     NSManager nsm;
+    private Binding bind;
     Access.Level level = Access.Level.DEFAULT;
     
     private boolean userQuery = false;
@@ -526,5 +528,20 @@ public class Context extends ASTObject {
     public void setNamedContext(HashMap<String, Context> context) {
         this.context = context;
     }         
+
+    /**
+     * @return the bind
+     */
+    public Binding getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public Context setBind(Binding bind) {
+        this.bind = bind;
+        return this;
+    }
   
 }

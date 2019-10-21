@@ -63,6 +63,7 @@ public class Metadata extends ASTObject
     public static final int UNLOCK    = 44;
     public static final int LIMIT     = 45;
     public static final int GRAPH     = 46;
+    public static final int FROM      = 47;
     
     
     public static final int EVENT   = 50;
@@ -168,6 +169,7 @@ public class Metadata extends ASTObject
         define("@lock",     LOCK); 
         define("@unlock",   UNLOCK); 
         define("@graph",    GRAPH); 
+        define("@from",     FROM); 
         
         
         define("@event",    EVENT);  
@@ -426,6 +428,33 @@ public class Metadata extends ASTObject
      */
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+    
+    // ________________________________________________
+    
+    // @graph <server1> <g1> <g2> <server2> <g3>
+    public List<String> getGraphList(String service) {
+        List<String> graphList  = getValues(FROM);
+        List<String> serverList = getValues(FEDERATE);
+        ArrayList<String> res = new ArrayList<>();
+        boolean find = false;
+        if (graphList != null && serverList != null) {
+            for (String str : graphList) {
+                if (find) {
+                    if (serverList.contains(str)) {
+                        break;
+                    }
+                    else {
+                        res.add(str);
+                    }
+                }
+                else if (str.equals(service)) {
+                    find = true;
+                }
+            }
+        }
+        
+        return res;
     }
     
   

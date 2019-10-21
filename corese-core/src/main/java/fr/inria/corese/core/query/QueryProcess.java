@@ -483,6 +483,12 @@ public class QueryProcess extends QuerySolver {
 
     }
     
+    // import function definition as public function
+    public void imports(String path) throws EngineException {
+        String q = "@public @import <%s> select where {}";
+        compile(String.format(q, path));
+    }
+    
     IDatatype[] param(IDatatype... ldt) {
         return ldt;
     }
@@ -501,7 +507,11 @@ public class QueryProcess extends QuerySolver {
      * Execute LDScript function defined as @public
      */
     public IDatatype funcall(String name, IDatatype... param) throws EngineException {
-        return funcall(name, null, param);
+        return funcall(name, (Context)null, param);
+    }
+    
+    public IDatatype funcall(String name, Binding b, IDatatype... param) throws EngineException {
+        return funcall(name, new Context().setBind(b), param);
     }
 
     public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {
@@ -515,11 +525,18 @@ public class QueryProcess extends QuerySolver {
     IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
         Eval eval = getEval();
         eval.getMemory().getQuery().setContext(c);
+        if (c != null && c.getBind() != null) {
+            getBind(eval).share(c.getBind());
+        }
         return new Funcall(name).call((Interpreter) eval.getEvaluator(),
-                (Binding) eval.getMemory().getBind(),
+                getBind(eval),
                 eval.getMemory(), eval.getProducer(), function, param);
     }
-
+    
+    Binding getBind(Eval eval) {
+        return (Binding) eval.getMemory().getBind();
+    }
+    
     Eval getEval() throws EngineException {
         if (eval == null){
             eval = createEval("select where {}  ", null);

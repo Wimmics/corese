@@ -210,6 +210,18 @@ public class Transformer implements TransformProcessor {
         Graph g = Graph.create();
         return new Transformer(g, p);
     }
+    
+    public static String turtle(Graph g) {
+        return create(g, TURTLE).transform();
+    }
+    
+    public static String rdfxml(Graph g) {
+        return create(g, RDFXML).transform();
+    }
+    
+    public static String json(Graph g) {
+        return create(g, JSON).transform();
+    }
 
     /**
      * Create Transformer for named graph system named graph, std named grapĥ:

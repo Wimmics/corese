@@ -544,10 +544,11 @@ public class ProviderImpl implements Provider {
     
     
     Mappings post1(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
+        ASTQuery aa  = (ASTQuery) q.getOuterQuery().getAST();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
-        InputStream stream = doPost(serv.getLabel(), query, timeout);       
+        InputStream stream = doPost(aa.getMetadata(), serv.getLabel(), query, timeout);       
         return parse(stream, trap);
     }
     
@@ -587,19 +588,20 @@ public class ProviderImpl implements Provider {
         return map;
     }
 
-    public StringBuffer doPost2(String server, String query) throws IOException {
-        URLConnection cc = post(server, query, 0);
+    public StringBuffer doPost2(Metadata meta, String server, String query) throws IOException {
+        URLConnection cc = post(meta, server, query, 0);
         return getBuffer(cc.getInputStream());
     }
 
-    public InputStream doPost(String server, String query, int timeout) throws IOException {
-        URLConnection cc = post(server, query, timeout);
+    public InputStream doPost(Metadata meta, String server, String query, int timeout) throws IOException {
+        URLConnection cc = post(meta, server, query, timeout);
         return cc.getInputStream();
     }
 
-    URLConnection post(String server, String query, int timeout) throws IOException {
+    URLConnection post(Metadata meta, String server, String query, int timeout) throws IOException {
         String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
-
+        List<String> graphList = getGraphList(server, meta);
+        qstr = complete(qstr, server, graphList);
         URL queryURL = new URL(server);
         HttpURLConnection urlConn = (HttpURLConnection) queryURL.openConnection();
         urlConn.setRequestMethod("POST");
@@ -616,7 +618,26 @@ public class ProviderImpl implements Provider {
         out.flush();
 
         return urlConn;
-
+    }
+    
+    // default-graph-uri
+    String complete(String qstr, String server, List<String> graphList) {
+        if (!graphList.isEmpty()) {
+            System.out.println("Federate: " + server + " " + graphList);
+            String graph="";
+            for (String name : graphList) {
+                graph += "&default-graph-uri=" + name;
+            }
+            qstr += graph;
+        }
+        return qstr;
+    }
+    
+    List<String> getGraphList(String server, Metadata meta) {
+        if (meta == null) {
+            return new ArrayList<>(0);
+        }
+        return meta.getGraphList(server);
     }
 
     StringBuffer getBuffer(InputStream stream) throws IOException {

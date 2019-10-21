@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.ExpHandler;
 import fr.inria.corese.kgram.core.Query;
 
 /**
@@ -73,7 +74,7 @@ public class TransformerVisitor implements QueryVisitor {
                 Node n = query.getNode(var);
                 if (n != null) {
                     // bind exists node 
-                    exp.setNodeList(exp.getNodes(true, false, true, false));
+                    exp.setNodeList(exp.getTheNodes(new ExpHandler(true, false, true, false)));
                     exp.setBGPAble(true);
                     exp.cache(n);
                 }

@@ -623,7 +623,7 @@ public class ProviderImpl implements Provider {
     // default-graph-uri
     String complete(String qstr, String server, List<String> graphList) {
         if (!graphList.isEmpty()) {
-            System.out.println("Federate: " + server + " " + graphList);
+            //System.out.println("Federate: " + server + " " + graphList);
             String graph="";
             for (String name : graphList) {
                 graph += "&default-graph-uri=" + name;

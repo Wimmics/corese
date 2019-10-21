@@ -49,7 +49,7 @@ public class FunctionCompiler {
 
     void compileLambda(Query q, ASTQuery ast) {
         compile(q, ast, ast.getDefineLambda());
-        define(ast.getDefineLambda(), q);
+        define(ast, ast.getDefineLambda(), q);
     }
 
     /**
@@ -65,7 +65,7 @@ public class FunctionCompiler {
             return;
         }
 
-        define(ast.getDefine(), q);
+        define(ast, ast.getDefine(), q);
     }
 
     void compile(Query q, ASTQuery ast, ASTExtension ext) {
@@ -129,9 +129,9 @@ public class FunctionCompiler {
         imported.put(path, path);
         ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
         compile(q, ast, ast2.getDefine());
-        define(ast2.getDefine(), q);
+        define(ast, ast2.getDefine(), q);
         compile(q, ast, ast2.getDefineLambda());
-        define(ast2.getDefineLambda(), q);
+        define(ast, ast2.getDefineLambda(), q);
     }
 
     void undefinedFunction(Query q, ASTQuery ast) {
@@ -182,18 +182,18 @@ public class FunctionCompiler {
     /**
      * Define function into Extension Export into Interpreter
      */
-    void define(ASTExtension aext, Query q) {
+    void define(ASTQuery ast, ASTExtension aext, Query q) {
         fr.inria.corese.kgram.filter.Extension ext = q.getCreateExtension();
         DatatypeHierarchy dh = new DatatypeHierarchy();
         if (q.isDebug()) {
             dh.setDebug(true);
         }
         ext.setHierarchy(dh);
-
+        boolean pub = ast.hasMetadata(Metadata.PUBLIC);
         for (ASTExtension.ASTFunMap m : aext.getMaps()) {
             for (Function exp : m.values()) {
                 ext.define(exp);
-                if (exp.isPublic()) {
+                if (pub || exp.isPublic()) {
                     definePublic(exp, q);
                 }
             }

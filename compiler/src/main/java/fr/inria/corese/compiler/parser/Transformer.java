@@ -669,55 +669,7 @@ public class Transformer implements ExpType {
     }
     
 
-//    /**
-//     * Define function into Extension Export into Interpreter
-//     */
-//    void define(ASTExtension aext,  Query q) {
-//        Extension ext = q.getCreateExtension(); 
-//        DatatypeHierarchy dh = new DatatypeHierarchy();
-//        if (q.isDebug()) dh.setDebug(true);
-//        ext.setHierarchy(dh);
-//        
-//        for (ASTFunMap m : aext.getMaps()) {
-//            for (Function exp : m.values()) {
-//                ext.define(exp);
-//                if (exp.isPublic()) {
-//                    definePublic(exp, q);
-//                }
-//            }
-//        }
-//    }
-      
-//    // TODO: check isSystem() because it is exported
-//    /**
-//     * ext is loaded function definitions define them as public
-//     *
-//     * @param ext
-//     * @param q
-//     */
-//    void definePublic(Extension ext, Query q) {
-//        definePublic(ext, q, true);
-//    }
-//
-    
-//
-//    void definePublic(Function fun, Query q) {
-//        definePublic(fun, q, true);
-//    }
-//
-//    void definePublic(Function fun, Query q, boolean isDefine) {
-//        if (isDefine) {
-//            if (Interpreter.getExtension().getHierarchy() == null) {
-//                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
-//            }
-//            Interpreter.define(fun);
-//        }
-//        fun.setPublic(true);
-//        if (fun.isSystem()) {
-//            // export function with exists {} 
-//            fun.getTerm().setPattern(q);
-//        }
-//    }
+
 
     void construct(Query q, ASTQuery ast) {
         validate(ast.getInsert(), ast);

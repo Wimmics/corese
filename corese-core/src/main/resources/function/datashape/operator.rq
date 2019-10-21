@@ -22,12 +22,12 @@ function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
                     let (mmes = sh:mymessage(mes, m)) {
                         # xt:print(mmes);
                         # suc = false
-                        st:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                        sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
                     }
                 }
                 else {
                     # suc = false
-                    st:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                    sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
                 }
             }
         } ;

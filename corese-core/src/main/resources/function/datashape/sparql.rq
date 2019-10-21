@@ -56,7 +56,7 @@ function sh:sparqlvalidp (shape, sh, cst, define, q, vis, s, p, oper, obj) {
             # SPARQL query returns solutions that fail
             let (suc = false) {
                 set (res = false);
-                st:report(cst, sh, cst, shape, s, p, value, suc, vis)
+                sh:report(cst, sh, cst, shape, s, p, value, suc, vis)
             }
         } ;
         return (res)

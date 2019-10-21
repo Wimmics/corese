@@ -30,24 +30,24 @@ function sh:path(shape, sh, vis, ls, p, value, isbound) {
 
 #
 # bound = true -> value is bound
-# ls: target node list or target node (when inside boolean operator)
+# nodeList: target node list or target node (when inside boolean operator)
 # p: the path
 # oper=sh:nodeKind ; val=sh:IRI
 #
-function sh:generic1(shape, sh, vis, ls, p, value, isbound) {
+function sh:generic1(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
         for ((oper val) in sh:getConstraint(sh:generic, shape, sh)) {
-            #xt:print("path:", oper, val, ls);
-            for (s in dt:list(ls)) {
+            #xt:print("path:", oper, val, p, nodeList);
+            for (s in dt:list(nodeList)) {
                 for (o in (if (isbound, xt:list(value), sh:path(shape, s, p)))) {
                     let (suc = coalesce(
                         if (oper = sh:functioncst, 
                                 funcall(val, shape, sh, s, p, o), 
                                 funcall(oper, shape, o, val)), 
                         false)) {
+                        if (oper in (sh:property), true, 
+                                sh:report(oper, sh, if (oper = sh:node, val, st:null), shape, s, p, o, suc, vis)) ;
                         if (! suc) {
-                            if (oper in (sh:property), true, 
-                                st:report(oper, sh, if (oper = sh:node, val, st:null), shape, s, p, o, suc, vis)) ;
                             set(res = false) 
                         }
                     }
@@ -59,10 +59,10 @@ function sh:generic1(shape, sh, vis, ls, p, value, isbound) {
 }
 
 
-function sh:generic2(shape, sh, vis, ls, p, value, isbound) {
+function sh:generic2(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
         for ((oper val disjoint amin amax) in sh:getConstraint(sh:generic2, shape, sh)) {
-            for (s in dt:list(ls)) {
+            for (s in dt:list(nodeList)) {
                 let (suc = coalesce(                    
                         sh:qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax) , 
                         false) ) {
@@ -77,10 +77,10 @@ function sh:generic2(shape, sh, vis, ls, p, value, isbound) {
 }
 
 
-function sh:generic4(shape, sh, vis, ls, p, value, isbound) {
+function sh:generic4(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
         for ((oper val) in sh:getConstraint(sh:generic4, shape, sh)) {
-            for (s in dt:list(ls)) {
+            for (s in dt:list(nodeList)) {
                 let (suc = coalesce(
                     if (isbound, 
                         funcall(oper, shape, sh, vis, s, p, val, value),
@@ -95,7 +95,7 @@ function sh:generic4(shape, sh, vis, ls, p, value, isbound) {
     }
 }
 
-
+# sh:cstpattern defined in constraint.rq
 function sh:pathpattern (shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
         for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
@@ -106,7 +106,7 @@ function sh:pathpattern (shape, sh, vis, nodeList, p, value, isbound) {
                             false)) {    
                         if (!suc) {
                             set(res = false) ;
-                            st:report(sh:pattern, sh, shape, subject, p, node, suc, vis)
+                            sh:report(sh:pattern, sh, shape, subject, p, node, suc, vis)
                         }
                     }
                 }
@@ -117,7 +117,7 @@ function sh:pathpattern (shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
-
+# sh:cstsparql defined in constraint.rq
 function sh:sparql(shape, sh, vis, nodeList, p, value, isbound) {
     let (suc = true) {
         for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
@@ -136,26 +136,32 @@ function sh:sparql(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
+# *******************************************
 
-# properties for path/generic.rq
+#
+# Retrieve properties of constraint sh using a query, do it once
+# they are stored as a list in a map by sh:getConstraint defined in core.rq
+#
+
 function sh:generic(shape, sh) {
-    let (select ?shape ?sh (aggregate(xt:list(?q, ?m)) as ?list) where {
-        graph ?shape {  
-            values ?q { 
+    let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
+        graph ?shape { 
+        values ?oper { 
                 sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
                 sh:nodeKind sh:class 
                 sh:in sh:languageIn sh:node sh:property
                 # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
                 sh:function sh:functioncst
-            }
-            ?sh ?q ?m    
         }
-    } ) {
+        ?sh ?oper ?val 
+        }
+        } 
+        
+    ) {
         return(list)
     }
 }
 
-# properties for path/generic2.rq
 function sh:generic2(shape, sh) {
     let (select ?shape ?sh 
         (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, 
@@ -173,18 +179,16 @@ function sh:generic2(shape, sh) {
 }
 
 
-
-# properties for path/generic4.rq
 function sh:generic4(shape, sh) {
-    let (select ?shape ?sh (aggregate(xt:list(?oper, ?b)) as ?list) where {
+    let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
         graph ?shape {  
             values ?oper { 
                 sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
                 sh:maxCount sh:minCount
                 sh:hasValue sh:uniqueLang sh:lessThan sh:lessThanOrEquals
             }
-            ?sh ?oper ?b  
-            filter if (?oper = sh:uniqueLang, sameTerm(?b, true), true)
+            ?sh ?oper ?val  
+            filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
         }
         } ) {
         return(list)
@@ -192,7 +196,28 @@ function sh:generic4(shape, sh) {
 }
 
 
-
+#
+# called when start
+# within xt:focus(?shape, sh:sibling())
+# record sibling qualifiedValueShape in a table
+#
+function sh:sibling() {
+    for (select  ?qsh ?list where {
+            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
+            where {
+                select distinct ?qsh ?sibling ?path
+                where {
+                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
+                          sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
+                    filter (?sibling != ?qsh)
+                }
+            }
+            group by ?qsh
+        } ) {
+            if (bound(?qsh), sh:setConstraint(sh:sibling, ?qsh, ?list), true) 
+    } ;
+    return (true)
+}
 
 
 # ************** operators
@@ -206,8 +231,8 @@ function sh:qualifiedValueShape (shape, sh, vis, s, p, qsh, disjoint, amin, amax
          suc1 = xt:size(qlist) >= amin, 
          suc2 = if (amax = -1, true, xt:size(qlist) <= amax))
     {
-        if (suc1, true, st:report(sh:qualifiedMinCount, sh, shape, s, p, s, suc1, vis)) ;
-        if (suc2, true, st:report(sh:qualifiedMaxCount, sh, shape, s, p, s, suc2, vis)) ;
+        sh:report(sh:qualifiedMinCount, sh, shape, s, p, s, suc1, vis) ;
+        sh:report(sh:qualifiedMaxCount, sh, shape, s, p, s, suc2, vis) ;
         return (suc1 && suc2)
     }
 }
@@ -265,9 +290,9 @@ function sh:lessThanList(shape, sh, vis, s, p, q, list, leq, oper){
         for (o in list) {
             for (v in xt:objects(s, q)) {
                 let (res = coalesce(if (leq, o <= v, o < v), false)) {
+                    sh:report(oper, sh, shape, s, p, o, res, vis) ;
                     if (! res) {
-                        set(suc = false);
-                        st:report(oper, sh, shape, s, p, o, res, vis)
+                        set(suc = false)
                     } 
                 }
             }
@@ -297,9 +322,9 @@ function sh:uniqueLang (shape, sh, vis, s, p, v){
          } ;
          
          for ((lan value) in amap) {
-            if (value > 1) {
-                set(suc = false);
-                st:report(sh:uniqueLang, sh, shape, s, p, lan, false, vis)
+            let (res = value = 1) {
+                if (res, true, set(suc = false));
+                sh:report(sh:uniqueLang, sh, shape, s, p, lan, res, vis)
             }
          } ;
          
@@ -313,7 +338,7 @@ function sh:hasValue (shape, sh, vis, s, p, v) {
   letdyn (value = v) {
     let (suc = mapany (lambda(object) { coalesce(object = value, false) }, 
                     sh:path(shape, s, p))) {
-        if (suc, true, st:report(sh:hasValue, sh, shape, s, p, v, suc, vis)) ;
+        sh:report(sh:hasValue, sh, shape, s, p, v, suc, vis) ;
         return (suc)
     }
   }
@@ -337,7 +362,7 @@ function sh:maxCount (shape, sh, vis, s, p, m, o) {
 function sh:minCount (shape, sh, vis, s, p, m) {
     let (val = xt:size(sh:path(shape, s, p)),
          suc = val >= m) { 
-        if (suc, true, st:report(sh:minCount, sh, shape, s, p, val, suc, vis));
+        sh:report(sh:minCount, sh, shape, s, p, val, suc, vis);
         return(suc)
     }
 }
@@ -345,7 +370,7 @@ function sh:minCount (shape, sh, vis, s, p, m) {
 function sh:maxCount (shape, sh, vis, s, p, m) {
     let (val = xt:size(sh:path(shape, s, p)),
          suc = val <= m) { 
-        if (suc, true, st:report(sh:maxCount, sh, shape, s, p, val, suc, vis));
+        sh:report(sh:maxCount, sh, shape, s, p, val, suc, vis);
         return(suc)
     }
 }
@@ -360,7 +385,7 @@ function sh:disjoint (shape, sh, vis, s, p, q) {
          l2 = sh:path(shape, s, q)) {
         for (o in l1) {
             let (suc = ! xt:member(o, l2)) {
-                if (suc, true, st:report(sh:disjoint, sh, shape, s, p, o, suc, vis)) ;
+                sh:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
                 set (res = res && suc)
             }
         } ;
@@ -373,7 +398,7 @@ function sh:disjoint (shape, sh, vis, s, p, q, o) {
          l2 = sh:path(shape, s, q)) {
         if (xt:member(o, l1)) {
             let (suc = ! xt:member(o, l2)) {
-                if (suc, true, st:report(sh:disjoint, sh, shape, s, p, o, suc, vis)) ;
+                sh:report(sh:disjoint, sh, shape, s, p, o, suc, vis) ;
                 return (suc)
             }
         } ;
@@ -400,7 +425,7 @@ function sh:myequals (shape, sh, vis, s, p, q, l1, l2) {
     let (res = true) {
         for (o in l1) {
             let (suc = xt:member(o, l2)) {
-                 if (suc, true, st:report(sh:equals, sh, shape, s, p, o, suc, vis)) ;
+                 sh:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
                  set(res = res && suc) 
             }
         } ;
@@ -420,7 +445,7 @@ function sh:equals (shape, sh, vis, s, p, q, o) {
 
 function sh:equal (shape, sh, vis, s, p, q, o, l) {
     let (suc = xt:member(o, l)) {
-        if (suc, true, st:report(sh:equals, sh, shape, s, p, o, suc, vis)) ;
+        sh:report(sh:equals, sh, shape, s, p, o, suc, vis) ;
         return (suc)
     }
 }
@@ -429,16 +454,11 @@ function sh:equal (shape, sh, vis, s, p, q, o, l) {
 
 
 
-
-
-
-########################## from path profile
-
 function sh:not (shape, sh, vis, s, p, cst) {
     let (res = true) {
         for (o in sh:path(shape, s, p)) {
             let (suc = ! sh:path(shape, cst, false, s, p, o, true)) {
-                if (suc, true, st:report(sh:not, sh, shape, s, p, o, suc, vis));
+                sh:report(sh:not, sh, shape, s, p, o, suc, vis);
                 set (res = res && suc)
             }
         } ;
@@ -463,7 +483,7 @@ function msh:boolean (oper, shape, sh, vis, s, p, and) {
     let (res = true) {
         for (o in sh:path(shape, s, p)) {
             let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
-                if (suc, true, st:report(oper, sh, shape, s, p, o, suc, vis));
+                if (suc, true, sh:report(oper, sh, shape, s, p, o, suc, vis));
                 set (res = res && suc)
             }
         };
@@ -476,7 +496,7 @@ function sh:not (shape, sh, vis, s, p, cst, o) {
     let (l = sh:path(shape, s, p)) {
         if (xt:member(o, l)) {
             let (suc = ! sh:path(shape, cst, false, s, p, o, true)) {
-                if (suc, true, st:report(sh:not, sh, shape, s, p, o, suc, vis));
+                sh:report(sh:not, sh, shape, s, p, o, suc, vis);
                 return(suc)
             }
         } ;
@@ -501,7 +521,7 @@ function msh:boolean (oper, shape, sh, vis, s, p, and, o) {
     let (l = sh:path(shape, s, p)) {
         if (xt:member(o, l)) {
             let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
-                if (suc, true, st:report(oper, sh, shape, s, p, o, suc, vis));
+                sh:report(oper, sh, shape, s, p, o, suc, vis);
                 return (suc)
             }
         };

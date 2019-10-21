@@ -8,67 +8,10 @@
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
-prefix fun:  <http://www.w3.org/ns/shacl#> 
-prefix java: <http://www.w3.org/ns/shacl#>  
 
-
-function xsd:boolean sh:target(dt:graph ?shape) {
-let (?suc = true) {
-for (
-   select ?shape ?sh  (aggregate(distinct ?s) as ?list) 
-   where { 
-  
-    {graph ?shape {
-        ?sh sh:targetSubjectsOf ?p 			
-        filter not exists { ?sh sh:deactivated true} }
-     ?s ?p ?o 	
-     }
-    
-    union
-    
-    {graph ?shape {
-        ?sh sh:targetObjectsOf ?p 				
-        filter not exists { ?sh sh:deactivated true} }
-        
-     ?x ?p ?s}
-    
-    union 
-    
-    {graph ?shape {
-        ?sh sh:targetClass ?c 
-        filter not exists { ?sh sh:deactivated true} }
-        
-     ?s rdf:type/rdfs:subClassOf* ?c}
-     
-     union 
-    
-    {graph ?shape {
-        ?sh a sh:NodeShape, rdfs:Class
-        filter not exists { ?sh sh:deactivated true} }
-        
-     ?s rdf:type/rdfs:subClassOf* ?sh} 
-     
-    union 
-     
-    {graph ?shape {
-        ?sh sh:targetNode ?s
-        filter not exists { ?sh sh:deactivated true} }
-    }
-                      
-  } group by ?sh ) {
-    if (sh:trace(), xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
-    if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
-            set(?suc = false) , true)
-            
-    } ;
-    return(?suc)
-  }
-}
-  
   
 function xsd:boolean sh:shapeNode(dt:graph ?shape, ?s) {
-let (?suc = true) {
-for (
+query(
    select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
    where { 
    
@@ -113,20 +56,12 @@ for (
         filter not exists { ?sh sh:deactivated true} }
     }
                       
-  } group by ?sh ) {
-  
-  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
-        set(?suc = false) , true)
-        
-  } ;
-  return(?suc)
-  }
+  } group by ?sh ) 
 } 
 
 
 function sh:shapeNode(?shape, ?s, ?sh) {
-let (?suc = true) {
-for (
+query (
    select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
    where { 
    
@@ -171,22 +106,13 @@ for (
         filter not exists { ?sh sh:deactivated true} }
     }
                           
-  } group by ?sh ) {
-  
-  
-  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
-        set(?suc = false) , true)
-        
-  } ;
-  return(?suc)
-  }
+  } group by ?sh ) 
 } 
 
 
 
 function sh:shapeGraph(?shape, ?sh) {
-let (?suc = true) {
-for (
+query (
    select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
    where { 
    
@@ -229,12 +155,5 @@ for (
         filter not exists { ?sh sh:deactivated true} }
     }
                       
-  } group by ?sh ) {
-  
-  if (xt:size(?list) > 0  && ! sh:hasShape(?shape, ?sh, true, ?list) ,
-        set(?suc = false) , true)
-        
-  } ;
-  return(?suc)
-  }
+  } group by ?sh )
 }  

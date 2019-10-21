@@ -23,7 +23,7 @@ function sh:constraint(shape, sh, vis, nodeList) {
 # list of (oper value) is computed once for each shape sh and stored in a table 
 # sh:getConstraint retrieve the list (oper value)
 # nodeList is either a list of nodes or a single node
-# st:report generates a validation report in case of error
+# sh:report generates a validation report in case of error
 #
 function sh:constraint1 (shape, sh, vis, nodeList) {
     let (res = true) {
@@ -32,7 +32,7 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
                 let (suc = coalesce(if (oper = sh:functioncst,  
                     funcall(value, shape, sh, node), 
                     funcall(oper, shape, node, value)), false)) {
-                        if (suc, true, st:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis)) ;
+                        sh:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
             }
@@ -80,9 +80,9 @@ function sh:cstpattern (shape, sh, vis, nodeList) {
                 let (suc = !isBlank(node) && coalesce(
                         if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
                         false)) {    
+                    sh:report(sh:pattern, sh, shape, node, st:null, node, suc, vis);
                     if (!suc) {
-                        set(res = false) ;
-                        st:report(sh:pattern, sh, shape, node, st:null, node, suc, vis)
+                        set(res = false) 
                     }
                 }
             }
@@ -92,7 +92,13 @@ function sh:cstpattern (shape, sh, vis, nodeList) {
 }
 
 
-# properties for constraint/pattern.rq
+
+
+#
+# Retrieve properties of constraints, thay are stored in a map by getConstraint
+#
+# 
+
 function sh:cstpattern(shape, sh) {
     let (select ?shape ?sh (aggregate(xt:list(?exp, coalesce(?flag, st:null))) as ?list) where {
         graph ?shape {  
@@ -105,7 +111,6 @@ function sh:cstpattern(shape, sh) {
 }
 
 
-# properties for constraint/generic.rq
 function sh:cstgeneric(shape, sh, list) {
     let (select ?shape ?sh ?list (aggregate(xt:list(?q, ?m)) as ?res) where {
         graph ?shape {  
@@ -118,7 +123,6 @@ function sh:cstgeneric(shape, sh, list) {
     }
 }
 
-# properties for constraint/generic.rq
 function sh:cstgeneric(shape, sh) {
     sh:cstgeneric(shape, sh, xt:list(
                 sh:hasValue, sh:datatype, sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive, sh:minLength, sh:maxLength, sh:nodeKind, sh:node, sh:in, sh:languageIn, 
@@ -154,16 +158,19 @@ function sh:cstsparql(shape, sh) {
 }
 
 
-# properties for constraint/generic3.rq
 function sh:cstgeneric3(shape, sh) {
     sh:cstgeneric(shape, sh, xt:list(sh:class, sh:disjoint, sh:equals))
 }
 
 
 
+
+
+
+
 function sh:class (shape, sh, vis, s, ?c) {
     let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
-        if (suc, true, st:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis)) ;
+        sh:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis) ;
         return (suc)
     }
 }
@@ -171,7 +178,7 @@ function sh:class (shape, sh, vis, s, ?c) {
 
 function sh:disjoint (shape, sh, vis, s, p) {
     let (l = sh:path(shape, s, p), suc = ! xt:member(s, l)) {
-        if (suc, true, st:report(sh:disjoint, sh, shape, s, p, s, suc, vis)) ;
+        sh:report(sh:disjoint, sh, shape, s, p, s, suc, vis) ;
         return (suc)
     }
 }
@@ -187,7 +194,7 @@ function sh:equals (shape, sh, vis, s, p) {
 
 function sh:equals1 (shape, sh, vis, s, p, l) {
     let (suc = xt:member(s, l)) {
-        if (suc, true, st:report(sh:equals, sh, shape, s, p, s, suc, vis)) ;
+        sh:report(sh:equals, sh, shape, s, p, s, suc, vis);
         return (suc)
     }
 }
@@ -196,7 +203,7 @@ function sh:equals2 (shape, sh, vis, s, p, l) {
     let (res = true) {
         for (m in l) {
             let (suc = s = m) {
-                if (suc, true, st:report(sh:equals, sh, shape, s, p, m, suc, vis));
+                sh:report(sh:equals, sh, shape, s, p, m, suc, vis);
                 set (res = res && suc)
             }
         } ;

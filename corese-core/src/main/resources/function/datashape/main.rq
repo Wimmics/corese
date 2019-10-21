@@ -5,7 +5,132 @@
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 
-@import <ppath.rq> <operator.rq> <path.rq> <core.rq> <constraint.rq>
+@import <target.rq> <focus.rq> <ppath.rq> <operator.rq> <path.rq> <core.rq> <constraint.rq>
+
+
+#
+# main function
+# Current graph is RDF graph
+# shape is SHACL Shape graph (they can be the same graph)
+# return validation report graph
+#
+function dt:graph sh:shacl() {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:shacl(xt:graph())
+}
+
+function dt:graph sh:shacl(dt:graph shape) {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:shacl(shape, sh:focus(shape))
+}
+
+function dt:graph sh:shaclshape(sh) {
+   if (sh:trace(), xt:print("shaclshape:", sh), true);
+   sh:shacl(xt:graph(), sh:focus(xt:graph(), sh))
+}
+
+#
+# evaluate sh(node) even if node is not into sh target
+#
+function dt:graph sh:shaclshape(sh, node) {
+   if (sh:trace(), xt:print("shaclshape:", sh, node), true);
+   sh:shacl(xt:graph(), xt:list(xt:list(sh, xt:list(node))))
+}
+
+function dt:graph sh:shaclnode(node) {
+   if (sh:trace(), xt:print("shaclnode:", node), true);
+   sh:shacl(xt:graph(), sh:focusnode(xt:graph(), node))
+}
+
+#
+# focus = mappings or list(sh=nodeShape; list=targetNodeList)
+#
+function dt:graph sh:shacl(dt:graph shape, focus) {
+    sh:start(shape) ;
+    let (suc = sh:eval(shape, focus)) {
+        sh:success(suc);
+        sh:finish() ;
+        return (validationReport)
+    }
+}
+
+function sh:focuslist(dt:graph shape) {
+    sh:list(sh:focus(shape))
+}
+
+
+function xsd:boolean sh:conform(?g) {
+    xt:focus(?g,
+    let (select * where { ?x sh:conforms ?b } ) {
+        ?b
+    }
+    )
+}
+
+
+function sh:trace(shape, mapmap) {
+        for ((key val) in mapmap) {
+            if (key != sh:def) {
+                xt:print(key);
+                for ((sh list) in val) {
+                    if (isExtension(list) && xt:size(list) > 0) {
+                        xt:print(sh, ":", list);
+                        if (isBlank(sh)) {
+                            xt:print(xt:turtle(shape, sh))
+                        }
+                    }
+                } ;
+                xt:print("__")
+            }
+        }
+}
+
+#
+# focus = mappings or list(sh=nodeShape; list=targetNodeList)
+#
+function sh:eval(shape, focus) {
+    let (suc = true) {
+        for ((sh list) in focus) {
+            if (sh:trace(), 
+                xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
+            if (bound(sh) && xt:size(list) > 0) {
+                let (res = sh:core(shape, sh, true, list)) {
+                    if (res, true, set(suc = false))
+                }
+            }
+        } ;
+        return (suc)
+    }
+}
+
+
+# start
+function sh:start(shape) {
+    # transformer visitor for legacy
+    st:visit(st:start, st:trace) ;
+    # validation report graph
+    set(validationReport = query(construct where {})) ;
+    set(mapmap = xt:map()) ;
+    set(tracemap = xt:map());
+    coalesce(sh:trace(), sh:trace(!true));
+    sh:init();
+    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling()))
+}
+
+# declare report graph to transformer visitor graph, use case: shape workflow
+function sh:finish() {
+    #sh:tracefinish();
+    st:visit(st:trace, st:graph, validationReport) 
+}
+
+
+function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
+    sh:core(shape, sh, vis, ls)
+}
+
+
+
+
 
 
 
@@ -23,24 +148,6 @@ function sh:test(){
     st:get(st:test, true) 
 }
 
-function sh:pack(test, name){
-    if (sh:test(), 
-        return(concat("/user/corby/home/AAData/sttl/datashape/", test)), name)
-}
-
-function sh:main(){
-    sh:pack("main", st:dsmain)
-}
-
-function sh:path(){
-    sh:pack("path", st:dspath)
-}
-
-
-# main function 
-function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
-    sh:core(shape, sh, vis, ls)
-}
 
 # get relevant properties of sh  in a table
 function sh:getConstraint(name, sh) {
@@ -59,11 +166,16 @@ function sh:getmap(name) {
     coalesce(xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
 }
 
+function sh:gettracemap(name) {
+    coalesce(xt:get(tracemap, name), xt:set(tracemap, name, xt:map()))
+}
+
+
 function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
     suc
 }
 
-function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
+function xsd:boolean sh:report(name, s, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
         sh:visit(name, s, suc)
     } ;
@@ -74,11 +186,16 @@ function xsd:boolean st:report(name, s, xsd:boolean suc, xsd:boolean vis) {
 # suc is success/failure of the shape
 # vis true means generate a ValidationResult
 #
-function xsd:boolean st:report(name,  sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
-    st:report(name, sh, st:null, shape, foc, p, o, suc, vis)
+function xsd:boolean sh:report(name,  sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
+    sh:report(name, sh, st:null, shape, foc, p, o, suc, vis)
 }
 
-function xsd:boolean st:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
+function xsd:boolean sh:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
+    sh:report(name, sh, shape, foc, st:null, st:null, suc, vis)
+}
+
+function xsd:boolean sh:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
+    sh:record(name,  sh, cst, shape, foc, p, o, suc, vis);
     if (vis && ! suc) { 
         sh:result(name, sh, cst, shape, foc,  p, o) ;
         sh:visit(name, foc, suc)
@@ -86,54 +203,47 @@ function xsd:boolean st:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:bo
     return(true)
 }
 
-function xsd:boolean st:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
-    st:report(name, sh, shape, foc, st:null, st:null, suc, vis)
+
+
+
+function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis) {
+    if (vis) {
+        #let (amap = sh:gettracemap(name)) {
+            #xt:set(amap, sh, coalesce(xt:get(amap, sh) + 1, 1))
+        #} ;
+        let (amap = sh:gettracemap(sh:total)) {
+            xt:set(amap, sh:total, coalesce(xt:get(amap, sh:total) + 1, 1))
+        }
+    }
 }
+
+function sh:tracerecord(shape, mapmap) {
+        for ((key val) in mapmap) {
+            if (key != sh:def) {
+                xt:print(key);
+                for ((sh value) in val) {
+                        xt:print(sh, ":", value) ;
+                        if (isBlank(sh)) {
+                            xt:print(xt:turtle(shape, sh))
+                        }
+                } ;
+                xt:print("__")
+            }
+        }
+}
+
+
 
 function sh:value(v){
     if (isURI(v) && v = st:null, error(), v)
 }
 
 
-
-
-# start
-function sh:starter() {
-    sh:start() ;
-    # validation report graph
-    set(validationReport = query(construct where {})) ;
-    set(mapmap = xt:map()) ;
-    sh:trace(false);
-    sh:init()
+function xsd:boolean sh:trace() {
+    return (coalesce(shaclTrace, false))
 }
 
-
-# within xt:focus(?shape, sh:sibling())
-# record sibling qualifiedValueShape in a table
-function sh:sibling() {
-    for (select  ?qsh ?list where {
-            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
-            where {
-                select distinct ?qsh ?sibling ?path
-                where {
-                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
-                          sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
-                    filter (?sibling != ?qsh)
-                }
-            }
-            group by ?qsh
-        } ) {
-            if (bound(?qsh), sh:setConstraint(sh:sibling, ?qsh, ?list), true) 
-    } ;
-    return (true)
-}
-
-
-function sh:trace() {
-    return (shaclTrace)
-}
-
-function sh:trace(bb) {
+function xsd:boolean sh:trace(xsd:boolean bb) {
     set (shaclTrace = bb )
 }
 
@@ -147,7 +257,6 @@ function xsd:boolean sh:success(xsd:boolean bb) {
             us:insert(g, validationReport)
         }
     } ;
-    sh:finish() ;
     return (true)
 }
 
@@ -189,17 +298,17 @@ function xsd:boolean sh:result(?name, ?sh, ?cst, dt:graph ?shape, ?foc, ?p, ?o){
             sh:sourceShape ?sh
         } 
         where { 
-            bind (uuid() as ?r)
-            bind (coalesce(sh:isdefby(?name), ?name) as ?def)
-            bind (coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
-            bind (sh:getMessage(?shape, ?sh, ?cst) as ?m)
-            bind (if (bound(?m), ?m, concat("Fail at: ", sh:createMessage(?shape, ?sh, ?cst))) as ?mes)
-            bind (sh:value(?p) as ?pp)
-            bind (sh:value(?o) as ?oo)            
-            bind (if (bound(?pp), sh:graph(?shape, ?pp), error())  as ?pathDetail)                                       
-            bind (sh:graphbnode(?shape, ?foc) as ?focDetail)
-            bind (if (bound(?oo), sh:graphbnode(?shape, ?oo), error())  as ?valueDetail)
-            bind (sh:bnodeid() as ?bnode)
+            bind(uuid() as ?r)
+            bind(coalesce(sh:isdefby(?name), ?name) as ?def)
+            bind(coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
+            bind(sh:getMessage(?shape, ?sh, ?cst) as ?m)
+            bind(if (bound(?m), ?m, concat("Fail at: ", sh:createMessage(?shape, ?sh, ?cst))) as ?mes)
+            bind(sh:value(?p) as ?pp)
+            bind(sh:value(?o) as ?oo)            
+            bind(if (bound(?pp), sh:graph(?shape, ?pp), error())  as ?pathDetail)                                       
+            bind(sh:graphbnode(?shape, ?foc) as ?focDetail)
+            bind(if (bound(?oo), sh:graphbnode(?shape, ?oo), error())  as ?valueDetail)
+            bind(sh:bnodeid() as ?bnode)
         } 
         values (?name ?sh ?cst ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
         ) 
@@ -221,18 +330,6 @@ function sh:getMessage(shape, sh, cst) {
         coalesce(xt:value(shape, cst, sh:message), xt:value(shape, sh, sh:message)))
 }
 
-#
-# transformer visitor
-#
-function sh:start() {
-    st:visit(st:start, st:trace) 
-}
-
-# declare report graph to transformer visitor graph, use case: shape workflow
-function sh:finish() {
-    #sh:tracefinish();
-    st:visit(st:trace, st:graph, validationReport) 
-}
 
 function sh:tracefinish() {
     xt:print(xt:turtle(validationReport));

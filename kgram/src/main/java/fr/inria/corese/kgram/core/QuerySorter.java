@@ -231,8 +231,8 @@ public class QuerySorter implements ExpType {
     
     // used by Eval subEval() bind()
     void union(Exp exp){
-        exp.first().setNodeList(exp.first().getInScopeNodes());
-        exp.rest().setNodeList(exp.rest().getInScopeNodes());
+        exp.first().setNodeList(exp.first().getAllInScopeNodes());
+        exp.rest().setNodeList(exp.rest().getAllInScopeNodes());
     }
     
     void minus(Exp exp){

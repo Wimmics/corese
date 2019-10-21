@@ -7,7 +7,7 @@ prefix doc:  <http://w3c.github.io/data-shapes/shacl/#>
 
 # @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
 
-@import <function/datashape/main.rq>  <function/datashape/target.rq>  
+@import <function/datashape/main.rq>   
 
 template st:profile {} where {}
 

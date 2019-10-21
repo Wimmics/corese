@@ -13,12 +13,9 @@
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template st:start(?shapeGraph) {
-    ?suc
+    ?g
 }
 where {
-  bind (sh:starter() as ?st)
   bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
-  bind (xt:focus(?shape, sh:sibling()) as ?sib)
-  bind (sh:target(?shape) as ?suc) 
-  bind (sh:success(?suc)  as ?b)
+  bind (sh:shacl(?shape) as ?g)
 }

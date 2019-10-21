@@ -1,24 +1,16 @@
 #
-# Data Shape Validator
-# http://w3c.github.io/data-shapes/shacl/
-#
-# main: shapes with targets
-# core: shape constraints (property, path, constraint, and, or, not, closed)
-# property:   property predicate constraint
-# path:       property path constraint
-# constraint: node constraint
+# SHACL Interpreter
 #
 # Olivier Corby - Inria I3S - 2016
 #
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template st:main(?shape, ?name, ?s, ?sh) {
-    ?suc
+    ?g
 }
 where {
-  bind (sh:starter() as ?st)
-  #bind (coalesce(st:get(st:shape), st:shape) as ?shape)
-  bind (xt:focus(?shape, sh:sibling()) as ?sib)
-  bind (if (bound(?sh), funcall(?name, ?shape, ?s, ?sh), funcall(?name, ?shape, ?s)) as ?suc) 
-  bind (sh:success(?suc) as ?b)
+  bind (
+    sh:shacl(?shape, 
+        apply(?name, if (bound(?sh), xt:list(?shape, ?s, ?sh), xt:list(?shape, ?s))) )
+    as ?g) 
 }

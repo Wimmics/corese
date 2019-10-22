@@ -111,7 +111,8 @@ function sh:start(shape) {
     # validation report graph
     set(validationReport = query(construct where {})) ;
     set(mapmap = xt:map()) ;
-    set(tracemap = xt:map());
+    set(recordmapsuc = xt:map());
+    set(recordmapfail = xt:map());
     coalesce(sh:trace(), sh:trace(!true));
     sh:init();
     if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling()))
@@ -166,8 +167,10 @@ function sh:getmap(name) {
     coalesce(xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
 }
 
-function sh:gettracemap(name) {
-    coalesce(xt:get(tracemap, name), xt:set(tracemap, name, xt:map()))
+function sh:getrecordmap(name, suc) {
+if (suc,
+    coalesce(xt:get(recordmapsuc,  name), xt:set(recordmapsuc,  name, xt:map())),
+    coalesce(xt:get(recordmapfail, name), xt:set(recordmapfail, name, xt:map())))
 }
 
 
@@ -205,15 +208,18 @@ function xsd:boolean sh:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:bo
 
 
 
-
+#
+# Additional report
+#
 function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
-        #let (amap = sh:gettracemap(name)) {
-            #xt:set(amap, sh, coalesce(xt:get(amap, sh) + 1, 1))
-        #} ;
-        let (amap = sh:gettracemap(sh:total)) {
-            xt:set(amap, sh:total, coalesce(xt:get(amap, sh:total) + 1, 1))
-        }
+        let (amap = sh:getrecordmap(name, suc)) {
+            xt:set(amap, sh, coalesce(xt:get(amap, sh) + 1, 1)) ;
+            xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal) + 1, 1)) 
+        } ;
+        let (amap = sh:getrecordmap(sh:total, suc)) {
+             xt:set(amap, sh:total, coalesce(xt:get(amap, sh:total) + 1, 1))
+        }         
     }
 }
 

@@ -30,18 +30,22 @@ public class Stack {
     void push(Function exp){
         expList.add(exp);
         for (Expression arg : exp.getFunction().getArgs()){
-            varList.add(arg.getVariable());
+            push(arg.getVariable());
         }
+    }
+    
+    void push(Variable var) {
+        varList.add(var);
     }
     
     void push(Let exp){
         expList.add(exp);
-        varList.add(exp.getVariable());
+        //push(exp.getVariable());
     }
     
      void push(ForLoop exp){
         expList.add(exp);
-        varList.add(exp.getVariable());
+        push(exp.getVariable());
     }
     
     void popFunction(Expression exp){
@@ -50,8 +54,10 @@ public class Stack {
         }
     }
     
-    void popLet(Expression exp){
-        popVar();
+    void popLet(Let exp){
+        for (Expression decl : exp.getDeclaration()) {
+            popVar();
+        }
     }
     
     void popFor(Expression exp){
@@ -66,7 +72,7 @@ public class Stack {
         Expression exp = expList.remove(expList.size() - 1);
         switch(exp.oper()){
             case ExprType.FUNCTION: popFunction(exp); break;
-            case ExprType.LET: popLet(exp); break;
+            case ExprType.LET: popLet(exp.getLet()); break;
             case ExprType.FOR: popFor(exp); break;
         }
     }

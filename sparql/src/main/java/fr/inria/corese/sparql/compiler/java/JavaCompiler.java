@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.compiler.java;
 
+import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -15,6 +16,8 @@ import fr.inria.corese.sparql.triple.function.script.Statement;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.filter.Extension;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -35,7 +38,7 @@ public class JavaCompiler {
     private static Logger logger = LoggerFactory.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
     String path =
-            "/user/corby/home/NetBeansProjects/corese-github/kgtool/src/main/java/fr/inria/corese/extension/";
+            "/user/corby/home/NetBeansProjects/corese-github-v4/corese-core/src/main/java/fr/inria/corese/core/extension/";
     static final String SPACE = " ";
     static final int STEP = 2;
     static final String IDATATYPE = "IDatatype";
@@ -44,7 +47,7 @@ public class JavaCompiler {
     
     
     public static final String VAR_EXIST = "?_b";
-    public String pack = "fr.inria.corese.extension";
+    public String pack = "fr.inria.corese.core.extension";
     
     
     int margin = 0;
@@ -109,6 +112,7 @@ public class JavaCompiler {
         
         functionName.put(Processor.XT_GEN_GET,     "GetGen.gget");
         functionName.put(Processor.XT_GET,         "Get.get");
+        functionName.put(Processor.XT_EDGES,         "edge");
         
         functionName.put(Processor.XT_LIST,         "DatatypeMap.newList");
         functionName.put(Processor.XT_SIZE,         "DatatypeMap.size");
@@ -120,7 +124,7 @@ public class JavaCompiler {
         functionName.put(Processor.XT_REVERSE,      "DatatypeMap.reverse");
         functionName.put(Processor.XT_MERGE,        "DatatypeMap.merge");
        
-        functionName.put(Processor.STRLEN,           "DatatypeMap.strlen");
+        functionName.put(Processor.STRLEN,          "DatatypeMap.strlen");
         functionName.put(Processor.STRDT,           "DatatypeMap.newInstance");
     }
     
@@ -146,10 +150,36 @@ public class JavaCompiler {
         trailer();
         return this;
     }
+    
+    public JavaCompiler toJava(Query q) throws IOException {
+        ASTQuery ast = (ASTQuery) q.getAST();
+        this.ast = ast;
+        path(ast);
+        head.process(pack, name);
+        toJava(q.getExtension());
+        //toJava(ast.getDefineLambda());
+        trailer();
+        return this;
+    }
+    
+    public void toJava(Extension ext) throws IOException {
+        for (Extension.FunMap m : ext.getMaps()) {
+            for (Expr ee : m.values()) {
+                Function exp = (Function) ee;
+                System.out.println(exp);
+                if (! exp.hasMetadata(Metadata.SKIP)){ 
+                    compile(exp);
+                    append(NL);
+                }
+            }
+        }
+    }
+    
 
     public void toJava(ASTExtension ext) throws IOException {
         for (ASTExtension.ASTFunMap m : ext.getMaps()) {
             for (Function exp : m.values()) {
+                System.out.println(exp);
                 if (! exp.hasMetadata(Metadata.SKIP)){ 
                     compile(exp);
                     append(NL);
@@ -346,8 +376,31 @@ public class JavaCompiler {
         decrnl();
         append("}");
     }
+    
+    
+     void let(Let term) {
+         for (Expression exp : term.getDeclaration()) {
+             if (!stack.isBound(term.getVariable(exp))) {
+                 append(IDATATYPE).append(SPACE);
+             }
+             toJava(term.getVariable(exp));
+             append(" = ");
+             toJava(term.getDefinition(exp));
+             pv();
+             nl();
+             stack.push(term.getVariable(exp));
+         }
+         
+        stack.push(term);
 
-    void let(Let term) {
+        toJava(term.getBody());
+        
+        stack.pop(term);
+        
+        pv(term.getBody());
+    }
+
+    void let2(Let term) {
         if (! stack.isBound(term.getVariable())){
             append(IDATATYPE).append(SPACE);
         }
@@ -357,8 +410,11 @@ public class JavaCompiler {
         pv();
         nl();
         stack.push(term);
+        
         toJava(term.getBody());
+        
         stack.pop(term);
+        
         pv(term.getBody());
     }
 

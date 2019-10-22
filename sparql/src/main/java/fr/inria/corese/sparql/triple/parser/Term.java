@@ -841,7 +841,11 @@ public class Term extends Expression {
     }
     
     public String javaName() {
-        return NSManager.nstrip(getName());
+        String str = NSManager.nstrip(getName());
+        if (str.equals(getName()) && getName().contains(":")) {
+            return getName().substring(getName().indexOf(":")+1);
+        }
+        return str;
     }
 
     @Override

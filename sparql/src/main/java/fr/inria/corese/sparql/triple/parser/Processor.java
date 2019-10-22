@@ -136,7 +136,7 @@ public class Processor {
         private static final String XT_CAST     = EXT + "cast";        
         private static final String XT_REJECT   = EXT + "reject";
         private static final String XT_VARIABLES= EXT + "variables";
-        private static final String XT_EDGES     = EXT + "edges";
+        public static final String XT_EDGES     = EXT + "edges";
         private static final String XT_NAME     = EXT + "name";        
         private static final String XT_QUERY    = EXT + "query";
         private static final String XT_AST      = EXT + "ast";

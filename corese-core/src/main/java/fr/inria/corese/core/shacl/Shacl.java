@@ -7,7 +7,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +21,8 @@ public class Shacl {
 
     
     static final Logger logger = Logger.getLogger(Shacl.class.getName());
-    public static final String TRACEMAP_VAR = "?tracemap";
+    public static final String TRACEMAPSUC_VAR = "?recordmapsuc";
+    public static final String TRACEMAPFAIL_VAR = "?recordmapfail";
     public static final String MAPMAP_VAR = "?mapmap";
     private static final String TRACE_VAR  = "?shaclTrace";
 
@@ -59,7 +59,8 @@ public class Shacl {
     }
     
     public Shacl(Graph g) {
-        graph = g;
+        setGraph(g);
+        setShacl(g);
     }
     
     Binding input() {
@@ -78,18 +79,19 @@ public class Shacl {
     }
     
     /**
-     * Evaluate Shacl shape 
+     * Evaluate shacl shape whole graph
      */
     public Graph eval() throws EngineException {
         return eval(SHACL, getGraph());
     }
     
     public Graph eval(Graph shacl) throws EngineException {
+        setShacl(shacl);
         return eval(SHACL, shacl);
     }
     
     /**
-     *  
+     * Evaluate shape/node
      */
     public Graph shape(IDatatype sh) throws EngineException {
         return eval(SHAPE, sh);
@@ -141,27 +143,19 @@ public class Shacl {
      * Display additional information about evaluation
      */
     public void tracerecord() throws EngineException {
-        IDatatype dt = getBind().getVariable(TRACEMAP_VAR);
-        tracerecord(dt);
+        IDatatype suc  = getBind().getVariable(TRACEMAPSUC_VAR);
+        IDatatype fail = getBind().getVariable(TRACEMAPFAIL_VAR);
+        tracerecord(suc);
+        tracerecord(fail);
     }  
 
 
     
-//    Graph eval(String name, Graph shacl) throws EngineException {
-//        setShacl(shacl);
-//        IDatatype dt = funcall(name, shacl);
-//        if (dt.getPointerObject() == null) {
-//            throw new EngineException("No validation graph") ;
-//        }
-//        
-//        setResult((Graph) dt.getPointerObject());
-//        getResult().index();
-//        return getResult();
-//    }
+    // _________________________________________________
+    
     
     
     Graph eval(String name, Object... obj) throws EngineException {
-        setShacl(shacl);
         IDatatype dt = funcall(name, obj);
         if (dt.getPointerObject() == null) {
             throw new EngineException("No validation graph") ;
@@ -197,11 +191,11 @@ public class Shacl {
     }
     
     void trace(IDatatype mapmap) throws EngineException {
-        funcall(TRACE, shacl, mapmap);
+        funcall(TRACE, getShacl(), mapmap);
     }
     
     void tracerecord(IDatatype mapmap) throws EngineException {
-        funcall(TRACERECORD, shacl, mapmap);
+        funcall(TRACERECORD, getShacl(), mapmap);
     }
     
     public Graph getResult() {

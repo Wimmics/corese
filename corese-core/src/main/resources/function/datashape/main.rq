@@ -60,11 +60,9 @@ function sh:focuslist(dt:graph shape) {
 
 
 function xsd:boolean sh:conform(?g) {
-    xt:focus(?g,
-    let (select * where { ?x sh:conforms ?b } ) {
-        ?b
+    let (select * where { graph ?g { ?x sh:conforms ?b } } ) {
+        return(?b)
     }
-    )
 }
 
 
@@ -82,7 +80,8 @@ function sh:trace(shape, mapmap) {
                 } ;
                 xt:print("__")
             }
-        }
+        } ;
+        return (true)
 }
 
 #
@@ -145,9 +144,7 @@ function sh:detail() {
     return (bound(detailShapeMode) && detailShapeMode)
 }
 
-function sh:test(){
-    st:get(st:test, true) 
-}
+#function sh:test(){ st:get(st:test, true) }
 
 
 # get relevant properties of sh  in a table
@@ -217,10 +214,11 @@ function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, x
             xt:set(amap, sh, coalesce(xt:get(amap, sh) + 1, 1)) ;
             xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal) + 1, 1)) 
         } ;
-        let (amap = sh:getrecordmap(sh:total, suc)) {
-             xt:set(amap, sh:total, coalesce(xt:get(amap, sh:total) + 1, 1))
+        let (bmap = sh:getrecordmap(sh:total, suc)) {
+             xt:set(bmap, sh:total, coalesce(xt:get(bmap, sh:total) + 1, 1))
         }         
-    }
+    } ;
+    return(true)
 }
 
 function sh:tracerecord(shape, mapmap) {
@@ -235,13 +233,14 @@ function sh:tracerecord(shape, mapmap) {
                 } ;
                 xt:print("__")
             }
-        }
+        } ;
+        return (true)
 }
 
 
 
 function sh:value(v){
-    if (isURI(v) && v = st:null, error(), v)
+    return(if (isURI(v) && v = st:null, error(), v))
 }
 
 

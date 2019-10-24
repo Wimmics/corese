@@ -39,7 +39,7 @@ function sh:path(dt:graph ?shape, ?exp) {
             }
         } ) {
           
-    if (! bound(?q)) { error() }   
+    if (! bound(?q)) { return(error()) }   
     else if (?q = rdf:rest)    { return(xt:list(sh:sequence, sh:listsh(?shape, ?exp))) }
     else if (sh:extension(?exp, ?q)) { return (sh:extension(?shape, ?q, ?path)) }
     else { return(xt:list(?q, sh:path(?shape, ?path))) }

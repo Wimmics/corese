@@ -17,7 +17,7 @@ function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
     let (maps = xt:sparql(q, "$this", val)) {
       #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
         for (m in maps) {
-            let ((this path value) = m) {
+            let ((path value) = m) {
                 if (hasmes) {
                     let (mmes = sh:mymessage(mes, m)) {
                         # xt:print(mmes);

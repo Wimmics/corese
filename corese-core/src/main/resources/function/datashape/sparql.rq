@@ -52,7 +52,7 @@ function sh:sparqlvalid(?shape, ?sh) {
 function sh:sparqlvalidp (shape, sh, cst, define, q, vis, s, p, oper, obj) {
     let (res = true, var = sh:variable(oper),
          qq = concat(define, replace(q, "\\$PATH", sh:display(shape, p)), sh:values(var))) {
-        for (($this value) in xt:sparql(qq, "$this", s, var, obj)) { 
+        for ((value) in xt:sparql(qq, "$this", s, var, obj)) { 
             # SPARQL query returns solutions that fail
             let (suc = false) {
                 set (res = false);
